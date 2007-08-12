@@ -1,0 +1,23 @@
+-1L  
+<no title>
+=====
+-1L  001.sh
+demo/001:Multiple Modes, Mode Transitions
+CHOICES:  QuexCore;
+RESULT:   OK;
+=====
+-1L  003.sh
+demo/003:Unicode Based Lexical Analyzis
+CHOICES:  BYTES_PER_CHARACTER=2, BYTES_PER_CHARACTER=4, BYTES_PER_CHARACTER=whar_t;
+RESULT:   OK, OK, <no result>;
+=====
+-1L  000.sh
+demo/000:Single Mode Example
+CHOICES:  QuexCore;
+RESULT:   OK;
+=====
+-1L  002.sh
+demo/002:Indentation Based Scopes
+CHOICES:  QuexCore;
+RESULT:   OK;
+=====

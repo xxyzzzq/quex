@@ -1,0 +1,132 @@
+(*) 07y8m11d:
+
+    support internal codings other than ASCII, UCS-2 and UCS-4
+
+(*) 07y8m9d:
+
+    Unify Exception Handling
+
+(*) 07y8m4d:
+
+    automatic token id generation in case that a token id is not specified.
+    at least automatic detection of undeclared token ids in the => sections.
+
+(*) 07y8m4d:
+
+   Unit tests for move_forward, move_backward.
+
+(*) 07y7m2d:
+
+    NOTE: If some day the 'counting' feature is implemented for states to solve
+          the 'x*/x+' problem. then the functions 
+
+           get_fixed_number_of_newlines_to_acceptance 
+	   get_fixed_number_of_characters_to_acceptance
+
+	   need to return None, in case that there are such states involved.
+	   if counting states appear only in post or pre-conditions this does
+	   not matter.
+
+(*) 07y7m2d:
+
+    Try to identify used and unused functions.
+
+(*) 07y5m26d:
+
+    common option switch structure of type
+
+    this allows switches to be defined on the compiler line
+    and enable at the same time default values
+
+    #if  ! defined(QUEX_OPTION__BLAH_OFF) && ! defined(QUEX_OPTION__BLAH_ON)
+    #    define QUEX_OPTION__BLAH  ON
+    #endif
+
+   straighten out the QUEX_OPTION definitions for virtual functions.
+
+   maybee use __QUEX_OPTIONS which are not to be changed by the user after
+   the engine has been build.
+
+(*) 07y5m24d:
+
+    Check for the \u and \U implementations for uni-code on non-control 
+    characters.
+
+(*) 07y5m17d:
+
+    check the unit test for get-backward-2, make a unit test for mark_lexeme_start
+    consider the placement of the lexeme start at buffer limits or _end_of_file_p!
+
+(*) 07y5m16:
+
+    Either delete the .finalize stuff from the state machine or do something
+    meaningful.
+
+(*) 07y5m16:
+
+    The trivial pre-conditions, that run on the same scheme as the 
+    begin_of_line_pre-condition, i.e. they do not need a whole 
+    inverse state machine, but consider simply the last character
+    that was passed.
+
+(*) 07y5m15d:
+
+    The '.' introduced triggers of the inverse of BeginOfFile and EndOfFile.
+    For fine-tuning it may be advantegous to check wether these triggers
+    can actually occur inside a pattern, i.e. in a pre-condition BeginOfFile
+    may occur, in a forward lexing state machine not.
+
+    Hint: defining EndOfFile and BeginOfFile as the same code, may make this
+          discussion pointless. Then no efficiency can be gained. 
+
+(*) 07y4m30d
+    Rethink: Efficiency of quex::get_token(token&)
+
+    Many tokens are only interesting with respect to their ID, there
+    is no need to pass a Token-object or to fill it. How can this be 
+    dealt with? Consider communication scheme with the parser.
+
+    Gain: -- one pointer less to put on the stack for each detected token.
+          -- one copy less of a token object for each detected token.
+
+
+(*) 07y5m13:
+    generator.regular_expression.snap_utf8 ...
+
+    straighten out the 'reading' of an utf8 character in non_control_chars, string
+    and 'set'. All of them refer to different functions. The whole setup should 
+    only take one single core when one deals with the backslashed characters.
+    The issue here is the different handling of backslashed characters. Probably
+    the backslashed chars should be passes as an argument.
+
+(*) 07y7m10d:
+
+   Saving code space with by having the reload code implemented only once.
+   Implement the reload of the buffer with 'switch jumps', i.e.
+
+   ...
+   goto ENTRY_INTO_MACHINE;
+   jump_position = STATE_MACHINE__XXX__POSITION_VOID;
+
+REENTRY:
+   switch( jump_position ) {
+
+ENTRY_INTO_MACHINE:
+       SEEK(..)
+       if(  ) acceptance ...
+    case STATE_MACHINE_GET_CHARACTER_AT_STATE_123:
+
+       ....
+
+       // nothing matched ... > check reload
+       jump_position = STATE_MACHINE_GET_CHARACTER_AT_STATE_123
+       goto RELOAD;
+
+       ....
+
+    RELOAD:
+       ...
+       goto REENTRY;  // jump_position has been set at the state ...
+
+
+

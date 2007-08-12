@@ -1,0 +1,2 @@
+rm -f test-forward-get test-misc-I test-misc-II test-misc-III test-backward-get 
+rm -f *.o
