@@ -1,6 +1,6 @@
-This is pdfeTeX, Version 3.141592-1.21a-2.2 (Web2C 7.5.4) (format=pdflatex 2006.11.27)  11 AUG 2007 07:24
+This is pdfeTeX, Version 3.141592-1.21a-2.2 (Web2C 7.5.4) (format=pdflatex 2006.11.27)  12 AUG 2007 12:02
 entering extended mode
-**main.tex
+**main
 (./main.tex
 LaTeX2e <2003/12/01>
 Babel <v3.8d> and hyphenation patterns for american, french, german, ngerman, b
@@ -583,59 +583,72 @@ Overfull \hbox (7.78685pt too wide) in paragraph at lines 21--22
 [][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-) (./formal/generated-class/virtual-functions.tex) (./formal/pasting-header.tex
-) (./formal/derivation.tex
+) (./formal/generated-class/virtual-functions.tex)
+(./formal/character-encoding/intro.tex
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[54]) (./formal/user-token-class.tex
+[54] <figures/character-encoding.png, id=246, 1533.93076pt x 998.22937pt>
+File: figures/character-encoding.png Graphic file (type png)
+
+<use figures/character-encoding.png>
+
+LaTeX Warning: Reference `fig:character-encodings' on page 55 undefined on inpu
+t line 27.
+
+
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[55]
+[55 <./figures/character-encoding.png>]
+Overfull \hbox (73.78752pt too wide) in paragraph at lines 59--60
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+) (./formal/pasting-header.tex) (./formal/derivation.tex
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[56]) (./formal/code-sections.tex) (./formal/macro.tex
+[56]) (./formal/user-token-class.tex
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[57]) (./formal/command-line-options.tex
+[57]) (./formal/code-sections.tex
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[58]
+[58]) (./formal/macro.tex
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[59]
+[59]) (./formal/command-line-options.tex
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[60])
+[60]
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[61]
+[61])
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[62
-
-]
+[62]
 Appendix A.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 157.
-(./inside-quex/intro.tex) (./inside-quex/intro/intro.tex [63])
+(Font)              <12> on input line 160.
+(./inside-quex/intro.tex) (./inside-quex/intro/intro.tex [63
+
+])
 (./inside-quex/intro/the-big-picture.tex
-<figures/pattern-bank.png, id=275, 1004.553pt x 458.01112pt>
+<figures/pattern-bank.png, id=276, 1004.553pt x 458.01112pt>
 File: figures/pattern-bank.png Graphic file (type png)
 
 <use figures/pattern-bank.png>
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[64] <figures/pattern-bank-merged.pdf, id=282, 510.90875pt x 280.04625pt>
+[64] <figures/pattern-bank-merged.pdf, id=283, 510.90875pt x 280.04625pt>
 File: figures/pattern-bank-merged.pdf Graphic file (type pdf)
 
 <use figures/pattern-bank-merged.pdf>
@@ -643,7 +656,7 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [65 <./figures/pattern-bank.png>]) (./inside-quex/intro/post-conditions.tex
-<figures/post-conditions-patterns.pdf, id=286, 627.34375pt x 249.93375pt>
+<figures/post-conditions-patterns.pdf, id=287, 627.34375pt x 249.93375pt>
 File: figures/post-conditions-patterns.pdf Graphic file (type pdf)
 
 <use figures/post-conditions-patterns.pdf>
@@ -651,11 +664,11 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [66 <./figures/pattern-bank-merged.pdf>]
-<figures/post-conditions-patterns-sequence.pdf, id=296, 443.55713pt x 212.29312
+<figures/post-conditions-patterns-sequence.pdf, id=297, 443.55713pt x 212.29312
 pt>
 File: figures/post-conditions-patterns-sequence.pdf Graphic file (type pdf)
  <use figures/post-conditions-patterns-sequence.pdf>
-<figures/post-conditions-patterns-merged.pdf, id=297, 664.884pt x 220.4235pt>
+<figures/post-conditions-patterns-merged.pdf, id=298, 664.884pt x 220.4235pt>
 File: figures/post-conditions-patterns-merged.pdf Graphic file (type pdf)
 
 <use figures/post-conditions-patterns-merged.pdf>)
@@ -692,7 +705,7 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [70]) (./inside-quex/thomson-construction/serial.tex
-<figures/pattern-sequentialize.pdf, id=317, 752.8125pt x 319.1925pt>
+<figures/pattern-sequentialize.pdf, id=318, 752.8125pt x 319.1925pt>
 File: figures/pattern-sequentialize.pdf Graphic file (type pdf)
 
 <use figures/pattern-sequentialize.pdf>)
@@ -705,7 +718,7 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 LaTeX Warning: Reference `sec:thomson-construction/serial' on page 72 undefined
  on input line 10.
 
-<figures/pattern-parallelize.pdf, id=329, 630.55576pt x 225.84375pt>
+<figures/pattern-parallelize.pdf, id=330, 630.55576pt x 225.84375pt>
 File: figures/pattern-parallelize.pdf Graphic file (type pdf)
 
 <use figures/pattern-parallelize.pdf>)
@@ -714,7 +727,7 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [72 <./figures/pattern-parallelize.pdf>]
-<figures/pattern-repeat-kleene-closure.pdf, id=333, 624.3325pt x 146.5475pt>
+<figures/pattern-repeat-kleene-closure.pdf, id=334, 624.3325pt x 146.5475pt>
 File: figures/pattern-repeat-kleene-closure.pdf Graphic file (type pdf)
 
 <use figures/pattern-repeat-kleene-closure.pdf>
@@ -731,11 +744,11 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [75]) (./inside-quex/NFA-to-DFA.tex
-<figures/epsilon-closure.pdf, id=352, 755.2215pt x 436.33012pt>
+<figures/epsilon-closure.pdf, id=353, 755.2215pt x 436.33012pt>
 File: figures/epsilon-closure.pdf Graphic file (type pdf)
 
 <use figures/epsilon-closure.pdf>
-<figures/NFA-to-DFA-transitions.pdf, id=353, 640.49287pt x 448.074pt>
+<figures/NFA-to-DFA-transitions.pdf, id=354, 640.49287pt x 448.074pt>
 File: figures/NFA-to-DFA-transitions.pdf Graphic file (type pdf)
 
 <use figures/NFA-to-DFA-transitions.pdf>
@@ -743,7 +756,7 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [76]
-<figures/NFA-to-DFA-trigger-history.pdf, id=357, 543.83176pt x 157.18726pt>
+<figures/NFA-to-DFA-trigger-history.pdf, id=358, 543.83176pt x 157.18726pt>
 File: figures/NFA-to-DFA-trigger-history.pdf Graphic file (type pdf)
 
 <use figures/NFA-to-DFA-trigger-history.pdf>
@@ -782,11 +795,11 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [79]) (./inside-quex/hopcroft-optimization.tex
-<figures/hopcroft-before.pdf, id=368, 256.96pt x 256.96pt>
+<figures/hopcroft-before.pdf, id=369, 256.96pt x 256.96pt>
 File: figures/hopcroft-before.pdf Graphic file (type pdf)
 
 <use figures/hopcroft-before.pdf>
-<figures/hopcroft-after.pdf, id=369, 256.96pt x 256.96pt>
+<figures/hopcroft-after.pdf, id=370, 256.96pt x 256.96pt>
 File: figures/hopcroft-after.pdf Graphic file (type pdf)
 
 <use figures/hopcroft-after.pdf>
@@ -798,11 +811,11 @@ Overfull \hbox (2.02121pt too wide) in paragraph at lines 17--17
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[80] <figures/hopcroft-2-before.pdf, id=376, 256.96pt x 256.96pt>
+[80] <figures/hopcroft-2-before.pdf, id=377, 256.96pt x 256.96pt>
 File: figures/hopcroft-2-before.pdf Graphic file (type pdf)
 
 <use figures/hopcroft-2-before.pdf>
-<figures/hopcroft-2-after.pdf, id=377, 256.96pt x 256.96pt>
+<figures/hopcroft-2-after.pdf, id=378, 256.96pt x 256.96pt>
 File: figures/hopcroft-2-after.pdf Graphic file (type pdf)
 
 <use figures/hopcroft-2-after.pdf>
@@ -928,7 +941,7 @@ Overfull \hbox (6.79999pt too wide) in paragraph at lines 3--4
 [] 
  []
 
-<figures/basic-buffer.pdf, id=423, 395.4775pt x 169.63374pt>
+<figures/basic-buffer.pdf, id=424, 395.4775pt x 169.63374pt>
 File: figures/basic-buffer.pdf Graphic file (type pdf)
 
 <use figures/basic-buffer.pdf> [89
@@ -938,7 +951,7 @@ File: figures/basic-buffer.pdf Graphic file (type pdf)
 Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
-[90] <figures/algorzthm.pdf, id=435, 710.655pt x 415.5525pt>
+[90] <figures/algorzthm.pdf, id=436, 710.655pt x 415.5525pt>
 File: figures/algorzthm.pdf Graphic file (type pdf)
 
 <use figures/algorzthm.pdf>) (./inside-quex/buffer/load.tex
@@ -949,11 +962,11 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 
 [91 <./figures/algorzthm.pdf>]
-<figures/load-forward.pdf, id=444, 771.88374pt x 260.975pt>
+<figures/load-forward.pdf, id=445, 771.88374pt x 260.975pt>
 File: figures/load-forward.pdf Graphic file (type pdf)
 
 <use figures/load-forward.pdf>
-<figures/load-backward.pdf, id=445, 771.88374pt x 266.9975pt>
+<figures/load-backward.pdf, id=446, 771.88374pt x 266.9975pt>
 File: figures/load-backward.pdf Graphic file (type pdf)
 
 <use figures/load-backward.pdf>) (./inside-quex/buffer/constructor.tex
@@ -977,23 +990,26 @@ Overfull \vbox (9.51996pt too high) has occurred while \output is active []
 
 LaTeX Warning: There were undefined references.
 
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
  )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 11 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 3884 strings out of 94499
- 63514 string characters out of 1172809
+ 3899 strings out of 94499
+ 63962 string characters out of 1172809
  133793 words of memory out of 3500000
- 6796 multiletter control sequences out of 10000+50000
+ 6807 multiletter control sequences out of 10000+50000
  22011 words of font info for 60 fonts, out of 500000 for 2000
  580 hyphenation exceptions out of 1000
- 37i,12n,68p,243b,1633s stack positions out of 1500i,500n,5000p,200000b,5000s
+ 37i,12n,68p,239b,1636s stack positions out of 1500i,500n,5000p,200000b,5000s
 PDF statistics:
- 466 PDF objects out of 300000
+ 467 PDF objects out of 300000
  0 named destinations out of 131072
- 151 words of extra memory for PDF output out of 65536
+ 156 words of extra memory for PDF output out of 65536
 </usr/share/texmf/fonts/type1/bluesky/cm/cmsy8.pfb></usr/share/
 texmf/fonts/type1/bluesky/cm/cmmi6.pfb></usr/share/texmf/fonts/type1/bluesky/cm
 /cmsy9.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmti10.pfb></usr/share/texm
@@ -1010,4 +1026,4 @@ share/texmf/fonts/type1/bluesky/cm/cmtt12.pfb></usr/share/texmf/fonts/type1/blu
 esky/cm/cmr10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr12.pfb></usr/shar
 e/texmf/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf/fonts/type1/blues
 ky/cm/cmmi12.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmssbx10.pfb>
-Output written on main.pdf (94 pages, 689032 bytes).
+Output written on main.pdf (94 pages, 718463 bytes).

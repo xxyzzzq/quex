@@ -9,7 +9,7 @@ RESULT:   OK;
 -1L  003.sh
 demo/003:Unicode Based Lexical Analyzis
 CHOICES:  BYTES_PER_CHARACTER=2, BYTES_PER_CHARACTER=4, BYTES_PER_CHARACTER=whar_t;
-RESULT:   OK, OK, <no result>;
+RESULT:   OK, OK, OK;
 =====
 -1L  000.sh
 demo/000:Single Mode Example

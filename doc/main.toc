@@ -42,12 +42,13 @@
 \contentsline {subsection}{\numberline {4.6.5}Class Body Extensions: {\tt body}}{53}
 \contentsline {subsection}{\numberline {4.6.6}Constructor Extensions: {\tt init}}{53}
 \contentsline {subsection}{\numberline {4.6.7}Virtual Member Functions}{54}
-\contentsline {section}{\numberline {4.7}Pasting Header Information: {\tt header}}{54}
-\contentsline {section}{\numberline {4.8}Deriving from Lexical Analyser}{55}
-\contentsline {section}{\numberline {4.9}User defined Token Classes}{55}
-\contentsline {section}{\numberline {4.10}Summary of Code Sections}{57}
-\contentsline {section}{\numberline {4.11}Macro Switches}{57}
-\contentsline {section}{\numberline {4.12}Command Line Options}{58}
+\contentsline {section}{\numberline {4.7}Character Encoding (Unicode Support)}{54}
+\contentsline {section}{\numberline {4.8}Pasting Header Information: {\tt header}}{56}
+\contentsline {section}{\numberline {4.9}Deriving from Lexical Analyser}{56}
+\contentsline {section}{\numberline {4.10}User defined Token Classes}{57}
+\contentsline {section}{\numberline {4.11}Summary of Code Sections}{58}
+\contentsline {section}{\numberline {4.12}Macro Switches}{59}
+\contentsline {section}{\numberline {4.13}Command Line Options}{60}
 \contentsline {chapter}{\numberline {A}{{Que{\raise 0.2em \hbox {$\chi $}}}} Intern: Generation of the Core Engine}{63}
 \contentsline {section}{\numberline {A.1}Introduction}{63}
 \contentsline {subsection}{\numberline {A.1.1}The Big Picture}{64}
