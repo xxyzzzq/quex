@@ -145,9 +145,10 @@ def do(argv):
         sys.exit(-1)
 
     # check validity
-    if setup.bytes_per_ucs_code_point != "wchar_t":
-        if setup.bytes_per_ucs_code_point not in [1, 2, 4]:
-            print "error: choice for --bytes-per-ucs-code-point: %i" % setup.bytes_per_ucs_code_point
+    bpc = setup.bytes_per_ucs_code_point
+    if bpc != "wchar_t":
+        if bpc not in ["1", "2", "4"]:
+            print "error: choice for --bytes-per-ucs-code-point: %s" % bpc
             print "error: quex only supports 1, 2, or 4 bytes per character in internal engine"
             sys.exit(-1)
         else:

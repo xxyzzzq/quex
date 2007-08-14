@@ -16,18 +16,16 @@ CONTINUE:Reentry analysis without return from function
 CHOICES:  PlainMemory, QuexBuffer;
 RESULT:   OK, OK;
 =====
--1L  test-no-backward-reloading.py
-Buffer Reload:No Backward Reload -- Precondition at Border
-CHOICES:  No_NDEBUG, NDEBUG;
-RESULT:   OK, OK;
+-1L  a.out
+(*) test string:
 =====
 -1L  test-mode-changes.py
 CONTINUE:Mode Changes
 CHOICES:  PlainMemory, QuexBuffer;
 RESULT:   OK, OK;
 =====
--1L  test-post-conditions.py
-Post Conditions:Part 1
+-1L  test-simple-3.py
+Simple:Special Case '.' (drop out on valid target state)
 CHOICES:  PlainMemory, QuexBuffer;
 RESULT:   OK, OK;
 =====
@@ -44,8 +42,8 @@ RESULT:   OK, OK;
 (*) test string:
 RESULT:   FAIL;
 =====
--1L  test-simple-3.py
-Simple:Special Case '.' (drop out on valid target state)
+-1L  test-post-conditions.py
+Post Conditions:Part 1
 CHOICES:  PlainMemory, QuexBuffer;
 RESULT:   OK, OK;
 =====
@@ -64,8 +62,10 @@ Simple:Begin of Line (BOL), End of Line (EOL)
 CHOICES:  PlainMemory, QuexBuffer;
 RESULT:   OK, OK;
 =====
--1L  a.out
-(*) test string:
+-1L  test-no-backward-reloading.py
+Buffer Reload:No Backward Reload -- Precondition at Border
+CHOICES:  No_NDEBUG, NDEBUG;
+RESULT:   OK, OK;
 =====
 -1L  test-simple.py
 Simple:Tiny Expressions
