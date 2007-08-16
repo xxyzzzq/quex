@@ -45,7 +45,7 @@ for number in range(300):
     if result_state_idx == None: result_state_idx = -1
     sys.stdout.write("%i %s %s\n" % (number, repr(example_func(number)), repr(result_state_idx)))
     if example_func(number) != result_state_idx:
-	differences.append(number)
+        differences.append(number)
 
 print "# errors = ", differences    
 

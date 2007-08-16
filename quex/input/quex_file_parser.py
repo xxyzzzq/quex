@@ -64,7 +64,7 @@ def parse_code_fragment(fh, code_fragment_name):
 
     return result
 
-def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, ElementNames, MinElementN):	
+def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, ElementNames, MinElementN):   
     """Returns list of lists, where 
      
          record_list[i][k]  means element 'k' of line 'i'
@@ -78,29 +78,29 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
     if i == -1: 
         error_msg("missing '{' after %s statement" % CodeFragmentName, fh)
     #
-    line_n = start_line_n	
+    line_n = start_line_n       
     record_list = []
     while 1 + 1 == 2:
         line = fh.readline()
         line_n += 1
         #
         if line == "": 
-	    error_msg("found end of file while parsing a '%s' range.\n" % CodeFragmentName + \
-		      "range started here.", fh, start_line_n)    
+            error_msg("found end of file while parsing a '%s' range.\n" % CodeFragmentName + \
+                      "range started here.", fh, start_line_n)    
         line = trim(line)
         if line == "":                           continue           # empty line
         elif line[0] == '}':                     return record_list # end of define range
-	elif len(line) > 1 and line[:2] == "//": continue           # comment
+        elif len(line) > 1 and line[:2] == "//": continue           # comment
 
         # -- interpret line as list of whitespace separated record elements
-	fields = line.split()    
+        fields = line.split()    
         if len(fields) < MinElementN: 
-	    format_str = ""
-	    for element in ElementNames:
-	        format_str += "%s   " % element 
-	    error_msg("syntax error in pattern definition\n" + \
-		      "format: %s  NEWLINE" % format_str , fh, line_n)
-	record_list.append(fields + [line_n, line])    
+            format_str = ""
+            for element in ElementNames:
+                format_str += "%s   " % element 
+            error_msg("syntax error in pattern definition\n" + \
+                      "format: %s  NEWLINE" % format_str , fh, line_n)
+        record_list.append(fields + [line_n, line])    
 
 
     raise "this code section should have never been reached!"
@@ -109,9 +109,9 @@ def parse_pattern_name_definitions(fh):
     """Parses pattern definitions of the form:
    
           WHITESPACE  [ \t\n]
-	  IDENTIFIER  [a-zA-Z0-9]+
-	  OP_PLUS     "+"
-	  
+          IDENTIFIER  [a-zA-Z0-9]+
+          OP_PLUS     "+"
+          
        That means: 'name' whitespace 'regular expression' whitespace newline.
        Comments can only be '//' nothing else and they have to appear at the
        beginning of the line.
@@ -121,28 +121,28 @@ def parse_pattern_name_definitions(fh):
     """
     #
     record_list = __parse_domain_of_whitespace_separated_elements(fh, "define", 
-	                                                          ["NAME", "REGULAR-EXPRESSION"], 2)
+                                                                  ["NAME", "REGULAR-EXPRESSION"], 2)
     
     db = lexer_mode.shorthand_db
     for record in record_list:
         line_n                 = record[-2]
         line                   = record[-1]
-	name                   = record[0]
-	regular_expression_str = trim(line[len(name):])
-	#
-	if db.has_key(name):    
-	    error_msg("pattern name defined twice: '%s'" % name, fh.name, line_n, DontExitF=True)
-	    error_msg("previously define here.", db[name].filename, db[name].line_n)
-	else:    
-	    db[name] = lexer_mode.PatternShorthand(name, regular_expression_str, 
-	                                           fh.name, line_n)
+        name                   = record[0]
+        regular_expression_str = trim(line[len(name):])
+        #
+        if db.has_key(name):    
+            error_msg("pattern name defined twice: '%s'" % name, fh.name, line_n, DontExitF=True)
+            error_msg("previously define here.", db[name].filename, db[name].line_n)
+        else:    
+            db[name] = lexer_mode.PatternShorthand(name, regular_expression_str, 
+                                                   fh.name, line_n)
         line_n += 1
 
 def parse_token_id_definitions(fh):
     """Parses token definitions of the form:
   
           TOKEN_ID_NAME [Number] [TypeName] 
-	  
+          
        For example:
 
           TKN_IDENTIFIER   1002  std::string
@@ -151,48 +151,48 @@ def parse_token_id_definitions(fh):
    
           TKN_NUMBER   std::double
           TKN_FLAG     1008
-          TKN_NUMBER   2999	  
-	 
+          TKN_NUMBER   2999       
+         
        defines an id TKN_NUMBER, where the type is set to 'std::string'. Then
        TKN_FLAG is defined as numerical value 1008. Finally an addition to 
        TKN_NUMBER is made, saying that is has the numerical value of 2999.       
-	  
+          
     """
     #
     record_list = __parse_domain_of_whitespace_separated_elements(fh, "define", 
-	                                                          ["TOKEN-ID-NAME", 
-								   "[Number]", "[TypeName]"], 1)
+                                                                  ["TOKEN-ID-NAME", 
+                                                                   "[Number]", "[TypeName]"], 1)
     
     db = lexer_mode.token_id_db
     for record in record_list:
         # NOTE: record[-1] -> line text, record[-2] -> line number
         #       record[:-2] fields of the line
         line_n    = record[-2]
-	name      = record[0]
-	type_name = None
-	number    = None
-	#
-	if len(record) - 2 > 1: 
-	    candidate = record[1]
-	    # does candidate consist only of digits ? --> number
-	    # is first character a letter or '_' ?    --> type_name	
-	    if candidate.isdigit():                             number = long(candidate)
-	    elif candidate[0].isalpha() or candidate[0] == "_": type_name = candidate
- 	#
-	if len(record) - 2 > 2:
-	    candidate = record[2]
-	    # is first character a letter or '_' ?	
-	    if candidate[0].isalpha() or candidate[0] == "_": 
-	        if type_name != None:
-		    error_msg("token can only have *one* type associated with it", fh, line_n)
-	    	type_name = candidate
-	#
-	if not db.has_key(name): 
-	    db[name] = TokenInfo(name, number, type_name, fh.name, line_n)
+        name      = record[0]
+        type_name = None
+        number    = None
+        #
+        if len(record) - 2 > 1: 
+            candidate = record[1]
+            # does candidate consist only of digits ? --> number
+            # is first character a letter or '_' ?    --> type_name     
+            if candidate.isdigit():                             number = long(candidate)
+            elif candidate[0].isalpha() or candidate[0] == "_": type_name = candidate
+        #
+        if len(record) - 2 > 2:
+            candidate = record[2]
+            # is first character a letter or '_' ?      
+            if candidate[0].isalpha() or candidate[0] == "_": 
+                if type_name != None:
+                    error_msg("token can only have *one* type associated with it", fh, line_n)
+                type_name = candidate
+        #
+        if not db.has_key(name): 
+            db[name] = TokenInfo(name, number, type_name, fh.name, line_n)
         else:
-	    if number != None:    db[name].id        = number
-	    if type_name != None: db[name].type_name = type_name
-	    db[name].positions.append([fh.name, line_n])
+            if number != None:    db[name].id        = number
+            if type_name != None: db[name].type_name = type_name
+            db[name].positions.append([fh.name, line_n])
 
 
 def parse_initial_mode_definition(fh):
@@ -200,11 +200,11 @@ def parse_initial_mode_definition(fh):
     # specify the name of the intial lexical analyser mode
     mode_name = read_next_word(fh)
     if lexer_mode.initial_mode.line_n != -1:
-	error_msg("start mode defined more than once!", fh, DontExitF=True)
-	error_msg("previously defined here",
-		  lexer_mode.initial_mode.filename,
-		  lexer_mode.initial_mode.line_n)
-	
+        error_msg("start mode defined more than once!", fh, DontExitF=True)
+        error_msg("previously defined here",
+                  lexer_mode.initial_mode.filename,
+                  lexer_mode.initial_mode.line_n)
+        
     lexer_mode.initial_mode.code     = mode_name
     lexer_mode.initial_mode.filename = fh.name
     lexer_mode.initial_mode.line_n   = get_current_line_info_number(fh)
@@ -230,7 +230,7 @@ def parse_section(fh, Setup):
     word = read_next_word(fh)
 
     if word == "start":
-	parse_initial_mode_definition(fh)
+        parse_initial_mode_definition(fh)
         return
     
     elif word == "header":
@@ -244,18 +244,18 @@ def parse_section(fh, Setup):
     elif word == "init":
         parse_unique_code_fragment(fh, "init", lexer_mode.class_init)
         return
-	
+        
     elif word == "define":
         parse_pattern_name_definitions(fh)
         return
 
-    elif word == "token":	
+    elif word == "token":       
         parse_token_id_definitions(fh)
         return
 
     elif word == "mode":
-	parse_mode_definition(fh, Setup)
-	return
+        parse_mode_definition(fh, Setup)
+        return
     else:
         error_msg("sequence '%s' not recognized as valid keyword in this context" % word + \
                   "use: 'mode', 'header', 'body', 'init', 'define', 'token' or 'start'", fh)
@@ -305,51 +305,51 @@ def parse_mode_definition(fh, Setup):
         word = read_next_word(fh)
 
         if   word == "}":
-	    if new_mode.matches == {}:
-	        error_msg("mode '%s' does not contain any pattern" % new_mode.name, fh)
+            if new_mode.matches == {}:
+                error_msg("mode '%s' does not contain any pattern" % new_mode.name, fh)
             break
 
         elif word == "on_entry":
-	    # Event: enter into mode
+            # Event: enter into mode
             parse_unique_code_fragment(fh, "%s::on_entry event handler" % new_mode.name, new_mode.on_entry)
             continue
         
         elif word == "on_exit":
-	    # Event: exit from mode
+            # Event: exit from mode
             parse_unique_code_fragment(fh, "%s::on_exit event handler" % new_mode.name, new_mode.on_exit)
             continue
 
         elif word == "on_match":
-	    # Event: exit from mode
+            # Event: exit from mode
             parse_unique_code_fragment(fh, "%s::on_match event handler" % new_mode.name, new_mode.on_match)
             continue
 
         elif  word == "on_indentation":
-	    # Event: start of indentation, 
-	    #        first non-whitespace after whitespace
+            # Event: start of indentation, 
+            #        first non-whitespace after whitespace
             parse_unique_code_fragment(fh, "%s::on_indentation event handler" % new_mode.name, 
-		                       new_mode.on_indentation)
+                                       new_mode.on_indentation)
             continue
 
-	elif word == "on_end_of_stream": 
-	    # Event: End of data stream / end of file
-	    # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
-	    #       patterns are entered here, even if later versions of quex might dismiss
-	    #       those rule deefinitions in favor of consistent event handlers.
-	    pattern = "<<EOF>>"
+        elif word == "on_end_of_stream": 
+            # Event: End of data stream / end of file
+            # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
+            #       patterns are entered here, even if later versions of quex might dismiss
+            #       those rule deefinitions in favor of consistent event handlers.
+            pattern = "<<EOF>>"
 
-	elif word == "on_failure":
-	    # Event: No pattern matched for current position.
-	    # NOTE: See 'on_end_of_stream' comments.
-	    pattern = "<<FAIL>>"
+        elif word == "on_failure":
+            # Event: No pattern matched for current position.
+            # NOTE: See 'on_end_of_stream' comments.
+            pattern = "<<FAIL>>"
 
-	elif len(word) >= 3 and word[:3] == "on_":    
-	    error_msg("unknown event handler '%s'. known event handlers are:\n" % word + \
-		      "on_entry, on_exit, on_indentation, on_end_of_stream, on_failure. on_match\n" + \
-		      "note, that any pattern starting with 'on_' is considered an event handler.\n" + \
-		      "use double quotes to bracket patterns that start with 'on_'", fh)
-	else:
-	    pattern = word
+        elif len(word) >= 3 and word[:3] == "on_":    
+            error_msg("unknown event handler '%s'. known event handlers are:\n" % word + \
+                      "on_entry, on_exit, on_indentation, on_end_of_stream, on_failure. on_match\n" + \
+                      "note, that any pattern starting with 'on_' is considered an event handler.\n" + \
+                      "use double quotes to bracket patterns that start with 'on_'", fh)
+        else:
+            pattern = word
 
         skip_whitespace(fh)
 
@@ -378,8 +378,8 @@ def parse_mode_definition(fh, Setup):
             skip_whitespace(fh)
             # shorthand for { self.send(TKN_SOMETHING); RETURN; }
             token_name, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
-	    if bracket_i == -1: 
-	    	error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
+            if bracket_i == -1: 
+                error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
 
             token_name = trim(token_name)
             if bracket_i == 0:
@@ -389,7 +389,7 @@ def parse_mode_definition(fh, Setup):
             else:
                 token_constructor_args = ""
                 
-	    # after 'send' the token queue is filled and one can safely return
+            # after 'send' the token queue is filled and one can safely return
             code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
 
             line_n = get_current_line_info_number(fh) + 1

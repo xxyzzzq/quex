@@ -89,10 +89,10 @@ func_str = \
 
 class TokenInfo:
     def __init__(self, Name, IDNumber, TypeName, Filename, LineN):
-	self.name         = Name
-	self.number       = IDNumber
-	self.related_type = TypeName
-	self.positions    = [ Filename, LineN ]
+        self.name         = Name
+        self.number       = IDNumber
+        self.related_type = TypeName
+        self.positions    = [ Filename, LineN ]
 
 
 def do(global_setup):
@@ -146,13 +146,13 @@ def output(global_setup):
         print "   '%s'" % global_setup.input_user_token_id_file
 
         global_setup.output_token_id_file = global_setup.input_user_token_id_file
-	return
+        return
     
     print "(0) create token id file"
     if global_setup.input_token_id_db == "":
-	print "error: token-id database not specified"
-	sys.exit(-1)
-	
+        print "error: token-id database not specified"
+        sys.exit(-1)
+        
     print "   token class file = '%s'" % global_setup.input_token_class_file
     print "   => '%s'" % global_setup.output_token_id_file
     
@@ -177,9 +177,9 @@ def output(global_setup):
 
     i   = setup.id_count_offset
     for token_name in token_names:
-	token_info = lexer_mode.token_id_db[token_name] 
-	id = i
-	if token_info.number != None: id = token_info.number
+        token_info = lexer_mode.token_id_db[token_name] 
+        id = i
+        if token_info.number != None: id = token_info.number
         token_id_txt += "const quex::%s::id_type %s%s %s= %i;\n" % (setup.token_class,
                                                                     setup.token_prefix,
                                                                     token_name, space(token_name), id)

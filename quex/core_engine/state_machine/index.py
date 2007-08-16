@@ -24,14 +24,14 @@ def map_state_combination_to_index(combination):
     returned."""
     # if all state machines are in state TERMINATION, then the state needs to be TERMINATION.
     if combination == [ STATE_TERMINATION ] * len(combination): 
-	return STATE_TERMINATION
+        return STATE_TERMINATION
 
     cc_combination = deepcopy(combination)
     cc_combination.sort()
     key_str = repr(cc_combination)
 
     if not __map_combination_to_index.has_key(key_str):
-	# use state_machine.index.get() to get a new unique index for the combination
+        # use state_machine.index.get() to get a new unique index for the combination
         __map_combination_to_index[key_str] = get()  
     
     return __map_combination_to_index[key_str]
@@ -42,8 +42,8 @@ def register_state_machine(StateMachineRef):
     """Produces a unique id for the state machine. This function is only to be called
        from inside the constructor of class StateMachine."""
     if StateMachineRef in __map_state_machine_id_to_state_machine.values(): 
-	raise "error: tried to register state machine twice"
-	
+        raise "error: tried to register state machine twice"
+        
     global __internal_state_machine_id_counter
     __internal_state_machine_id_counter += long(1)
     # add the state machine under the give key to the database
@@ -52,7 +52,7 @@ def register_state_machine(StateMachineRef):
     
 def get_state_machine_by_id(StateMachineID):
     if __map_state_machine_id_to_state_machine.has_key(StateMachineID) == False:
-    	raise "error: state machine '%s' has not been registered." % repr(StateMachineID)
+        raise "error: state machine '%s' has not been registered." % repr(StateMachineID)
     return __map_state_machine_id_to_state_machine[StateMachineID]    
     
 ################################################################################    
@@ -68,7 +68,7 @@ def get_state_machine_by_id(StateMachineID):
 #       the 'id' of state machine A is less then the 'id' of
 #       state machine B. This is so, because 'less' means that
 #       A has been defined before B (id increases each time a 
-#	new state machine is defined.    
+#       new state machine is defined.    
 ################################################################################    
 __state_machine_ranking_db = {}        
 def state_machine_ranking_db_register(SuperiorStateMachineID, InferiorStateMachineID):
@@ -82,34 +82,34 @@ def state_machine_ranking_db_register(SuperiorStateMachineID, InferiorStateMachi
 
        NOTE: The non-automatic priviledging is not propperly set up.
              The question is anywhile: will it be useful or do we simply
-	     line up the patterns and then the priviledges are assigned?
-	     This solution would imply much less fuss.
+             line up the patterns and then the priviledges are assigned?
+             This solution would imply much less fuss.
     """
     global __state_machine_ranking_db    
 
     # check if by accident two times the same index was given
     if SuperiorStateMachineID == InferiorStateMachineID:
         raise "state machine of index '%s' cannot be superior to itself" % \
-	      SuperiorStateMachineID 
+              SuperiorStateMachineID 
 
     # check if a contradictory relation has been entered before
     if  state_machine_ranking_db_is_superior(InferiorStateMachineID, SuperiorStateMachineID): 
         raise "state machine index '%s' is already superior to '%s'\n" \
-	      "it was tried to enter '%s' to be superior to '%s'" % \
-	       (InferiorStateMachineID, SuperiorStateMachineID,
+              "it was tried to enter '%s' to be superior to '%s'" % \
+               (InferiorStateMachineID, SuperiorStateMachineID,
                 SuperiorStateMachineID, InferiorStateMachineID)  
     
     def __state_machine_ranking_db_add(key, element):
-	if __state_machine_ranking_db.has_key(key): __state_machine_ranking_db[key].append(element)
+        if __state_machine_ranking_db.has_key(key): __state_machine_ranking_db[key].append(element)
         else:                                       __state_machine_ranking_db[key] = [ element ]
 
     __state_machine_ranking_db_add(SuperiorStateMachineID, InferiorStateMachineID)
 
     # if per definition A < B, thenn all elements between a and B need to be < B.
-    # otherwise, one gets into trouble with the sorting algorithm.	
+    # otherwise, one gets into trouble with the sorting algorithm.      
     # if SuperiorStateMachineID - InferiorStateMachineID > 1:
     #   for sm_id in range(InferiorStateMachineID + 1, SuperiorStateMachineID): 
-    #	   __state_machine_ranking_db_add(sm_id, InferiorStateMachineID)
+    #      __state_machine_ranking_db_add(sm_id, InferiorStateMachineID)
 
 
 def state_machine_ranking_db_is_superior(A_id, B_id):
@@ -120,13 +120,13 @@ def state_machine_ranking_db_is_superior(A_id, B_id):
 
        RETURNS: True  if A is superior to B
                 False if A is not superior, i.e. either there is no entry
-		      that indicates superioty of A over B or B might even
-		      be superior to A.
-	
+                      that indicates superioty of A over B or B might even
+                      be superior to A.
+        
        NOTE: The non-automatic priviledging is not propperly set up.
              The question is anywhile: will it be useful or do we simply
-	     line up the patterns and then the priviledges are assigned?
-	     This solution would imply much less fuss.
+             line up the patterns and then the priviledges are assigned?
+             This solution would imply much less fuss.
 
        NOTE: get an impression about the relation of A and B in the ranking db
              call is_superior(A, B) and is_superior(B, A).
@@ -143,10 +143,10 @@ def state_machine_ranking_db_is_superior(A_id, B_id):
     # loop over all state machines that are inferior to A
     for inferior_state_machine_id in __state_machine_ranking_db[A_id]:     
         if state_machine_ranking_db_is_superior(inferior_state_machine_id, B_id):
-	   return True
+           return True
 
-    # no assumptions made at all 	   
-    return False							 
+    # no assumptions made at all           
+    return False                                                         
 
 def state_machine_ranking_get_dominating_state_machine(StateMachineID_list):
     """Returns a list of the highest ranked state machines in the given list
@@ -158,12 +158,12 @@ def state_machine_ranking_get_dominating_state_machine(StateMachineID_list):
 
        NOTE: The non-automatic priviledging is not propperly set up.
              The question is anywhile: will it be useful or do we simply
-	     line up the patterns and then the priviledges are assigned?
-	     This solution would imply much less fuss.
+             line up the patterns and then the priviledges are assigned?
+             This solution would imply much less fuss.
     """   
     if StateMachineID_list.__class__.__name__ != "list":
         raise "expected list of state machine ids, received '%s'" % repr(StateMachineID_list)
-	
+        
     L = len(StateMachineID_list)
     if L == 0:
         raise "empty state machine list received"
@@ -174,13 +174,13 @@ def state_machine_ranking_get_dominating_state_machine(StateMachineID_list):
     non_dominated_state_machine_id_list = []
     for sm_id in StateMachineID_list:
         for competitor_id in StateMachineID_list:
-	    if competitor_id == sm_id: continue
-	    if state_machine_ranking_db_is_superior(competitor_id, sm_id): 
-		# sm_id is dominated: do not add to non-dominated list
-		break
-    	else:
-	    # no competitor was superior: add to non-dominated list
-	    non_dominated_state_machine_id_list.append(sm_id)
+            if competitor_id == sm_id: continue
+            if state_machine_ranking_db_is_superior(competitor_id, sm_id): 
+                # sm_id is dominated: do not add to non-dominated list
+                break
+        else:
+            # no competitor was superior: add to non-dominated list
+            non_dominated_state_machine_id_list.append(sm_id)
    
     if non_dominated_state_machine_id_list == []:
         non_dominated_state_machine_id_list = copy(StateMachineID_list)
@@ -200,16 +200,16 @@ def state_machine_ranking_db_sort(StateMachineID_list):
        
        NOTE: The non-automatic priviledging is not propperly set up.
              The question is anywhile: will it be useful or do we simply
-	     line up the patterns and then the priviledges are assigned?
-	     This solution would imply much less fuss.
+             line up the patterns and then the priviledges are assigned?
+             This solution would imply much less fuss.
        
     """    
     def compare_this(A, B):
-	if   state_machine_ranking_db_is_superior(A, B): return -1
+        if   state_machine_ranking_db_is_superior(A, B): return -1
         elif state_machine_ranking_db_is_superior(B, A): return 1
-	else:                                            return cmp(A, B) 
+        else:                                            return cmp(A, B) 
 
     StateMachineID_list.sort(compare_this)
 
     return StateMachineID_list
-							 
+                                                         

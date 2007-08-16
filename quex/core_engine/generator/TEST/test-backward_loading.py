@@ -27,6 +27,6 @@ pattern_action_pair_list = [
 #          |12456789|
 test_str = "   0xxxxxxalola 0xxxxxxxa"
 generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="QuexBuffer", 
-	          QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
-		  NDEBUG_str=NDEBUG_compiler_str)
+                  QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
+                  NDEBUG_str=NDEBUG_compiler_str)
     

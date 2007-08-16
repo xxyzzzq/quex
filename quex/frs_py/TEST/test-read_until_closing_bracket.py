@@ -13,10 +13,10 @@ if "--hwut-info" in sys.argv:
 def test(Text, Opener, Closer, IgnoreRegions=[]):
     sh = StringIO(Text)
     try:
-	accumulated_text = read_until_closing_bracket(sh, Opener, Closer, IgnoreRegions) 
+        accumulated_text = read_until_closing_bracket(sh, Opener, Closer, IgnoreRegions) 
     except:
-	print "ERROR"
-	return
+        print "ERROR"
+        return
 
     print "##-----------------------------------------------------------------------"
     print Text

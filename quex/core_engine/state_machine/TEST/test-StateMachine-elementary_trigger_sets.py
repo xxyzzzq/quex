@@ -14,17 +14,17 @@ if "--hwut-info" in sys.argv:
 #     different target states
 sm = StateMachine()
 sm.add_transition(10L,
-     		  NumberSet(Interval(0, 10)).union(Interval(20, 30)).union(Interval(40, 50)),
- 		  1L)
+                  NumberSet(Interval(0, 10)).union(Interval(20, 30)).union(Interval(40, 50)),
+                  1L)
 sm.add_transition(10L,
-   		  NumberSet(Interval(5, 10)).union(Interval(21, 29)),
-		  2L)
+                  NumberSet(Interval(5, 10)).union(Interval(21, 29)),
+                  2L)
 sm.add_transition(10L,
-   		  NumberSet(Interval(11, 20)).union(Interval(22, 23)).union(Interval(50, 60)),
-		  3L)
+                  NumberSet(Interval(11, 20)).union(Interval(22, 23)).union(Interval(50, 60)),
+                  3L)
 sm.add_transition(10L,
                   NumberSet(Interval(35, 42)),
-		  4L)
+                  4L)
 
 sm.create_new_state(StateIdx=1)
 sm.create_new_state(StateIdx=2)

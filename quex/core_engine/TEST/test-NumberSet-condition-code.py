@@ -27,7 +27,7 @@ A0 = NumberSet([Interval(10,20),    Interval(21,30),
                 Interval(90,100),   Interval(110,130),
                 Interval(150,151),  Interval(151,190),
                 Interval(190,195),  Interval(195,196), 
-		Interval(197, 198), Interval(198, 198),
+                Interval(197, 198), Interval(198, 198),
                 Interval(200,230),  Interval(231,240),
                 Interval(250,260),  Interval(261,280)])
 

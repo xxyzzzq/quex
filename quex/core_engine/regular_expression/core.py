@@ -19,14 +19,14 @@
 #            primary repetition_cmd
 #  
 #  non_double_quote: 'anything but an unbackslashed double quote, i.e. \" is ok, 
-#                     but " is not.'	  
+#                     but " is not.'      
 #  non_rect_bracket_close: 'anything but an unbackslashed rectangular bracket, i.e.
-#                           \] is ok, but ] is not.'		   
+#                           \] is ok, but ] is not.'               
 #  non_control_character: 'anything but (, ", [, or {'
-#  	
-#  repetition_cmd: 'a repetition command such as +, *, {2}, {,2}, {2,5}'	
+#       
+#  repetition_cmd: 'a repetition command such as +, *, {2}, {,2}, {2,5}'        
 #
-#########################################################################################      	
+#########################################################################################       
 import sys
 import StringIO
 
@@ -68,11 +68,11 @@ def __debug_exit(result, stream):
     __debug_recursion_depth -= 1
 
     if __debug_output_enabled_f: 
-	pos = stream.tell()
-	txt = stream.read()
-	stream.seek(pos)    
+        pos = stream.tell()
+        txt = stream.read()
+        stream.seek(pos)    
         __debug_print("##exit: ", txt)
-	
+        
     return result
 
 def __debug_entry(function_name, stream):
@@ -80,20 +80,20 @@ def __debug_entry(function_name, stream):
     __debug_recursion_depth += 1
 
     if __debug_output_enabled_f: 
-	pos = stream.tell()
-	txt = stream.read()
-	stream.seek(pos)    
-    	__debug_print("##entry: %s, remainder = " % function_name, txt)
+        pos = stream.tell()
+        txt = stream.read()
+        stream.seek(pos)    
+        __debug_print("##entry: %s, remainder = " % function_name, txt)
 
 def __check_for_EOF_or_FAIL_pattern(stream, InitialPosition, EndOfFile_Code):
     # -- is it the <<EOF>> rule?
     if stream.read(len("<<EOF>>")) == "<<EOF>>":  
-	return create_EOF_detecting_state_machine(EndOfFile_Code)
+        return create_EOF_detecting_state_machine(EndOfFile_Code)
     stream.seek(InitialPosition)
     # -- is it the <<FAIL>> rule?
     if stream.read(len("<<FAIL>>")) == "<<FAIL>>":  
-	raise "error: '<<FAIL>>' regular expression should not reach regular expression parser"
-	# return "<<FAIL>>"
+        raise "error: '<<FAIL>>' regular expression should not reach regular expression parser"
+        # return "<<FAIL>>"
 
     stream.seek(InitialPosition)
     return None
@@ -124,8 +124,8 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
     # -- MAIN: transform the pattern into a state machine
     sm = snap_conditional_expression(stream, PatternDict)
     if sm == None: 
-	stream.seek(initial_position)
-	return None
+        stream.seek(initial_position)
+        return None
     
     # -- check for end of line condition (EOL)
     if stream.read(1) == '$': end_of_line_f = True
@@ -134,12 +134,12 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
 
     # -- set begin of line/end of line conditions
     setup_border_conditions.do(sm, begin_of_line_f, end_of_line_f,
-	                       BeginOfFile_Code, EndOfFile_Code, 
-			       DOS_CarriageReturnNewlineF)
+                               BeginOfFile_Code, EndOfFile_Code, 
+                               DOS_CarriageReturnNewlineF)
 
     # -- check that pre- and post-conditioning did not mess up the origins
     #if sm.verify_unique_origin() == False:
-    #	raise "state machine does not have a unique origin:\n" + repr(sm) 
+    #   raise "state machine does not have a unique origin:\n" + repr(sm) 
 
     if begin_of_line_f or end_of_line_f: sm = __beautify(sm)
     return sm
@@ -152,7 +152,7 @@ def snap_conditional_expression(stream, PatternDict):
        TODO: <- ($8592) for pre-conditions
              -> ($8594) for post-conditions
 
-    """			    
+    """                     
     __debug_entry("conditional expression", stream)    
 
     # -- expression
@@ -161,31 +161,31 @@ def snap_conditional_expression(stream, PatternDict):
     
     # -- '/'
     if stream.read(1) != '/': 
-	# (1) expression without pre and post condition
-	stream.seek(-1, 1)
+        # (1) expression without pre and post condition
+        stream.seek(-1, 1)
         # pattern_0 is already beautified by 'snap_expression()'
-	result = __construct(pattern_0)
-	return __debug_exit(result, stream)
-	
+        result = __construct(pattern_0)
+        return __debug_exit(result, stream)
+        
     # -- expression
     pattern_1 = snap_expression(stream, PatternDict) 
     if pattern_1 == None: return __debug_exit(pattern_0, stream)
     
     # -- '/'
     if stream.read(1) != '/': 
-	# (2) expression with only a post condition
-	stream.seek(-1, 1)
-	#     NOTE: setup_post_condition() marks state origins!
-	result = __construct(pattern_0, post_condition=pattern_1)
+        # (2) expression with only a post condition
+        stream.seek(-1, 1)
+        #     NOTE: setup_post_condition() marks state origins!
+        result = __construct(pattern_0, post_condition=pattern_1)
         return __debug_exit(result, stream)
 
     # -- expression
     pattern_2 = snap_expression(stream, PatternDict) 
     if pattern_2 == None: 
-	# (3) expression with only a pre condition
-    	#     NOTE: setup_pre_condition() marks the state origins!
-	result = __construct(pattern_1, pre_condition=pattern_0)
-	return __debug_exit(result, stream)
+        # (3) expression with only a pre condition
+        #     NOTE: setup_pre_condition() marks the state origins!
+        result = __construct(pattern_1, pre_condition=pattern_0)
+        return __debug_exit(result, stream)
 
     # (4) expression with post and pre-condition
     result = __construct(pattern_1, pre_condition=pattern_0, post_condition=pattern_2)
@@ -194,7 +194,7 @@ def snap_conditional_expression(stream, PatternDict):
 def snap_expression(stream, PatternDict):
     """expression:  term
                     term | expression
-    """		     
+    """              
     __debug_entry("expression", stream)    
     # -- term
     result = snap_term(stream, PatternDict) 
@@ -203,7 +203,7 @@ def snap_expression(stream, PatternDict):
     # -- optional '|'
     if stream.read(1) != '|': 
         stream.seek(-1, 1)
-    	return __debug_exit(result, stream)
+        return __debug_exit(result, stream)
     
     position_1 = stream.tell()
     __debug_print("'|' (in expression)")
@@ -212,8 +212,8 @@ def snap_expression(stream, PatternDict):
     result_2 = snap_expression(stream, PatternDict) 
     __debug_print("expression(in expression):",  result_2)
     if result_2 == None:
-   	stream.seek(position_1) 
-	return __debug_exit(result, stream)
+        stream.seek(position_1) 
+        return __debug_exit(result, stream)
 
     result = parallelize.do([result, result_2])    
     return __debug_exit(__beautify(result), stream)
@@ -246,17 +246,17 @@ def snap_primary(stream, PatternDict):
                  { identifier }                       = pattern replacement
                  ( expression )
                  non_control_character+               = lonely characters
-		 primary repetition_cmd
+                 primary repetition_cmd
     """
     __debug_entry("primary", stream)    
     x = stream.read(1)
     if x == "": return __debug_exit(None, stream)
 
     def eat_this(supposed_first_char, the_string):
-	if len(the_string) < 1 or the_string[0] != supposed_first_char:
-	    raise "missing '%s'" % supposed_first_char + "\n" + \
-		  "remaining string = '%s'" % the_string 
-	return the_string[1:]    
+        if len(the_string) < 1 or the_string[0] != supposed_first_char:
+            raise "missing '%s'" % supposed_first_char + "\n" + \
+                  "remaining string = '%s'" % the_string 
+        return the_string[1:]    
 
     # -- 'primary' primary
     if   x == "\"": result = snap_non_double_quote(stream)
@@ -266,29 +266,29 @@ def snap_primary(stream, PatternDict):
     elif x == "(": 
         result = snap_expression(stream, PatternDict)
         if stream.read(1) != ")": 
-	    stream.seek(-1, 1)
-	    raise "error: missing closing ')' after expression. found '%s'" % stream.read()
+            stream.seek(-1, 1)
+            raise "error: missing closing ')' after expression. found '%s'" % stream.read()
 
     elif x not in CONTROL_CHARACTERS:
-	# NOTE: The '\' is not inside the control characters---for a reason.
-	#       It is used to define for example character codes using '\x' etc.
+        # NOTE: The '\' is not inside the control characters---for a reason.
+        #       It is used to define for example character codes using '\x' etc.
         stream.seek(-1, 1)
-	result = snap_non_control_characters(stream)
+        result = snap_non_control_characters(stream)
 
     else:
-	# NOTE: This includes the '$' sign which means 'end of line'
-	#       because the '$' sign is in CONTROL_CHARACTERS, but is not checked
-	#       against. Thus, it it good to leave here on '$' because the
-	#       '$' sign is handled on the very top level.
+        # NOTE: This includes the '$' sign which means 'end of line'
+        #       because the '$' sign is in CONTROL_CHARACTERS, but is not checked
+        #       against. Thus, it it good to leave here on '$' because the
+        #       '$' sign is handled on the very top level.
         # this is not a valid primary
-	stream.seek(-1, 1)
+        stream.seek(-1, 1)
         return __debug_exit(None, stream)
 
     # -- optional repetition command? 
     result_repeated = __snap_repetition_range(result, stream) 
     if result_repeated != None: 
         return __debug_exit(__beautify(result_repeated), stream)
-    else:	                
+    else:                       
         return __debug_exit(__beautify(result), stream)
     
 def snap_non_double_quote(stream):
@@ -297,8 +297,8 @@ def snap_non_double_quote(stream):
       was cut off."""
     character_string = __snap_until(stream, "\"")  
 
-    # transform string into state machine	 
-    result = map_utf8_string.do(character_string)	 
+    # transform string into state machine        
+    result = map_utf8_string.do(character_string)        
 
     return result
 
@@ -308,8 +308,8 @@ def snap_non_rect_bracket_close(stream):
     """
     character_string = __snap_until(stream, "]")  
 
-    # transform string into state machine	 
-    result = map_utf8_set.do(character_string)	 
+    # transform string into state machine        
+    result = map_utf8_set.do(character_string)   
 
     return result
 
@@ -327,17 +327,17 @@ def snap_non_control_characters(stream):
         char_code = utf8.map_utf8_to_unicode(stream)
         #
         if char_code == 0xFF: break
-	# ask < 0xFF to protect against overflow in char() function
+        # ask < 0xFF to protect against overflow in char() function
         if char_code < 0xFF and \
-	   chr(char_code) in CONTROL_CHARACTERS: stream.seek(-1, 1); break 
+           chr(char_code) in CONTROL_CHARACTERS: stream.seek(-1, 1); break 
 
-	# any backslashed character is the character itself, it cannot not be
-	# used after that as a command.
+        # any backslashed character is the character itself, it cannot not be
+        # used after that as a command.
         if char_code == ord("\\"):
-	    char_code = utf8.map_utf8_to_unicode(stream)
+            char_code = utf8.map_utf8_to_unicode(stream)
 
         # add new transition from current state to a new state triggering
-	# on the given character.
+        # on the given character.
         state_index = result.add_transition(state_index, char_code)
 
     # last character in the chain triggers an 'acceptance state'
@@ -353,9 +353,9 @@ def snap_replacement(stream, PatternDict):
     pattern_name = trim(pattern_name)    
     if PatternDict.has_key(pattern_name) == False:
         raise "Pattern of name '%s' was not defined" % pattern_name
-	
-    # transform string into state machine	 
-    # NOTE: The result may again contain a pattern identifier, etc.	
+        
+    # transform string into state machine        
+    # NOTE: The result may again contain a pattern identifier, etc.     
     regular_expression = StringIO.StringIO(PatternDict[pattern_name])
     result = snap_expression(regular_expression, PatternDict) 
     pos = stream.tell()
@@ -368,10 +368,10 @@ def __snap_repetition_range(the_state_machine, stream):
        syntaxes are supported:
            '?'      one or none repetition
            '+'      one or arbitrary repetition
-	   '*'      arbitrary repetition (even zero)
-	   '{n}'    exactly 'n' repetitions
-	   '{m,n}'  from 'm' to 'n' repetitions
-	   '{n,}'   arbitrary, but at least 'n' repetitions
+           '*'      arbitrary repetition (even zero)
+           '{n}'    exactly 'n' repetitions
+           '{m,n}'  from 'm' to 'n' repetitions
+           '{n,}'   arbitrary, but at least 'n' repetitions
     """       
     position_0 = stream.tell()
     x = stream.read(1)
@@ -380,34 +380,34 @@ def __snap_repetition_range(the_state_machine, stream):
     elif x == "?": result = repeat.do(the_state_machine, 0, 1)
     elif x == "{":
         repetition_range_str = __snap_until(stream, "}")
-	if len(repetition_range_str) and not repetition_range_str[0].isdigit():
-	    # no repetition range, so everything remains as it is
-	    stream.seek(position_0)
-      	    return the_state_machine
-	    
+        if len(repetition_range_str) and not repetition_range_str[0].isdigit():
+            # no repetition range, so everything remains as it is
+            stream.seek(position_0)
+            return the_state_machine
+            
         try:
-	    if repetition_range_str.find(",") == -1:
-	        # no ',' thus "match exactly a certain number": 
-	        # e.g. {4} = match exactly four repetitions
-	        number = int(repetition_range_str)
-    		result = repeat.do(the_state_machine, number, number)
-    	        return result
-	    # a range of numbers is given 	
+            if repetition_range_str.find(",") == -1:
+                # no ',' thus "match exactly a certain number": 
+                # e.g. {4} = match exactly four repetitions
+                number = int(repetition_range_str)
+                result = repeat.do(the_state_machine, number, number)
+                return result
+            # a range of numbers is given       
             fields = repetition_range_str.split(",")
-	    fields = map(trim, fields)
+            fields = map(trim, fields)
 
             number_1 = int(trim(fields[0]))
             if fields[1] == "": number_2 = -1                    # e.g. {2,}
-	    else:               number_2 = int(trim(fields[1]))  # e.g. {2,5}  
-	    # produce repeated state machine 
-	    result = repeat.do(the_state_machine, number_1, number_2)
+            else:               number_2 = int(trim(fields[1]))  # e.g. {2,5}  
+            # produce repeated state machine 
+            result = repeat.do(the_state_machine, number_1, number_2)
             return result
-	except:
-    	    raise "error while parsing repetition range expression '%s'" % repetition_range_str	
+        except:
+            raise "error while parsing repetition range expression '%s'" % repetition_range_str 
     else:
         # no repetition range, so everything remains as it is
-	stream.seek(position_0)
-      	return the_state_machine
+        stream.seek(position_0)
+        return the_state_machine
     
     return result
 
@@ -419,26 +419,26 @@ def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
      backslash_f = False
      open_bracket_n = 1 
      while 1 + 1 == 2:
-	letter = stream.read(1)
-	if letter == "": break
+        letter = stream.read(1)
+        if letter == "": break
 
-      	cut_string += letter    
+        cut_string += letter    
 
         if letter == "\\": 
-	    backslash_f = not backslash_f	
-	    continue
-	    
-	if letter == ClosingDelimiter and not backslash_f: 
-	    if open_bracket_n == 1: cut_string = cut_string[:-1]; break
-	    open_bracket_n -= 1
-	elif letter == OpeningDelimiter and not backslash_f: 
-	    # NOTE: if OpeningDelimiter == None, then this can never be the case!
-	    open_bracket_n += 1
+            backslash_f = not backslash_f       
+            continue
+            
+        if letter == ClosingDelimiter and not backslash_f: 
+            if open_bracket_n == 1: cut_string = cut_string[:-1]; break
+            open_bracket_n -= 1
+        elif letter == OpeningDelimiter and not backslash_f: 
+            # NOTE: if OpeningDelimiter == None, then this can never be the case!
+            open_bracket_n += 1
 
         # if a backslash would have appeared, we would have 'continue'd (see above)
-	backslash_f = False    
+        backslash_f = False    
      else:
- 	 raise "unable to find closing delimiter '%s'"	% ClosingDelimiter
+         raise "unable to find closing delimiter '%s'"  % ClosingDelimiter
    
      return cut_string
 
@@ -453,8 +453,8 @@ def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
 
        NOTE: This is fundamentally different from beginning of line (BOL). BOL
              can be achieved by letting the state machine raise the corresponding
-	     flag. End of line post conditions rely on external algorithms for
-	     mounting a post-condition.
+             flag. End of line post conditions rely on external algorithms for
+             mounting a post-condition.
     """
     post_condition_sm = StateMachine()
     post_condition_sm.add_transition(post_condition_sm.init_state_index, ord('\n'), AcceptanceF=True)
@@ -480,9 +480,9 @@ def create_ALL_BUT_NEWLINE_state_machine():
     global __SETUP
     result = StateMachine()
     trigger_set = NumberSet([Interval(ord("\n")), 
-	                     Interval(__SETUP.BufferLimit_Code),
-	                     Interval(__SETUP.EndOfFile_Code),
-			     Interval(__SETUP.BeginOfFile_Code)])
+                             Interval(__SETUP.BufferLimit_Code),
+                             Interval(__SETUP.EndOfFile_Code),
+                             Interval(__SETUP.BeginOfFile_Code)])
 
     result.add_transition(result.init_state_index, trigger_set.inverse(), AcceptanceF=True) 
     result.mark_state_origins()
@@ -491,25 +491,25 @@ def create_ALL_BUT_NEWLINE_state_machine():
 def __construct(core_sm, pre_condition=None, post_condition=None):
 
     if pre_condition == None and post_condition == None:
-	core_sm.mark_state_origins()
-	result = core_sm
-	# -- can't get more beautiful ...
+        core_sm.mark_state_origins()
+        result = core_sm
+        # -- can't get more beautiful ...
     
     elif pre_condition == None and post_condition != None:
-	result = setup_post_condition.do(core_sm, post_condition)
-	result = __beautify(result)
+        result = setup_post_condition.do(core_sm, post_condition)
+        result = __beautify(result)
 
     elif pre_condition != None and post_condition == None:
-    	result = setup_pre_condition.do(core_sm, pre_condition)
-	result = __beautify(result)
+        result = setup_pre_condition.do(core_sm, pre_condition)
+        result = __beautify(result)
 
     elif pre_condition != None and post_condition != None:
-	# NOTE: pre-condition needs to be setup **after** post condition, because
-	#       post condition deletes all origins!
-	#       (is this still so? 07y7m6d fschaef)
-	result = setup_post_condition.do(core_sm, post_condition)
-	result = setup_pre_condition.do(result, pre_condition)
-	result = __beautify(result)
+        # NOTE: pre-condition needs to be setup **after** post condition, because
+        #       post condition deletes all origins!
+        #       (is this still so? 07y7m6d fschaef)
+        result = setup_post_condition.do(core_sm, post_condition)
+        result = setup_pre_condition.do(result, pre_condition)
+        result = __beautify(result)
 
     result.finalized_f = True
 

@@ -18,7 +18,7 @@ def do(Modes):
     else:
         print "error: there is no mode that can be applied"
         print "error: all are inheritable only"
-	print "error: modes are = ", Modes.values()
+        print "error: modes are = ", Modes.values()
         sys.exit(-1)
 
     # is the initial mode defined

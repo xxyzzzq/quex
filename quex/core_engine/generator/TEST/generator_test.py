@@ -41,8 +41,8 @@ int main(int, char**)
     printf("(*) test string: \\n'%%TEST_STRING%%'\\n");
     printf("(*) result:\\n");
     do {
-	success_f = lexer_state.__current_mode_analyser_function_p(&lexer_state);
-    } while ( success_f );	
+        success_f = lexer_state.__current_mode_analyser_function_p(&lexer_state);
+    } while ( success_f );      
     printf("  ''\\n");
 }\n"""
 
@@ -67,52 +67,52 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     txt = test_program_common
     
     if BufferType=="QuexBuffer": 
-	if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
-	txt = "#include <sstream>\n" + txt
+        if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
+        txt = "#include <sstream>\n" + txt
 
-	buffer_specific_str = quex_buffer_based_test_program.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
-	buffer_specific_str = buffer_specific_str.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
-    	core_engine_definition_file = "quex/code_base/core_engine/definitions-quex-buffer.h"
+        buffer_specific_str = quex_buffer_based_test_program.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
+        buffer_specific_str = buffer_specific_str.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
+        core_engine_definition_file = "quex/code_base/core_engine/definitions-quex-buffer.h"
     else:                        
-	buffer_specific_str = plain_memory_based_test_program
-    	core_engine_definition_file = "quex/code_base/core_engine/definitions-plain-memory.h"
+        buffer_specific_str = plain_memory_based_test_program
+        core_engine_definition_file = "quex/code_base/core_engine/definitions-plain-memory.h"
 
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
 
     txt = blue_print(txt,
-	             [["%%TEST_STRING%%",           test_str],
-		      ["%%BUFFER_SPECIFIC_SETUP%%", buffer_specific_str]])
+                     [["%%TEST_STRING%%",           test_str],
+                      ["%%BUFFER_SPECIFIC_SETUP%%", buffer_specific_str]])
 
     return txt, core_engine_definition_file
 
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
-	                          BeginOfFile_Code, EndOfFile_Code, 
-				  core_engine_definition_file, SecondModeF=False):
+                                  BeginOfFile_Code, EndOfFile_Code, 
+                                  core_engine_definition_file, SecondModeF=False):
     default_action = "return 0;"
 
     # -- produce some visible output about the setup
     print "(*) Lexical Analyser Patterns:"
     for pair in PatternActionPairList:
-	print "%20s --> %s" % (pair[0], pair[1])
+        print "%20s --> %s" % (pair[0], pair[1])
     # -- create default action that prints the name and the content of the token
     PatternActionPairList = map(lambda x: 
-	                        generator.ActionInfo(regex.do(x[0], PatternDictionary, 
-				                              BeginOfFile_Code, EndOfFile_Code), 
-						     action(x[1])),
-				PatternActionPairList)
+                                generator.ActionInfo(regex.do(x[0], PatternDictionary, 
+                                                              BeginOfFile_Code, EndOfFile_Code), 
+                                                     action(x[1])),
+                                PatternActionPairList)
 
     print "## (1) code generation"    
     txt  = "#include<stdio.h>\n"
     txt += "#define  __QUEX_OPTION_UNIT_TEST\n"
 
     txt += generator.do(PatternActionPairList, default_action, PrintStateMachineF=True,
-	 	        AnalyserStateClassName         = "analyser",
-			StandAloneAnalyserF            = True, 
-			PatternDictionary              = PatternDictionary,
-			QuexEngineHeaderDefinitionFile = core_engine_definition_file,
-			EndOfFile_Code                 = EndOfFile_Code)   
+                        AnalyserStateClassName         = "analyser",
+                        StandAloneAnalyserF            = True, 
+                        PatternDictionary              = PatternDictionary,
+                        QuexEngineHeaderDefinitionFile = core_engine_definition_file,
+                        EndOfFile_Code                 = EndOfFile_Code)   
 
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 
@@ -124,29 +124,29 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
        NDEBUG_str=""):    
     
     test_program, core_engine_definition_file = create_main_function(BufferType, TestStr,
-	                                                             QuexBufferSize, QuexBufferFallbackN)
+                                                                     QuexBufferSize, QuexBufferFallbackN)
 
     if BufferType=="QuexBuffer": BeginOfFile_Code = 0x19; EndOfFile_Code = 0x1A
     else:                        BeginOfFile_Code = 0;    EndOfFile_Code = 0
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
-	                                               PatternDictionary, 
-	                                               BeginOfFile_Code, EndOfFile_Code, 
-				                       core_engine_definition_file)
+                                                       PatternDictionary, 
+                                                       BeginOfFile_Code, EndOfFile_Code, 
+                                                       core_engine_definition_file)
 
     if SecondPatternActionPairList != []:
-	state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
-		                                            PatternDictionary, 
-	                                                    BeginOfFile_Code, EndOfFile_Code, 
-				                            core_engine_definition_file, 
-							    SecondModeF=True)
+        state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
+                                                            PatternDictionary, 
+                                                            BeginOfFile_Code, EndOfFile_Code, 
+                                                            core_engine_definition_file, 
+                                                            SecondModeF=True)
 
 
     if ShowBufferLoadsF:
-	state_machine_code = "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS\n" + \
-		             "#define __QUEX_OPTION_UNIT_TEST\n" + \
-			     "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n" + \
-		             state_machine_code
+        state_machine_code = "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS\n" + \
+                             "#define __QUEX_OPTION_UNIT_TEST\n" + \
+                             "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n" + \
+                             state_machine_code
 
     fh = open("tmp.cpp", "w")
     fh.write(test_program_common_declarations)

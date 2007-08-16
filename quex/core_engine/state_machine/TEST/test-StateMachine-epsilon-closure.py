@@ -22,8 +22,8 @@ for state_idx in test_sm0.get_state_indices():
     ec =  test_sm0.get_epsilon_closure(state_idx)
     if len(ec) != 1: print "state = ", state_idx, "epsilon-closure = ", ec
     else:            
-	if ec[0] == state_idx: normal_epsilon_closures.append(state_idx)
-	else:                  print "error: state idx", state_idx, " produces epsilon transition = ", ec
+        if ec[0] == state_idx: normal_epsilon_closures.append(state_idx)
+        else:                  print "error: state idx", state_idx, " produces epsilon transition = ", ec
 
 normal_epsilon_closures.sort()
 print "## normal epsilon closures = ", normal_epsilon_closures

@@ -4,7 +4,7 @@
 #       from the module state_machine.paralellize.
 import sys
 sys.path.append("../")
-			
+                        
 from core import *
 import paralellize 
 
@@ -20,8 +20,8 @@ paralellize.state_machine_n = len(paralellize.state_machines)
 def consistency(combination):
     # check combination (does every state machine have the specified index)
     for i in range(len(combination)):
-	if paralellize.state_machines[i].has_state_index(combination[i]) == False:
-	    raise "state machine %i does not have a state (start or target) of %i" % \
+        if paralellize.state_machines[i].has_state_index(combination[i]) == False:
+            raise "state machine %i does not have a state (start or target) of %i" % \
                   (i, combination[i])
 
 def test(combination_0):
@@ -30,7 +30,7 @@ def test(combination_0):
 
     print followers
     for combination in followers:
-	consistency(combination)
+        consistency(combination)
         print "FROM: ", combination_0, "TO:", combination
         print paralellize.get_macro_state_transition(combination_0,
                                                      combination)

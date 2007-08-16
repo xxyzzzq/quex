@@ -48,8 +48,8 @@ class Interval:
                 raise "Begin can only be 'None', if End is also 'None'!"
             self.begin = Begin            
             if End == None:  
-		if self.begin != sys.maxint: self.end = self.begin + 1
-		else:                        self.end = self.begin
+                if self.begin != sys.maxint: self.end = self.begin + 1
+                else:                        self.end = self.begin
             else:    
                 self.end = End
             
@@ -57,8 +57,8 @@ class Interval:
         return self.begin == self.end
 
     def is_all(self):
-	return self.begin == -sys.maxint and self.end == sys.maxint   
-	print "##res:", result
+        return self.begin == -sys.maxint and self.end == sys.maxint   
+        print "##res:", result
  
     def contains(self, Number):
         """True  => if Number in NumberSet
@@ -163,44 +163,44 @@ class Interval:
         return "[" + repr(self.begin) + ", " + repr(self.end) + ")"
 
     def get_utf8_string(self):
-	#_____________________________________________________________________________
-	if self.begin > self.end:
-	    raise "Begin of interval '%i' lies behind end of interval '%i'." % (self.begin, self.end)
-	
-	def utf8_char(Code):
+        #_____________________________________________________________________________
+        if self.begin > self.end:
+            raise "Begin of interval '%i' lies behind end of interval '%i'." % (self.begin, self.end)
+        
+        def utf8_char(Code):
             if   Code == - sys.maxint:   return "-oo"
-	    elif Code == sys.maxint:     return "oo"		
-	    elif Code == ord('\n'):      return "'\\n'"
-	    elif Code == ord('\t'):      return "'\\t'"
-	    elif Code == ord('\r'):      return "'\\r'"
-	    elif Code < ord('0'):        return "\\" + repr(Code) 
-	    else:
-		char_str = utf8.map_unicode_to_utf8(Code)
-		return "'" + char_str + "'"
+            elif Code == sys.maxint:     return "oo"            
+            elif Code == ord('\n'):      return "'\\n'"
+            elif Code == ord('\t'):      return "'\\t'"
+            elif Code == ord('\r'):      return "'\\r'"
+            elif Code < ord('0'):        return "\\" + repr(Code) 
+            else:
+                char_str = utf8.map_unicode_to_utf8(Code)
+                return "'" + char_str + "'"
             # elif Code < ord('0') or Code > ord('z'): return "\\" + repr(Code)
             # else:                                    return "'" + chr(Code) + "'"
 
-	if self.begin == self.end: 
+        if self.begin == self.end: 
             return "''"
         elif self.end - self.begin == 1: 
             return utf8_char(self.begin) 
-	else:                          
-	    if   self.end == -sys.maxint: end_char = "-oo"
-	    elif self.end == sys.maxint:  end_char = "oo"
-	    else:                         end_char = utf8_char(self.end-1)
+        else:                          
+            if   self.end == -sys.maxint: end_char = "-oo"
+            elif self.end == sys.maxint:  end_char = "oo"
+            else:                         end_char = utf8_char(self.end-1)
             return "[" + utf8_char(self.begin) + ", " + end_char + "]"
 
     def gnuplot_string(self, y_coordinate):
-	if self.begin == self.end: return ""
+        if self.begin == self.end: return ""
         txt = ""
-	txt += "%i %f\n" % (self.begin, y_coordinate)
-	txt += "%i %f\n" % (self.end-1, y_coordinate)
-	txt += "%i %f\n" % (self.end-1, float(y_coordinate) + 0.8)
-	txt += "%i %f\n" % (self.begin, float(y_coordinate) + 0.8)
-	txt += "%i %f\n" % (self.begin, y_coordinate)
-	return txt
+        txt += "%i %f\n" % (self.begin, y_coordinate)
+        txt += "%i %f\n" % (self.end-1, y_coordinate)
+        txt += "%i %f\n" % (self.end-1, float(y_coordinate) + 0.8)
+        txt += "%i %f\n" % (self.begin, float(y_coordinate) + 0.8)
+        txt += "%i %f\n" % (self.begin, y_coordinate)
+        return txt
 
-	    
+            
 class NumberSet:
     """Represents an arbitrary set of numbers. The set is described
        in terms of intervals, i.e. objects of class 'Interval'. This
@@ -249,11 +249,11 @@ class NumberSet:
                 toucher_list.append(interval)
 
         # (2) combine all intervals that intersect with the new one
-	min_begin = NewInterval.begin
-	max_end   = NewInterval.end
+        min_begin = NewInterval.begin
+        max_end   = NewInterval.end
         for toucher in toucher_list:
-	    if toucher.begin < min_begin: min_begin = toucher.begin
-	    if toucher.end > max_end:     max_end   = toucher.end
+            if toucher.begin < min_begin: min_begin = toucher.begin
+            if toucher.end > max_end:     max_end   = toucher.end
         combination = Interval(min_begin, max_end)
 
         # (3) build new list of intervals
@@ -310,21 +310,21 @@ class NumberSet:
         return True
         
     def is_all(self):
- 	"""Returns True if this NumberSet covers all numbers, False if not.
+        """Returns True if this NumberSet covers all numbers, False if not.
            
            Note: All intervals should have been added using the function 'add_interval'
-	         Thus no overlapping intervals shall exists. If the set covers all numbers,
-	         then there can only be one interval that 'is_all()'
+                 Thus no overlapping intervals shall exists. If the set covers all numbers,
+                 then there can only be one interval that 'is_all()'
         """
-	if len(self.__intervals) != 1: return False
-	return self.__intervals[0].is_all()
-	    
+        if len(self.__intervals) != 1: return False
+        return self.__intervals[0].is_all()
+            
     def interval_number(self):
-	"""This value gives some information about the 'complexity' of the number set."""
-	return len(self.__intervals)
+        """This value gives some information about the 'complexity' of the number set."""
+        return len(self.__intervals)
 
     def get_intervals(self):
-	return deepcopy(self.__intervals)
+        return deepcopy(self.__intervals)
 
     def union(self, Other):
         if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
@@ -409,9 +409,9 @@ class NumberSet:
     def get_utf8_string(self):
         msg = ""
         for interval in self.__intervals:
-	    msg += interval.get_utf8_string() + ", "
-	if msg != "": msg = msg[:-2]
-	return msg
+            msg += interval.get_utf8_string() + ", "
+        if msg != "": msg = msg[:-2]
+        return msg
 
     def gnuplot_string(self, y_coordinate):
         txt = ""
@@ -424,16 +424,16 @@ class NumberSet:
                        Language     = "C",
                        FunctionName = "example"):
 
-	LanguageDB = languages.db[Language]
+        LanguageDB = languages.db[Language]
         txt  = LanguageDB["$function_def"].replace("$$function_name$$", FunctionName)
         txt += self.__condition_code(LanguageDB)
         txt += LanguageDB["$function_end"]
 
-	return txt
+        return txt
 
     def __condition_code(self, LanguageDB,
                          LowestInterval_Idx = -1, UppestInterval_Idx = -1, 
-			 NoIndentF = False):
+                         NoIndentF = False):
         
         """Writes code that does a mapping according to 'binary search' by
         means of if-else-blocks.

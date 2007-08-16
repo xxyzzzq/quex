@@ -11,32 +11,32 @@ from quex.core_engine.generator.action_info import ActionInfo
 # C++
 #
 def __transition(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, TargetStateIdx, 
-	         OriginList, BackwardLexingF, BufferReloadRequiredOnDropOutF=True):
+                 OriginList, BackwardLexingF, BufferReloadRequiredOnDropOutF=True):
     """
-	StateMachineName: Name of the state machine.
+        StateMachineName: Name of the state machine.
 
-	TargetStateIdx: != None: Index of the state to which 'goto' has to go.
-			== None: Drop Out. Goto a terminal state.
+        TargetStateIdx: != None: Index of the state to which 'goto' has to go.
+                        == None: Drop Out. Goto a terminal state.
 
-	OriginList: List of origins. In case that a transition to a terminal state
-	            is requested (TargetStateIdx==None), it may depend on
-		    pre-conditions what terminal state is targeted. 
+        OriginList: List of origins. In case that a transition to a terminal state
+                    is requested (TargetStateIdx==None), it may depend on
+                    pre-conditions what terminal state is targeted. 
 
-	BackwardLexingF: Flag indicating wether this function is called during 
-	                 normal forward lexing, or for the implementation of a 
-			 backwards state machine (complex pre-conditions).
+        BackwardLexingF: Flag indicating wether this function is called during 
+                         normal forward lexing, or for the implementation of a 
+                         backwards state machine (complex pre-conditions).
 
-	 BufferReloadRequiredOnDropOutF: If a state has no transitions, no input is taken 
-	                 from the input stream. Therefore, at this point, the buffer reload
-			 is also nonsense. This flag tells, if code for buffer reload is required
+         BufferReloadRequiredOnDropOutF: If a state has no transitions, no input is taken 
+                         from the input stream. Therefore, at this point, the buffer reload
+                         is also nonsense. This flag tells, if code for buffer reload is required
                          or not in the case of a drop out.
     """
     if BackwardLexingF: 
-	return __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-		                            BufferReloadRequiredOnDropOutF)
+        return __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, 
+                                            BufferReloadRequiredOnDropOutF)
     else:
-	return __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, 
-		                           TargetStateIdx, OriginList, BufferReloadRequiredOnDropOutF)
+        return __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, 
+                                           TargetStateIdx, OriginList, BufferReloadRequiredOnDropOutF)
     
 def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, BufferReloadRequiredOnDropOutF):
     """Backward lexiging state transitions are simple, there are only two cases:
@@ -49,7 +49,7 @@ def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateI
        Normally, on 'drop out' one either:
 
            -- goes to a specific terminal state of the winning pattern, or
-	   -- goes to the general terminal state that determines the last pattern that won.
+           -- goes to the general terminal state that determines the last pattern that won.
 
        During backward lexing, though, there are **no winning patterns**. All patterns that ever
        matched are indicated through there 'pre-condition-fulfilled flag'. This flag is set at 
@@ -63,30 +63,30 @@ def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateI
     if TargetStateIdx >= 0:
         return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
     else:
-	return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
+        return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
 
 def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
-	                  BufferReloadRequiredOnDropOutF,
-			  CurrentStateIsAcceptanceF = None,
-			  OriginList                = None):
+                          BufferReloadRequiredOnDropOutF,
+                          CurrentStateIsAcceptanceF = None,
+                          OriginList                = None):
 
     if BackwardLexingF: 
-	return __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
-		                                     BufferReloadRequiredOnDropOutF)
+        return __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
+                                                     BufferReloadRequiredOnDropOutF)
     else:
-	return __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
-						    BufferReloadRequiredOnDropOutF,
-						    CurrentStateIsAcceptanceF = CurrentStateIsAcceptanceF,
-						    OriginList                = OriginList)	
+        return __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
+                                                    BufferReloadRequiredOnDropOutF,
+                                                    CurrentStateIsAcceptanceF = CurrentStateIsAcceptanceF,
+                                                    OriginList                = OriginList)     
 
 def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx, 
-	                                  BufferReloadRequiredOnDropOutF):	
+                                          BufferReloadRequiredOnDropOutF):      
     txt = ""
     if BufferReloadRequiredOnDropOutF:
-	txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-	txt += "if( backward_lexing_drop_out(me, input) ) " 
-	txt += "goto %s; /* no adr. adaptions necessary */\n" % label.get_input(StateMachineName, CurrentStateIdx)
-	txt += "#endif\n"
+        txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
+        txt += "if( backward_lexing_drop_out(me, input) ) " 
+        txt += "goto %s; /* no adr. adaptions necessary */\n" % label.get_input(StateMachineName, CurrentStateIdx)
+        txt += "#endif\n"
 
     #  -- general drop out: goto general terminal state
     txt += "goto %s;" % label.get_terminal(StateMachineName) 
@@ -94,25 +94,25 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
     return txt
 
 def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx, 
-	                                 BufferReloadRequiredOnDropOutF,
-					 CurrentStateIsAcceptanceF, OriginList):	
+                                         BufferReloadRequiredOnDropOutF,
+                                         CurrentStateIsAcceptanceF, OriginList):        
     txt = ""
     if BufferReloadRequiredOnDropOutF:
-	txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-	txt += "loaded_byte_n = forward_lexing_drop_out(me, input);\n"
-	txt += "if( loaded_byte_n ) {\n" 
-	txt += "    $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n"
-	txt += "    goto %s;\n" % label.get_input(StateMachineName, CurrentStateIdx)
-	txt += "}\n"
-	txt += "#endif\n"
+        txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
+        txt += "loaded_byte_n = forward_lexing_drop_out(me, input);\n"
+        txt += "if( loaded_byte_n ) {\n" 
+        txt += "    $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n"
+        txt += "    goto %s;\n" % label.get_input(StateMachineName, CurrentStateIdx)
+        txt += "}\n"
+        txt += "#endif\n"
 
     # From here on: input is not a 'buffer limit code' 
     #               (i.e. input does **not** mean: 'load buffer')
     
     #     -- 'drop out' in non-acceptance --> goto general terminal
     if CurrentStateIsAcceptanceF == False:  
-	txt += "goto %s;" % label.get_terminal(StateMachineName)
-	return txt
+        txt += "goto %s;" % label.get_terminal(StateMachineName)
+        return txt
      
     #    -- 'drop out' in acceptance state --> check pre-conditions (if there are some)
     #                                      --> goto first specific terminal that either
@@ -126,30 +126,30 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     #        post conditions.
     #
     t_txt = ""
-    for origin in OriginList: 	
-	# -- pre-conditioned acceptance: check for correspondent flag which is supposed to be
-	#    raised during the pre-condition check, some intelligent algo (see begin of line).
-	terminal_label = label.get_terminal(StateMachineName, origin.state_machine_id)
-	#
-	if origin.pre_condition_id() != -1L:
-	    t_txt += "if( pre_condition_%s_fulfilled_f ) goto %s;\n" % (origin.state_machine_id, terminal_label)
-	    continue	    
-	
-	elif origin.pre_condition_begin_of_line_f():
-	    t_txt += "if( me->begin_of_line_f ) goto %s;\n" % terminal_label
-	    continue
-	
+    for origin in OriginList:   
+        # -- pre-conditioned acceptance: check for correspondent flag which is supposed to be
+        #    raised during the pre-condition check, some intelligent algo (see begin of line).
+        terminal_label = label.get_terminal(StateMachineName, origin.state_machine_id)
+        #
+        if origin.pre_condition_id() != -1L:
+            t_txt += "if( pre_condition_%s_fulfilled_f ) goto %s;\n" % (origin.state_machine_id, terminal_label)
+            continue        
+        
+        elif origin.pre_condition_begin_of_line_f():
+            t_txt += "if( me->begin_of_line_f ) goto %s;\n" % terminal_label
+            continue
+        
         elif origin.is_acceptance():    
             t_txt += "goto %s;\n" % terminal_label   # triggers conditionless
-	    break                                  # no need for further pre-condition consideration
-	    
+            break                                  # no need for further pre-condition consideration
+            
     # -- double check for consistency
-    if t_txt == "": raise "Acceptance state without acceptance origins!"	
+    if t_txt == "": raise "Acceptance state without acceptance origins!"        
 
     return txt + t_txt
 
 def __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, TargetStateIdx, OriginList,
-	                        BufferReloadRequiredOnDropOutF):
+                                BufferReloadRequiredOnDropOutF):
     """
        (1) If event triggers to subsequent state, one has to go there independent wether 
            the current state is an acceptance state or not.
@@ -157,19 +157,19 @@ def __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateI
        (2) If a 'drop out' occured in a non-acceptance state, then:
        
             -- TargetStateIdx == None (Normal Drop Out) 
-	       Goto the general terminal.
+               Goto the general terminal.
                There one determines the last pattern that won (if there is one).
 
        (3) If a 'drop out' in an acceptance state occured, the pre-conditions (if there are some
            determine which pattern has won, i.e. to what specific terminal state is to be gone.
-	   
+           
     """
     
     # (*) Target State Defined (not a 'drop out') --> go there
     if TargetStateIdx != None:   
-	return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
+        return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
     else:
-	return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
+        return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
 
 def __acceptance_info(OriginList, LanguageDB, BackwardLexingF):
     """Two cases:
@@ -178,15 +178,15 @@ def __acceptance_info(OriginList, LanguageDB, BackwardLexingF):
           the origin (note: this origin may result through a priorization)
        -- an origin marks an acceptance of an expression that has a post-condition.
           store the input position in a dedicated input position holder for the 
-	  origins state machine.
+          origins state machine.
     """
 
     if BackwardLexingF:
         # (*) Backward Lexing 
-	return __acceptance_info_backward_lexing(OriginList, LanguageDB)
+        return __acceptance_info_backward_lexing(OriginList, LanguageDB)
     else:
         # (*) Forward Lexing 
-	return __acceptance_info_forward_lexing(OriginList, LanguageDB)
+        return __acceptance_info_forward_lexing(OriginList, LanguageDB)
 
 def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     """Backward Lexing:
@@ -198,19 +198,19 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
-	                              origin.pre_condition_begin_of_line_f() or
-				      origin.pre_condition_id() != -1L or
-				      origin.post_conditioned_acceptance_f(),
-				      OriginList)
+                                      origin.pre_condition_begin_of_line_f() or
+                                      origin.pre_condition_id() != -1L or
+                                      origin.post_conditioned_acceptance_f(),
+                                      OriginList)
     if inadmissible_origin_list != []:
-	raise "Inadmissible origins for inverse state machine."
+        raise "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
     txt = "$/* origins = %s$*/" % repr(OriginList)
     #
     for origin in OriginList:
-	if origin.store_input_position_f():
-	    txt += "pre_condition_%s_fulfilled_f = 1;\n" % repr(origin.state_machine_id).replace("L", "")	    
+        if origin.store_input_position_f():
+            txt += "pre_condition_%s_fulfilled_f = 1;\n" % repr(origin.state_machine_id).replace("L", "")           
     txt += "\n"    
 
     return txt
@@ -219,12 +219,12 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
     # check wether there is an non-acceptance state in the list, that
     # is neither a post nor a pre-condition
     important_origin_list = filter(lambda origin: 
-	                           origin.is_acceptance() or
-				   origin.store_input_position_f(),
-	                           OriginList)
+                                   origin.is_acceptance() or
+                                   origin.store_input_position_f(),
+                                   OriginList)
 
     if important_origin_list == []:
-    	return ""
+        return ""
 
     txt = "$/* origins = %s$*/" % repr(OriginList)
 
@@ -237,19 +237,19 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
     for origin in important_origin_list: 
         #   post condition flag 
         # + store input position flag 
-    	# => end of core pattern, now starts the post condition
+        # => end of core pattern, now starts the post condition
         # (only post condition means: final end of pattern)
-	if origin.post_conditioned_acceptance_f() and origin.store_input_position_f():
-	    post_conditioned_pattern_id_list.append(origin)
+        if origin.post_conditioned_acceptance_f() and origin.store_input_position_f():
+            post_conditioned_pattern_id_list.append(origin)
         elif origin.pre_condition_id() != -1L or origin.pre_condition_begin_of_line_f():
-	    pre_conditioned_pattern_id_list.append(origin)
+            pre_conditioned_pattern_id_list.append(origin)
         else:
-	    unconditional_acceptance_pattern_id_list.append(origin)
+            unconditional_acceptance_pattern_id_list.append(origin)
    
-    # (*) write code to store input positions for post-conditions		
+    # (*) write code to store input positions for post-conditions               
     for origin in post_conditioned_pattern_id_list:
-	txt += LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
-    txt += "\n"	    
+        txt += LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
+    txt += "\n"     
         
     # (*) write code to handle pre-conditioned acceptance 
     #     Only those patterns are consider which have a higher priviledge 
@@ -257,33 +257,33 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
     #     and further checks for other patterns are redundant.
     first_condition_f = True
     for origin in pre_conditioned_pattern_id_list:
-	if first_condition_f: test_str = "$if CONDITION $then\nACTION $end\n"; first_condition_f = False    
-	else:                 test_str = "$elseif CONDITION $then\nACTION $end\n"
+        if first_condition_f: test_str = "$if CONDITION $then\nACTION $end\n"; first_condition_f = False    
+        else:                 test_str = "$elseif CONDITION $then\nACTION $end\n"
 
-	if origin.pre_condition_begin_of_line_f(): condition_str = " me->begin_of_line_f "
-	else: condition_str = " pre_condition_%s_fulfilled_f " % origin.state_machine_id
+        if origin.pre_condition_begin_of_line_f(): condition_str = " me->begin_of_line_f "
+        else: condition_str = " pre_condition_%s_fulfilled_f " % origin.state_machine_id
 
-	action_str = "    last_acceptance = %s;\n" % origin.state_machine_id
-	# patterns that win on pre-conditions are absolute winners, not like 
-	# post-conditioned patterns. there is no need for dedicated acceptance
-	# positions for each pre-condition isolatedly.
-	action_str += "    " + LanguageDB["$input/tell_position"]() + "\n"
+        action_str = "    last_acceptance = %s;\n" % origin.state_machine_id
+        # patterns that win on pre-conditions are absolute winners, not like 
+        # post-conditioned patterns. there is no need for dedicated acceptance
+        # positions for each pre-condition isolatedly.
+        action_str += "    " + LanguageDB["$input/tell_position"]() + "\n"
 
-	txt += blue_print(test_str, [["CONDITION", condition_str],
-			             ["ACTION",    action_str]])
-	
+        txt += blue_print(test_str, [["CONDITION", condition_str],
+                                     ["ACTION",    action_str]])
+        
     # (*) write code for the unconditional acceptance states
     indent_str = ""
     if unconditional_acceptance_pattern_id_list != []:
-	if not first_condition_f: txt += "$else\n"; indent_str = "    "
-	origin = unconditional_acceptance_pattern_id_list[0]
-	txt +=  indent_str + "last_acceptance = %s;\n" % origin.state_machine_id
-	# -- patterns where the post-condition succeeds do not have to store the 
-	#    input position again. they take it from the time where the core pattern
-	#    succeeded.
-	if origin.store_input_position_f():
-	    txt += indent_str + LanguageDB["$input/tell_position"]() + "\n"
-	if not first_condition_f: txt += "$end\n"
+        if not first_condition_f: txt += "$else\n"; indent_str = "    "
+        origin = unconditional_acceptance_pattern_id_list[0]
+        txt +=  indent_str + "last_acceptance = %s;\n" % origin.state_machine_id
+        # -- patterns where the post-condition succeeds do not have to store the 
+        #    input position again. they take it from the time where the core pattern
+        #    succeeded.
+        if origin.store_input_position_f():
+            txt += indent_str + LanguageDB["$input/tell_position"]() + "\n"
+        if not first_condition_f: txt += "$end\n"
 
     txt += "\n"    
     return txt
@@ -301,12 +301,12 @@ __function_header_common = """
 #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 #    define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)   \\
         /* Is this condition really necessary? <fschaef 07y7m26d> */      \\
-	if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \\
-	    last_acceptance_input_position -= LoadedByteN;                \\
-									  \\
+        if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \\
+            last_acceptance_input_position -= LoadedByteN;                \\
+                                                                          \\
 $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
 
-#endif	
+#endif  
 
 #ifdef CONTINUE
 #   undef CONTINUE
@@ -356,50 +356,50 @@ __function_local_variable_definitions = """
 #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
     int loaded_byte_n = 0; /* At transition Drop-Out: 
                            **    > 0  number of loaded bytes. 
-			   **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
-			   */
+                           **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
+                           */
 #endif
    QUEX_ANALYSER__$$STATE_MACHINE_NAME$$__REENTRY_POINT:
 """
 
 def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
-	                function_body, PostConditionedStateMachineID_List, PreConditionIDList,
-			SupportBeginOfLineF, 
-			QuexEngineHeaderDefinitionFile, ModeNameList=[], InitialStateIndex=-1):   
+                        function_body, PostConditionedStateMachineID_List, PreConditionIDList,
+                        SupportBeginOfLineF, 
+                        QuexEngineHeaderDefinitionFile, ModeNameList=[], InitialStateIndex=-1):   
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
-			 is the mode name. otherwise, any name can be chosen. 
+                         is the mode name. otherwise, any name can be chosen. 
        StandAloneEngineF = False if a mode for a quex engine is to be created. True
                            if a stand-alone lexical engine is required (without the
-			   complete mode-handling framework of quex).
-	
+                           complete mode-handling framework of quex).
+        
        NOTE: If a stand-alone lexer is requested, then there are two functions that are
              created additionally: 
 
-	       'EngineClassName'_init(EngineClassName* me,
-	                              QUEX_CHARACTER_TYPE StartInputPosition);
+               'EngineClassName'_init(EngineClassName* me,
+                                      QUEX_CHARACTER_TYPE StartInputPosition);
 
                      This function has to be called before starting the lexing process.
-		     See the unit tests for examples.
-	       
-	       'EngineClassName'_do(EngineClassName* me);
-		     
-		     This function does a lexical analysis from the current position as
-		     it is stored in 'me'.
-    """		     
+                     See the unit tests for examples.
+               
+               'EngineClassName'_do(EngineClassName* me);
+                     
+                     This function does a lexical analysis from the current position as
+                     it is stored in 'me'.
+    """              
     txt = ""
     if SupportBeginOfLineF: 
-	txt += "#define __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION\n"
+        txt += "#define __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION\n"
 
     txt += "#include<%s>\n" % QuexEngineHeaderDefinitionFile
     if StandAloneEngineF: 
-	txt += __function_header_stand_alone
+        txt += __function_header_stand_alone
     else:                 
-	txt += __function_header_quex_mode_based
-	L = max(map(lambda name: len(name), ModeNameList))
-	for name in ModeNameList:
-	    txt += "    quex::quex_mode&  %s%s = self.%s;\n" % \
-		   (name, " " * (L- len(name)), name)
+        txt += __function_header_quex_mode_based
+        L = max(map(lambda name: len(name), ModeNameList))
+        for name in ModeNameList:
+            txt += "    quex::quex_mode&  %s%s = self.%s;\n" % \
+                   (name, " " * (L- len(name)), name)
 
 
     txt += __function_local_variable_definitions
@@ -407,27 +407,27 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     # -- post-condition position: store position of original pattern
     for state_machine_id in PostConditionedStateMachineID_List:
-	txt += "    QUEX_CHARACTER_POSITION  last_acceptance_%s_input_position = (QUEX_CHARACTER_POSITION)(0x00);\n" % \
-		repr(state_machine_id).replace("L", "")
+        txt += "    QUEX_CHARACTER_POSITION  last_acceptance_%s_input_position = (QUEX_CHARACTER_POSITION)(0x00);\n" % \
+                repr(state_machine_id).replace("L", "")
 
     # -- smart buffers require a reload procedure to adapt the positions of pointers.
     #    recall, that the pointer point to memory and do not refer to stream positions.
     #    thus, they need to be adapted according to the loaded number of bytes
     load_procedure_txt = ""
     for state_machine_id in PostConditionedStateMachineID_List:
-	load_procedure_txt += "        last_acceptance_%s_input_position -= (LoadedByteN); \\\n" % \
-		              state_machine_id
-    txt = txt.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", load_procedure_txt)                	
+        load_procedure_txt += "        last_acceptance_%s_input_position -= (LoadedByteN); \\\n" % \
+                              state_machine_id
+    txt = txt.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", load_procedure_txt)                   
 
-    # -- pre-condition fulfillment flags		
+    # -- pre-condition fulfillment flags                
     for state_machine_id in PreConditionIDList:
-	# get the state machine that the pre-condition serves:
-	# -- get the state machine that represents the pre-condition
-	pre_sm = index.get_state_machine_by_id(state_machine_id)
-	# -- extract the original state machine that the pre-condition referes to.    
-	pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
-	txt += "    int                        pre_condition_%s_fulfilled_f = 0;\n" \
-	       % repr(pre_sm_origin_id).replace("L", "")
+        # get the state machine that the pre-condition serves:
+        # -- get the state machine that represents the pre-condition
+        pre_sm = index.get_state_machine_by_id(state_machine_id)
+        # -- extract the original state machine that the pre-condition referes to.    
+        pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
+        txt += "    int                        pre_condition_%s_fulfilled_f = 0;\n" \
+               % repr(pre_sm_origin_id).replace("L", "")
 
     # -- entry to the actual function body
     # -- entry to the actual function body
@@ -443,7 +443,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
     for mode_name in ModeNameList:
-	txt += "        unused = unused + %s.id;\n" % mode_name
+        txt += "        unused = unused + %s.id;\n" % mode_name
     txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
 
     txt += "    }\n"
@@ -466,18 +466,18 @@ __terminal_state_str  = """
 %%SPECIFIC_TERMINAL_STATES%%
 
   %%GENERAL_TERMINAL_STATE_LABEL%%: {
-	int tmp = last_acceptance;
-	//
-	//  if last_acceptance => goto correspondent acceptance terminal state
-	//  else               => execute defaul action
-	//
-	switch( tmp ) {
+        int tmp = last_acceptance;
+        //
+        //  if last_acceptance => goto correspondent acceptance terminal state
+        //  else               => execute defaul action
+        //
+        switch( tmp ) {
 %%JUMPS_TO_ACCEPTANCE_STATE%%
-	    default:
-	       // no acceptance state    
-	       %%DEFAULT_ACTION%%
-	       goto QUEX_ANALYSER__%%STATE_MACHINE_NAME%%__REENTRY_PREPARATION;
-	}
+            default:
+               // no acceptance state    
+               %%DEFAULT_ACTION%%
+               goto QUEX_ANALYSER__%%STATE_MACHINE_NAME%%__REENTRY_PREPARATION;
+        }
     }
 QUEX_ANALYSER__%%STATE_MACHINE_NAME%%__REENTRY_PREPARATION:
     // (*) Common point for **restarting** lexical analysis.
@@ -503,86 +503,86 @@ QUEX_ANALYSER__%%STATE_MACHINE_NAME%%__REENTRY_PREPARATION:
 
 def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeginOfLineF, PreConditionIDList):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
-	     states, since only the flag 'pre-condition fulfilled is raised.
-    """	     
+             states, since only the flag 'pre-condition fulfilled is raised.
+    """      
     def __adorn_action_code(action_info, SupportBeginOfLineF): 
-	ignored_code_regions = [["//", "\n", "\n"],   # c++ comments
-		                ["/*", "*/", ""],     # c comments
-				["\"", "\"", ""]]     # strings in quotes
-	txt = ""
-	# TODO: There could be a differenciation between a pattern that contains
-	#       newline at the end, and those that do not. Then, there need not
-	#       be a conditional question.
-	if SupportBeginOfLineF:
-	    txt += "    QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN\n"
+        ignored_code_regions = [["//", "\n", "\n"],   # c++ comments
+                                ["/*", "*/", ""],     # c comments
+                                ["\"", "\"", ""]]     # strings in quotes
+        txt = ""
+        # TODO: There could be a differenciation between a pattern that contains
+        #       newline at the end, and those that do not. Then, there need not
+        #       be a conditional question.
+        if SupportBeginOfLineF:
+            txt += "    QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN\n"
 
-	if action_info.contains_Lexeme_object(ignored_code_regions):
-	    txt += "    QUEX_PREPARE_LEXEME_OBJECT\n"
-	else:
-	    txt += "    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT\n"
+        if action_info.contains_Lexeme_object(ignored_code_regions):
+            txt += "    QUEX_PREPARE_LEXEME_OBJECT\n"
+        else:
+            txt += "    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT\n"
 
-	if action_info.contains_LexemeLength_object(ignored_code_regions):	
-	    txt += "    QUEX_PREPARE_LEXEME_LENGTH\n"
+        if action_info.contains_LexemeLength_object(ignored_code_regions):      
+            txt += "    QUEX_PREPARE_LEXEME_LENGTH\n"
 
-	txt += "    " + action_info.action_code().replace("\n", "\n    ") + "\n"  
+        txt += "    " + action_info.action_code().replace("\n", "\n    ") + "\n"  
 
 
-	return txt
+        return txt
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     txt = ""
     for state_machine_id, pattern_action_info in action_db.items():
-	state_machine_id_str = repr(state_machine_id).replace("L", "")
-	state_machine        = pattern_action_info.pattern_state_machine()
-	action_code_orig     = pattern_action_info.action_code()
-	#
-	action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
-	    
-	# -- if the pattern is terminated after the post-condition, then the input
-	#    has to be put back to the end of the 'core expression'.	
-        post_condition_number_str = ""	
-	if state_machine.is_post_conditioned(): post_condition_number_str =  state_machine_id_str + "_"
-	#
-	txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
-	#
-	txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % post_condition_number_str
-	# -- paste the action code that correponds to the pattern   
-	txt += action_code + "\n"    
+        state_machine_id_str = repr(state_machine_id).replace("L", "")
+        state_machine        = pattern_action_info.pattern_state_machine()
+        action_code_orig     = pattern_action_info.action_code()
+        #
+        action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
+            
+        # -- if the pattern is terminated after the post-condition, then the input
+        #    has to be put back to the end of the 'core expression'.    
+        post_condition_number_str = ""  
+        if state_machine.is_post_conditioned(): post_condition_number_str =  state_machine_id_str + "_"
+        #
+        txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
+        #
+        txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % post_condition_number_str
+        # -- paste the action code that correponds to the pattern   
+        txt += action_code + "\n"    
         txt += "    CONTINUE;  // == goto QUEX_ANALYZER__%s__REENTRY_PREPARATION\n" % StateMachineName
-	
+        
     specific_terminal_states_str = txt
 
-    # (*) general terminal state (entered from non-acceptance state)	
-    txt = "" 	
+    # (*) general terminal state (entered from non-acceptance state)    
+    txt = ""    
     for state_machine_id in action_db.keys():
-	txt += "     case %s: goto %s;\n" % (repr(state_machine_id), 
-		                             label.get_terminal(StateMachineName, state_machine_id))
+        txt += "     case %s: goto %s;\n" % (repr(state_machine_id), 
+                                             label.get_terminal(StateMachineName, state_machine_id))
     jumps_to_acceptance_states_str = txt
 
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
     delete_pre_condition_flags_str = ""
     for state_machine_id in PreConditionIDList:
-	# get the state machine that the pre-condition serves:
-	# -- get the state machine that represents the pre-condition
-	pre_sm = index.get_state_machine_by_id(state_machine_id)
-	# -- extract the original state machine that the pre-condition referes to.    
-	pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
-	delete_pre_condition_flags_str += "    pre_condition_%s_fulfilled_f = 0;\n" \
-	                                  % repr(pre_sm_origin_id).replace("L", "")
+        # get the state machine that the pre-condition serves:
+        # -- get the state machine that represents the pre-condition
+        pre_sm = index.get_state_machine_by_id(state_machine_id)
+        # -- extract the original state machine that the pre-condition referes to.    
+        pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
+        delete_pre_condition_flags_str += "    pre_condition_%s_fulfilled_f = 0;\n" \
+                                          % repr(pre_sm_origin_id).replace("L", "")
 
     #  -- execute default pattern action 
-    #  -- reset character stream to last success		
-    #  -- goto initial state	
+    #  -- reset character stream to last success                
+    #  -- goto initial state    
     default_action_str = __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF)
     txt = blue_print(__terminal_state_str, 
-	             [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
-	 	      ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
-		      ["%%DEFAULT_ACTION%%",               default_action_str],
-		      ["%%GENERAL_TERMINAL_STATE_LABEL%%", label.get_terminal(StateMachineName, None)],
-		      ["%%STATE_MACHINE_NAME%%",           StateMachineName],
-		      ["%%INITIAL_STATE_INDEX_LABEL%%",    label.get(StateMachineName, sm.init_state_index)],
-		      ["%%DELETE_PRE_CONDITION_FULLFILLED_FLAGS%%", delete_pre_condition_flags_str]])
+                     [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
+                      ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
+                      ["%%DEFAULT_ACTION%%",               default_action_str],
+                      ["%%GENERAL_TERMINAL_STATE_LABEL%%", label.get_terminal(StateMachineName, None)],
+                      ["%%STATE_MACHINE_NAME%%",           StateMachineName],
+                      ["%%INITIAL_STATE_INDEX_LABEL%%",    label.get(StateMachineName, sm.init_state_index)],
+                      ["%%DELETE_PRE_CONDITION_FULLFILLED_FLAGS%%", delete_pre_condition_flags_str]])
 
     return txt
     

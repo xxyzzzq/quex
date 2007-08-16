@@ -39,29 +39,29 @@ class Tracker:
     def __consider_interval(self, x0, x1):
         """... the core of the matter"""
         if x1 == None: x1 = x0 + 1
-	#
+        #
         if self.negation_f == False:  self.direct_match_set.add_interval(Interval(x0,x1))
         else:                         self.inverse_match_set.add_interval(Interval(x0,x1))
 
     def consider_interval(self, x0, x1 = None):
         # flush last letter if it exists
-    	self.consider_letter(-1)
-	# flush interval
-	self.__consider_interval(x0, x1)
+        self.consider_letter(-1)
+        # flush interval
+        self.__consider_interval(x0, x1)
 
     def consider_letter(self, x):
         # if previous character was a letter, than add it to the set of trigger letters
-	if self.last_letter != -1: self.__consider_interval(self.last_letter, self.last_letter+1)
+        if self.last_letter != -1: self.__consider_interval(self.last_letter, self.last_letter+1)
         # store currently incoming letter code in 'self.last_letter' (maybee, its used for a 
         # character range).
-	self.last_letter = x
+        self.last_letter = x
  
     def negate(self):
          # flush last letter if it exists
-    	self.consider_letter(-1)
+        self.consider_letter(-1)
 
-	if self.negation_f: self.negation_f = False
-	else:               self.negation_f = True 
+        if self.negation_f: self.negation_f = False
+        else:               self.negation_f = True 
 
 
 def get_utf8_trigger_set(UTF8_String):
@@ -75,37 +75,37 @@ def get_utf8_trigger_set(UTF8_String):
     i = 0
     while i < Lx:
         if x[i] == ord('-'):
-	    #_________________________________________________________________________
-	    # character range:  'character0' '-' 'character1'
-	    #
-	    if tracker.last_letter == -1:
-		return False, "'-' requires a preceding letter, e.g. 'a-z'"
+            #_________________________________________________________________________
+            # character range:  'character0' '-' 'character1'
+            #
+            if tracker.last_letter == -1:
+                return False, "'-' requires a preceding letter, e.g. 'a-z'"
             tracker.consider_interval(tracker.last_letter, x[i+1] + 1)
             # ATE: 2 characters
             i += 2
 
         elif i + 1 < Lx and x[i] == ord("\\"):
-	    #_________________________________________________________________________
+            #_________________________________________________________________________
             # Escape Character / Sophisticated Code Point Definition
-	    #
-	    value, i = snap_backslashed_character.do(x, i)
-	    tracker.consider_letter(value)
+            #
+            value, i = snap_backslashed_character.do(x, i)
+            tracker.consider_letter(value)
 
         elif x[i] == ord("^"):
-	    #_________________________________________________________________________
+            #_________________________________________________________________________
             # Negation
-	    #
+            #
             # any characterange or interval that is specified is now
             # negated, i.e. ^0-5 means: 'anything but 0-5'
-	    tracker.negate()
+            tracker.negate()
             tracker.consider_letter(-1)  # '-1' => there is no preceeding character
             # ATE: one character
             i += 1
 
         else:
-	    #_________________________________________________________________________
+            #_________________________________________________________________________
             # Normal character
-	    #
+            #
             tracker.consider_letter(x[i])
             # ATE: one character
             i += 1

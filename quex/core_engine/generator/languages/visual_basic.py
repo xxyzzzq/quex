@@ -4,11 +4,11 @@ db={}
 
 def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
     """
-	(1) StateIdx != None
-            jump label for state machine state entry	
+        (1) StateIdx != None
+            jump label for state machine state entry    
         (2) StateIdx == None:  terminal state
-	    (1a) SuccessfulOriginalStateMachineID == None: not acceptance terminal state
-	    (1b) else: acceptance terminal state
+            (1a) SuccessfulOriginalStateMachineID == None: not acceptance terminal state
+            (1b) else: acceptance terminal state
     """
     def nice(SM_ID): return repr(SM_ID).replace("L", "")
 
@@ -16,7 +16,7 @@ def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None)
         return "QUEX_LABEL_%s_ENTRY_%s" % (StateMachineName, nice(StateIdx))
     elif SuccessfulOriginalStateMachineID == None:
         return "QUEX_LABEL_%s_TERMINAL" % StateMachineName
-    else:	
+    else:       
         return "QUEX_LABEL_%s_TERMINAL_%s" % (StateMachineName, nice(SuccessfulOriginalStateMachineID))
 
 #________________________________________________________________________________
@@ -24,11 +24,11 @@ def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None)
 #
 def __cpp_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
     return "goto %s;" % get_label(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID)
-	 
+         
 def __cpp_acceptance_info(SuccessfulOriginalStateMachineID, LanguageDB):
     if SuccessfulOriginalStateMachineID != None:
-	txt =  "last_acceptance = %s;\n" % SuccessfulOriginalStateMachineID
-	txt += LanguageDB["$input/tell_position"] + "\n"
+        txt =  "last_acceptance = %s;\n" % SuccessfulOriginalStateMachineID
+        txt += LanguageDB["$input/tell_position"] + "\n"
     else:
         txt = ""    
     return txt
@@ -80,7 +80,7 @@ $$QUEX_ANALYZER_FUNCTION_NAME$$(QUEX_ANALYSER_FUNC_ARGS) {
 """
 def __cpp_analyser_function(FunctionName, function_body):   
     txt = __cpp_function_header.replace("$$QUEX_ANALYZER_FUNCTION_NAME$$", 
-	                                FunctionName)
+                                        FunctionName)
     txt += function_body
     txt += "}\n"
     return txt
@@ -113,17 +113,17 @@ __cpp_terminal_state_str  = """
     // jump to last acceptance state
     //     if last acceptance:
     //        -- execute pattern action 
-    //	      -- goto initial state
+    //        -- goto initial state
     //     else:
     //        -- execute defaul action
     //        -- goto initial state    
     switch( tmp ) {
-	%%JUMPS_TO_ACCEPTANCE_STATE%%
-	default:
-	   // no acceptance state    
-	   %%DEFAULT_ACTION%%
-	   QUEX_STREAM_GET(input);
-           goto QUEX_LABEL_%%STATE_MACHINE_NAME%%_ENTRY_INITIAL_STATE;	   
+        %%JUMPS_TO_ACCEPTANCE_STATE%%
+        default:
+           // no acceptance state    
+           %%DEFAULT_ACTION%%
+           QUEX_STREAM_GET(input);
+           goto QUEX_LABEL_%%STATE_MACHINE_NAME%%_ENTRY_INITIAL_STATE;     
     }
 """
 
@@ -132,35 +132,35 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
     # -- specific terminal states of patterns (entered from acceptance states)
     txt = ""
     for state_machine_id in action_db.keys():
-	txt += "  %s:\n" % get_label("", None, state_machine_id)
-	action_code = "    " + action_db[state_machine_id].replace("\n", "\n    ")   
+        txt += "  %s:\n" % get_label("", None, state_machine_id)
+        action_code = "    " + action_db[state_machine_id].replace("\n", "\n    ")   
         txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);"
-	txt += action_code + "\n"    
-	txt += "    // if action code returns from the function, then the following is meaningless\n"
-	if sm.states[sm.init_state_index].get_transitions() != []:
-	    txt += "    QUEX_STREAM_GET(input);"
+        txt += action_code + "\n"    
+        txt += "    // if action code returns from the function, then the following is meaningless\n"
+        if sm.states[sm.init_state_index].get_transitions() != []:
+            txt += "    QUEX_STREAM_GET(input);"
         txt += "    goto QUEX_LABEL_%s_ENTRY_INITIAL_STATE;\n" %  StateMachineName
 
     specific_terminal_states_str = txt
 
-    #  -- general terminal state (entered from non-acceptance state)	
-    txt = "" 	
+    #  -- general terminal state (entered from non-acceptance state)    
+    txt = ""    
     for state_machine_id in action_db.keys():
-	txt += "     case %s: goto %s;\n" % \
-		(repr(state_machine_id), get_label("", None, state_machine_id))
+        txt += "     case %s: goto %s;\n" % \
+                (repr(state_machine_id), get_label("", None, state_machine_id))
     jumps_to_acceptance_states_str = txt
 
 
     #     -- execute default pattern action 
-    #     -- reset character stream to last success		
-    #	  -- goto initial state	
+    #     -- reset character stream to last success             
+    #     -- goto initial state 
     txt = blue_print(__cpp_terminal_state_str, 
-	             [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
-	 	      ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
-		      ["%%DEFAULT_ACTION%%",               DefaultAction.replace("\n", "        \n")],
-		      ["%%GENERAL_TERMINAL_STATE_LABEL%%", get_label("", None, None)],
-		      ["%%STATE_MACHINE_NAME%%",           StateMachineName],
-		      ["%%INITIAL_STATE_INDEX_LABEL%%",    get_label(StateMachineName, sm.init_state_index)]])
+                     [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
+                      ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
+                      ["%%DEFAULT_ACTION%%",               DefaultAction.replace("\n", "        \n")],
+                      ["%%GENERAL_TERMINAL_STATE_LABEL%%", get_label("", None, None)],
+                      ["%%STATE_MACHINE_NAME%%",           StateMachineName],
+                      ["%%INITIAL_STATE_INDEX_LABEL%%",    get_label(StateMachineName, sm.init_state_index)]])
     return txt
     
 db["C++"] = {
@@ -171,21 +171,21 @@ db["C++"] = {
     "$end":    "}",
     "$<":      "<",
     "$endif":  "}",
-    "$else":   "} else {",						     
+    "$else":   "} else {",                                                   
     "$and":    "&&",
     "$==":     "==",
     "$/*":     "//",
     "$*/":     "\n",
     "$input":               "input",
     "$input/get":           "QUEX_STREAM_GET(input);",
-    "$input/tell_position": "QUEX_STREAM_TELL(last_acceptance_input_position);",	
-    "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",	
+    "$input/tell_position": "QUEX_STREAM_TELL(last_acceptance_input_position);",        
+    "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$goto-state":       __cpp_goto_state,
-    "$acceptance-info":  __cpp_acceptance_info,	
+    "$acceptance-info":  __cpp_acceptance_info, 
     "$analyser-func":    __cpp_analyser_function,
-    "$terminal-code":    __cpp_terminal_states,	
+    "$terminal-code":    __cpp_terminal_states, 
     }
 
 #________________________________________________________________________________
@@ -210,38 +210,38 @@ db["Perl"]["$function_def"] = "sub $$function_name$$ {\n    input = shift\n"
 #    
 def __python_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
     if StateIdx == None: 
-  	return __python_goto_terminal_state(UserDefinedStateMachineName,  
-	                                    SuccessfulOriginalStateMachineID)
+        return __python_goto_terminal_state(UserDefinedStateMachineName,  
+                                            SuccessfulOriginalStateMachineID)
     txt = "# QUEX_LABEL_%s_ENTRY_%s;\n" % (UserDefinedStateMachineName,
-	                                 repr(StateIdx).replace("L",""))
+                                         repr(StateIdx).replace("L",""))
     return txt + "return %s" % repr(StateIdx)
-	 
+         
 def __python_goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginalStateMachineID=None):
     if SuccessfulOriginalStateMachineID == None:
         txt = "# goto QUEX_LABEL_%s_TERMINAL;\n" % UserDefinedStateMachineName
-    else:	
+    else:       
         txt = "# goto QUEX_LABEL_%s_TERMINAL_%s;\n" % (UserDefinedStateMachineName,
-	        				       repr(SuccessfulOriginalStateMachineID).replace("L",""))
-    return txt + "return -1"	
+                                                       repr(SuccessfulOriginalStateMachineID).replace("L",""))
+    return txt + "return -1"    
 
 def __python_note_acceptance(SuccessfulOriginalStateMachineID):
     if SuccessfulOriginalStateMachineID != None:
         txt =  "# last_acceptance = %s\n" % SuccessfulOriginalStateMachineID
         txt += "# last_acceptance_input_position = stream.tell()\n"
     else:
-	txt = ""    
+        txt = ""    
     return txt
 
 db["Python"] = {
     "$function_def":  "def $$function_name$$(input):\n",
-    "$function_end":  "\n",						     
+    "$function_end":  "\n",                                                  
     "$if":     "if ",
     "$then":   ":",
     "$end":    "",
     "$<":      "<",
     "$>=":     ">=",
-    "$endif": "",						     
-    "$else":   "else:",						     
+    "$endif": "",                                                    
+    "$else":   "else:",                                              
     "$and":    "and",
     "$==":     "==",
     "$/*":     "#",
@@ -252,7 +252,7 @@ db["Python"] = {
     "$goto-state":        __python_goto_state, 
     "$goto-terminate":    __python_goto_terminal_state, 
     "$note-acceptance":   __python_note_acceptance,                    
-    "$label":             "",	
+    "$label":             "",   
 }
 
 #________________________________________________________________________________
@@ -276,11 +276,11 @@ def replace_keywords(program_txt, LanguageDB, NoIndentF):
     txt = blue_print(program_txt, LanguageDB.items())
 
     if NoIndentF == False:
-	# delete the last newline, to prevent additional indentation
-	if txt[-1] == "\n": txt = txt[:-1]
-	# indent by four spaces
-	# (if this happens in recursively called functions nested indented blocks
-	#  are correctly indented, see NumberSet::get_condition_code() for example)	
-	txt = txt.replace("\n", "\n    ") + "\n"
+        # delete the last newline, to prevent additional indentation
+        if txt[-1] == "\n": txt = txt[:-1]
+        # indent by four spaces
+        # (if this happens in recursively called functions nested indented blocks
+        #  are correctly indented, see NumberSet::get_condition_code() for example)     
+        txt = txt.replace("\n", "\n    ") + "\n"
     
-    return txt   	
+    return txt          

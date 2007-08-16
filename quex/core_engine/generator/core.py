@@ -18,35 +18,35 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
 
        NOTE: From this level of abstraction downwards, a pattern is 
              represented as a state machine. No longer the term pattern
-	     is used. The pattern to which particular states belong are
-	     kept track of by using an 'origin' list that contains 
-	     state machine ids (== pattern ids) and the original 
-	     state index.
-	     
-	     ** A Pattern is Identified by the State Machine ID**
+             is used. The pattern to which particular states belong are
+             kept track of by using an 'origin' list that contains 
+             state machine ids (== pattern ids) and the original 
+             state index.
+             
+             ** A Pattern is Identified by the State Machine ID**
        
        NOTE: It is crucial that the pattern priviledges have been entered
              into 'state_machine_id_ranking_db' in state_machine.index
-	     if they are to be priorized. Further, priviledged state machines
-	     must have been created **earlier** then lesser priviledged
-	     state machines.
+             if they are to be priorized. Further, priviledged state machines
+             must have been created **earlier** then lesser priviledged
+             state machines.
     """
     if type(PatternActionPair_List) <> list:
-	raise "Argument 'PatternActionPair_List' needs to be of type 'list of ActionInfo(s)'\n" + \
+        raise "Argument 'PatternActionPair_List' needs to be of type 'list of ActionInfo(s)'\n" + \
               "Argument is of type: '%s'" % repr(type(PatternActionPair_List))
 
     for element in PatternActionPair_List:
-	if element.__class__.__name__ != "ActionInfo":
-	    raise "Argument 'PatternActionPair_List' needs to be of type 'list of ActionInfo(s)'\n" + \
-		  "received element of type: '%s'" % element.__class__.__name__  
-	  
+        if element.__class__.__name__ != "ActionInfo":
+            raise "Argument 'PatternActionPair_List' needs to be of type 'list of ActionInfo(s)'\n" + \
+                  "received element of type: '%s'" % element.__class__.__name__  
+          
     if not StandAloneAnalyserF and QuexEngineHeaderDefinitionFile == "":
-	raise "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
-	      "a header file for the core engine define statements. See file\n" + \
-	      "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"	
+        raise "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
+              "a header file for the core engine define statements. See file\n" + \
+              "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
 
     if QuexEngineHeaderDefinitionFile == "":
-	QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
+        QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
     
     # (0) extract data structures:
     #      -- state machine list: simply a list of all state machines
@@ -69,35 +69,35 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
     # [NOT IMPLEMENTED YET]    
     # # trivial_pre_condition_dict = {}             # map: state machine id --> character code(s)
     for action_info in PatternActionPair_List:
-	sm = action_info.pattern_state_machine()
+        sm = action_info.pattern_state_machine()
         state_machine_list.append(sm)
-	# -- register action information under the state machine id, where it 
-	#    belongs.
-	origins_of_acceptance_states = sm.get_origin_ids_of_acceptance_states()
-	if len(origins_of_acceptance_states) == 0:
-	    raise "error: code generation for pattern:\n" + \
-	          "error: no acceptance state contains origin information."
+        # -- register action information under the state machine id, where it 
+        #    belongs.
+        origins_of_acceptance_states = sm.get_origin_ids_of_acceptance_states()
+        if len(origins_of_acceptance_states) == 0:
+            raise "error: code generation for pattern:\n" + \
+                  "error: no acceptance state contains origin information."
         origin_state_machine_id = origins_of_acceptance_states[0]
         action_db[origin_state_machine_id] = action_info
 
-	# -- collect all pre-conditions and make one single state machine out of it
-	if sm.has_non_trivial_pre_condition():
-	    pre_sm = sm.pre_condition_state_machine
-	    pre_condition_sm_list.append(pre_sm)
-	    pre_condition_sm_id_list.append(pre_sm.get_id())
-	    
-	if sm.has_trivial_pre_condition_begin_of_line():
-	    begin_of_line_condition_f = True
+        # -- collect all pre-conditions and make one single state machine out of it
+        if sm.has_non_trivial_pre_condition():
+            pre_sm = sm.pre_condition_state_machine
+            pre_condition_sm_list.append(pre_sm)
+            pre_condition_sm_id_list.append(pre_sm.get_id())
+            
+        if sm.has_trivial_pre_condition_begin_of_line():
+            begin_of_line_condition_f = True
 
-	# [NOT IMPLEMENTED YET]    
+        # [NOT IMPLEMENTED YET]    
         # # -- collect information about trivial (char code) pre-conditions 
         # # if sm.get_trivial_pre_condition_character_codes() != []:
-	# #    trivial_pre_condition_dict[sm.get_id()] = sm.get_trivial_pre_condition_character_codes()
+        # #    trivial_pre_condition_dict[sm.get_id()] = sm.get_trivial_pre_condition_character_codes()
 
-	# -- collect all ids of post conditioned state machines
-	if sm.is_post_conditioned():
-	    post_conditioned_sm_id_list.append(origin_state_machine_id)
-				    
+        # -- collect all ids of post conditioned state machines
+        if sm.is_post_conditioned():
+            post_conditioned_sm_id_list.append(origin_state_machine_id)
+                                    
     # (1) transform all given patterns into a single state machine
     #     (the index of the patterns remain as 'origins' inside the states)
     sm = get_state_machine(state_machine_list)
@@ -110,55 +110,55 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
     #     acceptance state is entered)
     pre_condition_sm = None
     if pre_condition_sm_list != []:
-	pre_condition_sm = get_state_machine(pre_condition_sm_list, FilterDominatedOriginsF=False)
-	for pre_sm in pre_condition_sm_list:
-	    action_db[pre_sm.get_id()] = ActionInfo(pre_sm, "")
+        pre_condition_sm = get_state_machine(pre_condition_sm_list, FilterDominatedOriginsF=False)
+        for pre_sm in pre_condition_sm_list:
+            action_db[pre_sm.get_id()] = ActionInfo(pre_sm, "")
 
     # (2) create code
     return __get_code(sm, pre_condition_sm, pre_condition_sm_id_list, 
-	              StateMachineName, AnalyserStateClassName, StandAloneAnalyserF, Language, 
-	              pre_condition_sm_list, post_conditioned_sm_id_list, 
-	              action_db, DefaultAction, begin_of_line_condition_f, 
-	              QuexEngineHeaderDefinitionFile, ModeNameList, PrintStateMachineF)
+                      StateMachineName, AnalyserStateClassName, StandAloneAnalyserF, Language, 
+                      pre_condition_sm_list, post_conditioned_sm_id_list, 
+                      action_db, DefaultAction, begin_of_line_condition_f, 
+                      QuexEngineHeaderDefinitionFile, ModeNameList, PrintStateMachineF)
 
 def __get_code(sm, pre_condition_sm, pre_condition_sm_id_list,
-	       StateMachineName, AnalyserStateClassName, 
-	       StandAloneAnalyserF, Language,
-	       pre_condition_sm_list, post_conditioned_sm_id_list, 
-	       action_db, DefaultAction, begin_of_line_condition_f, 
-	       QuexEngineHeaderDefinitionFile, ModeNameList, PrintStateMachineF):
+               StateMachineName, AnalyserStateClassName, 
+               StandAloneAnalyserF, Language,
+               pre_condition_sm_list, post_conditioned_sm_id_list, 
+               action_db, DefaultAction, begin_of_line_condition_f, 
+               QuexEngineHeaderDefinitionFile, ModeNameList, PrintStateMachineF):
 
     LanguageDB = languages.db[Language]
 
     txt = ""
     #  -- all state machine transitions 
     if pre_condition_sm_list != []:
-	txt += "    // state machine for pre-condition test:\n"
+        txt += "    // state machine for pre-condition test:\n"
         if PrintStateMachineF: 
-	    txt += "    // " + repr(pre_condition_sm).replace("\n", "\n    // ") + "\n"
+            txt += "    // " + repr(pre_condition_sm).replace("\n", "\n    // ") + "\n"
         txt += state_machine_coder.do(pre_condition_sm, 
-				      Language=Language, 
-		                      UserDefinedStateMachineName=StateMachineName + "__PRE_CONDITION__",
-		   	              BackwardLexingF=True)
-	
+                                      Language=Language, 
+                                      UserDefinedStateMachineName=StateMachineName + "__PRE_CONDITION__",
+                                      BackwardLexingF=True)
+        
     txt += "    // state machine for pattern analysis:\n"
     if PrintStateMachineF: 
         txt += "    // " + repr(sm).replace("\n", "\n    // ") + "\n"
     txt += state_machine_coder.do(sm, Language=Language, 
-	              		  UserDefinedStateMachineName=StateMachineName, 
-		       		  BackwardLexingF=False)
+                                  UserDefinedStateMachineName=StateMachineName, 
+                                  BackwardLexingF=False)
     
     #  -- terminal states: execution of pattern actions  
     txt += LanguageDB["$terminal-code"](StateMachineName, sm, action_db, DefaultAction, 
-	                                begin_of_line_condition_f, pre_condition_sm_id_list) 
+                                        begin_of_line_condition_f, pre_condition_sm_id_list) 
 
     # -- pack the whole thing into a function 
     txt = LanguageDB["$analyser-func"](StateMachineName, AnalyserStateClassName, StandAloneAnalyserF,
-	                               txt, 
-				       post_conditioned_sm_id_list, pre_condition_sm_id_list,
-				       begin_of_line_condition_f,
-				       QuexEngineHeaderDefinitionFile, 
-				       ModeNameList, InitialStateIndex=sm.init_state_index) 
+                                       txt, 
+                                       post_conditioned_sm_id_list, pre_condition_sm_id_list,
+                                       begin_of_line_condition_f,
+                                       QuexEngineHeaderDefinitionFile, 
+                                       ModeNameList, InitialStateIndex=sm.init_state_index) 
     return txt
     
 def get_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
@@ -169,15 +169,15 @@ def get_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
 
        Performs: -- parallelization
                  -- translation from NFA to DFA
-		 -- Frank Schaefers Adapted Hopcroft optimization.
+                 -- Frank Schaefers Adapted Hopcroft optimization.
 
        Again: The state machine ids of the original state machines
               are traced through the whole process.
-	      
+              
        FilterDominatedOriginsF, if set to False, can disable the filtering
               of dominated origins. This is important for pre-conditions, because,
-              all successful patterns need to be reported!	      
-             	      
+              all successful patterns need to be reported!            
+                      
     """   
     # (1) mark at each state machine the machine and states as 'original'.
     #      
@@ -233,28 +233,28 @@ def __check_for_nothing_is_fine(sm, EndOfFile_Code):
        that the pattern containing the 'EndOfFile' knows how to deal with it.
 
        NOTE: This discussion has no equivalent for backwards lexical analysis
-	     during pre-conditions, because it is forward analysis that moves
-	     the focus of the analyser. If a BeginOfFile occurs and a pre-condition
-	     accepts it as 'nothing is just fine' then the real analysis still
-	     starts at the previous end position. There is no infinit moving
-	     backwards in this case. THUS, this check has NOT to be accomplished
-	     for pre-condition state machines.
+             during pre-conditions, because it is forward analysis that moves
+             the focus of the analyser. If a BeginOfFile occurs and a pre-condition
+             accepts it as 'nothing is just fine' then the real analysis still
+             starts at the previous end position. There is no infinit moving
+             backwards in this case. THUS, this check has NOT to be accomplished
+             for pre-condition state machines.
 
        -- The same as for EOF is true, if the condition is 'x*' for example, and
           an 'a' arrives, which shall call for a mismatch. If such a free pass is
-	  defined any non-matching first character **must** be defined. In the
-	  same way as above, this non-matching character will win and avoid 
-	  infinite recursion.
+          defined any non-matching first character **must** be defined. In the
+          same way as above, this non-matching character will win and avoid 
+          infinite recursion.
 
        FINALLY: A pattern definition of '.*' of 'x*' does not make the slightest
                 sense, because we need to catch a mismatch on the first character.
-		Thus the pattern must at least have a length of one. Forget about
-		the whole discussion above and simply forbid pattern definitions
-		with 'nothing is just fine'.
+                Thus the pattern must at least have a length of one. Forget about
+                the whole discussion above and simply forbid pattern definitions
+                with 'nothing is just fine'.
     """
     init_state = sm.states[sm.init_state_index]
     if init_state.is_acceptance() == False: 
-	return
+        return
 
     raise "error: A pattern (such as '.*' or 'x*') allows no input to be acceptable.\n" + \
           "error: This does not make sense!"
@@ -267,9 +267,9 @@ def __check_for_nothing_is_fine(sm, EndOfFile_Code):
 #              "error: Think about 'x+' instead of 'x*'."
 #         
 #     if None in init_state.get_target_state_indices() or init_state.get_epsilon_trigger_set() == []:
-# 	raise "error: A pattern (such as 'x*') allows no input to be acceptable. In this case\n" +         \
-# 	      "error: another pattern (i.e. '.+') needs to catch all mismatches of the first character." + \
-# 	      "error: Think about 'x+' instead of 'x*'."
+#       raise "error: A pattern (such as 'x*') allows no input to be acceptable. In this case\n" +         \
+#             "error: another pattern (i.e. '.+') needs to catch all mismatches of the first character." + \
+#             "error: Think about 'x+' instead of 'x*'."
 
 
     

@@ -55,5 +55,5 @@ XXXXXXXXXA
 """
 
 generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="QuexBuffer",
-		  NDEBUG_str=NDEBUG_compiler_str)
+                  NDEBUG_str=NDEBUG_compiler_str)
     

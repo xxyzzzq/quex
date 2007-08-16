@@ -73,10 +73,10 @@ ReferencedCodeFragment_OpenLinePragma = {
 #  ...[Language][1]   = template containing 'NUMBER' and 'FILENAME' that
 #                       are to replaced in order to get the resetting line pragma.
 #___________________________________________________________________________________
-	"C": [
-	      '/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */',
-	      '#line NUMBER "FILENAME"'
-	     ],
+        "C": [
+              '/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */',
+              '#line NUMBER "FILENAME"'
+             ],
    }
 
 class ReferencedCodeFragment:
@@ -86,37 +86,37 @@ class ReferencedCodeFragment:
         self.line_n   = LineN
 
     def get(self, Language="C"):
-	txt = ""
-	if self.code == "": return ""
+        txt = ""
+        if self.code == "": return ""
 
-	if Language == "C":
-	    txt += '\n#line %i "%s"\n' % (self.line_n, self.filename)
-	    txt += self.code
+        if Language == "C":
+            txt += '\n#line %i "%s"\n' % (self.line_n, self.filename)
+            txt += self.code
             if txt[-1] != "\n": txt = txt + "\n"
-	    txt += ReferencedCodeFragment_OpenLinePragma["C"][0] + "\n"
-	
-	return txt
+            txt += ReferencedCodeFragment_OpenLinePragma["C"][0] + "\n"
+        
+        return txt
 
 def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
     if Language not in ReferencedCodeFragment_OpenLinePragma.keys():
-	return
+        return
 
     try:    fh = open(filename)
     except: raise "error: file to straighten line pragmas not found: '%s'" % \
-	    filename
+            filename
 
     new_content = ""
     line_n      = 0
     LinePragmaInfo = ReferencedCodeFragment_OpenLinePragma[Language]
     for line in fh.readlines():
-	line_n += 1
-	if line.find(LinePragmaInfo[0]) != -1:
-	    if Language == "C":
-		line = LinePragmaInfo[1]
-		line = line.replace("NUMBER", repr(int(line_n)))
-		line = line.replace("FILENAME", filename)
-		line = line + "\n"
-	new_content += line
+        line_n += 1
+        if line.find(LinePragmaInfo[0]) != -1:
+            if Language == "C":
+                line = LinePragmaInfo[1]
+                line = line.replace("NUMBER", repr(int(line_n)))
+                line = line.replace("FILENAME", filename)
+                line = line + "\n"
+        new_content += line
 
     fh.close()
 
@@ -149,8 +149,8 @@ class Match:
         # (is this still necessary: Frank Schaefer Jan, 2005 (d.Hy. 1425)
         # self.id                = get_unique_match_id()
 
-    def __repr__(self):		
-    	txt = ""
+    def __repr__(self):         
+        txt = ""
         txt += "self.pattern           = " + repr(self.pattern) + "\n"
         txt += "self.action            = " + repr(self.action.code) + "\n"
         txt += "self.filename          = " + repr(self.action.filename) + "\n"
@@ -397,7 +397,7 @@ class LexMode:
                 -- which options are concatinated to a list
                 -- which ones are replaced
                 -- what are the values of the options
-	"""
+        """
         if not self.options_info.has_key(Option):
             error_msg("tried to set option '%s' which does not exist!\n" % Option + \
                       "options are %s" % repr(self.options_info.keys()))
@@ -521,14 +521,14 @@ class_init = ReferencedCodeFragment()
 class PatternShorthand:
     def __init__(self, Name="", RegularExpressionStr="", Filename="", LineN=-1):
         self.name               = Name
-	self.regular_expression = RegularExpressionStr
+        self.regular_expression = RegularExpressionStr
         self.filename           = Filename
         self.line_n             = LineN
 
 #-----------------------------------------------------------------------------------------
 # shorthand_db: user defined names for regular expressions.
 #               (this is what contained in the pattern file for flex-based engines.
-#                it is only used with quex generated engines)	
+#                it is only used with quex generated engines)   
 #-----------------------------------------------------------------------------------------
 shorthand_db = {}
 

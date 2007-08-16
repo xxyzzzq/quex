@@ -20,16 +20,16 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     result = sm.clone()
     print "##-- %i -----------------------------------------------------------------------" % Idx
     if sm_pre != None: 
-    	setup_pre_condition.do(result, sm_pre)
-	print " -- pre-condition  = True"
+        setup_pre_condition.do(result, sm_pre)
+        print " -- pre-condition  = True"
     else:
-	print " -- pre-condition  = False"
-	
+        print " -- pre-condition  = False"
+        
     if sm_post != None:
-	setup_post_condition.do(result, sm_post)
-	print " -- post-condition = True"
+        setup_post_condition.do(result, sm_post)
+        print " -- post-condition = True"
     else:
-	print " -- post-condition = False"
+        print " -- post-condition = False"
     
     print " -- begin of file  = ", BOF_F
     print " -- end of file    = ", EOF_F
@@ -52,7 +52,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     print
     print "result sm.id     = ", result.get_id()
     if result.pre_condition_state_machine != None:
-	print "result pre sm.id = ", result.pre_condition_state_machine.get_id()
+        print "result pre sm.id = ", result.pre_condition_state_machine.get_id()
     print "result = ", result
     print "trivially pre-conditioned = ", result.has_trivial_pre_condition()
 
@@ -73,9 +73,9 @@ for flag_k in range(0, 4):
 
     for flag_i in range(0, 4):
         i += 1
-	bof_f = flag_i & 2 == 2
-	eof_f = flag_i & 1 == 1
-	test(i, sm_pre, sm, sm_post, bof_f,  eof_f)    
+        bof_f = flag_i & 2 == 2
+        eof_f = flag_i & 1 == 1
+        test(i, sm_pre, sm, sm_post, bof_f,  eof_f)    
     
    
 

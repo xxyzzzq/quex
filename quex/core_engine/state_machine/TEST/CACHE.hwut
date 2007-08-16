@@ -27,8 +27,9 @@ RESULT:   OK;
 StateMachine Operations:Inverse
 RESULT:   OK;
 =====
-1180163876L  ./test-StateMachine-trace-origin-inverse.py.bak
-
+-1L  test-repeat-pure.py
+StateMachine Operations:Repetitions Kleene closure 0 or arbitrary repetitions
+RESULT:   OK;
 =====
 1180163857L  ./test-StateMachine-epsilon-closure.py.bak
 
@@ -41,9 +42,6 @@ RESULT:   OK;
 
 =====
 1180163849L  ./test-StateMachine-clone.py.bak
-
-=====
-1180163792L  ./test-repeat-pure.py.bak
 
 =====
 -1L  test-parallelize.py
@@ -111,9 +109,8 @@ RESULT:   OK;
 Tracing origin:Paralellization
 RESULT:   OK;
 =====
--1L  test-repeat-pure.py
-StateMachine Operations:Repetitions Kleene closure 0 or arbitrary repetitions
-RESULT:   OK;
+1180163876L  ./test-StateMachine-trace-origin-inverse.py.bak
+
 =====
 -1L  test-StateMachine-hopcroft-optimization.py
 DFA:Hopcroft optimization (minimize state set)
@@ -135,6 +132,9 @@ RESULT:   OK;
 
 =====
 1180163871L  ./test-StateMachine-trace-origin-create-DFA.py.bak
+
+=====
+1180163792L  ./test-repeat-pure.py.bak
 
 =====
 -1L  test-StateMachine-create-DFA.py

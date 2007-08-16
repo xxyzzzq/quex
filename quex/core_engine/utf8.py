@@ -14,8 +14,8 @@ def map_utf8_to_unicode(utf8_string_or_stream):
     
        Returns: (string) the unicode of the letter and the remaining utf8-string with the first 
                          letters cut that represented the unicode letter.
-		(StringIO) the unicode of the first utf8 coding in the stream. sets the stream
-                           position to the first character after the utf8 code.		
+                (StringIO) the unicode of the first utf8 coding in the stream. sets the stream
+                           position to the first character after the utf8 code.         
     """    
     if utf8_string_or_stream.__class__.__name__ == "StringIO":
        return __read_one_utf8_code_from_stream(utf8_string_or_stream)
@@ -43,24 +43,24 @@ def map_n_utf8_to_unicode(utf8_string, N=-1, RemainderF=False):
        else:          return result
 
     if N != -1:
-	tmp = __read_one_utf8_code_from_stream(stream)
-	result.append(tmp)
-	n = 0
-	while tmp != 0xFF:
-	    n += 1
-	    if n >= N: break
-	    tmp = __read_one_utf8_code_from_stream(stream)
-	    result.append(tmp)
+        tmp = __read_one_utf8_code_from_stream(stream)
+        result.append(tmp)
+        n = 0
+        while tmp != 0xFF:
+            n += 1
+            if n >= N: break
+            tmp = __read_one_utf8_code_from_stream(stream)
+            result.append(tmp)
 
     else:
-	tmp = __read_one_utf8_code_from_stream(stream)
-	while tmp != 0xFF:
-	    result.append(tmp)
-	    tmp = __read_one_utf8_code_from_stream(stream)
+        tmp = __read_one_utf8_code_from_stream(stream)
+        while tmp != 0xFF:
+            result.append(tmp)
+            tmp = __read_one_utf8_code_from_stream(stream)
 
     if RemainderF: 
         remainder = stream.read()    
-    	return result, remainder
+        return result, remainder
     else:          
         return result
 
@@ -152,8 +152,8 @@ def __read_one_utf8_code_from_stream(char_stream):
     RETURNS: integer value of the unicode character.
              0xFF          in case of error.
 
-	     second parameter: True if character was backslashed,
-	                       False if not.
+             second parameter: True if character was backslashed,
+                               False if not.
     """
     character = char_stream.read(1)
     if character == "": return 0xFF
@@ -163,13 +163,13 @@ def __read_one_utf8_code_from_stream(char_stream):
 
         # interpret the sequence "backslash + char" as character
         try:    
-	    character_code = backslashed_characters[character]
-	except: 
-	    char_stream.seek(-1, 1)
-	    return ord("\\")
+            character_code = backslashed_characters[character]
+        except: 
+            char_stream.seek(-1, 1)
+            return ord("\\")
 
-	return character_code
-	
+        return character_code
+        
     try:    head_char = ord(character)
     except: return 0xFF
 
@@ -177,7 +177,7 @@ def __read_one_utf8_code_from_stream(char_stream):
     #     0xC0 to 0xFD. If the chacter code falls out of this border no further
     #     consideration is required.
     if head_char < 0xC0 or head_char > 0xFD:
-	return head_char
+        return head_char
 
 
     # (*) determine byte range and number of characters

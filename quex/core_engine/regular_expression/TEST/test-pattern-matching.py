@@ -19,11 +19,11 @@ def test(the_state_machine, string_to_match):
     letter_n = -1
     for letter_code in letter_code_list:   
         letter_n += 1   
-	if letter_n % 5 == 0: sys.stdout.write("\n")
+        if letter_n % 5 == 0: sys.stdout.write("\n")
         state_index = sm.get_result_state_index(state_index, letter_code) 
         sys.stdout.write("'%s' --> (%s), " % (utf8.map_unicode_to_utf8(letter_code), 
-		                             repr(state_index).replace("L","")))
-	if state_index == -1: break
+                                             repr(state_index).replace("L","")))
+        if state_index == -1: break
 
     print
 

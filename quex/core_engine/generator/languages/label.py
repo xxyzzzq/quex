@@ -5,7 +5,7 @@ def __nice(SM_ID):
 
 def get(StateMachineName, StateIdx):
     if StateIdx == None: 
-	raise "StateIdx == None; call function 'get_terminal' instead."
+        raise "StateIdx == None; call function 'get_terminal' instead."
 
     return "QUEX_LABEL_%s_ENTRY_%s" % (StateMachineName, __nice(StateIdx))
 
@@ -19,7 +19,7 @@ def get_terminal(StateMachineName, TerminalStateIdx=None):
 
     if TerminalStateIdx == None:
         return "QUEX_LABEL_%s_TERMINAL" % StateMachineName
-    else:	
+    else:       
         return "QUEX_LABEL_%s_TERMINAL_%s" % (StateMachineName, __nice(TerminalStateIdx))
 
 def get_drop_out(StateMachineName, StateIdx):

@@ -8,7 +8,7 @@ from   quex.frs_py.file_in import error_msg
 import quex.token_id_maker                      as token_id_maker
 import quex.lexer_mode                          as lexer_mode
 from   quex.lexer_mode                          import ReferencedCodeFragment_straighten_open_line_pragmas, \
-	                                               ReferencedCodeFragment
+                                                       ReferencedCodeFragment
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
 import quex.input.quex_file_parser              as quex_file_parser
@@ -50,7 +50,7 @@ def do(Setup):
     # only inheritable == abstract => no real implemented mode exist of this
     # (such modes only serve as base modes for other modes)
     mode_list = filter(lambda mode: mode.options["inheritable:"] != "only", 
-	    	       mode_db.values())
+                       mode_db.values())
 
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
@@ -69,36 +69,36 @@ def do(Setup):
     analyzer_code = ""
     for mode in mode_list:        
         # -- adapt the shorthand information, so that it can be treated
-	#    by the code generator.
-	pattern_dictionary = {}
-	for item in lexer_mode.shorthand_db.values():
-	    pattern_dictionary[item.name] = item.regular_expression	    
+        #    by the code generator.
+        pattern_dictionary = {}
+        for item in lexer_mode.shorthand_db.values():
+            pattern_dictionary[item.name] = item.regular_expression         
 
-	# -- adapt pattern-action pair information so that it can be treated
-	#    by the code generator.
-	pattern_action_pair_info_list   = mode.pattern_action_pairs().values()
+        # -- adapt pattern-action pair information so that it can be treated
+        #    by the code generator.
+        pattern_action_pair_info_list   = mode.pattern_action_pairs().values()
 
-	#    take out the '<<FAIL>>' rule, if there is one. Note, that the
-	#    regular expression parser can handle <<EOF>> but not <<FAIL>>.
-	default_action = __extract_default_action(mode, pattern_action_pair_info_list, 
-		                                  Setup)
+        #    take out the '<<FAIL>>' rule, if there is one. Note, that the
+        #    regular expression parser can handle <<EOF>> but not <<FAIL>>.
+        default_action = __extract_default_action(mode, pattern_action_pair_info_list, 
+                                                  Setup)
 
- 	dummy, pattern_action_pair_list = get_generator_input(mode,
-		                                              pattern_action_pair_info_list, 
-							      pattern_dictionary, Setup)
+        dummy, pattern_action_pair_list = get_generator_input(mode,
+                                                              pattern_action_pair_info_list, 
+                                                              pattern_dictionary, Setup)
 
-	# accumulate inheritance information for comment
+        # accumulate inheritance information for comment
         inheritance_info_str += dummy + "**\n"
 
         analyzer_code += generator.do(pattern_action_pair_list, default_action, 
-		                      PrintStateMachineF             = True,
-		                      StateMachineName               = mode.name,
-				      AnalyserStateClassName         = Setup.output_engine_name,
-				      StandAloneAnalyserF            = False, 
-				      PatternDictionary              = pattern_dictionary,
-				      QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
-				      ModeNameList                   = mode_name_list)   
-	
+                                      PrintStateMachineF             = True,
+                                      StateMachineName               = mode.name,
+                                      AnalyserStateClassName         = Setup.output_engine_name,
+                                      StandAloneAnalyserF            = False, 
+                                      PatternDictionary              = pattern_dictionary,
+                                      QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
+                                      ModeNameList                   = mode_name_list)   
+        
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "w")
     fh.write(analyzer_code)
@@ -134,52 +134,52 @@ def get_generator_input(Mode, match_info_list, PatternDictionary, Setup):
     #   => At this place all patterns are sorted according to their inheritance 
     #      level. Thus, a propper priviledge handling is guaranteed.
     def pattern_precedence(A, B):
-	tmp = - cmp(A.inheritance_level, B.inheritance_level)
-	if tmp != 0: return tmp
-	else:        return cmp(A.pattern_index, B.pattern_index)
-	
+        tmp = - cmp(A.inheritance_level, B.inheritance_level)
+        if tmp != 0: return tmp
+        else:        return cmp(A.pattern_index, B.pattern_index)
+        
     match_info_list.sort(pattern_precedence)
 
     inheritance_info_str     = ""
     pattern_action_pair_list = []
     for pattern_info in match_info_list:
 
-	pattern          = pattern_info.pattern
-	safe_pattern_str = pattern_info.pattern.replace("\"", "\\\"")
+        pattern          = pattern_info.pattern
+        safe_pattern_str = pattern_info.pattern.replace("\"", "\\\"")
 
-	# -- create a state machine for the given pattern
-	try:
-	    pattern_state_machine = regex.do(pattern, PatternDictionary, 
-					     Setup.begin_of_stream_code, Setup.end_of_stream_code,
-					     DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
-	except str, ErrorMsg:
-	    error_msg("error: %s", ErrorMsg, pattern_info.filename, pattern_info.line_n)
-	    
+        # -- create a state machine for the given pattern
+        try:
+            pattern_state_machine = regex.do(pattern, PatternDictionary, 
+                                             Setup.begin_of_stream_code, Setup.end_of_stream_code,
+                                             DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
+        except str, ErrorMsg:
+            error_msg("error: %s", ErrorMsg, pattern_info.filename, pattern_info.line_n)
+            
 
-	if len(pattern_state_machine.get_origin_ids_of_acceptance_states()) == 0:
-	    error_msg("pattern '%s' is not a valid regular expression. " % pattern, 
-		      pattern_info.filename, pattern_info.line_n)
-	
-	# counting the columns,
-	# counting the newlines: here one might have analysis about the pattern
-	#                        preceeding and only doing the check if the pattern
-	#                        potentially contains newlines.
-	action = action_code_formatter.do(Mode, pattern_info.action, Setup, safe_pattern_str,
+        if len(pattern_state_machine.get_origin_ids_of_acceptance_states()) == 0:
+            error_msg("pattern '%s' is not a valid regular expression. " % pattern, 
+                      pattern_info.filename, pattern_info.line_n)
+        
+        # counting the columns,
+        # counting the newlines: here one might have analysis about the pattern
+        #                        preceeding and only doing the check if the pattern
+        #                        potentially contains newlines.
+        action = action_code_formatter.do(Mode, pattern_info.action, Setup, safe_pattern_str,
                                       pattern_state_machine)
 
-	
-	action_info = generator.ActionInfo(pattern_state_machine, action)
+        
+        action_info = generator.ActionInfo(pattern_state_machine, action)
 
-	pattern_action_pair_list.append(action_info)
+        pattern_action_pair_list.append(action_info)
 
-	try:
-	    inheritance_info_str += "** %2i %2i %s\n" % (pattern_info.inheritance_level, 
-							 pattern_info.pattern_index,
-							 safe_pattern_str)
-	except:    
-	    error_msg("pattern_info object =\n  " + repr(pattern_info).replace("\n", "\n  "), 
-		      "assert", 
-		      "get_generator_input()")
+        try:
+            inheritance_info_str += "** %2i %2i %s\n" % (pattern_info.inheritance_level, 
+                                                         pattern_info.pattern_index,
+                                                         safe_pattern_str)
+        except:    
+            error_msg("pattern_info object =\n  " + repr(pattern_info).replace("\n", "\n  "), 
+                      "assert", 
+                      "get_generator_input()")
 
     
     return inheritance_info_str, pattern_action_pair_list
@@ -188,22 +188,22 @@ def get_generator_input(Mode, match_info_list, PatternDictionary, Setup):
 def __extract_default_action(Mode, pattern_action_pair_info_list, Setup):
 
     code_fragment =  ReferencedCodeFragment(
-	    "std::cout << \"<lexical analyzer: no match on code point 0x\";\n" + \
-	    "std::cout << std::hex << input << std::dec << \">\\n\";\n" + \
-	    "self.send(token::ID_TERMINATION);\n" + \
-	    "return token::ID_TERMINATION;\n",
-	    "<no file>", 0)
+            "std::cout << \"<lexical analyzer: no match on code point 0x\";\n" + \
+            "std::cout << std::hex << input << std::dec << \">\\n\";\n" + \
+            "self.send(token::ID_TERMINATION);\n" + \
+            "return token::ID_TERMINATION;\n",
+            "<no file>", 0)
     i = -1
     for pattern_action_pair in pattern_action_pair_info_list:
-	i += 1
-	if pattern_action_pair.pattern != "<<FAIL>>": continue
+        i += 1
+        if pattern_action_pair.pattern != "<<FAIL>>": continue
 
-	code_fragment =  pattern_action_pair.action
-	del pattern_action_pair_info_list[i]
-	# -- double check that '<<FAIL>>' does not occur twice
-	if "<<FAIL>>" in map(lambda pap: pap.pattern, pattern_action_pair_info_list):
-	    raise "error: <<FAIL>> rule occurs twice. should have been caught py parser."
-	break
+        code_fragment =  pattern_action_pair.action
+        del pattern_action_pair_info_list[i]
+        # -- double check that '<<FAIL>>' does not occur twice
+        if "<<FAIL>>" in map(lambda pap: pap.pattern, pattern_action_pair_info_list):
+            raise "error: <<FAIL>> rule occurs twice. should have been caught py parser."
+        break
 
     return action_code_formatter.do(Mode, code_fragment, Setup, "<<FAIL>>", PatternStateMachine=None)
 

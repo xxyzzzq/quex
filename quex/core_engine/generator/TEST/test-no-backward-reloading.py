@@ -28,6 +28,6 @@ print "## NOTE: The following setup guides the lexer into a buffer reload right 
 print "##       the pre-conditions. No buffer reload backwards is to appear!"
 test_str = "   0xxxxxa lola"
 generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="QuexBuffer", 
-	          QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
-		  NDEBUG_str=NDEBUG_compiler_str)
+                  QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
+                  NDEBUG_str=NDEBUG_compiler_str)
     

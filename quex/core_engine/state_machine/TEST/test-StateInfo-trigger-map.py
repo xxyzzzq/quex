@@ -15,10 +15,10 @@ def test(sm):
     tm = sm.get_trigger_map()
     # (*) print the trigger map entries
     for trigger_interval, target_index in tm:
-	if target_index == None:
-	    print trigger_interval.gnuplot_string(-1) + "\n"
-	else:	
-	    print trigger_interval.gnuplot_string(target_index) + "\n"
+        if target_index == None:
+            print trigger_interval.gnuplot_string(-1) + "\n"
+        else:   
+            print trigger_interval.gnuplot_string(target_index) + "\n"
 
 
 # (*) create a couple of number sets and put them as triggers to four 
@@ -46,7 +46,7 @@ s = StateInfo()
 s.add_transition(NumberSet(Interval(46, 47)), 1L)
 s.add_transition(NumberSet(Interval(48, 49)), 1L)
 test(s)
-	
+        
 # (*) special case: only one interval at all
 s = StateInfo()
 s.add_transition(NumberSet(Interval(46, 47)), 1L)

@@ -5,7 +5,7 @@
 #       from the module state_machine.paralellize.
 import sys
 sys.path.append("../")
-			
+                        
 from core import *
 import paralellize 
 

@@ -30,7 +30,7 @@ db["C++"] = {
     "$then":   ") {",
     "$end":    "}",
     "$<":      "<",
-    "$else":   "else {",						     
+    "$else":   "else {",                                                     
     "$and":    "&&",
     "$==":     "==",
     "$/*":     "//",
@@ -39,15 +39,15 @@ db["C++"] = {
     "$input/get":           "QUEX_STREAM_GET(input);",
     "$input/get-backwards": "QUEX_STREAM_GET_BACKWARDS(input);",
     "$input/tell_position": cpp.__tell_position, 
-    "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",	
+    "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$transition":          cpp.__transition,
     "$label-definition":    cpp.__label_definition,
-    "$acceptance-info":     cpp.__acceptance_info,	
+    "$acceptance-info":     cpp.__acceptance_info,      
     "$analyser-func":       cpp.__analyser_function,
-    "$terminal-code":       cpp.__terminal_states,	
-    "$pre-condition-ok":    cpp.__pre_condition_ok,						     
+    "$terminal-code":       cpp.__terminal_states,      
+    "$pre-condition-ok":    cpp.__pre_condition_ok,                                                  
     "$drop-out":            cpp.__state_drop_out_code
     }
 
@@ -72,14 +72,14 @@ db["Perl"]["$function_def"] = "sub $$function_name$$ {\n    input = shift\n"
 #    
 db["Python"] = {
     "$function_def":  "def $$function_name$$(input):\n",
-    "$function_end":  "\n",						     
+    "$function_end":  "\n",                                                  
     "$if":     "if ",
     "$then":   ":",
     "$end":    "",
     "$<":      "<",
     "$>=":     ">=",
-    "$endif": "",						     
-    "$else":   "else:",						     
+    "$endif": "",                                                    
+    "$else":   "else:",                                              
     "$and":    "and",
     "$==":     "==",
     "$/*":     "#",
@@ -92,7 +92,7 @@ db["Python"] = {
     "$label-definition":  python.__label_definition,
     "$goto-terminate":    python.__goto_terminal_state, 
     "$acceptance-info":   python.__note_acceptance,                    
-    "$label":             "",	
+    "$label":             "",   
     "$drop-out":          python.__state_drop_out_code,
 }
 
@@ -117,11 +117,11 @@ def replace_keywords(program_txt, LanguageDB, NoIndentF):
     txt = blue_print(program_txt, LanguageDB.items())
 
     if NoIndentF == False:
-	# delete the last newline, to prevent additional indentation
-	if txt[-1] == "\n": txt = txt[:-1]
-	# indent by four spaces
-	# (if this happens in recursively called functions nested indented blocks
-	#  are correctly indented, see NumberSet::get_condition_code() for example)	
-	txt = txt.replace("\n", "\n    ") + "\n"
+        # delete the last newline, to prevent additional indentation
+        if txt[-1] == "\n": txt = txt[:-1]
+        # indent by four spaces
+        # (if this happens in recursively called functions nested indented blocks
+        #  are correctly indented, see NumberSet::get_condition_code() for example)     
+        txt = txt.replace("\n", "\n    ") + "\n"
     
-    return txt   	
+    return txt          

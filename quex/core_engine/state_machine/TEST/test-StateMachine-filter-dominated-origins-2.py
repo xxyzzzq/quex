@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from quex.core_engine.state_machine.index import get_state_machine_by_id, \
-     				state_machine_ranking_db_register
+                                state_machine_ranking_db_register
 from quex.core_engine.state_machine.core  import StateMachine, StateInfo, StateOriginInfo
 
 if "--hwut-info" in sys.argv:
@@ -14,14 +14,14 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 def add_origin(StateMachineIdx, StoreInputPositionF,
-	       PostConditionedAcceptanceF=False, PreConditionedStateMachineID=-1L):              
+               PostConditionedAcceptanceF=False, PreConditionedStateMachineID=-1L):              
 
     sm = get_state_machine_by_id(StateMachineIdx)
      
     si.add_origin(StateOriginInfo(long(StateMachineIdx), long(sm.init_state_index), 
-				  StoreInputPositionF, 
-	   		          PostConditionedAcceptanceF, 
-			          PreConditionedStateMachineID))
+                                  StoreInputPositionF, 
+                                  PostConditionedAcceptanceF, 
+                                  PreConditionedStateMachineID))
 
 def add_priority(A, B):
     print "priority: %s > %s" % (repr(A), repr(B))    
@@ -33,16 +33,16 @@ def register_random_priviledges():
            1000 so that they do not interfer with the original ones    
     """
     for i in range(10):
-	X0 = long(random() * 10) + 1000    
-	X1 = long(random() * 10) + 1000    
-	try:    state_machine_ranking_db_register(X0, X1)
-	except: pass
-	try:    state_machine_ranking_db_register(A, X0)
-	except: pass
-	try:    state_machine_ranking_db_register(C, X1)
-	except: pass
-	try:    state_machine_ranking_db_register(E, X0)
-	except: pass
+        X0 = long(random() * 10) + 1000    
+        X1 = long(random() * 10) + 1000    
+        try:    state_machine_ranking_db_register(X0, X1)
+        except: pass
+        try:    state_machine_ranking_db_register(A, X0)
+        except: pass
+        try:    state_machine_ranking_db_register(C, X1)
+        except: pass
+        try:    state_machine_ranking_db_register(E, X0)
+        except: pass
 
 def print_this(Title):    
     print "---------------------------------------------------------------------"
@@ -50,9 +50,9 @@ def print_this(Title):
     print
 
     for origin in si.get_origin_list():
-	acceptance_mark = " "
-	if origin.is_acceptance(): acceptance_mark = "*"
-	print acceptance_mark + repr(origin)
+        acceptance_mark = " "
+        if origin.is_acceptance(): acceptance_mark = "*"
+        print acceptance_mark + repr(origin)
 
     print "---------------------------------------------------------------------"
 

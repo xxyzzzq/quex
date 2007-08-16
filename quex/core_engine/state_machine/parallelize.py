@@ -13,28 +13,28 @@ def do(the_state_machines):
     if type(the_state_machines) != list or len(the_state_machines) == 0:
         raise "expect argument of type non-empty 'list' received:", repr(the_state_machines)
     if map(lambda x: x.__class__.__name__, the_state_machines) != ["StateMachine"] * len(the_state_machines):
-	raise "expected an argument consisting only of objects of State Machines\n" + \
-	      "received:" + repr(map(lambda x: x.__class__.__name__, the_state_machines))
-	      
-    # filter out empty state machines from the consideration	      
+        raise "expected an argument consisting only of objects of State Machines\n" + \
+              "received:" + repr(map(lambda x: x.__class__.__name__, the_state_machines))
+              
+    # filter out empty state machines from the consideration          
     state_machines = filter(lambda sm: not sm.is_empty(), the_state_machines)
 
     def __add_optional_free_pass(result_state_machine,
-	                         TerminationStateIdx=-1):
-        """Add an optional 'free pass' if there was an empty state."""	
-	# if there was an empty state, then the number of elements in the list changed
-	# in case there was an empty state one has to add a 'free pass' from begin to 
-	# the final acceptance state.	
-	if TerminationStateIdx == -1:
-	    acceptance_state_list_set = result_state_machine.get_acceptance_state_list()
-	    if acceptance_state_list_set == []:
-	        raise "resulting state machine has no acceptance state!"
-	    acceptance_state_list = acceptance_state_list_set[0]
-	    TerminationStateIdx   = acceptance_state_list[0]
+                                 TerminationStateIdx=-1):
+        """Add an optional 'free pass' if there was an empty state."""  
+        # if there was an empty state, then the number of elements in the list changed
+        # in case there was an empty state one has to add a 'free pass' from begin to 
+        # the final acceptance state.   
+        if TerminationStateIdx == -1:
+            acceptance_state_list_set = result_state_machine.get_acceptance_state_list()
+            if acceptance_state_list_set == []:
+                raise "resulting state machine has no acceptance state!"
+            acceptance_state_list = acceptance_state_list_set[0]
+            TerminationStateIdx   = acceptance_state_list[0]
 
-	if len(state_machines) != len(the_state_machines):
-	    result_state_machine.add_epsilon_transition(result_state_machine.init_state_index, 
-		    					TerminationStateIdx)
+        if len(state_machines) != len(the_state_machines):
+            result_state_machine.add_epsilon_transition(result_state_machine.init_state_index, 
+                                                        TerminationStateIdx)
         return result_state_machine
 
     if len(state_machines) < 2:
@@ -52,8 +52,8 @@ def do(the_state_machines):
     result = StateMachine()
     for clone in clone_list:
         for start_state_index, states in clone.states.items():        
-	    # DOUBT: is deepcopy necessary at this place?
-	    # ANSWER: it does not harm, because no new state indices are creates
+            # DOUBT: is deepcopy necessary at this place?
+            # ANSWER: it does not harm, because no new state indices are creates
             result.states[start_state_index] = deepcopy(states)
 
     # (*) add additional **init** and **end** state
@@ -72,10 +72,10 @@ def do(the_state_machines):
     #     via epsilon transition.
     for clone in clone_list:
         result.mount_to_initial_state(clone.init_state_index)
-	result.mount_to_acceptance_states(new_terminal_state_index,
-					  CancelStartAcceptanceStateF=True,
-					  RaiseTargetAcceptanceStateF=True,
-					  LeaveStoreInputPositionsF=True)
+        result.mount_to_acceptance_states(new_terminal_state_index,
+                                          CancelStartAcceptanceStateF=True,
+                                          RaiseTargetAcceptanceStateF=True,
+                                          LeaveStoreInputPositionsF=True)
 
 
     return __add_optional_free_pass(result, new_terminal_state_index)

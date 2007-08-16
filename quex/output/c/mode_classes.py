@@ -27,7 +27,7 @@ mode_function_implementation_str = \
 %%EXIT-PROCEDURE%%
     }
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
     $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_on_indentation($$LEXER_CLASS_NAME$$* me, const int Indentation) {
 %%INDENTATION-PROCEDURE%%
@@ -64,7 +64,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     on_entry_str += "assert(me->%s.has_entry_from(FromMode));\n" % mode.name
     on_entry_str += "#endif\n"
     for code_info in code_fragments:
-	on_entry_str += code_info.get()
+        on_entry_str += code_info.get()
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
     # (*) on exit
@@ -113,7 +113,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
                       ["%%HAS_ENTRANCE_FROM%%",         has_entry_from_str],
                       ["%%HAS_EXIT_TO%%",               has_exit_to_str],
                       ["%%MODE_NAME%%",                 mode.name],
-		      ])
+                      ])
     return txt
 
 
@@ -130,13 +130,13 @@ def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
     txt  = "\n"
     txt += "switch( Mode->id ) {\n"
     for mode_name in ThoseModes:
-	txt += "case LEX_ID_%s: return true;\n" % mode_name
+        txt += "case LEX_ID_%s: return true;\n" % mode_name
     txt += "default:\n"
     if ConsiderDerivedClassesF:
-	for mode_name in ThoseModes:
-	    txt += "    if( Mode->has_base(%s) ) return true;\n" % mode_name
+        for mode_name in ThoseModes:
+            txt += "    if( Mode->has_base(%s) ) return true;\n" % mode_name
     else:
-	txt += ";\n"
+        txt += ";\n"
     txt += "}\n"
 
     txt += "#ifdef __QUEX_OPTION_ERROR_OUTPUT_ON_MODE_CHANGE_ERROR\n"

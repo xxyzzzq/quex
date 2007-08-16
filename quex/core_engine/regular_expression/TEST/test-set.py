@@ -10,8 +10,8 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
     
 def test(TestString):
-	print "expression    = \"" + TestString + "\""
-	print "state machine\n", character_set.do(TestString)
+        print "expression    = \"" + TestString + "\""
+        print "state machine\n", character_set.do(TestString)
 
 test("a-z")
 test("ABCDE0-9")

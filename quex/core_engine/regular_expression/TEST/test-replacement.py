@@ -15,8 +15,8 @@ def test(TestString, PatterDict):
 
 pattern_dict = { "DIGIT":      '[0-9]', 
                  "NAME":       '[A-Z][a-z]+', 
-		 "NUMBER":     '{DIGIT}("."{DIGIT}*)?',
-		 "IDENTIFIER": '[_a-z][_a-z0-9]*',
+                 "NUMBER":     '{DIGIT}("."{DIGIT}*)?',
+                 "IDENTIFIER": '[_a-z][_a-z0-9]*',
                  "SPACE":      '[ \t\n]'
 }
 

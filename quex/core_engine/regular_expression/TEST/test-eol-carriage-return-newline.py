@@ -19,7 +19,7 @@ def test_core(TestString):
     print "expression    = \"" + TestString + "\""
     sm = core.do(TestString, DOS_CarriageReturnNewlineF=True)
     if sm == None: 
-	print "pattern syntax error"
+        print "pattern syntax error"
     else:
         print "state machine\n", sm 
         print "begin of line = ", sm.has_trivial_pre_condition_begin_of_line()

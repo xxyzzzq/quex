@@ -30,19 +30,19 @@ def do(UTF8_String):
     new_ucs_letters = []
     i = -1
     while i < len(ucs_letters) - 1:
-	i += 1
-	letter = ucs_letters[i]
-	if letter == ord("\\") and i < len(ucs_letters) - 1 and ucs_letters[i+1] == ord('"'): 
-	    i += 1
-	    letter = ord('"')
-	new_ucs_letters.append(letter)
+        i += 1
+        letter = ucs_letters[i]
+        if letter == ord("\\") and i < len(ucs_letters) - 1 and ucs_letters[i+1] == ord('"'): 
+            i += 1
+            letter = ord('"')
+        new_ucs_letters.append(letter)
 
     ucs_letters = new_ucs_letters
 
     # print "## ucs letters = ", ucs_letters
     state_idx = result.init_state_index
     for letter_code in ucs_letters:
-	state_idx = result.add_transition(state_idx, letter_code)
+        state_idx = result.add_transition(state_idx, letter_code)
 
     # when the last state has trigger it is supposed to end up in 'acceptance'
     result.set_acceptance(state_idx)

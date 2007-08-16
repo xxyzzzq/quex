@@ -17,9 +17,9 @@ print "##sm0", sm0
 print "##sm1", sm1
 print "##sm2", sm2
 sm = sequentialize.do([empty_state_machine, sm0, 
-	               empty_state_machine, sm1, 
-		       empty_state_machine, sm2,
-		       empty_state_machine  ]) 
+                       empty_state_machine, sm1, 
+                       empty_state_machine, sm2,
+                       empty_state_machine  ]) 
 
 print "-------------------------------------------------------------------------------"
 print "##result = ", sm

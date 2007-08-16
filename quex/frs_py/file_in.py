@@ -28,31 +28,31 @@ def skip_whitespace(fh):
         if tmp in [' ', '\t', '\n']: continue
         elif tmp == "": raise "EOF"
 
-	# -- character was not a whitespace character
-	#    => is there a '//' or a '/*' -comment ?
-	tmp2 = fh.read(1)
-	if tmp2 == "": raise "EOF"
+        # -- character was not a whitespace character
+        #    => is there a '//' or a '/*' -comment ?
+        tmp2 = fh.read(1)
+        if tmp2 == "": raise "EOF"
 
-	tmp += tmp2
-	if tmp == "//":   
-	    # skip until '\n'
-	    while tmp != '\n':
-		tmp = fh.read(1)
-		if tmp == "": raise "EOF"
+        tmp += tmp2
+        if tmp == "//":   
+            # skip until '\n'
+            while tmp != '\n':
+                tmp = fh.read(1)
+                if tmp == "": raise "EOF"
 
-	elif tmp == "/*":
-	    # skip until '*/'
-	    previous = " "
-	    while tmp != "":
-		tmp = fh.read(1)
-		if tmp == "": raise "EOF"
-		if previous + tmp == "*/":
-		    break
-		previous = tmp
-	else:
-	    # no whitespace, no comment --> real character
-	    fh.seek(-2, 1)
-	    return                
+        elif tmp == "/*":
+            # skip until '*/'
+            previous = " "
+            while tmp != "":
+                tmp = fh.read(1)
+                if tmp == "": raise "EOF"
+                if previous + tmp == "*/":
+                    break
+                previous = tmp
+        else:
+            # no whitespace, no comment --> real character
+            fh.seek(-2, 1)
+            return                
 
 
 def read_until_whitespace(fh):
@@ -62,17 +62,17 @@ def read_until_whitespace(fh):
         tmp = fh.read(1)
         if   tmp == "": raise "EOF"
         elif tmp in [' ', '\t', '\n']:                     fh.seek(-1, 1); return txt
-	elif previous_tmp == "/" and (tmp in ["*",  "/"]): fh.seek(-2, 1); return txt[:-1]
+        elif previous_tmp == "/" and (tmp in ["*",  "/"]): fh.seek(-2, 1); return txt[:-1]
         txt += tmp
-	previous_tmp = tmp
+        previous_tmp = tmp
 
 def read_until_closing_bracket(fh, Opener, Closer,
                                IgnoreRegions = [ ['"', '"'],      # strings
                                                  ["//", "\n"],    # c++ comments
                                                  ["/*", "*/"] ],  # c comments
-			       SkipClosingDelimiterF = True):			 
+                               SkipClosingDelimiterF = True):                    
     """This function does not eat the closing bracket from the stream.
-    """								    
+    """                                                             
     # print "# # read_until_closing_bracket: ", Opener, ", ", Closer, ", ", IgnoreRegions
 
     open_brackets_n = 1
@@ -82,72 +82,72 @@ def read_until_closing_bracket(fh, Opener, Closer,
     if IgnoreRegions != []: 
         # check for correct type, because this can cause terrible errors
         if type(IgnoreRegions) != list:
-	    raise "read_until_closing_bracket(): argument 'IgnoreRegions' must be of type '[[]]'"
-	for element in IgnoreRegions:					 
+            raise "read_until_closing_bracket(): argument 'IgnoreRegions' must be of type '[[]]'"
+        for element in IgnoreRegions:                                    
             if type(element) != list:
-	        raise "read_until_closing_bracket(): argument 'IgnoreRegions' must be of type '[[]]'"
-						 
-	CacheSz = max(map(lambda delimiter: len(delimiter[0]), IgnoreRegions) + [ CacheSz ])
+                raise "read_until_closing_bracket(): argument 'IgnoreRegions' must be of type '[[]]'"
+                                                 
+        CacheSz = max(map(lambda delimiter: len(delimiter[0]), IgnoreRegions) + [ CacheSz ])
 
     cache = ["\0"] * CacheSz
 
     def match_against_cache(Delimiter):
-	"""Determine wether the string 'Delimiter' is flood into the cache or not."""
-	if len(Delimiter) > len(cache):
-	    raise "error: read_until_closing_bracket() cache smaller than delimiter"
+        """Determine wether the string 'Delimiter' is flood into the cache or not."""
+        if len(Delimiter) > len(cache):
+            raise "error: read_until_closing_bracket() cache smaller than delimiter"
 
-	# delimiter == "" means that it is, in fact, not a delimiter (disabled)    
-	if Delimiter == "": return False
-	L = len(Delimiter)
-	i = -1
-	for letter in Delimiter:
-	    i += 1
-	    if letter != cache[L-i-1]: return False
-	return True
+        # delimiter == "" means that it is, in fact, not a delimiter (disabled)    
+        if Delimiter == "": return False
+        L = len(Delimiter)
+        i = -1
+        for letter in Delimiter:
+            i += 1
+            if letter != cache[L-i-1]: return False
+        return True
 
     # ignore_start_triggers = map(lamda x: x[0], IgnoreRegions)
     while 1 + 1 == 2:
         tmp = fh.read(1)
         txt += tmp
-	cache.insert(0, tmp)  # element 0 last element flood into cache (current)
-	cache.pop(-1)         # element N first element                 (oldest)
+        cache.insert(0, tmp)  # element 0 last element flood into cache (current)
+        cache.pop(-1)         # element N first element                 (oldest)
 
         if tmp == "":         
-	    raise "EOF"
+            raise "EOF"
 
         elif tmp == "\\":       
-	    backslash_f = not backslash_f   # every second backslash switches to 'non-escape char'
-	    continue
+            backslash_f = not backslash_f   # every second backslash switches to 'non-escape char'
+            continue
 
 
-	if not backslash_f:
-	    result = match_against_cache(Opener)
-	    if   match_against_cache(Opener):
-		open_brackets_n += 1
-	    elif match_against_cache(Closer):
-		open_brackets_n -= 1
-		if open_brackets_n == 0: 
-		    # stop accumulating text when the closing delimiter is reached. do not 
-		    # append the closing delimiter to the text. 
-		    txt = txt[:-len(Closer)]
-		    break
+        if not backslash_f:
+            result = match_against_cache(Opener)
+            if   match_against_cache(Opener):
+                open_brackets_n += 1
+            elif match_against_cache(Closer):
+                open_brackets_n -= 1
+                if open_brackets_n == 0: 
+                    # stop accumulating text when the closing delimiter is reached. do not 
+                    # append the closing delimiter to the text. 
+                    txt = txt[:-len(Closer)]
+                    break
 
-	backslash_f = False
+        backslash_f = False
 
         for delimiter in IgnoreRegions:
-	    # If the start delimiter for ignored regions matches the strings recently in flooded into
-	    # the cache, then read until the end of the region that is to be ignored.
-	    if match_against_cache(delimiter[0]): 
-		## print "##cache = ", cache
-		txt += read_until_closing_bracket(fh, "", delimiter[1], IgnoreRegions=[]) 
-		txt += delimiter[1]
-		# the 'ignore region info' may contain information about with what the
-		# closing delimiter is to be replaced
-		## print "##ooo", txt
-		# flush the cache
-		cache = ["\0"] * CacheSz
-		break
-		
+            # If the start delimiter for ignored regions matches the strings recently in flooded into
+            # the cache, then read until the end of the region that is to be ignored.
+            if match_against_cache(delimiter[0]): 
+                ## print "##cache = ", cache
+                txt += read_until_closing_bracket(fh, "", delimiter[1], IgnoreRegions=[]) 
+                txt += delimiter[1]
+                # the 'ignore region info' may contain information about with what the
+                # closing delimiter is to be replaced
+                ## print "##ooo", txt
+                # flush the cache
+                cache = ["\0"] * CacheSz
+                break
+                
     return txt
 
 def read_until_character(fh, Character):
@@ -179,7 +179,7 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
             if Verbose: return txt, EndMarkers.index(tmp)
             else:       return txt
         txt += tmp
-	
+        
 def read_until_line_contains(in_fh, LineContent):
     L = len(LineContent)
 
@@ -318,26 +318,26 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False):
         prefix = "command line"
     if fh == "assert":
         if type(LineN) != str: 
-	    error_msg("3rd argument needs to be a string,\n" + \
-		      "if message type == 'assert'", "assert", 
-		      "file_in.error_msg()")
-	file_name = LineN    
-	prefix = "internal assert:" + file_name + ":"   
+            error_msg("3rd argument needs to be a string,\n" + \
+                      "if message type == 'assert'", "assert", 
+                      "file_in.error_msg()")
+        file_name = LineN    
+        prefix = "internal assert:" + file_name + ":"   
     else:
-	if type(fh) == str:
-	    line_n = LineN
-	    Filename = fh 
-	else:
-	    if fh != None:
-		line_n   = get_current_line_info_number(fh)
-		Filename = fh.name
-	    else:
-		line_n = -1
-		Filename = ""
-	prefix = "%s:%i:error" % (Filename, line_n + 1)   
-	
+        if type(fh) == str:
+            line_n = LineN
+            Filename = fh 
+        else:
+            if fh != None:
+                line_n   = get_current_line_info_number(fh)
+                Filename = fh.name
+            else:
+                line_n = -1
+                Filename = ""
+        prefix = "%s:%i:error" % (Filename, line_n + 1)   
+        
     for line in split(ErrMsg, "\n"):
-	print prefix + ": %s" % line
+        print prefix + ": %s" % line
 
     if not DontExitF: sys.exit(-1)
 

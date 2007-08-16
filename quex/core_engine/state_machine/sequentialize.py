@@ -19,11 +19,11 @@ def do(the_state_machines, LeaveIntermediateAcceptanceStatesF=False):
     if type(the_state_machines) != list or len(the_state_machines) == 0:
         raise "expect argument of type non-empty 'list' received:", repr(the_state_machines)
     if map(lambda x: x.__class__.__name__, the_state_machines) != ["StateMachine"] * len(the_state_machines):
-	raise "expected an argument consisting only of objects of State Machines\n" + \
-	      "received:" + repr(map(lambda x: x.__class__.__name__, the_state_machines))
+        raise "expected an argument consisting only of objects of State Machines\n" + \
+              "received:" + repr(map(lambda x: x.__class__.__name__, the_state_machines))
     # state machines with no states can be deleted from the list. they do not do anything
-    # and do not introduce triggers.	      
-    state_machines = filter(lambda sm: not sm.is_empty(), the_state_machines)	      
+    # and do not introduce triggers.          
+    state_machines = filter(lambda sm: not sm.is_empty(), the_state_machines)         
    
     if len(state_machines) < 2:
         if len(state_machines) < 1: return StateMachine()
@@ -45,10 +45,10 @@ def do(the_state_machines, LeaveIntermediateAcceptanceStatesF=False):
     #           take over all transitions of a start index into the result without
     #           considering interferences (see below)
     for next_clone in clone_list[1:]:
-	# mount on every success state the initial state of the following state
-	# machine via epsilon transition
+        # mount on every success state the initial state of the following state
+        # machine via epsilon transition
         result.mount_to_acceptance_states(next_clone.init_state_index, 
-					  CancelStartAcceptanceStateF = not LeaveIntermediateAcceptanceStatesF)
+                                          CancelStartAcceptanceStateF = not LeaveIntermediateAcceptanceStatesF)
         for start_state_index, states in next_clone.states.items():        
             result.states[start_state_index] = deepcopy(states)
         
