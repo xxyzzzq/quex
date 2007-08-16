@@ -4,8 +4,8 @@ from copy import copy
 import sys
 
 from GetPot import GetPot
-from frs_py.string_handling import trim
-from quex.frs_py.file_in    import open_file_or_die, error_msg
+from quex.frs_py.string_handling import trim
+from quex.frs_py.file_in         import open_file_or_die, error_msg
 
 class something:
     pass
