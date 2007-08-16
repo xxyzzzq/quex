@@ -2,7 +2,7 @@ rm -f test-forward-get test-misc-I test-misc-II test-misc-III test-backward-get
 rm -f *.o
 <no file 'TITLE.hwut'>
 DIR:  ./demo/TEST
-DATE: Thu Aug 16 08:06:07 2007
+DATE: Thu Aug 16 21:29:08 2007
 
 
  -- demo/000:
@@ -36,7 +36,7 @@ DATE: Thu Aug 16 08:06:07 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/TEST
-DATE: Thu Aug 16 08:06:20 2007
+DATE: Thu Aug 16 21:29:20 2007
 
     Prepare Pattern Information for Code Generation
     test-coder-get_generator_input.py .......................................[OK]
@@ -52,7 +52,7 @@ Input Buffer Tests
 Frank-Rene Schaefer
 
 DIR:  ./quex/code_base/buffer/TEST
-DATE: Thu Aug 16 08:06:20 2007
+DATE: Thu Aug 16 21:29:21 2007
 make: test-misc-II
 make: test-misc-III
 make: test-forward-get
@@ -91,7 +91,7 @@ make: test-backward-get
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/buffer/iconv/TEST
-DATE: Thu Aug 16 08:06:22 2007
+DATE: Thu Aug 16 21:29:23 2007
 make: n-beat
 make: one-beat
 
@@ -113,7 +113,7 @@ rm -f test-simple test-simple-2
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/template/TEST
-DATE: Thu Aug 16 08:06:22 2007
+DATE: Thu Aug 16 21:29:23 2007
 make: test-simple
 make: test-simple-2
 
@@ -135,7 +135,7 @@ make: test-simple-2
 Number Set Operations and UTF-8 Encoding
 
 DIR:  ./quex/core_engine/TEST
-DATE: Thu Aug 16 08:06:25 2007
+DATE: Thu Aug 16 21:29:25 2007
 
 
  -- NumberSet:
@@ -166,7 +166,7 @@ DATE: Thu Aug 16 08:06:25 2007
 Code Generation
 
 DIR:  ./quex/core_engine/generator/TEST
-DATE: Thu Aug 16 08:06:25 2007
+DATE: Thu Aug 16 21:29:25 2007
 
 
  -- Pre- and Post- Conditions:
@@ -246,7 +246,7 @@ DATE: Thu Aug 16 08:06:25 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/regular_expression/TEST
-DATE: Thu Aug 16 08:06:54 2007
+DATE: Thu Aug 16 21:29:51 2007
 
     alternative expressions
     test-alternatives.py ....................................................[OK]
@@ -287,7 +287,7 @@ DATE: Thu Aug 16 08:06:54 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/state_machine/TEST
-DATE: Thu Aug 16 08:06:57 2007
+DATE: Thu Aug 16 21:29:54 2007
 
 
  -- StateMachine:
@@ -375,7 +375,7 @@ DATE: Thu Aug 16 08:06:57 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/frs_py/TEST
-DATE: Thu Aug 16 08:07:17 2007
+DATE: Thu Aug 16 21:30:13 2007
 
 
  -- file_in/read_until_closing_bracket:
