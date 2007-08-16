@@ -6,7 +6,7 @@ from GetPot import GetPot
 import quex.frs_py.file_in  as file_in
 import quex.lexer_mode      as lexer_mode
 
-from frs_py.string_handling import blue_print
+from quex.frs_py.string_handling import blue_print
 
 
 class Setup:
