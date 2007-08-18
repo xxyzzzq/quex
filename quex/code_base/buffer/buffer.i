@@ -227,7 +227,7 @@ namespace quex {
 	    //    the buffer. 
 	    assert(LoadedN == (size_t)backward_distance);
 #else
-	    __load_corethis->content_begin(), backward_distance);  // avoid unused LoadedN
+	    __load_core(this->content_begin(), backward_distance);  // avoid unused LoadedN
 #endif
 	    // -- end of file / end of buffer:
 	    if( this->_end_of_file_p ) {
