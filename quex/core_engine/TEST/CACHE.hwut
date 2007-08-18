@@ -15,8 +15,9 @@ RESULT:   OK;
 NumberSet:Difference
 RESULT:   OK;
 =====
-1180879172L  ./test-NumberSet-condition-code.py.bak
-0 1.8
+-1L  test-NumberSet-condition-code.py
+NumberSet:Condition Code Generation
+RESULT:   OK;
 =====
 -1L  test-utf8-UCS-to-UTF8.py
 Utf8-Module:Map UTF8 String To Unicode Values
@@ -30,9 +31,8 @@ RESULT:   OK;
 NumberSet:Union
 RESULT:   OK;
 =====
--1L  test-NumberSet-condition-code.py
-NumberSet:Condition Code Generation
-RESULT:   OK;
+1180879172L  ./test-NumberSet-condition-code.py.bak
+0 1.8
 =====
 1180879172L  ./test-NumberSet-inverse.py.bak
 # write output in temporary file:'tmp'

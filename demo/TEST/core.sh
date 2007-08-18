@@ -9,21 +9,15 @@
 # (C) 2006 Frank-Rene Schäfer
 #
 #______________________________________________________________________
-if [[ $1 == "QuexCore" ]]; then
-    makefile_name=Makefile
-fi
-if [[ $1 == "FlexCore" ]]; then
-    makefile_name=Makefile.flex_core
-fi
 cd $QUEX_PATH/demo/$2
 pwd
-echo "makefile =" $makefile_name
+echo "makefile =" Makefile
 echo "cleaning ..."
-make -f $makefile_name clean >& /dev/null
+make clean >& /dev/null
 echo "building ..."
-make -f $makefile_name       >& /dev/null
+make       >& /dev/null
 echo "executing ..."
 ./lexer
 echo "cleaning ..."
-make -f $makefile_name clean >& /dev/null
+make clean >& /dev/null
 
