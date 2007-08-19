@@ -343,7 +343,6 @@ class StateInfo:
             result = result.union(self.__epsilon.trigger_set)
         return result
 
-
     def get_trigger_set(self, TargetIdx=None):
         """Returns all triggers that lead to target 'TargetIdx'. If a trigger 'None' is returned
            it means that the epsilon transition triggers to target state. If the TargetIndex is 
@@ -747,7 +746,6 @@ class StateInfo:
             Trigger = copy(self.__epsilon.trigger_set)
             self.__epsilon.trigger_set = NumberSet()
             
-
         # (*) Append Transition: StartState --- Trigger ---> TargetState
         #
         #     -- ensure that for a given target state and 'raise-succes-action', there is only

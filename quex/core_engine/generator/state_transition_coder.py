@@ -102,24 +102,8 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
         #     If the input falls into this interval the target trigger is identified!
-        #     
-        #     -- target state != None, then the machine is still eating
-        #                                   => transition to subsequent state.
-        #
-        #     -- target state == None, drop into a terminal state.
-        #
-        #     for details about $transition, see the __transition() function of the
-        #     respective language module.
-        #
-        target_state_index = TriggerMap[0][1]       
-        #
-        txt += "%s" % LanguageDB["$transition"](StateMachineName, 
-                                                StateIdx,
-                                                state.is_acceptance(),
-                                                target_state_index,
-                                                state.get_origin_list(),
-                                                BackwardLexingF) 
-        txt += "    $/* %s $*/" % TriggerMap[0][0].get_utf8_string()
+        txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
+                                        LanguageDB, BackwardLexingF)
         
     else:    
         # two or more intervals => cut in the middle
@@ -130,19 +114,122 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
              # input < 0 is impossible, since unicode codepoints start at 0!
              txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
                                       StateMachineName, StateIdx, BackwardLexingF=BackwardLexingF)
-        else:
-            if middle[0].begin < 0:
-                raise "code generation: error cannot split intervals at negative code points."
 
-            txt += "$if input $< %s $then\n" % repr(middle[0].begin)
-            txt += __get_code(state,TriggerMap[:MiddleTrigger_Idx], LanguageDB, 
-                    StateMachineName, StateIdx, BackwardLexingF=BackwardLexingF)
-            txt += "$end$else\n"
-            txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
-                    StateMachineName, StateIdx, BackwardLexingF=BackwardLexingF)
-            txt += "$end\n" 
+        elif TriggerSetN == 2:
+             txt += __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
+                                            LanguageDB, BackwardLexingF)
+
+        elif TriggerSetN == 3:
+             txt += __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
+                                              LanguageDB, BackwardLexingF)
+
+        else:
+            txt += __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, 
+                                      StateMachineName, StateIdx, state, BackwardLexingF)
         
     # return program text for given language
     return languages.replace_keywords(txt, LanguageDB, NoIndentF=False)
+
+
+def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry, 
+                             LanguageDB, BackwardLexingF, IndentF=False):
+    """Creates the transition code to a given target based on the information in
+       the trigger map entry.
+    """
+    interval           = TriggerMapEntry[0]
+    target_state_index = TriggerMapEntry[1]       
+    #  target state != None, then the machine is still eating
+    #                        => transition to subsequent state.
+    #
+    #  target state == None, drop into a terminal state (defined by origins).
+    #
+    #  for details about $transition, see the __transition() function of the
+    #  respective language module.
+    #
+    txt = "%s" % LanguageDB["$transition"](StateMachineName, 
+                                           StateIdx,
+                                           state.is_acceptance(),
+                                           target_state_index,
+                                           state.get_origin_list(),
+                                           BackwardLexingF) 
+    txt += "    $/* %s $*/" % interval.get_utf8_string()
+
+    if IndentF: txt = "    " + txt.replace("\n", "\n    ")
+    return txt
+        
+def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
+                            LanguageDB, BackwardLexingF):
+
+    if len(TriggerMap) != 2:
+        raise "__bracket_two_intervals(): requires TriggerMap with two intervals."
+
+    interval_idx = -1  # default: no interval of size '1'
+
+    for i in range(2):
+        interval = TriggerMap[i][0]
+        if interval.size() == 1: interval_idx = i; break
+
+    # interval_idx = -1
+    if   interval_idx == 0: txt = "$if input $== %s $then\n" % repr(TriggerMap[0][0].begin)
+    elif interval_idx == 1: txt = "$if input $!= %s $then\n" % repr(TriggerMap[1][0].begin)
+    else:                   txt = "$if input $< %s $then\n"  % repr(TriggerMap[1][0].begin)
+
+    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
+                                    LanguageDB, BackwardLexingF, IndentF=True)
+    txt += "$end$else\n"
+    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[1], 
+                                    LanguageDB, BackwardLexingF, IndentF=True)
+    txt += "$end\n" 
+
+    return txt
+
+def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
+                              LanguageDB, BackwardLexingF):
+    if len(TriggerMap) != 3:
+        raise "__bracket_three_intervals(): requires TriggerMap with three intervals."
+
+    # does one interval have the size '1'?
+    size_one_map = [False, False, False]   # size_on_map[i] == True if interval 'i' has size '1'
+    for i in range(len(TriggerMap)):
+        interval = TriggerMap[i][0]
+        if interval.size() == 1: size_one_map[i] = True
+
+    # (*) special trick only hold for one single case:
+    #     -- the interval in the middle has size 1
+    #     -- the outer two intervals trigger to the same target state
+    # if size_one_map != [False, True, False] or TriggerMap[0][1] == TriggerMap[2][0]:
+    return __bracket_normally(1, TriggerMap, LanguageDB, 
+                              StateMachineName, StateIdx, state, BackwardLexingF)
+
+    # (*) test: inner character is matched => goto its target
+    #           else:                      => goto alternative target
+    txt = "$if input $== %s $then\n" % repr(TriggerMap[1][0].begin)
+    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[1], 
+                                             LanguageDB, BackwardLexingF, IndentF=True)
+    txt += "$end$else\n"
+    # TODO: Add somehow a mechanism to report that here the intervals 0 **and** 1 are triggered
+    #       (only for the comments in the generated code)
+    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
+                                    LanguageDB, BackwardLexingF, IndentF=True)
+    txt += "$end\n" 
+    return txt
+
+def __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, StateMachineName, StateIdx, state, BackwardLexingF):
+
+    middle = TriggerMap[MiddleTrigger_Idx]
+    if middle[0].begin < 0:
+        raise "code generation: error cannot split intervals at negative code points."
+
+    txt  = "$if input $< %s $then\n" % repr(middle[0].begin)
+    txt += __get_code(state,TriggerMap[:MiddleTrigger_Idx], LanguageDB, 
+                      StateMachineName, StateIdx, BackwardLexingF)
+    txt += "$end$else\n"
+    txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
+                      StateMachineName, StateIdx, BackwardLexingF)
+    txt += "$end\n" 
+
+    return txt
+
+
 
 

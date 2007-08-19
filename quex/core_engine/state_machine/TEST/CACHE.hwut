@@ -19,16 +19,17 @@ RESULT:   OK;
 StateMachine:Cloning
 RESULT:   OK;
 =====
--1L  test-parallelize-trace-origin.py
-Tracing origin:Paralellization
+-1L  test-count_newline_n.py
+Predetermined Character Count:Newlines
 RESULT:   OK;
 =====
 -1L  test-StateMachine-inverse.py
 StateMachine Operations:Inverse
 RESULT:   OK;
 =====
-1180163876L  ./test-StateMachine-trace-origin-inverse.py.bak
-
+-1L  test-repeat-pure.py
+StateMachine Operations:Repetitions Kleene closure 0 or arbitrary repetitions
+RESULT:   OK;
 =====
 1180163857L  ./test-StateMachine-epsilon-closure.py.bak
 
@@ -37,9 +38,8 @@ RESULT:   OK;
 StateMachine Operations:Repetition with min and max repetition numbers
 RESULT:   OK;
 =====
--1L  test-StateMachine-hopcroft-optimization.py
-DFA:Hopcroft optimization (minimize state set)
-RESULT:   OK;
+1180163867L  ./test-StateMachine-hopcroft-optimization.py.bak
+
 =====
 1180163849L  ./test-StateMachine-clone.py.bak
 
@@ -48,8 +48,8 @@ RESULT:   OK;
 StateMachine Operations:Paralell
 RESULT:   OK;
 =====
--1L  test-StateMachine-trace-origin-hopcroft-optimization.py
-Tracing origin:Hopcroft optimization (minimize state set)
+-1L  test-StateMachine-trace-origin-create-DFA.py
+Tracing origin:NFA to DFA (subset construction)
 RESULT:   OK;
 =====
 1180163854L  ./test-StateMachine-elementary_trigger_sets-2.py.bak
@@ -86,12 +86,12 @@ RESULT:   OK;
 1180163844L  ./test-setup_pre_condition.py.bak
 
 =====
--1L  test-count_contains_only_spaces.py
-Predetermined Character Count:Contains only Spaces
-RESULT:   OK;
-=====
 -1L  test-StateInfo-has_trigger.py
 Trigger Set Check:Has Trigger
+RESULT:   OK;
+=====
+-1L  test-count_contains_only_spaces.py
+Predetermined Character Count:Contains only Spaces
 RESULT:   OK;
 =====
 -1L  test-StateMachine-filter-dominated-origins.py
@@ -105,22 +105,19 @@ RESULT:   OK;
 NFA:Epsilon closure (single state)
 RESULT:   OK;
 =====
--1L  test-repeat-pure.py
-StateMachine Operations:Repetitions Kleene closure 0 or arbitrary repetitions
+-1L  test-parallelize-trace-origin.py
+Tracing origin:Paralellization
 RESULT:   OK;
 =====
--1L  test-count_newline_n.py
-Predetermined Character Count:Newlines
+1180163876L  ./test-StateMachine-trace-origin-inverse.py.bak
+
+=====
+-1L  test-StateMachine-hopcroft-optimization.py
+DFA:Hopcroft optimization (minimize state set)
 RESULT:   OK;
 =====
-1180163792L  ./test-repeat-pure.py.bak
-
-=====
-1180163867L  ./test-StateMachine-hopcroft-optimization.py.bak
-
-=====
--1L  test-StateMachine-trace-origin-create-DFA.py
-Tracing origin:NFA to DFA (subset construction)
+-1L  test-StateMachine-trace-origin-hopcroft-optimization.py
+Tracing origin:Hopcroft optimization (minimize state set)
 RESULT:   OK;
 =====
 -1L  test-StateMachine-elementary_trigger_sets-2.py
@@ -135,6 +132,9 @@ RESULT:   OK;
 
 =====
 1180163871L  ./test-StateMachine-trace-origin-create-DFA.py.bak
+
+=====
+1180163792L  ./test-repeat-pure.py.bak
 
 =====
 -1L  test-StateMachine-create-DFA.py

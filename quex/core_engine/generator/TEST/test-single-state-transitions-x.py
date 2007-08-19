@@ -13,6 +13,7 @@
 ################################################################################
 import sys
 import os
+import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.interval_handling import NumberSet, Interval
@@ -21,26 +22,27 @@ from quex.core_engine.state_machine.core import StateInfo
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
 if "--hwut-info" in sys.argv:
-    print "Single State: Transition Code Generation"
+    print "Single State: Extensive Transition Code Generation"
     sys.exit(0)
 
-state = StateInfo()
-state.add_transition(NumberSet([Interval(10,20),    Interval(195,196)]),  1L)
-state.add_transition(NumberSet([Interval(51,70),    Interval(261,280)]),  2L)
-state.add_transition(NumberSet([Interval(90,100),   Interval(110,130)]),  3L)
-state.add_transition(NumberSet([Interval(150,151),  Interval(151,190)]),  4L)
-state.add_transition(NumberSet([Interval(190,195),  Interval(21,30)]),    5L) 
-state.add_transition(NumberSet([Interval(197, 198), Interval(198, 198)]), 6L)
-state.add_transition(NumberSet([Interval(200,230),  Interval(231,240)]),  7L)
-state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71,71)]),  8L)
 
+# Create a large number of intervals with sizes 1 to 4. 
+state = StateInfo()
+interval_start = 0
+interval_end   = -1
+# initialize pseudo random generator: produces always the same numbers.
+random.seed(110270)   # must set the seed for randomness, otherwise system time
+#                     # is used which is no longer deterministic.
+for i in range(300):
+    interval_end = interval_start + int(random.random() * 4) + 1
+    state.add_transition(Interval(interval_start, interval_end), long(i % 24))
+    interval_start = interval_end
 
 function = "def example_func(input):\n" + state_transition_coder.do("Python", "", state, -1, False)
-# print "#" + function.replace("\n", "\n#")
 exec(function)
 
 differences = []    
-for number in range(300):
+for number in range(interval_end):
     result_state_idx = state.get_result_state_index(number)
     if result_state_idx == None: result_state_idx = -1
     sys.stdout.write("%i %s %s\n" % (number, repr(example_func(number)), repr(result_state_idx)))

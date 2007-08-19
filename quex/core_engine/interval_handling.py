@@ -159,6 +159,9 @@ class Interval:
             if self.end   != sys.maxint:  result.append(Interval(self.end, sys.maxint))
             return result
 
+    def size(self):
+        return self.end - self.begin
+
     def __repr__(self):
         return "[" + repr(self.begin) + ", " + repr(self.end) + ")"
 
