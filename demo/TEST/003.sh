@@ -5,19 +5,12 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 
-if [[ $1 == "BPC=2_NDEBUG" ]]; then
-    args="DNDEBUG BYTES_PER_CHARACTER=2"
-fi
-if [[ $1 == "BPC=2_DEBUG" ]]; then
-    args="BYTES_PER_CHARACTER=2"
-fi
-if [[ $1 == "BPC=4" ]]; then
-    args="BYTES_PER_CHARACTER=4"
-fi
-if [[ $1 == "BPC=4_NDEBUG" ]]; then
-    args="NDEBUG BYTES_PER_CHARACTER=4"
-fi
-if [[ $1 == "BPC=wchar_t" ]]; then
-    args="BYTES_PER_CHARACTER=wchar_t"
-fi
+case $1 in
+"BPC=2" )        args="BYTES_PER_CHARACTER=2" ;;
+"BPC=2_NDEBUG" ) args="NDEBUG BYTES_PER_CHARACTER=2" ;;
+"BPC=4" )        args="BYTES_PER_CHARACTER=4" ;;
+"BPC=4_NDEBUG" ) args="NDEBUG BYTES_PER_CHARACTER=4" ;;
+"BPC=wchar_t" )  args="BYTES_PER_CHARACTER=wchar_t" ;;
+esac
+
 source core.sh 003 $args 
