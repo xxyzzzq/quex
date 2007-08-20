@@ -197,15 +197,17 @@ def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
     # (*) special trick only hold for one single case:
     #     -- the interval in the middle has size 1
     #     -- the outer two intervals trigger to the same target state
-    # if size_one_map != [False, True, False] or TriggerMap[0][1] == TriggerMap[2][0]:
-    return __bracket_normally(1, TriggerMap, LanguageDB, 
-                              StateMachineName, StateIdx, state, BackwardLexingF)
+    target_state_0 = TriggerMap[0][1]
+    target_state_2 = TriggerMap[2][1]
+    if size_one_map != [False, True, False] or target_state_0 != target_state_2:
+        return __bracket_normally(1, TriggerMap, LanguageDB, 
+                                  StateMachineName, StateIdx, state, BackwardLexingF)
 
     # (*) test: inner character is matched => goto its target
     #           else:                      => goto alternative target
     txt = "$if input $== %s $then\n" % repr(TriggerMap[1][0].begin)
     txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[1], 
-                                             LanguageDB, BackwardLexingF, IndentF=True)
+                                    LanguageDB, BackwardLexingF, IndentF=True)
     txt += "$end$else\n"
     # TODO: Add somehow a mechanism to report that here the intervals 0 **and** 1 are triggered
     #       (only for the comments in the generated code)

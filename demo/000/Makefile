@@ -3,7 +3,6 @@
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
 
-
 # (*) SETUP ____________________________________________________________________
 #
 # QUEX_PATH    = ../../ # there should be an environment variable 'QUEX_PATH'
@@ -11,7 +10,6 @@
 #
 # -- INPUT
 MODE_FILES   = simple.qx
-DEBUG_F      = # --debug # set flag if debugging info is required
 #
 # -- APPLICATION / LIBRARY specification
 APPLICATION_NAME = lexer
@@ -34,8 +32,8 @@ LIBRARY_OBJS     = $(ENGINE_NAME).o
 # (*) COMPILER SETTINGS ________________________________________________________
 #
 # -- compiler
-CC = g++ -c -fPIC -ggdb -Wno-deprecated -Wall         \
-	 -I./ -I$(QUEX_PATH)                          \
+CC = g++ -c -fPIC -ggdb -Wno-deprecated -Wall  \
+	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)   
 
 # -- linker
 LD         = g++ -ggdb 

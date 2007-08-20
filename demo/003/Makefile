@@ -13,7 +13,6 @@ endif
 #
 # -- INPUT
 MODE_FILES   = simple.qx
-DEBUG_F      = # --debug # set flag if debugging info is required
 #
 # -- APPLICATION / LIBRARY specification
 APPLICATION_NAME = lexer
@@ -37,7 +36,7 @@ LIBRARY_OBJS     = $(ENGINE_NAME).o
 #
 # -- compiler
 CC = g++ -c -fPIC -Wno-deprecated -Wall \
-	 -I./  -I$(QUEX_PATH) \
+	 -I./  -I$(QUEX_PATH) $(NDEBUG_F) \
 	 -D___QUEX_UNIT_TESTING___ -ggdb
 
 # -- linker
