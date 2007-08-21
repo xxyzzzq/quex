@@ -251,17 +251,43 @@ namespace quex {
 	// (*) Version information
 	const char* version() const; // created by quex for version/date information
 
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+	class __include_stack {
+	    struct state {
+		quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
+#               ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+		int     indentation;
+		bool    indentation_count_enabled_f;
+		bool    indentation_event_enabled_f;
+#               endif
+#               ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+		int     column_number_at_end;           // column after current pattern
+#               endif
+#               ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+		int     line_number_at_end;             // line after current pattern
+#               endif
+	    };
+	    std::vector<state>  _stack;
 
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+	public:
+	    template <class InputHandle> 
+            void   push(InputHandle*);
+	    void   push_file(const QUEX_LEXEME_CHARACTER_TYPE*);
+	    void   pop();
+	} include_stack;
+#   endif   
+
+#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     private: 
-	int  _line_number_at_begin;    // line where current pattern starts
+	int  _line_number_at_begin;   // line where current pattern starts
 	int  _line_number_at_end;     // line after current pattern
     public:  
 	int  line_number() const          { return line_number_at_begin(); }
 	int  line_number_at_begin() const { return _line_number_at_begin; }
 	int  line_number_at_end() const   { return _line_number_at_end; }
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#   endif
+
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
     private: 
 	int  _column_number_at_begin;  // column where current pattern starts
 	int  _column_number_at_end;   // column after current pattern
@@ -269,7 +295,7 @@ namespace quex {
 	int  column_number() const          { return column_number_at_begin(); }
 	int  column_number_at_begin() const { return _column_number_at_begin; }
 	int  column_number_at_end() const   { return _column_number_at_end; }
-#endif
+#   endif
 
 	//________________________________________________________________________________
 	// Post Categorization of Lexemes:
@@ -418,9 +444,10 @@ namespace quex {
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 	// (*) Python-like indentation support ___________________________________________
     private:	
-	int     _indentation;
-	bool    _indentation_count_enabled_f;
-	bool    _indentation_event_enabled_f;
+	int     _indentation;                 // number of columns to first non-whitespace
+	//                                    // in the current line.
+	bool    _indentation_count_enabled_f; // count whitespace for indentation?
+	bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
     public:
 	void    disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 #endif 
@@ -904,20 +931,65 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
     CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE ToBeAppended)
     { 
 
-#if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
-    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
+#       if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
+           defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
 	if( _accumulated_text.length() == 0 ) {
-#     ifndef  QUEX_OPTION_NO_COLUMN_NUMBER_COUNTING
+#           ifndef  QUEX_OPTION_NO_COLUMN_NUMBER_COUNTING
 	    _begin_column = _the_lexer->column_number_at_begin();
-#     endif
-#     ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+#           endif
+#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
 	    _begin_line   = _the_lexer->line_number_at_begin();
-#     endif
+#           endif
 	}
-#endif
+#       endif
 
 	_accumulated_text += ToBeAppended; 
     }
+
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    template <class InputHandle> inline void	
+    CLASS::__include_stack::push(InputHandle* new_input_handle_p) 
+    {
+	_stack.push_back(CLASS::__include_stack::state());
+	CLASS::__include_stack::state*  current = _stack.top();
+	
+        current->buffer_p = this->the_buffer;
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+	current->indentation                 = this->_indentation;
+	current->indentation_count_enabled_f = this->_indentation_count_enabled_f;
+        current->indentation_event_enabled_f = this->_indentation_event_enabled_f;
+#       endif
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	current->line_number_at_end   = this->_line_number_at_end;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	current->column_number_at_end = this->_column_number_at_end;
+#       endif
+	       
+    }	
+    // template <class InputHandle> inline void	
+    // CLASS::__include_stack::push(InputHandle* new_input_handle_p) 
+    inline void	
+    CLASS::__include_stack::pop() 
+    {
+	CLASS::__include_stack::state*  previous = _stack.top();
+
+        this->the_buffer = previous->buffer_p;
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+	this->_indentation                 = previous->indentation;
+	this->_indentation_count_enabled_f = previous->indentation_count_enabled_f;
+        this->_indentation_event_enabled_f = previous->indentation_event_enabled_f;
+#       endif
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	this->_line_number_at_end   = previous->line_number_at_end;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	this->_column_number_at_end = previous->column_number_at_end;
+#       endif
+
+	_stack.pop_back();
+    }
+#   endif
 
 #undef CLASS
 
