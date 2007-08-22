@@ -50,6 +50,14 @@
 %%SWITCH%% QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #endif
 
+// -- Include Stack Support:
+//    Easy handling of include files/streams via 'push' and 'pop'
+//    Turn this off, if you do not use 'inclusion' in your files and
+//    you want to save some bytes.
+#ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+%%SWITCH%% QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#endif
+
 #ifndef     QUEX_SETTING_BUFFER_SIZE
 #    define QUEX_SETTING_BUFFER_SIZE  65536
 #endif
@@ -252,29 +260,25 @@ namespace quex {
 	const char* version() const; // created by quex for version/date information
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-	class __include_stack {
-	    struct state {
-		quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
-#               ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
-		int     indentation;
-		bool    indentation_count_enabled_f;
-		bool    indentation_event_enabled_f;
-#               endif
-#               ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-		int     column_number_at_end;           // column after current pattern
-#               endif
-#               ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-		int     line_number_at_end;             // line after current pattern
-#               endif
-	    };
-	    std::vector<state>  _stack;
+	struct memento {
+	    quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
+#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	    int     indentation;
+	    bool    indentation_count_enabled_f;
+	    bool    indentation_event_enabled_f;
+#           endif
+#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	    int     column_number_at_end;           // column after current pattern
+#           endif
+#           ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	    int     line_number_at_end;             // line after current pattern
+#           endif
+	};
+	std::vector<memento>  _include_stack;
 
-	public:
-	    template <class InputHandle> 
-            void   push(InputHandle*);
-	    void   push_file(const QUEX_LEXEME_CHARACTER_TYPE*);
-	    void   pop();
-	} include_stack;
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, const char* IConvInputCodingName = 0x0);
+	bool   include_stack_pop();
 #   endif   
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -948,46 +952,70 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
     template <class InputHandle> inline void	
-    CLASS::__include_stack::push(InputHandle* new_input_handle_p) 
+    CLASS::include_stack_push(InputHandle* new_input_handle_p, 
+			      const char* IConvInputCodingName /* = 0x0 */) 
     {
-	_stack.push_back(CLASS::__include_stack::state());
-	CLASS::__include_stack::state*  current = _stack.top();
+	_include_stack.push_back(CLASS::memento());
+	CLASS::memento&  current = _include_stack.back();
 	
-        current->buffer_p = this->the_buffer;
+        // (1) saving the current state of the lexical analyzer (memento pattern)
+        current.buffer_p = this->__buffer;
+	std::cout << "push: " << (long)(this->__buffer) << std::endl;
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-	current->indentation                 = this->_indentation;
-	current->indentation_count_enabled_f = this->_indentation_count_enabled_f;
-        current->indentation_event_enabled_f = this->_indentation_event_enabled_f;
+	current.indentation                 = this->_indentation;
+	current.indentation_count_enabled_f = this->_indentation_count_enabled_f;
+        current.indentation_event_enabled_f = this->_indentation_event_enabled_f;
 #       endif
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-	current->line_number_at_end   = this->_line_number_at_end;
+	current.line_number_at_end   = this->_line_number_at_end;
 #       endif
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-	current->column_number_at_end = this->_column_number_at_end;
+	current.column_number_at_end = this->_column_number_at_end;
 #       endif
-	       
+
+	// (2) initializing the new state of the lexer for reading the new input file/stream
+	QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(new_input_handle_p, IConvInputCodingName);
+	QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	_indentation                 = 0;
+	_indentation_count_enabled_f = false;
+	_indentation_event_enabled_f = true;
+#endif
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+	_line_number_at_begin = 0;
+	_line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	_column_number_at_begin = 0;
+	_column_number_at_end   = 1; 
+#endif
     }	
-    // template <class InputHandle> inline void	
-    // CLASS::__include_stack::push(InputHandle* new_input_handle_p) 
-    inline void	
-    CLASS::__include_stack::pop() 
-    {
-	CLASS::__include_stack::state*  previous = _stack.top();
 
-        this->the_buffer = previous->buffer_p;
+    inline bool
+    CLASS::include_stack_pop() 
+    {
+	if( _include_stack.empty() ) return false;
+
+	CLASS::memento&  previous = _include_stack.back();
+
+        this->__buffer = previous.buffer_p;
+	std::cout << "popped: " << (long)(this->__buffer) << std::endl;
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-	this->_indentation                 = previous->indentation;
-	this->_indentation_count_enabled_f = previous->indentation_count_enabled_f;
-        this->_indentation_event_enabled_f = previous->indentation_event_enabled_f;
+	this->_indentation                 = previous.indentation;
+	this->_indentation_count_enabled_f = previous.indentation_count_enabled_f;
+        this->_indentation_event_enabled_f = previous.indentation_event_enabled_f;
 #       endif
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-	this->_line_number_at_end   = previous->line_number_at_end;
+	this->_line_number_at_end   = previous.line_number_at_end;
 #       endif
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-	this->_column_number_at_end = previous->column_number_at_end;
+	this->_column_number_at_end = previous.column_number_at_end;
 #       endif
 
-	_stack.pop_back();
+	_include_stack.pop_back();
+
+	return true;
     }
 #   endif
 

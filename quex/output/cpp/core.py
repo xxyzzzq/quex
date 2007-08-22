@@ -138,6 +138,7 @@ def do(Modes, setup):
     txt = set_switch(txt, setup.output_debug_f,    "QUEX_OPTION_DEBUG_TOKEN_SENDING")
     txt = set_switch(txt, setup.output_debug_f,    "QUEX_OPTION_DEBUG_MODE_TRANSITIONS")
     txt = set_switch(txt, setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
+    txt = set_switch(txt, True,                    "QUEX_OPTION_INCLUDE_STACK_SUPPORT")
     txt = set_switch(txt, not setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
     
