@@ -61,7 +61,7 @@ void
 QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me, 
 	                       QUEX_CHARACTER_TYPE*         InputStartPosition,
 			       quex::buffer_core<QUEX_CHARACTER_TYPE>* the_buffer,
-			       QUEX_MODE_FUNCTION_P                    TheInitianAnalyserFunctionP) 
+			       QUEX_MODE_FUNCTION_P                    TheInitialAnalyserFunctionP) 
 {
     /* Provide a string object 'Lexeme' and an integer 'LexemeL' to support
      ** further treatment inside the action.
@@ -81,7 +81,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
      */
     me->char_covered_by_terminating_zero = '\0'; 
     me->__buffer = the_buffer;
-    me->__current_mode_analyser_function_p = TheInitianAnalyserFunctionP;
+    me->__current_mode_analyser_function_p = TheInitialAnalyserFunctionP;
     // me->__buffer->seek_streampos(InputStartPosition);     
 #ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION    
     me->begin_of_line_f = 1;

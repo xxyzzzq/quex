@@ -1,4 +1,5 @@
 PROGRAMS = test-forward-get \
+	   test-forward-get-2 \
 	   test-misc-I test-misc-II test-misc-III \
 	   test-backward-get \
 	   # test-backward-get-2 \
@@ -17,13 +18,7 @@ all: $(PROGRAMS)
 hwut-info:
 	@echo $(PROGRAMS)
 
-test-misc-I: test-misc-I.o misc-core.o
-	g++ $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< misc-core.o -o $@
-
-test-misc-III: test-misc-III.o misc-core.o
-	g++ -I./  -I../../ $(DEBUGF) $(OPTF) $< misc-core.o -o $@
-
-test-misc-II: test-misc-II.o misc-core.o
+test-misc-%: test-misc-%.o misc-core.o
 	g++ $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< misc-core.o -o $@
 
 %.o: %.cpp 

@@ -11,7 +11,7 @@ int
 main(int argc, char** argv)
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-	std::cout << "Forward Iteration\n";
+	std::cout << "Forward Iteration: Multiple Loads.\n";
 	std::cout << "CHOICES: Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2\n";
 	return 1;
     }

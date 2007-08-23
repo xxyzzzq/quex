@@ -84,6 +84,11 @@
 #    endif
 #endif
 
+// 
+//   Begin of line pre-condition introduces an extra flag in the buffer
+//   structure. Only out-comment this in case of tough memory restrictions,
+//   if no begin of line pre-condition is required.
+%%SWITCH%% __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
 namespace quex {
     class $$LEXER_CLASS_NAME$$;
@@ -109,7 +114,7 @@ typedef int QUEX_ANALYSER_RETURN_TYPE;
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
 typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;        
-typedef $$QUEX_LEXEME_TYPE$$  QUEX_LEXEME_CHARACTER_TYPE;        
+typedef $$QUEX_LEXEME_TYPE$$     QUEX_LEXEME_CHARACTER_TYPE;        
 // IConv Coding Name for the internally used character coding. 
 //   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
 //   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
@@ -209,29 +214,29 @@ namespace quex {
 	/* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);
 
     public:
-  	$$LEXER_CLASS_NAME$$(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
+	$$LEXER_CLASS_NAME$$(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
 	$$LEXER_CLASS_NAME$$(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
 	$$LEXER_CLASS_NAME$$(FILE* input_fh,               const char* IConvInputCodingName = 0x0);
 
-  	virtual ~$$LEXER_CLASS_NAME$$();
+	virtual ~$$LEXER_CLASS_NAME$$();
 	//
 	// -- token stream: read next token
-  	%%TOKEN_CLASS%%::id_type   get_token(%%TOKEN_CLASS%%* p_result);
+	%%TOKEN_CLASS%%::id_type   get_token(%%TOKEN_CLASS%%* p_result);
 	
 	//
 	// (*) Mode handling
 	//
 	//     -- modes: read access
-  	quex_mode&    mode();
-  	const int     mode_id() const;
-  	const char*   mode_name() const;
+	quex_mode&    mode();
+	const int     mode_id() const;
+	const char*   mode_name() const;
 	//
 	//     -- modes: changing lexical analysis mode
-  	void        set_mode_brutally(const int        LexerMode);
+	void        set_mode_brutally(const int        LexerMode);
 	void        set_mode_brutally(const quex_mode& Mode);
 	//
-  	void        operator<<(const int MODE_ID);               // not to be used in concatination
-  	void        operator<<(/* NOT const*/ quex_mode& Mode);  // not to be used in concatination
+	void        operator<<(const int MODE_ID);               // not to be used in concatination
+	void        operator<<(/* NOT const*/ quex_mode& Mode);  // not to be used in concatination
 	//
 	void        pop_mode();
 	void        pop_drop_mode();
@@ -262,7 +267,13 @@ namespace quex {
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 	struct memento {
 	    quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
-#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	    QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
+            QUEX_MODE_FUNCTION_P     current_mode_analyser_function_p;
+	    bool                     continue_analysis_after_adapting_mode_function_p_f;
+#           ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+	    int                      begin_of_line_f; 
+#           endif
+#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 	    int     indentation;
 	    bool    indentation_count_enabled_f;
 	    bool    indentation_event_enabled_f;
@@ -277,7 +288,11 @@ namespace quex {
 	std::vector<memento>  _include_stack;
 
 	template <class InputHandle> 
-	void   include_stack_push(InputHandle*, const char* IConvInputCodingName = 0x0);
+	void   include_stack_push(InputHandle*, const char* IConvInputCodingName = 0x0,
+				  const int MODE_ID = -1);
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, const char* IConvInputCodingName = 0x0,
+				  QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction = 0x0);
 	bool   include_stack_pop();
 #   endif   
 
@@ -371,14 +386,14 @@ namespace quex {
 	void  count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement);
 
 	void  __count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
-	             		      QUEX_CHARACTER_TYPE* Begin,
-	             		      QUEX_CHARACTER_TYPE* End, 
-	             		      const bool       LicenseToCountF);
+				      QUEX_CHARACTER_TYPE* Begin,
+				      QUEX_CHARACTER_TYPE* End, 
+				      const bool       LicenseToCountF);
 
 	void  __count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration, 
-	             				         QUEX_CHARACTER_TYPE* Begin,
-	             				         QUEX_CHARACTER_TYPE* End,
-	             				         const bool       LicenseToCountF);
+							 QUEX_CHARACTER_TYPE* Begin,
+							 QUEX_CHARACTER_TYPE* End,
+							 const bool       LicenseToCountF);
 #    endif 
 	void  __count_assert_consistency();
 
@@ -388,9 +403,9 @@ namespace quex {
 					  QUEX_CHARACTER_TYPE* Begin);
 
 	QUEX_CHARACTER_TYPE* __count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
-							        QUEX_CHARACTER_TYPE* End,
-							        const int    LexemeLength,
-							        const bool   LicenseToIncrementLineCountF=false);
+								QUEX_CHARACTER_TYPE* End,
+								const int    LexemeLength,
+								const bool   LicenseToIncrementLineCountF=false);
 
 	//      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
@@ -689,7 +704,7 @@ namespace quex {
     
     inline void    
     CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) {
-	                             /* NOT const */ quex_mode& SourceMode = mode();
+				     /* NOT const */ quex_mode& SourceMode = mode();
   
         /* To be optimized aways if its function body is empty (see above) */
 	__debug_print_transition(&SourceMode, &TargetMode);  
@@ -952,15 +967,34 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
     template <class InputHandle> inline void	
-    CLASS::include_stack_push(InputHandle* new_input_handle_p, 
-			      const char* IConvInputCodingName /* = 0x0 */) 
+    CLASS::include_stack_push(InputHandle*   new_input_handle_p, 
+			      const char*    IConvInputCodingName /* = 0x0 */,
+			      const int      MODE_ID /* = -1 */) 
+    {
+        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+	assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < %%MAX_MODE_CLASS_N%% + 1));
+	if( MODE_ID == -1 ) 
+	    include_stack_push(new_input_handle_p, IConvInputCodingName);	
+        else
+	    include_stack_push(new_input_handle_p, IConvInputCodingName, mode_db[MODE_ID]->analyser_function);
+    }
+    template <class InputHandle> inline void	
+    CLASS::include_stack_push(InputHandle*         new_input_handle_p, 
+			      const char*          IConvInputCodingName      /* = 0x0 */,
+			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction /* = 0x0 */) 
     {
 	_include_stack.push_back(CLASS::memento());
 	CLASS::memento&  current = _include_stack.back();
 	
         // (1) saving the current state of the lexical analyzer (memento pattern)
         current.buffer_p = this->__buffer;
-	std::cout << "push: " << (long)(this->__buffer) << std::endl;
+	current.char_covered_by_terminating_zero = this->char_covered_by_terminating_zero;
+        current.current_mode_analyser_function_p = this->__current_mode_analyser_function_p ;
+	current.continue_analysis_after_adapting_mode_function_p_f = \
+                                  this->__continue_analysis_after_adapting_mode_function_p_f;
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+	current.begin_of_line_f = this->begin_of_line_f; 
+#       endif
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 	current.indentation                 = this->_indentation;
 	current.indentation_count_enabled_f = this->_indentation_count_enabled_f;
@@ -975,7 +1009,10 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 	// (2) initializing the new state of the lexer for reading the new input file/stream
 	QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(new_input_handle_p, IConvInputCodingName);
-	QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
+	if( StartModeAnalyzerFunction == 0 ) 
+	    QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
+	else
+	    QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 	_indentation                 = 0;
@@ -1000,7 +1037,13 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 	CLASS::memento&  previous = _include_stack.back();
 
         this->__buffer = previous.buffer_p;
-	std::cout << "popped: " << (long)(this->__buffer) << std::endl;
+	this->char_covered_by_terminating_zero    = previous.char_covered_by_terminating_zero;
+	this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;
+	this->__continue_analysis_after_adapting_mode_function_p_f = \
+                                previous.continue_analysis_after_adapting_mode_function_p_f;
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+	this->begin_of_line_f = previous.begin_of_line_f; 
+#       endif
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 	this->_indentation                 = previous.indentation;
 	this->_indentation_count_enabled_f = previous.indentation_count_enabled_f;
