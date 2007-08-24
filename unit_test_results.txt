@@ -1,6 +1,6 @@
 <no file 'TITLE.hwut'>
 DIR:  ./demo/TEST
-DATE: Mon Aug 20 19:18:34 2007
+DATE: Fri Aug 24 08:14:01 2007
 
 
  -- demo/000:
@@ -29,6 +29,11 @@ DATE: Mon Aug 20 19:18:34 2007
            BPC=4 ............................................................[OK]
            BPC=4_NDEBUG .....................................................[OK]
            BPC=wchar_t ......................................................[OK]
+    Including Files
+    005.sh 1 ................................................................[OK]
+           1_NDEBUG .........................................................[OK]
+           2 ................................................................[OK]
+           2_NDEBUG .........................................................[OK]
 ---------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -39,7 +44,7 @@ DATE: Mon Aug 20 19:18:34 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/TEST
-DATE: Mon Aug 20 19:19:32 2007
+DATE: Fri Aug 24 08:15:11 2007
 
     Prepare Pattern Information for Code Generation
     test-coder-get_generator_input.py .......................................[OK]
@@ -55,23 +60,29 @@ Input Buffer Tests
 Frank-Rene Schaefer
 
 DIR:  ./quex/code_base/buffer/TEST
-DATE: Mon Aug 20 19:19:32 2007
+DATE: Fri Aug 24 08:15:11 2007
+make: test-forward-get-2
 make: test-misc-II
 make: test-misc-III
-make: test-forward-get
-make: test-misc-I
 make: test-backward-get
+make: test-misc-I
+make: test-forward-get
 
     Backwards Iteration
     test-backward-get Normal ................................................[OK]
                       EOFC=1_BOFC=2_BLC=0 ...................................[OK]
                       EOFC=1_BOFC=0_BLC=2 ...................................[OK]
                       EOFC=0_BOFC=1_BLC=2 ...................................[OK]
-    Forward Iteration
+
+ -- Forward Iteration:
+
+    Multiple Loads.
     test-forward-get Normal .................................................[OK]
                      EOFC=1_BOFC=2_BLC=0 ....................................[OK]
                      EOFC=1_BOFC=0_BLC=2 ....................................[OK]
                      EOFC=0_BOFC=1_BLC=2 ....................................[OK]
+    EOF at first load.
+    test-forward-get-2 ......................................................[OK]
 
  -- Miscenllaneous Scenarios:
 
@@ -81,7 +92,13 @@ make: test-backward-get
     Content Size = 11, Fallback Size = 1
     test-misc-II istream ....................................................[OK]
                  stdio ......................................................[OK]
-    Content Size = 11, Fallback Size = 0
+    Content Size = 11, Fallbacrm -f test-forward-get test-forward-get-2 test-misc-I test-misc-II test-misc-III test-backward-get 
+rm -f *.o
+rm -f one-beat n-beat
+rm -f *.o
+rm -f real-code.cpp
+rm -f test-simple test-simple-2
+k Size = 0
     test-misc-III istream ...................................................[OK]
                   stdio .....................................................[OK]
 ---------------------------------------------------------------------------------
@@ -89,18 +106,12 @@ make: test-backward-get
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
 | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___rm -f test-forward-get test-misc-I test-misc-II test-misc-III test-backward-get 
-rm -f *.o
-rm -f one-beat n-beat
-rm -f *.o
-rm -f real-code.cpp
-rm -f test-simple test-simple-2
-|\__| (_)
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/buffer/iconv/TEST
-DATE: Mon Aug 20 19:19:35 2007
+DATE: Fri Aug 24 08:15:16 2007
 make: n-beat
 make: one-beat
 
@@ -118,7 +129,7 @@ make: one-beat
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/template/TEST
-DATE: Mon Aug 20 19:19:36 2007
+DATE: Fri Aug 24 08:15:16 2007
 make: test-simple
 make: test-simple-2
 
@@ -140,7 +151,7 @@ make: test-simple-2
 Number Set Operations and UTF-8 Encoding
 
 DIR:  ./quex/core_engine/TEST
-DATE: Mon Aug 20 19:19:38 2007
+DATE: Fri Aug 24 08:15:17 2007
 
 
  -- NumberSet:
@@ -171,7 +182,7 @@ DATE: Mon Aug 20 19:19:38 2007
 Code Generation
 
 DIR:  ./quex/core_engine/generator/TEST
-DATE: Mon Aug 20 19:19:38 2007
+DATE: Fri Aug 24 08:15:18 2007
 
 
  -- Pre- and Post- Conditions:
@@ -253,7 +264,7 @@ DATE: Mon Aug 20 19:19:38 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/regular_expression/TEST
-DATE: Mon Aug 20 19:20:19 2007
+DATE: Fri Aug 24 08:15:59 2007
 
     alternative expressions
     test-alternatives.py ....................................................[OK]
@@ -294,7 +305,7 @@ DATE: Mon Aug 20 19:20:19 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/state_machine/TEST
-DATE: Mon Aug 20 19:20:22 2007
+DATE: Fri Aug 24 08:16:03 2007
 
 
  -- StateMachine:
@@ -382,7 +393,7 @@ DATE: Mon Aug 20 19:20:22 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/frs_py/TEST
-DATE: Mon Aug 20 19:20:40 2007
+DATE: Fri Aug 24 08:16:21 2007
 
 
  -- file_in/read_until_closing_bracket:

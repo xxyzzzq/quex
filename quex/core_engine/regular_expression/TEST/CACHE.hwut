@@ -21,6 +21,10 @@ RESULT:   OK;
 state machine pattern matching
 RESULT:   OK;
 =====
+-1L  test-pre-and-post-condition.py
+Conditional Analysis:pre- and post-conditions
+RESULT:   OK;
+=====
 -1L  test-set.py
 map character *range* to state machine
 RESULT:   OK;
@@ -43,10 +47,6 @@ RESULT:   OK;
 =====
 -1L  test-post-condition.py
 Conditional Analysis:post conditions
-RESULT:   OK;
-=====
--1L  test-pre-and-post-condition.py
-Conditional Analysis:pre- and post-conditions
 RESULT:   OK;
 =====
 -1L  test-eol-carriage-return-newline.py

@@ -60,7 +60,6 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
             
     return txt + func + "\n"
 
-
 def __get_line_and_column_counting(PatternStateMachine):
 
     txt  = "self.__count_shift_end_values_to_start_values();\n"

@@ -288,11 +288,14 @@ namespace quex {
 	std::vector<memento>  _include_stack;
 
 	template <class InputHandle> 
-	void   include_stack_push(InputHandle*, const char* IConvInputCodingName = 0x0,
-				  const int MODE_ID = -1);
+	void   include_stack_push(InputHandle*, const int MODE_ID = -1, 
+                                  const char* IConvInputCodingName = 0x0);
 	template <class InputHandle> 
-	void   include_stack_push(InputHandle*, const char* IConvInputCodingName = 0x0,
-				  QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction = 0x0);
+	void   include_stack_push(InputHandle*, const quex_mode&,
+                                  const char* IConvInputCodingName = 0x0);
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+                                  const char* IConvInputCodingName);
 	bool   include_stack_pop();
 #   endif   
 
@@ -967,22 +970,34 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
     template <class InputHandle> inline void	
+    CLASS::include_stack_push(InputHandle*      new_input_handle_p, 
+			      const quex_mode&  mode, 
+			      const char*       IConvInputCodingName /* = 0x0 */)
+    {
+        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+        include_stack_push(new_input_handle_p, mode.analyser_function, IConvInputCodingName);
+    }
+    template <class InputHandle> inline void	
     CLASS::include_stack_push(InputHandle*   new_input_handle_p, 
-			      const char*    IConvInputCodingName /* = 0x0 */,
-			      const int      MODE_ID /* = -1 */) 
+			      const int      MODE_ID /* = -1 */, 
+			      const char*    IConvInputCodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
 	assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < %%MAX_MODE_CLASS_N%% + 1));
 	if( MODE_ID == -1 ) 
-	    include_stack_push(new_input_handle_p, IConvInputCodingName);	
+	    include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName);	
         else
-	    include_stack_push(new_input_handle_p, IConvInputCodingName, mode_db[MODE_ID]->analyser_function);
+	    include_stack_push(new_input_handle_p, mode_db[MODE_ID]->analyser_function, IConvInputCodingName);
     }
     template <class InputHandle> inline void	
     CLASS::include_stack_push(InputHandle*         new_input_handle_p, 
-			      const char*          IConvInputCodingName      /* = 0x0 */,
-			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction /* = 0x0 */) 
+			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+			      const char*          IConvInputCodingName)
     {
+        assert(StartModeAnalyzerFunction != 0x0);
+        assert(new_input_handle_p != 0x0);
+        // IConvInputCodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
+
 	_include_stack.push_back(CLASS::memento());
 	CLASS::memento&  current = _include_stack.back();
 	
@@ -1009,10 +1024,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 	// (2) initializing the new state of the lexer for reading the new input file/stream
 	QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(new_input_handle_p, IConvInputCodingName);
-	if( StartModeAnalyzerFunction == 0 ) 
-	    QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
-	else
-	    QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 	_indentation                 = 0;

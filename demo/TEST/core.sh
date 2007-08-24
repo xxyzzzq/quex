@@ -22,7 +22,7 @@ make clean   >& /dev/null
 echo "make $arg1 $3"
 make  $arg1 $3 >& /dev/null
 echo "executing ..."
-./lexer
+./lexer $args_to_lexer
 echo "cleaning ..."
 make clean   >& /dev/null
 

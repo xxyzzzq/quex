@@ -189,7 +189,7 @@ def __extract_default_action(Mode, pattern_action_pair_info_list, Setup):
 
     code_fragment =  ReferencedCodeFragment(
             "std::cout << \"<lexical analyzer: no match on code point 0x\";\n" + \
-            "std::cout << std::hex << input << std::dec << \">\\n\";\n" + \
+            "std::cout << std::hex << (int)input << std::dec << \">\\n\";\n" + \
             "self.send(token::ID_TERMINATION);\n" + \
             "return token::ID_TERMINATION;\n",
             "<no file>", 0)
