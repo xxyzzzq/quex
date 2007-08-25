@@ -26,7 +26,6 @@ def do(Modes, setup):
 
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
-    print "##", setup.bytes_per_ucs_code_point
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
                                 "wchar_t": "wchar_t" }[setup.bytes_per_ucs_code_point]
     quex_lexeme_type_str    = { 1: "char    ", 2: "int16_t",  4: "int32_t",  

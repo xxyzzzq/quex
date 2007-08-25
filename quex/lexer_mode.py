@@ -126,14 +126,15 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     
 class Match:
-    def __init__(self, Pattern="", Action="",
+    def __init__(self, Pattern, Action, PatternStateMachine,
                  IL = None,
                  PatternIdx=0,
                  PriorityMarkF=False, DeletionF=False,
                  Filename="", LineN=-1):
 
-        self.pattern           = Pattern
-        self.action            = ReferencedCodeFragment(Action, Filename, LineN)
+        self.pattern               = Pattern
+        self.pattern_state_machine = PatternStateMachine
+        self.action                = ReferencedCodeFragment(Action, Filename, LineN)
         # depth of inheritance where the pattern occurs
         self.inheritance_level = IL
         # position in the list where the pattern occured in the mode itself
@@ -212,6 +213,7 @@ class LexMode:
         self.on_entry       = ReferencedCodeFragment()
         self.on_exit        = ReferencedCodeFragment()
         self.on_match       = ReferencedCodeFragment()
+        self.on_failure     = ReferencedCodeFragment()
         self.on_indentation = ReferencedCodeFragment()
 
         # A flag indicating wether the mode has gone trough
@@ -222,59 +224,40 @@ class LexMode:
         """Collect all 'on_entry' event handlers from all base classes.
            Returns list of 'ReferencedCodeFragment'.
         """
-        if self.on_entry.line_n == -1: code_fragments = []
-        else:                          code_fragments = [ self.on_entry ]
-
-        for base_mode_name in self.base_modes:
-            # -- get 'on_entry' handler from the base mode
-            base_mode = mode_db[base_mode_name]
-            code_fragments.extend(base_mode.on_entry_code_fragments(Depth+1))
-
-        # reverse the order, so that the lowest base class appears first
-        if Depth==0: code_fragments.reverse()
-
-        return code_fragments
+        return self.__collect_fragments("on_entry")
 
     def on_exit_code_fragments(self, Depth=0):
         """Collect all 'on_exit' event handlers from all base classes.
            Returns list of 'ReferencedCodeFragment'.
         """
-        if self.on_exit.line_n == -1: code_fragments = []
-        else:                         code_fragments = [ self.on_exit ]
-
-        for base_mode_name in self.base_modes:
-            # -- get 'on_exit' handler from the base mode
-            base_mode = mode_db[base_mode_name]
-            code_fragments.extend(base_mode.on_exit_code_fragments(Depth+1))
-
-        # reverse the order, so that the lowest base class appears first
-        if Depth==0: code_fragments.reverse()
-
-        return code_fragments
+        return self.__collect_fragments("on_exit")
 
     def on_indentation_code_fragments(self, Depth=0):
         """Collect all 'on_indentation' event handlers from all base classes.
            Returns list of 'ReferencedCodeFragment'.
         """
-        if self.on_indentation.line_n == -1: code_fragments = []
-        else:                         code_fragments = [ self.on_indentation ]
-
-        for base_mode_name in self.base_modes:
-            # -- get 'on_indentation' handler from the base mode
-            base_mode = mode_db[base_mode_name]
-            code_fragments.extend(base_mode.on_indentation_code_fragments(Depth+1))
-
-        # reverse the order, so that the lowest base class appears first
-        if Depth==0: code_fragments.reverse()
-
-        return code_fragments
+        return self.__collect_fragments("on_indentation")
 
     def on_match_code_fragments(self, Depth=0):
-        """Collect all 'on_indentation' event handlers from all base classes.
+        """Collect all 'on_match' event handlers from all base classes.
            Returns list of 'ReferencedCodeFragment'.
         """
-        if self.on_match.line_n == -1: code_fragments = []
-        else:                          code_fragments = [ self.on_match ]
+        return self.__collect_fragments("on_match")
+
+    def on_failure_code_fragments(self, Depth=0):
+        """Collect all 'on_failure' event handlers from all base classes.
+           Returns list of 'ReferencedCodeFragment'.
+        """
+        return self.__collect_fragments("on_failure")
+
+    def __collect_fragments(self, FragmentName, Depth=0):
+        """Collect all event handlers with the given FragmentName from all base classes.
+           Returns list of 'ReferencedCodeFragment'.
+        """
+        if self.__dict__[FragmentName].line_n == -1:
+            code_fragments = []
+        else:      
+            code_fragments = [ self.__dict__[FragmentName] ]
 
         for base_mode_name in self.base_modes:
             # -- get 'on_match' handler from the base mode

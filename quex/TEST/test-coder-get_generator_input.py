@@ -4,8 +4,9 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core                       as coder
-import quex.core_engine.generator.core as generator
+import quex.core                                as coder
+import quex.core_engine.regular_expression.core as regex
+import quex.core_engine.generator.core          as generator
 from   quex.lexer_mode                 import Match, LexMode
 
 
@@ -19,6 +20,7 @@ def create_Match_object(match_info):
 
     return Match(match_info[0], 
                  "std::cout << \"%s\" << std::endl;\n" % match_info[1],
+                 regex.do(match_info[0]),
                  inheritance_level) 
 
 pattern_action_pair_list = [
@@ -31,7 +33,6 @@ pattern_action_pair_list = [
 match_list = map(lambda x: create_Match_object(x), 
                  pattern_action_pair_list)
 
-pattern_dict = { "DIGIT": "[0-9]" }
 class pseudo_setup:
     def __init__(self):
         self.output_debug_f                = False
@@ -43,7 +44,7 @@ Setup = pseudo_setup()
 
 Mode = LexMode("TEST", "", 0)
 
-inheritance_info, generator_input = coder.get_generator_input(Mode, match_list, pattern_dict, Setup)
+inheritance_info, generator_input = coder.get_generator_input(Mode, match_list, Setup)
 
 print "/*\n" + inheritance_info + "*/\n"
 

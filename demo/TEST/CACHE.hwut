@@ -12,7 +12,7 @@ CHOICES:  BPC=2, BPC=2_NDEBUG, BPC=4, BPC=4_NDEBUG, BPC=wchar_t;
 RESULT:   OK, OK, OK, OK, OK;
 =====
 -1L  005.sh
-demo/003:Including Files
+demo/005:Including Files
 CHOICES:  1, 1_NDEBUG, 2, 2_NDEBUG;
 RESULT:   OK, OK, OK, OK;
 =====

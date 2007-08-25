@@ -1,7 +1,15 @@
 import quex.core_engine.state_machine.character_counter as counter
 from quex.core_engine.interval_handling import NumberSet
 
-def do(Mode, CodeFragment, Setup, SafePatternStr, PatternStateMachine):
+def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateMachine, DefaultActionF=False):
+
+    if type(CodeFragment_or_CodeFragments) == list:
+        if DefaultActionF == False:
+            raise "action code formatting: Multipled Code Fragments can only be specified for default action."
+        CodeFragementList = CodeFragment_or_CodeFragments
+    else:
+        CodeFragment = CodeFragment_or_CodeFragments
+
     txt = "{"
     txt += "\n"
 
@@ -19,7 +27,12 @@ def do(Mode, CodeFragment, Setup, SafePatternStr, PatternStateMachine):
         txt += '<< ") %s: %s \'" << Lexeme << "\'\\n";\n' % (Mode.name, SafePatternStr)
         txt += '#endif\n'
         
-    txt += CodeFragment.get("C") + "\n}"
+    if DefaultActionF == False: 
+        txt += CodeFragment.get("C") + "\n}"
+    else:                       
+        for code_info in Mode.on_failure_code_fragments():
+            txt += code_info.get("C")
+        txt += "\n}"
 
     return txt
 

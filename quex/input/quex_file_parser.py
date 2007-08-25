@@ -19,7 +19,8 @@ import subprocess
 from   quex.frs_py.file_in          import *
 from   quex.frs_py.string_handling  import trim
 from   quex.token_id_maker          import TokenInfo
-import quex.lexer_mode              as     lexer_mode
+import quex.lexer_mode                          as lexer_mode
+import quex.core_engine.regular_expression.core as regex
 
 
 def do(file_list, Setup):
@@ -268,9 +269,12 @@ def parse_mode_definition(fh, Setup):
     # NOTE: constructor does register this mode in the mode_db
     new_mode  = lexer_mode.LexMode(mode_name, fh.name, get_current_line_info_number(fh))
 
-    # (*) inherited modes
+    # (*) inherited modes / options
     skip_whitespace(fh)
     dummy, k = read_until_letter(fh, [":", "{"], Verbose=1)
+
+    if k != 1 and k != 0:
+        error_message("missing ':' or '{' after mode '%s'" % mode_name, fh)
 
     if k == 0:
         # ':' => inherited modes/options follow
@@ -293,10 +297,6 @@ def parse_mode_definition(fh, Setup):
                 content, i = read_until_letter(fh, ["<", "{"], Verbose=True)
                 if i != 0: break
 
-    elif k != 1:
-        error_message("missing ':' or '{' after mode '%s'" % mode_name, fh)
-        
-    
     # (*) read in pattern-action pairs
     pattern_i = -1
     while 1 + 1 == 2:
@@ -309,50 +309,22 @@ def parse_mode_definition(fh, Setup):
                 error_msg("mode '%s' does not contain any pattern" % new_mode.name, fh)
             break
 
-        elif word == "on_entry":
-            # Event: enter into mode
-            parse_unique_code_fragment(fh, "%s::on_entry event handler" % new_mode.name, new_mode.on_entry)
-            continue
-        
-        elif word == "on_exit":
-            # Event: exit from mode
-            parse_unique_code_fragment(fh, "%s::on_exit event handler" % new_mode.name, new_mode.on_exit)
-            continue
+        result = check_for_event_specification(word, fh, new_mode)
+        if result == True: continue
+        pattern = result
 
-        elif word == "on_match":
-            # Event: exit from mode
-            parse_unique_code_fragment(fh, "%s::on_match event handler" % new_mode.name, new_mode.on_match)
-            continue
-
-        elif  word == "on_indentation":
-            # Event: start of indentation, 
-            #        first non-whitespace after whitespace
-            parse_unique_code_fragment(fh, "%s::on_indentation event handler" % new_mode.name, 
-                                       new_mode.on_indentation)
-            continue
-
-        elif word == "on_end_of_stream": 
-            # Event: End of data stream / end of file
-            # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
-            #       patterns are entered here, even if later versions of quex might dismiss
-            #       those rule deefinitions in favor of consistent event handlers.
-            pattern = "<<EOF>>"
-
-        elif word == "on_failure":
-            # Event: No pattern matched for current position.
-            # NOTE: See 'on_end_of_stream' comments.
-            pattern = "<<FAIL>>"
-
-        elif len(word) >= 3 and word[:3] == "on_":    
-            error_msg("unknown event handler '%s'. known event handlers are:\n" % word + \
-                      "on_entry, on_exit, on_indentation, on_end_of_stream, on_failure. on_match\n" + \
-                      "note, that any pattern starting with 'on_' is considered an event handler.\n" + \
-                      "use double quotes to bracket patterns that start with 'on_'", fh)
-        else:
-            pattern = word
+        try:
+            # adapt pattern dictionary: -- this may be superfluous if the it was organized differently
+            pattern_dictionary = {}
+            for item in lexer_mode.shorthand_db.values():
+                pattern_dictionary[item.name] = item.regular_expression         
+            pattern_state_machine = regex.do(pattern, pattern_dictionary, 
+                                             Setup.begin_of_stream_code, Setup.end_of_stream_code,
+                                             DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
+        except:
+            error_msg("error in regular expression")
 
         skip_whitespace(fh)
-
         word = read_next_word(fh)
 
         if word == "PRIORITY-MARK":
@@ -362,7 +334,7 @@ def parse_mode_definition(fh, Setup):
             # when inheritance is resolved this pattern does not override
             # any pattern below, however, it determines the 'position in the
             # list where this pattern occurs.'
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", PatternIdx=pattern_i,
+            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, PatternIdx=pattern_i,
                                                          PriorityMarkF = True)
 
         elif word == "DELETION":
@@ -371,7 +343,7 @@ def parse_mode_definition(fh, Setup):
             #
             # this mark deletes any pattern that was inherited
             # with the same 'name'
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", PatternIdx=pattern_i,
+            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, PatternIdx=pattern_i,
                                                          DeletionF = True)
             
         elif word == "=>":
@@ -393,7 +365,7 @@ def parse_mode_definition(fh, Setup):
             code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
 
             line_n = get_current_line_info_number(fh) + 1
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, code, PatternIdx=pattern_i,
+            new_mode.matches[pattern] = lexer_mode.Match(pattern, code,  pattern_state_machine, PatternIdx=pattern_i,
                                                          Filename=fh.name, LineN=line_n)
             
         elif word != "{":
@@ -403,9 +375,58 @@ def parse_mode_definition(fh, Setup):
             line_n = get_current_line_info_number(fh) + 1
             code   = read_until_closing_bracket(fh, "{", "}")
 
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, code, PatternIdx=pattern_i,
+            new_mode.matches[pattern] = lexer_mode.Match(pattern, code, pattern_state_machine, PatternIdx=pattern_i,
                                                          Filename=fh.name, LineN=line_n)
         
-
     return
+
+
+def check_for_event_specification(word, fh, new_mode):
+
+    if word == "on_entry":
+        # Event: enter into mode
+        parse_unique_code_fragment(fh, "%s::on_entry event handler" % new_mode.name, new_mode.on_entry)
+        return True
+    
+    elif word == "on_exit":
+        # Event: exit from mode
+        parse_unique_code_fragment(fh, "%s::on_exit event handler" % new_mode.name, new_mode.on_exit)
+        return True
+
+    elif word == "on_match":
+        # Event: exit from mode
+        parse_unique_code_fragment(fh, "%s::on_match event handler" % new_mode.name, new_mode.on_match)
+        return True
+
+    elif  word == "on_indentation":
+        # Event: start of indentation, 
+        #        first non-whitespace after whitespace
+        parse_unique_code_fragment(fh, "%s::on_indentation event handler" % new_mode.name, 
+                                   new_mode.on_indentation)
+        return True
+
+    elif word == "on_failure" or word == "<<FAIL>>":
+        # Event: No pattern matched for current position.
+        # NOTE: See 'on_end_of_stream' comments.
+        parse_unique_code_fragment(fh, "%s::on_failure event handler" % new_mode.name, 
+                                   new_mode.on_failure)
+        return True
+
+    elif word == "on_end_of_stream": 
+        # Event: End of data stream / end of file
+        # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
+        #       patterns are entered here, even if later versions of quex might dismiss
+        #       those rule deefinitions in favor of consistent event handlers.
+        return "<<EOF>>"
+
+    elif len(word) >= 3 and word[:3] == "on_":    
+        error_msg("Unknown event handler '%s'. Known event handlers are:\n\n" % word + \
+                  "on_entry, on_exit, on_indentation, on_end_of_stream, on_failure. on_match\n\n" + \
+                  "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
+                  "use double quotes to bracket patterns that start with 'on_'.", fh)
+
+    # The word can only be a pattern ... 
+    return word
+
+
 
