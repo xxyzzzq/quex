@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.core as core
 
 if "--hwut-info" in sys.argv:
-    print "Begin of Line '^', End of Line '$'"
+    print "Conditional Analysis: Begin of Line '^', End of Line '$'"
     sys.exit(0)
 
 

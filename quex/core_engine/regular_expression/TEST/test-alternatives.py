@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.core as core
 
 if "--hwut-info" in sys.argv:
-    print "alternative expressions"
+    print "Combination: Alternative Expressions"
     sys.exit(0)
     
 def test(TestString):

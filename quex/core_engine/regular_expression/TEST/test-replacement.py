@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.core as core
 
 if "--hwut-info" in sys.argv:
-    print "pattern identifier replacement"
+    print "Basics: Pattern identifier replacement"
     sys.exit(0)
     
 def test(TestString, PatterDict):

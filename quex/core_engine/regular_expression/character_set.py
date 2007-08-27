@@ -17,14 +17,15 @@ def do(UTF8_String):
     """
     
     # transform the range-string into a trigger set
-    trigger_set = get_utf8_trigger_set(UTF8_String)
+    trigger_set, comment = __get_utf8_trigger_set(UTF8_String)
+    if trigger_set == False:
+        raise comment
 
     # create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.
-    result = StateMachine()
-    state_idx = result.init_state_index
-    result.add_transition(state_idx, trigger_set, AcceptanceF=True)
-    return result
+    sm = StateMachine()
+    sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
+    return sm
 
 class Tracker:
     def __init__(self):
@@ -64,7 +65,7 @@ class Tracker:
         else:               self.negation_f = True 
 
 
-def get_utf8_trigger_set(UTF8_String):
+def __get_utf8_trigger_set(UTF8_String):
     """Transforms the regular expression character set expression into 
        an object of type NumberSet, i.e. a set of integers representing
        the unicode characters of the set.
@@ -89,6 +90,9 @@ def get_utf8_trigger_set(UTF8_String):
             # Escape Character / Sophisticated Code Point Definition
             #
             value, i = snap_backslashed_character.do(x, i)
+            if value == None:
+                max_i = min(len(x), i + 3)
+                return False, "backslashed character(s) %s ... cannot be backslashed" % repr(map(chr, x[i:max_i]))
             tracker.consider_letter(value)
 
         elif x[i] == ord("^"):
@@ -118,6 +122,6 @@ def get_utf8_trigger_set(UTF8_String):
     # the whole set:     combine inverse and direct set with 'or', i.e. union
     result = tracker.direct_match_set
     result = result.intersection(tracker.inverse_match_set.inverse())
-    return result 
+    return result, ""
 
 

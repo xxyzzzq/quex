@@ -29,8 +29,8 @@ case does not seem to be very probable. Sometimes it may be necessary,
      would result in the {\tt for}-keyword token.
 
 As for version 0.10.0, {\quex} has a deficiency which is due to the parsing algorithm
-of the mode definition parts. Until now, spaces '\kern 1ex' cannot be used directly
-inside mode definitions, i.e.
+of the mode definition parts. Until then, it was not possible to define spaces '\kern 1ex' 
+directly directly inside mode definitions, i.e.
 
 \begin{verbatim}
 mode {
@@ -40,26 +40,12 @@ mode {
 }
 \end{verbatim}
 
-is {\it not} possible. Please, define a whitespace pattern inside a '{\tt define}' section
-and use the pattern lookup, as shown below:
-
-\begin{verbatim}
-define {
-    WHITESPACE   [ \t\n]
-}
-
-...
-
-mode {
-    {WHITESPACE} {
-	// ... reaction on whitespace ...
-    }
-}
-\end{verbatim}
-
-Since version 0.10.0, there is indeed a regular expression parser inside quex
-for the implementation of the quex core engine. It has not been connected,
-though, to the old engine that was to produce only flex-readable code,
-without 'understanding' it.  Versions to come are likely to catch such pitfalls by
-parsing the regular expression.
-
+However, this issue has been solved from version 0.15.1 on. One has to be
+cautious, though using newlines and tabs.  You can in certain circumstances
+define a newline or a tab trigger as directly 'as is', i.e. as a line break and
+a tabulator.  This is perfectly coherent with the regular expression grammar.
+However, for clarity it is better to use the {\tt \verb|\|t} and {\tt
+    \verb|\|n} expressions. Note, that a whitespace as a lonestanding character
+    ends the regular expression. Using 'real' newlines and tabulators may cause problems when lonestanding
+    characters are parsed in groups. With the backslashed expressions there is
+    no danger and things are clear.

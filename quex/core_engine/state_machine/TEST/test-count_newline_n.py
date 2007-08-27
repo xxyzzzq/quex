@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core_engine.regular_expression.core         as core
+import quex.core_engine.regular_expression.core         as regex
 import quex.core_engine.state_machine.character_counter as counter
 
 if "--hwut-info" in sys.argv:
@@ -11,8 +11,9 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
     
 def test(TestString):
-    print ("expression           = " + TestString).replace("\n", "\\n").replace("\t", "\\t")
-    sm = core.do(TestString)
+    TestString = TestString.replace("\n", "\\n").replace("\t", "\\t")
+    print "expression           = " + TestString
+    sm = regex.do(TestString)
     print "fixed newline number = ", counter.get_newline_n(sm)
 
 test('[0-9]+')

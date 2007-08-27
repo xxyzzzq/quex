@@ -1,6 +1,6 @@
 <no file 'TITLE.hwut'>
 DIR:  ./demo/TEST
-DATE: Sat Aug 25 11:26:14 2007
+DATE: Mon Aug 27 08:36:34 2007
 
 
  -- demo/000:
@@ -47,7 +47,7 @@ DATE: Sat Aug 25 11:26:14 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/TEST
-DATE: Sat Aug 25 11:27:24 2007
+DATE: Mon Aug 27 08:37:43 2007
 
     Prepare Pattern Information for Code Generation
     test-coder-get_generator_input.py .......................................[OK]
@@ -63,7 +63,7 @@ Input Buffer Tests
 Frank-Rene Schaefer
 
 DIR:  ./quex/code_base/buffer/TEST
-DATE: Sat Aug 25 11:27:24 2007
+DATE: Mon Aug 27 08:37:44 2007
 make: test-forward-get-2
 make: test-misc-II
 make: test-misc-III
@@ -114,7 +114,7 @@ ze = 11, Fallback Size = 0
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/buffer/iconv/TEST
-DATE: Sat Aug 25 11:27:28 2007
+DATE: Mon Aug 27 08:37:47 2007
 make: n-beat
 make: one-beat
 
@@ -132,7 +132,7 @@ make: one-beat
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/template/TEST
-DATE: Sat Aug 25 11:27:28 2007
+DATE: Mon Aug 27 08:37:47 2007
 make: test-simple
 make: test-simple-2
 
@@ -154,7 +154,7 @@ make: test-simple-2
 Number Set Operations and UTF-8 Encoding
 
 DIR:  ./quex/core_engine/TEST
-DATE: Sat Aug 25 11:27:29 2007
+DATE: Mon Aug 27 08:37:48 2007
 
 
  -- NumberSet:
@@ -185,7 +185,7 @@ DATE: Sat Aug 25 11:27:29 2007
 Code Generation
 
 DIR:  ./quex/core_engine/generator/TEST
-DATE: Sat Aug 25 11:27:29 2007
+DATE: Mon Aug 27 08:37:49 2007
 
 
  -- Pre- and Post- Conditions:
@@ -267,37 +267,43 @@ DATE: Sat Aug 25 11:27:29 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/regular_expression/TEST
-DATE: Sat Aug 25 11:28:09 2007
+DATE: Mon Aug 27 08:38:28 2007
 
-    alternative expressions
-    test-alternatives.py ....................................................[OK]
+    State Machine Pattern Matching
+    test-pattern-matching.py ................................................[OK]
+
+ -- Conditional Analysis:
+
     Begin of Line '^', End of Line '$'
     test-bol-eol.py .........................................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
     test-eol-carriage-return-newline.py .....................................[OK]
-    lonestanding characters
-    test-lonely-characters.py ...............................................[OK]
-    state machine pattern matching
-    test-pattern-matching.py ................................................[OK]
-    simple repeated expressions
-    test-repeated-expressions.py ............................................[OK]
-    pattern identifier replacement
-    test-replacement.py .....................................................[OK]
-    map character *range* to state machine
-    test-set.py .............................................................[OK]
-    snap string until (low level function)
-    test-snap_until.py ......................................................[OK]
-    map character *string* to state machine
-    test-string.py ..........................................................[OK]
-
- -- Conditional Analysis:
-
     post conditions
     test-post-condition.py ..................................................[OK]
     pre- and post-conditions
     test-pre-and-post-condition.py ..........................................[OK]
     pre conditions
     test-pre-condition.py ...................................................[OK]
+
+ -- Basics:
+
+    Lonestanding characters
+    test-lonely-characters.py ...............................................[OK]
+    Pattern identifier replacement
+    test-replacement.py .....................................................[OK]
+    Map character *range* to state machine
+    test-set.py .............................................................[OK]
+    Snap string until (low level function)
+    test-snap_until.py ......................................................[OK]
+    Map character *string* to state machine
+    test-string.py ..........................................................[OK]
+
+ -- Combination:
+
+    Alternative Expressions
+    test-alternatives.py ....................................................[OK]
+    Simple repeated expressions
+    test-repeated-expressions.py ............................................[OK]
 ---------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -308,7 +314,7 @@ DATE: Sat Aug 25 11:28:09 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/state_machine/TEST
-DATE: Sat Aug 25 11:28:12 2007
+DATE: Mon Aug 27 08:38:31 2007
 
 
  -- StateMachine:
@@ -396,7 +402,7 @@ DATE: Sat Aug 25 11:28:12 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/frs_py/TEST
-DATE: Sat Aug 25 11:28:31 2007
+DATE: Mon Aug 27 08:38:49 2007
 
 
  -- file_in/read_until_closing_bracket:

@@ -126,11 +126,10 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     
 class Match:
-    def __init__(self, Pattern, Action, PatternStateMachine,
-                 IL = None,
-                 PatternIdx=0,
+    def __init__(self, Pattern, Action, PatternStateMachine, PatternIdx,
+                 Filename="", LineN=-1, 
                  PriorityMarkF=False, DeletionF=False,
-                 Filename="", LineN=-1):
+                 IL = None):
 
         self.pattern               = Pattern
         self.pattern_state_machine = PatternStateMachine

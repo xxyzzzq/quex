@@ -134,3 +134,46 @@ init-state = 322L
       == \41 ==> 00324
       <no epsilon>
 
+## NOTE: The 'c' has to be ignored, because it comes after the lonestanding space
+expression    = "(a|b) c"
+state machine
+init-state = 358L
+00358 <~ (108, 358)
+      == ['a', 'b'] ==> 00359
+      <no epsilon>
+00359* <~ (108, 359, S)
+      <no epsilon>
+
+## NOTE: The 'c' has to be ignored, because it comes after the lonestanding space
+expression    = "(a|b)
+c"
+state machine
+init-state = 385L
+00385 <~ (121, 385)
+      == ['a', 'b'] ==> 00386
+      <no epsilon>
+00386* <~ (121, 386, S)
+      <no epsilon>
+
+## NOTE: The '=> TKN_IF' has to be ignored, because it comes after the lonestanding space
+expression    = "if         => TKN_IF"
+state machine
+init-state = 393L
+00393 <~ (124, 393)
+      == 'i' ==> 00395
+      <no epsilon>
+00394* <~ (124, 394, S)
+      <no epsilon>
+00395 <~ (124, 395)
+      == 'f' ==> 00394
+      <no epsilon>
+
+expression    = "\n"
+state machine
+init-state = 400L
+00400 <~ (127, 400)
+      == '\n' ==> 00401
+      <no epsilon>
+00401* <~ (127, 401, S)
+      <no epsilon>
+

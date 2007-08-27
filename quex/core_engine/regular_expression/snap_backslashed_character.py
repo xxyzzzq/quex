@@ -1,22 +1,43 @@
 import quex.core_engine.utf8 as utf8
 from copy import deepcopy
+backslashed_character_db = { 
+        # inside string "..." and outside 
+        'a': ord('\a'),   'b': ord('\b'), 'f': ord('\f'),   'n': ord('\n'),
+        'r': ord('\r'),   't': ord('\t'), 'v': ord('\v'),   '\\': ord('\\'), '"': ord('"'),
+        # only ouside of string
+        '+': ord('+'), '*': ord('*'), '?': ord('?'), '/': ord('/'), 
+        '|': ord('|'), '$': ord('$'), '^': ord('^'), '-': ord('-'), '\\': ord('\\'),  
+        '[': ord('['), ']': ord(']'),    
+        '(': ord('('), ')': ord(')'),  
+        '{': ord('{'), '}': ord('}'), 
+}
+        
+def do(x, i, ReducedSetOfBackslashedCharactersF=False):
+    """x = string containing characters after 'the backslash'
+       i = position of the backslash in the given string
 
-quex_backslashed_characters = deepcopy(utf8.backslashed_characters)
-# extra characters
-quex_backslashed_characters['^']  = ord('^'), 
-quex_backslashed_characters['-']  = ord('-'),  
-quex_backslashed_characters['[']  = ord('['),
-quex_backslashed_characters['(']  = ord('('),
-quex_backslashed_characters[']']  = ord(']'), 
-quex_backslashed_characters[')']  = ord(')'), 
-quex_backslashed_characters['\\'] = ord('\\')  
-quex_backslashed_characters['"']  = ord('"')  
-              
+       RETURNS: UCS code of the interpreted character,
+                index of first element after the treated characters in the string
 
-def do(x, i):
-    if quex_backslashed_characters.has_key(chr(x[i+1])):
+    """
+    if type(x) != str and type(x) != list:       
+        raise "expected a string or list of integers (ucs values) as first argument"
+    if type(i) != int:       
+        raise "expected an integer as second argument"
+    if i < -1 or i >= len(x) -1: 
+        raise "string '%s' does not have a position %i" % (x, i+1)
+    if type(x) == str:
+        x = map(ord, x)  # transform string into a list of ASCII values (UCS page 0)
+
+    if ReducedSetOfBackslashedCharactersF:
+        backslashed_character_list = [ 'a', 'b', 'f', 'n', 'r', 't', 'v', '\\', '"' ]
+    else:
+        backslashed_character_list = backslashed_character_db.keys()
+
+       
+    if chr(x[i+1]) in backslashed_character_list:
         # a backslashed letter, e.g. \n, \a, \-, etc.
-        value = quex_backslashed_characters[chr(x[i+1])]
+        value = backslashed_character_db[chr(x[i+1])]
         # ATE: two characters
         return value, i+2
 
@@ -45,7 +66,7 @@ def do(x, i):
         return number, i
 
     else:
-        raise "unknown backslashed character"
+        return None, i
 
 def __parse_hex_number(x, u, MaxL):
     """x    = string to be parsed

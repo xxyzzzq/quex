@@ -162,6 +162,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     os.system("./tmp.executable")
     print "## (4) cleaning up"
     os.remove("./tmp.executable")
-    os.remove("./tmp.cpp")
+    # os.remove("./tmp.cpp")
 
 

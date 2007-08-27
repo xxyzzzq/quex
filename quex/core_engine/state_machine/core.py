@@ -975,6 +975,7 @@ class StateMachine:
                  TrivialPreConditionBeginOfLineF=False,
                  TrivialPreConditionCharacterCodes=-1):
 
+        # print "##state_machine_init"
         if InitStateIndex == None: self.init_state_index = state_machine_index.get()
         else:                      self.init_state_index = InitStateIndex
             
@@ -1965,9 +1966,10 @@ class StateMachine:
 
     def __repr__(self):
         msg = "init-state = " + repr(self.init_state_index) + "\n"
-        sorted_state_infos = self.states.items()
+        sorted_state_infos = self.states.keys()
         sorted_state_infos.sort()
-        for state_i, state in sorted_state_infos:
+        for state_i in sorted_state_infos:
+            state = self.states[state_i]
             if state.is_acceptance(): msg += "%05i*" % state_i + repr(state)
             else:                     msg += "%05i" % state_i + repr(state)
             

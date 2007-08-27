@@ -302,86 +302,91 @@ def parse_mode_definition(fh, Setup):
     while 1 + 1 == 2:
         pattern_i += 1
         
-        word = read_next_word(fh)
 
-        if   word == "}":
+        skip_whitespace(fh)
+        position = fh.tell()
+        word     = read_next_word(fh)
+
+        if word == "}":
             if new_mode.matches == {}:
                 error_msg("mode '%s' does not contain any pattern" % new_mode.name, fh)
             break
 
-        result = check_for_event_specification(word, fh, new_mode)
-        if result == True: continue
-        pattern = result
+        result = check_for_event_specification(word, fh, new_mode, Setup, pattern_i)
+        if result == True: 
+            continue
 
-        try:
-            # adapt pattern dictionary: -- this may be superfluous if the it was organized differently
-            pattern_dictionary = {}
-            for item in lexer_mode.shorthand_db.values():
-                pattern_dictionary[item.name] = item.regular_expression         
-            pattern_state_machine = regex.do(pattern, pattern_dictionary, 
+        elif type(result) == str:
+            pattern = result
+            pattern_state_machine = regex.do(pattern, {}, 
                                              Setup.begin_of_stream_code, Setup.end_of_stream_code,
                                              DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
-        except:
-            error_msg("error in regular expression")
-
-        skip_whitespace(fh)
-        word = read_next_word(fh)
-
-        if word == "PRIORITY-MARK":
-            # pattern may be an inherited pattern, but it is assigned the priority
-            # to the position where this mark appears. this means:
-            #
-            # when inheritance is resolved this pattern does not override
-            # any pattern below, however, it determines the 'position in the
-            # list where this pattern occurs.'
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, PatternIdx=pattern_i,
-                                                         PriorityMarkF = True)
-
-        elif word == "DELETION":
-            # pattern may be an inherited pattern, but
-            # it is UNDESIRED TO APPEAR IN CURRENT MODE.
-            #
-            # this mark deletes any pattern that was inherited
-            # with the same 'name'
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, PatternIdx=pattern_i,
-                                                         DeletionF = True)
-            
-        elif word == "=>":
-            skip_whitespace(fh)
-            # shorthand for { self.send(TKN_SOMETHING); RETURN; }
-            token_name, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
-            if bracket_i == -1: 
-                error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
-
-            token_name = trim(token_name)
-            if bracket_i == 0:
-                token_constructor_args = read_until_closing_bracket(fh, "(", ")")
-                token_constructor_args = ", " + token_constructor_args
-                verify_next_word(fh, ";")
-            else:
-                token_constructor_args = ""
-                
-            # after 'send' the token queue is filled and one can safely return
-            code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
-
-            line_n = get_current_line_info_number(fh) + 1
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, code,  pattern_state_machine, PatternIdx=pattern_i,
-                                                         Filename=fh.name, LineN=line_n)
-            
-        elif word != "{":
-            error_msg("missing token '{' followed by whitespace.", fh)
 
         else:
-            line_n = get_current_line_info_number(fh) + 1
-            code   = read_until_closing_bracket(fh, "{", "}")
+            fh.seek(position)
+            pattern, pattern_state_machine = parse_regular_expression_specification(fh, Setup)
 
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, code, pattern_state_machine, PatternIdx=pattern_i,
-                                                         Filename=fh.name, LineN=line_n)
+        parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, pattern_i)
+
+
+def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, PatternIdx):
+    skip_whitespace(fh)
+    position = fh.tell()
         
+    if fh.read(1) == "{":
+        line_n = get_current_line_info_number(fh) + 1
+        code   = read_until_closing_bracket(fh, "{", "}")
+
+        new_mode.matches[pattern] = lexer_mode.Match(pattern, code, pattern_state_machine, 
+                                                     PatternIdx, fh.name, line_n)
+        return
+
+    fh.seek(position)
+    word = read_next_word(fh)
+
+    if word == "PRIORITY-MARK":
+        # This mark 'lowers' the priority of a pattern to the priority of the current
+        # pattern index (important for inherited patterns, that have higher precedence).
+        new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, 
+                                                     PatternIdx, PriorityMarkF = True)
+
+    elif word == "DELETION":
+        # This mark deletes any pattern that was inherited with the same 'name'
+        new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, 
+                                                     PatternIdx, DeletionF = True)
+        
+    elif word == "=>":
+        parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx)
+
+    else:
+        error_msg("missing token '{', 'PRIORITY-MARK', 'DELETE', or '=>'.", fh)
+
     return
 
+def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx):
+    skip_whitespace(fh)
+    # shorthand for { self.send(TKN_SOMETHING); RETURN; }
+    token_name, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
+    if bracket_i == -1: 
+        error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
 
-def check_for_event_specification(word, fh, new_mode):
+    token_name = trim(token_name)
+    if bracket_i == 0:
+        token_constructor_args = read_until_closing_bracket(fh, "(", ")")
+        token_constructor_args = ", " + token_constructor_args
+        verify_next_word(fh, ";")
+    else:
+        token_constructor_args = ""
+        
+    # after 'send' the token queue is filled and one can safely return
+    code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
+
+    line_n = get_current_line_info_number(fh) + 1
+    new_mode.matches[pattern] = lexer_mode.Match(pattern, code,  pattern_state_machine, PatternIdx,
+                                                 fh.name, line_n)
+    
+
+def check_for_event_specification(word, fh, new_mode, Setup, PatternIdx):
 
     if word == "on_entry":
         # Event: enter into mode
@@ -412,7 +417,7 @@ def check_for_event_specification(word, fh, new_mode):
                                    new_mode.on_failure)
         return True
 
-    elif word == "on_end_of_stream": 
+    elif word == "on_end_of_stream" or word == "<<EOF>>": 
         # Event: End of data stream / end of file
         # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
         #       patterns are entered here, even if later versions of quex might dismiss
@@ -425,8 +430,32 @@ def check_for_event_specification(word, fh, new_mode):
                   "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
                   "use double quotes to bracket patterns that start with 'on_'.", fh)
 
-    # The word can only be a pattern ... 
-    return word
+    # word was not an event specification 
+    return False
 
 
+def parse_regular_expression_specification(fh, Setup):
+
+    start_position = fh.tell()
+    try:
+        # -- adapt pattern dictionary: 
+        #    (this may be superfluous if the it was organized differently)
+        pattern_dictionary = {}
+        for item in lexer_mode.shorthand_db.values():
+            pattern_dictionary[item.name] = item.regular_expression         
+
+        # -- parse regular expression, build state machine
+        pattern_state_machine = regex.do(fh, pattern_dictionary, 
+                                         Setup.begin_of_stream_code, Setup.end_of_stream_code,
+                                         DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
+    except str, error_msg:
+        error_msg(error_msg + "\n" + "error in regular expression", fh)
+
+    end_position = fh.tell()
+
+    fh.seek(start_position)
+    pattern = fh.read(end_position - start_position)
+
+    print "##pattern: ", pattern
+    return pattern, pattern_state_machine
 

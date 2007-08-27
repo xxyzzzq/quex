@@ -37,6 +37,7 @@ from quex.core_engine.state_machine.core import StateMachine
 import quex.core_engine.utf8                                  as utf8
 import quex.core_engine.regular_expression.character_set      as map_utf8_set
 import quex.core_engine.regular_expression.character_string   as map_utf8_string
+import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat
@@ -269,6 +270,11 @@ def snap_primary(stream, PatternDict):
             stream.seek(-1, 1)
             raise "error: missing closing ')' after expression. found '%s'" % stream.read()
 
+    elif x.isspace():
+        # a lonestanding space ends the regular expression
+        stream.seek(-1, 1)
+        return __debug_exit(None, stream)
+
     elif x not in CONTROL_CHARACTERS:
         # NOTE: The '\' is not inside the control characters---for a reason.
         #       It is used to define for example character codes using '\x' etc.
@@ -321,21 +327,34 @@ def snap_non_control_characters(stream):
     __debug_entry("else characters", stream)
 
     result = StateMachine()
+    pos = stream.tell()
+    stream.seek(pos)
     #
     state_index = result.init_state_index
     while 1 + 1 == 2: 
+        position = stream.tell()
+        stream.seek(position)
         char_code = utf8.map_utf8_to_unicode(stream)
         #
         if char_code == 0xFF: break
+
         # ask < 0xFF to protect against overflow in char() function
-        if char_code < 0xFF and \
-           chr(char_code) in CONTROL_CHARACTERS: stream.seek(-1, 1); break 
+        elif char_code < 0xFF: 
+            if chr(char_code) in CONTROL_CHARACTERS or chr(char_code).isspace():
+                stream.seek(-1, 1) 
+                break 
 
-        # any backslashed character is the character itself, it cannot not be
-        # used after that as a command.
-        if char_code == ord("\\"):
-            char_code = utf8.map_utf8_to_unicode(stream)
-
+        if chr(char_code) == "\\":
+            position = stream.tell()
+            what_follows_backslash = stream.read(16)
+            interpreted_backslashed_char_code, i = snap_backslashed_character.do(what_follows_backslash, -1)
+            if interpreted_backslashed_char_code == None: 
+                stream.seek(position)
+                # char_code is treated 'as is', i.e. as a backslash
+            else:
+                stream.seek(position + i)
+                char_code = interpreted_backslashed_char_code
+                
         # add new transition from current state to a new state triggering
         # on the given character.
         state_index = result.add_transition(state_index, char_code)

@@ -90,7 +90,7 @@ def __get_line_and_column_counting(PatternStateMachine):
     elif newline_n != 0:
         # IDEA: Try to determine number of characters backwards to newline directly
         #       from the pattern state machine.
-        func = "self.count_FixedNewlineN(Lexeme, LexemeL, %i);" % newline_n
+        func = "self.count_FixNewlineN(Lexeme, LexemeL, %i);" % newline_n
 
     else:
         if character_n == -1: func = "self.count_NoNewline(LexemeL);"

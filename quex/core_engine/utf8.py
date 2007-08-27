@@ -1,13 +1,6 @@
 from copy import copy
 import StringIO
 
-backslashed_characters = \
-{ # 'bells'
-      'a': ord('\a'),   'b': ord('\b'),
-      'f': ord('\f'),   'n': ord('\n'),
-      'r': ord('\r'),   't': ord('\t'),
-      'v': ord('\v'),   '\\': ord('\\')
-}
 
 def map_utf8_to_unicode(utf8_string_or_stream):
     """Maps the start of the 'utf8_string' to a single unicode character. 
@@ -17,7 +10,8 @@ def map_utf8_to_unicode(utf8_string_or_stream):
                 (StringIO) the unicode of the first utf8 coding in the stream. sets the stream
                            position to the first character after the utf8 code.         
     """    
-    if utf8_string_or_stream.__class__.__name__ == "StringIO":
+    if    utf8_string_or_stream.__class__.__name__ == "StringIO" \
+       or utf8_string_or_stream.__class__.__name__ == "file":
        return __read_one_utf8_code_from_stream(utf8_string_or_stream)
     elif utf8_string_or_stream.__class__.__name__ == "str":
        utf8_string = utf8_string_or_stream
@@ -157,19 +151,6 @@ def __read_one_utf8_code_from_stream(char_stream):
     """
     character = char_stream.read(1)
     if character == "": return 0xFF
-
-    if character == "\\":
-        character = char_stream.read(1)
-
-        # interpret the sequence "backslash + char" as character
-        try:    
-            character_code = backslashed_characters[character]
-        except: 
-            char_stream.seek(-1, 1)
-            return ord("\\")
-
-        return character_code
-        
     try:    head_char = ord(character)
     except: return 0xFF
 

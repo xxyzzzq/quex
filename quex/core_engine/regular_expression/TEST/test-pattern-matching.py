@@ -7,7 +7,7 @@ import quex.core_engine.regular_expression.core as re2sm
 import quex.core_engine.utf8                    as utf8
 
 if "--hwut-info" in sys.argv:
-    print "state machine pattern matching"
+    print "State Machine Pattern Matching"
     sys.exit(0)
 
 def test(the_state_machine, string_to_match):

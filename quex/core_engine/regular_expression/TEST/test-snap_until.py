@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.core as core
 
 if "--hwut-info" in sys.argv:
-    print "snap string until (low level function)"
+    print "Basics: Snap string until (low level function)"
     sys.exit(0)
 
 

@@ -3,6 +3,16 @@ from copy import deepcopy, copy
 
 STATE_TERMINATION = long(-1)     # ID for 'success state'
 
+def clear():
+    global __internal_state_index_counter
+    global __map_combination_to_index
+    global __map_state_machine_id_to_state_machine
+    global __internal_state_machine_id_counter
+    __internal_state_index_counter = long(-1)
+    __map_combination_to_index = {}
+    __map_state_machine_id_to_state_machine = {}    
+    __internal_state_machine_id_counter = long(-1)
+
 #     The index is chosen to be globally unique, even though, there is a constraint
 #     that all target indices of a state machine must be also start indices. For connecting
 #     state machines though, it is much easier to rely on a globaly unique state index.
@@ -110,7 +120,6 @@ def state_machine_ranking_db_register(SuperiorStateMachineID, InferiorStateMachi
     # if SuperiorStateMachineID - InferiorStateMachineID > 1:
     #   for sm_id in range(InferiorStateMachineID + 1, SuperiorStateMachineID): 
     #      __state_machine_ranking_db_add(sm_id, InferiorStateMachineID)
-
 
 def state_machine_ranking_db_is_superior(A_id, B_id):
     """Checks for the relation between two state machines recursively. Imagine

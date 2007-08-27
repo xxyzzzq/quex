@@ -6,7 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.regular_expression.character_string as character_string
 
 if "--hwut-info" in sys.argv:
-    print "map character *string* to state machine"
+    print "Basics: Map character *string* to state machine"
     sys.exit(0)
     
 def test(TestString):
