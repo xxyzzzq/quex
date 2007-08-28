@@ -83,7 +83,6 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             # post conditions add an epsilon transition that has to be solved 
             # by translating state machine into a DFA
             sm = setup_post_condition.do(sm, post_sm) 
-            sm.finalized_f = True
             sm = sm.get_DFA()
             sm.delete_meaningless_origins()
         

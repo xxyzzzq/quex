@@ -190,7 +190,6 @@ def get_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     
     # (2) setup all patterns in paralell 
     sm = parallelize.do(StateMachine_List)
-    sm.finalize()
 
     # (3) convert the state machine to an DFA (paralellization created an NFA)
     sm = sm.get_DFA()

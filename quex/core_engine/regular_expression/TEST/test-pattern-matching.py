@@ -32,7 +32,6 @@ regex_str = "h[alowe ]+t"
 print "regular expression = '%s'" % regex_str
 sm = re2sm.do(regex_str)
 print sm
-sm.finalize()
 test(sm, "hallo welt")    
 test(sm, "haaawwwolellewat")    
 
@@ -41,6 +40,5 @@ regex_str = "a+(b|c)*t"
 print "regular expression = '%s'" % regex_str
 sm = re2sm.do(regex_str)
 print sm
-sm.finalize()
 test(sm, "aaaacccbbt")    
 test(sm, "abcbcbct")    

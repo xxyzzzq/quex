@@ -1,3 +1,33 @@
+(*) 07y8m28d from 07y5m16:
+
+    Either delete the .finalize stuff from the state machine or do something
+    meaningful.
+
+(*) 07y8m28d from 07y5m13:
+    generator.regular_expression.snap_utf8 ...
+
+    straighten out the 'reading' of an utf8 character in non_control_chars, string
+    and 'set'. All of them refer to different functions. The whole setup should 
+    only take one single core when one deals with the backslashed characters.
+    The issue here is the different handling of backslashed characters. Probably
+    the backslashed chars should be passes as an argument.
+
+(*) from ... 07y5m26d:
+
+    common option switch structure of type
+
+    this allows switches to be defined on the compiler line
+    and enable at the same time default values
+
+    #if  ! defined(QUEX_OPTION__BLAH_OFF) && ! defined(QUEX_OPTION__BLAH_ON)
+    #    define QUEX_OPTION__BLAH  ON
+    #endif
+
+   straighten out the QUEX_OPTION definitions for virtual functions.
+
+   maybee use __QUEX_OPTIONS which are not to be changed by the user after
+   the engine has been build.
+
 (*) 07y8m9d from 07y6m7d:
 
     NOTE: for the inclusion of inconv:

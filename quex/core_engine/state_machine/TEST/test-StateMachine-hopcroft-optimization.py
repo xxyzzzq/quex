@@ -18,7 +18,6 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 1)
-sm.finalize()
 dfa = sm.get_DFA()
 print dfa.get_hopcroft_optimization()    
 
@@ -28,7 +27,6 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm)
-sm.finalize()
 dfa = sm.get_DFA()
 print dfa.get_hopcroft_optimization() 
 
@@ -38,7 +36,6 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 0, 1)
-sm.finalize()
 dfa = sm.get_DFA()
 print dfa.get_hopcroft_optimization() 
 
@@ -48,7 +45,6 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 3, 5)
-sm.finalize()
 dfa = sm.get_DFA()
 print dfa.get_hopcroft_optimization() 
 
@@ -76,9 +72,6 @@ sm.add_transition(n2, ord('b'), n2)
 sm.add_transition(n3, ord('c'), n3)
 sm.add_transition(n2, ord('c'), n3)
 sm.add_transition(n3, ord('b'), n2)
-
-# simlate finalized object
-sm.finalized_f = True
 
 # (*) minimize the number of states using hopcroft optimization
 optimal_sm = sm.get_hopcroft_optimization()

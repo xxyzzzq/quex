@@ -456,6 +456,5 @@ def parse_regular_expression_specification(fh, Setup):
     fh.seek(start_position)
     pattern = fh.read(end_position - start_position)
 
-    print "##pattern: ", pattern
     return pattern, pattern_state_machine
 

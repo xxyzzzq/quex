@@ -36,7 +36,6 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
 
     # print "EXPRESSION = ", result
     # print "POST CONDITION = ", post_sm
-    result.finalized_f = True    
     # print "APPENDED = ", result
     result = result.get_DFA()
     # print "DFA = ", result

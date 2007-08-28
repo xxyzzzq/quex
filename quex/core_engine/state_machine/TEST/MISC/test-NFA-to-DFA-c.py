@@ -25,7 +25,6 @@ def test(combination_0):
     tmp.sort(lambda a, b: cmp(a[1],b[1]))
     for combination, index in tmp: 
         print index, combination
-    paralellize.result_state_machine.finalize()
     print paralellize.result_state_machine
 
 

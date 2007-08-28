@@ -552,10 +552,7 @@ class StateInfo:
         """
         # NOTE: 'add_transition' ensures that the path '(target_state, action)' is
         #       **unique** in the transition list.
-        # NOTE: A check against the ELSE condition is not necessary, if the transitions
-        #       are finalized (using 'finalize()'). To be sure that the function works
-        #       anyway, a check is added.
-        
+        #
         # (*) the comparison could be displayed in a matrix. a comparison
         #     only has to happen in one diagonal half of the matrix.        
         i = -1
@@ -566,8 +563,8 @@ class StateInfo:
                 # -- does trigger_list_A and trigger_list_B intersect?
                 if tA.trigger_set.intersection(tB.trigger_set).is_empty():
                     return False
-            # -- check against else transition - should not be necessary after
-            #    callt to 'finalize()'
+            # -- check against else transition - should not be necessary if transitions
+            #    are set up propperly
             if tA.trigger_set.intersection(self.__epsilon.trigger_set).is_empty():
                 return False
                 
@@ -808,14 +805,6 @@ class StateInfo:
                                     origin.store_input_position_f()        or
                                     origin.pre_condition_begin_of_line_f(),
                                     self.__origin_list)
-    
-    def finalize(self):
-        """
-            -- Unifies transitions that point to the same target. This 
-               does not include the epsilon transition!
-        """
-        for t in self.__transition_list:
-                pass  # TODO ....            
 
     def consistency_check(self, DesireCodeGenerationF=True):
         if self.is_acceptance():
@@ -982,7 +971,6 @@ class StateMachine:
         # state-idx => StateInfo (information about what triggers
         #              transition to what target state).
         self.states = { self.init_state_index: StateInfo(AcceptanceF) }        
-        self.finalized_f = False
         
         # register this state machine and get a unique id for it
         self.__id = state_machine_index.register_state_machine(self)
@@ -1046,8 +1034,6 @@ class StateMachine:
 
     def get_target_state_indices(self, StateIdx):
         """Returns a list of all target states that can be reached from state 'StateIdx'."""
-        if self.finalized_f == False:
-            raise "call to this function requires finalized state_machine object"
         if not self.has_start_state_index(StateIdx):  
             raise "state index " + repr(StateIdx) + " not contained in state machine."
 
@@ -1057,8 +1043,6 @@ class StateMachine:
         """RETURNS: State index of the state reached by triggering 'Trigger'
                     in state 'StateIdx'.
         """
-        if self.finalized_f == False:
-            raise "call to this function requires finalized state_machine object"
         if not self.has_start_state_index(StateIdx):  
             raise "state index " + repr(StateIdx) + " not contained in state machine."
 
@@ -1067,8 +1051,6 @@ class StateMachine:
     def get_trigger_set(self, StartIdx, TargetIdx):
         """Returns a set of triggers that lead from state 'StateIdx' to 'TargetIdx'.
         """
-        if self.finalized_f == False:
-            raise "call to this function requires finalized state_machine object"
         if self.has_start_state_index(StartIdx) == False: 
             return None
         return self.states[StartIdx].get_trigger_set(TargetIdx)
@@ -1100,9 +1082,6 @@ class StateMachine:
     def get_epsilon_closure(self, StateIdx, _considered_state_indices=None):
         """Return all states that can be reached from 'StateIdx' via epsilon
         transition."""
-        if self.finalized_f == False:
-            raise "call to this function requires finalized state_machine object"
-
         if _considered_state_indices == None: 
             _considered_state_indices = []
         if self.has_state_index(StateIdx) == False:
@@ -1765,7 +1744,6 @@ class StateMachine:
             state.delete_meaningless_origins()
 
     def delete_epsilon_transition(self, StartStateIdx, TargetStateIdx):
-        self.finalized_f = False
 
         if self.has_state_index(StateIdx) == False:
             raise "error: state index ", repr(StateIdx), " does not exist in state machine."
@@ -1798,13 +1776,11 @@ class StateMachine:
             state.add_origin(state_machine_id, state_idx, state.is_acceptance())
 
     def create_new_init_state(self, AcceptanceF=False):
-        self.finalized_f = False
 
         self.init_state_index = self.create_new_state()
         return self.init_state_index
 
     def create_new_state(self, AcceptanceF=False, StateIdx=None):
-        self.finalized_f = False
         if StateIdx == None:
             new_state_index = state_machine_index.get()
         else:
@@ -1832,8 +1808,6 @@ class StateMachine:
         if type(AcceptanceF) != bool:
             raise "required: 4th arg 'AcceptanceF' = bool, received ", repr(AcceptanceF)
 
-        self.finalized_f = False
-
         # If target state is undefined (None) then a new one has to be created
         if TargetStateIdx == None:
             TargetStateIdx = state_machine_index.get()
@@ -1851,7 +1825,6 @@ class StateMachine:
         if TargetStateIdx != None and type(TargetStateIdx) != long:
             raise "error: 2nd arg 'TargetStateIdx' needs to be None or of type long\n" + \
                   "error: received '%s'" % repr(TargetStateIdx)  
-        self.finalized_f = False
 
         # create new state if index does not exist
         if not self.has_start_state_index(StartStateIdx):
@@ -1873,7 +1846,6 @@ class StateMachine:
                                    RaiseTargetAcceptanceStateF=False,
                                    LeaveStoreInputPositionsF=False):
         """Mount on any acceptance state the MountedStateIdx via epsilon transition."""
-        self.finalized_f = False        
 
         for state_idx, state in self.states.items():
             # -- only consider state other than the state to be mounted
@@ -1891,14 +1863,12 @@ class StateMachine:
     def mount_to_initial_state(self, TargetStateIdx):
         """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 
            The initial states epsilon transition to TERMINATE is deleted."""
-        self.finalized_f = False
 
         if self.has_state_index(self.init_state_index) == False:
             raise "error: initial state index " + repr(self.init_state_index) + " does not exist in state machine!?."
         self.states[self.init_state_index].add_epsilon_target_state(TargetStateIdx)
 
     def set_acceptance(self, StateIdx, StatusF=True):
-        self.finalized_f = False
 
         if self.has_state_index(StateIdx) == False:
             raise "error: state index " + repr(StateIdx) + " does not exist in state machine!"
@@ -1907,22 +1877,6 @@ class StateMachine:
     def set_trivial_pre_condition_begin_of_line(self):
         self.__trivial_pre_condition_begin_of_line_f = True
     
-    def finalize(self):
-        """Remove transitions that point to the same target, through the same action
-        as the else transition."""
-        # (*) replace acceptance states that consist only out of an else 
-        #     transition by one single of that sort               
-        # for state_idx, state in self.states.items():
-        #    if state.has_only_else_transition():
-        #       tunnel_list.append(state_idx)
-        # if len(tunnel_list) > 1:
-        #    # each state that has only an else transition 
-        #    # leave only one acceptance
-
-        # (*) loop over all start state indices
-        for state in self.states.values(): state.finalize()
-        self.finalized_f = True
-
     def adapt_origins(self, StateMachineID):
         """Adapts origin to origin in a state machine 'StateMachineID'
         """

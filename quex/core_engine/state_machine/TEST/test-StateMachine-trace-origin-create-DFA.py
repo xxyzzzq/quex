@@ -49,8 +49,6 @@ sm.states[n0].add_origin(88L, 0L)
 sm.states[n4].add_origin(77L, 1L)    
 sm.states[n6].add_origin(88L, 22L, True)    
 
-# simlate finalized object
-sm.finalized_f = True
 
 # (*) create the DFA from the specified NFA
 dfa = sm.get_DFA()

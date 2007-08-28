@@ -17,8 +17,6 @@ sm = StateMachine()
 sm.add_transition(36L, 98, 100L)
 sm.add_transition(37L, 98, 100L)
 
-sm.finalize()
-
 print "states machine = ", sm
 
 # (*) compute the elementary trigger set
@@ -34,8 +32,6 @@ for target_indices, trigger_set in ets:
 sm = StateMachine()
 sm.add_transition(36L, Interval(98, 100), 100L)
 sm.add_transition(37L, 98, 100L)
-
-sm.finalize()
 
 print "states machine = ", sm
 

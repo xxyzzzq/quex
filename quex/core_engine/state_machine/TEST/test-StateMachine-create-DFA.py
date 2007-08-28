@@ -17,9 +17,6 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 1)
-#print sm    
-sm.finalize()
-#print sm
 dfa = sm.get_DFA()
 print dfa
 
@@ -29,8 +26,6 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm)
-#print "##ar:", sm    
-sm.finalize()
 dfa = sm.get_DFA()
 print dfa
 
@@ -69,8 +64,6 @@ n9 = sm.add_epsilon_transition(n8, RaiseAcceptanceF=True)
 sm.add_epsilon_transition(n2, n9)
 sm.add_epsilon_transition(n8, n3)
 
-# simlate finalized object
-sm.finalize()
 
 # (*) create the DFA from the specified NFA
 dfa = sm.get_DFA()

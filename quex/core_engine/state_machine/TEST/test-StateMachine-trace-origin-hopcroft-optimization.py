@@ -49,8 +49,6 @@ sm.states[n3].add_origin(0L, 88L)
 sm.states[n3].add_origin(1L, 88L)
 sm.states[n3].add_origin(2L, 88L)
 
-# simlate finalized object
-sm.finalized_f = True
 print sm
 # (*) minimize the number of states using hopcroft optimization
 optimal_sm = sm.get_hopcroft_optimization()

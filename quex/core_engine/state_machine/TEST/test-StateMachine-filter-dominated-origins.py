@@ -27,7 +27,6 @@ sm3.mark_state_origins()
 
 # -- paralellize the patterns    
 sm = parallelize.do([sm0, sm1, sm2, sm3])
-sm.finalized_f = True    
 # -- create the optimized DFA for the patterns running in paralell
 sm = sm.get_DFA()    
 sm = sm.get_hopcroft_optimization() 

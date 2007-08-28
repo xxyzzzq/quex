@@ -15,7 +15,6 @@ def test(sm, post_sm):
     print "EXPRESSION = ", sm
     print "POST CONDITION = ", post_sm
     result = setup_post_condition.do(sm, post_sm)
-    result.finalized_f = True    
     print "APPENDED = ", result
     result = result.get_DFA()
     print "DFA = ", result

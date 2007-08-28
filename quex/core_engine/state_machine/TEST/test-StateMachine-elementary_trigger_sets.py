@@ -31,8 +31,6 @@ sm.create_new_state(StateIdx=2)
 sm.create_new_state(StateIdx=3)
 sm.create_new_state(StateIdx=4)
 
-sm.finalize()
-
 print "# in gnuplot: plot [0:70] \"tmp\" w l" 
 
 for key, trigger_set in sm.states[10].get_trigger_dictionary().items():

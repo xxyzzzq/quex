@@ -15,7 +15,6 @@ def test(sm, pre_sm):
     print "EXPRESSION = ", sm
     print "PRE-CONDITION = ", pre_sm
     result = setup_pre_condition.do(sm, pre_sm)
-    result.finalized_f = True    
     print "with pre-condition = ", result
 
 print "-------------------------------------------------------------------------------"

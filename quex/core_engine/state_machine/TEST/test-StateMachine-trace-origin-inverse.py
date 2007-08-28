@@ -19,16 +19,15 @@ def invert_this(sm):
     print "inverse  = ", tmp 
     return tmp
 
-sm0.mark_state_origins(); sm0.finalized_f = True    
-# sm1.mark_state_origins(); sm1.finalized_f = True    
-sm2.mark_state_origins(); sm2.finalized_f = True    
+sm0.mark_state_origins() 
+# sm1.mark_state_origins()
+sm2.mark_state_origins()
     
 sm0 = invert_this(sm0)
 # invert_this(sm1)
 sm2 = invert_this(sm2)
 
 sm = parallelize.do([sm0, sm2])  
-sm.finalized_f = True    
 
 print "-------------------------------------------------------------------------------"
 print "## paralellized = ", sm

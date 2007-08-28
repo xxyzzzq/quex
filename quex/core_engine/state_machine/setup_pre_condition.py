@@ -47,7 +47,6 @@ def do(the_state_machine, pre_condition_state_machine):
         
     # (*) invert the state machine of the pre-condition 
     inverse_pre_condition = pre_condition_state_machine.get_inverse()
-    inverse_pre_condition.finalized_f = True
     inverse_pre_condition = inverse_pre_condition.get_DFA()
     inverse_pre_condition = inverse_pre_condition.get_hopcroft_optimization()
     # -- mark other state machine with original state machine id

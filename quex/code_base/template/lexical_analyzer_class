@@ -293,10 +293,12 @@ namespace quex {
 	template <class InputHandle> 
 	void   include_stack_push(InputHandle*, const quex_mode&,
                                   const char* IConvInputCodingName = 0x0);
-	template <class InputHandle> 
-	void   include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
-                                  const char* IConvInputCodingName);
 	bool   include_stack_pop();
+
+     private:
+	template <class InputHandle> 
+	void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+                                    const char* IConvInputCodingName);
 #   endif   
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -975,7 +977,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 			      const char*       IConvInputCodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-        include_stack_push(new_input_handle_p, mode.analyser_function, IConvInputCodingName);
+        __include_stack_push(new_input_handle_p, mode.analyser_function, IConvInputCodingName);
     }
     template <class InputHandle> inline void	
     CLASS::include_stack_push(InputHandle*   new_input_handle_p, 
@@ -985,12 +987,12 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
 	assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < %%MAX_MODE_CLASS_N%% + 1));
 	if( MODE_ID == -1 ) 
-	    include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName);	
+	    __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName);	
         else
-	    include_stack_push(new_input_handle_p, mode_db[MODE_ID]->analyser_function, IConvInputCodingName);
+	    __include_stack_push(new_input_handle_p, mode_db[MODE_ID]->analyser_function, IConvInputCodingName);
     }
     template <class InputHandle> inline void	
-    CLASS::include_stack_push(InputHandle*         new_input_handle_p, 
+    CLASS::__include_stack_push(InputHandle*         new_input_handle_p, 
 			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
 			      const char*          IConvInputCodingName)
     {
@@ -1049,6 +1051,9 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 	CLASS::memento&  previous = _include_stack.back();
 
         this->__buffer = previous.buffer_p;
+
+        delete previous.buffer_p;
+
 	this->char_covered_by_terminating_zero    = previous.char_covered_by_terminating_zero;
 	this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;
 	this->__continue_analysis_after_adapting_mode_function_p_f = \

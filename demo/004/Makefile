@@ -36,7 +36,7 @@ LIBRARY_OBJS     = $(ENGINE_NAME).o
 # -- compiler
 CC = g++ -c -Wno-deprecated -Wall \
 	 -I./  -I$(QUEX_PATH) \
-	 -O3 \
+	 -ggdb \
          -DQUEX_SETTING_BUFFER_SIZE=0x8000 \
 	 -DNDEBUG                          \
 

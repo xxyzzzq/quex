@@ -35,7 +35,6 @@ si0_2 = sm0.add_transition(si0_1, ord('b'))
 si0_3 = sm0.add_transition(si0_2, ord('c'))
 sm0.add_transition(si0_1, ord('d'), si0_3)
 sm0.add_transition(si0_3, ord('e'), AcceptanceF=True)
-sm0.finalize()
 
 
 # SM1:   (4)-- 'a-g' -->(5)--- 'e' --->(6)--- 'f' ---> SUCCESS
@@ -49,7 +48,6 @@ sm1.add_transition(si1_0, ord('g'), si1_1)
 si1_2 = sm1.add_transition(si1_1, ord('e'))
 sm1.add_transition(si1_1, None, si1_1)         # else --> same state
 si1_3 = sm1.add_transition(si1_2, ord('f'), AcceptanceF=True)
-sm1.finalize()
 
 # SM2:   (7)--- 'g' --->(8)--- 'e' --->(9)--- 'h' --->(10)--- 'e' ---> SUCCESS
 #                        ^                             |
@@ -62,7 +60,6 @@ si2_2 = sm2.add_transition(si2_1, ord('e'))
 si2_3 = sm2.add_transition(si2_2, ord('h'))
 sm2.add_transition(si2_3, ord('g'), si2_1)         
 si2_4 = sm2.add_transition(si2_3, ord('e'), AcceptanceF=True)
-sm2.finalize()
 
 #
 # SM3:   (10)--- 'a' --->(11)--- 'b' --->(12)--- 'c' ---> SUCCESS
@@ -72,6 +69,5 @@ si3_0 = sm3.init_state_index
 si3_1 = sm3.add_transition(si3_0, ord('a'))
 si3_2 = sm3.add_transition(si3_1, ord('b'))
 si3_3 = sm3.add_transition(si3_2, ord('c'), AcceptanceF=True)
-sm3.finalize()
 
 

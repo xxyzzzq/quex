@@ -484,7 +484,6 @@ def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
     return result
 
 def __beautify(the_state_machine):
-    the_state_machine.finalize()
     result = the_state_machine.get_DFA()
     result = result.get_hopcroft_optimization()    
     return result
@@ -530,7 +529,6 @@ def __construct(core_sm, pre_condition=None, post_condition=None):
         result = setup_pre_condition.do(result, pre_condition)
         result = __beautify(result)
 
-    result.finalized_f = True
 
     return result
   

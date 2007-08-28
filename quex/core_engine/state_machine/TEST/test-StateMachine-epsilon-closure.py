@@ -15,7 +15,6 @@ test_sm0 = repeat.do(sm0, 1)
 
 print "## state machine = ", test_sm0
 print "## compute epsilon closures of all states:"
-test_sm0.finalize()
 
 normal_epsilon_closures = []
 for state_idx in test_sm0.get_state_indices():

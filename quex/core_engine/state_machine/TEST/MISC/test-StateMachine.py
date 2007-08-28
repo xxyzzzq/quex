@@ -20,6 +20,4 @@ state_idx = sm.add_transition(state_idx, ord('l'))
 state_idx = sm.add_transition(state_idx, ord('l'))
 state_idx = sm.add_transition(state_idx, ord('o'), RaiseSuccessF=True)
 
-sm.finalize()
-
 print sm
