@@ -1050,9 +1050,8 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 	CLASS::memento&  previous = _include_stack.back();
 
+        delete this->__buffer;
         this->__buffer = previous.buffer_p;
-
-        delete previous.buffer_p;
 
 	this->char_covered_by_terminating_zero    = previous.char_covered_by_terminating_zero;
 	this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;

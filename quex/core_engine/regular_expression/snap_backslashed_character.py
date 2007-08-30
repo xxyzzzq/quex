@@ -13,19 +13,28 @@ backslashed_character_db = {
 }
         
 def do(x, i, ReducedSetOfBackslashedCharactersF=False):
-    """x = string containing characters after 'the backslash'
+    """All backslashed characters shall enter this function. In particular 
+       backslashed characters appear in:
+        
+             "$50"     -- quoted strings
+             [a-zA-Z]  -- character sets
+             for       -- lonestanding characters 
+    
+       x = string containing characters after 'the backslash'
        i = position of the backslash in the given string
+
+       ReducedSetOfBackslashedCharactersF indicates whether we are outside of a quoted
+       string (lonestanding characters, sets, etc.) or inside a string. Inside a quoted
+       string there are different rules, because not all control characters need to be
+       considered.
 
        RETURNS: UCS code of the interpreted character,
                 index of first element after the treated characters in the string
-
     """
-    if type(x) != str and type(x) != list:       
-        raise "expected a string or list of integers (ucs values) as first argument"
-    if type(i) != int:       
-        raise "expected an integer as second argument"
-    if i < -1 or i >= len(x) -1: 
-        raise "string '%s' does not have a position %i" % (x, i+1)
+    assert type(x) == str or type(x) == list       
+    assert type(i) == int       
+    assert i >= -1 and i < len(x) -1
+
     if type(x) == str:
         x = map(ord, x)  # transform string into a list of ASCII values (UCS page 0)
 
@@ -43,14 +52,7 @@ def do(x, i, ReducedSetOfBackslashedCharactersF=False):
 
     elif chr(x[i+1]).isdigit():
         # octal number 
-        # **THIS IS FOR COMPLIANCE WITH FLEX SYNTAX**
-        numbe_str = chr(x[i+1])
-        u = i + 2
-        while u < i + 5 and chr(x[u]).isdigit():
-            number_str = chr(x[u])
-        number = long(numbe_str, 8)     
-        if number > 2^31:
-            return False, "octal number > 2^31. Unicode letters have a max. index of 2^31"
+        number, i = __parse_octal_number(x, i+1, i+5)
         # ATE: until u 
         return number, i
 
@@ -65,8 +67,28 @@ def do(x, i, ReducedSetOfBackslashedCharactersF=False):
         number, i = __parse_hex_number(x, i+2, i+6)
         return number, i
 
+    elif x[i+1] == ord('U'):
+        # 2 byte character code point
+        number, i = __parse_hex_number(x, i+2, i+8)
+        return number, i
+
     else:
         return None, i
+
+def __parse_octal_number(x, u, MaxL):
+    """x    = string to be parsed
+       i    = start position in string to be considered
+       MaxL = first position after end of string to be parsed
+    """
+    Lx = len(x)
+    MaxL = min(Lx, MaxL)
+    number_str = ""
+
+    while u < MaxL and chr(x[u]).isdigit() and x[u] < ord("8"): 
+        number_str += chr(x[u])
+        u += 1
+        
+    return long(number_str, 8), u      
 
 def __parse_hex_number(x, u, MaxL):
     """x    = string to be parsed
@@ -74,11 +96,13 @@ def __parse_hex_number(x, u, MaxL):
        MaxL = first position after end of string to be parsed
     """
     Lx = len(x)
-    MaxL = max(Lx, MaxL)
+    MaxL = min(Lx, MaxL)
+    number_str = ""
 
     while u < MaxL and \
          (chr(x[u]).isdigit() or 
           chr(x[u]) in ['a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F']):
         number_str += chr(x[u])
+        u += 1
         
     return long(number_str, 16), u      

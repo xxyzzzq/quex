@@ -1,6 +1,7 @@
-(*) 07y8m11d:
+(*) 07y5m24d:
 
-    support internal codings other than ASCII, UCS-2 and UCS-4
+    Check for the \u and \U implementations for uni-code on non-control 
+    characters.
 
 (*) 07y8m9d:
 
@@ -10,6 +11,10 @@
 
     automatic token id generation in case that a token id is not specified.
     at least automatic detection of undeclared token ids in the => sections.
+
+(*) 07y8m11d:
+
+    support internal codings other than ASCII, UCS-2 and UCS-4
 
 (*) 07y8m4d:
 
@@ -31,11 +36,6 @@
 
     Try to identify used and unused functions.
 
-
-(*) 07y5m24d:
-
-    Check for the \u and \U implementations for uni-code on non-control 
-    characters.
 
 (*) 07y5m17d:
 
