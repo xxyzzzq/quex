@@ -27,15 +27,15 @@ whole job. Those are the following:
 The functions can be grouped according to two actions: pushing the current state
 of the lexical analyzer on an include stack and popping the last pushed state
 of the lexical analyzer from the include stack. The overloaded functions
-{\tt include_stack_push($\ldots$)} require as a first argument a {\tt FILE*}
+{\tt include\_stack\_push($\ldots$)} require as a first argument a {\tt FILE*}
 or an {\tt istream*} pointer of the stream which is supposed to be the new
 input stream. The analyzer then automatically creates a new buffer object and
 sets everything up for the input from the new stream. Also, the current
 state is stored in a stack. If the program feels that is has finished parsing 
 an {\it included file}\footnote{This happens usually on the occasion of 'end of file'.}
 then it may want to return to the {\it including file}. The reset of the old 
-state is now easily possible using the function {\tt include_stack_pop()}. 
+state is now easily possible using the function {\tt include\_stack\_pop()}. 
 It {\it deletes} the buffer of the included file, but it does not delete
 the related input stream. If there is something to do with it, it has to be done
-{\it before} calling {\tt include_stack_pop()}. In particular, it 
+{\it before} calling {\tt include\_stack\_pop()}. In particular, it 
 is generally a good idea to close the file stream when reading has finished.

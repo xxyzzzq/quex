@@ -1,3 +1,8 @@
+(*) 07y5m24d:
+
+    Check for the \u and \U implementations for uni-code on non-control 
+    characters.
+
 (*) 07y8m28d from 07y5m16:
 
     Either delete the .finalize stuff from the state machine or do something

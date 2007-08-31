@@ -30,23 +30,13 @@ class Transition:
     # transitions to trigger). Finally, the target state is entered.
     #
     def __init__(self, TriggerSet, TargetStateIdx):
-        if TriggerSet.__class__.__name__ != "NumberSet":
-            raise "required: 1st arg 'TriggerSet' = NumberSet, received ", repr(TriggerSet)
-        if type(TargetStateIdx) != long:
-            raise "required: 2nd arg 'TargetStateIdx' = long, received ", repr(TargetStateIdx)
+        assert TriggerSet.__class__.__name__ == "NumberSet"
+        assert type(TargetStateIdx) == long
        
         # set of characters that trigger the transition 
         self.trigger_set        = TriggerSet
         # target state index (where one lands if transition is performed)
         self.target_state_index = TargetStateIdx
-        
-    def compare_path(self, TargetStateIdx):
-        """Compares only the path, i.e. anything else but the trigger set of another transition.
-           RETURNS:   True = path is the same, False otherwise.
-        """
-        if type(TargetStateIdx) != long:
-            raise "TargetStateIdx must be of type long"
-        return self.target_state_index == TargetStateIdx
 
     def get_string(self, ElseTransitionF=False):
         """Return a string representation of the Transition. If 'ElseTransitionF' is 
@@ -153,18 +143,19 @@ class StateOriginInfo:
                  current acceptance state of the origin.
         """
         sm = get_state_machine_by_id(self.state_machine_id)
+
         if sm.states.has_key(self.state_index):
             state = sm.states[self.state_index]
         else:
-           if sm.pre_condition_state_machine == None:
-               raise "state machine '%s' does not have a state '%s'" % \
-                     (self.state_machine_id, self.state_index) 
-           elif sm.pre_condition_state_machine.states.has_key(self.state_index):
-               state = sm.pre_condition_state_machine.states[self.state_index]
-           else:
-               raise "state machine '%s' does not have a state '%s'" % \
-                     (self.state_machine_id, self.state_index) + \
-                     "nor does its pre-condition state machine"
+            # key has not been found in the core state machine, ...
+            # does it exist in the pre-condition state machine?
+           assert sm.pre_condition_state_machine != None \
+                  and sm.pre_condition_state_machine.states.has_key(self.state_index), \
+                  "state machine '%s' does not have a state '%s'" % \
+                  (self.state_machine_id, self.state_index) + \
+                  "nor does its pre-condition state machine"
+
+           state = sm.pre_condition_state_machine.states[self.state_index]
                    
                
         return state.is_acceptance()
@@ -179,21 +170,21 @@ class StateOriginInfo:
                  self.state_index      == other.state_index                           
 
         if result == True: 
-            if self.__store_input_position_f != other.__store_input_position_f:
-                raise "Two StateOriginInfo objects report about the same state different\n" \
-                      "information about the input being stored or not.\n" \
-                      "state machine id = " + repr(self.state_machine_id) + "\n" + \
-                      "state index      = " + repr(self.state_index)
-            if self.__pre_condition_id != other.__pre_condition_id:
-                raise "Two StateOriginInfo objects report about the same state different\n" \
-                      "information about the pre-conditioned acceptance.\n" \
-                      "state machine id = " + repr(self.state_machine_id) + "\n" + \
-                      "state index      = " + repr(self.state_index)
-            if self.__post_conditioned_acceptance_f != other.__post_conditioned_acceptance_f:
-                raise "Two StateOriginInfo objects report about the same state different\n" \
-                      "information about the post-conditioned acceptance.\n" \
-                      "state machine id = " + repr(self.state_machine_id) + "\n" + \
-                      "state index      = " + repr(self.state_index)
+            assert self.__store_input_position_f == other.__store_input_position_f, \
+                   "Two StateOriginInfo objects report about the same state different\n" \
+                   "information about the input being stored or not.\n" \
+                   "state machine id = " + repr(self.state_machine_id) + "\n" + \
+                   "state index      = " + repr(self.state_index)
+            assert self.__pre_condition_id == other.__pre_condition_id, \
+                   "Two StateOriginInfo objects report about the same state different\n" \
+                   "information about the pre-conditioned acceptance.\n" \
+                   "state machine id = " + repr(self.state_machine_id) + "\n" + \
+                   "state index      = " + repr(self.state_index)
+            assert self.__post_conditioned_acceptance_f == other.__post_conditioned_acceptance_f, \
+                   "Two StateOriginInfo objects report about the same state different\n" \
+                   "information about the post-conditioned acceptance.\n" \
+                   "state machine id = " + repr(self.state_machine_id) + "\n" + \
+                   "state index      = " + repr(self.state_index)
 
         return result     
 
@@ -201,16 +192,14 @@ class StateOriginInfo:
         self.__store_input_position_f = Value
 
     def set_pre_condition_id(self, Value=True):
-        if type(Value) != long:
-            raise "set_pre_condition_id(Value): Value must be of type 'long'"
+        assert type(Value) == long
         self.__pre_condition_id = Value
 
     def set_pre_condition_begin_of_line_f(self, Value=True):
         self.__pre_condition_begin_of_line_f = Value
 
     def set_post_conditioned_acceptance_f(self, Value=True):
-        if type(Value) != bool:
-            raise "set_post_conditioned_acceptance_f(Value): Value must be of type 'bool'"
+        assert type(Value) == bool
         self.__post_conditioned_acceptance_f = Value
 
     def pre_condition_id(self):
@@ -306,8 +295,7 @@ class StateInfo:
         
     def get_result_list(self, Trigger):
         """Returns the set of resulting target states."""
-        if type(Trigger) != int:
-            raise "Trigger: 1st argument must be of type int, received", Trigger
+        assert type(Trigger) == int
 
         result_list = []
         for t in self.__transition_list:
@@ -517,8 +505,8 @@ class StateInfo:
 
         # (*) post check assert
         for entry in trigger_map:
-            if entry[0].end == None:
-                raise "remaining open intervals in trigger map construction"
+            assert entry[0].end != None, \
+                   "remaining open intervals in trigger map construction"
 
         return trigger_map
 
@@ -597,27 +585,21 @@ class StateInfo:
                                                   map(lambda t: t.trigger_set, self.__transition_list)))
               
     def has_none_of_triggers(self, CharacterCodeList):
-        if type(CharacterCodeList) != type([]):
-            raise "Character code must be of type 'list'\n" + \
-                  "received: " + repr(CharacterCodeList) + " " + repr(type(CharacterCodeList))
+        assert type(CharacterCodeList) == type([])
 
         for code in CharacterCodeList:
             if self.has_trigger(code): return False
         return True
 
     def has_one_of_triggers(self, CharacterCodeList):
-        if type(CharacterCodeList) != type([]):
-            raise "Character code must be of type 'list'\n" + \
-                  "received: " + repr(CharacterCodeList) + " " + repr(type(CharacterCodeList))
+        assert type(CharacterCodeList) == type([])
 
         for code in CharacterCodeList:
             if self.has_trigger(code): return True
         return False
 
     def has_trigger(self, CharacterCode):
-        if type(CharacterCode) != int:
-            raise "Character code must be of type 'int'\n" + \
-                  "received: " + repr(CharacterCode) + " " + repr(type(CharacterCode))
+        assert type(CharacterCode) == int
 
         if self.get_result_state_index(CharacterCode) == None: return False
         else:                                                  return True
@@ -637,8 +619,8 @@ class StateInfo:
                  'store_input_position_f' is to be adpated manually using the
                  function 'set_store_input_position_f'
         """      
-        if type(Value) != bool:
-            raise "StateInfo: acceptance flag can only be set to a bool value"
+        assert type(Value) == bool
+
         self.__acceptance_f = Value
         # default: store_input_position_f follows acceptance_f
         if not LeaveStoreInputPositionF: self.set_store_input_position_f(Value)
@@ -685,19 +667,9 @@ class StateInfo:
             __set_origin(self, new_origin)
             return
 
-        elif type(StateMachineID_or_StateOriginInfo) == long:
-            StateMachineID = StateMachineID_or_StateOriginInfo
-        elif type(StateMachineID_or_StateOriginInfo) == int:
-            StateMachineID = long(StateMachineID_or_StateOriginInfo)
-        else:
-            raise "1st argument must be of type 'long' (maybe 'int') or 'StateOriginInfo'\n" + \
-                  "found: %s" % (repr(StateMachineID_or_StateOriginInfo))       
-
-        if type(StateIdx) == int:
-            StateMachineID = long(StateIdx)
-        elif type(StateIdx) != long:
-            raise "2nd argument must be of type 'long' (maybe 'int')\n" + \
-                  "found: %s" % (repr(StateIdx))        
+        StateMachineID = StateMachineID_or_StateOriginInfo
+        assert type(StateMachineID) == long
+        assert type(StateIdx) == long
            
         # -- create the origin data structure             
         if StoreInputPositionF == None: StoreInputPositionF = self.is_acceptance()
@@ -729,10 +701,8 @@ class StateInfo:
         
         RETURNS: The target state index (may be created newly).
         """
-        if type(TargetStateIdx) != long and TargetStateIdx != None:
-            raise "required: 2nd arg 'TargetStateIdx' = long, received ", repr(TargetStateIdx)
-        if Trigger.__class__.__name__ not in ["int", "list", "Interval", "NumberSet", "NoneType"]: 
-            raise "required: 1st arg 'Trigger' is not one of {int, Interval, NumberSet, list, None}, received ", repr(Trigger)
+        assert type(TargetStateIdx) == long or TargetStateIdx == None
+        assert Trigger.__class__.__name__ in ["int", "list", "Interval", "NumberSet", "NoneType"] 
 
         if Trigger == None:
             # Trigger = None means that the remaining set of triggers is to be
@@ -811,8 +781,8 @@ class StateInfo:
             # there can be only one original state for code generation
             # THIS IS NOT CORRECT for post conditions (does this function still make sense? fschaef)
             if DesireCodeGenerationF:
-                if len(self.__origin_list) != 1:
-                    raise "list of origins must contain exactly one 'winner state' for acceptance"
+                assert len(self.__origin_list) == 1, \
+                       "list of origins must contain exactly one 'winner state' for acceptance"
                     
     def adapt_origins(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
@@ -1034,8 +1004,7 @@ class StateMachine:
 
     def get_target_state_indices(self, StateIdx):
         """Returns a list of all target states that can be reached from state 'StateIdx'."""
-        if not self.has_start_state_index(StateIdx):  
-            raise "state index " + repr(StateIdx) + " not contained in state machine."
+        assert self.has_start_state_index(StateIdx)  
 
         return self.states[StateIdx].get_target_state_indices()
 
@@ -1043,8 +1012,7 @@ class StateMachine:
         """RETURNS: State index of the state reached by triggering 'Trigger'
                     in state 'StateIdx'.
         """
-        if not self.has_start_state_index(StateIdx):  
-            raise "state index " + repr(StateIdx) + " not contained in state machine."
+        assert self.has_start_state_index(StateIdx)  
 
         return self.states[StateIdx].get_result_state_index(Trigger)
 
@@ -1082,10 +1050,10 @@ class StateMachine:
     def get_epsilon_closure(self, StateIdx, _considered_state_indices=None):
         """Return all states that can be reached from 'StateIdx' via epsilon
         transition."""
+        assert self.has_state_index(StateIdx)
+
         if _considered_state_indices == None: 
             _considered_state_indices = []
-        if self.has_state_index(StateIdx) == False:
-            raise "error: state index " + repr(StateIdx) + " does not exist in state machine."
 
         aggregated_epsilon_closure = [ StateIdx ] 
         for ti in self.states[StateIdx].get_epsilon_target_state_indices():
@@ -1103,11 +1071,10 @@ class StateMachine:
            NOTE: This functions traces down the epsilon transitions and adds all states of the
                  epsilon transition to the collected transitions.
         """
-        if type(state_machines) != list or len(state_machines) == 0:
-            raise "expect argument of type non-empty 'list' received:", repr(state_machines)
-        if map(lambda x: x.__class__.__name__, state_machines) != ["StateMachine"] * len(state_machines):
-            raise "expected an argument consisting only of objects of State Machines\n" + \
-                  "received:" + repr(map(lambda x: x.__class__.__name__, state_machines))
+        assert type(state_machines) == list
+        assert len(state_machines) != 0
+
+        assert map(lambda x: x.__class__.__name__, state_machines) == ["StateMachine"] * len(state_machines)
 
         # epsilon closure of state = union of epsilon closure of each state
         # (use a dictionary to ensure uniqueness of states)
@@ -1420,15 +1387,14 @@ class StateMachine:
                                             the original target state in
                                             self.states[StateIdx]
             """
-            if StateIdx.__class__.__name__ != "long":
-                raise "1st arg 'StateIdx' is supposed to be of type long \n" + \
-                      "received \"%s\"" % repr(StateIdx)
+            assert type(StateIdx) == long
+
             aux_state = StateInfo()
             for t in self.states[StateIdx].get_transitions():
                 state_set_i = get_state_set_containing_state_index(t.target_state_index, StateSetList)  
-                if state_set_i == -1L:
-                    raise "target state '" + repr(t.target_state_index) + "' not contained in any state set" + \
-                          "state sets = " + repr(StateSetList)
+                assert state_set_i != -1L, \
+                       "target state '" + repr(t.target_state_index) + "' not contained in any state set" + \
+                       "state sets = " + repr(StateSetList)
                     
                 aux_state.add_transition(t.trigger_set, state_set_i)
 
@@ -1466,10 +1432,11 @@ class StateMachine:
                 state_set_i += 1
                 
                 N = len(state_set)
-                if N == 0: 
-                    raise "state set of size '0' occured\n" + \
-                          "state sets = " + repr(state_set_list)
-                elif N == 1:
+                assert N != 0, \
+                       "state set of size '0' occured\n" + \
+                       "state sets = " + repr(state_set_list)
+
+                if N == 1:
                     # only one state in state set => no change possible
                     continue    
                 # auxiliary states: an auxiliary state 'i' triggers to the state_set 'k' if 
@@ -1532,9 +1499,9 @@ class StateMachine:
         state_set_idx = -1L
         for state_set in state_set_list:
             state_set_idx += 1L
-            if state_set == []:
-                raise "state set of size '0' occured\n" + \
-                      "state sets = " + repr(state_set_list)
+            assert state_set != [], \
+                   "state set of size '0' occured\n" + \
+                   "state sets = " + repr(state_set_list)
 
             # states in one set behave all equivalent with respect to target state sets
             # thus only one state from the start set has to be considered.      
@@ -1578,9 +1545,8 @@ class StateMachine:
         """
         #__________________________________________________________________________________________
         # TODO: See th above comment and think about it.
-        if self.pre_condition_state_machine != None or \
-           self.has_trivial_pre_condition():
-               raise "pre-conditioned state machines cannot be inverted via 'get_inverse()'"
+        assert self.pre_condition_state_machine == None and not self.has_trivial_pre_condition(), \
+               "pre-conditioned state machines cannot be inverted via 'get_inverse()'"
 
         #__________________________________________________________________________________________
         result = StateMachine(InitStateIndex=self.init_state_index)
@@ -1665,9 +1631,10 @@ class StateMachine:
         original_sm_list = {}
         for origin in origin_list:
             original_sm_list[origin.state_machine_id] = True
-        if len(original_sm_list.keys()) > 1:
-            raise "state machine has more than one original state machine.\n" + \
-                  "state machine ids: ", repr(original_sm_list)
+
+        assert len(original_sm_list.keys()) <= 1, \
+               "state machine has more than one original state machine.\n" + \
+               "state machine ids: " + repr(original_sm_list)
 
         return original_sm_list.keys()[0]         
                 
@@ -1745,8 +1712,8 @@ class StateMachine:
 
     def delete_epsilon_transition(self, StartStateIdx, TargetStateIdx):
 
-        if self.has_state_index(StateIdx) == False:
-            raise "error: state index ", repr(StateIdx), " does not exist in state machine."
+        assert self.has_state_index(StateIdx)
+
         self.states[StartStateIdx].delete_epsilon_target_state(TargetStateIdx)  
 
     def mark_state_origins(self, OtherStateMachineID=-1L, DontMarkIfOriginsPresentF=False):
@@ -1765,8 +1732,7 @@ class StateMachine:
               to ensure that every state has an origin structure related to it, without
               overiding existing ones.
         """
-        if type(OtherStateMachineID) != long:
-           raise "StateMachineID and StateIdx must be of type 'long'."
+        assert type(OtherStateMachineID) == long
 
         if OtherStateMachineID == -1L: state_machine_id = self.__id
         else:                          state_machine_id = OtherStateMachineID
@@ -1798,15 +1764,11 @@ class StateMachine:
 
            RETURNS: The target state index.
         """
-        if type(StartStateIdx) != long:
-            raise "required: 1st arg 'StartStateIdx' = long, received ", repr(StartStateIdx)
+        assert type(StartStateIdx) == long
         # NOTE: The Transition Constructor is very tolerant, so no tests on TriggerSet()
-        # if TriggerSet.__class__.__name__ != "NumberSet":
-        #    raise "required: 2nd arg 'TriggerSet' = NumberSet, received ", repr(TriggerSet)
-        if type(TargetStateIdx) != long and TargetStateIdx != None:
-            raise "required: 3rd arg 'TargetStateIdx' = long, received ", repr(TargetStateIdx)
-        if type(AcceptanceF) != bool:
-            raise "required: 4th arg 'AcceptanceF' = bool, received ", repr(AcceptanceF)
+        #       assert TriggerSet.__class__.__name__ == "NumberSet"
+        assert type(TargetStateIdx) == long or TargetStateIdx == None
+        assert type(AcceptanceF) == bool
 
         # If target state is undefined (None) then a new one has to be created
         if TargetStateIdx == None:
@@ -1822,9 +1784,7 @@ class StateMachine:
         return self.states[StartStateIdx].add_transition(TriggerSet, TargetStateIdx)
             
     def add_epsilon_transition(self, StartStateIdx, TargetStateIdx=None, RaiseAcceptanceF=False):
-        if TargetStateIdx != None and type(TargetStateIdx) != long:
-            raise "error: 2nd arg 'TargetStateIdx' needs to be None or of type long\n" + \
-                  "error: received '%s'" % repr(TargetStateIdx)  
+        assert TargetStateIdx == None or type(TargetStateIdx) == long
 
         # create new state if index does not exist
         if not self.has_start_state_index(StartStateIdx):
@@ -1864,14 +1824,14 @@ class StateMachine:
         """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 
            The initial states epsilon transition to TERMINATE is deleted."""
 
-        if self.has_state_index(self.init_state_index) == False:
-            raise "error: initial state index " + repr(self.init_state_index) + " does not exist in state machine!?."
+        assert self.has_state_index(self.init_state_index)
+
         self.states[self.init_state_index].add_epsilon_target_state(TargetStateIdx)
 
     def set_acceptance(self, StateIdx, StatusF=True):
 
-        if self.has_state_index(StateIdx) == False:
-            raise "error: state index " + repr(StateIdx) + " does not exist in state machine!"
+        assert self.has_state_index(StateIdx)
+
         self.states[StateIdx].set_acceptance(StatusF)
 
     def set_trivial_pre_condition_begin_of_line(self):
