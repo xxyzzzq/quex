@@ -92,9 +92,8 @@ def __check_for_EOF_or_FAIL_pattern(stream, InitialPosition, EndOfFile_Code):
         return create_EOF_detecting_state_machine(EndOfFile_Code)
     stream.seek(InitialPosition)
     # -- is it the <<FAIL>> rule?
-    if stream.read(len("<<FAIL>>")) == "<<FAIL>>":  
-        raise "error: '<<FAIL>>' regular expression should not reach regular expression parser"
-        # return "<<FAIL>>"
+    assert stream.read(len("<<FAIL>>")) != "<<FAIL>>", \
+           "error: '<<FAIL>>' regular expression should not reach regular expression parser"
 
     stream.seek(InitialPosition)
     return None
@@ -268,7 +267,7 @@ def snap_primary(stream, PatternDict):
         result = snap_expression(stream, PatternDict)
         if stream.read(1) != ")": 
             stream.seek(-1, 1)
-            raise "error: missing closing ')' after expression. found '%s'" % stream.read()
+            raise RegularExpressionException("missing closing ')' after expression. found '%s'" % stream.read())
 
     elif x.isspace():
         # a lonestanding space ends the regular expression
@@ -371,7 +370,8 @@ def snap_replacement(stream, PatternDict):
     pattern_name = __snap_until(stream, "}")  
     pattern_name = trim(pattern_name)    
     if PatternDict.has_key(pattern_name) == False:
-        raise "Pattern of name '%s' was not defined" % pattern_name
+        raise RegularExpressionException("Pattern of name '%s' was not defined in any preceding 'define { }' section" \
+                                         % pattern_name)
         
     # transform string into state machine        
     # NOTE: The result may again contain a pattern identifier, etc.     

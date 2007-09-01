@@ -18,8 +18,7 @@ def do(UTF8_String):
     
     # transform the range-string into a trigger set
     trigger_set, comment = __get_utf8_trigger_set(UTF8_String)
-    if trigger_set == False:
-        raise comment
+    assert trigger_set != False, comment
 
     # create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.

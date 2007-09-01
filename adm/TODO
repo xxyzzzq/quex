@@ -1,15 +1,7 @@
-(*) 07y8m9d:
-
-    Unify Exception Handling
-
 (*) 07y8m4d:
 
     automatic token id generation in case that a token id is not specified.
     at least automatic detection of undeclared token ids in the => sections.
-
-(*) 07y8m11d:
-
-    support internal codings other than ASCII, UCS-2 and UCS-4
 
 (*) 07y8m4d:
 
@@ -95,4 +87,8 @@ ENTRY_INTO_MACHINE:
        goto REENTRY;  // jump_position has been set at the state ...
 
 
+
+(*) 07y8m11d:
+
+    support internal codings other than ASCII, UCS-2 and UCS-4
 

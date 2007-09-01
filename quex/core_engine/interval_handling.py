@@ -167,8 +167,7 @@ class Interval:
 
     def get_utf8_string(self):
         #_____________________________________________________________________________
-        if self.begin > self.end:
-            raise "Begin of interval '%i' lies behind end of interval '%i'." % (self.begin, self.end)
+        assert self.begin <= self.end
         
         def utf8_char(Code):
             if   Code == - sys.maxint:   return "-oo"
@@ -216,14 +215,14 @@ class NumberSet:
            Arg = Interval ==> initial interval
            Arg = integer  ==> interval consisting of one number
            """
+        arg_type = Arg.__class__.__name__
+        assert arg_type in  ["Interval", "NumberSet", "int", "list"] or Arg == None
         self.__intervals = []
         
         if type(Arg) == list:
             # use 'add_interval' to ensure consistency
             for interval in Arg:
-                if interval.__class__.__name__ != "Interval":
-                    raise "list contained object of type %s\nexpected 'Interval'" % \
-                          interval.__class__.__name__
+                assert interval.__class__.__name__ == "Interval"
                 self.add_interval(deepcopy(interval))
 
         elif Arg.__class__.__name__ == "Interval":
@@ -234,10 +233,6 @@ class NumberSet:
 
         elif type(Arg) == int:
             self.add_interval(Interval(Arg))
-
-        elif Arg != None:
-            # Arg == -1 => empty number set
-            raise "error: no way to handle Arg = ", repr(Arg)
 
     def add_interval(self, NewInterval):
         """Adds an interval and ensures that no overlap with existing
@@ -354,8 +349,7 @@ class NumberSet:
     def difference(self, Other):
         if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
 
-        if self.__overlappers() != []:
-            raise "NumberSet::difference() expects non-overlapping intervals"
+        assert self.__overlappers() == []
         
         # note: there should be no overlaps according to 'add_interval'
         remainder = deepcopy(self)
@@ -453,10 +447,10 @@ class NumberSet:
         MiddleInterval_Idx = (UppestInterval_Idx + LowestInterval_Idx) / 2
         
         # quick check:
-        if UppestInterval_Idx < LowestInterval_Idx:
-            raise "NumberSet::conditions_code(): strange interval indices:" + \
-                  "lowest interval index = " + repr(LowestInterval_Idx) + \
-                  "uppest interval index = " + repr(UppestInterval_Idx)
+        assert UppestInterval_Idx >= LowestInterval_Idx, \
+               "NumberSet::conditions_code(): strange interval indices:" + \
+               "lowest interval index = " + repr(LowestInterval_Idx) + \
+               "uppest interval index = " + repr(UppestInterval_Idx)
         
         middle = self.__intervals[MiddleInterval_Idx]
         

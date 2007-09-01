@@ -26,23 +26,15 @@ def do(the_state_machine, pre_condition_state_machine):
     """
     #___________________________________________________________________________________________
     # (*) do some consistency checking   
-    if the_state_machine.__class__.__name__ != "StateMachine":
-        raise "expected 1st argument as objects of class StateMachine\n" + \
-              "received: " + the_state_machine.__class__.__name__
-    if pre_condition_state_machine.__class__.__name__ != "StateMachine":
-        raise "expected 2nd argument as objects of class StateMachine\n" + \
-              "received: " + pre_condition_state_machine.__class__.__name__
-
+    assert the_state_machine.__class__.__name__ == "StateMachine"
+    assert pre_condition_state_machine.__class__.__name__ == "StateMachine"
     # -- state machines with no states are senseless here. 
-    if the_state_machine.is_empty():
-        raise  "empty state machine can have no pre-condition"
-    if pre_condition_state_machine.is_empty():
-        raise  "empty state machine cannot be a pre-condition"
-
+    assert not the_state_machine.is_empty() 
+    assert not pre_condition_state_machine.is_empty()
     # -- trivial pre-conditions should be added last, for simplicity
-    if the_state_machine.has_trivial_pre_condition():
-        raise "This function was not designed to deal with trivially pre-conditioned state machines." + \
-              "Please, make sure the trivial pre-conditioning happens *after* regular pre-conditions."  
+    assert not the_state_machine.has_trivial_pre_condition(), \
+           "This function was not designed to deal with trivially pre-conditioned state machines." + \
+           "Please, make sure the trivial pre-conditioning happens *after* regular pre-conditions."  
     #___________________________________________________________________________________________
         
     # (*) invert the state machine of the pre-condition 

@@ -341,8 +341,8 @@ class LexMode:
                  defined and inheritable and there is no circular inheritance !
                  Therefore there is no need to check if the base mode
                  has an entry in the mode database."""
-        if self.consistency_check_done_f == False:
-            raise "LexMode::inheritance_structure_string(): called before consistency check!"
+        assert self.consistency_check_done_f == True, \
+               "LexMode::inheritance_structure_string(): called before consistency check!"
 
         if Depth != 0: str = "** " + ("   " * Depth) + self.name + "\n"
         else:          str = "** <" + self.name + ">\n"

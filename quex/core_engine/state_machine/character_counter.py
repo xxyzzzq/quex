@@ -83,8 +83,7 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
              to be matched cannot be determined directly from the state machine.
              They have to be computed after a match has happend.
     """
-    if TargetStateIdx not in Path: 
-        raise "error: function considered to be used for recursion paths. no recursion here."
+    assert TargetStateIdx in Path 
 
     # -- recursion detected!
     #    did the critical character occur in the path?

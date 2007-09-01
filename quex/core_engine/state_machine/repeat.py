@@ -13,9 +13,7 @@ def do(the_state_machine, min_repetition_n = 0, max_repetition_n = -1):
     """ Creates a state machine that represents a repetition of the given 
         'the_state_machine'. Minimum and maximim number of repetitions can be specified.
     """
-    if min_repetition_n > max_repetition_n and max_repetition_n != -1:
-        raise "Maximum repetition number needs to be greater than minimum repetition number." + \
-              "min_repetition_n = %i, max_repetition_n = %i" % (min_repetition_n, max_repetition_n)
+    assert min_repetition_n <= max_repetition_n or max_repetition_n == -1
 
     # (*) if minimum number of repetitions is required, then the initial
     #     repetition is produced by sequentialization.

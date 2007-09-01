@@ -1,8 +1,8 @@
 
 class ActionInfo:
     def __init__(self, PatternStateMachine, ActionCodeStr):
-        if PatternStateMachine == None:
-            raise "empty pattern state machine: (probably passed an empty pattern)"
+        assert PatternStateMachine != None
+        assert type(ActionCodeStr) == str
 
         self.__action_code_str       = ActionCodeStr
         self.__pattern_state_machine = PatternStateMachine
@@ -26,14 +26,13 @@ class ActionInfo:
         return self.__contains("LexemeL", CommentDelimiters)
 
     def __contains(self, ObjectName, CommentDelimiters, IgnoreRegions=["\"", "\""]):
-        if type(CommentDelimiters) != list:
-            raise "Argument 'CommentDelimiters' must be of type [[]]"
+        assert type(CommentDelimiters) == list
+
         for delimiter_info in CommentDelimiters:
-            if type(delimiter_info) != list:
-                raise "Argument 'CommentDelimiters' must be of type [[]]"
-            if len(delimiter_info) != 3:
-                raise "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
-                      "start of comment, end of comment, replacement string for comment."
+            assert type(delimiter_info) == list, "Argument 'CommentDelimiters' must be of type [[]]"
+            assert len(delimiter_info) == 3, \
+                   "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
+                   "start of comment, end of comment, replacement string for comment."
         # TODO: Implement the skip_whitespace() function for more general treatment of Comment
         #       delimiters. Quotes for strings '"" shall then also be treate like comments.
         return self.__action_code_str.find(ObjectName) != -1

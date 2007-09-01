@@ -19,33 +19,37 @@ import sys
 from copy    import copy
 from string  import split
 
+class EndOfStreamException(Exception):
+    pass
+
 temporary_files  = []
+
 
 def skip_whitespace(fh):
     while 1 + 1 == 2:
         tmp = fh.read(1)
 
         if tmp in [' ', '\t', '\n']: continue
-        elif tmp == "": raise "EOF"
+        elif tmp == "": raise EndOfStreamException()
 
         # -- character was not a whitespace character
         #    => is there a '//' or a '/*' -comment ?
         tmp2 = fh.read(1)
-        if tmp2 == "": raise "EOF"
+        if tmp2 == "": raise EndOfStreamException()
 
         tmp += tmp2
         if tmp == "//":   
             # skip until '\n'
             while tmp != '\n':
                 tmp = fh.read(1)
-                if tmp == "": raise "EOF"
+                if tmp == "": raise EndOfStreamException()
 
         elif tmp == "/*":
             # skip until '*/'
             previous = " "
             while tmp != "":
                 tmp = fh.read(1)
-                if tmp == "": raise "EOF"
+                if tmp == "": raise EndOfStreamException()
                 if previous + tmp == "*/":
                     break
                 previous = tmp
@@ -60,7 +64,7 @@ def read_until_whitespace(fh):
     previous_tmp = ""
     while 1 + 1 == 2:
         tmp = fh.read(1)
-        if   tmp == "": raise "EOF"
+        if   tmp == "": raise EndOfStreamException()
         elif tmp in [' ', '\t', '\n']:                     fh.seek(-1, 1); return txt
         elif previous_tmp == "/" and (tmp in ["*",  "/"]): fh.seek(-2, 1); return txt[:-1]
         txt += tmp
@@ -81,11 +85,10 @@ def read_until_closing_bracket(fh, Opener, Closer,
     CacheSz = max(len(Opener), len(Closer))
     if IgnoreRegions != []: 
         # check for correct type, because this can cause terrible errors
-        if type(IgnoreRegions) != list:
-            raise "read_until_closing_bracket(): argument 'IgnoreRegions' must be of type '[[]]'"
+        assert type(IgnoreRegions) == list
+
         for element in IgnoreRegions:                                    
-            if type(element) != list:
-                raise "read_until_closing_bracket(): argument 'IgnoreRegions' must be of type '[[]]'"
+            assert type(element) == list
                                                  
         CacheSz = max(map(lambda delimiter: len(delimiter[0]), IgnoreRegions) + [ CacheSz ])
 
@@ -93,8 +96,8 @@ def read_until_closing_bracket(fh, Opener, Closer,
 
     def match_against_cache(Delimiter):
         """Determine wether the string 'Delimiter' is flood into the cache or not."""
-        if len(Delimiter) > len(cache):
-            raise "error: read_until_closing_bracket() cache smaller than delimiter"
+        assert len(Delimiter) <= len(cache), \
+               "error: read_until_closing_bracket() cache smaller than delimiter"
 
         # delimiter == "" means that it is, in fact, not a delimiter (disabled)    
         if Delimiter == "": return False
@@ -113,7 +116,7 @@ def read_until_closing_bracket(fh, Opener, Closer,
         cache.pop(-1)         # element N first element                 (oldest)
 
         if tmp == "":         
-            raise "EOF"
+            raise EndOfStreamException()
 
         elif tmp == "\\":       
             backslash_f = not backslash_f   # every second backslash switches to 'non-escape char'
@@ -159,7 +162,7 @@ def read_until_character(fh, Character):
     # TODO: incorporate "comment ignoring"
     while 1 + 1 == 2:
         tmp = fh.read(1)
-        if   tmp == "": raise "EOF"
+        if   tmp == "": raise EndOfStreamException()
         elif tmp == "\\": backslash_n += 1
         else:
             backslash_n = 0
@@ -174,7 +177,7 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
     txt = ""
     while 1 + 1 == 2:
         tmp = fh.read(1)
-        if tmp == "": raise "EOF"
+        if tmp == "": raise EndOfStreamException()
         if tmp in EndMarkers:
             if Verbose: return txt, EndMarkers.index(tmp)
             else:       return txt
@@ -279,7 +282,7 @@ def read_next_word(fh):
     skip_whitespace(fh)
     word = read_until_whitespace(fh)
 
-    if word == "": raise "EOF"
+    if word == "": raise EndOfStreamException()
     return word
 
 def read_word_list(fh, EndMarkers, Verbose=False):
@@ -292,7 +295,7 @@ def read_word_list(fh, EndMarkers, Verbose=False):
     while 1 + 1 == 2:
         skip_whitespace(fh)
         word = read_next_word(fh)        
-        if word == "": raise "EOF"
+        if word == "": raise EndOfStreamException()
         if word in EndMarkers:
             if Verbose: return word_list, EndMarkers.index(word)
             else:       return word_list

@@ -1,6 +1,6 @@
 <no file 'TITLE.hwut'>
 DIR:  ./demo/TEST
-DATE: Fri Aug 31 08:43:59 2007
+DATE: Sat Sep  1 09:52:51 2007
 
 
  -- demo/000:
@@ -47,7 +47,7 @@ DATE: Fri Aug 31 08:43:59 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/TEST
-DATE: Fri Aug 31 08:45:07 2007
+DATE: Sat Sep  1 09:53:59 2007
 
     Prepare Pattern Information for Code Generation
     test-coder-get_generator_input.py .......................................[OK]
@@ -63,10 +63,10 @@ Input Buffer Tests
 Frank-Rene Schaefer
 
 DIR:  ./quex/code_base/buffer/TEST
-DATE: Fri Aug 31 08:45:07 2007
+DATE: Sat Sep  1 09:53:59 2007
 make: test-forward-get-2
-make: test-misc-II
 make: test-misc-III
+make: test-misc-II
 make: test-backward-get
 make: test-misc-I
 make: test-forward-get
@@ -114,7 +114,7 @@ ze = 11, Fallback Size = 0
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/buffer/iconv/TEST
-DATE: Fri Aug 31 08:45:11 2007
+DATE: Sat Sep  1 09:54:03 2007
 make: n-beat
 make: one-beat
 
@@ -132,7 +132,7 @@ make: one-beat
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/template/TEST
-DATE: Fri Aug 31 08:45:11 2007
+DATE: Sat Sep  1 09:54:03 2007
 make: test-simple
 make: test-simple-2
 
@@ -154,7 +154,7 @@ make: test-simple-2
 Number Set Operations and UTF-8 Encoding
 
 DIR:  ./quex/core_engine/TEST
-DATE: Fri Aug 31 08:45:12 2007
+DATE: Sat Sep  1 09:54:04 2007
 
 
  -- NumberSet:
@@ -185,7 +185,7 @@ DATE: Fri Aug 31 08:45:12 2007
 Code Generation
 
 DIR:  ./quex/core_engine/generator/TEST
-DATE: Fri Aug 31 08:45:12 2007
+DATE: Sat Sep  1 09:54:04 2007
 
 
  -- Pre- and Post- Conditions:
@@ -267,7 +267,7 @@ DATE: Fri Aug 31 08:45:12 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/regular_expression/TEST
-DATE: Fri Aug 31 08:45:52 2007
+DATE: Sat Sep  1 09:54:45 2007
 
     State Machine Pattern Matching
     test-pattern-matching.py ................................................[OK]
@@ -319,7 +319,7 @@ DATE: Fri Aug 31 08:45:52 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/state_machine/TEST
-DATE: Fri Aug 31 08:45:55 2007
+DATE: Sat Sep  1 09:54:48 2007
 
 
  -- StateMachine:
@@ -407,7 +407,7 @@ DATE: Fri Aug 31 08:45:55 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/frs_py/TEST
-DATE: Fri Aug 31 08:46:13 2007
+DATE: Sat Sep  1 09:55:07 2007
 
 
  -- file_in/read_until_closing_bracket:

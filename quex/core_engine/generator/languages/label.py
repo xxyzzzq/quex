@@ -4,8 +4,7 @@ def __nice(SM_ID):
     
 
 def get(StateMachineName, StateIdx):
-    if StateIdx == None: 
-        raise "StateIdx == None; call function 'get_terminal' instead."
+    assert StateIdx != None, "StateIdx == None; call function 'get_terminal' instead."
 
     return "QUEX_LABEL_%s_ENTRY_%s" % (StateMachineName, __nice(StateIdx))
 

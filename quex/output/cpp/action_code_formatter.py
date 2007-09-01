@@ -4,8 +4,8 @@ from quex.core_engine.interval_handling import NumberSet
 def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateMachine, DefaultActionF=False):
 
     if type(CodeFragment_or_CodeFragments) == list:
-        if DefaultActionF == False:
-            raise "action code formatting: Multipled Code Fragments can only be specified for default action."
+        assert DefaultActionF != False, \
+               "action code formatting: Multipled Code Fragments can only be specified for default action."
         CodeFragementList = CodeFragment_or_CodeFragments
     else:
         CodeFragment = CodeFragment_or_CodeFragments

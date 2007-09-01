@@ -31,19 +31,13 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
              must have been created **earlier** then lesser priviledged
              state machines.
     """
-    if type(PatternActionPair_List) <> list:
-        raise "Argument 'PatternActionPair_List' needs to be of type 'list of ActionInfo(s)'\n" + \
-              "Argument is of type: '%s'" % repr(type(PatternActionPair_List))
-
-    for element in PatternActionPair_List:
-        if element.__class__.__name__ != "ActionInfo":
-            raise "Argument 'PatternActionPair_List' needs to be of type 'list of ActionInfo(s)'\n" + \
-                  "received element of type: '%s'" % element.__class__.__name__  
-          
-    if not StandAloneAnalyserF and QuexEngineHeaderDefinitionFile == "":
-        raise "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
-              "a header file for the core engine define statements. See file\n" + \
-              "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
+    assert type(PatternActionPair_List) == list
+    assert map(lambda elm: elm.__class__.__name__ == "ActionInfo", PatternActionPair_List) \
+           == [ True ] * len(PatternActionPair_List)
+    assert StandAloneAnalyserF or QuexEngineHeaderDefinitionFile != "", \
+           "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
+           "a header file for the core engine define statements. See file\n" + \
+           "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
 
     if QuexEngineHeaderDefinitionFile == "":
         QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
@@ -74,9 +68,9 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
         # -- register action information under the state machine id, where it 
         #    belongs.
         origins_of_acceptance_states = sm.get_origin_ids_of_acceptance_states()
-        if len(origins_of_acceptance_states) == 0:
-            raise "error: code generation for pattern:\n" + \
-                  "error: no acceptance state contains origin information."
+        assert len(origins_of_acceptance_states) != 0, \
+               "error: code generation for pattern:\n" + \
+               "error: no acceptance state contains origin information."
         origin_state_machine_id = origins_of_acceptance_states[0]
         action_db[origin_state_machine_id] = action_info
 
@@ -255,7 +249,8 @@ def __check_for_nothing_is_fine(sm, EndOfFile_Code):
     if init_state.is_acceptance() == False: 
         return
 
-    raise "error: A pattern (such as '.*' or 'x*') allows no input to be acceptable.\n" + \
+    assert False == True, \
+          "error: A pattern (such as '.*' or 'x*') allows no input to be acceptable.\n" + \
           "error: This does not make sense!"
 
 #   That is what was necessary to implement the superflous ideas introduced in the 

@@ -8,9 +8,9 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
        by 'Language'.
     """    
     # (*) check that no epsilon transition triggers to a real state                   
-    if state.get_epsilon_target_state_indices() != []:
-        raise "epsilon transition contained target states: state machine was not made a DFA!\n" + \
-              "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
+    assert state.get_epsilon_target_state_indices() == [], \
+           "epsilon transition contained target states: state machine was not made a DFA!\n" + \
+           "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
        
     #_________________________________________________________________________________________    
     TriggerMap = state.get_trigger_map()
@@ -86,12 +86,12 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
     if TriggerSetN > 1:
         previous_interval = TriggerMap[0][0] 
         for trigger_interval, target_state_index in TriggerMap[1:]:
-            if trigger_interval.begin != previous_interval.end:
-                raise "non-adjacent intervals in TriggerMap\n" + \
-                      "TriggerMap = " + repr(TriggerMap)
-            if trigger_interval.end <= previous_interval.begin:
-                raise "unsorted intervals in TriggerMap\n" + \
-                      "TriggerMap = " + repr(TriggerMap)
+            assert trigger_interval.begin == previous_interval.end, \
+                   "non-adjacent intervals in TriggerMap\n" + \
+                   "TriggerMap = " + repr(TriggerMap)
+            assert trigger_interval.end > previous_interval.begin, \
+                   "unsorted intervals in TriggerMap\n" + \
+                   "TriggerMap = " + repr(TriggerMap)
             previous_interval = deepcopy(trigger_interval)
 
         
@@ -159,9 +159,7 @@ def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry,
         
 def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
                             LanguageDB, BackwardLexingF):
-
-    if len(TriggerMap) != 2:
-        raise "__bracket_two_intervals(): requires TriggerMap with two intervals."
+    assert len(TriggerMap) == 2
 
     interval_idx = -1  # default: no interval of size '1'
 
@@ -185,8 +183,7 @@ def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
 
 def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
                               LanguageDB, BackwardLexingF):
-    if len(TriggerMap) != 3:
-        raise "__bracket_three_intervals(): requires TriggerMap with three intervals."
+    assert len(TriggerMap) == 3
 
     # does one interval have the size '1'?
     size_one_map = [False, False, False]   # size_on_map[i] == True if interval 'i' has size '1'
@@ -219,8 +216,8 @@ def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
 def __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, StateMachineName, StateIdx, state, BackwardLexingF):
 
     middle = TriggerMap[MiddleTrigger_Idx]
-    if middle[0].begin < 0:
-        raise "code generation: error cannot split intervals at negative code points."
+    assert middle[0].begin >= 0, \
+           "code generation: error cannot split intervals at negative code points."
 
     txt  = "$if input $< %s $then\n" % repr(middle[0].begin)
     txt += __get_code(state,TriggerMap[:MiddleTrigger_Idx], LanguageDB, 

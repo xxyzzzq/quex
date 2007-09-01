@@ -32,7 +32,7 @@ def do(file_list, Setup):
         try:
             while 1 + 1 == 2:
                 parse_section(fh, Setup)
-        except "EOF":
+        except EndOfStreamException:
             pass
         
     return lexer_mode.mode_db
@@ -104,7 +104,7 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
         record_list.append(fields + [line_n, line])    
 
 
-    raise "this code section should have never been reached!"
+    assert True == False, "this code section should have never been reached!"
 
 def parse_pattern_name_definitions(fh):
     """Parses pattern definitions of the form:
@@ -448,8 +448,8 @@ def parse_regular_expression_specification(fh, Setup):
         pattern_state_machine = regex.do(fh, pattern_dictionary, 
                                          Setup.begin_of_stream_code, Setup.end_of_stream_code,
                                          DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
-    except str, error_msg:
-        error_msg(error_msg + "\n" + "error in regular expression", fh)
+    except RegularExpressionException, x:
+        error_msg("Regular expression parsing:\n" + x.message, fh)
 
     end_position = fh.tell()
 

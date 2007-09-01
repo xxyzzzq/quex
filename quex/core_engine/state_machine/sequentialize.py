@@ -15,12 +15,10 @@ def do(the_state_machines, LeaveIntermediateAcceptanceStatesF=False):
        status and only the last state machine in the list keeps its
        acceptance states.
     """
+    assert type(the_state_machines) == list 
+    assert len(the_state_machines) != 0
+    assert map(lambda x: x.__class__.__name__, the_state_machines) == ["StateMachine"] * len(the_state_machines)
 
-    if type(the_state_machines) != list or len(the_state_machines) == 0:
-        raise "expect argument of type non-empty 'list' received:", repr(the_state_machines)
-    if map(lambda x: x.__class__.__name__, the_state_machines) != ["StateMachine"] * len(the_state_machines):
-        raise "expected an argument consisting only of objects of State Machines\n" + \
-              "received:" + repr(map(lambda x: x.__class__.__name__, the_state_machines))
     # state machines with no states can be deleted from the list. they do not do anything
     # and do not introduce triggers.          
     state_machines = filter(lambda sm: not sm.is_empty(), the_state_machines)         

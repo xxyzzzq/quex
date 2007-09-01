@@ -10,13 +10,14 @@ def map_utf8_to_unicode(utf8_string_or_stream):
                 (StringIO) the unicode of the first utf8 coding in the stream. sets the stream
                            position to the first character after the utf8 code.         
     """    
+    arg_type=utf8_string_or_stream.__class__.__name__
+    assert arg_type in ["StringIO", "file", "str"]
+
     if    utf8_string_or_stream.__class__.__name__ == "StringIO" \
        or utf8_string_or_stream.__class__.__name__ == "file":
        return __read_one_utf8_code_from_stream(utf8_string_or_stream)
     elif utf8_string_or_stream.__class__.__name__ == "str":
        utf8_string = utf8_string_or_stream
-    else:
-       raise "passed argument must be a string or a StringIO object."   
 
     stream = StringIO.StringIO(utf8_string)
     ucs_character_code = __read_one_utf8_code_from_stream(stream)

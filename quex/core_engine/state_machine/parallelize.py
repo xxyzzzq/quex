@@ -9,12 +9,9 @@ from quex.core_engine.state_machine.core import StateMachine
 
 def do(the_state_machines):
     """Connect state machines paralell."""
- 
-    if type(the_state_machines) != list or len(the_state_machines) == 0:
-        raise "expect argument of type non-empty 'list' received:", repr(the_state_machines)
-    if map(lambda x: x.__class__.__name__, the_state_machines) != ["StateMachine"] * len(the_state_machines):
-        raise "expected an argument consisting only of objects of State Machines\n" + \
-              "received:" + repr(map(lambda x: x.__class__.__name__, the_state_machines))
+    assert type(the_state_machines) == list
+    assert len(the_state_machines) != 0
+    assert map(lambda x: x.__class__.__name__, the_state_machines) == ["StateMachine"] * len(the_state_machines)
               
     # filter out empty state machines from the consideration          
     state_machines = filter(lambda sm: not sm.is_empty(), the_state_machines)
@@ -27,8 +24,8 @@ def do(the_state_machines):
         # the final acceptance state.   
         if TerminationStateIdx == -1:
             acceptance_state_list_set = result_state_machine.get_acceptance_state_list()
-            if acceptance_state_list_set == []:
-                raise "resulting state machine has no acceptance state!"
+            assert acceptance_state_list_set != [], \
+                   "resulting state machine has no acceptance state!"
             acceptance_state_list = acceptance_state_list_set[0]
             TerminationStateIdx   = acceptance_state_list[0]
 

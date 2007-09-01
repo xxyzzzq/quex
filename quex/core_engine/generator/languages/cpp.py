@@ -144,7 +144,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
             break                                  # no need for further pre-condition consideration
             
     # -- double check for consistency
-    if t_txt == "": raise "Acceptance state without acceptance origins!"        
+    assert t_txt != "", "Acceptance state without acceptance origins!"        
 
     return txt + t_txt
 
@@ -202,8 +202,8 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
                                       origin.pre_condition_id() != -1L or
                                       origin.post_conditioned_acceptance_f(),
                                       OriginList)
-    if inadmissible_origin_list != []:
-        raise "Inadmissible origins for inverse state machine."
+    assert inadmissible_origin_list == [], \
+           "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
     txt = "$/* origins = %s$*/" % repr(OriginList)

@@ -51,8 +51,8 @@ __internal_state_machine_id_counter = long(-1)
 def register_state_machine(StateMachineRef):
     """Produces a unique id for the state machine. This function is only to be called
        from inside the constructor of class StateMachine."""
-    if StateMachineRef in __map_state_machine_id_to_state_machine.values(): 
-        raise "error: tried to register state machine twice"
+    assert StateMachineRef not in  __map_state_machine_id_to_state_machine.values(), \
+           "error: tried to register state machine twice"
         
     global __internal_state_machine_id_counter
     __internal_state_machine_id_counter += long(1)
@@ -61,8 +61,8 @@ def register_state_machine(StateMachineRef):
     return __internal_state_machine_id_counter 
     
 def get_state_machine_by_id(StateMachineID):
-    if __map_state_machine_id_to_state_machine.has_key(StateMachineID) == False:
-        raise "error: state machine '%s' has not been registered." % repr(StateMachineID)
+    assert __map_state_machine_id_to_state_machine.has_key(StateMachineID)
+
     return __map_state_machine_id_to_state_machine[StateMachineID]    
     
 ################################################################################    
@@ -98,16 +98,15 @@ def state_machine_ranking_db_register(SuperiorStateMachineID, InferiorStateMachi
     global __state_machine_ranking_db    
 
     # check if by accident two times the same index was given
-    if SuperiorStateMachineID == InferiorStateMachineID:
-        raise "state machine of index '%s' cannot be superior to itself" % \
-              SuperiorStateMachineID 
+    assert SuperiorStateMachineID != InferiorStateMachineID, \
+           "state machine of index '%s' cannot be superior to itself" % SuperiorStateMachineID 
 
     # check if a contradictory relation has been entered before
-    if  state_machine_ranking_db_is_superior(InferiorStateMachineID, SuperiorStateMachineID): 
-        raise "state machine index '%s' is already superior to '%s'\n" \
-              "it was tried to enter '%s' to be superior to '%s'" % \
-               (InferiorStateMachineID, SuperiorStateMachineID,
-                SuperiorStateMachineID, InferiorStateMachineID)  
+    assert not state_machine_ranking_db_is_superior(InferiorStateMachineID, SuperiorStateMachineID), \
+           "state machine index '%s' is already superior to '%s'\n" \
+           "it was tried to enter '%s' to be superior to '%s'" % \
+           (InferiorStateMachineID, SuperiorStateMachineID,
+            SuperiorStateMachineID, InferiorStateMachineID)  
     
     def __state_machine_ranking_db_add(key, element):
         if __state_machine_ranking_db.has_key(key): __state_machine_ranking_db[key].append(element)
@@ -170,12 +169,9 @@ def state_machine_ranking_get_dominating_state_machine(StateMachineID_list):
              line up the patterns and then the priviledges are assigned?
              This solution would imply much less fuss.
     """   
-    if StateMachineID_list.__class__.__name__ != "list":
-        raise "expected list of state machine ids, received '%s'" % repr(StateMachineID_list)
-        
+    assert StateMachineID_list.__class__.__name__ == "list"
     L = len(StateMachineID_list)
-    if L == 0:
-        raise "empty state machine list received"
+    assert L != 0, "empty state machine list received"
 
     if L < 2: return StateMachineID_list[0]
 
