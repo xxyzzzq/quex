@@ -1,0 +1,436 @@
+<no file 'TITLE.hwut'>
+DIR:  ./demo/TEST
+DATE: Sat Sep  1 09:52:51 2007
+
+
+ -- demo/000:
+
+    Single Mode Example
+    000.sh NDEBUG ...........................................................[OK]
+           DEBUG ............................................................[OK]
+
+ -- demo/001:
+
+    Multiple Modes, Mode Transitions
+    001.sh NDEBUG ...........................................................[OK]
+           DEBUG ............................................................[OK]
+
+ -- demo/002:
+
+    Indentation Based Scopes
+    002.sh NDEBUG ...........................................................[OK]
+           DEBUG ............................................................[OK]
+
+ -- demo/003:
+
+    Unicode Based Lexical Analyzis
+    003.sh BPC=2 ............................................................[OK]
+           BPC=2_NDEBUG .....................................................[OK]
+           BPC=4 ............................................................[OK]
+           BPC=4_NDEBUG .....................................................[OK]
+           BPC=wchar_t ......................................................[OK]
+
+ -- demo/005:
+
+    Including Files
+    005.sh 1 ................................................................[OK]
+           1_NDEBUG .........................................................[OK]
+           2 ................................................................[OK]
+           2_NDEBUG .........................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/TEST
+DATE: Sat Sep  1 09:53:59 2007
+
+    Prepare Pattern Information for Code Generation
+    test-coder-get_generator_input.py .......................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+Input Buffer Tests
+Frank-Rene Schaefer
+
+DIR:  ./quex/code_base/buffer/TEST
+DATE: Sat Sep  1 09:53:59 2007
+make: test-forward-get-2
+make: test-misc-III
+make: test-misc-II
+make: test-backward-get
+make: test-misc-I
+make: test-forward-get
+
+    Backwards Iteration
+    test-backward-get Normal ................................................[OK]
+                      EOFC=1_BOFC=2_BLC=0 ...................................[OK]
+                      EOFC=1_BOFC=0_BLC=2 ...................................[OK]
+                      EOFC=0_BOFC=1_BLC=2 ...................................[OK]
+
+ -- Forward Iteration:
+
+    Multiple Loads.
+    test-forward-get Normal .................................................[OK]
+                     EOFC=1_BOFC=2_BLC=0 ....................................[OK]
+                     EOFC=1_BOFC=0_BLC=2 ....................................[OK]
+                     EOFC=0_BOFC=1_BLC=2 ....................................[OK]
+    EOF at first load.
+    test-forward-get-2 ......................................................[OK]
+
+ -- Miscenllaneous Scenarios:
+
+    Content Size = 11, Fallback Size = 10
+    test-misc-I istream .....................................................[OK]
+                stdio .......................................................[OK]
+    Content Size = 11, Fallback Size = 1
+    test-misc-II istream ....................................................[OK]
+                 stdio ......................................................[OK]
+    Content Sirm -f test-forward-get test-forward-get-2 test-misc-I test-misc-II test-misc-III test-backward-get 
+rm -f *.o
+rm -f one-beat n-beat
+rm -f *.o
+rm -f real-code.cpp
+rm -f test-simple test-simple-2
+ze = 11, Fallback Size = 0
+    test-misc-III istream ...................................................[OK]
+                  stdio .....................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/code_base/buffer/iconv/TEST
+DATE: Sat Sep  1 09:54:03 2007
+make: n-beat
+make: one-beat
+
+    Converting Stream in N Tiny Beats
+    n-beat ..................................................................[OK]
+    Converting Stream in One Beat
+    one-beat ................................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/code_base/template/TEST
+DATE: Sat Sep  1 09:54:03 2007
+make: test-simple
+make: test-simple-2
+
+
+ -- Count Line and Column:
+
+    Without Indentation Count
+    test-simple .............................................................[OK]
+    With Indentation
+    test-simple-2 ...........................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+Number Set Operations and UTF-8 Encoding
+
+DIR:  ./quex/core_engine/TEST
+DATE: Sat Sep  1 09:54:04 2007
+
+
+ -- NumberSet:
+
+    Condition Code Generation
+    test-NumberSet-condition-code.py ........................................[OK]
+    Difference
+    test-NumberSet-difference.py ............................................[OK]
+    Intersection
+    test-NumberSet-intersection.py ..........................................[OK]
+    Inverse
+    test-NumberSet-inverse.py ...............................................[OK]
+    Union
+    test-NumberSet-union.py .................................................[OK]
+
+ -- Utf8-Module:
+
+    Map UTF8 String To Unicode Values
+    test-utf8-UCS-to-UTF8.py ................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+Code Generation
+
+DIR:  ./quex/core_engine/generator/TEST
+DATE: Sat Sep  1 09:54:04 2007
+
+
+ -- Pre- and Post- Conditions:
+
+    Simple
+    test-pre-post-condition.py PlainMemory ..................................[OK]
+                               QuexBuffer ...................................[OK]
+
+ -- Simple:
+
+    Begin of Line (BOL), End of Line (EOL)
+    test-bol-eol.py PlainMemory .............................................[OK]
+                    QuexBuffer ..............................................[OK]
+    Maximum Length Match
+    test-simple-2.py PlainMemory ............................................[OK]
+                     QuexBuffer .............................................[OK]
+    Special Case '.' (drop out on valid target state)
+    test-simple-3.py PlainMemory ............................................[OK]
+                     QuexBuffer .............................................[OK]
+    Tiny Expressions
+    test-simple.py PlainMemory ..............................................[OK]
+                   QuexBuffer ...............................................[OK]
+
+ -- Pre Conditions:
+
+    Part 2
+    test-pre-conditions-2.py PlainMemory ....................................[OK]
+                             QuexBuffer .....................................[OK]
+    Part 1
+    test-pre-conditions.py PlainMemory ......................................[OK]
+                           QuexBuffer .......................................[OK]
+
+ -- CONTINUE:
+
+    (special use case)
+    test-continue-without-return-2.py PlainMemory ...........................[OK]
+                                      QuexBuffer ............................[OK]
+    Reentry analysis without return from function
+    test-continue-without-return.py PlainMemory .............................[OK]
+                                    QuexBuffer ..............................[OK]
+    Mode Changes
+    test-mode-changes.py PlainMemory ........................................[OK]
+                         QuexBuffer .........................................[OK]
+
+ -- Post Conditions:
+
+    Part 2
+    test-post-conditions-2.py PlainMemory ...................................[OK]
+                              QuexBuffer ....................................[OK]
+    Part 1
+    test-post-conditions.py PlainMemory .....................................[OK]
+                            QuexBuffer ......................................[OK]
+
+ -- Buffer Reload:
+
+    Backwards
+    test-backward_loading.py No_NDEBUG ......................................[OK]
+                             NDEBUG .........................................[OK]
+    No Backward Reload -- Precondition at Border
+    test-no-backward-reloading.py No_NDEBUG .................................[OK]
+                                  NDEBUG ....................................[OK]
+    Forward Position Adaption
+    test-position_adaption.py No_NDEBUG .....................................[OK]
+                              NDEBUG ........................................[OK]
+
+ -- Single State:
+
+    Extensive Transition Code Generation
+    test-single-state-transitions-x.py ......................................[OK]
+    Transition Code Generation
+    test-single-state-transitions.py ........................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/core_engine/regular_expression/TEST
+DATE: Sat Sep  1 09:54:45 2007
+
+    State Machine Pattern Matching
+    test-pattern-matching.py ................................................[OK]
+
+ -- Conditional Analysis:
+
+    Begin of Line '^', End of Line '$'
+    test-bol-eol.py .........................................................[OK]
+    End of Line '$' (with DOS/Windows '\r\n')
+    test-eol-carriage-return-newline.py .....................................[OK]
+    post conditions
+    test-post-condition.py ..................................................[OK]
+    pre- and post-conditions
+    test-pre-and-post-condition.py ..........................................[OK]
+    pre conditions
+    test-pre-condition.py ...................................................[OK]
+
+ -- Basics:
+
+    Lonestanding characters
+    test-lonely-characters.py ...............................................[OK]
+    Pattern identifier replacement
+    test-replacement.py .....................................................[OK]
+    Map character *range* to state machine
+    test-set.py .............................................................[OK]
+    Snap string until (low level function)
+    test-snap_until.py ......................................................[OK]
+    Map character *string* to state machine
+    test-string.py ..........................................................[OK]
+
+ -- Backslashed Characters:
+
+    General
+    test-snap_backslashed_character.py ......................................[OK]
+
+ -- Combination:
+
+    Alternative Expressions
+    test-alternatives.py ....................................................[OK]
+    Simple repeated expressions
+    test-repeated-expressions.py ............................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/core_engine/state_machine/TEST
+DATE: Sat Sep  1 09:54:48 2007
+
+
+ -- StateMachine:
+
+    Cloning
+    test-StateMachine-clone.py ..............................................[OK]
+
+ -- Trigger Set Check:
+
+    Has Trigger
+    test-StateInfo-has_trigger.py ...........................................[OK]
+
+ -- NFA:
+
+    Conversion to DFA (subset construction)
+    test-StateMachine-create-DFA.py .........................................[OK]
+    Get elementary trigger sets II
+    test-StateMachine-elementary_trigger_sets-2.py ..........................[OK]
+    Get elementary trigger sets (target index --> trigger sets)
+    test-StateMachine-elementary_trigger_sets.py ............................[OK]
+    Epsilon closure (single state)
+    test-StateMachine-epsilon-closure.py ....................................[OK]
+
+ -- Tracing origin:
+
+    Cloning
+    test-StateMachine-trace-origin-clone.py .................................[OK]
+    NFA to DFA (subset construction)
+    test-StateMachine-trace-origin-create-DFA.py ............................[OK]
+    Hopcroft optimization (minimize state set)
+    test-StateMachine-trace-origin-hopcroft-optimization.py .................[OK]
+    Inverse
+    test-StateMachine-trace-origin-inverse.py ...............................[OK]
+    Paralellization
+    test-parallelize-trace-origin.py ........................................[OK]
+
+ -- StateMachine Operations:
+
+    Inverse
+    test-StateMachine-inverse.py ............................................[OK]
+    Paralell
+    test-parallelize.py .....................................................[OK]
+    Repetitions Kleene closure 0 or arbitrary repetitions
+    test-repeat-pure.py .....................................................[OK]
+    Repetition with min and max repetition numbers
+    test-repeat.py ..........................................................[OK]
+    Sequence
+    test-sequentialize.py ...................................................[OK]
+    Append Post Condition
+    test-setup_border_conditions.py .........................................[OK]
+    Append Post Condition
+    test-setup_post_condition.py ............................................[OK]
+    Setup Pre-Condition
+    test-setup_pre_condition.py .............................................[OK]
+
+ -- Ranking of state machines:
+
+    Filter dominated origins
+    test-StateMachine-filter-dominated-origins.py ...........................[OK]
+    Pattern priorization
+    test-ranking.py .........................................................[OK]
+
+ -- Predetermined Character Count:
+
+    Characters
+    test-count_character_n.py ...............................................[OK]
+    Contains only Spaces
+    test-count_contains_only_spaces.py ......................................[OK]
+    Newlines
+    test-count_newline_n.py .................................................[OK]
+
+ -- DFA:
+
+    Get Trigger Map (intervals --> target states)
+    test-StateInfo-trigger-map.py ...........................................[OK]
+    Hopcroft optimization (minimize state set)
+    test-StateMachine-hopcroft-optimization.py ..............................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/frs_py/TEST
+DATE: Sat Sep  1 09:55:07 2007
+
+
+ -- file_in/read_until_closing_bracket:
+
+    Test also for ignored regions
+    test-read_until_closing_bracket.py ......................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+SUMMARY:
+./quex/core_engine/generator/TEST.............[OK]
+./quex/core_engine/TEST.......................[OK]
+./demo/TEST...................................[OK]
+./quex/code_base/template/TEST................[OK]
+./quex/frs_py/TEST............................[OK]
+./quex/code_base/buffer/iconv/TEST............[OK]
+./quex/core_engine/state_machine/TEST.........[OK]
+./quex/TEST...................................[OK]
+./quex/code_base/buffer/TEST..................[OK]
+./quex/core_engine/regular_expression/TEST....[OK]
+<terminated>

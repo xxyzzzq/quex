@@ -1,0 +1,161 @@
+// -*- C++ -*-
+start = PROGRAM
+
+header {
+#include <cstdlib>  // C++ adapted 'stdlib.h'
+//                  // gets:  atoi(const char*) 
+}
+
+define {
+    // -*- C -*- // just to color it in emacs
+    // Pattern definitions for example application
+    P_WHITESPACE  	  [ \t\n]+
+    P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
+    P_NUMBER              [0-9]+
+    //
+    P_STRING_DELIMITER                "\""
+    P_BACKSLASHED_STRING_DELIMITER    "\\\""
+    P_BACKSLASHED_BACKSLASH           "\\\\"
+}
+
+token {
+    AMPERSANT
+    ASSIGN_DIV
+    ASSIGN_MINUS
+    ASSIGN_MULT
+    ASSIGN_PLUS
+    BRACKET_C
+    BRACKET_C
+    BRACKET_O
+    BRACKET_O
+    BREAK
+    CATCH
+    CLASS
+    COLON
+    CONST
+    CONTINUE
+    CORNER_BRACKET_C
+    CORNER_BRACKET_O
+    CURLY_BRACKET_C
+    CURLY_BRACKET_O
+    DIV
+    DOUBLE_COLON
+    ELSE
+    EQ
+    FOR
+    GREATER
+    GR_EQ
+    IDENTIFIER
+    IF
+    LESS
+    LE_EQ
+    MINUS
+    MULT
+    NOT
+    NUMBER
+    OP_ASSIGNMENT
+    PLUS
+    PRIVATE
+    PROTECTED
+    PUBLIC
+    QUOTE
+    SEMICOLON
+    SEMICOLON
+    STRING
+    STRUCT
+    STRUCT
+    TEMPLATE
+    THROW
+    TRY
+    WHILE
+}
+
+mode END_OF_FILE :
+<inheritable: only>  
+{    
+    <<EOF>> {
+	self.send(quex::token::ID_TERMINATION);
+        RETURN;
+    }
+}
+
+
+mode PROGRAM :
+     END_OF_FILE
+<entry: STRING_READER>
+<exit:  STRING_READER>
+{
+    "("           => TKN_BRACKET_O;
+    ")"           => TKN_BRACKET_C;
+    "<"           => TKN_LESS;
+    ">"           => TKN_GREATER;
+    "["           => TKN_CORNER_BRACKET_O;
+    "]"           => TKN_CORNER_BRACKET_C;
+    "{"           => TKN_CURLY_BRACKET_O;
+    "}"           => TKN_CURLY_BRACKET_C;
+    "="           => TKN_OP_ASSIGNMENT;
+    "+"           => TKN_PLUS;
+    "-"           => TKN_MINUS;
+    "*"           => TKN_MULT;
+    "/"           => TKN_DIV;
+    "+="          => TKN_ASSIGN_PLUS;
+    "-="          => TKN_ASSIGN_MINUS;
+    "*="          => TKN_ASSIGN_MULT;
+    "/="          => TKN_ASSIGN_DIV;
+    "=="          => TKN_EQ;
+    ">="          => TKN_GR_EQ;
+    "<="          => TKN_LE_EQ;
+    "!"           => TKN_NOT;
+    "&"           => TKN_AMPERSANT;
+    "::"          => TKN_DOUBLE_COLON;
+    ":"           => TKN_COLON;
+    for           => TKN_FOR;
+    while         => TKN_WHILE;
+    break         => TKN_BREAK;
+    continue      => TKN_CONTINUE;
+    class         => TKN_CLASS;
+    struct        => TKN_STRUCT;
+    template      => TKN_TEMPLATE;
+    "public:"     => TKN_PUBLIC;
+    "private:"    => TKN_PRIVATE;
+    "protected:"  => TKN_PROTECTED;
+    ";"           => TKN_SEMICOLON;
+    const         => TKN_CONST;
+    throw         => TKN_THROW;
+    try           => TKN_TRY;
+    catch         => TKN_CATCH;
+    else          => TKN_ELSE;
+    if            => TKN_IF;
+    ";"           => TKN_SEMICOLON;
+    {P_IDENTIFIER}  => TKN_IDENTIFIER(Lexeme);
+    {P_NUMBER}      => TKN_NUMBER(atoi(Lexeme));
+
+    {P_WHITESPACE} {
+    }
+    {P_STRING_DELIMITER} {
+	self.send(TKN_QUOTE);
+	self << STRING_READER;
+    }
+}
+
+mode STRING_READER :
+     END_OF_FILE
+<entry: PROGRAM>
+<exit:  PROGRAM>
+{
+    on_entry { self.accumulator.clear(); }
+    on_exit  { 
+	self.accumulator.flush(TKN_STRING); 
+	self.send(TKN_QUOTE);
+    }
+
+    {P_BACKSLASHED_STRING_DELIMITER} { self.accumulator.add(Lexeme); }
+    {P_BACKSLASHED_BACKSLASH}        { self.accumulator.add(Lexeme); }
+
+    {P_STRING_DELIMITER}             { self << PROGRAM; }
+
+    // default rule: shall always come last
+    . {
+	self.accumulator.add(Lexeme);
+    }
+}

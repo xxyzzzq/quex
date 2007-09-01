@@ -1,0 +1,86 @@
+In practical applications for programming languages, the large majority of
+patterns to be identified are simple and do not require large algorithms to
+handle them. Keywords, such as '{\tt if}', '{\tt then}', and '{\tt foreach}',
+operators, such as '$+$' and '{\tt *}' and delimiters such as '{\tt ;}', '{\tt
+  (}' and '{\tt )}' simply need to send a token telling that such and such
+appeared. Their pattern action pairs all look similar to the following:
+
+\begin{lstlisting}
+  ...
+  {P_KEYWORD_IF} {
+       self.send(TKN_KEYWORD_IF);
+       RETURN;
+  }
+  {P_KEYWORD_THEN} {
+       self.send(TKN_KEYWORD_THEN);
+       RETURN;
+  }
+  {P_OPERATOR_PLUS} {
+       self.send(TKN_OP_PLUS);
+       RETURN;
+  }
+  ...
+\end{lstlisting}
+
+{\Quex} allows to write such simple token sendings in a more elegant manner.
+If a pattern is followed by a {\tt =$>$} operator and a name {\it xyz} then
+this is translated into 'pattern sends token with name {\it xyz}'. The code as
+shown above will be internally generated. The above code segment is equivalent
+to the following:
+
+\begin{lstlisting}
+  ...
+  {P_KEYWORD_IF}    => TKN_KEYWORD_IF;
+  {P_KEYWORD_THEN}  => TKN_KEYWORD_THEN;
+  {P_OPERATOR_PLUS} => TKN_OP_PLUS;
+  ...
+\end{lstlisting}
+
+For simple patterns that consist of a fixed string and that appear only in one
+place it does not make sense to define a pattern explicitly. They can also be
+given directly, i.e. one can write
+
+\begin{lstlisting}
+  ...
+  "if"    => TKN_KEYWORD_IF;
+  "then"  => TKN_KEYWORD_THEN;
+  "+"     => TKN_OP_PLUS;
+  ...
+\end{lstlisting}
+
+thus avoiding long lists of pattern definitions external to the mode
+definition. Sometimes, though, things are little more complicated.  It might
+be necessary to extract some of the information in the lexeme and store it
+into the token as in the following pattern action pairs:
+
+\begin{lstlisting}
+  ...
+  {P_NUMBER} {
+    self.send(TKN_NUMBER, atoi(Lexeme));
+    RETURN; 
+  }
+  {P_IDENTIFIER} { 
+    self.send(TKN_IDENTIFIER, Lexeme); 
+    RETURN; 
+  }
+  ...
+\end{lstlisting}
+
+In these cases, one passes arguments to the send function other then the
+token-id. In order to specify additional arguments to the send functions the
+token-ids have to be followed by a pair of brackets containing the list of
+arguments (possibly separated by comma). This way, the above two pattern
+action pairs can be rewritten elegantly as:
+
+\begin{lstlisting}
+  ...
+  {P_NUMBER}     => TKN_NUMBER(atoi(Lexeme));
+  {P_IDENTIFIER} => TKN_IDENTIFIER(Lexeme); 
+  ...
+\end{lstlisting}
+
+These abbreviations not only speed up the generation of a lexical analyser
+tremendously, but they make the lexical analyser descriptions also very
+readable. Long lists of pattern-action pairs can be understood and
+analysed in a few seconds.
+
