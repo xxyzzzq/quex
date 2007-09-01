@@ -1,0 +1,758 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+//
+// (C) 2007 Frank-Rene Schaefer
+//
+#ifndef __INCLUDE_GUARD_QUEX_BUFFER__
+#define __INCLUDE_GUARD_QUEX_BUFFER__
+
+#ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER
+#   include <iostream>
+#endif
+
+#include <buffer/input_strategy>
+
+#include <cassert>
+
+namespace quex {
+
+    const int  DEFAULT_BUFFER_BEGIN_OF_FILE_CODE = 0x19;
+    const int  DEFAULT_BUFFER_END_OF_FILE_CODE   = 0x1A;
+    const int  DEFAULT_BUFFER_LIMIT_CODE         = 0x00;
+
+    template <class InputStrategy, class OverflowPolicy> class basic_buffer;
+    
+#ifndef NDEBUG
+    /* DEBUG: The 'memory_position' type is a pointer mimiking class that stores also the
+    **        **base position** of the buffer to which it referes. Locations are
+    **        memory addresses. When a buffer-reload happens, those addresses have
+    **        to be adapted. Imagine:
+    **
+    **        before:  
+    **                 Start                PosX                   Start = 0    
+    **                 |                    |                      PosX  = 21 
+    **                 [1234567890abcdfeghijklmnopqrstuvwxyzABC] 
+    **
+    **         after:
+    **                 Start    PosX                               Start = 13
+    **                 |        |                                  PosX  = 11 
+    **                 [cdfeghijklmnopqrstuvwxyzABCDEFGHIJKLMNO] 
+    **
+    **        When NDEBUG is not defined, this type is used, so that asserts in seek
+    **        functions can check wether the start position refers to the current start
+    **        position of the buffer (i.e. the memory_position has been updated).
+    **
+    **        If NDEBUG is defined, than this type is defined as a normal pointer.
+    **
+    */
+    template <class InputStrategy> 
+    struct memory_position_mimiker {
+	// for compatibility with 'char*'
+	memory_position_mimiker(typename InputStrategy::provided_character_type* Adr = 0x0, 
+		                typename InputStrategy::stream_position Pos = 0x0) 
+	    : address(Adr), buffer_start_position(Pos) {}
+
+	typename InputStrategy::provided_character_type*  address;
+	typename InputStrategy::stream_position           buffer_start_position;
+
+	// When loading forward from the stream, the pointers to memory_positions move backwards.
+	// Thus, the signs in the operators are mirrored.
+	// (operators not to be used in concatination -> void)
+	void operator+=(const int Value) { address += Value; buffer_start_position -= Value; }
+	void operator-=(const int Value) { address -= Value; buffer_start_position += Value; }
+	void operator++() { operator+=(1); }
+	void operator--() { operator-=(1); }
+
+	// conversion operator, so that the object can be used at any place
+	// where a normal provided_character_type pointer is required (integrates seemingless)
+	operator typename InputStrategy::provided_character_type*() { return address; }
+    };
+#endif   	
+
+    struct DefaultOverflowPolicy {
+    template<class X, class Y> bool static forward(basic_buffer<X,Y>* that);
+    template<class X, class Y> bool static backward(basic_buffer<X,Y>* that);
+    };
+
+
+    template<class InputStrategy  = input_strategy<std::istream*, char>,
+	     class OverflowPolicy = DefaultOverflowPolicy> 
+	class basic_buffer {
+	public:
+	    typedef InputStrategy my;
+	    typedef typename InputStrategy::stream_position           stream_position;
+	    typedef typename InputStrategy::stream_offset             stream_offset;
+	    typedef typename InputStrategy::input_handle_type         input_handle_type;
+	    typedef typename InputStrategy::provided_character_type   character_type;
+
+	private:
+	    // buffers cannot be copied!
+	    /* DISABLED */ basic_buffer(const basic_buffer&);
+	    /* DISABLED */ basic_buffer operator=(const basic_buffer&);
+
+	public:
+#ifndef NDEBUG
+            typedef memory_position_mimiker<InputStrategy>  memory_position;
+#else
+	    typedef character_type*                         memory_position;
+#endif
+	    const int BOFC;
+	    const int EOFC;
+	    const int BLC;
+
+	    // (*) Constructor/Destructor __________________________________________________________________
+	    basic_buffer(InputStrategy& input_strategy, 
+			 int BufferSz=65536, int BackupSectionSz=64,
+			 int Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
+			 int Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
+			 int Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+	    basic_buffer(input_handle_type* input_handle, 
+			 int BufferSz=65536, int BackupSectionSz=64,
+			 int Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
+			 int Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
+			 int Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+	    ~basic_buffer();
+
+	    // (*) Analyzer Main functions _________________________________________________________________
+	    int  get_forward();
+	    int  get_backward();
+	    int  load_forward();
+	    int  load_backward();
+
+	    void              set_subsequent_character(const int Value);
+	    character_type    get_subsequent_character();
+	    character_type    get_current_character();
+	    character_type*   get_lexeme_start_p() { return _lexeme_start_p; }
+	    void              mark_lexeme_start();
+	    void              set_current_p(character_type* Adr);
+	    character_type*   current_p() { return _current_p; }
+
+	    memory_position   tell_adr();
+	    void              seek_adr(memory_position Adr);
+	    void              seek_offset(const int Offset);
+
+	    int               content_size()  { return BUFFER_SIZE - 2; }
+	    character_type*   content_begin() { return _buffer + 1; }               // 1st in content
+	    character_type*   content_end()   { return _buffer + BUFFER_SIZE - 1; } // 1st after content
+	    character_type*   buffer_begin()  { return _buffer; }                   // 1st in buffer
+	    character_type*   buffer_end()    { return _buffer + BUFFER_SIZE; }     // 1st after buffer
+
+	    void              close_input() { _input.close(); }
+
+	    void              assert_consistency();
+
+#ifdef __QUEX_OPTION_UNIT_TEST
+	    // NOTE: Include <iostream> for unit tests before this header!
+	    character_type   get_border_char(const character_type);
+	    void             show_content();
+	    void             x_show_content(); 
+	    void             show_brief_content(); 
+#endif
+
+	public:
+	    // NOT private: for usage in the template type OverflowPolicy
+	    //              (template friends are not solved propperly on all compilers)
+	    void   __set_end_of_file(character_type* EOF_p);
+	    void   __set_begin_of_file();
+	    void   __unset_end_of_file();
+	    void   __unset_begin_of_file();
+
+	protected:
+	    // (*) Member Variables ___________________________________________________________________________
+	    character_type*  _buffer;              
+	    character_type*  _current_p;
+	    int              _fallback_n;
+	    character_type*  _lexeme_start_p;
+	    character_type*  _end_of_file_p;       // pointer to position in buffer that corresponds EOF, 
+	    //                                     // == 0x0 if EOF not in buffer.
+	    stream_position  _start_pos_of_buffer; // position in stream that corresponds to _content[0]
+	    //
+	    InputStrategy    _input;               // DESIGN PATTERN: 'Strategy'
+
+	private:
+	    const int     BUFFER_SIZE;
+	    const int     FALLBACK_N;
+	    //
+	    int     __load_core(character_type* fill_start_adr, const int N);
+	    void    __constructor_core();
+	};    
+
+    typedef basic_buffer<> buffer;
+
+#   define TEMPLATE template<class InputStrategy, class OverflowPolicy>
+#   define CLASS    basic_buffer<InputStrategy, OverflowPolicy>   
+
+    TEMPLATE inline CLASS::basic_buffer(InputStrategy& input_strategy_object, 
+					int BufferSz        /*=65536*/, 
+					int BackupSectionSz /*=64*/,
+					int Value_BOFC      /*=Default ...*/,
+					int Value_EOFC      /*=Default ...*/,
+					int Value_BLC       /*=Default ...*/) 
+	: BOFC(Value_BOFC), EOFC(Value_EOFC), BLC(Value_BLC), 
+	_input(input_strategy_object),
+	BUFFER_SIZE(BufferSz), FALLBACK_N(BackupSectionSz)
+    {
+	__constructor_core(BufferSz, BackupSectionSz, Value_BOFC, Value_EOFC, Value_BOFC);
+    }
+
+    TEMPLATE inline CLASS::basic_buffer(input_handle_type* input_handle_p, 
+					int BufferSz        /*=65536*/, 
+					int BackupSectionSz /*=64*/,
+					int Value_BOFC      /*=Default ...*/,
+					int Value_EOFC      /*=Default ...*/,
+					int Value_BLC       /*=Default ...*/) 
+       : BOFC(Value_BOFC), EOFC(Value_EOFC), BLC(Value_BLC), 
+       _input(InputStrategy(input_handle_p)),
+       BUFFER_SIZE(BufferSz), FALLBACK_N(BackupSectionSz)
+
+    {
+	__constructor_core();
+    }
+
+    TEMPLATE inline void CLASS::__constructor_core() 
+    {
+	assert(BUFFER_SIZE > 2); 
+	assert(FALLBACK_N < BUFFER_SIZE - 2);  // '-2' because of the border chars.
+	//___________________________________________________________________________
+	//
+	// NOTE: The borders are filled with buffer limit codes, end of file or
+	//       begin of file codes. Thus the buffer's volume is two elements greater
+	//       then the buffer's content.
+	//
+	_buffer = new character_type[BUFFER_SIZE];      
+	// _buffer[0]             = lower buffer limit code character
+	// _buffer[1]             = first char of content
+	// _buffer[BUFFER_SIZE-2] = last char of content
+	// _buffer[BUFFER_SIZE-1] = upper buffer limit code character
+
+	// -- current = 1 before content, 
+	//    because we always read '_current_p + 1' as next char.
+	_current_p      = _buffer;     
+	// -- initial lexeme start, of course, at the start
+	_lexeme_start_p = _buffer + 1;
+
+	// -- load initial content starting from position zero
+	const int LoadedN = __load_core(content_begin(), content_size());
+
+	// -- the fallback border
+	_fallback_n              = FALLBACK_N;
+	// -- start position of the buffer = 0
+	_start_pos_of_buffer = _input.tell() - (stream_position)(LoadedN);
+
+	// -- end of file / end of buffer:
+	if( LoadedN != content_size() ) __set_end_of_file(content_begin() + LoadedN); // end of file
+	else                            __unset_end_of_file();                        // buffer limit
+	
+	// -- begin of buffer?
+	if( _start_pos_of_buffer == (stream_position)(0) ) __set_begin_of_file();   // begin of file                
+	else                                               __unset_begin_of_file(); // buffer limit
+    }
+
+    TEMPLATE inline
+	CLASS::~basic_buffer() {
+	    delete [] _buffer;
+	}
+
+    TEMPLATE inline int  
+	CLASS::get_forward() {
+	    assert(_current_p >= buffer_begin() - 1);
+	    assert(_current_p <  buffer_end()   - 1);
+	    //________________________________________________________________________________
+	    // NOTE: Limit codes are stored at the end of the buffer. This causes
+	    //       all transitions to fail in the state machine. The 'fail'
+	    //       case has now to check wether the current input is zero.
+	    //       if so, the load_new_content() function is to be called.
+	    // THUS: Under normal conditions (99.99% of the cases) no extra
+	    //       check for end of buffer is necessary => speed up.
+	    return *(++_current_p);
+	}
+
+    TEMPLATE inline int  
+	CLASS::get_backward() {
+	    // NOTE: When a BLC/BOF is returned due to reaching the begin of the buffer,
+	    //       the current_p == content_begin() - 2. The following asserts ensure that the
+	    //       'get_backward()' is not called in such cases, except after 'load_backwards()'
+	    assert(_current_p >= buffer_begin());
+	    assert(_current_p <  buffer_end());
+	    //________________________________________________________________________________
+	    int tmp = *_current_p;
+	    --_current_p;
+	    return tmp;	
+	}
+
+    TEMPLATE void              
+	CLASS::set_subsequent_character(const int Value) {
+	    assert(_current_p > _buffer );
+	    assert(_current_p < _buffer + 1 + content_size());
+	    *(_current_p + 1) = Value;
+	}
+
+    TEMPLATE typename CLASS::character_type    
+	CLASS::get_subsequent_character() { 
+	    assert(_current_p >= content_begin());
+	    assert(_current_p < content_end());
+	    return *(_current_p + 1); 
+	}
+
+    TEMPLATE typename CLASS::character_type    
+	CLASS::get_current_character() { 
+	    assert(_current_p >= content_begin());
+	    assert(_current_p < content_end());
+	    return *_current_p; 
+	}
+
+    TEMPLATE void       
+	CLASS::mark_lexeme_start() { 
+	    // allow: *_current_p = BLC, BOF, or EOF
+	    assert(_current_p >= content_begin() - 2);                
+	    assert(_end_of_file_p != 0x0 || _current_p < content_end());  
+	    assert(_end_of_file_p == 0x0 || _current_p <= _end_of_file_p);  
+
+	    // pointing to the next character to be read
+	    _lexeme_start_p = _current_p + 1;     
+	}
+
+    TEMPLATE void 
+	CLASS::set_current_p(character_type* Adr) { 
+	    assert(Adr >= buffer_begin());
+	    assert(Adr < content_end());
+	    _current_p = Adr;
+	}
+
+#if (! defined(NDEBUG)) || defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER)
+    TEMPLATE void 
+	CLASS::assert_consistency() {
+	    // NOTE: If NDEBUG is defined, the following asserts are taken out
+	    //       and this function is a null function that is deleted by the compiler.
+	    // NOTE: No assumptions can be made in general on the relation between
+	    //       _current_p and _lexeme_start_p, since for forwards lexing
+	    //       _current_p comes before _lexeme_start_p, wherelse for back-
+	    //       ward lexing this is vice versa. 
+	    //       See "code_base/core_engine/definitions-quex-buffer.h"
+	    if( _current_p      < buffer_begin() - 1) abort(); 
+	    if( _lexeme_start_p < buffer_begin() )    abort();                
+	    //
+	    if( _end_of_file_p == 0x0 ) {
+		if( _current_p      >  buffer_end() ) abort(); 
+		if( _lexeme_start_p >= buffer_end() ) abort();  
+	    } else {
+		if( _end_of_file_p < content_begin() || _end_of_file_p >= content_end() ) abort();
+		if( _lexeme_start_p > _end_of_file_p )  abort();  
+		if( _current_p      > _end_of_file_p )  abort(); 
+	    }
+	}
+#else
+    TEMPLATE void 
+	assert_consistenty() {}
+#endif
+
+
+    TEMPLATE inline int  
+	CLASS::load_forward() {
+	    // RETURNS: false -> end of file, no further content available
+	    //          true  -> new content has been loaded into the buffer.
+	    //
+#ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
+	    std::cout << "LOAD FORWARD\n";
+	    show_content();
+#endif
+	    // NOTE: This function assumes that the _current_p has reached the border
+	    //       and therefore new content has to be loaded.
+	    //
+	    // The end of the file might not be the border of the buffer. 
+	    // => distinguish in asserts between eof in buffer or not.
+	    assert(_end_of_file_p == 0x0 || *_current_p == basic_buffer::EOFC );   
+	    assert(_end_of_file_p == 0x0 || _current_p  == _end_of_file_p);
+	    assert(_end_of_file_p != 0x0 || *_current_p == basic_buffer::BLC );
+	    assert(_end_of_file_p != 0x0 || _current_p  == _buffer + BUFFER_SIZE - 1);
+	    //
+	    // If the lexeme start pointer is at the beginning of the buffer,
+	    // then no new content can be loaded without a special strategy.
+	    // At this point '=0' is permitted, but downwards we call a virtual
+	    // function that handles this case, derive from this class to 
+	    // implement your personal strategy to handle this.	
+	    const int LexemeStartOffSet = _lexeme_start_p - content_begin();
+	    assert(LexemeStartOffSet >= -1);
+	    // lexeme start can be on border, i.e. it can point to 
+	    // content_begin() -1, or content_end(), or _end_of_file_p
+            assert(_end_of_file_p != 0x0 || LexemeStartOffSet <= content_size());
+            assert(_end_of_file_p == 0x0 || LexemeStartOffSet <= _end_of_file_p - content_begin());
+	    //________________________________________________________________________________
+
+	    if( _end_of_file_p ) return -1; 
+
+	    // buffer:
+	    //             border
+	    //                :
+	    // |11111111111111:22222222222222222222222222222222222222|
+	    //   copy of      :   new loaded content of buffer
+	    //   end of old   
+	    //   buffer      
+	    _fallback_n = FALLBACK_N;
+
+	    // (*) calculate the fallback area:
+	    //     -- the lexeme start pointer has to be inside the buffer 
+	    //        content_size() - LexemeStartOffSet  - 1 >= border
+	    if( content_size() - LexemeStartOffSet > _fallback_n ) {
+		_fallback_n = content_size() - LexemeStartOffSet;
+		if( _fallback_n == content_size() ) {
+		    // if the lexeme covers the whole buffer, than the _fallback_n would reach
+		    // the end of the buffer. this is a case for a call to a virtual event
+		    // handler: 
+		    if( OverflowPolicy::forward(this) == false ) return -1;
+		}
+	    }
+	    //     -- there cannot be more fallback than what was read
+	    int putback_n = _current_p - content_begin();
+	    if( putback_n > _fallback_n ) putback_n = _fallback_n;
+
+	    // (*) copy fallback content, for the case that 'get_backward' is called now.
+	    std::memmove(content_begin() + _fallback_n - putback_n, 
+		         content_end() - putback_n, putback_n);
+
+	    // (*) load new content starting from beyond the fallback border
+	    const stream_position CurrentPos = _input.tell();
+	    const stream_position EndPosOfBuffer(_start_pos_of_buffer + 
+		                                 (stream_offset)(content_size()));
+	    if( ! (EndPosOfBuffer == CurrentPos) ) _input.seek(EndPosOfBuffer);
+
+	    const int LoadN   = content_size() - _fallback_n;
+	    const int LoadedN = __load_core(content_begin() + _fallback_n, LoadN);
+
+	    // -- end of file / end of buffer:
+	    if( LoadedN != LoadN ) {
+		_end_of_file_p  = content_begin() + _fallback_n + LoadedN;
+		*_end_of_file_p = basic_buffer::EOFC;
+	    } else {
+		_end_of_file_p      = 0x0;
+		*(content_end()) = basic_buffer::BLC;
+	    }
+
+	    // -- begin of file / begin of buffer
+	    //    any 'load forward' undoes a 'begin of file touched', since now we can
+	    //    try to read again backwards. reading of zero bytes is impossible, since
+	    //    FALLBACK_N has to be < content_size().
+	    *(buffer_begin()) = basic_buffer::BLC; // begin of buffer                
+
+	    // (*) adapt pointers
+	    _current_p      = content_begin() + _fallback_n - 1; // next char to be read: '_current_p + 1'
+	    _lexeme_start_p = content_begin() + LexemeStartOffSet - LoadN;  // LoadN = number of elements deleted
+	    //                                                       // => independent on number of elements that
+	    //                                                       //    were actually read !!
+	    _start_pos_of_buffer = _input.tell() - (stream_position)(LoadedN + _fallback_n);
+	    // NOTE: Return value used for adaptions of memory addresses. The same rule as for
+	    //       _lexeme_start_p holds for those addresses.
+
+#ifdef  __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
+	    std::cout << "LOAD FORWARD (end)\n";
+	    show_content();
+#endif
+	    return LoadN;
+	}
+
+    TEMPLATE inline int  
+	CLASS::load_backward() {
+	    // RETURNS: false -> begin of file, no further content available
+	    //          true  -> new content has been loaded into the buffer.
+#ifdef  __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
+	    std::cout << "LOAD BACK\n";
+	    show_content();
+#endif
+	    // PURPOSE: Going backwards, because a call to get_backward() hit the 
+	    //          front of the buffer. Usually, there is the '_fallback_n' buffer that
+	    //          allows a certain distance backwards. If still the begin of the
+	    //          buffer is reached, then this is an indication that something 
+	    //          is 'off-the-norm'. Lexical analysis is not supposed to go longtimes
+	    //          backwards. For such cases we step a long stretch backwards:
+	    //          a third of the buffer's size! 
+	    //
+	    //          A meaningful border would be 10 Bytes. If the buffer's size is for
+	    //          example 512 kB then the backwards_distance, here, is 170 kB. This leaves a  
+	    //          safety region which is about 17.476 times greater than normal (10 Bytes).
+	    //
+	    // NOTE: This function assumes that the probability to go backwards is much 
+	    //       less than the probability to go forwards. Also, it is assumed that 
+	    //       going backwards does not go over so long stretches as while going
+	    //       forwards. Thus only a small stretch of the backward stream is loaded,
+	    //       in the hope, that this is enough before starting through again forwards.
+	    assert(_current_p == content_begin() - 2); // this function should only be called when 
+	    //                                         // the iterator has reached the lower border of the 
+	    //                                         // buffer.
+	    // border marked by code since the last section of the file might not 
+	    // fill the buffer and therefore might not reach the border.
+	    assert( *(buffer_begin()) == basic_buffer::BOFC || *(buffer_begin()) == basic_buffer::BLC );   
+	    const int LexemeStartOffSet = _lexeme_start_p - content_begin();
+	    // lexeme start can be on border, i.e. it can point to 
+	    // content_begin() -1, or content_end(), or _end_of_file_p
+	    assert(LexemeStartOffSet >= -1);
+	    assert(_end_of_file_p != 0x0 || LexemeStartOffSet <= content_size());
+	    assert(_end_of_file_p == 0x0 || LexemeStartOffSet <= _end_of_file_p - content_begin());
+	    //_______________________________________________________________________________
+	    if( *(buffer_begin()) == basic_buffer::BOFC ) return -1; // we cannot go further back
+
+	    // (*) compute the distance to go backwards
+	    long backward_distance = long(content_size() / 3);    // go back a third of the buffer 
+	    //
+	    if( _start_pos_of_buffer < backward_distance ) backward_distance = _start_pos_of_buffer; 
+
+	    // -- _lexeme_start_p shall never be beyond the content limit
+	    if( LexemeStartOffSet + backward_distance > content_size() ) {
+		// later on: 
+		//      _lexeme_start_p (new) = _lexeme_start_p (old) + backward_distance
+		// thus extreme case:
+		//      content_end() - 1 = _lexeme_start_p (old) + backward_distance
+		// with:
+		//      LexemeStartOffSet = _lexeme_start_p - content_begin()
+		backward_distance = content_size() - LexemeStartOffSet - 1;
+	    }
+	    if( backward_distance <= 0 ) 
+		if( OverflowPolicy::backward(this) == false ) return -1;
+
+
+	    // (*) let's assume that copying is much faster then loading content from file:
+	    //    copy content that is already there to its new position.
+	    std::memmove(content_begin() + backward_distance, content_begin(), content_size() - backward_distance);
+
+	    // (*) load new content starting from beyond the fallback border
+	    _input.seek(_start_pos_of_buffer - (stream_offset)(backward_distance));
+
+	    // (*) load new content starting from beyond the fallback border
+#ifndef NDEBUG
+	    const int LoadedN = __load_core(content_begin(), backward_distance);
+	    // -- If file content < buffer size, then the start position of the stream to which
+	    //    the buffer refers is always 0 and no backward loading will ever happen.
+	    // -- If the file content >= buffer size, then backward loading must always fill
+	    //    the buffer. 
+	    //    Only exception: The fallback region is greater then the backward_distance,
+	    //                    and the end_of_file is inside the buffer. Then it cannot 
+	    //                    be assumed that all backward_distance is loaded.
+	    assert(   LoadedN == backward_distance
+		   || (_end_of_file_p != 0x0 && backward_distance < _fallback_n));
+#else
+	    __load_core(content_begin(), backward_distance);  // avoid unused LoadedN
+#endif
+	    // -- end of file / end of buffer:
+	    if( _end_of_file_p ) {
+		_end_of_file_p += backward_distance;
+		if( _end_of_file_p < content_end() ) {
+		    *_end_of_file_p = basic_buffer::EOFC;
+		}
+		else {
+		    _end_of_file_p             = 0x0;
+		    *(content_end()) = basic_buffer::BLC;
+		}		    
+	    }
+#ifndef NDEBUG
+	    // NOTE: In case of _end_of_file_p == 0x0 the EOF position is not inside
+	    //       the buffer and it can be assumed that the border is set to BLC (buffer limit code).
+	    // -- begin of file / begin of buffer
+	    if( ! _end_of_file_p ) assert( *(content_end()) == basic_buffer::BLC );
+#endif
+	    if( backward_distance == _start_pos_of_buffer ) *(buffer_begin()) = basic_buffer::BOFC;
+	    else                                            *(buffer_begin()) = basic_buffer::BLC;
+
+	    // (*) set the read pointer
+	    _current_p            = _current_p + backward_distance + 1; 
+	    _lexeme_start_p       = _lexeme_start_p + backward_distance;
+	    _start_pos_of_buffer -= backward_distance;  
+
+	    //________________________________________________________________________________
+	    // -- any 'load backward' undoes a 'end of file touched', since now we can
+	    //    try to read again backwards.
+#ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
+	    std::cout << "LOAD BACK (end)\n";
+	    show_content();
+#endif
+	    return backward_distance;
+	}
+
+
+    TEMPLATE inline int  
+	CLASS::__load_core(character_type* fill_start_adr, const int N) {
+	    // -- Reads N bytes into buffer starting at 'fill_start_adr'. If less then
+	    //    N bytes could be read, the end of file flag is raised.
+	    //	
+	    assert(fill_start_adr     >= content_begin());
+	    assert(fill_start_adr + N <= content_end());
+	    //______________________________________________________________________________
+	    const int ReadN = _input.read(fill_start_adr, N); 
+
+	    return ReadN;
+	}
+
+
+#ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER
+    TEMPLATE inline typename CLASS::character_type  
+	CLASS::get_border_char(const character_type C) {
+	    if     ( C == basic_buffer::BLC )  return '|';
+	    else if( C == basic_buffer::EOFC ) return ']';
+	    else if( C == basic_buffer::BOFC)  return '[';
+	    else {
+		return '?';
+	    }
+	}
+
+    // Do not forget to include <iostream> before this header when doing those unit tests
+    // which are using this function.
+    TEMPLATE inline void  
+	CLASS::show_content() {
+	    // NOTE: if the limiting char needs to be replaced temporarily by
+	    //       a terminating zero.
+	    // NOTE: this is a **simple** printing function for unit testing and debugging
+	    //       it is thought to print only ASCII characters (i.e. code points < 0xFF)
+	    int             covered_char = 0xFFFF;
+	    character_type* end_p = 0x0;
+	    for(end_p = content_begin(); end_p < buffer_end() ; ++end_p) {
+		if( *end_p == basic_buffer::EOFC || *end_p == basic_buffer::BLC ) { 
+		    covered_char = *end_p; *end_p = '\0'; break; 
+		}
+	    }
+	    // check for missing limit character
+	    assert(covered_char != 0xFFFF);
+	    //_________________________________________________________________________________
+	    char tmp[content_size()+4];
+	    // tmp[0]                  = outer border
+	    // tmp[1]                  = buffer limit
+	    // tmp[2...content_size()+1] = content_begin()[0...content_size()-1]
+	    // tmp[content_size()+2]     = buffer limit
+	    // tmp[content_size()+3]     = outer border
+	    // tmp[content_size()+4]     = terminating zero
+	    for(int i=2; i<content_size()+2; ++i) tmp[i] = ' ';
+	    tmp[content_size()+4] = '\0';
+	    tmp[content_size()+3] = '|';
+	    tmp[content_size()+2] = get_border_char(end_p != content_end() ? 
+		                                    BLC : (char)covered_char);
+	    tmp[1]                = get_border_char(*(content_begin()-1));
+	    tmp[0]                = '|';
+	    //
+	    tmp[_fallback_n - 1 + 2]              = ':';	
+	    tmp[_current_p - content_begin() + 2] = 'C';
+	    if( _lexeme_start_p >= content_begin() && _lexeme_start_p <= content_end() ) 
+		tmp[(int)(_lexeme_start_p - content_begin()) + 2] = 'S';
+	    //
+	    if ( _current_p == content_begin() - 2 ) {
+		std::cout << tmp << " <out>";
+	    } else {
+		char current = end_p != _current_p ? (*_current_p) : covered_char; 
+		if( current == basic_buffer::BOFC)      std::cout << tmp << " BOFC";
+		else if( current == basic_buffer::EOFC) std::cout << tmp << " EOFC";
+		else if( current == basic_buffer::BLC)  std::cout << tmp << " BLC"; 
+		else                                    std::cout << tmp << " '" << current << "'";
+	    }
+	    // std::cout << " = 0x" << std::hex << int(*_current_p) << std::dec 
+	    std::cout << std::endl;
+	    std::cout << "|" << get_border_char(*(buffer_begin())) << content_begin();
+	    std::cout << get_border_char(covered_char);
+	    //
+	    for(unsigned i=0; i<content_size() - strlen(content_begin()); ++i) std::cout << "|";
+
+	    // undo the temporary covering ___________________________________________________
+	    *end_p = covered_char;
+	    //
+	    std::cout << "|\n";
+	}
+
+
+    TEMPLATE inline void 
+	CLASS::x_show_content() {
+	    show_content();
+	    show_brief_content();
+	}
+
+    TEMPLATE inline void 
+	CLASS::show_brief_content() {
+	    std::cout << "start-pos:  " << _start_pos_of_buffer << std::endl;
+	    const int  Pos = _input.tell();
+	    std::cout << "stream-pos: " << Pos << std::endl;
+	    std::cout << "EOF = " << bool(_end_of_file_p);
+	    std::cout << ", BOF = " << bool(*(buffer_begin()) == basic_buffer::BOFC) << std::endl;
+	    std::cout << "current_p (offset)    = " << _current_p - content_begin() << std::endl;
+	    std::cout << "lexeme start (offset) = " << _lexeme_start_p - content_begin() << std::endl;
+	    // char       mini_buffer[8];
+	    //_sh->read(mini_buffer, 8);
+	    //std::cout << ": ... '" << mini_buffer << "'" << std::endl;
+	    //_sh->seekg(Pos);
+	}
+#endif
+
+    TEMPLATE inline void 
+	CLASS::__set_end_of_file(character_type* EOF_p)
+	{
+	    _end_of_file_p  = EOF_p; 
+	    *_end_of_file_p = basic_buffer::EOFC;
+	}
+
+    TEMPLATE inline void 
+	CLASS::__unset_end_of_file()
+	{
+	    _end_of_file_p  = 0x0; 
+	    *(content_end()) = basic_buffer::BLC;
+	}
+
+    TEMPLATE inline void 
+	CLASS::__set_begin_of_file()
+	{
+	    *(buffer_begin()) = basic_buffer::BOFC; 
+	}
+
+    TEMPLATE inline void 
+	CLASS::__unset_begin_of_file()
+	{
+	    *(buffer_begin()) = basic_buffer::BLC; 
+	}
+
+    TEMPLATE inline typename CLASS::memory_position    
+	CLASS::tell_adr()
+	{
+#ifndef NDEBUG
+	    return memory_position(_current_p, _start_pos_of_buffer);
+#else
+	    return memory_position(_current_p);
+#endif
+	}
+
+    TEMPLATE inline void 
+	CLASS::seek_adr(const memory_position Adr)
+	{
+#ifndef NDEBUG
+	    // Check wether the memory_position is relative to the current start position 
+	    // of the stream. That means, that the tell_adr() command was called on the
+	    // same buffer setting or the positions have been adapted using the += operator.
+	    assert(Adr.buffer_start_position == _start_pos_of_buffer);
+	    _current_p = Adr.address;
+#else
+	    _current_p = Adr;
+#endif
+	}
+
+    TEMPLATE inline void 
+	CLASS::seek_offset(const int Offset)
+	{
+	    _current_p += Offset;
+	    // NOTE: The buffer starts at 'buffer_begin()'
+	    assert(_current_p >= buffer_begin() && _current_p < content_end());
+	}
+
+    TEMPLATE inline bool   
+	DefaultOverflowPolicy::forward(CLASS* that) { 
+#ifdef __QUEX_OPTION_UNIT_TEST
+	    std::cerr << "ALERT: Lexeme start drops beyond end of buffer (buffer overflow)." << std::endl;
+#endif
+	    that->__set_end_of_file(that->content_begin());
+	    return false; /* => END OF FILE */ 
+	}
+
+
+    TEMPLATE inline bool   
+	DefaultOverflowPolicy::backward(CLASS* that) { 
+#ifdef __QUEX_OPTION_UNIT_TEST
+	    std::cerr << "ALERT: Lexeme start drops beyond begin of buffer (buffer underflow)." << std::endl;
+#endif
+	    that->__set_begin_of_file();
+	    return false; /* => BEGIN OF FILE */ 
+	}
+
+#undef TEMPLATE
+#undef CLASS
+}
+
+#endif // __INCLUDE_GUARD_QUEX_BUFFER__

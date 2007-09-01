@@ -1,0 +1,11 @@
+-1L  
+<no title>
+=====
+-1L  test-simple
+Count Line and Column:Without Indentation Count
+RESULT:   OK;
+=====
+-1L  test-simple-2
+Count Line and Column:With Indentation
+RESULT:   OK;
+=====

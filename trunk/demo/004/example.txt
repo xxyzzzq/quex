@@ -1,0 +1,26 @@
+template <class X>
+struct example {
+  int    x;
+private:
+  double y;
+
+public:
+  void function() const;
+
+  X::element_type  my_array[512];
+};
+
+try {
+    if( 1 + x == 23 ) {
+	printf("hello world");
+    } else {
+	printf("never mind, world");
+	throw this;
+    }
+} catch {
+}
+throw
+continue
+for
+while
+break

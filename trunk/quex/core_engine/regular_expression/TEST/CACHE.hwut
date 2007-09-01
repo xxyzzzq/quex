@@ -1,0 +1,59 @@
+-1L  
+<no title>
+=====
+-1L  test-lonely-characters.py
+Basics:Lonestanding characters
+RESULT:   OK;
+=====
+-1L  test-alternatives.py
+Combination:Alternative Expressions
+RESULT:   OK;
+=====
+-1L  test-replacement.py
+Basics:Pattern identifier replacement
+RESULT:   OK;
+=====
+-1L  test-snap_until.py
+Basics:Snap string until (low level function)
+RESULT:   OK;
+=====
+-1L  test-pattern-matching.py
+State Machine Pattern Matching
+RESULT:   OK;
+=====
+-1L  test-string.py
+Basics:Map character *string* to state machine
+RESULT:   OK;
+=====
+-1L  test-pre-and-post-condition.py
+Conditional Analysis:pre- and post-conditions
+RESULT:   OK;
+=====
+-1L  test-set.py
+Basics:Map character *range* to state machine
+RESULT:   OK;
+=====
+-1L  test-pre-condition.py
+Conditional Analysis:pre conditions
+RESULT:   OK;
+=====
+-1L  test-repeated-expressions.py
+Combination:Simple repeated expressions
+RESULT:   OK;
+=====
+-1L  test-bol-eol.py
+Conditional Analysis:Begin of Line '^', End of Line '$'
+RESULT:   OK;
+=====
+-1L  test-snap_backslashed_character.py
+Backslashed Characters:General
+RESULT:   OK;
+=====
+-1L  test-post-condition.py
+Conditional Analysis:post conditions
+RESULT:   OK;
+=====
+-1L  test-eol-carriage-return-newline.py
+Conditional Analysis:End of Line '$' (with DOS/Windows '\r\n')
+RESULT:   OK;
+=====
