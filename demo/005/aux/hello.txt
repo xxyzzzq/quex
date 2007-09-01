@@ -1,3 +1,0 @@
-include aux/bonjour.txt
-Hello World
-

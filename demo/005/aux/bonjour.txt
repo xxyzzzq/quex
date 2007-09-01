@@ -1,4 +1,0 @@
-Bonjour le monde
-include aux/moin.txt
-include aux/hallo.txt
-
