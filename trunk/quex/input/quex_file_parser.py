@@ -139,7 +139,7 @@ def parse_pattern_name_definitions(fh):
                                                    fh.name, line_n)
         line_n += 1
 
-def parse_token_id_definitions(fh):
+def parse_token_id_definitions(fh, Setup):
     """Parses token definitions of the form:
   
           TOKEN_ID_NAME [Number] [TypeName] 
@@ -173,6 +173,15 @@ def parse_token_id_definitions(fh):
         type_name = None
         number    = None
         #
+        # -- check the name, if it starts with the token prefix paste a warning
+        token_prefix = Setup.input_token_id_prefix
+        if name.find(token_prefix) == 0:
+            error_msg("Token identifier begins with token prefix '%s'.\n" % token_prefix + \
+                      "This is not forbidden, but consider that this token identifier appears in the source\n" + \
+                      "code as '%s%s'" % (token_prefix, name) + ", because quex mounts " + \
+                      "the token prefix automatically.", fh, DontExitF=True)
+
+        #
         if len(record) - 2 > 1: 
             candidate = record[1]
             # does candidate consist only of digits ? --> number
@@ -195,7 +204,6 @@ def parse_token_id_definitions(fh):
             if type_name != None: db[name].type_name = type_name
             db[name].positions.append([fh.name, line_n])
 
-
 def parse_initial_mode_definition(fh):
     verify_next_word(fh, "=")
     # specify the name of the intial lexical analyser mode
@@ -209,7 +217,6 @@ def parse_initial_mode_definition(fh):
     lexer_mode.initial_mode.code     = mode_name
     lexer_mode.initial_mode.filename = fh.name
     lexer_mode.initial_mode.line_n   = get_current_line_info_number(fh)
-
 
 def parse_section(fh, Setup):
 
@@ -251,7 +258,7 @@ def parse_section(fh, Setup):
         return
 
     elif word == "token":       
-        parse_token_id_definitions(fh)
+        parse_token_id_definitions(fh, Setup)
         return
 
     elif word == "mode":
@@ -260,7 +267,6 @@ def parse_section(fh, Setup):
     else:
         error_msg("sequence '%s' not recognized as valid keyword in this context" % word + \
                   "use: 'mode', 'header', 'body', 'init', 'define', 'token' or 'start'", fh)
-
 
 def parse_mode_definition(fh, Setup):
 
@@ -328,7 +334,6 @@ def parse_mode_definition(fh, Setup):
 
         parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, pattern_i)
 
-
 def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, PatternIdx):
     skip_whitespace(fh)
     position = fh.tell()
@@ -356,14 +361,14 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
                                                      PatternIdx, DeletionF = True)
         
     elif word == "=>":
-        parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx)
+        parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx, Setup)
 
     else:
         error_msg("missing token '{', 'PRIORITY-MARK', 'DELETE', or '=>'.", fh)
 
     return
 
-def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx):
+def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx, Setup):
     skip_whitespace(fh)
     # shorthand for { self.send(TKN_SOMETHING); RETURN; }
     token_name, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
@@ -379,13 +384,28 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
         token_constructor_args = ""
         
     # after 'send' the token queue is filled and one can safely return
+    if token_name != "quex::token::ID_TERMINATION":
+        if token_name.find(Setup.input_token_id_prefix) != 0:
+            error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
+                      "found: '%s'" % token_name, fh)
+        prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
+
+        if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
+            error_msg("Token identifier '%s' has not been declared int token {...} section.\n" % token_name + \
+                      "Quex defines this token id '%s' implicitly.\n" % token_name + \
+                      "Please, note that inside the token {...} section tokens are declared **without** prefix.\n" + \
+                      "That means, in that section ommit the '%s' at the beginning of the token identifier." % \
+                      Setup.input_token_id_prefix, \
+                      fh, DontExitF=True)
+            lexer_mode.token_id_db[prefix_less_token_name] = \
+                    TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
+
     code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
 
     line_n = get_current_line_info_number(fh) + 1
     new_mode.matches[pattern] = lexer_mode.Match(pattern, code,  pattern_state_machine, PatternIdx,
                                                  fh.name, line_n)
     
-
 def check_for_event_specification(word, fh, new_mode, Setup, PatternIdx):
 
     if word == "on_entry":
@@ -432,7 +452,6 @@ def check_for_event_specification(word, fh, new_mode, Setup, PatternIdx):
 
     # word was not an event specification 
     return False
-
 
 def parse_regular_expression_specification(fh, Setup):
 

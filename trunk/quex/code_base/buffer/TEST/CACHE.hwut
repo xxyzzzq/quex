@@ -1,6 +1,9 @@
 -1L  
 <no title>
 =====
+1180812552L  ./test-misc-III.bak
+Miscenllaneous Scenarios:Content Size = 11, Fallback Size = 0
+=====
 1179470567L  ./test-backward-get-2
 Backwards Iteration:Maximum Fallback Region
 CHOICES:  Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2;
@@ -15,11 +18,10 @@ Miscenllaneous Scenarios:Content Size = 11, Fallback Size = 0
 CHOICES:  istream, stdio;
 RESULT:   OK, OK;
 =====
-1180812552L  ./test-misc-III.bak
-Miscenllaneous Scenarios:Content Size = 11, Fallback Size = 0
-=====
-1180812552L  ./test-misc-II.bak
-Miscenllaneous Scenarios:Content Size = 11, Fallback Size = 1
+1180812552L  ./test-backward-get.bak
+Backwards Iteration
+CHOICES:  Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2;
+RESULT:   <no result>, <no result>, <no result>, <no result>;
 =====
 -1L  test-misc-II
 Miscenllaneous Scenarios:Content Size = 11, Fallback Size = 1
@@ -49,8 +51,6 @@ Forward Iteration:Multiple Loads.
 CHOICES:  Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2;
 RESULT:   OK, OK, OK, OK;
 =====
-1180812552L  ./test-backward-get.bak
-Backwards Iteration
-CHOICES:  Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2;
-RESULT:   <no result>, <no result>, <no result>, <no result>;
+1180812552L  ./test-misc-II.bak
+Miscenllaneous Scenarios:Content Size = 11, Fallback Size = 1
 =====

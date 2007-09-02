@@ -516,7 +516,7 @@ shorthand_db = {}
 
 #-----------------------------------------------------------------------------------------
 # token_id_db: list of all defined token-ids together with the file position
-#              where they are defined.
+#              where they are defined. See token_ide_maker, class TokenInfo.
 #-----------------------------------------------------------------------------------------
 token_id_db = {}
 
