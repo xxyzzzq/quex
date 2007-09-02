@@ -1,0 +1,36 @@
+1174326228  ./test-post-condition.py
+Conditional Analysis: post conditions
+=====
+1174766984  ./test-replacement.py
+pattern identifier replacement
+=====
+1173381448  ./test-lonely-characters.py
+lonestanding characters
+=====
+1173381448  ./test-pre-and-post-condition.py
+Conditional Analysis: pre- and post-conditions
+=====
+1173381448  ./test-pre-condition.py
+Conditional Analysis: pre conditions
+=====
+1174178659  ./test-bol-eol.py
+Begin of Line '^', End of Line '$'
+=====
+1173381448  ./test-alternatives.py
+alternative expressions
+=====
+1173381448  ./test-repeated-expressions.py
+simple repeated expressions
+=====
+1173381448  ./test-string.py
+map character *string* to state machine
+=====
+1173381448  ./test-snap_until.py
+snap string until (low level function)
+=====
+1173381448  ./test-set.py
+map character *range* to state machine
+=====
+1173856696  ./test-pattern-matching.py
+state machine pattern matching
+=====
