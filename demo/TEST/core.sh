@@ -15,7 +15,6 @@ if [[ $2 == "NDEBUG" ]]; then
 else
     arg1="NDEBUG_F= "
 fi
-pwd
 echo "makefile =" Makefile
 echo "cleaning ..."
 make clean   >& /dev/null

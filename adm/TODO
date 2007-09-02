@@ -1,12 +1,3 @@
-(*) 07y8m4d:
-
-    automatic token id generation in case that a token id is not specified.
-    at least automatic detection of undeclared token ids in the => sections.
-
-(*) 07y8m4d:
-
-   Unit tests for move_forward, move_backward in buffer handling.
-
 (*) 07y7m2d:
 
     NOTE: If some day the 'counting' feature is implemented for states to solve
@@ -91,4 +82,8 @@ ENTRY_INTO_MACHINE:
 (*) 07y8m11d:
 
     support internal codings other than ASCII, UCS-2 and UCS-4
+
+(*) 07y8m4d:
+
+   Unit tests for move_forward, move_backward in buffer handling.
 

@@ -1,4 +1,3 @@
-/home/fschaef/prj/quex/demo/000
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=  

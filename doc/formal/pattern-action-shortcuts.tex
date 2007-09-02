@@ -84,3 +84,8 @@ tremendously, but they make the lexical analyser descriptions also very
 readable. Long lists of pattern-action pairs can be understood and
 analysed in a few seconds.
 
+Note, that if an identifier is used that is not declared in a {\tt token}-section, 
+    then {\quex} implicitly declares this token, but still a warning is reported.
+In order to get things setup quickly, it is possible to complete renounce on
+{\tt token} sections. However, for a good style the output of these warnings
+might be pasted into one of the {\tt token}-sections.
