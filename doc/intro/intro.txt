@@ -7,7 +7,7 @@ matched the pattern.
 
 Figure \ref{fig:lexical-analyser} shows the principle of lexical
 analysis.  The lexical analyser receives a stream of characters `if( x> 3.1 )
-$\{$ ...` and produces a list of tokens that tells what the stream signifies. A first
+{ ...` and produces a list of tokens that tells what the stream signifies. A first
   token tells that there was an `if` statement, the second token tells
   that there was an opening bracket, the third one tells that there was an
   identifier with the content `x`, and so on. 
