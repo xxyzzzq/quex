@@ -1,14 +1,14 @@
 The {\quex} program generates a lexical analyser that scans text and
 identifies patterns. The result of this lexical analysis is a list of {\it
   tokens}. A token is a piece of atomic information directly relating to a
-pattern, or an {\it event}. It consists of a type-identifier, i.e. the {\it
+pattern, or an _event_. It consists of a type-identifier, i.e. the {\it
   token type}, and content wich is extracted from the text fragment that
 matched the pattern. 
 
 Figure \ref{fig:lexical-analyser} shows the principle of lexical
 analysis.  The lexical analyser receives a stream of characters "if( x> 3.1 )
 $\{$ ..." and produces a list of tokens that tells what the stream signifies. A first
-  token tells that there was an {\tt if} statement, the second token tells
+  token tells that there was an `if` statement, the second token tells
   that there was an opening bracket, the third one tells that there was an
   identifier with the content {\tt x}, and so on. 
   

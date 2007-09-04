@@ -1,0 +1,39 @@
+When {\quex} creates a lexical analyser it leaves some switches in the code
+that can be turned on and off in order to control certain
+charactersistics. First of all, {\quex} makes heavy use of`assert`s to
+make sure that the code is executed appropriately. These asserts can be turned
+off by defining the`NDEBUG` macro.  The following macros are {\quex}
+specific and can be specified with the '-D' option of your compiler:
+
+\begin{description}
+
+\item[\tt DEBUG\_QUEX\_MODE\_TRANSITIONS]: If defined, the lexical analyser
+engine displays any mode transition on the standard error output. 
+
+\item[\tt DEBUG\_QUEX\_PATTERN\_MATCHES]: If defined every pattern match is
+  going to be displayed on the standard error output. Note, that if the
+  lexical analyser is created with option `--debug no`' (see section
+  \ref{sec:formal/command-line-options}), then the source code does not
+  contain the code fragments that activate such a printout.
+
+  
+\item[\tt DEBUG\_QUEX\_TOKEN\_SEND]: If defined, then every token being sent
+  using the`send` function group is displayed on standard error output.
+  
+\item[\tt QUEX\_FOREIGN\_TOKEN\_ID\_DEFINITION]: If defined the definition of
+  token-ids, i.e. their numeric values is taken from an external file.  This
+  file needs to be specified using the command line optio`n
+    --foreign-token-id-file`. Foreign token-id definitions make sense, for
+  example, if the parser generator insists on defining token-ids.  If this
+  macro is not defined the given external file is ignored and
+  {\quex}-generated numerical values are used.
+
+        
+\item[\tt QUEX\_NO\_SUPPORT\_FOR\_COLUMN\_NUMBER\_COUNTING]: 
+  
+\item[\tt QUEX\_NO\_SUPPORT\_FOR\_LINE\_NUMBER\_COUNTING]: By defining these
+  macros the user can turn off the column number and line number counting. The
+  analyser may run a little faster then. Note, that in this case the member
+  functions for column number and line number access are no longer available.
+        
+\end{description}
