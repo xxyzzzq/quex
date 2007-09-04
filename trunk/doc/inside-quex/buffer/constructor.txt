@@ -1,4 +1,4 @@
-{\Quex}s buffer is implemented as a template. By this means a maximum of
+Quexs buffer is implemented as a template. By this means a maximum of
 flexibility is achieved. The following parameters can be passed to the 
 template:
 

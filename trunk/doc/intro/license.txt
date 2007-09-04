@@ -8,7 +8,7 @@ Note, that if any part of the LPGL contradicts with the former restrictions,
 the former restrictions have precedence. The 'no warranty clause' holds
 in any case. The LPGL:
 
-{\Quex} is  free software; you can redistribute  it and/or modify
+Quex is  free software; you can redistribute  it and/or modify
 it  under  the terms  of  the GNU  Lesser  General  Public License  as
 published by the  Free Software Foundation; either version  2.1 of the
 License, or (at your option) any later version.

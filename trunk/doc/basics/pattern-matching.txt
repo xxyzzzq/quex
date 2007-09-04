@@ -62,8 +62,8 @@ the parser).
 Traditionally, lexical analysers send a single token for an identified pattern
 in the character stream. Practically, this means that, after a pattern match
 has happened the 'token-getter-function' returns the token that was identified.
-{\Quex}, though, implements a more flexible approach which is better suited
+Quex, though, implements a more flexible approach which is better suited
 for implicit tokens and mode transitions. The following section shows how
-tokens are communicated by a lexical analyser created with the {\quex}
+tokens are communicated by a lexical analyser created with the quex
 program.
 

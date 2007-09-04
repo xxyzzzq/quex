@@ -26,7 +26,7 @@ pointer.  In a pattern action pair, for example, one might write
          cerr << "mode not a base of PROGRAM: " << self.mode_name() << endl;      
 \end{lstlisting}
 
-For the end-user these functions are not really relevant, since {\quex}
+For the end-user these functions are not really relevant, since quex
 itself introduces {\tt assert}s on mode transitions and provides convienient member
 functions in the lexical analyser class to access information about the
 current mode.

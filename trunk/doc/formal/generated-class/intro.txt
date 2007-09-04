@@ -1,4 +1,4 @@
-{\Quex} generates a C++ class that implements a lexical analyser as specified
+Quex generates a C++ class that implements a lexical analyser as specified
 by the user. This section discusses the class members and member functions with
 which the user may interacts. Section \ref{sec:formal/generated-class/ui}
 discusses the usage of the lexical analyser from outside, i.e. how the end

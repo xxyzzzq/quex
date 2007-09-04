@@ -1,4 +1,4 @@
-{\Quex} provides a special event is executed at the moment any
+Quex provides a special event is executed at the moment any
 match is executed. This allows the user to do some things---for 
 example for debugging  purposes--- at any pattern match. The
 event handler name to do this is `on\_match`. The code

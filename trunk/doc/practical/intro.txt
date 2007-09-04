@@ -1,10 +1,10 @@
 This practical examples guides through the phases of creating a lexical
-analyser using {\quex}. The files of this example can be found in the directory
-{\tt DEMO/001/} of the {\quex} distribution. The file {\tt simple.qx} contains
+analyser using quex. The files of this example can be found in the directory
+{\tt DEMO/001/} of the quex distribution. The file {\tt simple.qx} contains
 the description of the lexical analyzer, {\tt lexer.cpp} contains a lexical
 analyzer application, and a {\tt Makefile} allows the convinient creation of
 the whole lexical analyzer application. Copy-pasting this example may be a good
-starting point for the work with {\quex}. A good approach is to devide the development
+starting point for the work with quex. A good approach is to devide the development
 of a lexical analyzer into the two steps of _design_ and _implementation_. 
 The first step consists of three minor activities:
 
@@ -29,7 +29,7 @@ The first step consists of three minor activities:
   
 \item _Definition of Token-IDs_. We finally want to send tokens and those
   tokens must have identifiers. For this reason, the user needs to specify
-  names of tokens in a token section, so that {\quex} can create ids for them.
+  names of tokens in a token section, so that quex can create ids for them.
   
 \end{enumerate}
 
@@ -39,7 +39,7 @@ develops the following files that are required for generating a lexical
 analyser:
 
 \begin{description}
-  \item[\tt simple.qx] which contains all information {\quex} needs to create
+  \item[\tt simple.qx] which contains all information quex needs to create
                        a lexical analyzer. 
   \item[\tt lexer.cpp] which uses the created lexical analyser in a
                        mini example application.

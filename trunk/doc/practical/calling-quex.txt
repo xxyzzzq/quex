@@ -3,7 +3,7 @@ example lexical analyser application is as simple as can be. Type `make`
 in the command line and the application is built. The Makefile that comes with
 the sample application is written in a way that makes it very easy to adapt
 and extend its contents for other user's needs. The core of this make file 
-explains how to call {\quex}:
+explains how to call quex:
 
 \begin{samepage}
 \begin{lstlisting}
@@ -28,11 +28,11 @@ $(ENGINE_SOURCES): $(PATTERN_FILE) $(MODE_FILES) $(TOKEN_DB)
 
 The build rule says that whenever one of the files containing mode descriptions
 changes the source code for the lexical analyser has to be rebuild. In our
-example the only mode file is `simple.qx`. {\Quex} receives the names of the 
+example the only mode file is `simple.qx`. Quex receives the names of the 
 input file names as 'no-minus' followers of the command line option 
 '`--mode-files`'.
 
-The output of {\quex} is determined by the option `--engine`. The name
+The output of quex is determined by the option `--engine`. The name
 that follows it specifies the name of the class that implements the engine.
 But, it also acts as filestem for all output files. In our example, the
 engine's name is `tiny\_lexer`. Therefore, there will be four files
@@ -65,12 +65,12 @@ created:
   extracted information from a file that was initially created by flex. The
   user is not concerned of this file.
 
-\item[File (only with {\quex}-core engine): \tt tiny-lexer-core-engine.cpp] is
+\item[File (only with quex-core engine): \tt tiny-lexer-core-engine.cpp] is
   a generated C++ code file containing the generated lexical analyzer engines
   for all modes.  
 \end{description}
 
-Once the engine sources are built by {\quex} (and possibly by the help of flex), an
+Once the engine sources are built by quex (and possibly by the help of flex), an
 example application can be built that uses the lexical analyser.  The source
 code for the example is specified in file '`lexer.cpp`'. The content
 of this file is shown in figure \ref{ref:sample-application}.

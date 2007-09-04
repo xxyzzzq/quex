@@ -20,7 +20,7 @@ chunk as basis for a grammar, since atoms should be inseparable and should
 not be some higher level construct. But, there are more very strong arguments
 for not melting the lexical analyser with the parser.
 
-Oringinaly, the {\quex} system was developped inside a interpreter called
+Oringinaly, the quex system was developped inside a interpreter called
 {\SaferTeX}\cite{TUG-2004}. The goal was to produce a beautiful programming
 language for typesetting. The beauty of its source code appearance was to be
 achieved through redundancy reduction, i.e. the programmer only should provide
@@ -76,9 +76,9 @@ plot_range = '[' number ':' number ']'
 Lexical mode transitions and mode inheritance relations have become key
 concepts for the lexical analyser of the {\SaferTeX} system. Since these
 features seemed to be unique to the author, an effort was done to extract the
-lexical analyser from {\SaferTeX} into an independent program {\quex}, and
+lexical analyser from {\SaferTeX} into an independent program quex, and
 make it available to a broader public. Together, with a PEG parser\cite{}, it
 is now possible to parse even language such as Python, which cannot not be
-parsed without implicit tokens. {\quex}, therefore, {\it extends} the space of
+parsed without implicit tokens. quex, therefore, {\it extends} the space of
 parsable languages.
 

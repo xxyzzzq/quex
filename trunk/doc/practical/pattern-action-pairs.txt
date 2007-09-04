@@ -13,11 +13,11 @@ Inside the brackets a special token is sent, a token with the id:
           quex::token::ID_TERMINATION
 \end{verbatim}
 
-telling that lexical analysis is over. Note, that in {\quex} one uses the
+telling that lexical analysis is over. Note, that in quex one uses the
 keyword `self` and not a `this`-pointer to refer to the lexical
-analyser. Recall that {\quex} is a code generator, not a compiler.
+analyser. Recall that quex is a code generator, not a compiler.
 Internally, the code fragments that are specified as pattern-action pairs or
-event handlers may be pasted by {\quex} into objects other than the lexical
+event handlers may be pasted by quex into objects other than the lexical
 analyser (e.g. the lexical-analyser-mode-information structures). Also the
 user might derive his own class from the lexical analyser class, so there
 would be a type-issue. To unify the access to the lexical analyser, all places
@@ -140,8 +140,8 @@ mode STRING_READER :
 \end{figure}
 
 This section now finished the specification of file `simple.qx` as 
-an input file for the {\quex} lexical analyser generator. The next section
-tells how to call {\quex} to generate a full fledged engine that does the
+an input file for the quex lexical analyser generator. The next section
+tells how to call quex to generate a full fledged engine that does the
 lexical analysis as required.
 
 

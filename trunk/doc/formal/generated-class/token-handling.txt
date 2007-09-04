@@ -1,5 +1,5 @@
 Section \ref{sec:basics/token-queue} elaborated on the idea that the lexical
-analyser communicates tokens to the user. In the {\quex} generated lexical
+analyser communicates tokens to the user. In the quex generated lexical
 analyser the tokens are stored in a token-queue before they are delivered to
 the caller of `get\_token()`. Inside the pattern-action the `send`
 function group allows to send tokens:

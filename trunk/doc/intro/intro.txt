@@ -1,13 +1,13 @@
-The {\quex} program generates a lexical analyser that scans text and
+The quex program generates a lexical analyser that scans text and
 identifies patterns. The result of this lexical analysis is a list of 
   _tokens_. A token is a piece of atomic information directly relating to a
 pattern, or an _event_. It consists of a type-identifier, i.e. the 
   _token type_, and content wich is extracted from the text fragment that
 matched the pattern. 
 
-Figure \ref{fig:lexical-analyser} shows the principle of lexical
-analysis.  The lexical analyser receives a stream of characters `if( x> 3.1 )
-{ ...` and produces a list of tokens that tells what the stream signifies. A first
+Figure <<fig_lexical_analyser, (here),style=ref>> shows the principle of lexical
+analysis.  The lexical analyser receives a stream of characters "`if( x> 3.1 )
+{ ...`" and produces a list of tokens that tells what the stream signifies. A first
   token tells that there was an `if` statement, the second token tells
   that there was an opening bracket, the third one tells that there was an
   identifier with the content `x`, and so on. 
@@ -21,16 +21,17 @@ is much easier and safer to provide some flexibility and power. This is to be
 demonstrated in the following chapters.
 
 .The process of lexical analysis.
+[[fig_lexical_analyser]]
 image::figures/lexical-analysis-process.png[]
 
-The following features distinguish {\quex} from the traditional lexical
+The following features distinguish quex from the traditional lexical
 analysers such as lex or flex:
 
 - _Ease_. A simple as well as a complicated lexical analyzer can 
       be specified in a very elegant and transparent manner. Do not get confused
       over the set of features and philosophies. If you do not use them, then
       simple skip the concerning regions in the text. Start from the ready-to-rumble
-      examples in the ./DEMO subdirectory.
+      examples in the `./demo` subdirectory.
 
 -  A generator for a directly _coded lexical analyzer_ featuring
   pre- and post-condtions. The generated lexical analyzer is up to 2.5 times
@@ -55,10 +56,8 @@ analysers such as lex or flex:
  * Indentation _events_, i.e it is possible to provide an event handler
     for the event of the first appearing non-whitespace in a line. This event
     handling happens quasi-paralell to the pattern matching.
-
-  \end{itemize}
   
-- A default general purpose _token_ class. Additionally, {\Quex}
+- A default general purpose _token_ class. Additionally, Quex
   provides an interface to run the lexical analyser with a user-defined token
   class.
   
@@ -74,9 +73,9 @@ analysers such as lex or flex:
   where it ended.
 
 The present text first explains briefly the basic concepts of lexical analysis
-in {\quex}. Here, a short review is given on lexical analysis, but then it
+in quex. Here, a short review is given on lexical analysis, but then it
 concentrates on the introduction of the features mentioned above. The
 subsequent chapter dicusses a simple example of a complete application for
 lexical analysis. Finally, the last chapter elaborates on the formal usage of
-all features of {\quex}. 
+all features of quex. 
 

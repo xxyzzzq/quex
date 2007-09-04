@@ -1,4 +1,4 @@
-{\Quex} allows to specify characteristics of modes concerning 
+Quex allows to specify characteristics of modes concerning 
 transitions and inheritance. The keyword `mode` starts the
 definition of a lexical analyser mode. Then it can be directly followed by a
 curly bracket that starts the pattern-action pair definitions as shown in
@@ -58,7 +58,7 @@ Note, that if a mode specifies base modes and options, the options are
 specified after the base modes. 
 
 Base modes directly follow the ':' sign. The list of base modes is whitespace
-separated. When the first $<$ sign arrives, {\quex} starts reading the
+separated. When the first $<$ sign arrives, quex starts reading the
 options. Options are bracketed by $<$ and $>$ signs and multiple options 
 are also listed whitespace separatedly. The following options can be
 specified:

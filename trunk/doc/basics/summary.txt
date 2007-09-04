@@ -1,4 +1,4 @@
-This chapter discussed the major features of {\quex}. To the knowledge of the
+This chapter discussed the major features of quex. To the knowledge of the
 author of this text, at the time of this writing, there is no lexical analyser
 generator that matches these features. Moreover, once one gets used to think
 in terms of 'sending tokens', 'mode-transitions', and once one gets used to

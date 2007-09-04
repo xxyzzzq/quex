@@ -30,7 +30,7 @@ works in exactly the same manner.
 The positioning functions {\tt tell\_adr()} and {\tt seek\_adr()} are implemented with the same
 spirit of stingyness. The return and receive memory addresses. Thus, any address taken with 'tell'
 needs to be adapted at after any call to {\tt load\_forward} or {\tt load\_backward()}\footnote{Again, such
-a requirement on the usage is nearly insane to be demanded from a human user. {\Quex}s code generator, though,
+a requirement on the usage is nearly insane to be demanded from a human user. Quexs code generator, though,
 has no problem with that.}. The {\tt seek\_offset()} function currently only adds a value to the
 'current' pointer\footnote{When the {\tt NDEBUG} flag is not set, it is checked wether the result is inside
 the boundaries of the buffer}. This function, actually, only used for unit tests. During analysis
