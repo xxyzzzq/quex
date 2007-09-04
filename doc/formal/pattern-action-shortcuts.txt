@@ -22,7 +22,7 @@ appeared. Their pattern action pairs all look similar to the following:
   ...
 \end{lstlisting}
 
-{\Quex} allows to write such simple token sendings in a more elegant manner.
+Quex allows to write such simple token sendings in a more elegant manner.
 If a pattern is followed by a `=$>$` operator and a name _xyz_ then
 this is translated into 'pattern sends token with name _xyz_'. The code as
 shown above will be internally generated. The above code segment is equivalent
@@ -85,7 +85,7 @@ readable. Long lists of pattern-action pairs can be understood and
 analysed in a few seconds.
 
 Note, that if an identifier is used that is not declared in a `token`-section, 
-    then {\quex} implicitly declares this token, but still a warning is reported.
+    then quex implicitly declares this token, but still a warning is reported.
 In order to get things setup quickly, it is possible to complete renounce on
 {\tt token} sections. However, for a good style the output of these warnings
 might be pasted into one of the {\tt token}-sections.

@@ -1,6 +1,6 @@
 For a given character stream it might be possible that more than one pattern
 matches. Therefore, rules are needed that describe the resolution of those
-'conflicts'. This section explains the priorities that {\quex} assigns to a
+'conflicts'. This section explains the priorities that quex assigns to a
 given set of patterns based on length, position, inheritance relationships,
 and a possible _priority-mark_. Imagine, two patterns:
 %%

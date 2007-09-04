@@ -35,7 +35,7 @@ evil\footnote{An exception might be made for tiny quick-and-dirty languages.
   language grammar is small enough for not getting confused by lexical
   analysis rules, then there might be an advantage of convinience.}!
 
-%% A final remark on history: {\SaferTeX}, the project in whichs frame {\quex}
+%% A final remark on history: {\SaferTeX}, the project in whichs frame quex
 %% evolved, is now renamed {\Boox} and tries to implement a next generation
 %% typesetting system, i.e. a successor of {\TeX}.
 

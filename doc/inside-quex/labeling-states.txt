@@ -2,7 +2,7 @@ The previous sections discussed how to generate a state machine for one
 isolated regular expression using the Thomson Construction.  The final lexical
 analyzer, though, needs to have all possible patterns present, i.e. combined
 into an automaton in order to judge which pattern matches from the current
-input position. The approach that was chosen in {\quex} was to produce a single
+input position. The approach that was chosen in quex was to produce a single
 deterministic automaton from the set of state machines for each pattern.  This
 process is described in the following sections.
 
@@ -45,7 +45,7 @@ A special pre-condition is the begin-of-line pre-condition. It is a trivial
 pre-condition, since it does not involve an inverse state machine. Thus
 it is treated as a separate flag.
 
-Inside {\Quex}, there is a data structure dedicated to store
+Inside Quex, there is a data structure dedicated to store
 this information, called class`StateOriginInfo`. It contains
 the following fields:
 

@@ -28,7 +28,7 @@ case does not seem to be very probable. Sometimes it may be necessary,
      with {\tt for} could not propperly be detected, since the first three letters
      would result in the {\tt for}-keyword token.
 
-As for version 0.10.0, {\quex} has a deficiency which is due to the parsing algorithm
+As for version 0.10.0, quex has a deficiency which is due to the parsing algorithm
 of the mode definition parts. Until then, it was not possible to define spaces '\kern 1ex' 
 directly directly inside mode definitions, i.e.
 

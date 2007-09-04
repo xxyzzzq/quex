@@ -1,7 +1,7 @@
 The last section discussed how additional contents can be pasted into the
 defintion of the class' body that represents the lexical analyser. Naturally,
 those new contents need to be initialized. This happens inside the constructor
-of the generated lexical analyser. {\Quex} allows to specify additional
+of the generated lexical analyser. Quex allows to specify additional
 content to be executed inside the constructor using the `init` keyword
 outside any mode definition. The following code fragment shows a setup as
 it might occur in a lexical analyser that supports indentation based 

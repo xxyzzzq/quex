@@ -1,4 +1,4 @@
-The buffer implementation in {\quex} takes advantage of the mechanism of
+The buffer implementation in quex takes advantage of the mechanism of
 lexical analysis, and manages to keep the overhead of buffering extremely low.
 This works as shown in figure \ref{fig:algorithm}. First of all, some content of the
 information stream in stored in a fixed chunk of memory, the buffer. During the

@@ -1,5 +1,5 @@
 Additionally to the specification of the pattern to be matched 
-{\quex} allows to define conditions on the boundary of the pattern.
+quex allows to define conditions on the boundary of the pattern.
 This happens through pre- and post-conditions. First, the trivial
 pre- and post-conditions for begin of line and end of line are discussed.
 Then it is shown how to specify whole regular expressions to express
@@ -50,7 +50,7 @@ for the post-condition.
 		     implemented.}.
 		 
 \item {\tt Q/R/}: matches {\tt R} from the current position, but only if it is 
-                  preceeded by a {\tt Q}. Practically, this means that {\quex} goes
+                  preceeded by a {\tt Q}. Practically, this means that quex goes
 		  backwards in order to determine if the pre-condition {\tt Q} has matched 
 		  and then forward to see if {\tt R} has matched. {\tt R} is pre-conditioned.
 		  Note, with pre-conditions there is no trailing context problem as with 

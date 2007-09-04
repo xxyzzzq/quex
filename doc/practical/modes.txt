@@ -96,10 +96,10 @@ indicated by its name following the colon. The options
   tell that this mode can
 be entered from {\tt STRING\_READER} mode, and that it can exit to this mode.
 Any transition to another mode (that is not derived from {\tt STRING\_READER})
-is detected as an error\footnote{Note, that inside {\quex} {\tt assert()}
+is detected as an error\footnote{Note, that inside quex {\tt assert()}
   commands are used. According to ISO9899 (ANSI-C) the command only takes
   effect, if {\tt NDEBUG} is not defined. If it is, the mode transitions are
-  consequently not checked by the {\quex} engine. The general rule applies here
+  consequently not checked by the quex engine. The general rule applies here
   also: only define {\tt NDEBUG} if it is 100\% safe to say that no use-case
   will violate the design.}. Analogously, the {\tt STRING\_READER} mode is
 defined specifying its base class and the allowed transitions to {\tt

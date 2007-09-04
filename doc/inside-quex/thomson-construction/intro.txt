@@ -1,4 +1,4 @@
-The lexical analyser that {\quex} creates is based on regular expressions.  In
+The lexical analyser that quex creates is based on regular expressions.  In
 order to create state machines that represents regular expressions, it is
 necessary to provide operations that combine elementary regular expressions
 through _concatenation_, _parallelization_, _optionality_ and_ 

@@ -1,9 +1,9 @@
-{\Quex} provides a token-class that allows the storage of a `string`
+Quex provides a token-class that allows the storage of a `string`
 object, an `int` value. Note, that any complex structure might be
 transformed later on by the parser based on the given string. In some cases,
 though, it may be promising to implement a dedicated token class that is
 optimal in memory and speed with respect to a specific problem. For these
-cases, {\quex} allows the user to specify his own token class. The token queue 
+cases, quex allows the user to specify his own token class. The token queue 
 does not require any adaption, since it is implemented as a template. The 
 context of usages of tokens, however, imposes that it complies to some policies:
 
@@ -26,7 +26,7 @@ context of usages of tokens, however, imposes that it complies to some policies:
       \begin{verbatim}
         static const std::string&  map_id_to_name(token::id_type);
       \end{verbatim}
-      that maps any token-id to a human readable string. Note, that {\quex}
+      that maps any token-id to a human readable string. Note, that quex
       does generate this function automatically, as long as it is not told not
       to do so by specifying command line option
         \begin{verbatim}
@@ -69,10 +69,10 @@ As long as these conventions are respected the user created token class will
 interoperate with the framework smoothly. The inner structure of the token
 class can be freely implemented according to the programmer's optimization
 concepts. Note, that the name of the token class is also of free choice.  When
-invoquing {\quex}, the command line option `--token-class` needs to be
+invoquing quex, the command line option `--token-class` needs to be
 followed by the user defined token class name. The command line option` 
-  --token-class-file` tell {\quex} the name of the while where this class is
-defined. As long as this option are not defined {\quex} will not consider
+  --token-class-file` tell quex the name of the while where this class is
+defined. As long as this option are not defined quex will not consider
 user defined token classes and provide the standard token class.
 
 

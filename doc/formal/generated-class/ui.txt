@@ -40,7 +40,7 @@ lexers the member function
 \end{description}
 
 returns a string telling about the version (see also command line option` 
-  --version`), and the date when {\quex} produced the engine.  The current
+  --version`), and the date when quex produced the engine.  The current
 line and column numbers can be accessed using the functions
 
 \begin{description}

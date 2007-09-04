@@ -7,7 +7,7 @@ attributes to it. Such inheritance relationships are directional. In our
 example this means that every object that belongs to the class of cars also
 belongs to the class of vehicles (every car is a vehicle). However, not every
 object that belongs to the class of vehicles (e.g. a submarine) does belong to
-the the class of cars. Mode inheritance in {\quex} works similar and effects
+the the class of cars. Mode inheritance in quex works similar and effects
 the following three mechanisms:
 
 \begin{itemize}
@@ -50,13 +50,13 @@ the following three mechanisms:
 \end{itemize}
 
 Figure \ref{fig:mode-inheritance} shows an example where a mode A acts as a
-base mode for mode B. Internally, {\quex} creates a new mode B* that contains
+base mode for mode B. Internally, quex creates a new mode B* that contains
 the patterns that were explicitly givent by the definition of B and the
 patterns that are inherited from A. The pattern match action of {\sf XYZ} from
 mode B is omitted, since mode B has to behave like mode A for patterns
 specified in mode A. The `on\_entry` and `on\_exit` functions are of
 mode A are pasted into the own event handlers so that they are executed before
-them. What is not displayed in the figure is access inheritance. When {\Quex}
+them. What is not displayed in the figure is access inheritance. When Quex
 checks the entry and exits of a mode it consideres automatically also the
 base classes. If there is no base mode that acts like a door opener to a
 particular mode, then transits will cause a run-time error.

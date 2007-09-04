@@ -10,7 +10,7 @@ particular set of patterns is actively waiting to be matched against.  A
 lexical analyser needs to be in exactly one mode at a particular point in
 time. Thus, a lexical analyser mode corresponds to the way that the
 input stream is currently transformed into signals, i.e. tokens. To handle
-the detection and influencing of mode transitions, {\Quex} provides
+the detection and influencing of mode transitions, Quex provides
 event handling mechanisms as described in the following sections.
 
 A potential disadvantages of modes is confusion. With traditional lexical
@@ -21,7 +21,7 @@ are somwhere hidden in the pattern match actions.  GNU Flex's _start
 conditions_ are similar to modes. But, the only way two modes A and B modes can
 be related in flex is by letting a pattern be active in in A and B. There is no
 convienient mechanism to say: 'let B overtake all patterns of A'.  This is
-where mode inheritance relationships of {\Quex} provide clear convenience
+where mode inheritance relationships of Quex provide clear convenience
 advantages as described in the section after the following.
 
 

@@ -14,12 +14,12 @@ represented by more than one byte.
 
 \showpic
 {figures/character-encoding.png}
-{Character encodings involved in {\quex}'s generation process.}
+{Character encodings involved in quex's generation process.}
 {fig:character-encoding}
 
 Under Unix, a utility called 'iconv' \cite{} is the quasi standard for
 character set conversions. It is freely available for any major operating
-system.  {\Quex} uses the library of this utility and has it webbed into its
+system.  Quex uses the library of this utility and has it webbed into its
 buffer handling. This way `quex` is able to analyze character streams of
 all the hundreds of character encodings that iconv supports. It is essential to
 understand that there are _three_ different places where character
@@ -27,14 +27,14 @@ encodings are involved in the lexical analyzer generation. As shown in figure
 \ref{fig:character-encodings} these are the following:
 
 \begin{itemize}
-    \item {\bf Lexical Analyzer Description:} The encoding of the lexical analyzer generator, i.e. the {\quex}-files
-          which are used as input to {\quex} and _must_ use UTF-8.
+    \item {\bf Lexical Analyzer Description:} The encoding of the lexical analyzer generator, i.e. the quex-files
+          which are used as input to quex and _must_ use UTF-8.
           This encoding is independent of the coding of the files the generated
           lexical analyzer takes as input.
 
     \item {\bf Files to Be Analyzed:} The coding
           format of the files that the generated lexical analyzer reads. Note, that
-          this format is tied to a buffer. {\Quex}, though, provides the flexibility
+          this format is tied to a buffer. Quex, though, provides the flexibility
           to switch buffers and to allow to read files in different encodings 
           with the same lexical analyzer.
 
@@ -49,10 +49,10 @@ encodings are involved in the lexical analyzer generation. As shown in figure
 \end{itemize}
 
 There only three things required to get the encoding support for a particular coding. First
-one needs to make sure that the {\quex} files, i.e. the files that describe the lexical
+one needs to make sure that the quex files, i.e. the files that describe the lexical
 analyzer are stored in UTF-8 format by your editor. Most editors do this anyway by default.
-You need to pass the option `--iconv` to {\quex} when calling it. Third, the constructor
-of {\quex} is to be called with the encoding name of the files you want to parse, i.e. one might
+You need to pass the option `--iconv` to quex when calling it. Third, the constructor
+of quex is to be called with the encoding name of the files you want to parse, i.e. one might
 type
 
 \begin{lstlisting}
@@ -60,10 +60,10 @@ type
 \end{lstlisting}
 
 if one intends to create a purely greek programming language. If you set the command
-line option for 'byte per character' `-b wchar\_t`, then {\quex} will use
+line option for 'byte per character' `-b wchar\_t`, then quex will use
 the number of bytes that corresponds to `wchar\_t` on your platform. For
 anything else then ASCII input encodings do not specify a byte per character
-less than two.  At the time of this writing {\quex} does not support internal
+less than two.  At the time of this writing quex does not support internal
 engines that are not based on Unicode. Clearly, in the above example the turkish
 encoding is treated internally as character codes in the range of code points from 
 \$370 to \$3FF and \$1F00 to \$1FFF.

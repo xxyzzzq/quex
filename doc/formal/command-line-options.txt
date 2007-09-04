@@ -104,7 +104,7 @@ token-class:
     \clopt{"--token-class"} {name} {token}
         {
 	    _name_ = Name of the token class that the user defined. Note that the 
-	    token class needs to be specified in namespace {\quex}.
+	    token class needs to be specified in namespace quex.
         }
 
     \clopt{"--token-class-file"} {filename} {\$(QUEX\_PATH)/code\_base/token}
@@ -114,7 +114,7 @@ token-class:
         }
 \end{description}
 
-Even if a non-{\quex} token class is provided, still the token-id generator may
+Even if a non-quex token class is provided, still the token-id generator may
 be useful. By default, it remains in place. The user, however, can specify the
 following option to disable it:
 
@@ -175,15 +175,15 @@ options:
 	    and on which the lexical analyzer engine internally operates. The byte number
 	    should at least suffice to carry the desired input coding space. You can
 	    only specify 1 byte, 2 byte or 4 byte per character. If`wchar\_t` is specified
-	    {\quex} automatically adapts to the correspondent type of the  operating
+	    quex automatically adapts to the correspondent type of the  operating
 	    system environment where the target code is compiled. 
 	    Use this, if option`--iconv` is used and you are in doubt.
 	}
     \clopt{--endian}{"little", "big"}{"<system>"}
         {
 	    There are two types of byte ordering for integer number for different CPUs.
-	    For creating a lexical analyzer engine on the same CPU type as {\quex} runs
-	    then this option is not required, since {\quex} finds this out by its own.
+	    For creating a lexical analyzer engine on the same CPU type as quex runs
+	    then this option is not required, since quex finds this out by its own.
 	    If you create an engine for a different plattform, you must know its byte ordering
 	    scheme, i.e. little endian or big endian, and specify it after `--endian`'.
 	}

@@ -1,7 +1,7 @@
 With the rise of the Python programming language the use of indentation as
 scope delimiter has become popular. Indeed, it maybe the most efficient method
 to delimit scope with the least amount of additional characters
-\cite{Safer2004}, such as '\{' and '\}' in C-styled languages.  {\Quex}
+\cite{Safer2004}, such as '\{' and '\}' in C-styled languages.  Quex
 provides a convinient mechanism to handle indentations which runs quasi in
 paralell to the pattern matching: _indentation events_.  
 
@@ -58,7 +58,7 @@ problem remains: with such a design _patterns need to know about each
   other_ to work propperly! In an environment of many different modes which
 are additionally related by inheritance, it is difficult to guarantee that all
 patterns 'respect' the quirks of each other. They better work independently.
-The indentation events of {\quex} provide a means that allows one to avoid
+The indentation events of quex provide a means that allows one to avoid
 inter-pattern dependencies.
 
 Similarly, catching indentation with 'pre-condition newline plus whitespace',

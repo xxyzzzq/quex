@@ -1,4 +1,4 @@
-From the given set of modes, {\quex} creates a set of mode-information objects
+From the given set of modes, quex creates a set of mode-information objects
 as members of the lexical analyser class. The names of the members are exactly
 the same names as the names of the modes. In the example of the last section,
 the following three objects are members of the class `tiny\_lexer`:

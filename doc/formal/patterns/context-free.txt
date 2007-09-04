@@ -90,7 +90,7 @@ end of file and the failure event can be specified:
 
 \item {\tt $<<$FAIL$>>$} the event of failure, i.e. no single pattern matched. 
     Note, this rule is of the 'lex' style, but is only available with the 
-    {\quex} core engine.
+    quex core engine.
 
 \end{itemize}
 

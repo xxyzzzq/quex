@@ -11,7 +11,7 @@ consider a single analyzer function for each case of 'pre-condition met' and
 analysers to deal with $N$ pre-conditions is $2^N$ since any combination of
 'pre-condition met' and 'pre-condition not met' has to be considered. Very few
 pre-conditions would then blow the number of analysers beyond what is
-practical. {\Quex} could not be a general solution for pre-conditions.
+practical. Quex could not be a general solution for pre-conditions.
 
 Rather than creating an analyser for each pre-condition constallation, one
 single analyser containing all pre-conditioned and non-pre-conditioned patterns

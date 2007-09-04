@@ -86,12 +86,12 @@ the NFA requires then 255 checks.  For a Unicode-based lexical analyser this beh
 significantly different. Unicode 5.0 currently has \$10FFFF, i.e. decimal 1.114.111,
 	      code points -- not to speak about code points for private usage.
 	      Consequently about 140.000 times checks would have to be performed for each state in the state machine.
-	      In order to avoid such a caste in calculation time, the author of {\quex} developed a
+	      In order to avoid such a caste in calculation time, the author of quex developed a
 	      different algorithm based on character ranges as shown in figure \ref{fig:NFA-to-DFA-ranges}. 
 The algorithm identifies state combinations which are related to certain overlapping ranges
 of characters. 
 
-As mentioned in \ref{sec:character-range-representation}, the {\quex} engine
+As mentioned in \ref{sec:character-range-representation}, the quex engine
 relies on a description of triggers in terms of number ranges.  Instead of
 checking each character, the algorithm considers the numeric ranges $R_{A,B}$
 in which a state $A$ triggers to state $B$. If a range $R_{A,B}$ and $R_{A,B}$

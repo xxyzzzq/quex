@@ -16,10 +16,10 @@ it loads the next larger block of data.
 
 \showpic
 {figures/basic-buffer.pdf}
-{Structure of {\quex}'s buffer.}
+{Structure of quex's buffer.}
 {fig:basic-buffer}
 
-The structure of {\quex}s buffer is shown in figure \ref{fig:basic-buffer}. The buffer itself
+The structure of quexs buffer is shown in figure \ref{fig:basic-buffer}. The buffer itself
 is not more than a continous chunk of memory. It has two places to store
 border characters. One is located at the front to store 'begin of buffer' or 'begin of
 file'. The other is located at the end to store 'end of buffer' or 'end of file'.
@@ -35,7 +35,7 @@ new content has to be loaded. The fallback area allows to prevent immediate
 loads in the opposite directions if one requests to go back immediately
 after loading.
 
-The following sections explain the mechanisms of {\quex}s buffer, some
+The following sections explain the mechanisms of quexs buffer, some
 basic API functions for lexical analysis, the loading procedures, and the
 buffer creation procedure.
 

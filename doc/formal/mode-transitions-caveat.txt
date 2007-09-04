@@ -30,7 +30,7 @@ up in Warsaw or in Moscow. In a same way that train companies should better
 not do this to theirs customers, a programmer should not do to himself mode
 transitions inside `on\_entry` and `on\_exit`.
 
-Another issue has to do with optimization. {\Quex} is aware of transition handlers
+Another issue has to do with optimization. Quex is aware of transition handlers
 being implemented or not. If no transition handlers are implemented at all then
 no event handling code is executed. Note, that each entry and exit transition
 handler requires a dereferecing and a function call---even if the function itself

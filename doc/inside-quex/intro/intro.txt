@@ -5,7 +5,7 @@ discussed. This gives an overview about the major issues involved and build a
 basis for later sections to refer to. Many books discuss in detail the
 Thomson-construction and the Hopcroft-Optimization, but few (the author does
 	not know a single one) discusses the construction down to
-code-generation and its specialities in detail. {\Quex} was created to handle
+code-generation and its specialities in detail. Quex was created to handle
 efficiently Unicode character sets. As a consequence the table-driven approach,
 	    such as in lex \cite{} is no longer suitable%%
 %%  
@@ -16,7 +16,7 @@ efficiently Unicode character sets. As a consequence the table-driven approach,
 		century).  Compressing the table might slow down the speed of
 	    the lexical analyser significantly.}.
 %% 
-Thus, {\quex} implements a _directly coded lexical analyser_ where no state
+Thus, quex implements a _directly coded lexical analyser_ where no state
 variable is needed and no character-trigger table. It is also a much faster
 approach, since no memory has to be referenced%%
 %%
