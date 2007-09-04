@@ -2,6 +2,7 @@
 #            important to the code generator. They differ slightly from
 #            the 'Match' objects created for the 'LexMode' description.
 from copy import copy
+import sys
 
 from   quex.frs_py.file_in import error_msg
 
