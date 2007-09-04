@@ -1,0 +1,135 @@
+Context free regular expressions match against an input independent on what 
+ come before or after it. For example the regular expression \pattern{for}
+ will match against the letters `f`, `o`, and `r` independent
+ if there was a whitespace or whatsoever before it or after it. This is
+ the 'usual' way to define patterns. More sophisticated techniques are 
+ explained in the subsequent section. This sections explains how to 
+ define simple _chains of characters_ and `operations`
+ to combine them into powerful patterns.
+ \vskip0.5cm
+
+{\bf Chains of Characters:}
+
+\begin{itemize}
+\item `x` matches the character 'x'. 
+
+     That means, lonestanding characters match simply the character that they represent.
+     This is true, as long as those characters are not operators by which regular
+     expressions describe some fancy mechanisms---see below.
+
+\item `.` matches any character (byte) except newline and EOF. Note, that on systems
+      where newline is coded as $0D,\,0A$ this matches also the $0D$ character whenever 
+      a newline occurs (subject to possible change).
+
+\item `$[$xyz$]$`
+     a "character class" or "character set"; in this case, the pattern matches either an
+     `x', a `y', or a `z'. The brackets '$[$' and '$]$' are examples for lonestanding
+     characters that are operators. If they are to be matched quotes or backslashes
+     have to be used as shown below.
+
+\item `$[$abj-oZ$]$`
+     a "character class" with a range in it; matches an `a', a `b', any
+     letter from `j' through `o', or a `Z'. The minus '-' determines the
+     range specification. Its left hand side is the start of the range.
+     Its right hand sinde the end of the range (here 'j-o' means from 'j' to 'o').
+
+\item `$[$\verb|^|A-Z$]$`
+     a "negated character class", i.e., any character but those in the
+     class.  In this case, any character _except_ an uppercase letter.
+
+\item `$[$\verb|^|A-Z\verb|\|n$]$`
+     any character _except_ an uppercase letter or a newline.
+
+\item `"$[$xyz$]$\verb|\|"foo"'` the literal string: `$[$xyz$]$"foo'.
+    
+     That is, inside quotes the characters which are used as operators for
+     regular expressions can be applied in their original sense. A '$[$'
+     stands for code point 91 (hex. 5B), matches against a '$[$' and does
+     not mean 'open character set'.     
+	  
+\item `\verb|\|0` a NULL character (ASCII/Unicode code point 0).
+
+\item `\verb|\|U11A0FF` the character with hexadecimal value `11A0FF'. A
+      maximum of _six_ hexadecimal digits can be specified.  Hexadecimal numbers
+      with less than six digits must either be followed by a non-hex-digit, a 
+      delimiter such as quote \verb|"|, \verb|[|, or \verb|(|, or specified with leading
+      zeroes. Hexadecimal digits can be uppercase or lowercase.
+
+\item `\verb|\|X7A27` the character with hexadecimal value `7A27'. A
+      maximum of _four_ hexadecimal digits can be specified. The
+      delimiting rules are are ananlogous to the rules for `\verb|\|U`. 
+
+\item `\verb|\|x27` the character with hexadecimal value `27'. A maximum
+     of _two_ hexadecimal digits can be specified. The
+      delimiting rules are are ananlogous to the rules for `\verb|\|U`. 
+
+\item `\verb|\|123` the character with octal value 123, a maximum of three
+     digits less than 8 can follow the backslash. The
+      delimiting rules are ananlogous to the rules for `\verb|\|U`. 
+
+
+\item `\verb|\|a`, `\verb|\|b`, `\verb|\|f`, `\verb|\|n`, 
+      `\verb|\|r`, `\verb|\|t`, `\verb|\|r`, or `\verb|\|v`
+     the ANSI-C interpretation of the backslashed character.
+
+\end{itemize}
+
+Any character specified as character code, i.e. using `\verb|\|`, 
+{\tt \verb|\x|}, {\tt \verb|\X}, or {\tt \verb|U} are considered to be unicode
+code points. For applications in english spoken cultures this is identical to
+the ASCII encoding. For details about unicode code tables consider the
+standard \cite{Unicode50}.
+
+Two special rules have to appear isolatedly, out of the context of regular
+expressions. With the following two rules the actions for the event of 
+end of file and the failure event can be specified:
+
+\begin{itemize}
+
+\item {\tt $<<$EOF$>>$} the event of an end-of-file (end of data-stream). 
+
+\item {\tt $<<$FAIL$>>$} the event of failure, i.e. no single pattern matched. 
+    Note, this rule is of the 'lex' style, but is only available with the 
+    {\quex} core engine.
+
+\end{itemize}
+
+This syntax is more a 'recognition' of the traditional {\tt lex} syntax. In fact
+    the two event handlers '{\tt on\_failure}' and '{\tt on\_end\_of\_stream}' are
+    a one-to-one correspondance to what is mentioned above. Possibly some later
+    versions will totally dismiss the lex related engine core, and then also
+    these constructs will disappear in favor of the mentioned two event handlers.
+
+{\bf Operations:}     
+
+Let {\tt R} and {\tt S} be regular expressions, i.e. a chain of characters specified in the
+way mentioned above, or a regular expression as a result from the operations below.
+     
+\begin{itemize}
+
+\item {\tt R*} _zero_ or more occurencies of {\tt R}.
+
+\item {\tt R+} _one_ or more {\tt R}'s
+
+\item {\tt R?} _zero_ or _one_ {\tt R}. That means, there maybe an {\tt R} or not.
+
+\item {\tt R$\{$2,5$\}$} anywhere from two to five {\tt R}'s
+
+\item {\tt R$\{$2,$\}$} two or more {\tt R}'s.
+
+\item {\tt R$\{$4$\}$} exactly 4 {\tt R}'s.
+
+\item {\tt (R)} match an {\tt R}; parentheses are used to group operations, i.e. to override precedence,
+                in the same way as the brackets in $(a\, +\, b)\,\cdot\,c$ override the precedence of 
+		multiplication over addition.
+
+\item {\tt RS} the regular expression {\tt R} followed by the regular expression {\tt S};
+     called concatenation or sequence.
+
+\item {\tt R|S} either an R or an S, i.e. {\tt R} and {\tt S} are two valid alternatives.
+
+\item {\tt $\{$NAME$\}$} the expansion of the defined pattern "NAME". Recall, that pattern
+      names can be defined in {\tt define} sections
+      (see section \ref{sec:practical/patterns}).
+
+\end{itemize}
