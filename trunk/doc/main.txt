@@ -1,13 +1,30 @@
 Queχ - Lexical Analyser Generator
 =================================
 Frank-Rene Schaefer <fschaef@users.sourceforge.net>
-V. 0.15.3, 03. September, 2007
+0.15.3, 03. September, 2007
 
-Introduction
-------------
+
+
+== Introduction
 include::intro/intro.txt[]
 
-Installation
-~~~~~~~~~~~~
+=== Installation
 include::intro/installation.txt[]
+
+=== Licensing Information
+include::intro/license.txt[]
+
+=== The Name of the Game
+include::intro/naming.txt[]
+
+
+
+== Basics
+include::basics/intro.txt[]
+
+=== Pattern Matching
+include::basics/pattern-matching.txt[]
+
+=== The Token Queue
+include::basics/token-queue.txt[]
 
