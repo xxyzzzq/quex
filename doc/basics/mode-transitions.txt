@@ -13,10 +13,9 @@ internal variables or write some debug output. Then
 the event handler `on\_entry()` of entered mode Y is called. Again the user
 can provide some actions related to the entrance of that mode.
 
-\showpic
-{figures/mode-transition.png}
-{Event handling during lexical mode transitions.}
-{fig:mode-transitions}
+[[fig:mode-transitions]]
+.Event handling during lexical mode transitions.
+image::figures/mode-transition.png[]
 
 The ability to define event handlers for entering and exiting modes not only
 supports implicit token production, but also supports transparency. It can now
@@ -42,15 +41,14 @@ mode. Also, it can be specified that the {\sf COMMENT} mode can only exit to
 {\sf FUNCTION} or {\sf DOCU} mode, thus preventing it from dropping into {\sf
   STRING} or {\sf MATH} mode.
 
-\showpic
-{figures/mode-transition-control.png}
-{Restricted mode transitions.}
-{fig:mode-transition-control}
+[[fig:mode-transition-control]]
+.Restricted mode transitions.
+image::figures/mode-transition-control.png[]
 
 
 Extensive mode transitions without a control mechanism as the one implemented
 is quex is highly error prone. The advantage here is that the restrictions
-on the mode transitions are _explicitly\/_ specified in the description of
+on the mode transitions are _explicitly_ specified in the description of
 the lexical analyser. The alternative would be to create an external document
 and review the behavior of the lexical analyser with respect to mode
 transitions whenever an error is assumed from being caused by straying mode

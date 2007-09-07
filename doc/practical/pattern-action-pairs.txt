@@ -5,13 +5,13 @@ tokens that tell about atomic information chunks in the input stream. The most
 simple pattern-action pair consists of sending a specific token whenever a
 particular pattern occurs. Consider for example figure
 \ref{fig:eof-pattern-action-pairs}. It shows the definition of a mode that can
-handle the end of a file. The only pattern of this mode is $<<$`EOF`$>>$.  The action
+handle the end of a file. The only pattern of this mode is +++<<+++ `EOF` +++>>+++.  The action
 to be executed if this pattern occurs is embraced by curly brackets.
 Inside the brackets a special token is sent, a token with the id:
 
-\begin{verbatim}
+-------------------------------------------
           quex::token::ID_TERMINATION
-\end{verbatim}
+-------------------------------------------
 
 telling that lexical analysis is over. Note, that in quex one uses the
 keyword `self` and not a `this`-pointer to refer to the lexical
@@ -22,10 +22,12 @@ analyser (e.g. the lexical-analyser-mode-information structures). Also the
 user might derive his own class from the lexical analyser class, so there
 would be a type-issue. To unify the access to the lexical analyser, all places
 were code is pasted allow to use `self` as a variable that represents the
-lexical analyser.  The rule here is: say '`self.`' not '`this->`'.
+lexical analyser.  Use '`self.`' not '`this->`'!
 
-\begin{figure}
-\begin{lstlisting}
+[[fig:eof-pattern-action-pairs]]
+.The `END\_OF\_FILE` mode handling the end-of-file pattern.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mode END_OF_FILE :
 <inheritable: only>  
 {
@@ -34,15 +36,12 @@ mode END_OF_FILE :
         RETURN;
     }
 }
-\end{lstlisting}
-\caption{The `END\_OF\_FILE` mode handling the end-of-file pattern.}
-\label{fig:eof-pattern-action-pairs}
-\end{figure}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 A final `RETURN` statement in the pattern-action pair says that the
 flow of control can be turned back to the caller of function` 
-  get\_token()`. Note again, that `return` is not used. The `RETURN`
+  get_token()`. Note again, that `return` is not used. The `RETURN`
 macro ensures that the token queue is in a sound state before returning from
 the lexical analysis. The rule here is: say '`RETURN`' not '`return`'.
 
@@ -58,8 +57,9 @@ corresponds the lexeme that was matched.  The pattern`
 to the mode `STRING\_READER`.
 
 
-\begin{figure}
-\begin{lstlisting}
+.The `PROGRAM` mode.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mode PROGRAM :
      END_OF_FILE
 <exit:  STRING_READER>
@@ -80,10 +80,7 @@ mode PROGRAM :
         self << STRING_READER;
     }
 }
-\end{lstlisting}
-\caption{The `PROGRAM` mode.}
-\label{fig:program-mode}
-\end{figure}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 The `STRING\_READER` mode's pattern-action pairs are shown in figure
@@ -106,8 +103,10 @@ handlers facilitates the specification of mode transitions. It can be said
 for sure, that wherever in the code a command triggers an exit to another
 mode, the accumulator is flushed.
 
-\begin{figure}
-\begin{lstlisting}
+[[fig:string-reader-mode]]
+.The `STRING\_READER` mode.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mode STRING_READER :
      END_OF_FILE
 <exit:  PROGRAM>
@@ -134,10 +133,7 @@ mode STRING_READER :
         self.accumulator.add(Lexeme);
     }
 }
-\end{lstlisting}
-\caption{The `STRING\_READER` mode.}
-\label{fig:string-reader-mode}
-\end{figure}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This section now finished the specification of file `simple.qx` as 
 an input file for the quex lexical analyser generator. The next section
@@ -145,7 +141,3 @@ tells how to call quex to generate a full fledged engine that does the
 lexical analysis as required.
 
 
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: t
-%%% End: 

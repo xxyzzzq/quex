@@ -8,7 +8,7 @@ comes with the example can be easily adapted to particular applications and
 reduces the required effort to the typing of `make` on the command line.
 In general, the example files `simple.qx` and `lexer.cpp` build a good
 basis for a new project. In the following chapters various features and options
-of {\quex\} are discussed. Additionally some discussion will be made about the
+of quex are discussed. Additionally some discussion will be made about the
     generated lexical analyser.  The current chapter provided enough
 	information to start coding a lexical analyzer. Following chapters
 	become interesting once you tasted the ease of quex.

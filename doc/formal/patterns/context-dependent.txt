@@ -7,16 +7,15 @@ conditions on the surroundings of the pattern to be matched. The traditional
 characters to condition begin and end of line are:
 
 
-\begin{itemize}
 
-\item `\verb|^|R`: an `R`, but only at the beginning of a line. This condition
+`\verb|^|R`:: an `R`, but only at the beginning of a line. This condition
         holds whenever the scan starts at the beginning of the character stream or
 	right after a newline character. This shortcut scans only for a single 
 	newline character '\verb|\|' (hexadecimal $0A$) backwards, independent
 	on how the particular operating system codes the newline. In this case, 
 	there is no harm coming from different conventions of newline.
 
-\item `R\$`: an R, but only at the end of a line or right before the end of the
+`R\$`:: an R, but only at the end of a line or right before the end of the
      file. Note, that the meaning of this shortcut can be adapted according to the 
      target operating system. Some operating systems, such as DOS and Windows, code
      a newline as a sequence '\verb|\|r\verb|\|n' (hexadecimal $0D,\,0A$), i.e.
@@ -28,8 +27,6 @@ characters to condition begin and end of line are:
      convention is essential.  If newline is coded as $0D$,\,$0A$ then the
      first $0D$ would discard a pattern that was supposed to be followed by
      $0A$ only.
-
-\end{itemize}
 
 For more sophisticated case 'real' regular expressions can be defined to handle
 pre- and post-conditions. Note, that pre- and post-conditions can only appear

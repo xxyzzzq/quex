@@ -7,14 +7,14 @@ information over and over again. Consider the example of the
 \verb|\|begin-\verb|\|end-regions in {\LaTeX} as shown in the subsequent listing. 
 
 [latex]
-code~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{itemize}
 \item this is the first item.
 \item this is the second one.
 ...
 \item this is the last item.
 \end{itemize}
-code~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Logically, the begin and end tokens could have been derived from the fact that
 an \verb|\|item token pops up in normal text mode.  Implicit tokens means
