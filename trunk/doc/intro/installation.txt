@@ -31,9 +31,7 @@ place where you want to work on it, or simply change directory to there.  These
 directories contain sample applications 000, 001, $\ldots$. Change to the directory of the
 sample applications and type '`make`'. If everything is setup propperly
 you will get your first quex-made lexical analyser executable in the frame
-of some seconds. The 'normal' Makefile in these directories creates a lexical analyzer
-with a quex-core engine. If you want to create a core engine via flex you
-need to type '`make -f Makefile.flex\_core`' thus relying on the second makefile.
+of some seconds. 
 
 
 The example applications depict easy ways to specify

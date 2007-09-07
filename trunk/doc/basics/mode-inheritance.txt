@@ -10,8 +10,9 @@ object that belongs to the class of vehicles (e.g. a submarine) does belong to
 the the class of cars. Mode inheritance in quex works similar and effects
 the following three mechanisms:
 
-\begin{itemize}
-\item _Patterns_: If a mode B is derived\footnote{The statements
+Pattern Dispatching:: 
+
+    If a mode B is derived\footnote{The statements
     'B is derived from A', 'A is base class of B', and 'B inherits from A'
     are equivalent in meaning in the context of object oriented programming. 
     In the same way the term 'derivation', 'base class', and 'inheritance'
@@ -20,7 +21,7 @@ the following three mechanisms:
   pattern match actions. This is practical if one wants to ensure that 
   a certain mode does react on certain patterns. In this case it has to be
     derived from the mode that shows the desired behavior. 
-    
+    + 
     {\bf Rule}: If mode B is derived from A and both have a common pattern
     {\sf XYZ} where mode B relates it to a pattern action $XYZ_B$ and mode A
     relates it to a pattern action $XYZ_A$, then the pattern action $XYZ_B$ is
@@ -28,26 +29,28 @@ the following three mechanisms:
     action pair of the same pattern._ 
 
   
-\item_Event Handlers_. If a mode B is derived from a mode A, then B's
+Event Handlers:: 
+
+  If a mode B is derived from a mode A, then B's
   event handler will be executed after A's event handlers. For example, A may
   have an event handler '`on\_entry`' for entering mode A. Mode B itself
   might have an event handler for '`on\_entry`'. If the lexical analyser
   now enters mode B, the event handler of its base mode A is first executed
   and then the event handler of class B itself.
-  
+  +
   {\bf Rule:} _Event handlers are executed in sequence from base to
     derived classes._
   
-\item_Mode Access_: If a mode B is derived from a mode A, then 
+Mode Access::
+
+  If a mode B is derived from a mode A, then 
   any permission of entry or exit to A is also a permission for B to
   enter or exit. The philosophy behind this is that that due to pattern
   inheritance mode B will behave like mode A, so it can be trusted the same
   way that one trusts A. 
-
+  +
   {\bf Rule:} _Entrys and exits that are allowed for a base class
-    are also allowed for all its derived classes._
-  
-\end{itemize}
+  are also allowed for all its derived classes._
 
 Figure \ref{fig:mode-inheritance} shows an example where a mode A acts as a
 base mode for mode B. Internally, quex creates a new mode B* that contains
@@ -61,10 +64,9 @@ checks the entry and exits of a mode it consideres automatically also the
 base classes. If there is no base mode that acts like a door opener to a
 particular mode, then transits will cause a run-time error.
 
-\showpic
-{figures/mode-inheritance.png}
-{Mode Inheritance.}
-{fig:mode-inheritance}
+[[fig:mode-inheritance]]
+.Mode Inheritance.
+image::figures/mode-inheritance.png[]
 
 In conclusion, it can be said that inheritance is a very useful tool to
 implement some 'standard' behavior in a base mode. Derived modes can then

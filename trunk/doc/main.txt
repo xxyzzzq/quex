@@ -28,3 +28,62 @@ include::basics/pattern-matching.txt[]
 === The Token Queue
 include::basics/token-queue.txt[]
 
+=== Lexical Analysis Modes
+include::basics/modes.txt[]
+
+=== Mode Inheritance
+include::basics/mode-inheritance.txt[]
+
+=== Mode Transitions
+include::basics/mode-transitions.txt[]
+
+=== Indentation
+include::basics/indentation.txt[]
+
+=== Line and Column Number Counting
+include::basics/line-column-counting.txt[]
+
+=== Summary
+include::basics/summary.txt[]
+
+
+
+== Practical Usage
+include::practical/intro.txt[]
+
+=== Patterns
+include::practical/patterns.txt[]
+
+=== Token-ID
+include::practical/token-ids.txt[]
+
+=== Modes
+include::practical/modes.txt[]
+
+=== Pattern-Action Pairs
+include::practical/pattern-action-pairs.txt[]
+
+=== Calling Queχ
+include::practical/calling-quex.txt[]
+
+=== Summary
+include::practical/summary.txt[]
+
+
+== Formal Usage
+include::formal/intro.txt[]
+
+=== Patterns
+include::formal/patterns/intro.txt[]
+
+=== Context Free Regular Expressions
+include::formal/patterns/context-free.txt[]
+
+==== Pitfalls
+include::patterns/context-free-pitfalls.txt[]
+
+=== Pre- and Post-Conditions
+include::formal/patterns/context-dependent.txt[]
+
+==== Pitfalls
+include::patterns/context-dependent-pitfalls.txt[]
