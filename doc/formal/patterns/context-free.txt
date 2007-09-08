@@ -51,84 +51,106 @@ Context free regular expressions match against an input independent on what
        are used inside regular expressions, their values have to be re-assigned.
 
 `\U11A0FF`:: 
-      the character with hexadecimal value `11A0FF'. A
-      maximum of _six_ hexadecimal digits can be specified.  Hexadecimal numbers
-      with less than six digits must either be followed by a non-hex-digit, a 
-      delimiter such as quote \verb|"|, \verb|[|, or \verb|(|, or specified with leading
-      zeroes. Hexadecimal digits can be uppercase or lowercase.
+      the character with hexadecimal value 11A0FF. A maximum of _six_
+      hexadecimal digits can be specified.  Hexadecimal numbers with less than
+      six digits must either be followed by a non-hex-digit, a delimiter such
+      as `"`, `[`, or `(`, or specified with leading zeroes (i.e. use \U00071F,
+      for hexadecimal 71F). The latter choice is probably the best candidate
+      for an 'established habit'. Hexadecimal digits can contain be uppercase or
+      lowercase letters (from A to F).
 
 `\X7A27`:: 
-      the character with hexadecimal value `7A27'. A
+      the character with hexadecimal value 7A27. A
       maximum of _four_ hexadecimal digits can be specified. The
-      delimiting rules are are ananlogous to the rules for `\verb|\|U`. 
+      delimiting rules are are ananlogous to the rules for `\U`. 
 
 `\x27`:: 
-    the character with hexadecimal value `27'. A maximum
+    the character with hexadecimal value 27. A maximum
      of _two_ hexadecimal digits can be specified. The
-      delimiting rules are are ananlogous to the rules for `\verb|\|U`. 
+      delimiting rules are are ananlogous to the rules for `\U`. 
 
 `\123`:: 
     the character with octal value 123, a maximum of three
      digits less than 8 can follow the backslash. The
-      delimiting rules are ananlogous to the rules for `\verb|\|U`. 
+      delimiting rules are ananlogous to the rules for `\U`. 
 
 
 `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\r`, or `\v`::
      the ANSI-C interpretation of the backslashed character.
 
 
-Any character specified as character code, i.e. using `\`, 
-`\verb|\x|`, `\verb|\X`, or `\verb|U` are considered to be unicode
-code points. For applications in english spoken cultures this is identical to
-the ASCII encoding. For details about unicode code tables consider the
-standard \cite{Unicode50}.
+Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
+are considered to be unicode code points. For applications in english spoken
+cultures this is identical to the ASCII encoding. For details about unicode
+code tables consider the standard \cite{Unicode50}.
 
 Two special rules have to appear isolatedly, out of the context of regular
-expressions. With the following two rules the actions for the event of 
-end of file and the failure event can be specified:
+expressions. With the following two rules the actions for the event of end of
+file and the failure event can be specified:
 
 `<<` `EOF` `>>`:: 
+
     the event of an end-of-file (end of data-stream). 
 
 `<<` `FAIL` `>>`:: 
+
     the event of failure, i.e. no single pattern matched. 
     Note, this rule is of the 'lex' style, but is only available with the 
     quex core engine.
 
 
-This syntax is more a 'recognition' of the traditional `lex` syntax. In fact
-    the two event handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
-    a one-to-one correspondance to what is mentioned above. Possibly some later
-    versions will totally dismiss the lex related engine core, and then also
-    these constructs will disappear in favor of the mentioned two event handlers.
+This syntax is more 'in recognition' of the traditional `lex` syntax. In fact
+the two event handlers '`on\_failure`' and '`on\_end\_of\_stream`' are
+a one-to-one correspondance to what is mentioned above. Possibly some later
+versions will totally dismiss the lex related engine core, and then also
+these constructs will disappear in favor of the mentioned two event handlers.
 
 *Operations*    
 
 Let `R` and `S` be regular expressions, i.e. a chain of characters specified in the
 way mentioned above, or a regular expression as a result from the operations below.
      
-`R*`:: _zero_ or more occurencies of `R`.
+`R*`:: 
 
-`R+`:: _one_ or more `R`'s
+    _zero_ or more occurencies of the regular expression `R`.
 
-`R?`:: _zero_ or _one_ `R`. That means, there maybe an `R` or not.
+`R+`:: 
 
-`R$\{$2,5$\`$}:: anywhere from two to five `R`'s
+    _one_ or more repetition of the regular expression `R`.
 
-`R$\{$2,$\`$}:: two or more `R`'s.
+`R?`:: 
 
-`R$\{$4$\`$}:: exactly 4 `R`'s.
+    _zero_ or _one_ `R`. That means, there maybe an `R` or not.
 
-`(R)`:: match an `R`; parentheses are used to group operations, i.e. to override precedence,
-                in the same way as the brackets in $(a\, +\, b)\,\cdot\,c$ override the precedence of 
-		multiplication over addition.
+`R{2,5}`:: 
 
-`RS`:: the regular expression `R` followed by the regular expression `S`;
-     called concatenation or sequence.
+    anywhere from two to five repetitions of the regular expressions `R`.
 
-`R|S`:: either an R or an S, i.e. `R` and `S` are two valid alternatives.
+`R{2,}`:: 
 
-`${NAME}`:: the expansion of the defined pattern "NAME". Recall, that pattern
-      names can be defined in `define` sections
-      (see section \ref{sec:practical/patterns}).
+    two or more repetitions of the regular expression `R`.
+
+`R{4}:: 
+
+    exactly four repetitions of the regular expression `R`.
+
+`+++(R)+++`:: 
+
+    match an `R`; parentheses are used to _group_ operations, i.e. to override
+    precedence, in the same way as the brackets in $(a\, +\, b)\,\cdot\,c$
+    override the precedence of multiplication over addition.
+
+`RS`:: 
+
+    the regular expression `R` followed by the regular expression `S`. This
+    is usually called a _concatenation_ or a _sequence_.
+
+`R|S`:: 
+
+    either an R or an S, i.e. `R` and `S`. This is usually called an _alternative_.
+
+`$++{++NAME}`:: 
+
+    the expansion of the defined pattern "NAME". Pattern names can
+    be defined in `define` sections (see section <<sec:practical/patterns>>).
 

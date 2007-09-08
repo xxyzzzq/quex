@@ -9,7 +9,6 @@ header {
 define {
     // -*- C -*- // just to color it in emacs
     // Pattern definitions for example application
-    P_WHITESPACE  	  [ \t\n]
     P_IDENTIFIER          [a-zA-Z]+
     P_NUMBER              [0-9]+
     //
@@ -58,11 +57,11 @@ mode PROGRAM :
     [a-z]+      { self.send(TKN_IDENTIFIER, Lexeme); }
     {P_NUMBER}  => TKN_NUMBER(atoi(Lexeme));
 
-    {P_WHITESPACE} {
-    }
+    [ \t\n]     { }
+
     {P_STRING_DELIMITER} {
-	self.send(TKN_QUOTE);
-	self << STRING_READER;
+        self.send(TKN_QUOTE);
+        self << STRING_READER;
     }
 }
 
@@ -73,8 +72,8 @@ mode STRING_READER :
 {
     on_entry { self.accumulator.clear(); }
     on_exit  { 
-	self.accumulator.flush(TKN_STRING); 
-	self.send(TKN_QUOTE);
+        self.accumulator.flush(TKN_STRING); 
+        self.send(TKN_QUOTE);
     }
 
     {P_BACKSLASHED_STRING_DELIMITER} { self.accumulator.add(Lexeme); }
@@ -82,9 +81,7 @@ mode STRING_READER :
 
     {P_STRING_DELIMITER}             { self << PROGRAM; }
 
-    // default rule: shall always come last
     <<FAIL>> {
-	// TOGO van Bogo
-	self.accumulator.add(Lexeme);
+        self.accumulator.add(Lexeme);
     }
 }

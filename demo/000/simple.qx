@@ -1,11 +1,5 @@
 // -*- C++ -*-
 
-define {
-    // need to define whitespace, since current version 0.10.0 is not able
-    // to parse ' ' in a regular expression inside a mode.
-    P_WHITESPACE   [ \t\r\n]+
-}
-
 token {
    IDENTIFIER
    STRUCT
@@ -23,6 +17,7 @@ mode ONE_AND_ONLY
 {
     <<EOF>>     => quex::token::ID_TERMINATION;
 
+    [ \t\r\n]+  { }
     "struct"    => TKN_STRUCT;
     "int"       => TKN_TYPE_INT;
     "double"    => TKN_TYPE_DOUBLE;
@@ -33,7 +28,6 @@ mode ONE_AND_ONLY
     "}"         => TKN_BRACKET_CLOSE;
     [0-9]+      => TKN_NUMBER(atoi((char*)Lexeme));
     [_a-zA-Z]+  { self.send(TKN_IDENTIFIER, Lexeme); RETURN; }
-    {P_WHITESPACE} { }
 }
 
 

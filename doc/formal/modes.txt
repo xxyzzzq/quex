@@ -5,21 +5,21 @@ curly bracket that starts the pattern-action pair definitions as shown in
 figure \ref{fig:formal-mode-definition}a. This is the most simple way to
 define a mode.
 
-\begin{figure}[htbp] \leavevmode
-      a)
-      \begin{center} 
-        \begin{lstlisting}
+a)
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    mode MY_MODE {
      ...
      // pattern-action pairs of MY_MODE
      ...
    }          
-        \end{lstlisting}
-      \end{center} 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      b)
-    \begin{center}
-        \begin{lstlisting}
+b)
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    mode MY_MODE :
       END_OF_FILE
       WHITESPACE_EATER
@@ -29,12 +29,12 @@ define a mode.
      // pattern-action pairs of MY_MODE
      ...
    }          
-        \end{lstlisting}
-    \end{center} 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      c)
-    \begin{center}
-        \begin{lstlisting}
+c)
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    mode MY_MODE :
       END_OF_FILE
       <inheritable: yes>
@@ -45,11 +45,7 @@ define a mode.
      // pattern-action pairs of MY_MODE
      ...
    }          
-        \end{lstlisting}
-    \end{center} 
-  \caption{Definition of mode characteristics.} 
-  \label{fig:formal-mode-definition}
-\end{figure}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to define options or base modes the name of the mode has to be
 followed by a colon as in the examples in figure

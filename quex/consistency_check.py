@@ -16,9 +16,8 @@ def do(Modes):
     for mode in Modes.values():
         if mode.options["inheritable:"] != "only": break
     else:
-        print "error: there is no mode that can be applied"
-        print "error: all are inheritable only"
-        print "error: modes are = ", Modes.values()
+        print "error: There is no mode that can be applied---all existing modes are 'inheritable only'."
+        print "error: modes are = ", map(lambda m: m.name, Modes.values())
         sys.exit(-1)
 
     # is the initial mode defined
