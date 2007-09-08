@@ -1,7 +1,7 @@
 Queχ - Lexical Analyser Generator
 =================================
 Frank-Rene Schaefer <fschaef@users.sourceforge.net>
-0.15.3, 03. September, 2007
+0.15.4, 03. September, 2007
 
 
 
@@ -80,10 +80,19 @@ include::formal/patterns/intro.txt[]
 include::formal/patterns/context-free.txt[]
 
 ==== Pitfalls
-include::patterns/context-free-pitfalls.txt[]
+include::formal/patterns/context-free-pitfalls.txt[]
 
 === Pre- and Post-Conditions
 include::formal/patterns/context-dependent.txt[]
 
 ==== Pitfalls
-include::patterns/context-dependent-pitfalls.txt[]
+include::formal/patterns/context-dependent-pitfalls.txt[]
+
+=== The Starting Mode `start`
+include::basics/start-mode.txt[]
+
+=== Mode Characteristics
+include::formal/modes.txt[]
+
+
+(To be Continued)

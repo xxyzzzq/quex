@@ -1,36 +1,3 @@
-// -*- C++ -*-
-start = PROGRAM
-
-header {
-#include <cstdlib>  // C++ adapted 'stdlib.h'
-//                  // gets:  atoi(const char*) 
-}
-
-define {
-    // -*- C -*- // just to color it in emacs
-    // Pattern definitions for example application
-    P_WHITESPACE  	  [ \t\n]
-    P_IDENTIFIER          [a-zA-Z]+
-}
-
-token {
-    IDENTIFIER
-    NUMBER
-    OK
-    COPYRIGHT
-    DJAMEEL
-    ALPHA
-    INFINITY
-    CLOSE_FRENCH_QUOTE
-    OPEN_FRENCH_QUOTE
-    L_BRACKET
-    R_BRACKET
-    ARROW
-    DEGREE_CELSIUS
-    PI
-    ALLMOST_EQUAL
-}
-
 mode END_OF_FILE :
 <inheritable: only>  
 {    
@@ -39,7 +6,6 @@ mode END_OF_FILE :
         RETURN;
     }
 }
-
 
 mode PROGRAM :
      END_OF_FILE

@@ -1,97 +1,53 @@
-# PURPOSE: Makefile for unit tests.
+# PURPOSE: Makefile Demo Application of Quex
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
+.PHONY: clean
 
+ifndef QUEX_PATH
+    $(error The environment variable QUEX_PATH is not defined!)
+endif
 
 # (*) SETUP ____________________________________________________________________
-#
-# QUEX_PATH    = ../../ # there should be an environment variable 'QUEX_PATH'
-#                       # thus this does have to be defined explicitly here.
-#
 # -- INPUT
-MODE_FILES   = simple.qx
-DEBUG_F      = # --debug # set flag if debugging info is required
-#
-# -- APPLICATION / LIBRARY specification
-APPLICATION_NAME = lexer
-LIBRARY_NAME     = libLexer
+MODE_FILES       = simple.qx
+# -- FILES PRODUCED BY QUEX
 ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
-#
-GENERATED_MODE_FILES = \
-		       $(ENGINE_NAME)-core-engine.cpp   \
-
-GENERATED_MODE_OBJS  = $(GENERATED_MODE_FILES:.cpp=.o)
-#
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
-		   $(GENERATED_MODE_FILES)
-#
-LIBRARY_OBJS     = $(ENGINE_NAME).o
-
+		           $(ENGINE_NAME)-core-engine.cpp
+# -- OUTPUT
+APPLICATION      = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
-#
-# -- compiler
-CC = g++ -c -Wno-deprecated -Wall \
-	 -I./  -I$(QUEX_PATH) \
-	 -ggdb \
-         -DQUEX_SETTING_BUFFER_SIZE=0x8000 \
-	 -DNDEBUG                          \
+# (change g++ to whatever you use as compiler)
+CC = g++ -c -fPIC -Wno-deprecated -Wall \
+	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) 
 
-# -- linker
-LD         = g++ -O3
-STATIC_LD  = ar -rv
-DYNAMIC_LD = g++ -shared 
-
+LD = g++ -ggdb 
 
 # (*) RULES ____________________________________________________________________
-#
 # -- application
-$(APPLICATION_NAME): ./$(APPLICATION_NAME).o $(ENGINE_NAME).o $(GENERATED_MODE_OBJS)
-	$(LD) ./$(APPLICATION_NAME).o $(ENGINE_NAME).o   \
-	       $(GENERATED_MODE_OBJS)                    \
-               -o $(APPLICATION_NAME) 
-
-# -- libraries
-$(LIBRARY_NAME).a:
-	$(STATIC_LD) $@ $(LIBRARY_OBJS)
-
-$(LIBRARY_NAME).so:
-	$(DYNAMIC_LD) $(LIBRARY_OBJS) -o $@ 
+$(APPLICATION): $(APPLICATION).o \
+	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
+	$(LD) ./$(APPLICATION).o $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o \
+          -o $(APPLICATION) 
 
 # -- engine and object files
-$(APPLICATION_NAME).o: $(APPLICATION_NAME).cpp $(ENGINE_SOURCES)
-#       # require: $(ENGINE_SOURCES) for header files
-	$(CC)    $(APPLICATION_NAME).cpp  \
-              -o $(APPLICATION_NAME).o
-
-$(ENGINE_NAME).o: $(ENGINE_SOURCES)
-	$(CC)    $(ENGINE_NAME).cpp       \
-              -o $(ENGINE_NAME).o
-
-
-%.o: %.cpp
+%.o: %.cpp $(ENGINE_SOURCES)
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES)
-	quex --mode-files $(MODE_FILES)    \
-	     --engine     $(ENGINE_NAME) 
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
 
 # (*) HELPERS __________________________________________________________________
-#
 clean:	
 	touch $(MODE_FILES)
-	rm -f $(ENGINE_NAME) $(ENGINE_NAME).cpp \
-              $(ENGINE_NAME)-internal.h $(ENGINE_NAME)-token_ids
-	rm -f $(GENERATED_MODE_FILES)
-	rm -f $(GENERATED_MODE_OBJS)
+	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o
-	rm -f $(LIBRARY_NAME).a $(LIBRARY_NAME).so
+	rm -f $(ENGINE_NAME)-core-engine.o
 	rm -f lexer.o
 	rm -f lexer
-	rm -f gmon.out
 	rm -f token_ids
 	rm -f *.bak
-

@@ -319,7 +319,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False):
 
     if fh == -1:
         prefix = "command line"
-    if fh == "assert":
+    elif fh == "assert":
         if type(LineN) != str: 
             error_msg("3rd argument needs to be a string,\n" + \
                       "if message type == 'assert'", "assert", 

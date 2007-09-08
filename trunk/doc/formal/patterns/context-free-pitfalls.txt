@@ -31,25 +31,3 @@ case does not seem to be very probable. Sometimes it may be necessary,
      with `for` could not propperly be detected, since the first three letters
      would result in the `for`-keyword token.
 
-As for version 0.10.0, quex has a deficiency which is due to the parsing algorithm
-of the mode definition parts. Until then, it was not possible to define spaces '\kern 1ex' 
-directly directly inside mode definitions, i.e.
-
-[cpp]
-source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-mode {
-    [ \t\n]    {
-	// ... reaction on whitespace ...
-    }
-}
-source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-However, this issue has been solved from version 0.15.1 on. One has to be
-cautious, though using newlines and tabs.  You can in certain circumstances
-define a newline or a tab trigger as directly 'as is', i.e. as a line break and
-a tabulator.  This is perfectly coherent with the regular expression grammar.
-However, for clarity it is better to use the `\t` and `\n` 
-expressions. Note, that a whitespace as a lonestanding character
-    ends the regular expression. Using 'real' newlines and tabulators may cause problems when lonestanding
-    characters are parsed in groups. With the backslashed expressions there is
-    no danger and things are clear.

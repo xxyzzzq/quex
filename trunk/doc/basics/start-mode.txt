@@ -3,9 +3,9 @@ mode, so quex requires an initial mode explicitly to be specified. This
 happens using the `start` keyword, i.e. one has to type somewhere in
 between the mode definitions (but best at the very beginning):
 
-\begin{lstlisting}
+-----------------------
   start = PROGRAM
-\end{lstlisting}
+-----------------------
 
 Let the mode-stubs be stored in a file called `simple.qx`. The previous
 sections defined patterns, token-ids, and modes. Together with these

@@ -1,4 +1,4 @@
-With the files from directory \$(QUEX\_PATH){\tt /DEMO/001/} the creation of the
+With the files from directory \$(QUEX\_PATH){\tt demo/001/} the creation of the
 example lexical analyser application is as simple as can be. Type {\tt make}
 in the command line and the application is built. The Makefile that comes with
 the sample application is written in a way that makes it very easy to adapt
@@ -8,7 +8,7 @@ explains how to call {\quex}:
 \begin{samepage}
 \begin{lstlisting}
 # (*) definitions
-MODE_FILES  = ./in/simple.qx
+MODE_FILES  = simple.qx
 #
 ENGINE_NAME = tiny_lexer
 #
@@ -19,10 +19,12 @@ ENGINE_SOURCES = $(ENGINE_NAME)             \
                  $(ENGINE_NAME)-core-engine.cpp
 ...
 
-# (*) build rule
+# (*) Quex builds source code for lexical analyser
 $(ENGINE_SOURCES): $(PATTERN_FILE) $(MODE_FILES) $(TOKEN_DB)
         quex --mode-files $(MODE_FILES)      \
              --engine     $(ENGINE_NAME)
+
+my_lexer: 
 \end{lstlisting}
 \end{samepage}
 
