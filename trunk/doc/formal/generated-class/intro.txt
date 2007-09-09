@@ -7,8 +7,8 @@ stream is transformed into a token stream. The subsequent sections discuss how
 modes can be handled using member functions, token handling, the_ 
 accumulator_, and some virtual functions to be possibly overriden by a derived
 class. Any member function can theoretically be used in any
-context\footnote{This is, of course, only true as long as acces rights of` 
-private` or `public` do not forbid it.}.
+context footnote:[This is, of course, only true as long as acces rights of` 
+private` or `public` do not forbid it.].
 
 
 

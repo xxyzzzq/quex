@@ -14,10 +14,9 @@ comes handy is: _a buffer in the system memory_. A buffer loads a larger
 blocks of data and keeps them ready-to-read until its content is read completely. Then
 it loads the next larger block of data.
 
-\showpic
-{figures/basic-buffer.pdf}
-{Structure of quex's buffer.}
-{fig:basic-buffer}
+[[fig:basic-buffer]]
+.Structure of quex's buffer.
+image::figures/basic-buffer.pdf[]
 
 The structure of quexs buffer is shown in figure \ref{fig:basic-buffer}. The buffer itself
 is not more than a continous chunk of memory. It has two places to store

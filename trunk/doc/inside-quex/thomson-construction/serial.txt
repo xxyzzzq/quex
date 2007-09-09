@@ -2,25 +2,24 @@ Mounting two state machines together in sequence is fairly
 simple. If state machine B is to be mounted after state machine
 A, then the following is to be done:
 
-\begin{enumerate}
-\item Clone both state machines, to make sure that we have unique
+
+-  Clone both state machines, to make sure that we have unique
       state-ids inside the two machines, and operations won't 
       influence the originals A and B.
-\item Mount an epsilon transition from all acceptance states of A
+-  Mount an epsilon transition from all acceptance states of A
       to the initial state of B.
-\item Disable acceptance of all acceptance states in A.
-\item Collect all states of A and B into a single state machine.
-\end{enumerate}
+-  Disable acceptance of all acceptance states in A.
+-  Collect all states of A and B into a single state machine.
 
-\showpic
-{figures/pattern-sequentialize.pdf}
-{Mounting two state machines in a sequence.}
-{fig:mount-sequential}
+
+[[fig:mount-sequential]]
+.Mounting two state machines in a sequence.
+image::figures/pattern-sequentialize.pdf[]
 
 These steps imply that the acceptance state of the last state machine
 remains. In Quex an algorithm is implemented that does the sequentialization
 for any number of state machines---not just two---in one beat.
 In figure \ref{fig:mount-sequential} a state machine is created representing
 a 'matcher' for floating point numbers out of the sequentialized patterns
-\pattern{$[$0-9$]+$}, \pattern{.}, and pattern{$[$0-9$]+$}.
+$$[0-9]+$$, a dot '$$.$$', and $$[0-9]+$$}.
 

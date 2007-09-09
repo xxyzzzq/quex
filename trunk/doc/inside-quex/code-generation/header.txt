@@ -30,7 +30,8 @@ state where the core pattern would have raised 'acceptance'.
 The header of the state transition code of a particular acceptance 
 state looks like the following: 
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   QUEX_LABEL__ENTRY_98:
      QUEX_STREAM_TELL(last_acceptance_position); 
 
@@ -55,18 +56,19 @@ state looks like the following:
          last_acceptance = X;  // the dominating pattern
      } 
 
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If the state is not an acceptance state, then this header is simply empty.
 However, both types of states, acceptance and non-acceptance states share
 the following code fragment:
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      // (*) get a character from the input stream as a trigger
      QUEX_STREAM_GET(input);
      
      // ... it follows: the state transitions ...
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It simply reads the next character from the input stream. It is canned into
 a macro, so the user may adapt its underlying procedure to his way of representing

@@ -13,7 +13,8 @@ during a input channel change, i.e. an 'include' is not left to the user. The
 generated analyzer class provides the user with handy functions that do the
 whole job. Those are the following:
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	template <class InputHandle> 
 	void   include_stack_push(InputHandle*, const int MODE_ID = -1, 
                               const char* IConvInputCodingName = 0x0);
@@ -22,12 +23,12 @@ whole job. Those are the following:
                               const char* IConvInputCodingName = 0x0);
 
 	bool   include_stack_pop();
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The functions can be grouped according to two actions: pushing the current state
 of the lexical analyzer on an include stack and popping the last pushed state
 of the lexical analyzer from the include stack. The overloaded functions
-`include\_stack\_push($\ldots$)` require as a first argument a `FILE*`
+`include\_stack\_push(...)` require as a first argument a `FILE*`
 or an `istream*` pointer of the stream which is supposed to be the new
 input stream. The analyzer then automatically creates a new buffer object and
 sets everything up for the input from the new stream. Also, the current

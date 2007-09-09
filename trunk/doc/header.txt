@@ -14,10 +14,9 @@
 \setlength{\textheight}{21.5cm}
 \end{latexonly}
 
-\include{/home/fschaef/prj/Documents/TeX-Library/frs-showpic-pdf-and-hyperlatex}
-
-\def\quex{{\sf que$\chi$}}
-\def\Quex{{\sf que$\chi$}}
+[[def\Quex{{\sf que$\chi$}]]
+.def\quex{{\sf que$\chi$}
+image:[]
 %%\def\quex{{\sf que{{$\chi$}} }
 %%\def\Quex{{\sf Que{{$\chi$}} }
 \newcommand{\SaferTeX}{\c{S}\"{a}fer\TeX}

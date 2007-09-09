@@ -7,7 +7,10 @@ initiates a  transit into the entered mode. Certainly, such a mode
 transition does not make sense.
 In general, mode transitions inside `on\_entry` or `on\_exit`
 event handlers are best avoided. Consider the code fragment 
-\begin{lstlisting}
+
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mode MY_MODE_A {
 ...
    {P_SOMETHING} {
@@ -15,7 +18,8 @@ mode MY_MODE_A {
    }
 ...
 }
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 meaning that one desires to enter `MY\_MODE\_B` if pattern` 
   P\_SOMETHING` is detected. Imagine, now, because of some twisted mode
 transitions in the transition event handlers one ends up in a mode` 
@@ -33,12 +37,12 @@ transitions inside `on\_entry` and `on\_exit`.
 Another issue has to do with optimization. Quex is aware of transition handlers
 being implemented or not. If no transition handlers are implemented at all then
 no event handling code is executed. Note, that each entry and exit transition
-handler requires a dereferecing and a function call---even if the function itself
+handler requires a dereferecing and a function call--even if the function itself
 is empty. For fine tuning of speed it is advisable to use _only_ entry handlers
 or _only_ exit handlers. The gain in computation time can be computed simply
 as: probability of mode swith times time for dereferencing and empty function call
-over two. For reasonable languages (probability of mode change $<$ 1 / 25 characters) 
-consider the speed gain in a range of less than 2\%. The derefencing, though, can
+over two. For reasonable languages (probability of mode change $$<$$ 1 / 25 characters) 
+consider the speed gain in a range of less than 2%. The derefencing, though, can
 come costy if the mode change is seldom enough that is causes a cache-miss. Thus,
 for compilers that compile large fragments of code, this optimization should be
 considered.

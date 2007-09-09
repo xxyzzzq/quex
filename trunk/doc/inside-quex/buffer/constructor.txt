@@ -2,14 +2,14 @@ Quexs buffer is implemented as a template. By this means a maximum of
 flexibility is achieved. The following parameters can be passed to the 
 template:
 
-\begin{enumerate}
-\item`int BOFC`: The character code to designate 'begin of file'.
-\item`int EOFC`: The character code to designate 'end of file'.
-\item`int BLC`: The character code to designate 'buffer limit'.
-\item`class OverflowPolicy`: A class implementing two functions:` 
+
+- `int BOFC`: The character code to designate 'begin of file'.
+- `int EOFC`: The character code to designate 'end of file'.
+- `int BLC`: The character code to designate 'buffer limit'.
+- `class OverflowPolicy`: A class implementing two functions:` 
     forward`' and `backward`' to deal with the unlike event of buffer
     overflow (see section \ref{sec:buffer/overflow}).
-\end{enumerate}
+
 
 Those are the parameters to the class`basic\_buffer`. The header, though,
 defines a default setting for the class`buffer`. If these default do
@@ -17,9 +17,10 @@ not interfere with some abnormal goals (such as using EOF inside, not at the bor
 	expression), then these values can be adapted. The easiest way to to so
 is to adapt the `typedef`' statement in the header file:
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     typedef basic_buffer<0x1, 0x2, 0x0, MyOverflowPolicy> buffer;
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Then, again`quex::buffer` can be used to name the buffer class at any given
 place. Constructing a buffer is possible with two basic approaches. The first approach

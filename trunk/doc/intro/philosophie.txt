@@ -27,13 +27,14 @@ achieved through redundancy reduction, i.e. the programmer only should provide
 information that is absolutely necessary, thus avoiding visual noise. In
 {\LaTeX}, for example, an item list is specified as follows:
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{itemize}
 \item This is the first item ...
 \item This is the second item ...
 ...
 \end{itemize}
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An sophisticated lexical analyser, though, should be able to recognize that
 when an {\tt \verb|\|item} token arrives there must be an item list that
@@ -62,7 +63,8 @@ In grammars, sub-languages are tamed by 'bracket' tokens and {\it not by
   parser modes}. If it is desired to have a mini-graph-plotting language, for
 example inside a main language, one would expect a grammer like this:
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 plot_program = PLOT_BEGIN plot_statement_list PLOT_END
 
 plot_statement_list = plot_statement
@@ -71,7 +73,7 @@ plot_statement_list = plot_statement
 plot_statement  = 'plot' plot_range file_name 
 
 plot_range = '[' number ':' number ']' 
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Lexical mode transitions and mode inheritance relations have become key
 concepts for the lexical analyser of the {\SaferTeX} system. Since these

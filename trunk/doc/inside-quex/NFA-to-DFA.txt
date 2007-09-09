@@ -19,10 +19,9 @@ that the acceptance state of a combined state is acceptance as soon as one
 of its 'member states' is acceptance the entire mechanism of the NFA is preserved.
 
 
-\showpic
-{figures/epsilon-closure.pdf}
-{The $\epsilon$-closure.}
-{fig:epsilon-closure}
+[[fig:epsilon-closure]]
+.The $\epsilon$-closure.
+image::figures/epsilon-closure.pdf[]
 
 The notion of $\epsilon$-triggers enabled a very efficient method to
 sequentialize, parallelize and repeat state machines. As soon as a state
@@ -50,10 +49,9 @@ refrerred with its 'maiden name' rather then as part of $n0$
 	 from state 0. Also, $n0$ as being a 'super state ' does not belong to
 	 the same 'world' as the original states.}. 
 
-\showpic
-{figures/NFA-to-DFA-transitions.pdf}
-{Transscription of a state set into a single state of an DFA.}
-{fig:NFA-to-DFA}
+[[fig:NFA-to-DFA]]
+.Transscription of a state set into a single state of an DFA.
+image::figures/NFA-to-DFA-transitions.pdf[]
 
 The next step consist in finding state combinations and the trigger sets by which
 they are reached from the new state $n0$. Figure \ref{fig:NFA-to-DFA} shows an example
@@ -73,29 +71,27 @@ for a DFA are met. The search of a distinct trigger map consist of the following
 	single states, and the trigger map describes a one-to-one mapping from
 	incoming characters to target states.}
 
-\showpic
-{figures/NFA-to-DFA-trigger-history.pdf}
-{Combinations of follow-up states displayed against the code points of a character
-    set -- similar to a time history}
-{fig:NFA-to-DFA-ranges}    
+[[fig:NFA-to-DFA-ranges]]    
+.Combinations of follow-up states displayed against the code points of a characters set--similar to a time history.
+image::figures/NFA-to-DFA-trigger-history.pdf[]
 
 Traditionally \cite{}, \cite{} the detection of suiteable state combinations 
 considers each single character of the trigger map isolated.  This works fine, as long as the
 code set does not exceed the oldtimer 8-bit ASCII character set. Each state in
 the NFA requires then 255 checks.  For a Unicode-based lexical analyser this behaves
-significantly different. Unicode 5.0 currently has \$10FFFF, i.e. decimal 1.114.111,
-	      code points -- not to speak about code points for private usage.
-	      Consequently about 140.000 times checks would have to be performed for each state in the state machine.
-	      In order to avoid such a caste in calculation time, the author of quex developed a
-	      different algorithm based on character ranges as shown in figure \ref{fig:NFA-to-DFA-ranges}. 
+significantly different. Unicode 5.0 currently has $10FFFF, i.e. decimal 1.114.111,
+code points -- not to speak about code points for private usage.
+Consequently about 140.000 times checks would have to be performed for each state in the state machine.
+In order to avoid such a caste in calculation time, the author of quex developed a
+different algorithm based on character ranges as shown in figure \ref{fig:NFA-to-DFA-ranges}. 
 The algorithm identifies state combinations which are related to certain overlapping ranges
 of characters. 
 
 As mentioned in \ref{sec:character-range-representation}, the quex engine
 relies on a description of triggers in terms of number ranges.  Instead of
-checking each character, the algorithm considers the numeric ranges $R_{A,B}$
-in which a state $A$ triggers to state $B$. If a range $R_{A,B}$ and $R_{A,B}$
-intersect, then $B$ and $C$ are states which are entered simultaneously in the
+checking each character, the algorithm considers the numeric ranges `R_{A,B}`
+in which a state `A` triggers to state `B`. If a range `R_{A,B}` and `R_{A,B}`
+intersect, then `B` and `C` are states which are entered simultaneously in the
 NFA. Thus, they have to be combined in the DFA. For each set of target state
 combination the intersection of all trigger ranges gives the range on what the
 combination is triggered. It can now be 'renamed', i.e.  a new state can be
@@ -117,22 +113,21 @@ Now, that multiple states are combined into one state, the question remains abou
 acceptance type of the combined state? The answer becomes simple, though, considering that we try to
 match patterns and that a pattern match relates to an acceptance state:
 
-\begin{itemize}
-\item If no state in the state combination is an acceptance state, than the 
+-  If no state in the state combination is an acceptance state, than the 
       state representing the combination {\it is not an} acceptance state.
-\item If at least one state in the state combination {\it is an} acceptance state, than 
+-  If at least one state in the state combination {\it is an} acceptance state, than 
       the state representing the combination is an acceptance state. This is 
       so, since a pattern that matched through one path is not dismissed
       because another path does not match. For example, the regular
-      expression \pattern{if|ignore} matches on "if", i.e. the 'first path'
-      as soon as the "f" comes in, even though, the second path expects a "g" and
+      expression $$if|ignore$$ matches on $$if$$, i.e. the 'first path'
+      as soon as the $$f$$ comes in, even though, the second path expects a $$g$$ and
       would be non-acceptance. 
       Since it is only required that one pattern matches, the acceptance 
       of the first path is sufficient. 
-\item If two patterns in a combinatino trigger acceptance, this does not pose
+-  If two patterns in a combinatino trigger acceptance, this does not pose
       an exception since there exists preference rules that trigger if two
       patterns match on the same number of characters \myref{}.
-\end{itemize}
+
 
 The transformation from NFA to DFA is a process that is not only applied during
 the construction of state machines for isolated patterns, but also on the state
@@ -169,7 +164,8 @@ The following algorithm demonstrates in pseudo-code the process of constructing
 a DFA that corresponds to an NFA. It can be applied for single patterns, as
 well as for the combined state machine that represents the lexical analyser.
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 state-set-worklist = { [ init-state ] }
 
 while worklist not empty:
@@ -181,4 +177,4 @@ while worklist not empty:
 
     worklist = new-worklist	
 
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
