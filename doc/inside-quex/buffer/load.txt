@@ -6,10 +6,9 @@ current position. Also, since the current lexeme may be post-treated by some pat
 the pointer to the lexeme start also has to lie inside the buffer. The maximum of both values defines the 
 fallback border. 
 	
-\showpic
-{figures/load-forward.pdf}
-{Loading new contents 'forwards' from the stream into the buffer.}
-{fig:load-forward}
+[[fig:load-forward]]
+.Loading new contents 'forwards' from the stream into the buffer.
+image::figures/load-forward.pdf[]
 
 The new content from the file is then stored behind this border. If an
 end of file occurs, internally an 'end of file pointer' is set to the position in the
@@ -27,10 +26,9 @@ Else, it contains either the begin of file or the end of file character. Note, t
 begin of file character, if it occurs, occurs only at the begin of the buffer. The
 end of file character may occur at any position.
 
-\showpic
-{figures/load-backward.pdf}
-{Loading new contents 'backwards' from the stream into the buffer.}
-{fig:load-backward}
+[[fig:load-backward]]
+.Loading new contents 'backwards' from the stream into the buffer.
+image::figures/load-backward.pdf[]
 
 Figure \ref{fig:load-backward} shows the process of backward loading. Unlike loading forward not such a large amount
 of memory is newly loaded. Note, that backward loading is only necessary if the fallback buffer

@@ -14,16 +14,18 @@ patterns are defined directly in the mode definition. However, pattern
 definitions inside modes cannot contain whitespace, so we need to 
 define a pattern macro for that. Let us store 
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 define {
   P_WHITESPACE  [ \t\n]
 }
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 in at the head of the file. 
 
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   mode ONE_AND_ONLY { 
 
     <<EOF>> => quex::token::ID_TERMINATION;
@@ -37,10 +39,11 @@ in at the head of the file.
     [_a-zA-Z]+  => TKN_IDENTIFIER(yytext);
     {P_WHITESPACE} { }
   }
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TIMEOUT;
 ADDRESS;
 SEND;
@@ -48,4 +51,4 @@ EXPECT;
 SEMICOLON;
 NUMBER;
 IDENTIFIER;
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

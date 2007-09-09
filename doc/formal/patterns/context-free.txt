@@ -1,5 +1,5 @@
 Context free regular expressions match against an input independent on what 
- come before or after it. For example the regular expression \pattern{for}
+ come before or after it. For example the regular expression $$for$$
  will match against the letters `f`, `o`, and `r` independent
  if there was a whitespace or whatsoever before it or after it. This is
  the 'usual' way to define patterns. More sophisticated techniques are 
@@ -88,11 +88,11 @@ Two special rules have to appear isolatedly, out of the context of regular
 expressions. With the following two rules the actions for the event of end of
 file and the failure event can be specified:
 
-`<<` `EOF` `>>`:: 
+`$$<<EOF>>$$`:: 
 
     the event of an end-of-file (end of data-stream). 
 
-`<<` `FAIL` `>>`:: 
+`$$<<FAIL>>$$`:: 
 
     the event of failure, i.e. no single pattern matched. 
     Note, this rule is of the 'lex' style, but is only available with the 

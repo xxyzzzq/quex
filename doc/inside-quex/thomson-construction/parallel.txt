@@ -6,24 +6,23 @@ only one initial state. At this point the $\epsilon$-transition comes handy
 again. The following steps describe the process of mounting state machines in
 parallel:
 
-\begin{enumerate}
-\item Clone both state machines (see \ref{sec:thomson-construction/serial}).
-\item Mount an epsilon transition from all acceptance states of all 
+
+-  Clone both state machines (see \ref{sec:thomson-construction/serial}).
+-  Mount an epsilon transition from all acceptance states of all 
       state machines
       to a new terminal state T. Let T be an acceptance state.
-\item Disable original acceptance of all acceptance states in all state machines.
-\item Create a new initial state I and mount an $\epsilon$-transition to 
+-  Disable original acceptance of all acceptance states in all state machines.
+-  Create a new initial state I and mount an $\epsilon$-transition to 
       all initial states of all state machines.
-\end{enumerate}
+
 
 Figure \ref{fig:mount-parallel} shows the result of combining three state
 machines in parallel. By means of this procedure there is only one initial
 state and one terminal acceptance state for the state machine. Now, regular
-expression such as \pattern{"hello"$|$"bonjour"} can be implemented as two parallel
-state machines for \pattern{"hello"} and \pattern{"bonjour"}.
+expression such as $$"hello"|"bonjour"$$ can be implemented as two parallel
+state machines for $$"hello"$$ and $$"bonjour"$$.
 
-\showpic
-{figures/pattern-parallelize.pdf}
-{Mounting two state machines in parallel.}
-{fig:mount-parallel}
+[[fig:mount-parallel]]
+.Mounting two state machines in parallel.
+image::figures/pattern-parallelize.pdf[]
 

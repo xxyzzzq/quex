@@ -1,8 +1,8 @@
 In practical applications for programming languages, the large majority of
 patterns to be identified are simple and do not require large algorithms to
-handle them. Keywords, such as '{\tt if}', '{\tt then}', and '{\tt foreach}',
-operators, such as '$+$' and '{\tt *}' and delimiters such as '{\tt ;}', '{\tt
-  (}' and '{\tt )}' simply need to send a token telling that such and such
+handle them. Keywords, such as '`if`', '`then`', and '`foreach`',
+operators, such as '$+$' and '`*`' and delimiters such as '`;`', `'
+  (`' and '`)`' simply need to send a token telling that such and such
 appeared. Their pattern action pairs all look similar to the following:
 
 \begin{lstlisting}
@@ -22,9 +22,9 @@ appeared. Their pattern action pairs all look similar to the following:
   ...
 \end{lstlisting}
 
-{\Quex} allows to write such simple token sendings in a more elegant manner.
-If a pattern is followed by a {\tt =$>$} operator and a name {\it xyz} then
-this is translated into 'pattern sends token with name {\it xyz}'. The code as
+Quex allows to write such simple token sendings in a more elegant manner.
+If a pattern is followed by a `=$>$` operator and a name _xyz_ then
+this is translated into 'pattern sends token with name _xyz_'. The code as
 shown above will be internally generated. The above code segment is equivalent
 to the following:
 
@@ -84,8 +84,8 @@ tremendously, but they make the lexical analyser descriptions also very
 readable. Long lists of pattern-action pairs can be understood and
 analysed in a few seconds.
 
-Note, that if an identifier is used that is not declared in a {\tt token}-section, 
-    then {\quex} implicitly declares this token, but still a warning is reported.
+Note, that if an identifier is used that is not declared in a `token`-section, 
+    then quex implicitly declares this token, but still a warning is reported.
 In order to get things setup quickly, it is possible to complete renounce on
 {\tt token} sections. However, for a good style the output of these warnings
 might be pasted into one of the {\tt token}-sections.

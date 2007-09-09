@@ -10,11 +10,10 @@ can obviously be combined into a single one. This section
 concretizes this idea and develops the process known as 
 the Hopcroft optimization.
 
-\showdpich
-{figures/hopcroft-before.pdf}
-{figures/hopcroft-after.pdf}
+[[fig:hopcroft-1]]
 {Combining equivalent states of a state machine.}
-{fig:hopcroft-1}
+image:figures/hopcroft-before.pdf]
+image:figures/hopcroft-after.pdf[]
 
 An essential concept of the Hopcroft Optimization is the concept of_ 
     equivalent states_. State machines are equivalent if all possible following
@@ -37,11 +36,10 @@ replaced by the two state sets $X_0$ and $X_1$. This process can then be
 repeated until the worklist does not change anymore, i.e. no state sets 
 have to be split up, because the represent equivalent states.
 
-\showdpich
-{figures/hopcroft-2-before.pdf}
-{figures/hopcroft-2-after.pdf}
-{Combining equivalent states of a state machine with states of different origin.}
-{fig:hopcroft-2}
+[[fig:hopcroft-2]]
+.Combining equivalent states of a state machine with states of different origin.
+image:figures/hopcroft-2-before.pdf[]
+image:figures/hopcroft-2-after.pdf[]
 
 As long as one deals with a single isolated pattern things end up here.  For
 isolated patterns, it only matters if a match occured or not. For the combined
@@ -72,7 +70,8 @@ acceptance of the core pattern. Pre-conditions, though, add some restrictions.
 At this point, it makes sense to imagine the code produced to deal with pre-
 conditions:
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      // entry of a state with some pre-conditions:
      if      PreCondition_Pattern5 == True: acceptance = Pattern5
      else if PreCondition_Pattern2 == True: acceptance = Pattern2
@@ -82,7 +81,7 @@ conditions:
      //     if PreCondition_Pattern36 == True: acceptance = Pattern36   // does this 
      //     if PreCondition_Pattern0 == True:  acceptance = Pattern0    // make sense ?
      ...
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let us assume that the pattern priviledges are ordered the same way as they
 appear in the code fragment, i.e. 5 has the highest priority, if not than comes
@@ -104,7 +103,7 @@ split according to the above criterion. The splitting procedure considering the
 triggering to equivalent states remains the same. Here is the algorithm 
 in pseudo-code:
 
-....
+[TODO]
 
 Traditionally, the decision wether a set is to be split is made traditionally \cite{}
 based on single characters. This method works fine for ASCII character streams

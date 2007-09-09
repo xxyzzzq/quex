@@ -3,13 +3,15 @@ and exiting. Accordingly, one can define inside a mode the two handlers`
 on\_entry` and `on\_exit`. In addition to the `self` reference, the
 following variables are available:
 
-\begin{description}
-\item[\tt const quex\_mode\& FromMode:] Only availabe in `on\_entry` where
-  this is the mode _from_ which the current mode is entered.
+`const quex\_mode& FromMode`:: 
 
-\item[\tt const quex\_mode\& ToMode:] Only availabe in `on\_exit` where
-  this is the mode _to_ which the lexical analyser transits.
-\end{description}
+  Only availabe in `on\_entry` where this is the mode _from_ which the current
+  mode is entered.
+
+`const quex\_mode& ToMode`:: 
+
+  Only availabe in `on\_exit` where this is the mode _to_ which the lexical
+  analyser transits.
 
 The `on\_exit` function of the mode that is left is always called before
 the `on\_entry` function of the mode that is entered. Note, that it does

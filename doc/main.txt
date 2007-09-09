@@ -1,7 +1,7 @@
-Queχ - Lexical Analyser Generator
-=================================
+Queχ - Lexical Analyser Generator (html drafts)
+===============================================
 Frank-Rene Schaefer <fschaef@users.sourceforge.net>
-0.15.4, 03. September, 2007
+0.15.4, 9. September, 2007
 
 
 
@@ -94,5 +94,157 @@ include::basics/start-mode.txt[]
 === Mode Characteristics
 include::formal/modes.txt[]
 
+=== Pattern-Action Pairs
+include::formal/pattern-action.txt[]
+
+=== Pattern Action Shortcuts
+include::formal/pattern-action-shortcuts.txt[]
+
+=== Priorities
+include::formal/pattern-action-priorities.txt[]
+
+=== The Match Event
+include::formal/match_event.txt[]
+
+=== Mode Transition Events
+include::formal/mode-transitions.txt[]
+
+==== Caveat
+include::formal/mode-transitions-caveat.txt[]
+
+=== Indentation Events
+include::formal/indentation-events.txt[]
+
+=== Lexical Analyser Class
+include::formal/generated-class/intro.txt[]
+
+==== General User Interface
+include::formal/generated-class/ui.txt[]
+
+==== Mode Handling
+include::formal/generated-class/mode-handling.txt[]
+
+==== Mode Objects
+include::formal/generated-class/mode-objects.txt[]
+
+==== Token Handling
+include::formal/generated-class/token-handling.txt[]
+
+==== The Accumulator
+include::formal/generated-class/accumulator.txt[]
+
+==== Class Body Extensions: `body`
+include::formal/generated-class/class-body-extension.txt[]
+
+==== Constructor Extensions: `init`
+include::formal/generated-class/constructor-extension.txt[]
+
+==== Including Files/Switching Buffers
+include::formal/generated-class/switching-buffers.txt[]
+
+=== Character Encoding (Unicode Support)
+include::formal/character-encoding/intro.txt[]
+
+=== Pasting Header Information: {\tt header}
+include::formal/pasting-header.txt[]
+
+=== Deriving from Lexical Analyser
+include::formal/derivation.txt[]
+
+=== User defined Token Classes
+include::formal/user-token-class.txt[]
+
+=== Summary of Code Sections
+include::formal/code-sections.txt[]
+
+
+=== Macro Switches
+include::formal/macro.txt[]
+
+=== Command Line Options
+include::formal/command-line-options.txt[]
+
+
+== Appendix: {\Quex} Intern: Generation of the Core Engine
+include::inside-quex/intro.txt[]
+
+=== Introduction
+include::inside-quex/intro/intro.txt[]
+
+
+==== The Big Picture
+include::inside-quex/intro/the-big-picture.txt[]
+
+Post-Conditions
++++++++++++++++
+include::inside-quex/intro/post-conditions.txt[]
+
+Pre-Conditions
+++++++++++++++
+include::inside-quex/intro/pre-conditions.txt[]
+
+
+==== Generation Steps
+include::inside-quex/intro/generation-steps.txt[]
+
+
+=== Thomson Construction
+include::inside-quex/thomson-construction/intro.txt[]
+
+  
+==== Mounting State Machines in Sequence
+include::inside-quex/thomson-construction/serial.txt[]
+
+==== Mounting State Machines in Parallel
+include::inside-quex/thomson-construction/parallel.txt[]
+
+==== Implementing Repeated State Machines
+include::inside-quex/thomson-construction/repetition.txt[]
+
+
+=== Labeling State Origins
+include::inside-quex/labeling-states.txt[]
+
+
+=== Subset Construction---NFA to DFA
+include::inside-quex/NFA-to-DFA.txt[]
+
+
+=== Hopcroft Optimization
+include::inside-quex/hopcroft-optimization.txt[]
+
+
+=== Code Generation
+include::inside-quex/code-generation/core.txt[]
+
+  
+==== State Transition Header
+include::inside-quex/code-generation/header.txt[]
+
+==== State Transition Triggering
+include::inside-quex/code-generation/state-transitions.txt[]
+
+
+== Appendix: The Buffer
+include::inside-quex/buffer/intro.txt[]
+
+=== Programming Interface
+include::inside-quex/buffer/API.txt[]
+
+
+=== Mechanisms
+include::inside-quex/buffer/mechanisms.txt[]
+
+      
+=== Loading from File
+include::inside-quex/buffer/load.txt[]
+
+      
+=== Creation of A Buffer Object
+include::inside-quex/buffer/constructor.txt[]
+
+
+=== Input Methods
+include::inside-quex/buffer/input-methods.txt[]
 
 (To be Continued)

@@ -1,6 +1,6 @@
 Quex provides a special event is executed at the moment any
-match is executed. This allows the user to do some things---for 
-example for debugging  purposes--- at any pattern match. The
+match is executed. This allows the user to do some things--for 
+example for debugging  purposes--at any pattern match. The
 event handler name to do this is `on\_match`. The code
 fragment that follows this name is considered to be the action
 which is executed before any match action is executed. Every
@@ -16,7 +16,8 @@ an example, where the user wants to do some statistics
 on the number of matches, the number of backslashes and the 
 total length that was matched in the mode '`CORE`'.
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mode CORE :
 ...
 {
@@ -28,4 +29,4 @@ mode CORE :
    }
    ...
 } 
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

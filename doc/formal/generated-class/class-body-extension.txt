@@ -4,11 +4,12 @@ done using the keyword `body` outside the mode definitions. The following
 code, for example, pastes the definition of an integer vector into the class'
 body, so that it can later be used to keep track of indentation columns.
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 body {
   std::vector<int>    indentation_stack;
 }
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Note, that the namespace prefix `std::` is used. This is because the class
 definition's body appears inside a header file and in header files one better
@@ -16,7 +17,8 @@ uses absolute namings, rather than abbreviating using namespaces. The newly
 defined member can then be used inside any pattern action or event handler via
 access of the `self` reference, e.g.
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 mode SOMETHING {
    ...
    on_indentation {
@@ -32,5 +34,5 @@ mode SOMETHING {
    }
    ...
 }
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

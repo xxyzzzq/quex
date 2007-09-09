@@ -18,11 +18,12 @@ single analyser containing all pre-conditioned and non-pre-conditioned patterns
 is created. Pre-conditions are simply implemented by a conditional acceptance
 at the end of the pattern, i.e.
 
-\begin{lstlisting}
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // acceptance state ...
     if( pre_condition_X_fulfilled_f ) last_acceptance = X;
     ...
-\end{lstlisting}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When the analyser reaches the acceptance state of a pre-conditioned pattern it
 notifies a match only under the condition that the pre-condition flag was
