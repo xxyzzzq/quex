@@ -4,13 +4,13 @@ make NDEBUG_F=
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
-(1, 6)  	IDENTIFIER
+(1, 3)  	IDENTIFIER
 (1, 6)  	L_BRACKET
 (1, 7)  	ALPHA
 (1, 8)  	R_BRACKET
 (1, 10)  	ARROW
 (1, 12)  	INFINITY
-(1, 19)  	IDENTIFIER
+(1, 15)  	IDENTIFIER
 (1, 19)  	ALPHA
 (1, 21)  	ARROW
 (1, 23)  	NUMBER
@@ -27,18 +27,18 @@ executing ...
 (7, 5)  	ALLMOST_EQUAL
 (7, 7)  	NUMBER
 (9, 1)  	COPYRIGHT
-(11, 3)  	IDENTIFIER
+(9, 3)  	IDENTIFIER
 (11, 3)  	OPEN_FRENCH_QUOTE
-(11, 20)  	IDENTIFIER
-(11, 20)  	IDENTIFIER
-(11, 20)  	IDENTIFIER
+(11, 5)  	IDENTIFIER
+(11, 11)  	IDENTIFIER
+(11, 16)  	IDENTIFIER
 (11, 20)  	CLOSE_FRENCH_QUOTE
 (11, 22)  	OK
 (12, 3)  	DJAMEEL
 (12, 8)  	ALLMOST_EQUAL
-(12, 15)  	IDENTIFIER
+(12, 10)  	IDENTIFIER
 (12, 15)  	ALLMOST_EQUAL
-(14, 1)  	IDENTIFIER
+(12, 17)  	IDENTIFIER
 (14, 1)  	<TERMINATION>
 | [END] number of token = 36
 `------------------------------------------------------------------------------------
