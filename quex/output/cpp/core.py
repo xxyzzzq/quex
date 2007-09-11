@@ -143,6 +143,7 @@ def do(Modes, setup):
     
     txt = blue_print(txt,
             [
+                ["$$BUFFER_LIMIT_CODE$$",            setup.buffer_limit_code],
                 ["$$BEGIN_OF_STREAM_CODE$$",         setup.begin_of_stream_code],
                 ["$$END_OF_STREAM_CODE$$",           setup.end_of_stream_code],
                 ["%%CONSTRUCTOR_EXTENSTION%%",                  class_constructor_extension_str],

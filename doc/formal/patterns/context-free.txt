@@ -49,6 +49,8 @@ Context free regular expressions match against an input independent on what
        The NULL character is also used aa buffer limitting character!
        Same as with the code for 'begin-of-file' and 'end-of-file', if these codes
        are used inside regular expressions, their values have to be re-assigned.
+       See section <<sec:formal/command-line-options>> for specifying a different
+       value for the buffer limit code.
 
 `\U11A0FF`:: 
       the character with hexadecimal value 11A0FF. A maximum of _six_

@@ -542,63 +542,65 @@ namespace quex {
     quex::buffer_core<QUEX_CHARACTER_TYPE>*
     CLASS::get_buffer(InputHandleP input_handle, const char* IConvInputCodingName /* = 0x0 */)
     {
-	if( IConvInputCodingName != 0x0 ) {
+        if( IConvInputCodingName != 0x0 ) {
 #           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-	    // NOTE: default copy operation (== memcpy) for input_strategy_inconv is OK
-	    input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE>  input_strategy(
-		    input_handle, 
-		    iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
-		    IConvInputCodingName, QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
+            // NOTE: default copy operation (== memcpy) for input_strategy_inconv is OK
+            input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE>  input_strategy(
+                input_handle, 
+                iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
+                IConvInputCodingName, QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
 
-	    return new basic_buffer<input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE> >(
-		    input_strategy,
-		    (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-		    /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)$$BEGIN_OF_STREAM_CODE$$, 
-		    /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)$$END_OF_STREAM_CODE$$);
+            return new basic_buffer<input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE> >(
+                input_strategy,
+                (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
+                /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)$$BEGIN_OF_STREAM_CODE$$, 
+                /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)$$END_OF_STREAM_CODE$$,
+                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
 #           endif
-	    return 0x0;
-	}
-	else {
-	    return new basic_buffer<input_strategy<InputHandleP, QUEX_CHARACTER_TYPE> >
-		       (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-		       /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)$$BEGIN_OF_STREAM_CODE$$, 
-		       /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)$$END_OF_STREAM_CODE$$);
-	}
+            return 0x0;
+        }
+        else {
+            return new basic_buffer<input_strategy<InputHandleP, QUEX_CHARACTER_TYPE> >
+                   (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
+                   /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)$$BEGIN_OF_STREAM_CODE$$, 
+                   /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)$$END_OF_STREAM_CODE$$,
+                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
+        }
     }
 
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
     {
-	QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(input_handle, IConvInputCodingName);
-	QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
+        QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(input_handle, IConvInputCodingName);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
-	_indentation = 0;
-	_indentation_count_enabled_f = false;
-	_indentation_event_enabled_f = true;
+        _indentation = 0;
+        _indentation_count_enabled_f = false;
+        _indentation_event_enabled_f = true;
 #endif
 
 #ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-	_line_number_at_begin = 0;
-	_line_number_at_end   = 1;
+        _line_number_at_begin = 0;
+        _line_number_at_end   = 1;
 #endif
 #ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-	_column_number_at_begin = 0;
-	_column_number_at_end   = 1; 
+        _column_number_at_begin = 0;
+        _column_number_at_end   = 1; 
 #endif
-	_token_queue = new token_queue<%%TOKEN_CLASS%%>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+        _token_queue = new token_queue<%%TOKEN_CLASS%%>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
 
-	mode_db[0] = 0x0;
-	// LexModeID = 0 is not used, mode indices from 1 to ModeN
+        mode_db[0] = 0x0;
+        // LexModeID = 0 is not used, mode indices from 1 to ModeN
 %%CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE%%
 
-	set_mode_brutally(%%INITIAL_LEXER_MODE_ID%%);
+        set_mode_brutally(%%INITIAL_LEXER_MODE_ID%%);
 
         __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
-	//                                     // pattern actions
+        //                                     // pattern actions
         __continue_analysis_after_adapting_mode_function_p_f = false;
 
-	%%CONSTRUCTOR_EXTENSTION%%
+%%CONSTRUCTOR_EXTENSTION%%
     }	
 
     inline
