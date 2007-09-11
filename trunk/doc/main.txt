@@ -88,7 +88,7 @@ include::formal/patterns/context-dependent.txt[]
 ==== Pitfalls
 include::formal/patterns/context-dependent-pitfalls.txt[]
 
-=== The Starting Mode `start`
+=== Specification of Starting Mode with `start`
 include::basics/start-mode.txt[]
 
 === Mode Characteristics
@@ -133,10 +133,10 @@ include::formal/generated-class/token-handling.txt[]
 ==== The Accumulator
 include::formal/generated-class/accumulator.txt[]
 
-==== Class Body Extensions: `body`
+==== Class Body Extensions with `body`
 include::formal/generated-class/class-body-extension.txt[]
 
-==== Constructor Extensions: `init`
+==== Constructor Extensions with `init`
 include::formal/generated-class/constructor-extension.txt[]
 
 ==== Including Files/Switching Buffers
@@ -145,7 +145,7 @@ include::formal/generated-class/switching-buffers.txt[]
 === Character Encoding (Unicode Support)
 include::formal/character-encoding/intro.txt[]
 
-=== Pasting Header Information: {\tt header}
+=== Pasting Header Information with `header`
 include::formal/pasting-header.txt[]
 
 === Deriving from Lexical Analyser
@@ -165,7 +165,7 @@ include::formal/macro.txt[]
 include::formal/command-line-options.txt[]
 
 
-== Appendix: {\Quex} Intern: Generation of the Core Engine
+== Appendix: Quex Intern: Generation of the Core Engine
 include::inside-quex/intro.txt[]
 
 === Introduction
@@ -175,14 +175,11 @@ include::inside-quex/intro/intro.txt[]
 ==== The Big Picture
 include::inside-quex/intro/the-big-picture.txt[]
 
-Post-Conditions
-+++++++++++++++
+==== Post-Conditions
 include::inside-quex/intro/post-conditions.txt[]
 
-Pre-Conditions
-++++++++++++++
+==== Pre-Conditions
 include::inside-quex/intro/pre-conditions.txt[]
-
 
 ==== Generation Steps
 include::inside-quex/intro/generation-steps.txt[]
@@ -205,19 +202,15 @@ include::inside-quex/thomson-construction/repetition.txt[]
 === Labeling State Origins
 include::inside-quex/labeling-states.txt[]
 
-
-=== Subset Construction---NFA to DFA
+=== Subset Construction--NFA to DFA
 include::inside-quex/NFA-to-DFA.txt[]
-
 
 === Hopcroft Optimization
 include::inside-quex/hopcroft-optimization.txt[]
 
-
 === Code Generation
 include::inside-quex/code-generation/core.txt[]
 
-  
 ==== State Transition Header
 include::inside-quex/code-generation/header.txt[]
 
@@ -231,18 +224,15 @@ include::inside-quex/buffer/intro.txt[]
 === Programming Interface
 include::inside-quex/buffer/API.txt[]
 
-
 === Mechanisms
 include::inside-quex/buffer/mechanisms.txt[]
 
       
 === Loading from File
 include::inside-quex/buffer/load.txt[]
-
       
 === Creation of A Buffer Object
 include::inside-quex/buffer/constructor.txt[]
-
 
 === Input Methods
 include::inside-quex/buffer/input-methods.txt[]

@@ -31,3 +31,12 @@ case does not seem to be very probable. Sometimes it may be necessary,
      with `for` could not propperly be detected, since the first three letters
      would result in the `for`-keyword token.
 
+
+Another pitfall is related to character codes that the lexical analyser 
+uses to indicate _begin-of-file_, _end-of-file_, or _buffer-limit_. The
+values for those codes are chosen to be out of the range for sound 
+regular expressions parsing human written text (0x0 for buffer-limit, 0x1A for end-of-file, and 
+0x19 for begin-of-file). If it is intended to parse binary files, and these
+values are supposes to occur in patterns, then these codes need to be changed.
+Section <<sec:formal/command-line-options>> mentions how to specify their
+codes on the command line.
