@@ -28,7 +28,7 @@ analysis process. In our simple example, there are only three modes:
   to the `PROGRAM` mode.
 
 The inheritance relationships in this example are displayed in figure
-\ref{fig:inheritance-modes}. Both 'real' modes `PROGRAM` and` 
+<<fig:inheritance-modes, style=ref>>. Both 'real' modes `PROGRAM` and` 
   STRING_READER` are derived from `END_OF_FILE` so that they implement
 the standard behavior for the end-of-file event.
 
@@ -38,7 +38,7 @@ image::figures/inheritance-modes.png[]
 
 In this examples their are only two modes in which the lexical analyser can
 be. The posible transitions are shown in figure
-\ref{fig:mode-transition-example.png}. `PROGRAM` mode can transit into
+<<fig:mode-transition-example.png, style=ref>>. `PROGRAM` mode can transit into
 `STRING_READER` mode and vice versa. The mode inheritances and
 transitions are only pinpointed in non-machine readable form.  This
 information can be used to write the first stubs of the modes in
@@ -75,7 +75,7 @@ mode STRING_READER :
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The three code-stubs for the three modes are shown in figure
-\ref{fig:example-mode-stubs}. Until now, there are no pattern action pairs
+<<fig:example-mode-stubs, style=ref>>. Until now, there are no pattern action pairs
 defined inside the modes. The dots `...` inside the curly braces will
 later be replaced by the pattern-action pairs. First of all, mode `END_OF_FILE` 
 is defined. It does not inherit any mode, but can only be

@@ -5,35 +5,62 @@ make sure that the code is executed appropriately. These asserts can be turned
 off by defining the`NDEBUG` macro.  The following macros are quex
 specific and can be specified with the '-D' option of your compiler:
 
-\begin{description}
+QUEX_OPTION_LINE_NUMBER_COUNTING::	    
+ 
+  If this macro is defined, then the lexical analyzer class contains support
+  for line number counting. This means, that according member functions are
+  present and internal related bookkeeping is activated. Note, that activating
+  this feature may consume some calculation time. However, the solution for
+  number counting provided by quex is likely to beat any user-provided approach.
+  Note, that quex is able to analyze regular expressions to the point that it
+  tries to determine constant line offsets for a pattern, before the engine actually
+  runs.
 
-\item[\tt DEBUG\_QUEX\_MODE\_TRANSITIONS]: If defined, the lexical analyser
-engine displays any mode transition on the standard error output. 
+QUEX_OPTION_COLUMN_NUMBER_COUNTING::	    
 
-\item[\tt DEBUG\_QUEX\_PATTERN\_MATCHES]: If defined every pattern match is
-  going to be displayed on the standard error output. Note, that if the
-  lexical analyser is created with option `--debug no`' (see section
-  \ref{sec:formal/command-line-options}), then the source code does not
-  contain the code fragments that activate such a printout.
+  Same as `QUEX_OPTION_LINE_NUMBER_COUNTING` for column number counting.
 
+QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK::
+
+  This flag is only interesting if the flag `--no-mode-transition-check` was _not_
+  set, i.e. that code for mode-transition check has been produced by quex. This macro
+  allows to activate these mode transition checks. Note, that pushing and popping
+  of modes requires a run time mode transition check.
+
+QUEX_OPTION_DEBUG_TOKEN_SENDING::
   
-\item[\tt DEBUG\_QUEX\_TOKEN\_SEND]: If defined, then every token being sent
-  using the`send` function group is displayed on standard error output.
-  
-\item[\tt QUEX\_FOREIGN\_TOKEN\_ID\_DEFINITION]: If defined the definition of
-  token-ids, i.e. their numeric values is taken from an external file.  This
-  file needs to be specified using the command line optio`n
-    --foreign-token-id-file`. Foreign token-id definitions make sense, for
-  example, if the parser generator insists on defining token-ids.  If this
-  macro is not defined the given external file is ignored and
-  quex-generated numerical values are used.
+  If this option is activated a message is printed each time a token is sent to
+  the token queue. Together with a printout of the token after reception with
+  `get\_token()` this helps to see if tokens are flushed $$'in time'$$.
+  This feature is only available if the engine is produced with the `$$--debug$$`
+  flag.
 
-        
-\item[\tt QUEX\_NO\_SUPPORT\_FOR\_COLUMN\_NUMBER\_COUNTING]: 
-  
-\item[\tt QUEX\_NO\_SUPPORT\_FOR\_LINE\_NUMBER\_COUNTING]: By defining these
-  macros the user can turn off the column number and line number counting. The
-  analyser may run a little faster then. Note, that in this case the member
-  functions for column number and line number access are no longer available.
-        
-\end{description}
+QUEX_OPTION_DEBUG_MODE_TRANSITIONS::
+
+  If defined, the lexical analyser engine displays any mode transition on the
+  standard error output.  This feature is only available if the engine is
+  produced with the `$$--debug$$` flag.
+
+QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES::
+
+  If defined every pattern match is going to be displayed on the standard error
+  output.  This feature is only available if the engine is produced with the
+  `$$--debug$$` flag.
+
+QUEX_OPTION_INCLUDE_STACK_SUPPORT::
+
+  If enabled, then this macro activates support for the 'include stack', i.e.
+  the member functions to switch the input buffer elegantly to parse from 
+  included files and return back to the including file.
+
+QUEX_SETTING_BUFFER_SIZE::  
+
+  The internal input buffer size. (DEFAULT = 65536)
+
+QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE::  
+
+  The initial size of the token queue. The token queue extends itself if there
+  is not enough space to store tokens. However, in order to avoid such memory
+  allocations, it might be set to a reasonable number. (DEFAULT = 2048, but
+  something like 32 should actually be 'reasonable')
+

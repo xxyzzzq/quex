@@ -13,7 +13,7 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         void        send(const token::id_type TokenID, const int Number1);
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Figure \ref{fig:token-queue}, page \pageref{fig:token-queue}, displayed a sequence diagram depicting the
+Figure <<fig:token-queue, style=ref>>, page \pageref{fig:token-queue}, displayed a sequence diagram depicting the
 communication of tokens. Using the `send` function group the writer of
 pattern-action pairs does not need to care about the `get\_token()`
 function call. He sends tokens and leaves the responsibility of delivery

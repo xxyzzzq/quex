@@ -1,6 +1,6 @@
 This practical examples guides through the phases of creating a lexical
 analyser using quex. Copy pasting this example may be a good starting point
-for the work with quex. Figure \ref{fig:process} displays the major actions
+for the work with quex. Figure <<fig:process, style=ref>> displays the major actions
 to be taken. There are basically two major steps. The first step is a
 pre-condition for the second step where pattern-action pairs are defined. This
 first step consists of three minor activities:
@@ -15,8 +15,8 @@ image::figures/process[]
   pattern action pair line, but it is much more intuitive to define patterns
   in terms of regular expressions \cite{} in a separate data file. Those
   patterns act like constants that allow to understand quickly for what a
-  pattern/action pair stands. Using a name '{\tt NOT\_NEWLINE}+' is simply
-  visually more appealing than writing {\tt $[$\verb|^\|n$]$+}. Those patterns
+  pattern/action pair stands. Using a name `$$NOT\_NEWLINE+$$` is simply
+  visually more appealing than writing `$$[^\n]+$$`. Those patterns
   can be defined very easily in terms of regular expressions in a dedicated
   pattern file.
   

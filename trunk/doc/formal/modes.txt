@@ -2,7 +2,7 @@ Quex allows to specify characteristics of modes concerning
 transitions and inheritance. The keyword `mode` starts the
 definition of a lexical analyser mode. Then it can be directly followed by a
 curly bracket that starts the pattern-action pair definitions as shown in
-figure \ref{fig:formal-mode-definition}a. This is the most simple way to
+figure <<fig:formal-mode-definition, style=ref>>a. This is the most simple way to
 define a mode.
 
 a)
@@ -49,7 +49,7 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to define options or base modes the name of the mode has to be
 followed by a colon as in the examples in figure
-\ref{fig:formal-mode-definition}b and \ref{fig:formal-mode-definition}c.
+<<:formal-mode-definition, style=ref>>b and \ref{fig:formal-mode-definition, style=ref>>c.
 Note, that if a mode specifies base modes and options, the options are
 specified after the base modes. 
 
