@@ -5,7 +5,7 @@ mechanism is that of _pushing and popping_. This makes sense, if the new
 mode shall return to the previous mode. It is therefore similar to a
 'call-subroutine' in procedural programming languages. 
 
-Figure \ref{fig:mode-transitions} shows a typical mode transition. Mode X has some patterns
+Figure <<fig:mode-transitions, style=ref>> shows a typical mode transition. Mode X has some patterns
 and one of them matched. Inside the pattern match action a transition to mode
 Y is requested. This triggers the event handler `on\_exit()` of mode X
 before any transition is made. Here the user can send tokens, change some
@@ -27,7 +27,7 @@ If a mode transition happens that is not conform to this restrictions a
 run-time error is triggered. This helps to prevent the lexical analyser to
 slide from one mode to another due to some thoughtlessly designed patterns.
 
-Figure \ref{fig:mode-transition-control} shows an example, where mode
+Figure <<fig:mode-transition-control, style=ref>> shows an example, where mode
 transition control comes very handy. Here, there is a lexical mode for parsing
 the content of a {\sf FUNCTION}, a mode for {\sf COMMENT} and one for {\sf
   DOCU}-mentation parsing, a mode for parsing a character {\sf STRING} and one

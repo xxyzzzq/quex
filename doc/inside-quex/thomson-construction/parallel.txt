@@ -16,7 +16,7 @@ parallel:
       all initial states of all state machines.
 
 
-Figure \ref{fig:mount-parallel} shows the result of combining three state
+Figure <<fig:mount-parallel, style=ref>> shows the result of combining three state
 machines in parallel. By means of this procedure there is only one initial
 state and one terminal acceptance state for the state machine. Now, regular
 expression such as $$"hello"|"bonjour"$$ can be implemented as two parallel

@@ -1,10 +1,10 @@
-In some cases, such as in the example shown in figure \ref{fig:hopcroft-1}a,
+In some cases, such as in the example shown in figure <<fig:hopcroft-1, style=ref>>a,
 the structure of a state machine can obviously be optimized.
 Note, that the sole task of the state machine is to determine
 if the sequence of characters appeared that matches a pattern.
 In this sense, there is no difference between all acceptance
 states. As a direct consequence, if there is a set of acceptance
-states, such as state 1, 2, and 3 in figure \ref{fig:hopcroft-1}a, where all characters 
+states, such as state 1, 2, and 3 in figure <<fig:hopcroft-1, style=ref>>a, where all characters 
 trigger to another acceptance state, then those acceptance states
 can obviously be combined into a single one. This section
 concretizes this idea and develops the process known as 
@@ -44,7 +44,7 @@ image:figures/hopcroft-2-after.pdf[]
 As long as one deals with a single isolated pattern things end up here.  For
 isolated patterns, it only matters if a match occured or not. For the combined
 state machine, that represents the whole bank of patterns more information is
-to be considered. Such a case is depicted in figure \ref{fig:hopcroft-2}. Two
+to be considered. Such a case is depicted in figure <<fig:hopcroft-2, style=ref>>. Two
 acceptance state that report different patterns as 'winner' are not equivalent.
 Thus, the state set of initial equivalent acceptance states needs to be redefined.
 Note, that the remaining procedure remains the same -- one only has to discuss

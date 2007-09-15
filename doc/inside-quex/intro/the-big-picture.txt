@@ -26,7 +26,7 @@ different states of a state machine is chosen:
 .Three example patterns implemented as state machines.
 image::figures/pattern-bank.png[]
 
-Figure \ref{fig:pattern-bank} shows an example of three patterns that are to be matched
+Figure <<fig:pattern-bank, style=ref>> shows an example of three patterns that are to be matched
 against: A keyword $$WHILE$$, a label, i.e. a character sequence
 terminated by a colon, and an identifier, i.e. a character sequence.       An
 incoming character stream triggers step by step the transition in each of these
@@ -50,7 +50,7 @@ machine 2 enters acceptance, but we give state machine 1 a chance match a
 longer pattern.
 
 [[fig:pattern-bank-merged]]
-.State machine matching agains all three patterns from figure \ref{fig:pattern-bank}.
+.State machine matching agains all three patterns from figure <<fig:pattern-bank, style=ref>>.
 image::figures/pattern-bank-merged.pdf[]
 
 Now, consider the character sequence`W`,`H`,`I`,`L``,
@@ -64,7 +64,7 @@ Now, consider the character sequence`W`,`H`,`I`,`L``,
     happens by sequence, i.e. the pattern that was defined first, matches in
     case of equal length\footnote{Note, that we are talking here on the 'state
 	machine engine' level. The rules for pattern precedence in derived
-	    modes as mentioned in section \ref{fig:pattern-bank-merged} are actually translated into
+	    modes as mentioned in section <<fig:pattern-bank-merged, style=ref>> are actually translated into
 	    priviledge rules on the engine level. The design of quex 
 	       is layed out in a way for using a database that maintains 
 	    pattern-precedencies. However, practically this has no advantage, since
@@ -85,7 +85,7 @@ Now, consider the character sequence`W`,`H`,`I`,`L``,
 	
 The construction of a lexical analyser includes the construction of a single
 state machine that is equivalent to the bank of patterns which were shown in
-figure \ref{fig:pattern-bank}. Figure \ref{fig:pattern-bank-merged} shows a
+figure <<fig:pattern-bank, style=ref>>. Figure \ref{fig:pattern-bank-merged} shows a
 state machine which is the result of such a construction. In particular, this
 involves a construction of a deterministic finite automaton (DFA) from the
 pattern bank, which is a non-deterministic finite automaton (NFA). The pattern
@@ -93,7 +93,7 @@ bank allows that the state machine is in multiple states at the same time, a
 DFA is only in one particular state at a particular time. The state machine
 that results from this operation is still to be optimized. A so called Hopcroft
 optimization \cite{} reduces the number of states to a minimum. The result in
-the abovementioned case is the state machine of figure \ref{fig:pattern-bank-merged}.
+the abovementioned case is the state machine of figure <<fig:pattern-bank-merged, style=ref>>.
 
 Quex allows to define patterns that trigger only in a certain environment of
 characters. The ability to define borders of a pattern that are not part

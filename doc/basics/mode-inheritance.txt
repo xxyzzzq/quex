@@ -52,7 +52,7 @@ Mode Access::
   {\bf Rule:} _Entrys and exits that are allowed for a base class
   are also allowed for all its derived classes._
 
-Figure \ref{fig:mode-inheritance} shows an example where a mode A acts as a
+Figure <<fig:mode-inheritance, style=ref>> shows an example where a mode A acts as a
 base mode for mode B. Internally, quex creates a new mode B* that contains
 the patterns that were explicitly givent by the definition of B and the
 patterns that are inherited from A. The pattern match action of {\sf XYZ} from

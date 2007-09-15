@@ -1,4 +1,4 @@
-Figure \ref{fig:load-forward} shows the process of loading the buffer with fresh content in forward direction.
+Figure <<fig:load-forward, style=ref>> shows the process of loading the buffer with fresh content in forward direction.
 Loading data from a device into a buffer is very costy. So, it is a good idea to introduce
 some fallback area where the end of the current buffer content is stored at the beginning.
 This prevents an immediate load backwards as soon as a character is required from before the
@@ -30,7 +30,7 @@ end of file character may occur at any position.
 .Loading new contents 'backwards' from the stream into the buffer.
 image::figures/load-backward.pdf[]
 
-Figure \ref{fig:load-backward} shows the process of backward loading. Unlike loading forward not such a large amount
+Figure <<fig:load-backward, style=ref>> shows the process of backward loading. Unlike loading forward not such a large amount
 of memory is newly loaded. Note, that backward loading is only necessary if the fallback buffer
 was not enough. Thus, it implies some 'abuse of design' that is caught and treated seeminglessly.
 However, a basic assumption about lexical analysis is that the main direction is`forward\/`.

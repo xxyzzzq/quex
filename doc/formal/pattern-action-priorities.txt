@@ -31,7 +31,7 @@ deal with a print keyword or with an identifier? The rule here is: _first
 If a pattern in a base mode and a pattern in a derived mode match with the
 same number of characters, than _the base mode' pattern proceeds!_. This
 follows the philosophie that the base mode imposes behavior on the derived
-modes. Figure \ref{fig:pattern-priorities} shows how a pattern is matched in
+modes. Figure <<fig:pattern-priorities, style=ref>> shows how a pattern is matched in
 case of multiple patterns matching the current character input stream.
 
 [[fig:pattern-priorities]]
@@ -91,7 +91,7 @@ it behaves different! Priority marks are indecent and a sign of a bad design!
 
 Priority marks can be avoided by splitting the base mode A into two modes A0 and A1, one
 containing desired patterns and the undesired patterns. Figure
-\ref{fig:resolve-priority-mark} shows this idea. The original mode can be achieved by
+<<fig:resolve-priority-mark, style=ref>> shows this idea. The original mode can be achieved by
 derivation from A0 and A1. The mode B can derive from the base mode of desired patterns.
 This is the clean way to avoid that undesired base class patterns have to high priority
 --use `PRIORITY-MARK` in case of laziness.

@@ -4,7 +4,7 @@ discussed: pattern-action pairs. Lexical analysis has as a result a stream of
 tokens that tell about atomic information chunks in the input stream. The most
 simple pattern-action pair consists of sending a specific token whenever a
 particular pattern occurs. Consider for example figure
-\ref{fig:eof-pattern-action-pairs}. It shows the definition of a mode that can
+<<fig:eof-pattern-action-pairs, style=ref>>. It shows the definition of a mode that can
 handle the end of a file. The only pattern of this mode is +++<<+++ `EOF` +++>>+++.  The action
 to be executed if this pattern occurs is embraced by curly brackets.
 Inside the brackets a special token is sent, a token with the id:
@@ -46,7 +46,7 @@ macro ensures that the token queue is in a sound state before returning from
 the lexical analysis. The rule here is: say '`RETURN`' not '`return`'.
 
 The pattern-action pairs of the `PROGRAM` mode displayed in figure
-\ref{fig:program-mode} are a little more diverse. Note also, that for simple
+<<fig:program-mode, style=ref>> are a little more diverse. Note also, that for simple
 patterns the operator '`=`$>$' is used to express the sending of a token
 of a specific id. The whitespace pattern does not cause any token to be sent
 and one does not return to the user, thus it is followed by an empty pair of
@@ -84,7 +84,7 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 The `STRING\_READER` mode's pattern-action pairs are shown in figure
-\ref{fig:string-reader-mode}. This mode makes use of a special member of the
+<<fig:string-reader-mode, style=ref>>. This mode makes use of a special member of the
 lexical analyser object: _the accumulator_. This object allows to
 accumulate text from incoming patterns and flush them when desired. When this
 mode is entered, the accumulator is emptied (see `on\_entry`). When this
