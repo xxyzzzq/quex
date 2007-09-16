@@ -34,9 +34,11 @@ import StringIO
 from quex.frs_py.string_handling import trim
 from quex.core_engine.interval_handling import *
 from quex.core_engine.state_machine.core import StateMachine
+from quex.core_engine.regular_expression.auxiliary import *
+
 import quex.core_engine.utf8                                  as utf8
-import quex.core_engine.regular_expression.character_set      as map_utf8_set
 import quex.core_engine.regular_expression.character_string   as map_utf8_string
+import quex.core_engine.regular_expression.character_set_expression   as character_set_expression
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
@@ -48,55 +50,10 @@ import quex.core_engine.state_machine.setup_border_conditions as setup_border_co
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
-__debug_recursion_depth = -1
-__debug_output_enabled_f = False 
-
 class something:
     pass
 
 __SETUP = something()
-
-def __debug_print(msg, msg2="", msg3=""):
-    global __debug_recursion_depth
-    if type(msg2) != str: msg2 = repr(msg2)
-    if type(msg3) != str: msg3 = repr(msg3)
-    txt = "##" + "  " * __debug_recursion_depth + msg + " " + msg2 + " " + msg3
-    txt = txt.replace("\n", "\n    " + "  " * __debug_recursion_depth)
-    if __debug_output_enabled_f: print txt
-    
-def __debug_exit(result, stream):
-    global __debug_recursion_depth
-    __debug_recursion_depth -= 1
-
-    if __debug_output_enabled_f: 
-        pos = stream.tell()
-        txt = stream.read()
-        stream.seek(pos)    
-        __debug_print("##exit: ", txt)
-        
-    return result
-
-def __debug_entry(function_name, stream):
-    global __debug_recursion_depth
-    __debug_recursion_depth += 1
-
-    if __debug_output_enabled_f: 
-        pos = stream.tell()
-        txt = stream.read()
-        stream.seek(pos)    
-        __debug_print("##entry: %s, remainder = " % function_name, txt)
-
-def __check_for_EOF_or_FAIL_pattern(stream, InitialPosition, EndOfFile_Code):
-    # -- is it the <<EOF>> rule?
-    if stream.read(len("<<EOF>>")) == "<<EOF>>":  
-        return create_EOF_detecting_state_machine(EndOfFile_Code)
-    stream.seek(InitialPosition)
-    # -- is it the <<FAIL>> rule?
-    assert stream.read(len("<<FAIL>>")) != "<<FAIL>>", \
-           "error: '<<FAIL>>' regular expression should not reach regular expression parser"
-
-    stream.seek(InitialPosition)
-    return None
 
 def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0, 
        DOS_CarriageReturnNewlineF=False):
@@ -260,7 +217,7 @@ def snap_primary(stream, PatternDict):
 
     # -- 'primary' primary
     if   x == "\"": result = snap_non_double_quote(stream)
-    elif x == "[":  result = snap_non_rect_bracket_close(stream)
+    elif x == "[":  stream.seek(-1, 1); result = character_set_expression.do(stream)
     elif x == "{":  result = snap_replacement(stream, PatternDict)
     elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
     elif x == "(": 
@@ -304,17 +261,6 @@ def snap_non_double_quote(stream):
 
     # transform string into state machine        
     result = map_utf8_string.do(character_string)        
-
-    return result
-
-def snap_non_rect_bracket_close(stream):
-    """Cuts a character range bracketed by '[' ']' from the utf8_string and 
-       returns the resulting state machine.
-    """
-    character_string = __snap_until(stream, "]")  
-
-    # transform string into state machine        
-    result = map_utf8_set.do(character_string)   
 
     return result
 
@@ -430,37 +376,6 @@ def __snap_repetition_range(the_state_machine, stream):
     
     return result
 
-def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
-     """Cuts the first letters of the utf8_string until an un-backslashed
-        Delimiter occurs.
-     """
-     cut_string = ""  
-     backslash_f = False
-     open_bracket_n = 1 
-     while 1 + 1 == 2:
-        letter = stream.read(1)
-        if letter == "": break
-
-        cut_string += letter    
-
-        if letter == "\\": 
-            backslash_f = not backslash_f       
-            continue
-            
-        if letter == ClosingDelimiter and not backslash_f: 
-            if open_bracket_n == 1: cut_string = cut_string[:-1]; break
-            open_bracket_n -= 1
-        elif letter == OpeningDelimiter and not backslash_f: 
-            # NOTE: if OpeningDelimiter == None, then this can never be the case!
-            open_bracket_n += 1
-
-        # if a backslash would have appeared, we would have 'continue'd (see above)
-        backslash_f = False    
-     else:
-         raise "unable to find closing delimiter '%s'"  % ClosingDelimiter
-   
-     return cut_string
-
 def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
     """Appends a post condition to the state machine to handle the end of line
        statement. This consists in translating 'EndOfLine' into a state machine
@@ -488,24 +403,6 @@ def __beautify(the_state_machine):
     result = result.get_hopcroft_optimization()    
     return result
 
-def create_EOF_detecting_state_machine(EndOfFile_Code):
-    result = StateMachine()
-    result.add_transition(result.init_state_index, EndOfFile_Code, AcceptanceF=True) 
-    result.mark_state_origins()
-    return result
-
-def create_ALL_BUT_NEWLINE_state_machine():
-    global __SETUP
-    result = StateMachine()
-    trigger_set = NumberSet([Interval(ord("\n")), 
-                             Interval(__SETUP.BufferLimit_Code),
-                             Interval(__SETUP.EndOfFile_Code),
-                             Interval(__SETUP.BeginOfFile_Code)])
-
-    result.add_transition(result.init_state_index, trigger_set.inverse(), AcceptanceF=True) 
-    result.mark_state_origins()
-    return result
-    
 def __construct(core_sm, pre_condition=None, post_condition=None):
 
     if pre_condition == None and post_condition == None:
@@ -532,3 +429,21 @@ def __construct(core_sm, pre_condition=None, post_condition=None):
 
     return result
   
+def create_EOF_detecting_state_machine(EndOfFile_Code):
+    result = StateMachine()
+    result.add_transition(result.init_state_index, EndOfFile_Code, AcceptanceF=True) 
+    result.mark_state_origins()
+    return result
+
+def create_ALL_BUT_NEWLINE_state_machine():
+    global __SETUP
+    result = StateMachine()
+    trigger_set = NumberSet([Interval(ord("\n")), 
+                             Interval(__SETUP.BufferLimit_Code),
+                             Interval(__SETUP.EndOfFile_Code),
+                             Interval(__SETUP.BeginOfFile_Code)])
+
+    result.add_transition(result.init_state_index, trigger_set.inverse(), AcceptanceF=True) 
+    result.mark_state_origins()
+    return result
+    
