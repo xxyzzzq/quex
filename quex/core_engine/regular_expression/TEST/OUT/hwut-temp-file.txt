@@ -1,1 +1,0 @@
-map character *string* to state machine
