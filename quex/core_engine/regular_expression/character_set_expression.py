@@ -2,79 +2,146 @@
 #
 # set_expression: 
 #                 [: set_term :]
-#                 '(' set ')'
 #                 traditional character set
 #                 \P '{' propperty string '}'
 #
 # set_term:
+#                 union        '(' set_term [ ',' set_term ]+ ')'
+#                 intersection '(' set_term [ ',' set_term ]+ ')'
+#                 difference   '(' set_term [ ',' set_term ]+ ')'
+#                 inverse      '(' set_term ')'
 #                 set_expression
-#                 union        '(' set_expression [ ',' set_expression ]+ ')'
-#                 intersection '(' set_expression [ ',' set_expression ]+ ')'
-#                 difference   '(' set_expression [ ',' set_expression ]+ ')'
-#                 inverse      '(' set_expression ')'
 # 
 import quex.core_engine.regular_expression.traditional_character_set as traditional_character_set
 import quex.core_engine.regular_expression.auxiliary                 as aux
+#
+from quex.core_engine.state_machine.core import StateMachine
+from quex.exception                      import RegularExpressionException
+from quex.frs_py.string_handling         import trim
+from quex.frs_py.file_in                 import read_until_letter, \
+                                                skip_whitespace
+from quex.core_engine.regular_expression.auxiliary import __snap_until, \
+                                                          __debug_entry, \
+                                                          __debug_exit
 
 def do(stream):
-    return snap_set_expression(stream)
+    trigger_set = snap_set_expression(stream)
+
+    if trigger_set == None: 
+        raise RegularExpressionException("Regular Expression: character_set_expression called for something\n" + \
+                                         "that does not start with ']' or '\\P'")
+
+    # create state machine that triggers with the trigger set to SUCCESS
+    # NOTE: The default for the ELSE transition is FAIL.
+    sm = StateMachine()
+    sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
+
+    return __debug_exit(sm, stream)
 
 def snap_set_expression(stream):
-    __debug_entry("set_expression", stream)    
-    assert stream.read(1) == "[" 
+    __debug_entry("set_expression", stream)
 
-    skip
     x = stream.read(2)
-    y = stream.read(1)
-    if   x[0] == ":":  stream.seek(-1, 1); result = snap_set_term(stream)
-    elif x[0] == "(":  stream.seek(-1, 1); result = snap_set_expression(stream)
-    elif x == "\\P":   result = snap_propperty_string(stream)
-    else:              stream.seek(-2, 1); result = snap_traditional_character_set(stream)
+    if   x == "[:":
+        result = snap_set_term(stream)
+    elif x[0] == "[":
+        stream.seek(-1, 1)
+        result = snap_traditional_character_set(stream)
+    elif x == "\\P": 
+        result = snap_propperty_string(stream)
+    else:
+        result = None
 
     return __debug_exit(result, stream)
 
 def snap_set_term(stream):
     __debug_entry("set_term", stream)    
-    word = __read_word(stream)
+
+    skip_whitespace(stream)
+    position = stream.tell()
+    # if there is no following '(', then enter the 'snap_expression' block below
+    try:    
+        word = read_until_letter(stream, ["("])
+        # undo the '('
+        stream.seek(-1, 1)
+    except: 
+        word = "not union, intersection, difference, or inverse"
 
     if word not in [ "union", "intersection", "difference", "inverse"]: 
-        result = __debug_expression(snap_set_expression(stream)
+        # try to snap an expression out of it
+        stream.seek(position)
+        result = snap_set_expression(stream)
     else:
-        set_list = snap_set_list(stream)
-        if set_list == None:
-            return __debug_exit(None, stream)
+        set_list = snap_set_list(stream, word)
+        # if an error occurs during set_list parsing, an exception is thrown about syntax error
+
+        L      = len(set_list)
+        result = set_list[0]
 
         if word == "inverse":
-            # The inverse of multiple sets, is to be the inverse of the union
-            # of these sets.
-            result = set_list[0]
+            # The inverse of multiple sets, is to be the inverse of the union of these sets.
+            if L > 1:
+                for set in set_list[1:]:
+                    result = result.union(set)
+            result = result.inverse()
+            return __debug_exit(result, stream)
+
+        if L < 2:
+            raise RegularExpressionException("Regular Expression: A %s operation needs at least\n" % word + \
+                                             "two sets to operate on them.")
+            
+        if   word == "union":
             for set in set_list[1:]:
                 result = result.union(set)
-            result = result.inverse()
-        else:
-            # For 'union', 'intersection', and 'difference' the word corresponds
-            # to the member function name of NumberSet. So use __dict__[word] to
-            # get to the operation function.
-            result = set_list[0]
+        elif word == "intersection":
             for set in set_list[1:]:
-                result = result.__dict__[word](set)
+                result = result.intersection(set)
+        elif word == "difference":
+            for set in set_list[1:]:
+                result = result.difference(set)
+
+        return __debug_exit(result, stream)
 
     return __debug_exit(result, stream)
 
+def __snap_word(stream):
+    try:    the_word = read_until_letter(stream, ["("]) 
+    except: 
+        raise RegularExpressionException("Missing opening bracket.")
+    stream.seek(-1,1)
+    return trim(the_word)
 
+def snap_set_list(stream, set_operation_name):
+    __debug_entry("set_list", stream)
 
+    skip_whitespace(stream)
+    if stream.read(1) != "(": 
+        raise RegularExpressionException("Missing opening bracket '%s' operation." % set_operation_name)
 
+    set_list = []
+    while 1 + 1 == 2:
+        skip_whitespace(stream)
+        result = snap_set_term(stream)
+        if result == None: 
+            raise RegularExpressionException("Missing set expression list after '%s' operation." % set_operation_name)
+        set_list.append(result)
+        skip_whitespace(stream)
+        tmp = stream.read(1)
+        if tmp != ",": 
+            if tmp != ")":
+                stream.seek(-1, 1)
+                raise RegularExpressionException("Missing closing ')' after after '%s' operation." % set_operation_name)
+            return __debug_exit(set_list, stream)
 
 def snap_set_primary(stream):
-    return snap_traditional_character_set(stream)
+    __debug_entry("set_primary", stream)
 
+    return __debug_entry(snap_traditional_character_set(stream), stream)
 
 def snap_traditional_character_set(stream):
     """Cuts a character range bracketed by '[' ']' from the utf8_string and 
        returns the resulting state machine.
     """
-    assert stream.read(1) == "[" 
-
     character_string = aux.__snap_until(stream, "]")  
 
     # transform traditional character set string 'a-zA-X0-1' ... into a state machine        

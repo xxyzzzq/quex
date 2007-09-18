@@ -34,7 +34,11 @@ import StringIO
 from quex.frs_py.string_handling import trim
 from quex.core_engine.interval_handling import *
 from quex.core_engine.state_machine.core import StateMachine
-from quex.core_engine.regular_expression.auxiliary import *
+from quex.core_engine.regular_expression.auxiliary import __snap_until, \
+                                                          __check_for_EOF_or_FAIL_pattern, \
+                                                          __debug_entry, \
+                                                          __debug_exit, \
+                                                          __debug_print
 
 import quex.core_engine.utf8                                  as utf8
 import quex.core_engine.regular_expression.character_string   as map_utf8_string
@@ -217,7 +221,9 @@ def snap_primary(stream, PatternDict):
 
     # -- 'primary' primary
     if   x == "\"": result = snap_non_double_quote(stream)
-    elif x == "[":  stream.seek(-1, 1); result = character_set_expression.do(stream)
+    elif x == "[":  
+        stream.seek(-1, 1); 
+        result = character_set_expression.do(stream)
     elif x == "{":  result = snap_replacement(stream, PatternDict)
     elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
     elif x == "(": 
@@ -338,6 +344,10 @@ def __snap_repetition_range(the_state_machine, stream):
            '{m,n}'  from 'm' to 'n' repetitions
            '{n,}'   arbitrary, but at least 'n' repetitions
     """       
+    assert the_state_machine.__class__.__name__ == "StateMachine", \
+           "received object of type '%s'" % the_state_machine.__class__.__name__ + "\n" + \
+           repr(the_state_machine)
+
     position_0 = stream.tell()
     x = stream.read(1)
     if   x == "+": result = repeat.do(the_state_machine, 1)
