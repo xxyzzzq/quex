@@ -48,6 +48,15 @@ def do(UTF8_String):
        an object of type NumberSet, i.e. a set of integers representing
        the unicode characters of the set.
     """
+    def __consider_backslash_occurence(x, i):
+        value, i = snap_backslashed_character.do(x, i)
+        if value == None:
+            max_i = min(len(x), i + 3)
+            raise RegularExpressionException(
+                "Character range: backslashed character(s) %s ... cannot be backslashed" % \
+                repr(map(chr, x[i:max_i])))
+        return value, i
+
     tracker = Tracker()
     x  = utf8.map_n_utf8_to_unicode(UTF8_String)
     Lx = len(x)
@@ -59,21 +68,21 @@ def do(UTF8_String):
             #
             if tracker.last_letter == -1:
                 raise RegularExpressionException("Character range: '-' requires a preceding letter, e.g. 'a-z'")
-            tracker.consider_interval(tracker.last_letter, x[i+1] + 1)
-            # ATE: 2 characters
-            i += 2
+
+            i += 1
+            if i + 1 < Lx and x[i] == ord("\\"):
+                value, i = __consider_backslash_occurence(x, i)
+            else:
+                value = x[i] + 1
+                i += 1
+
+            tracker.consider_interval(tracker.last_letter, value)
 
         elif i + 1 < Lx and x[i] == ord("\\"):
             #_________________________________________________________________________
             # Escape Character / Sophisticated Code Point Definition
             #
-            value, i = snap_backslashed_character.do(x, i)
-            if value == None:
-                max_i = min(len(x), i + 3)
-                raise RegularExpressionException(
-                    "Character range: backslashed character(s) %s ... cannot be backslashed" % \
-                    repr(map(chr, x[i:max_i])))
-
+            value, i = __consider_backslash_occurence(x, i)
             tracker.consider_letter(value)
 
         elif x[i] == ord("^"):

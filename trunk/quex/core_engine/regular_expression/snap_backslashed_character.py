@@ -57,7 +57,6 @@ def do(x, i, ReducedSetOfBackslashedCharactersF=False):
         return number, i
 
     elif x[i+1] == ord('x'):
-        print "## obacht"
         # 1 byte character code point
         number, i = __parse_hex_number(x, i+2, i+4)
         # ATE: until end of hex number 
