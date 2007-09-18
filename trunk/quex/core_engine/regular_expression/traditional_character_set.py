@@ -2,29 +2,9 @@ import sys
 import quex.core_engine.utf8 as utf8
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 from quex.core_engine.interval_handling  import *
-from quex.core_engine.state_machine.core import StateMachine
+from quex.exception                      import RegularExpressionException
 
 
-def do(UTF8_String):
-    """Maps a'set string' to a state machine. Set strings are
-       of the format "a-z0123_" as used in regular expressions.
-       The resulting state machine has only three states:
-       the initial state, FAIL, and SUCCESS. If a trigger matches
-       one of the triggers in the set it transits from Initial
-       to success, else it transits to FAIL.
-
-       FORMAT: [a-zA-9012^w^\n]
-    """
-    
-    # transform the range-string into a trigger set
-    trigger_set, comment = __get_utf8_trigger_set(UTF8_String)
-    assert trigger_set != False, comment
-
-    # create state machine that triggers with the trigger set to SUCCESS
-    # NOTE: The default for the ELSE transition is FAIL.
-    sm = StateMachine()
-    sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
-    return sm
 
 class Tracker:
     def __init__(self):
@@ -63,8 +43,7 @@ class Tracker:
         if self.negation_f: self.negation_f = False
         else:               self.negation_f = True 
 
-
-def __get_utf8_trigger_set(UTF8_String):
+def do(UTF8_String):
     """Transforms the regular expression character set expression into 
        an object of type NumberSet, i.e. a set of integers representing
        the unicode characters of the set.
@@ -79,7 +58,7 @@ def __get_utf8_trigger_set(UTF8_String):
             # character range:  'character0' '-' 'character1'
             #
             if tracker.last_letter == -1:
-                return False, "'-' requires a preceding letter, e.g. 'a-z'"
+                raise RegularExpressionException("Character range: '-' requires a preceding letter, e.g. 'a-z'")
             tracker.consider_interval(tracker.last_letter, x[i+1] + 1)
             # ATE: 2 characters
             i += 2
@@ -91,7 +70,10 @@ def __get_utf8_trigger_set(UTF8_String):
             value, i = snap_backslashed_character.do(x, i)
             if value == None:
                 max_i = min(len(x), i + 3)
-                return False, "backslashed character(s) %s ... cannot be backslashed" % repr(map(chr, x[i:max_i]))
+                raise RegularExpressionException(
+                    "Character range: backslashed character(s) %s ... cannot be backslashed" % \
+                    repr(map(chr, x[i:max_i])))
+
             tracker.consider_letter(value)
 
         elif x[i] == ord("^"):
@@ -121,6 +103,6 @@ def __get_utf8_trigger_set(UTF8_String):
     # the whole set:     combine inverse and direct set with 'or', i.e. union
     result = tracker.direct_match_set
     result = result.intersection(tracker.inverse_match_set.inverse())
-    return result, ""
+    return result
 
 
