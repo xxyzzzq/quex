@@ -5,7 +5,7 @@ tokens that tell about atomic information chunks in the input stream. The most
 simple pattern-action pair consists of sending a specific token whenever a
 particular pattern occurs. Consider for example figure
 <<fig:eof-pattern-action-pairs, style=ref>>. It shows the definition of a mode that can
-handle the end of a file. The only pattern of this mode is +++<<+++ `EOF` +++>>+++.  The action
+handle the end of a file. The only pattern of this mode is $$<<`EOF`>>$$.  The action
 to be executed if this pattern occurs is embraced by curly brackets.
 Inside the brackets a special token is sent, a token with the id:
 

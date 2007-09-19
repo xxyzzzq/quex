@@ -439,12 +439,6 @@ def __construct(core_sm, pre_condition=None, post_condition=None):
 
     return result
   
-def create_EOF_detecting_state_machine(EndOfFile_Code):
-    result = StateMachine()
-    result.add_transition(result.init_state_index, EndOfFile_Code, AcceptanceF=True) 
-    result.mark_state_origins()
-    return result
-
 def create_ALL_BUT_NEWLINE_state_machine():
     global __SETUP
     result = StateMachine()

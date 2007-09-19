@@ -20,8 +20,8 @@ Definition of Patterns::
   pattern action pair line, but it is much more intuitive to define patterns
   in terms of regular expressions \cite{} in a separate data section. Those
   patterns act like constants that allow to understand quickly for what a
-  pattern/action pair stands. Using a name '`NOT_NEWLINE}+`' is simply
-  visually more appealing than writing `[^\n]+`}. Those patterns
+  pattern/action pair stands. Using a name `$${NOT_NEWLINE}+$$` is simply
+  visually more appealing than writing `$$[^\n]+$$`}. Those patterns
   can be defined very easily in terms of regular expressions.
   
 Definition of Token-IDs:: 

@@ -1,7 +1,7 @@
 The previous sections discused the construction of an 'annotated'
 state machine representing the lexical analyser. The final step
 of code generation remains. Code generation means to write a program
-that behaves like the state machine. This means, that if a character $\alpha$
+that behaves like the state machine. This means, that if a character α
 appears at the input one has to transit to the same state as the state machine
 would. Further, if the state machine fails, the program needs to fail. And,
     if it succeeds, i.e. a pattern matches, then the program need to notify 
@@ -17,9 +17,9 @@ to be matched -- it might only need some more characters. Thus the state
 machine leaves the acceptance state, but _it needs to store
 information_ about the match of A, just in case that pattern B is
 finally not matched. Consider the two patterns $$return$$ and
-$$[a-z_]+":"i$$}. When a character stream "return" came in, 
+$$[a-z_]+":"$$. When a character stream "return" came in, 
 the first pattern matched, but the second is still an option. So,
-if a string "return\_label:" appears one can report that the second 
+if a string `"return\_label:"` appears one can report that the second 
 pattern matched. But, if the trailing colon is missing, we need to be
 able to go back and report that there was a return statement.
 For this reason, we need two variables:
