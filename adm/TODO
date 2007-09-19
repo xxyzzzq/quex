@@ -1,3 +1,7 @@
+(*) 07y9m19h:
+
+    Check what happens if [z-a] is specified as a range
+
 (*) 07y9m9d:
 
     line up the quex::token::ID_TERMINATION

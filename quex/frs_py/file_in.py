@@ -58,7 +58,6 @@ def skip_whitespace(fh):
             fh.seek(-2, 1)
             return                
 
-
 def read_until_whitespace(fh):
     txt = ""
     previous_tmp = ""
@@ -182,6 +181,15 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
             if Verbose: return txt, EndMarkers.index(tmp)
             else:       return txt
         txt += tmp
+
+def read_until_non_letter(fh):
+    txt = ""
+    tmp = ""
+    while 1 + 1 == 2:
+        tmp = fh.read(1)
+        if tmp.isalpha(): txt += tmp
+        else:             break
+    return txt
         
 def read_until_line_contains(in_fh, LineContent):
     L = len(LineContent)

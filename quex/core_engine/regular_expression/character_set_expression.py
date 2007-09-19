@@ -6,10 +6,22 @@
 #                 \P '{' propperty string '}'
 #
 # set_term:
-#                 union        '(' set_term [ ',' set_term ]+ ')'
-#                 intersection '(' set_term [ ',' set_term ]+ ')'
-#                 difference   '(' set_term [ ',' set_term ]+ ')'
-#                 inverse      '(' set_term ')'
+#                 "alnum" 
+#                 "alpha" 
+#                 "blank" 
+#                 "cntrl" 
+#                 "digit" 
+#                 "graph" 
+#                 "lower" 
+#                 "print" 
+#                 "punct" 
+#                 "space" 
+#                 "upper" 
+#                 "xdigit"
+#                 "union"        '(' set_term [ ',' set_term ]+ ')'
+#                 "intersection" '(' set_term [ ',' set_term ]+ ')'
+#                 "difference"   '(' set_term [ ',' set_term ]+ ')'
+#                 "inverse"      '(' set_term ')'
 #                 set_expression
 # 
 import quex.core_engine.regular_expression.traditional_character_set as traditional_character_set
@@ -19,10 +31,26 @@ from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.string_handling         import trim
 from quex.frs_py.file_in                 import read_until_letter, \
+                                                read_until_non_letter, \
                                                 skip_whitespace
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit
+
+special_character_set_db = {
+        "alnum":  traditional_character_set.do("[a-zA-Z0-9]"),
+        "alpha":  traditional_character_set.do("[a-zA-Z]"),
+        "blank":  traditional_character_set.do("[ \\t]"),
+        "cntrl":  None, 
+        "digit":  traditional_character_set.do("[0-9]"),
+        "graph":  None,
+        "lower":  traditional_character_set.do("[a-z]"),
+        "print":  None,
+        "punct":  None, 
+        "space":  traditional_character_set.do("[ \\t\\r\\n]"),
+        "upper":  traditional_character_set.do("[A-Z]"),
+        "xdigit": traditional_character_set.do("[a-fA-F0-9]"),
+}
 
 def do(stream):
     trigger_set = snap_set_expression(stream)
@@ -59,19 +87,17 @@ def snap_set_term(stream):
 
     skip_whitespace(stream)
     position = stream.tell()
+
     # if there is no following '(', then enter the 'snap_expression' block below
     try:    
-        word = read_until_letter(stream, ["("])
-        # undo the '('
-        stream.seek(-1, 1)
+        word = read_until_non_letter(stream)
+        stream.seek(-1, 1)  # putback the non-letter
     except: 
-        word = "not union, intersection, difference, or inverse"
+        word = "not a valid word"
 
-    if word not in [ "union", "intersection", "difference", "inverse"]: 
-        # try to snap an expression out of it
-        stream.seek(position)
-        result = snap_set_expression(stream)
-    else:
+    word = trim(word)
+
+    if word in [ "union", "intersection", "difference", "inverse"]: 
         set_list = snap_set_list(stream, word)
         # if an error occurs during set_list parsing, an exception is thrown about syntax error
 
@@ -100,7 +126,13 @@ def snap_set_term(stream):
             for set in set_list[1:]:
                 result = result.difference(set)
 
-        return __debug_exit(result, stream)
+    elif word in special_character_set_db.keys():
+        result = special_character_set_db[word]
+
+    else:
+        # try to snap an expression out of it
+        stream.seek(position)
+        result = snap_set_expression(stream)
 
     return __debug_exit(result, stream)
 
