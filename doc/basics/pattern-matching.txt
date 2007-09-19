@@ -5,8 +5,8 @@ remains in the same state. Consider figure <<fig:pattern-state-machines, , style
 that depicts a state machine to match a floating point number. In its initial
 state it waits for a digit (the `START` state). If no digit arrives, the
 state machine goes into the `FAILED` state. It can be said for sure, that
-this was no number.  If a digit arrives, though, in transits into `'
-  DIGITS-A`'.  As long as digits arrive, it remains in this state. If a
+this was no number.  If a digit arrives, though, in transits into `DIGITS-A`.  
+As long as digits arrive, it remains in this state. If a
 non-digit comes in it transits into the `ACCEPTANCE` state, since already
 enough digits have arrived as to judge that it is a number. However, if a dot
 arrived, then the state machine enters into the `DOT` state. If after the
