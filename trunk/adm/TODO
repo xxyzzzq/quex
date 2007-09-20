@@ -1,3 +1,8 @@
+(*) 07y9m20d:
+
+    name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
+
+
 (*) 07y9m19h:
 
     Check what happens if [z-a] is specified as a range

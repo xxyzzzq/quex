@@ -6,7 +6,6 @@ Context free regular expressions match against an input independent on what
  explained in the subsequent section. This sections explains how to 
  define simple _chains of characters_ and `operations`
  to combine them into powerful patterns.
- \vskip0.5cm
 
 *Chains of Characters*
 
@@ -25,7 +24,15 @@ Context free regular expressions match against an input independent on what
      a "character class" or "character set"; in this case, the pattern matches either an
      `x', a `y', or a `z'. The brackets '$[$' and '$]$' are examples for lonestanding
      characters that are operators. If they are to be matched quotes or backslashes
-     have to be used as shown below.
+     have to be used as shown below. Character sets are a form of _alternative_ expressions--
+     for one single character. For more sophisticated alternative expressions see the
+     paragraphs below. 
+
+`$$[: expression :]$$`
+     matches a set of characters that result from a character set expression `expression`.
+     Section <<formal/patterns/character-set-expressions>> discusses this feature in detail.
+     In particual $$[:alnum:]$$, $$[:alpha:]$$ and the like are the character sets
+     as defined as POSIX bracket expressions.
 
 `[abj-oZ]`::
      a "character class" with a range in it; matches an `a', a `b', any
@@ -35,14 +42,19 @@ Context free regular expressions match against an input independent on what
 
 `[^A-Z\n]`::
      a "negated character class", i.e., any character but those in the
-     class.  In this case, any character _except_ an uppercase letter or newline.
+     class.  The $$^$$ character indicates _negation_ at this point. 
+     This expression matches any character _except_ an uppercase letter or newline.
 
 `"[xyz]\"foo"`::
      the literal string: `$[$xyz$]$"foo'.
      That is, inside quotes the characters which are used as operators for
      regular expressions can be applied in their original sense. A '$[$'
      stands for code point 91 (hex. 5B), matches against a '$[$' and does
-     not mean 'open character set'.     
+     not mean 'open character set'. Note, than inside strings one can 
+     still use the ANSI-C backslashed characters $$\n$$, $$\t$$, etc. as
+     well as the Unicode name property $$\N$$. However, general Unicode
+     property expression $$\P$$ that result in _character sets_ are not dealt
+     with inside strings.
 	  
 `\0`:: 
      a NULL character (ASCII/Unicode code point 0). This is to be used with *extreme caution*!
@@ -80,11 +92,19 @@ Context free regular expressions match against an input independent on what
 `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\r`, or `\v`::
      the ANSI-C interpretation of the backslashed character.
 
+`\N{ UNICODE CHARACTER NAME }`::
+     the code of the character with the given Unicode character name. 
+
+`\P{ Unicode Property Expression }`::
+     the set of characters for which the `Unicode Property Expression` holds.
+
 
 Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
 are considered to be unicode code points. For applications in english spoken
 cultures this is identical to the ASCII encoding. For details about unicode
-code tables consider the standard \cite{Unicode50}.
+code tables consider the standard \cite{Unicode50}. Section
+<<formal/ucs-properties>> is dedicated to an introduction to Unicode
+properties.
 
 Two special rules have to appear isolatedly, out of the context of regular
 expressions. With the following two rules the actions for the event of end of
@@ -111,6 +131,7 @@ these constructs will disappear in favor of the mentioned two event handlers.
 
 Let `R` and `S` be regular expressions, i.e. a chain of characters specified in the
 way mentioned above, or a regular expression as a result from the operations below.
+Much of the syntax is directly based on POSIX extended regular expressions \cite{}.
      
 `R*`:: 
 
@@ -132,7 +153,7 @@ way mentioned above, or a regular expression as a result from the operations bel
 
     two or more repetitions of the regular expression `R`.
 
-`R{4}:: 
+`R{4}`:: 
 
     exactly four repetitions of the regular expression `R`.
 
