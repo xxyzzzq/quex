@@ -1,0 +1,68 @@
+Character set expression are a tool to combine, filter and or select character
+ranges conviniently. The result of a character set expression is a set of
+characters. Such a set of characters can then be used to express that any of
+them can occur at a given position of the input stream. The character set
+expression $$[:alpha:]$$, for example matches all characters that are 
+letters, i.e. anything from `a` to `z` and `A` to `Z`. It belongs to the
+POSIX bracket expressions which are explained below. Further, this section
+explains how sets can be generated from other sets via the operations _union_,
+_intersection_, _difference_, and _inverse_.
+
+POSIX bracket expressions are basically shortcuts for some more 
+regular expressions that would formally look a bit more clumpsy. Quex
+provides those expressions bracketed in $$[:$$ and $$:]$$ brackets.
+They are specified in the table below.
+
+`----------`---------------------------------`----------------------------------
+Expression   Meaning                           Related Regular Expression
+--------------------------------------------------------------------------------
+[:alnum:]    Alphanumeric characters           $$[A-Za-z0-9]$$                          
+[:alpha:]    Alphabetic characters             $$[A-Za-z]$$                             
+[:blank:]    Space and tab                     $$[ \t]$$                                
+[:cntrl:]    Control characters                $$[\x00-\x1F\x7F]$$                      
+[:digit:]    Digits                            $$[0-9]$$                                
+[:graph:]    Visible characters                $$[\x21-\x7E]$$                          
+[:lower:]    Lowercase letters                 $$[a-z]$$                                
+[:print:]    Visible characters and spaces     $$[\x20-\x7E]$$                          
+[:punct:]    Punctuation characters            $$[!"#$%&'()*+,-./:;?@[\\\]_`{|}~]$$ 
+[:space:]    Whitespace characters             $$[ \t\r\n\v\f]$$                        
+[:upper:]    Uppercase letters                 $$[A-Z]$$                                
+[:xdigit:]   Hexadecimal digits                $$[A-Fa-f0-9]$$                          
+--------------------------------------------------------------------------------
+
+Caution has to be taken if these expressions are used for non-english languages. They
+are _solely_ concerned with the ASCII character set. For more sophisticated 
+property processing it is advisable to use Unicode property expressions as explained
+in section <<formal/ucs-properties>>. The use of Unicode character set potentially
+implies the handling of many different properties and character sets. For convinience,
+quex provides _operations on character sets_ to combine and filter different character
+sets and create new adapted ones. The basic operations that quex allows are displayed
+in the following table:
+
+`------------------------------`---------------------------------`----------------------------------
+Syntax                          Meaning                           Example
+--------------------------------------------------------------------------------
+union(set0, set1, ...)          Union of the list of sets.        union([a-z], [A-Z]) results
+                                                                  in the set of all upper and lower
+                                                                  case letters of the english
+                                                                  alphabet.
+
+intersection(set0, set1, ...)   Intersection of all specified     intersection([0-9], [4-5]) results
+                                sets.                             in the set [4-5].
+
+difference(setA, setB0, ...)    Subtracts all elements in the     difference([0-9], [4-5]) results
+                                sets setB0 and followers from     in a set containing [0-3] and [6-9].
+
+inverse(set, ...)               Inverse set of the union of the   inverse([A-Z]) results in all unicode
+                                the list of sets. Usually only    code points except the english letters
+                                one set is specified.             [A-Z].
+----------------------------------------------------------------------------------------------------------
+
+Note, that the `intersection` operation can be used to filter different sets. For example
+
+[Cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    intersection(\P{Script=Greek}, inverse(\P{Digit}))
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+results in the set of greek characters except the digits.
