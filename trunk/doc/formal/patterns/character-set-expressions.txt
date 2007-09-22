@@ -13,6 +13,7 @@ regular expressions that would formally look a bit more clumpsy. Quex
 provides those expressions bracketed in $$[:$$ and $$:]$$ brackets.
 They are specified in the table below.
 
+[grid=all]
 `----------`---------------------------------`----------------------------------
 Expression   Meaning                           Related Regular Expression
 --------------------------------------------------------------------------------
@@ -39,30 +40,32 @@ quex provides _operations on character sets_ to combine and filter different cha
 sets and create new adapted ones. The basic operations that quex allows are displayed
 in the following table:
 
-`------------------------------`---------------------------------`----------------------------------
-Syntax                          Meaning                           Example
---------------------------------------------------------------------------------
-union(set0, set1, ...)          Union of the list of sets.        union([a-z], [A-Z]) results
-                                                                  in the set of all upper and lower
-                                                                  case letters of the english
-                                                                  alphabet.
-
-intersection(set0, set1, ...)   Intersection of all specified     intersection([0-9], [4-5]) results
-                                sets.                             in the set [4-5].
-
-difference(setA, setB0, ...)    Subtracts all elements in the     difference([0-9], [4-5]) results
-                                sets setB0 and followers from     in a set containing [0-3] and [6-9].
-
-inverse(set, ...)               Inverse set of the union of the   inverse([A-Z]) results in all unicode
-                                the list of sets. Usually only    code points except the english letters
-                                one set is specified.             [A-Z].
+[grid=all]
+`----------------------------`-------------------------------------------`----------------------------------
+Syntax                        Meaning                                     Example
+--------------------------------------------------------------------------------------------------------
+`union(A0, A1, ...)`          Union of the list of sets.                  `union([a-z], [A-Z]) = [a-zA-Z]`
+`intersection(A0, A1, ...)`   Intersection the list of sets.              `intersection([0-9], [4-5]) = [4-5]` 
+`difference(A, B0, B1, ...)`  Subtracts B0, B1, from set A.               `difference([0-9], [4-5]) [0-36-9]`
+`inverse(A0, A1, ...)`        Inverse of the union of the list of sets.   `inverse([\x40-\5A]) = [\x00-\x40\x5B-\U12FFFF]` 
 ----------------------------------------------------------------------------------------------------------
 
-Note, that the `intersection` operation can be used to filter different sets. For example
+Note, that the `difference` and `intersection` operation can be 
+used convienently to filter different sets. For example
 
-[Cpp]
+[cpp]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    intersection(\P{Script=Greek}, inverse(\P{Digit}))
+  [: difference(\P{Script=Greek}, \P{Digit}) :]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-results in the set of greek characters except the digits.
+results in the set of greek characters except the digits. To allow
+only the numbers from the arabic code block `intersection` can 
+be used as follows:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  [: intersection(\P{Block=Arabic}, \P{Numeric}) :]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The subsequent section elaborates on the concept of Unicode properties.
+

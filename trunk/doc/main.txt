@@ -73,7 +73,7 @@ include::practical/summary.txt[]
 == Formal Usage
 include::formal/intro.txt[]
 
-=== Patterns
+=== Regular Expression Syntax
 include::formal/patterns/intro.txt[]
 
 === Context Free Regular Expressions
