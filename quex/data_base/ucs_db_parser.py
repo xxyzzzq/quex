@@ -33,7 +33,7 @@ def parse_table(Filename):
 
     return record_set
 
-class PropertyDB:
+class FileBasedDB:
 
     def __init__(self, DB_Filename, ValueType, ValueColumnIdx, KeyColumnIdx, Key2ColumnIdx=-1):
         self.db          = {}
@@ -44,7 +44,7 @@ class PropertyDB:
         self.value_type                       = ValueType
 
     def __getitem__(self, Value):
-        if self.db == {}: self.__init_db()
+        if self.db == {}: self.init_db()
         try:    return self.db[Value]
         except: pass
 
@@ -122,12 +122,11 @@ class PropertyDB:
                 enter(key2, value)
 
 
-    def __init_db(self):
+    def init_db(self):
         table = parse_table(self.db_filename)
         if self.value_type == "NumberSet": self.__convert_column_to_interval(table)
         elif self.value_type == "number":  self.__convert_column_to_number(table)
         self.__convert_table_to_associative_map(table)
-
 
 class PropertyInfo:
     def __init__(self, Name, Alias, Type):
@@ -136,16 +135,25 @@ class PropertyInfo:
         self.name  = Name
         self.alias = Alias
         self.type  = Type
-        self.value_list      = []
-        self.alias_to_name_map = {}  # map value to alias
+        self.name_to_alias_map = {}   # map value to alias
+        self.code_point_db     = None # only for binary properties
 
     def __repr__(self):
         txt  = "NAME          = '%s'\n" % self.name
         txt += "ALIAS         = '%s'\n" % self.alias
         txt += "TYPE          = '%s'\n" % self.type
-        txt += "VALUE_LIST    = '%s'\n" % repr(self.value_list)
-        txt += "VALUE_ALIASES = {\n    %s\n}\n" % repr(self.alias_to_name_map).replace(",", ",\n    ")
+        if self.type == "Binary":
+            txt += "VALUE_ALIASES = (Binary has no values)\n"
+        else:
+            txt += "VALUE_ALIASES = {\n    %s\n}\n" % repr(self.name_to_alias_map).replace(",", ",\n    ")
         return txt
+
+    def get_code_points(self, Value):
+        """Returns UCS code points of the characters for which 'property=Value'.
+        """
+        pass
+
+
 
 class PropertyInfoDB:
     def __init__(self):
@@ -155,11 +163,14 @@ class PropertyInfoDB:
     def __getitem__(self, PropertyName):
         if self.db == {}: self.__init_db()
         try:    return self.db[self.property_name_to_alias_map[PropertyName]]
-        except: print "## keys:", self.db.keys()
+        except: return ""
 
     def __init_db(self):
         self.__parse_property_name_alias_and_type()
         self.__parse_property_value_and_value_aliases()
+        # -- most of the properties are binary, so let's load the file PropList and
+        #    fill them in one single beat.
+        self.__load_binary_property_code_points()
 
     def __parse_property_name_alias_and_type(self):
         fh = open_data_base_file("PropertyAliases.txt")
@@ -201,15 +212,30 @@ class PropertyInfoDB:
             property_value       = row[2]
             # -- if property db has been parsed before, this shall not fail
             property_info = self.db[property_alias]
-            property_info.value_list.append(property_value)
-            property_info.alias_to_name_map[property_value] = property_value_alias
+            property_info.name_to_alias_map[property_value] = property_value_alias
+
+    def __load_binary_property_code_points(self):
+        binary_property_db = FileBasedDB("PropList.txt", "NumberSet", 0, 1)
+        binary_property_db.init_db()
+        for key, number_set in binary_property_db.db.items():
+            property_alias = self.property_name_to_alias_map[key]
+            self.db[property_alias].code_point_db = number_set
 
 
 
+    def get_property_descriptions(self):
+        item_list = self.db.items()
+        item_list.sort(lambda a, b: cmp(a[0], b[0]))
+        txt = ""
+        for key, property in item_list:
+            txt += "%s: %s%s\n" % (key, " " * (25 - len(key)), property.type)
+        return txt
 
-blocks_db  = PropertyDB("Blocks.txt", "NumberSet", 0, 1)
-scripts_db = PropertyDB("Scripts.txt", "NumberSet", 0, 1)
-names_db   = PropertyDB("UnicodeData.txt", "number", 0, 1, Key2ColumnIdx=10)
+
+
+blocks_db  = FileBasedDB("Blocks.txt", "NumberSet", 0, 1)
+scripts_db = FileBasedDB("Scripts.txt", "NumberSet", 0, 1)
+names_db   = FileBasedDB("UnicodeData.txt", "number", 0, 1, Key2ColumnIdx=10)
 property_info_db = PropertyInfoDB()
 
 
@@ -218,5 +244,5 @@ property_info_db = PropertyInfoDB()
 print blocks_db["Arabic"]
 print scripts_db["Greek"]
 print "%X" % names_db["LATIN SMALL LETTER CLOSED REVERSED EPSILON"]
-print property_info_db["Script"]
-
+print property_info_db["White_Space"]
+print property_info_db.get_property_descriptions()
