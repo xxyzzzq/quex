@@ -217,22 +217,33 @@ class NumberSet:
            """
         arg_type = Arg.__class__.__name__
         assert arg_type in  ["Interval", "NumberSet", "int", "list"] or Arg == None
+
         self.__intervals = []
         
-        if type(Arg) == list:
+        if  arg_type == "list":
             # use 'add_interval' to ensure consistency
             for interval in Arg:
                 assert interval.__class__.__name__ == "Interval"
                 self.add_interval(deepcopy(interval))
 
-        elif Arg.__class__.__name__ == "Interval":
+        elif arg_type == "Interval":
             self.add_interval(deepcopy(Arg))
 
-        elif Arg.__class__.__name__ == "NumberSet":
+        elif arg_type == "NumberSet":
             self.__intervals = deepcopy(Arg.__intervals)
 
-        elif type(Arg) == int:
+        elif arg_type == "int":
             self.add_interval(Interval(Arg))
+
+    def quick_append_interval(self, Other, SortF=True):
+        """This function assumes that there are no intersections with other intervals.
+           Use this function with caution. It is much faster than the 'union' function
+           or the function 'add_interval'.
+        """
+        assert Other.__class__.__name__ == "Interval"
+
+        self.__intervals.append(Other)
+        if SortF: self.clean()
 
     def add_interval(self, NewInterval):
         """Adds an interval and ensures that no overlap with existing
@@ -325,15 +336,22 @@ class NumberSet:
         return deepcopy(self.__intervals)
 
     def union(self, Other):
-        if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
+        Other_type = Other.__class__.__name__
+        assert Other_type == "Interval" or Other_type == "NumberSet"
 
         shadow_of_self = deepcopy(self)
+
+        if Other_type == "Interval": Other = NumberSet(Other)
+
         # simply add all intervals to one single set
         for interval in Other.__intervals + shadow_of_self.__intervals:
             shadow_of_self.add_interval(interval)
+
         return shadow_of_self            
 
     def intersection(self, Other):
+        assert Other.__class__.__name__ == "Interval" or Other.__class__.__name__ == "NumberSet"
+
         if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
 
         # intersect with each interval
@@ -347,6 +365,8 @@ class NumberSet:
         return result
 
     def difference(self, Other):
+        assert Other.__class__.__name__ == "Interval" or Other.__class__.__name__ == "NumberSet"
+
         if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
 
         assert self.__overlappers() == []

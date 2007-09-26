@@ -16,7 +16,7 @@ def open_data_base_file(Filename):
         fh = open(unicode_db_directory + "/" + Filename)
     except:
         error_msg("Fatal---Unicode Database File '%s' not found!\n" % Filename + \
-                  "QUEX_PATH='%s'\n" % os.eviron["QUEX_PATH"] + \
+                  "QUEX_PATH='%s'\n" % os.environ["QUEX_PATH"] + \
                   "Unicode Database Directory: '%s'" % unicode_db_directory)
     return fh
 
@@ -215,20 +215,43 @@ class PropertyInfoDB:
             property_info.name_to_alias_map[property_value] = property_value_alias
 
     def __load_binary_property_code_points(self):
-        binary_property_db = FileBasedDB("PropList.txt", "NumberSet", 0, 1)
-        binary_property_db.init_db()
-        for key, number_set in binary_property_db.db.items():
-            property_alias = self.property_name_to_alias_map[key]
-            self.db[property_alias].code_point_db = number_set
+        # property descriptions working with 'property names'
+        db_list_1 = [ 
+                FileBasedDB("PropList.txt", "NumberSet", 0, 1),
+                FileBasedDB("extracted/DerivedBinaryProperties.txt", "NumberSet", 0, 1),
+                FileBasedDB("DerivedCoreProperties.txt", "NumberSet", 0, 1),
+                FileBasedDB("DerivedNormalizationProps.txt", "NumberSet", 0, 1),
+                ]
 
+        def get_item_list(db_list):
+            item_list = []
+            for db in db_list:
+                db.init_db()
+                item_list.extend(db.db.items())
+            return item_list
+
+        item_list_1 = get_item_list(db_list_1)
+
+        for key, number_set in item_list_1:
+            if self.property_name_to_alias_map.has_key(key): 
+                property_name_alias = self.property_name_to_alias_map[key]
+            else:
+                property_name_alias = key
+            self.db[property_name_alias].code_point_db = number_set
 
 
     def get_property_descriptions(self):
         item_list = self.db.items()
         item_list.sort(lambda a, b: cmp(a[0], b[0]))
         txt = ""
+        item_list.sort(lambda a, b: cmp(a[1].name, b[1].name))
         for key, property in item_list:
-            txt += "%s: %s%s\n" % (key, " " * (25 - len(key)), property.type)
+            name = property.name
+            txt += "%s(%s): %s%s" % (name, key, " " * (25 - len(name+key)), property.type)
+            if property.code_point_db != None: txt += "%s(loaded)\n" % (" " * (15-len(property.type)))
+            else:                              txt += "\n"
+
+
         return txt
 
 
