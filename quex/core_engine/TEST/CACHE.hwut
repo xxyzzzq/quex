@@ -6,18 +6,17 @@ unequal-sign:E2.89.A0 -> 2260
 =====
 -1L  test-NumberSet-inverse.py
 NumberSet:Inverse
-RESULT:   OK;
+RESULT:   FAIL;
 =====
 1180879172L  ./test-NumberSet-intersection.py.bak
 #
 =====
 -1L  test-NumberSet-difference.py
 NumberSet:Difference
-RESULT:   OK;
+RESULT:   FAIL;
 =====
--1L  test-NumberSet-condition-code.py
-NumberSet:Condition Code Generation
-RESULT:   OK;
+1180879172L  ./test-NumberSet-condition-code.py.bak
+0 1.8
 =====
 -1L  test-utf8-UCS-to-UTF8.py
 Utf8-Module:Map UTF8 String To Unicode Values
@@ -25,14 +24,15 @@ RESULT:   OK;
 =====
 -1L  test-NumberSet-intersection.py
 NumberSet:Intersection
-RESULT:   OK;
+RESULT:   FAIL;
 =====
 -1L  test-NumberSet-union.py
 NumberSet:Union
-RESULT:   OK;
+RESULT:   FAIL;
 =====
-1180879172L  ./test-NumberSet-condition-code.py.bak
-0 1.8
+-1L  test-NumberSet-condition-code.py
+NumberSet:Condition Code Generation
+RESULT:   FAIL;
 =====
 1180879172L  ./test-NumberSet-inverse.py.bak
 # write output in temporary file:'tmp'
