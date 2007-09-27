@@ -395,10 +395,56 @@ class NumberSet:
         return result
         
     def clean(self):
-        """Sorts all intervals, so according to their beginimum. Lowest comes first."""
-
-        # sort all intervals
+        """Sorts all intervals, so according to their beginimum. Lowest comes first.
+           Combines adjacent and intersecting intervals to one.
+        """
         self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
+        return
+
+    def new_clean(self):
+        self.clean()
+
+        # combine adjacent intervals
+        L = len(self.__intervals)
+        if L < 2: return
+
+        new_intervals = []
+        i = 1 
+        current = self.__intervals[0]
+        while i < L:
+            # Any 'i' that arrives here denotes an interval that is to be considered.
+            # Below, i is increased by two to indicate the the next interval is to be ignored.
+            # For the last interval, though, there is not self.__intervals[i+1]. Thus
+            # it is to be accepted in any case.
+
+            next = self.__intervals[i]
+
+            if current.end < next.begin: 
+                # (1) no intersection?
+                i += 1
+                new_intervals.append(current)
+                current = next
+                print "## current.end < next.begin: ", current, next
+            else:
+                # (2) intersection:  [xxxxxxxxxxxxxxx]
+                #                              [yyyyyyyyyyyyyyyyy]
+                #          becomes   [xxxxxxxxxxxxxxxxxxxxxxxxxxx]
+                #
+                # => do not append interval i + 1, do not consider i + 1
+                i += 2
+                if current.end > next.end:
+                    # no adaptions necessary, simply ignore next interval
+                    print "## current.end > next.end: ", current, next
+                    pass
+                else:
+                    # adapt upper border of current interval to the end of the next
+                    current.end = next.end
+                    print "## current.end < next.end: ", current, next
+
+        new_intervals.append(current)
+
+
+        self.__intervals = new_intervals
 
     def __overlappers(self):
         tmp = {} # use this to get unique values of indices

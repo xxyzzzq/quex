@@ -60,6 +60,8 @@ def do(Title, func):
     elif Title == "DIFFERENCE":
         print A6.difference(B6).gnuplot_string(1)
         print B6.difference(A6).gnuplot_string(0)
+    elif Title == "CLEAN":
+        print "# no data yet"
 
 
 

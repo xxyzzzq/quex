@@ -1,17 +1,3 @@
-(*) test string: 
-'aber-hallo'
-(*) result:
-                  .  'a'
-                  .  'b'
-                  .  'e'
-                  .  'r'
-                  .  '-'
-                  .  'h'
-                  .  'a'
-                  .  'l'
-                  .  'l'
-                  .  'o'
-  ''
 (*) Lexical Analyser Patterns:
                    . --> .
 ## (1) code generation
