@@ -33,6 +33,34 @@ def parse_table(Filename):
 
     return record_set
 
+def convert_column_to_number(table, CodeColumnIdx):
+    """ CodeColumnIdx: Column that contains the UCS character code or
+                       code range.
+        table:         table in which the content is changed.
+    """
+    for row in table:
+        cell = row[CodeColumnIdx]
+        row[CodeColumnIdx] = int("0x" + cell, 16)
+
+def convert_column_to_interval(table, CodeColumnIdx):
+    """ CodeColumnIdx: Column that contains the UCS character code or
+                       code range.
+        table:         table in which the content is changed.
+    """
+    for row in table:
+        cell = row[CodeColumnIdx]
+        fields = cell.split("..")         # range: value0..value1
+        assert len(fields) in [1, 2]
+
+        if len(fields) == 2: 
+           begin = int("0x" + fields[0], 16)
+           end   = int("0x" + fields[1], 16) + 1
+        else:
+           begin = int("0x" + fields[0], 16)
+           end   = int("0x" + fields[0], 16) + 1
+
+        row[CodeColumnIdx] = Interval(begin, end)
+
 class FileBasedDB:
 
     def __init__(self, DB_Filename, ValueType, ValueColumnIdx, KeyColumnIdx, Key2ColumnIdx=-1):
@@ -47,36 +75,6 @@ class FileBasedDB:
         if self.db == {}: self.init_db()
         try:    return self.db[Value]
         except: pass
-
-    def __convert_column_to_number(self, table):
-        """ CodeColumnIdx: Column that contains the UCS character code or
-                           code range.
-            table:         table in which the content is changed.
-        """
-        CodeColumnIdx = self.value_column_index
-        for row in table:
-            cell = row[CodeColumnIdx]
-            row[CodeColumnIdx] = int("0x" + cell, 16)
-
-    def __convert_column_to_interval(self, table):
-        """ CodeColumnIdx: Column that contains the UCS character code or
-                           code range.
-            table:         table in which the content is changed.
-        """
-        CodeColumnIdx = self.value_column_index
-        for row in table:
-            cell = row[CodeColumnIdx]
-            fields = cell.split("..")         # range: value0..value1
-            assert len(fields) in [1, 2]
-
-            if len(fields) == 2: 
-               begin = int("0x" + fields[0], 16)
-               end   = int("0x" + fields[1], 16) + 1
-            else:
-               begin = int("0x" + fields[0], 16)
-               end   = int("0x" + fields[0], 16) + 1
-
-            row[CodeColumnIdx] = Interval(begin, end)
 
     def __enter_number_set(self, Key, Value):
         if self.db.has_key(Key):
@@ -121,11 +119,10 @@ class FileBasedDB:
                 key2 = record[self.optional_second_key_column_index]
                 enter(key2, value)
 
-
     def init_db(self):
         table = parse_table(self.db_filename)
-        if self.value_type == "NumberSet": self.__convert_column_to_interval(table)
-        elif self.value_type == "number":  self.__convert_column_to_number(table)
+        if self.value_type == "NumberSet": convert_column_to_interval(table, self.value_column_index)
+        elif self.value_type == "number":  convert_column_to_number(table, self.value_column_index)
         self.__convert_table_to_associative_map(table)
 
 class PropertyInfo:
@@ -171,6 +168,7 @@ class PropertyInfoDB:
         # -- most of the properties are binary, so let's load the file PropList and
         #    fill them in one single beat.
         self.__load_binary_property_code_points()
+        self.__load_binary_property_code_points_Composition_Exclusion()
 
     def __parse_property_name_alias_and_type(self):
         fh = open_data_base_file("PropertyAliases.txt")
@@ -237,25 +235,36 @@ class PropertyInfoDB:
                 property_name_alias = self.property_name_to_alias_map[key]
             else:
                 property_name_alias = key
+            if self.db[property_name_alias].type != "Binary": continue
             self.db[property_name_alias].code_point_db = number_set
 
+    def __load_binary_property_code_points_Composition_Exclusion(self):
+        table = parse_table("CompositionExclusions.txt")
+
+        number_set = NumberSet()
+        for row in table:
+           begin = int("0x" + row[0], 16)
+           number_set.quick_append_interval(Interval(begin, begin + 1))
+        number_set.clean()    
+
+        self.db["CE"].code_point_db = number_set
 
     def get_property_descriptions(self):
         item_list = self.db.items()
         item_list.sort(lambda a, b: cmp(a[0], b[0]))
         txt = ""
-        item_list.sort(lambda a, b: cmp(a[1].name, b[1].name))
+        item_list.sort(lambda a, b: cmp(a[1].type, b[1].type))
         for key, property in item_list:
             name = property.name
-            txt += "%s(%s): %s%s" % (name, key, " " * (25 - len(name+key)), property.type)
+            txt += "%s(%s): %s%s" % (name, key, " " * (34 - len(name+key)), property.type)
             if property.code_point_db != None: txt += "%s(loaded)\n" % (" " * (15-len(property.type)))
             else:                              txt += "\n"
-
 
         return txt
 
 
 
+blocks_db  = FileBasedDB("Blocks.txt", "NumberSet", 0, 1)
 blocks_db  = FileBasedDB("Blocks.txt", "NumberSet", 0, 1)
 scripts_db = FileBasedDB("Scripts.txt", "NumberSet", 0, 1)
 names_db   = FileBasedDB("UnicodeData.txt", "number", 0, 1, Key2ColumnIdx=10)

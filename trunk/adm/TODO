@@ -1,3 +1,14 @@
+(*) 07y9m28d:
+    tracker.consider_interval(tracker.last_letter, value)
+
+(*) 07y9m23d:
+
+    In the 'history' computation the 'union' member function is used. 
+    See if it cannot be replaced by 'quick_add_interval'. This results
+    in a tremendous speedup. Also: I adapted NumberSet.clean() to be propper
+    and fast, quick_add_interval + clean() could probably provide 
+    tremendous speed-up.
+
 (*) 07y9m20d:
 
     name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
@@ -13,7 +24,7 @@
 
 (*) 07y7m2d:
 
-    NOTE: If some day the 'counting' feature is implemented for states to solve
+    NOTE: If some day the 'state counting' feature is implemented for states to solve
           the 'x*/x+' problem. then the functions 
 
            get_fixed_number_of_newlines_to_acceptance 
@@ -22,6 +33,10 @@
 	   need to return None, in case that there are such states involved.
 	   if counting states appear only in post or pre-conditions this does
 	   not matter.
+
+    NOTE: There was also the idea to implement the solution of X*/X with 
+          an inverse state machine after acception. Then, again these functions may
+          probably not be adapted.
 
 (*) 07y7m2d:
 

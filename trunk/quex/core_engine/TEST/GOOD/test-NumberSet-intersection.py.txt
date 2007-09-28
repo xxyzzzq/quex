@@ -1,45 +1,45 @@
 #
 #(a) one interval overlaps all of the others
-#  A          = [[10, 20), [21, 30)]
-#  B          = [[0, 40)]
-#  intersection(A,B) = [[10, 20), [21, 30)]
-#  intersection(B,A) = [[10, 20), [21, 30)]
+#  A          = [[10, 19], [21, 29]]
+#  B          = [[0, 39]]
+#  intersection(A,B) = [[10, 19], [21, 29]]
+#  intersection(B,A) = [[10, 19], [21, 29]]
 #
 #(b) one interval overlaps the lower of the others
-#  A          = [[50, 70), [71, 80)]
-#  B          = [[40, 60)]
-#  intersection(A,B) = [[50, 60)]
-#  intersection(B,A) = [[50, 60)]
+#  A          = [[50, 69], [71, 79]]
+#  B          = [[40, 59]]
+#  intersection(A,B) = [[50, 59]]
+#  intersection(B,A) = [[50, 59]]
 #
 #(c) one interval overlaps the upper of the others
-#  A          = [[11, 130)]
-#  B          = [[120, 140)]
-#  intersection(A,B) = [[120, 130)]
-#  intersection(B,A) = [[120, 130)]
+#  A          = [[11, 129]]
+#  B          = [[120, 139]]
+#  intersection(A,B) = [[120, 129]]
+#  intersection(B,A) = [[120, 129]]
 #
 #(d) one interval overlaps the middle of the others
-#  A          = [[150, 170), [171, 190)]
-#  B          = [[160, 180)]
-#  intersection(A,B) = [[160, 170), [171, 180)]
-#  intersection(B,A) = [[160, 170), [171, 180)]
+#  A          = [[150, 169], [171, 189]]
+#  B          = [[160, 179]]
+#  intersection(A,B) = [[160, 169], [171, 179]]
+#  intersection(B,A) = [[160, 169], [171, 179]]
 #
 #(e) one interval overlaps the 1st a little, the second totally
-#  A          = [[200, 230), [231, 240)]
-#  B          = [[220, 250)]
-#  intersection(A,B) = [[220, 230), [231, 240)]
-#  intersection(B,A) = [[220, 230), [231, 240)]
+#  A          = [[200, 229], [231, 239]]
+#  B          = [[220, 249]]
+#  intersection(A,B) = [[220, 229], [231, 239]]
+#  intersection(B,A) = [[220, 229], [231, 239]]
 #
 #(d) one interval overlaps the 1st a little, the second totally
-#  A          = [[250, 260), [261, 280)]
-#  B          = [[240, 290)]
-#  intersection(A,B) = [[250, 260), [261, 280)]
-#  intersection(B,A) = [[250, 260), [261, 280)]
+#  A          = [[250, 259], [261, 279]]
+#  B          = [[240, 289]]
+#  intersection(A,B) = [[250, 259], [261, 279]]
+#  intersection(B,A) = [[250, 259], [261, 279]]
 #
 #(e) all together
-#  A          = [[10, 130), [150, 170), [171, 190), [200, 230), [231, 240), [250, 260), [261, 280)]
-#  B          = [[0, 60), [120, 140), [160, 180), [220, 290)]
-#  intersection(A,B) = [[10, 60), [120, 130), [160, 170), [171, 180), [220, 230), [231, 240), [250, 260), [261, 280)]
-#  intersection(B,A) = [[10, 60), [120, 130), [160, 170), [171, 180), [220, 230), [231, 240), [250, 260), [261, 280)]
+#  A          = [[10, 129], [150, 169], [171, 189], [200, 229], [231, 239], [250, 259], [261, 279]]
+#  B          = [[0, 59], [120, 139], [160, 179], [220, 289]]
+#  intersection(A,B) = [[10, 59], [120, 129], [160, 169], [171, 179], [220, 229], [231, 239], [250, 259], [261, 279]]
+#  intersection(B,A) = [[10, 59], [120, 129], [160, 169], [171, 179], [220, 229], [231, 239], [250, 259], [261, 279]]
 # write output in temporary file: 'tmp'
 # plot with gnuplot:
 # > plot "tmp" w l

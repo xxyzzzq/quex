@@ -163,7 +163,9 @@ class Interval:
         return self.end - self.begin
 
     def __repr__(self):
-        return "[" + repr(self.begin) + ", " + repr(self.end) + ")"
+        if self.begin == self.end:       return "[]"
+        elif self.end - self.begin == 1: return "[" + repr(self.begin) + "]" 
+        else:                            return "[" + repr(self.begin) + ", " + repr(self.end-1) + "]"
 
     def get_utf8_string(self):
         #_____________________________________________________________________________
@@ -243,7 +245,8 @@ class NumberSet:
         assert Other.__class__.__name__ == "Interval"
 
         self.__intervals.append(Other)
-        if SortF: self.clean()
+        if SortF: 
+            self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
     def add_interval(self, NewInterval):
         """Adds an interval and ensures that no overlap with existing
@@ -274,7 +277,7 @@ class NumberSet:
                 new_interval_list.append(interval)
 
         self.__intervals = new_interval_list
-        self.clean()
+        self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
     def cut_interval(self, CutInterval):
         """Cuts an interval from the intervals of the set.
@@ -302,7 +305,7 @@ class NumberSet:
                 new_interval_list.append(interval)
 
         self.__intervals = new_interval_list
-        self.clean()
+        self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
     def contains(self, Number):
         """True  => if Number in NumberSet
@@ -394,52 +397,42 @@ class NumberSet:
 
         return result
         
-    def clean(self):
-        """Sorts all intervals, so according to their beginimum. Lowest comes first.
+    def clean(self, SortF=True):
+        """Sorts all intervals, so according to their begin. Lowest comes first.
            Combines adjacent and intersecting intervals to one.
         """
-        self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
-        return
 
-    def new_clean(self):
-        self.clean()
+        # (1) Sort intervals
+        if SortF:
+            self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
-        # combine adjacent intervals
+        # (2) Combine adjacent intervals
         L = len(self.__intervals)
         if L < 2: return
 
         new_intervals = []
-        i = 1 
+        i = 0 
         current = self.__intervals[0]
-        while i < L:
-            # Any 'i' that arrives here denotes an interval that is to be considered.
-            # Below, i is increased by two to indicate the the next interval is to be ignored.
-            # For the last interval, though, there is not self.__intervals[i+1]. Thus
-            # it is to be accepted in any case.
-
+        while i < L - 1:
+            i += 1
             next = self.__intervals[i]
 
             if current.end < next.begin: 
                 # (1) no intersection?
-                i += 1
                 new_intervals.append(current)
                 current = next
-                print "## current.end < next.begin: ", current, next
             else:
                 # (2) intersection:  [xxxxxxxxxxxxxxx]
                 #                              [yyyyyyyyyyyyyyyyy]
                 #          becomes   [xxxxxxxxxxxxxxxxxxxxxxxxxxx]
                 #
                 # => do not append interval i + 1, do not consider i + 1
-                i += 2
                 if current.end > next.end:
                     # no adaptions necessary, simply ignore next interval
-                    print "## current.end > next.end: ", current, next
                     pass
                 else:
                     # adapt upper border of current interval to the end of the next
                     current.end = next.end
-                    print "## current.end < next.end: ", current, next
 
         new_intervals.append(current)
 
