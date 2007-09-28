@@ -1,6 +1,6 @@
 <no file 'TITLE.hwut'>
 DIR:  ./demo/TEST
-DATE: Fri Sep 28 07:46:01 2007
+DATE: Sat Sep 29 00:25:19 2007
 
 
  -- demo/000:
@@ -47,7 +47,7 @@ DATE: Fri Sep 28 07:46:01 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/TEST
-DATE: Fri Sep 28 07:47:17 2007
+DATE: Sat Sep 29 00:26:30 2007
 
     Prepare Pattern Information for Code Generation
     test-coder-get_generator_input.py .......................................[OK]
@@ -63,7 +63,7 @@ Input Buffer Tests
 Frank-Rene Schaefer
 
 DIR:  ./quex/code_base/buffer/TEST
-DATE: Fri Sep 28 07:47:17 2007
+DATE: Sat Sep 29 00:26:31 2007
 make: test-forward-get-2
 make: test-misc-II
 make: test-misc-III
@@ -114,7 +114,7 @@ ze = 11, Fallback Size = 0
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/buffer/iconv/TEST
-DATE: Fri Sep 28 07:47:21 2007
+DATE: Sat Sep 29 00:26:34 2007
 make: n-beat
 make: one-beat
 
@@ -132,7 +132,7 @@ make: one-beat
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/code_base/template/TEST
-DATE: Fri Sep 28 07:47:22 2007
+DATE: Sat Sep 29 00:26:35 2007
 make: test-simple
 make: test-simple-2
 
@@ -154,7 +154,7 @@ make: test-simple-2
 Number Set Operations and UTF-8 Encoding
 
 DIR:  ./quex/core_engine/TEST
-DATE: Fri Sep 28 07:47:24 2007
+DATE: Sat Sep 29 00:26:37 2007
 
 
  -- NumberSet:
@@ -187,7 +187,7 @@ DATE: Fri Sep 28 07:47:24 2007
 Code Generation
 
 DIR:  ./quex/core_engine/generator/TEST
-DATE: Fri Sep 28 07:47:24 2007
+DATE: Sat Sep 29 00:26:37 2007
 
 
  -- Pre- and Post- Conditions:
@@ -269,7 +269,7 @@ DATE: Fri Sep 28 07:47:24 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/regular_expression/TEST
-DATE: Fri Sep 28 07:48:07 2007
+DATE: Sat Sep 29 00:27:20 2007
 
     State Machine Pattern Matching
     test-pattern-matching.py ................................................[OK]
@@ -312,9 +312,7 @@ DATE: Fri Sep 28 07:48:07 2007
     Simple repeated expressions
     test-repeated-expressions.py ............................................[OK]
     Alternative Expressions
-
-    error: no file 'GOOD/test-set-expressions.py.txt'
-    test-set-expressions.py ...............................................[DONE]
+    test-set-expressions.py .................................................[OK]
 ---------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -325,7 +323,7 @@ DATE: Fri Sep 28 07:48:07 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/core_engine/state_machine/TEST
-DATE: Fri Sep 28 07:48:11 2007
+DATE: Sat Sep 29 00:27:23 2007
 
 
  -- StateMachine:
@@ -413,7 +411,7 @@ DATE: Fri Sep 28 07:48:11 2007
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
 DIR:  ./quex/frs_py/TEST
-DATE: Fri Sep 28 07:48:30 2007
+DATE: Sat Sep 29 00:27:43 2007
 
 
  -- file_in/read_until_closing_bracket:
@@ -439,13 +437,4 @@ SUMMARY:
 ./quex/TEST...................................[OK]
 ./quex/code_base/buffer/TEST..................[OK]
 ./quex/core_engine/regular_expression/TEST....[OK]
-DIR: /home/fschaef/prj/quex/trunk/quex/core_engine/regular_expression/TEST
-The following files have no entry in their 'GOOD' directories:
-
-    test-set-expressions.py.txt
-
-
-Copy:  ./quex/core_engine/regular_expression/TEST/OUT/test-set-expressions.py.txt
-to:    ./quex/core_engine/regular_expression/TEST/GOOD/ ?
-Note, that this means that it is taken for reference during any later unit test!
-('yes', 'all', 'no', 'none')
+<terminated>
