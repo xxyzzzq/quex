@@ -1,0 +1,78 @@
+// (C) 2007 Frank-Rene Schaefer
+//
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
+#define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
+
+extern "C" {
+#include <quex/code_base/compatibility/inttypes.h>
+}
+
+namespace quex {
+
+    // NOTE: Specializations are only implemented for InputHandleTypeP = pointer.
+    //       Any other implementation is forbidden and will not compile.
+    //       This is intended! <fschaef 07y7m22d>
+    template <class InputHandleTypeP, class ProvidedCharacterType>
+	struct input_strategy_base;
+
+    template <class InputHandleTypeP, class ProvidedCharacterType=uint8_t>
+	struct input_strategy;
+
+
+    template <class InputHandleType, class ProvidedCharacterType>
+    struct input_strategy_base<InputHandleType*, ProvidedCharacterType> {
+
+	typedef typename InputHandleType::streampos   stream_position;
+	typedef typename InputHandleType::streamoff   stream_offset;
+	typedef InputHandleType                       input_handle_type;
+
+	stream_position    tell()                           { return ih->tellg(); }
+	void               seek(const stream_position& Pos) { ih->seekg(Pos); }
+	void               close()                          { /* ih->close(); */ }
+	void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
+
+    protected:
+	InputHandleType* ih;
+	size_t           __load_bytes(void* buffer_position, const size_t ByteNToRead)
+	{ return ih->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); }
+    };
+
+    template <class ProvidedCharacterType>
+    struct input_strategy_base<FILE*, ProvidedCharacterType> {
+	typedef long   stream_position;
+	typedef long   stream_offset;
+	typedef FILE   input_handle_type;
+
+	stream_position    tell()                           { return ftell(ih); }
+	void               seek(const stream_position& Pos) { fseek(ih, Pos, SEEK_SET); }
+	void               close()                          { fclose(ih); }
+	void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
+
+    protected:
+	FILE*   ih;
+	size_t  __load_bytes(void* buffer_position, const size_t ByteNToRead)
+    	{ return fread(buffer_position, 1, ByteNToRead, ih); }
+    };
+
+    // specification on for InputHandleType*, no other specification.
+    template <class InputHandleType, class ProvidedCharacterType>
+    struct input_strategy<InputHandleType*, ProvidedCharacterType> : 
+	public input_strategy_base<InputHandleType*, ProvidedCharacterType> 
+    {
+	typedef input_strategy_base<InputHandleType*, ProvidedCharacterType> base;
+	typedef typename base::stream_position     stream_position;
+	typedef typename base::stream_offset       stream_offset;
+	typedef typename base::input_handle_type   input_handle_type;
+	typedef ProvidedCharacterType              provided_character_type;
+
+	static const size_t SizeOfCharacter = sizeof(provided_character_type);  
+
+	input_strategy(InputHandleType* InputHandle) { base::ih = InputHandle; }
+
+	int   read(ProvidedCharacterType* start_of_buffer, const int N)  
+	{ return base::__load_bytes(start_of_buffer, N * SizeOfCharacter); }
+    };
+
+}
+
+#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__

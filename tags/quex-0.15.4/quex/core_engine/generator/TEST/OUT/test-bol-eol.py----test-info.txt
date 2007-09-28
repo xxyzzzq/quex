@@ -1,0 +1,2 @@
+Simple: Begin of Line (BOL), End of Line (EOL)
+CHOICES: PlainMemory, QuexBuffer
