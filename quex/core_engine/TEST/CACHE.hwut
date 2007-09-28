@@ -13,7 +13,7 @@ RESULT:   OK;
 =====
 -1L  test-NumberSet-difference.py
 NumberSet:Difference
-RESULT:   FAIL;
+RESULT:   OK;
 =====
 -1L  test-NumberSet-condition-code.py
 NumberSet:Condition Code Generation
@@ -25,15 +25,15 @@ RESULT:   OK;
 =====
 -1L  test-NumberSet-clean.py
 NumberSet:Union
-RESULT:   FAIL;
+RESULT:   OK;
 =====
 -1L  test-NumberSet-intersection.py
 NumberSet:Intersection
-RESULT:   FAIL;
+RESULT:   OK;
 =====
 -1L  test-NumberSet-union.py
 NumberSet:Union
-RESULT:   FAIL;
+RESULT:   OK;
 =====
 1180879172L  ./test-NumberSet-condition-code.py.bak
 0 1.8
