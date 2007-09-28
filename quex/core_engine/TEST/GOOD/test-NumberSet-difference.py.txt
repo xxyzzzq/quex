@@ -1,45 +1,45 @@
 #
 #(a) one interval overlaps all of the others
-#  A          = [[10, 20), [21, 30)]
-#  B          = [[0, 40)]
+#  A          = [[10, 19], [21, 29]]
+#  B          = [[0, 39]]
 #  difference(A,B) = []
-#  difference(B,A) = [[0, 10), [20, 21), [30, 40)]
+#  difference(B,A) = [[0, 9], [20], [30, 39]]
 #
 #(b) one interval overlaps the lower of the others
-#  A          = [[50, 70), [71, 80)]
-#  B          = [[40, 60)]
-#  difference(A,B) = [[60, 70), [71, 80)]
-#  difference(B,A) = [[40, 50)]
+#  A          = [[50, 69], [71, 79]]
+#  B          = [[40, 59]]
+#  difference(A,B) = [[60, 69], [71, 79]]
+#  difference(B,A) = [[40, 49]]
 #
 #(c) one interval overlaps the upper of the others
-#  A          = [[11, 130)]
-#  B          = [[120, 140)]
-#  difference(A,B) = [[11, 120)]
-#  difference(B,A) = [[130, 140)]
+#  A          = [[11, 129]]
+#  B          = [[120, 139]]
+#  difference(A,B) = [[11, 119]]
+#  difference(B,A) = [[130, 139]]
 #
 #(d) one interval overlaps the middle of the others
-#  A          = [[150, 170), [171, 190)]
-#  B          = [[160, 180)]
-#  difference(A,B) = [[150, 160), [180, 190)]
-#  difference(B,A) = [[170, 171)]
+#  A          = [[150, 169], [171, 189]]
+#  B          = [[160, 179]]
+#  difference(A,B) = [[150, 159], [180, 189]]
+#  difference(B,A) = [[170]]
 #
 #(e) one interval overlaps the 1st a little, the second totally
-#  A          = [[200, 230), [231, 240)]
-#  B          = [[220, 250)]
-#  difference(A,B) = [[200, 220)]
-#  difference(B,A) = [[230, 231), [240, 250)]
+#  A          = [[200, 229], [231, 239]]
+#  B          = [[220, 249]]
+#  difference(A,B) = [[200, 219]]
+#  difference(B,A) = [[230], [240, 249]]
 #
 #(d) one interval overlaps the 1st a little, the second totally
-#  A          = [[250, 260), [261, 280)]
-#  B          = [[240, 290)]
+#  A          = [[250, 259], [261, 279]]
+#  B          = [[240, 289]]
 #  difference(A,B) = []
-#  difference(B,A) = [[240, 250), [260, 261), [280, 290)]
+#  difference(B,A) = [[240, 249], [260], [280, 289]]
 #
 #(e) all together
-#  A          = [[10, 130), [150, 170), [171, 190), [200, 230), [231, 240), [250, 260), [261, 280)]
-#  B          = [[0, 60), [120, 140), [160, 180), [220, 290)]
-#  difference(A,B) = [[60, 120), [150, 160), [180, 190), [200, 220)]
-#  difference(B,A) = [[0, 10), [130, 140), [170, 171), [230, 231), [240, 250), [260, 261), [280, 290)]
+#  A          = [[10, 129], [150, 169], [171, 189], [200, 229], [231, 239], [250, 259], [261, 279]]
+#  B          = [[0, 59], [120, 139], [160, 179], [220, 289]]
+#  difference(A,B) = [[60, 119], [150, 159], [180, 189], [200, 219]]
+#  difference(B,A) = [[0, 9], [130, 139], [170], [230], [240, 249], [260], [280, 289]]
 # write output in temporary file: 'tmp'
 # plot with gnuplot:
 # > plot "tmp" w l

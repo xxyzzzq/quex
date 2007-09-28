@@ -25,10 +25,6 @@ RESULT:   OK;
 Basics:Map character *string* to state machine
 RESULT:   OK;
 =====
--1L  test-pre-and-post-condition.py
-Conditional Analysis:pre- and post-conditions
-RESULT:   OK;
-=====
 -1L  test-set.py
 Basics:Map character *range* to state machine
 RESULT:   OK;
@@ -45,15 +41,23 @@ RESULT:   OK;
 Conditional Analysis:Begin of Line '^', End of Line '$'
 RESULT:   OK;
 =====
--1L  test-snap_backslashed_character.py
-Backslashed Characters:General
-RESULT:   OK;
-=====
 -1L  test-post-condition.py
 Conditional Analysis:post conditions
 RESULT:   OK;
 =====
+-1L  test-snap_backslashed_character.py
+Backslashed Characters:General
+RESULT:   OK;
+=====
+-1L  test-pre-and-post-condition.py
+Conditional Analysis:pre- and post-conditions
+RESULT:   OK;
+=====
 -1L  test-eol-carriage-return-newline.py
 Conditional Analysis:End of Line '$' (with DOS/Windows '\r\n')
+RESULT:   OK;
+=====
+-1L  test-set-expressions.py
+Combination:Alternative Expressions
 RESULT:   OK;
 =====

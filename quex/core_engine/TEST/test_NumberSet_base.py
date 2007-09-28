@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 import sys
 import os
+from copy import deepcopy
+
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.interval_handling import Interval, NumberSet
@@ -61,7 +63,19 @@ def do(Title, func):
         print A6.difference(B6).gnuplot_string(1)
         print B6.difference(A6).gnuplot_string(0)
     elif Title == "CLEAN":
-        print "# no data yet"
+        X = deepcopy(A6)
+        for interval in B6.get_intervals():
+            X.quick_append_interval(interval)
+        X.clean()
+        print X.gnuplot_string(1)
+
+        X = deepcopy(B6)
+        for interval in A6.get_intervals():
+            X.quick_append_interval(interval)
+        X.clean()
+        print X.gnuplot_string(0)
+
+        
 
 
 

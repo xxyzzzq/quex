@@ -27,14 +27,14 @@ RESULT:   OK;
 =====
 -1L  test-StateMachine-clone.py
 StateMachine:Cloning
-RESULT:   OK;
+RESULT:   FAIL;
 =====
 -1L  test-parallelize.py
 StateMachine Operations:Paralell
 RESULT:   OK;
 =====
--1L  test-StateMachine-trace-origin-hopcroft-optimization.py
-Tracing origin:Hopcroft optimization (minimize state set)
+-1L  test-StateMachine-trace-origin-create-DFA.py
+Tracing origin:NFA to DFA (subset construction)
 RESULT:   OK;
 =====
 -1L  test-StateMachine-create-DFA.py
@@ -85,13 +85,13 @@ RESULT:   OK;
 DFA:Hopcroft optimization (minimize state set)
 RESULT:   OK;
 =====
--1L  test-StateMachine-trace-origin-create-DFA.py
-Tracing origin:NFA to DFA (subset construction)
+-1L  test-StateMachine-trace-origin-hopcroft-optimization.py
+Tracing origin:Hopcroft optimization (minimize state set)
 RESULT:   OK;
 =====
 -1L  test-StateMachine-elementary_trigger_sets-2.py
 NFA:Get elementary trigger sets II
-RESULT:   OK;
+RESULT:   FAIL;
 =====
 -1L  test-setup_post_condition.py
 StateMachine Operations:Append Post Condition
