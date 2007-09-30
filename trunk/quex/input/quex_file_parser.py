@@ -384,21 +384,20 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
         token_constructor_args = ""
         
     # after 'send' the token queue is filled and one can safely return
-    if token_name != "quex::token::ID_TERMINATION":
-        if token_name.find(Setup.input_token_id_prefix) != 0:
-            error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
-                      "found: '%s'" % token_name, fh)
-        prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
+    if token_name.find(Setup.input_token_id_prefix) != 0:
+        error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
+                  "found: '%s'" % token_name, fh)
+    prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
 
-        if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
-            error_msg("Token identifier '%s' has not been declared int token {...} section.\n" % token_name + \
-                      "Quex defines this token id '%s' implicitly.\n" % token_name + \
-                      "Please, note that inside the token {...} section tokens are declared **without** prefix.\n" + \
-                      "That means, in that section ommit the '%s' at the beginning of the token identifier." % \
-                      Setup.input_token_id_prefix, \
-                      fh, DontExitF=True)
-            lexer_mode.token_id_db[prefix_less_token_name] = \
-                    TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
+    if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
+        error_msg("Token identifier '%s' has not been declared int token {...} section.\n" % token_name + \
+                  "Quex defines this token id '%s' implicitly.\n" % token_name + \
+                  "Please, note that inside the token {...} section tokens are declared **without** prefix.\n" + \
+                  "That means, in that section ommit the '%s' at the beginning of the token identifier." % \
+                  Setup.input_token_id_prefix, \
+                  fh, DontExitF=True)
+        lexer_mode.token_id_db[prefix_less_token_name] = \
+                TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
 
     code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
 
