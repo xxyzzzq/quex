@@ -74,8 +74,8 @@ func_str = \
            %%TOKEN_ID_CASES%%
        }
 
-       if     ( TokenID == %%TOKEN_CLASS%%::ID_TERMINATION )   return termination_string;
-       else if( TokenID == %%TOKEN_CLASS%%::ID_UNINITIALIZED ) return uninitialized_string;
+       if     ( TokenID == %%TOKEN_PREFIX%%ID_TERMINATION )   return termination_string;
+       else if( TokenID == %%TOKEN_PREFIX%%ID_UNINITIALIZED ) return uninitialized_string;
        std::map<%%TOKEN_CLASS%%::id_type, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
@@ -244,6 +244,3 @@ if __name__ == "__main__":
         
     do(Setup(input_file, output_file, token_class_file, token_class, token_prefix, token_counter_offset))
 
-#license-info Sat Aug  5 12:31:27 2006#
-#license-info Sat Aug  5 13:05:27 2006#
-#license-info Sat Aug  5 14:10:32 2006#
