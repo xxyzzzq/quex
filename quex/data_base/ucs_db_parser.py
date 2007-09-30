@@ -61,6 +61,37 @@ def convert_column_to_interval(table, CodeColumnIdx):
 
         row[CodeColumnIdx] = Interval(begin, end)
 
+def convert_table_to_associative_map(self, table):
+    """Produces a dictionary that maps from 'keys' to NumberSets. The 
+       number sets represent the code points for which the key (property)
+       is valid.
+
+       ValueColumnIdx: Column that contains the character code interval or
+                       string to which one wishes to map.
+
+       KeyColmnIdx:   Column that contains the 'key' to be used for the map
+
+       self.db = database to contain the associative map.
+    """
+    ValueColumnIdx = self.value_column_index
+    KeyColumnIdx   = self.key_column_index
+
+    enter = { "NumberSet": self.__enter_number_set,
+              "number":    self.__enter_number,
+              "string":    self.__enter_string
+            }[self.value_type]
+
+    i = 0
+    for record in table:
+        i += 1
+        key   = record[KeyColumnIdx]
+        value = record[ValueColumnIdx]
+
+        enter(key, value)
+        if self.optional_second_key_column_index != -1:
+            key2 = record[self.optional_second_key_column_index]
+            enter(key2, value)
+
 class FileBasedDB:
 
     def __init__(self, DB_Filename, ValueType, ValueColumnIdx, KeyColumnIdx, Key2ColumnIdx=-1):
@@ -88,36 +119,6 @@ class FileBasedDB:
     def __enter_number(self, Key, Value):
         self.db[Key] = Value
 
-    def __convert_table_to_associative_map(self, table):
-        """Produces a dictionary that maps from 'keys' to NumberSets. The 
-           number sets represent the code points for which the key (property)
-           is valid.
-
-           ValueColumnIdx: Column that contains the character code interval or
-                           string to which one wishes to map.
-
-           KeyColmnIdx:   Column that contains the 'key' to be used for the map
-
-           self.db = database to contain the associative map.
-        """
-        ValueColumnIdx = self.value_column_index
-        KeyColumnIdx   = self.key_column_index
-
-        enter = { "NumberSet": self.__enter_number_set,
-                  "number":    self.__enter_number,
-                  "string":    self.__enter_string
-                }[self.value_type]
-
-        i = 0
-        for record in table:
-            i += 1
-            key   = record[KeyColumnIdx]
-            value = record[ValueColumnIdx]
-
-            enter(key, value)
-            if self.optional_second_key_column_index != -1:
-                key2 = record[self.optional_second_key_column_index]
-                enter(key2, value)
 
     def init_db(self):
         table = parse_table(self.db_filename)
@@ -264,9 +265,18 @@ class PropertyInfoDB:
 
 
 
+def __handle_UnicodeData():
+    global names_db 
+    global numeric_value_db
+
+    table = parse_table("UnicodeData.txt")
+    convert_column_to_number(table, 0)
+
+
 blocks_db  = FileBasedDB("Blocks.txt", "NumberSet", 0, 1)
-blocks_db  = FileBasedDB("Blocks.txt", "NumberSet", 0, 1)
+age_db     = FileBasedDB("DerivedAge.txt", "NumberSet", 0, 1)
 scripts_db = FileBasedDB("Scripts.txt", "NumberSet", 0, 1)
+
 names_db   = FileBasedDB("UnicodeData.txt", "number", 0, 1, Key2ColumnIdx=10)
 property_info_db = PropertyInfoDB()
 
@@ -274,6 +284,7 @@ property_info_db = PropertyInfoDB()
 
 
 print blocks_db["Arabic"]
+print age_db["5.0"]
 print scripts_db["Greek"]
 print "%X" % names_db["LATIN SMALL LETTER CLOSED REVERSED EPSILON"]
 print property_info_db["White_Space"]
