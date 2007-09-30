@@ -16,12 +16,22 @@ class Tracker:
         #       to the following character. (see: consider_letter(...)).
         self.last_letter = -1 
  
-    def __consider_interval(self, x0, x1):
+    def __consider_interval(self, Begin, End):
         """... the core of the matter"""
-        if x1 == None: x1 = x0 + 1
+        if End == None: End = Begin + 1
         #
-        if self.negation_f == False:  self.direct_match_set.add_interval(Interval(x0,x1))
-        else:                         self.inverse_match_set.add_interval(Interval(x0,x1))
+        if Begin > End:
+            # In case that the 'end' is lesser than the begin, on canot simply switch
+            # end and begin. End points to the first element beyond the valid interval.
+            begin = End - 1
+            end = Begin
+        else:
+            begin = Begin
+            end   = End
+
+        interval = Interval(begin, end)
+        if self.negation_f == False:  self.direct_match_set.add_interval(interval)
+        else:                         self.inverse_match_set.add_interval(interval)
 
     def consider_interval(self, x0, x1 = None):
         # flush last letter if it exists
@@ -44,10 +54,10 @@ class Tracker:
         else:               self.negation_f = True 
 
 def do(UTF8_String):
-    """Transforms the regular expression character set expression into 
-       an object of type NumberSet, i.e. a set of integers representing
-       the unicode characters of the set.
+    """Transforms an expression of the form [a-z0-9A-Z] into a NumberSet of
+       code points that corresponds to the characters and character ranges mentioned.
     """
+
     def __consider_backslash_occurence(x, i):
         value, i = snap_backslashed_character.do(x, i)
         if value == None:
@@ -71,9 +81,10 @@ def do(UTF8_String):
 
             i += 1
             if i + 1 < Lx and x[i] == ord("\\"):
-                value, i = __consider_backslash_occurence(x, i)
+                value, i = __consider_backslash_occurence(x, i) 
+                value += 1        # value denotes 'end', i.e first character outside the interval
             else:
-                value = x[i] + 1
+                value = x[i] + 1  # value denotes 'end'
                 i += 1
 
             tracker.consider_interval(tracker.last_letter, value)
