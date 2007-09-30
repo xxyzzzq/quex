@@ -27,7 +27,8 @@ def test(TestString, NumbersF=False):
     except exception.RegularExpressionException, x:
         print x.message
 
-test("[: alnum :]", NumbersF=True)    
+test("[: alnum :]",         NumbersF=True)    
+test("[: [\\100-\\0] :]",   NumbersF=True)    
 test("[: [\\x10-\\x40] :]", NumbersF=True)    
 test("[: [\\X10-\\X40] :]", NumbersF=True)    
 test("[: [\\U10-\\U40] :]", NumbersF=True)    
