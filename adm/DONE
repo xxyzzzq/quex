@@ -1,3 +1,13 @@
+(*) 07y9m19h:
+
+    Check what happens if [z-a] is specified as a range
+    Implemented equivalence for z-a and a-z. See Documentation
+
+(*) 07y9m28d:
+    tracker.consider_interval(tracker.last_letter, value)
+
+    Bug fixed, appeared only for interval ends that are backslashed.
+
 (*) 07y8m4d:
 
     automatic token id generation in case that a token id is not specified.

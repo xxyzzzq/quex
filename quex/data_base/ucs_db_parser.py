@@ -61,7 +61,22 @@ def convert_column_to_interval(table, CodeColumnIdx):
 
         row[CodeColumnIdx] = Interval(begin, end)
 
-def convert_table_to_associative_map(self, table):
+def __enter_number_set(db, Key, Value):
+    ValueType = Value.__class__.__name__
+    assert ValueType in ["Interval", "int"]
+
+    if ValueType == "int": Value = Interval(Value)
+
+    if db.has_key(Key): db[Key].quick_append_interval(Value, SortF=False)
+    else:               db[Key] = NumberSet(Value)
+
+def __enter_string(db, Key, Value):
+    db[Key] = Value
+
+def __enter_number(db, Key, Value):
+    db[Key] = Value
+
+def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumnIdx, OptionalKeyColumnIdx=-1):
     """Produces a dictionary that maps from 'keys' to NumberSets. The 
        number sets represent the code points for which the key (property)
        is valid.
@@ -73,24 +88,27 @@ def convert_table_to_associative_map(self, table):
 
        self.db = database to contain the associative map.
     """
-    ValueColumnIdx = self.value_column_index
-    KeyColumnIdx   = self.key_column_index
+    try:
+        enter = { "NumberSet": __enter_number_set,
+                  "number":    __enter_number,
+                  "string":    __enter_string
+                }[ValueType]
+    except:
+        raise BaseException("ValueType = '%s' unknown.\n" % ValueType)
 
-    enter = { "NumberSet": self.__enter_number_set,
-              "number":    self.__enter_number,
-              "string":    self.__enter_string
-            }[self.value_type]
-
+    db = {}
     i = 0
     for record in table:
         i += 1
         key   = record[KeyColumnIdx]
         value = record[ValueColumnIdx]
 
-        enter(key, value)
-        if self.optional_second_key_column_index != -1:
-            key2 = record[self.optional_second_key_column_index]
-            enter(key2, value)
+        enter(db, key, value)
+        if  OptionalKeyColumnIdx != -1:
+            key2 = record[OptionalKeyColumnIdx]
+            enter(db, key2, value)
+
+    return db
 
 class FileBasedDB:
 
@@ -107,27 +125,20 @@ class FileBasedDB:
         try:    return self.db[Value]
         except: pass
 
-    def __enter_number_set(self, Key, Value):
-        if self.db.has_key(Key):
-            self.db[Key].quick_append_interval(Value)
-        else:
-            self.db[Key] = NumberSet(Value)
-
-    def __enter_string(self, Key, Value):
-        self.db[Key] = Value
-
-    def __enter_number(self, Key, Value):
-        self.db[Key] = Value
-
 
     def init_db(self):
         table = parse_table(self.db_filename)
         if self.value_type == "NumberSet": convert_column_to_interval(table, self.value_column_index)
         elif self.value_type == "number":  convert_column_to_number(table, self.value_column_index)
-        self.__convert_table_to_associative_map(table)
+
+        self.db = convert_table_to_associative_map(table, 
+                                                   self.value_column_index, 
+                                                   self.value_type,
+                                                   self.key_column_index, 
+                                                   self.optional_second_key_column_index)
 
 class PropertyInfo:
-    def __init__(self, Name, Alias, Type):
+    def __init__(self, Name, Alias, Type, RelatedPropertyInfoDB):
         """Alias = short form of Name or Value.
         """
         self.name  = Name
@@ -135,8 +146,11 @@ class PropertyInfo:
         self.type  = Type
         self.name_to_alias_map = {}   # map value to alias
         self.code_point_db     = None # only for binary properties
+        self.related_property_info_db = RelatedPropertyInfoDB
 
     def __repr__(self):
+        assert self.type in ["Binary", "Catalogue", "Enumerated", "String", "Miscellaneous", "Numeric"]
+
         txt  = "NAME          = '%s'\n" % self.name
         txt += "ALIAS         = '%s'\n" % self.alias
         txt += "TYPE          = '%s'\n" % self.type
@@ -146,10 +160,104 @@ class PropertyInfo:
             txt += "VALUE_ALIASES = {\n    %s\n}\n" % repr(self.name_to_alias_map).replace(",", ",\n    ")
         return txt
 
-    def get_code_points(self, Value):
-        """Returns UCS code points of the characters for which 'property=Value'.
+    def get_character_set(self, Value=None):
+        """Returns the character set that corresponds to 'Property==Value'.
+           'Value' can be a property value or a property value alias.
+           For binary properties 'Value' must be None.
         """
-        pass
+        assert self.type != "Binary" or Value == None
+
+        if self.code_point_db == None:
+            self.init_code_point_db()
+
+        if self.type == "Binary": 
+            return self.code_point_db
+
+        if self.name_to_alias_map.has_key(Value): value_alias = Value
+        else:                                     value_alias = self.name_to_alias_map[Value]
+
+        return self.code_point_db[value_alias]
+
+    def init_code_point_db(self):
+
+        if self.alias in ["na", "na1", "nv", "gc", "bc"]:
+            # Name
+            # Unicode 1 Name 
+            # Numeric Value
+            # General Category
+            # Bidi Class
+            self.related_property_info_db.load_UnicodeData()
+            return
+        
+        if self.type == "Catalog":
+            if self.alias == "blk":
+                self.code_point_db = FileBasedDB("Blocks.txt",     "NumberSet", 0, 1)
+            elif self.alias == "age":
+                self.code_point_db = FileBasedDB("DerivedAge.txt", "NumberSet", 0, 1)
+            elif self.alias == "sc":
+                self.code_point_db = FileBasedDB("Scripts.txt",    "NumberSet", 0, 1)
+
+        elif self.type == "Binary":
+
+            if self.alias in ["AHex", "Bidi_C", "CE", "Dash", "Dep", "Dia",
+                    "Ext", "Hex", "Hyphen", "IDSB", "IDST", "Ideo", "Join_C",
+                    "LOE", "NChar", "OAlpha", "ODI", "OGr_Ext", "OIDC", "OIDS",
+                    "OLower", "OMath", "OUpper", "Pat_Syn", "Pat_WS", "QMark",
+                    "Radical", "SD", "STerm", "Term", "UIdeo", "VS", "WSpace"]:
+
+                filename = "PropList.txt"
+
+            elif self.alias == "Bidi_M":
+
+                filename = "extracted/DerivedBinaryProperties.txt"
+
+            elif self.alias in ["Alpha", "DI", "Gr_Base", "Gr_Ext",
+                    "Gr_Link", "IDC", "IDS", "Math", "Lower", "Upper", "XIDC", "XIDS" ]:
+
+                filename = "DerivedCoreProperties.txt"
+
+            elif self.alias == "Comp_Ex":
+
+                filename = "DerivedNormalizationProps.txt"
+
+            elif self.alias == "CE":
+
+                self.related_property_info_db.load_Composition_Exclusion()
+                return
+
+            else:
+
+                print "## no db file:"
+                print self
+                return
+                   
+            self.related_property_info_db.load_binary_properties(filename)
+
+        elif self.type == "Enumerated":
+            try:
+                filename = {
+                        "Numeric_Type":              "extracted/DerivedNumericType.txt",
+                        "Joining_Type":              "extracted/DerivedJoiningType.txt",
+                        "Joining_Group":             "extracted/DerivedJoiningGroup.txt",
+                        "Word_Break":                "auxiliary/WordBreakProperty.txt",
+                        "Sentence_Break":            "auxiliary/SentenceBreakProperty.txt",
+                        "Grapheme_Cluster_Break":    "auxiliary/GraphemeClusterBreak.txt",
+                        "Hangul_Syllable_Type":      "HangulSyllableType.txt",
+                        "Line_Break":                "extracted/DerivedLineBreak.txt",
+                        "Decomposition_Type":        "extracted/DerivedDecompositionType.txt",
+                        "East_Asian_Width":          "extracted/DerivedEastAsionWidth.txt",
+                        "Canonical_Combining_Class": "extracted/DerivedCanonicalCombiningClass.txt",
+                    }[self.name]
+            except:
+                print "## no db file for:"
+                print self
+                return
+
+            self.code_point_db = FileBasedDB(filename, "NumberSet", 0, 1)
+
+        elif self.type == "Miscellaneous":
+            pass # see first check
+
 
 
 
@@ -160,16 +268,34 @@ class PropertyInfoDB:
 
     def __getitem__(self, PropertyName):
         if self.db == {}: self.__init_db()
-        try:    return self.db[self.property_name_to_alias_map[PropertyName]]
+
+        try:              return self.db[self.property_name_to_alias_map[PropertyName]]
         except: return ""
+
+    def get_character_set(self, Property, Value=None):
+        """Returns the character set that corresponds to 'Property==Value'.
+
+           'Property' can be a property name or a property alias.
+           'Value'    can be a property value or a property value alias.
+                      For binary properties 'Value' must be None.
+        """
+        if self.db == {}: self.__init_db()
+
+        if self.property_name_to_alias_map.has_key(Property):
+            property_alias = self.property_name_to_alias_map[Property]
+        else:
+            property_alias = Property
+
+        if not self.db.has_key(property_alias):
+            return None
+
+        property = self.db[property_alias]
+
+        return property.get_character_set(Value)
 
     def __init_db(self):
         self.__parse_property_name_alias_and_type()
         self.__parse_property_value_and_value_aliases()
-        # -- most of the properties are binary, so let's load the file PropList and
-        #    fill them in one single beat.
-        self.__load_binary_property_code_points()
-        self.__load_binary_property_code_points_Composition_Exclusion()
 
     def __parse_property_name_alias_and_type(self):
         fh = open_data_base_file("PropertyAliases.txt")
@@ -187,7 +313,6 @@ class PropertyInfoDB:
                 property_type = line.split()[1]
                 continue
             
-
             line = comment_deleter_re.sub("", line)
             if line.isspace() or line == "": continue
             # append content to record set
@@ -195,7 +320,7 @@ class PropertyInfoDB:
             property_alias = fields[0]
             property_name  = fields[1]
 
-            self.db[property_alias] = PropertyInfo(property_name, property_alias, property_type)
+            self.db[property_alias] = PropertyInfo(property_name, property_alias, property_type, self)
             self.property_name_to_alias_map[property_name] = property_alias
 
     def __parse_property_value_and_value_aliases(self):
@@ -213,33 +338,28 @@ class PropertyInfoDB:
             property_info = self.db[property_alias]
             property_info.name_to_alias_map[property_value] = property_value_alias
 
-    def __load_binary_property_code_points(self):
+    def load_binary_properties(self, DB_Filename):
         # property descriptions working with 'property names'
-        db_list_1 = [ 
-                FileBasedDB("PropList.txt", "NumberSet", 0, 1),
-                FileBasedDB("extracted/DerivedBinaryProperties.txt", "NumberSet", 0, 1),
-                FileBasedDB("DerivedCoreProperties.txt", "NumberSet", 0, 1),
-                FileBasedDB("DerivedNormalizationProps.txt", "NumberSet", 0, 1),
-                ]
+        db = FileBasedDB(DB_Filename, "NumberSet", 0, 1)
+        db.init_db()
 
-        def get_item_list(db_list):
-            item_list = []
-            for db in db_list:
-                db.init_db()
-                item_list.extend(db.db.items())
-            return item_list
+        for key, number_set in db.db.items():
 
-        item_list_1 = get_item_list(db_list_1)
-
-        for key, number_set in item_list_1:
             if self.property_name_to_alias_map.has_key(key): 
                 property_name_alias = self.property_name_to_alias_map[key]
             else:
                 property_name_alias = key
-            if self.db[property_name_alias].type != "Binary": continue
-            self.db[property_name_alias].code_point_db = number_set
 
-    def __load_binary_property_code_points_Composition_Exclusion(self):
+            property = self.db[property_name_alias]
+
+            if property_name_alias == "Comp_Ex": print number_set # DEBUG
+
+            if property.type != "Binary": continue
+
+
+            property.code_point_db = number_set
+
+    def load_Composition_Exclusion(self):
         table = parse_table("CompositionExclusions.txt")
 
         number_set = NumberSet()
@@ -250,6 +370,28 @@ class PropertyInfoDB:
 
         self.db["CE"].code_point_db = number_set
 
+    def load_UnicodeData(self):
+        table = parse_table("UnicodeData.txt")
+        CodePointIdx       = 0
+        NumericValueIdx    = 6
+        NameIdx            = 1
+        NameUC1Idx         = 10
+        GeneralCategoryIdx = 2
+        BidiClassIdx       = 4
+        convert_column_to_number(table, CodePointIdx)
+
+        names_db            = convert_table_to_associative_map(table, CodePointIdx, "number", NameIdx)
+        names_uc1_db        = convert_table_to_associative_map(table, CodePointIdx, "number", NameUC1Idx)
+        numeric_value_db    = convert_table_to_associative_map(table, CodePointIdx, "NumberSet", NumericValueIdx)
+        general_category_db = convert_table_to_associative_map(table, CodePointIdx, "NumberSet", GeneralCategoryIdx)
+        bidi_class_db       = convert_table_to_associative_map(table, CodePointIdx, "NumberSet", BidiClassIdx) 
+
+        self.db["na"].code_point_db  = names_db          # Name
+        self.db["na1"].code_point_db = names_uc1_db      # Name Unicode 1
+        self.db["nv"].code_point_db  = numeric_value_db  # Numeric Value
+        self.db["gc"].code_point_db  = numeric_value_db  # General Category
+        self.db["bc"].code_point_db  = numeric_value_db  # BidiClass
+
     def get_property_descriptions(self):
         item_list = self.db.items()
         item_list.sort(lambda a, b: cmp(a[0], b[0]))
@@ -258,34 +400,24 @@ class PropertyInfoDB:
         for key, property in item_list:
             name = property.name
             txt += "%s(%s): %s%s" % (name, key, " " * (34 - len(name+key)), property.type)
+            property.init_code_point_db()
             if property.code_point_db != None: txt += "%s(loaded)\n" % (" " * (15-len(property.type)))
             else:                              txt += "\n"
 
         return txt
 
 
-
-def __handle_UnicodeData():
-    global names_db 
-    global numeric_value_db
-
-    table = parse_table("UnicodeData.txt")
-    convert_column_to_number(table, 0)
-
-
-blocks_db  = FileBasedDB("Blocks.txt", "NumberSet", 0, 1)
-age_db     = FileBasedDB("DerivedAge.txt", "NumberSet", 0, 1)
-scripts_db = FileBasedDB("Scripts.txt", "NumberSet", 0, 1)
-
-names_db   = FileBasedDB("UnicodeData.txt", "number", 0, 1, Key2ColumnIdx=10)
-property_info_db = PropertyInfoDB()
+pi_db = PropertyInfoDB()
 
 
 
+print pi_db.get_character_set("Block",  "Arabic")
+print pi_db.get_character_set("Age",    "5.0")
+print pi_db.get_character_set("Script", "Greek")
+#print "%X" % names_db["LATIN SMALL LETTER CLOSED REVERSED EPSILON"]
+print pi_db.get_character_set("White_Space")
 
-print blocks_db["Arabic"]
-print age_db["5.0"]
-print scripts_db["Greek"]
-print "%X" % names_db["LATIN SMALL LETTER CLOSED REVERSED EPSILON"]
-print property_info_db["White_Space"]
-print property_info_db.get_property_descriptions()
+print pi_db.get_property_descriptions()
+
+print "###"
+print repr(pi_db["Comp_Ex"]), type(pi_db["CE"])

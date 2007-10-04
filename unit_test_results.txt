@@ -1,69 +1,100 @@
 <no file 'TITLE.hwut'>
 DIR:  ./demo/TEST
-DATE: Sat Sep 29 00:25:19 2007
+DATE: Sun Sep 30 16:29:23 2007
 
 
  -- demo/000:
 
     Single Mode Example
-    000.sh NDEBUG ...........................................................[OK]
-           DEBUG ............................................................[OK]
+    000.sh NDEBUG .........................................................[FAIL]
+           DEBUG ..........................................................[FAIL]
 
  -- demo/001:
 
     Multiple Modes, Mode Transitions
-    001.sh NDEBUG ...........................................................[OK]
-           DEBUG ............................................................[OK]
+    001.sh NDEBUG .........................................................[FAIL]
+           DEBUG ..........................................................[FAIL]
 
  -- demo/002:
 
     Indentation Based Scopes
-    002.sh NDEBUG ...........................................................[OK]
-           DEBUG ............................................................[OK]
+    002.sh NDEBUG .........................................................[FAIL]
+           DEBUG ..........................................................[FAIL]
 
  -- demo/003:
 
     Unicode Based Lexical Analyzis
-    003.sh BPC=2 ............................................................[OK]
-           BPC=2_NDEBUG .....................................................[OK]
-           BPC=4 ............................................................[OK]
-           BPC=4_NDEBUG .....................................................[OK]
-           BPC=wchar_t ......................................................[OK]
+    003.sh BPC=2 ..........................................................[FAIL]
+           BPC=2_NDEBUG ...................................................[FAIL]
+           BPC=4 ..........................................................[FAIL]
+           BPC=4_NDEBUG ...................................................[FAIL]
+           BPC=wchar_t ....................................................[FAIL]
 
  -- demo/005:
 
     Including Files
-    005.sh 1 ................................................................[OK]
-           1_NDEBUG .........................................................[OK]
-           2 ................................................................[OK]
-           2_NDEBUG .........................................................[OK]
+    005.sh 1 ..............................................................[FAIL]
+           1_NDEBUG .......................................................[FAIL]
+           2 ..............................................................[FAIL]
+           2_NDEBUG .......................................................[FAIL]
 ---------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
-DIR:  ./quex/TEST
-DATE: Sat Sep 29 00:26:30 2007
+DIR:  ./quex-ChecksumError/TEST
+DATE: Sun Sep 30 16:29:29 2007
 
     Prepare Pattern Information for Code Generation
-    test-coder-get_generator_input.py .......................................[OK]
+    test-coder-get_generator_input.py .....................................[FAIL]
 ---------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
 ---------------------------------------------------------------------------------
 Input Buffer Tests
 Frank-Rene Schaefer
 
-DIR:  ./quex/code_base/buffer/TEST
-DATE: Sat Sep 29 00:26:31 2007
+DIR:  ./quex-ChecksumError/code_base/buffer/TEST
+DATE: Sun Sep 30 16:29:29 2007
 make: test-forward-get-2
 make: test-misc-II
 make: test-misc-III
@@ -84,7 +115,13 @@ make: test-forward-get
                      EOFC=1_BOFC=2_BLC=0 ....................................[OK]
                      EOFC=1_BOFC=0_BLC=2 ....................................[OK]
                      EOFC=0_BOFC=1_BLC=2 ....................................[OK]
-    EOF at first load.
+    EOF at rm -f test-forward-get test-forward-get-2 test-misc-I test-misc-II test-misc-III test-backward-get 
+rm -f *.o
+rm -f one-beat n-beat
+rm -f *.o
+rm -f real-code.cpp
+rm -f test-simple test-simple-2
+first load.
     test-forward-get-2 ......................................................[OK]
 
  -- Miscenllaneous Scenarios:
@@ -95,13 +132,7 @@ make: test-forward-get
     Content Size = 11, Fallback Size = 1
     test-misc-II istream ....................................................[OK]
                  stdio ......................................................[OK]
-    Content Sirm -f test-forward-get test-forward-get-2 test-misc-I test-misc-II test-misc-III test-backward-get 
-rm -f *.o
-rm -f one-beat n-beat
-rm -f *.o
-rm -f real-code.cpp
-rm -f test-simple test-simple-2
-ze = 11, Fallback Size = 0
+    Content Size = 11, Fallback Size = 0
     test-misc-III istream ...................................................[OK]
                   stdio .....................................................[OK]
 ---------------------------------------------------------------------------------
@@ -113,8 +144,8 @@ ze = 11, Fallback Size = 0
 
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
-DIR:  ./quex/code_base/buffer/iconv/TEST
-DATE: Sat Sep 29 00:26:34 2007
+DIR:  ./quex-ChecksumError/code_base/buffer/iconv/TEST
+DATE: Sun Sep 30 16:29:39 2007
 make: n-beat
 make: one-beat
 
@@ -131,8 +162,8 @@ make: one-beat
 
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
-DIR:  ./quex/code_base/template/TEST
-DATE: Sat Sep 29 00:26:35 2007
+DIR:  ./quex-ChecksumError/code_base/template/TEST
+DATE: Sun Sep 30 16:29:41 2007
 make: test-simple
 make: test-simple-2
 
@@ -153,8 +184,8 @@ make: test-simple-2
 ---------------------------------------------------------------------------------
 Number Set Operations and UTF-8 Encoding
 
-DIR:  ./quex/core_engine/TEST
-DATE: Sat Sep 29 00:26:37 2007
+DIR:  ./quex-ChecksumError/core_engine/TEST
+DATE: Sun Sep 30 16:29:44 2007
 
 
  -- NumberSet:
@@ -186,72 +217,72 @@ DATE: Sat Sep 29 00:26:37 2007
 ---------------------------------------------------------------------------------
 Code Generation
 
-DIR:  ./quex/core_engine/generator/TEST
-DATE: Sat Sep 29 00:26:37 2007
+DIR:  ./quex-ChecksumError/core_engine/generator/TEST
+DATE: Sun Sep 30 16:29:45 2007
 
 
  -- Pre- and Post- Conditions:
 
     Simple
-    test-pre-post-condition.py PlainMemory ..................................[OK]
-                               QuexBuffer ...................................[OK]
+    test-pre-post-condition.py PlainMemory ................................[FAIL]
+                               QuexBuffer .................................[FAIL]
 
  -- Simple:
 
     Begin of Line (BOL), End of Line (EOL)
-    test-bol-eol.py PlainMemory .............................................[OK]
-                    QuexBuffer ..............................................[OK]
+    test-bol-eol.py PlainMemory ...........................................[FAIL]
+                    QuexBuffer ............................................[FAIL]
     Maximum Length Match
-    test-simple-2.py PlainMemory ............................................[OK]
-                     QuexBuffer .............................................[OK]
+    test-simple-2.py PlainMemory ..........................................[FAIL]
+                     QuexBuffer ...........................................[FAIL]
     Special Case '.' (drop out on valid target state)
-    test-simple-3.py PlainMemory ............................................[OK]
-                     QuexBuffer .............................................[OK]
+    test-simple-3.py PlainMemory ..........................................[FAIL]
+                     QuexBuffer ...........................................[FAIL]
     Tiny Expressions
-    test-simple.py PlainMemory ..............................................[OK]
-                   QuexBuffer ...............................................[OK]
+    test-simple.py PlainMemory ............................................[FAIL]
+                   QuexBuffer .............................................[FAIL]
 
  -- Pre Conditions:
 
     Part 2
-    test-pre-conditions-2.py PlainMemory ....................................[OK]
-                             QuexBuffer .....................................[OK]
+    test-pre-conditions-2.py PlainMemory ..................................[FAIL]
+                             QuexBuffer ...................................[FAIL]
     Part 1
-    test-pre-conditions.py PlainMemory ......................................[OK]
-                           QuexBuffer .......................................[OK]
+    test-pre-conditions.py PlainMemory ....................................[FAIL]
+                           QuexBuffer .....................................[FAIL]
 
  -- CONTINUE:
 
     (special use case)
-    test-continue-without-return-2.py PlainMemory ...........................[OK]
-                                      QuexBuffer ............................[OK]
+    test-continue-without-return-2.py PlainMemory .........................[FAIL]
+                                      QuexBuffer ..........................[FAIL]
     Reentry analysis without return from function
-    test-continue-without-return.py PlainMemory .............................[OK]
-                                    QuexBuffer ..............................[OK]
+    test-continue-without-return.py PlainMemory ...........................[FAIL]
+                                    QuexBuffer ............................[FAIL]
     Mode Changes
-    test-mode-changes.py PlainMemory ........................................[OK]
-                         QuexBuffer .........................................[OK]
+    test-mode-changes.py PlainMemory ......................................[FAIL]
+                         QuexBuffer .......................................[FAIL]
 
  -- Post Conditions:
 
     Part 2
-    test-post-conditions-2.py PlainMemory ...................................[OK]
-                              QuexBuffer ....................................[OK]
+    test-post-conditions-2.py PlainMemory .................................[FAIL]
+                              QuexBuffer ..................................[FAIL]
     Part 1
-    test-post-conditions.py PlainMemory .....................................[OK]
-                            QuexBuffer ......................................[OK]
+    test-post-conditions.py PlainMemory ...................................[FAIL]
+                            QuexBuffer ....................................[FAIL]
 
  -- Buffer Reload:
 
     Backwards
-    test-backward_loading.py No_NDEBUG ......................................[OK]
-                             NDEBUG .........................................[OK]
+    test-backward_loading.py No_NDEBUG ....................................[FAIL]
+                             NDEBUG .......................................[FAIL]
     No Backward Reload -- Precondition at Border
-    test-no-backward-reloading.py No_NDEBUG .................................[OK]
-                                  NDEBUG ....................................[OK]
+    test-no-backward-reloading.py No_NDEBUG ...............................[FAIL]
+                                  NDEBUG ..................................[FAIL]
     Forward Position Adaption
-    test-position_adaption.py No_NDEBUG .....................................[OK]
-                              NDEBUG ........................................[OK]
+    test-position_adaption.py No_NDEBUG ...................................[FAIL]
+                              NDEBUG ......................................[FAIL]
 
  -- Single State:
 
@@ -260,43 +291,91 @@ DATE: Sat Sep 29 00:26:37 2007
     Transition Code Generation
     test-single-state-transitions.py ........................................[OK]
 ---------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
-DIR:  ./quex/core_engine/regular_expression/TEST
-DATE: Sat Sep 29 00:27:20 2007
+DIR:  ./quex-ChecksumError/core_engine/regular_expression/TEST
+DATE: Sun Sep 30 16:30:09 2007
 
     State Machine Pattern Matching
-    test-pattern-matching.py ................................................[OK]
+    test-pattern-matching.py ..............................................[FAIL]
+    
+    test-set-expressions.py ...............................................[FAIL]
 
  -- Conditional Analysis:
 
     Begin of Line '^', End of Line '$'
-    test-bol-eol.py .........................................................[OK]
+    test-bol-eol.py .......................................................[FAIL]
     End of Line '$' (with DOS/Windows '\r\n')
-    test-eol-carriage-return-newline.py .....................................[OK]
+    test-eol-carriage-return-newline.py ...................................[FAIL]
     post conditions
-    test-post-condition.py ..................................................[OK]
+    test-post-condition.py ................................................[FAIL]
     pre- and post-conditions
-    test-pre-and-post-condition.py ..........................................[OK]
+    test-pre-and-post-condition.py ........................................[FAIL]
     pre conditions
-    test-pre-condition.py ...................................................[OK]
+    test-pre-condition.py .................................................[FAIL]
 
  -- Basics:
 
     Lonestanding characters
-    test-lonely-characters.py ...............................................[OK]
+    test-lonely-characters.py .............................................[FAIL]
     Pattern identifier replacement
-    test-replacement.py .....................................................[OK]
+    test-replacement.py ...................................................[FAIL]
     Map character *range* to state machine
-    test-set.py .............................................................[OK]
+    test-set.py ...........................................................[FAIL]
     Snap string until (low level function)
-    test-snap_until.py ......................................................[OK]
+    test-snap_until.py ....................................................[FAIL]
     Map character *string* to state machine
     test-string.py ..........................................................[OK]
 
@@ -308,22 +387,79 @@ DATE: Sat Sep 29 00:27:20 2007
  -- Combination:
 
     Alternative Expressions
-    test-alternatives.py ....................................................[OK]
+    test-alternatives.py ..................................................[FAIL]
     Simple repeated expressions
-    test-repeated-expressions.py ............................................[OK]
-    Alternative Expressions
-    test-set-expressions.py .................................................[OK]
+    test-repeated-expressions.py ..........................................[FAIL]
 ---------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
-DIR:  ./quex/core_engine/state_machine/TEST
-DATE: Sat Sep 29 00:27:23 2007
+DIR:  ./quex-ChecksumError/core_engine/state_machine/TEST
+DATE: Sun Sep 30 16:30:09 2007
 
 
  -- StateMachine:
@@ -334,7 +470,7 @@ DATE: Sat Sep 29 00:27:23 2007
  -- Trigger Set Check:
 
     Has Trigger
-    test-StateInfo-has_trigger.py ...........................................[OK]
+    test-StateInfo-has_trigger.py .........................................[FAIL]
 
  -- NFA:
 
@@ -389,11 +525,11 @@ DATE: Sat Sep 29 00:27:23 2007
  -- Predetermined Character Count:
 
     Characters
-    test-count_character_n.py ...............................................[OK]
+    test-count_character_n.py .............................................[FAIL]
     Contains only Spaces
-    test-count_contains_only_spaces.py ......................................[OK]
+    test-count_contains_only_spaces.py ....................................[FAIL]
     Newlines
-    test-count_newline_n.py .................................................[OK]
+    test-count_newline_n.py ...............................................[FAIL]
 
  -- DFA:
 
@@ -401,6 +537,86 @@ DATE: Sat Sep 29 00:27:23 2007
     test-StateInfo-trigger-map.py ...........................................[OK]
     Hopcroft optimization (minimize state set)
     test-StateMachine-hopcroft-optimization.py ..............................[OK]
+---------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex-ChecksumError/frs_py/TEST
+DATE: Sun Sep 30 16:30:12 2007
+
+
+ -- file_in/read_until_closing_bracket:
+
+    Test also for ignored regions
+    test-read_until_closing_bracket.py ......................................[OK]
 ---------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -410,8 +626,712 @@ DATE: Sat Sep 29 00:27:23 2007
 
 ---------------------------------------------------------------------------------
 <no file 'TITLE.hwut'>
+DIR:  ./quex/TEST
+DATE: Sun Sep 30 16:30:12 2007
+
+    
+    test-coder-get_generator_input.py .....................................[FAIL]
+---------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+error: test-coder-get_generator_input.py
+---------------------------------------------------------------------------------
+Input Buffer Tests
+Frank-Rene Schaefer
+
+DIR:  ./quex/code_base/buffer/TEST
+DATE: Sun Sep 30 16:30:12 2007
+make: test-forward-get-2
+make: test-misc-II
+make: test-misc-III
+make: test-backward-get
+make: test-misc-I
+make: test-forward-get
+error: make failed on 'test-forward-get-2'
+error: make failed on 'test-misc-II'
+
+    Backwards Iteration
+    test-backward-get Normal ................................................[OK]
+                      EOFC=1_BOFC=2_BLC=0 ...................................[OK]
+                      EOFC=1_BOFC=0_BLC=2 ...................................[OK]
+                      EOFC=0_BOFC=1_BLC=2 ...................................[OK]
+    <no title>
+    test-forward-get-2 .............................................[MAKE FAILED]
+    <no title>
+    test-misc-II ...................................................[MAKE FAILED]
+
+ -- Forward Iteration:
+
+    Multiple Loads.
+    test-forward-get Normal .................................................[OK]
+                     EOFC=1_BOFC=2_BLC=0 ....................................[OK]
+                     EOFC=1_BOFC=0_BLC=2 ....................................[OK]
+                     EOFC=0_BOFC=1_BLC=2 ....................................[OK]
+
+ -- Miscenllaneous Scenarios:
+
+    Content Size = 11, Fallback Size = 10
+    test-misc-I istream .....................................................[OK]
+                stdio .......................................................[OK]
+    Content Size = 11, Fallback Size = 0
+    test-misc-III istream ...................................................[OK]
+                  stdio .....................................................[OK]
+---------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+error: 000.sh NDEBUGrm -f test-forward-get test-forward-get-2 test-misc-I test-misc-II test-misc-III test-backward-get 
+rm -f *.o
+rm -f one-beat n-beat
+rm -f *.o
+rm -f real-code.cpp
+rm -f test-simple test-simple-2
+
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+error: test-coder-get_generator_input.py
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/code_base/buffer/iconv/TEST
+DATE: Sun Sep 30 16:30:15 2007
+make: n-beat
+make: one-beat
+
+    Converting Stream in N Tiny Beats
+    n-beat ..................................................................[OK]
+    Converting Stream in One Beat
+    one-beat ................................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/code_base/template/TEST
+DATE: Sun Sep 30 16:30:15 2007
+make: test-simple
+make: test-simple-2
+
+
+ -- Count Line and Column:
+
+    Without Indentation Count
+    test-simple .............................................................[OK]
+    With Indentation
+    test-simple-2 ...........................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+Number Set Operations and UTF-8 Encoding
+
+DIR:  ./quex/core_engine/TEST
+DATE: Sun Sep 30 16:30:17 2007
+
+
+ -- NumberSet:
+
+    Condition Code Generation
+    test-NumberSet-condition-code.py ........................................[OK]
+    Difference
+    test-NumberSet-difference.py ............................................[OK]
+    Intersection
+    test-NumberSet-intersection.py ..........................................[OK]
+    Inverse
+    test-NumberSet-inverse.py ...............................................[OK]
+    Union
+    test-NumberSet-union.py .................................................[OK]
+
+ -- Utf8-Module:
+
+    Map UTF8 String To Unicode Values
+    test-utf8-UCS-to-UTF8.py ................................................[OK]
+---------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+---------------------------------------------------------------------------------
+Code Generation
+
+DIR:  ./quex/core_engine/generator/TEST
+DATE: Sun Sep 30 16:30:17 2007
+
+    
+    test-backward_loading.py ..............................................[FAIL]
+    
+    test-bol-eol.py .......................................................[FAIL]
+    
+
+    error: no file 'GOOD/test-continue-without-return-2.py.txt'
+    test-continue-without-return-2.py .....................................[DONE]
+    
+
+    error: no file 'GOOD/test-continue-without-return.py.txt'
+    test-continue-without-return.py .......................................[DONE]
+    
+
+    error: no file 'GOOD/test-mode-changes.py.txt'
+    test-mode-changes.py ..................................................[DONE]
+    
+    test-no-backward-reloading.py .........................................[FAIL]
+    
+    test-position_adaption.py .............................................[FAIL]
+    
+    test-post-conditions-2.py .............................................[FAIL]
+    
+    test-post-conditions.py ...............................................[FAIL]
+    
+    test-pre-conditions-2.py ..............................................[FAIL]
+    
+    test-pre-conditions.py ................................................[FAIL]
+    
+    test-pre-post-condition.py ............................................[FAIL]
+    
+    test-simple-2.py ......................................................[FAIL]
+    
+
+    error: no file 'GOOD/test-simple-3.py.txt'
+    test-simple-3.py ......................................................[DONE]
+    
+    test-simple.py ........................................................[FAIL]
+
+ -- Single State:
+
+    Extensive Transition Code Generation
+    test-single-state-transitions-x.py ......................................[OK]
+    Transition Code Generation
+    test-single-state-transitions.py ........................................[OK]
+---------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+error: test-coder-get_generator_input.py
+error: test-backward_loading.py
+error: test-bol-eol.py
+error: test-no-backward-reloading.py
+error: test-position_adaption.py
+error: test-post-conditions-2.py
+error: test-post-conditions.py
+error: test-pre-conditions-2.py
+error: test-pre-conditions.py
+error: test-pre-post-condition.py
+error: test-simple-2.py
+error: test-simple.py
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/core_engine/regular_expression/TEST
+DATE: Sun Sep 30 16:30:33 2007
+
+    
+    test-alternatives.py ..................................................[FAIL]
+    
+    test-bol-eol.py .......................................................[FAIL]
+    
+    test-eol-carriage-return-newline.py ...................................[FAIL]
+    
+    test-lonely-characters.py .............................................[FAIL]
+    
+    test-pattern-matching.py ..............................................[FAIL]
+    
+    test-post-condition.py ................................................[FAIL]
+    
+    test-pre-and-post-condition.py ........................................[FAIL]
+    
+    test-pre-condition.py .................................................[FAIL]
+    
+    test-repeated-expressions.py ..........................................[FAIL]
+    
+    test-replacement.py ...................................................[FAIL]
+    
+    test-set-expressions.py ...............................................[FAIL]
+    
+    test-set.py ...........................................................[FAIL]
+    
+    test-snap_until.py ....................................................[FAIL]
+
+ -- Basics:
+
+    Map character *string* to state machine
+    test-string.py ..........................................................[OK]
+---------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+error: test-coder-get_generator_input.py
+error: test-backward_loading.py
+error: test-bol-eol.py
+error: test-no-backward-reloading.py
+error: test-position_adaption.py
+error: test-post-conditions-2.py
+error: test-post-conditions.py
+error: test-pre-conditions-2.py
+error: test-pre-conditions.py
+error: test-pre-post-condition.py
+error: test-simple-2.py
+error: test-simple.py
+error: test-alternatives.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-lonely-characters.py
+error: test-pattern-matching.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-repeated-expressions.py
+error: test-replacement.py
+error: test-set-expressions.py
+error: test-set.py
+error: test-snap_until.py
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
+DIR:  ./quex/core_engine/state_machine/TEST
+DATE: Sun Sep 30 16:30:34 2007
+
+    
+    test-StateInfo-has_trigger.py .........................................[FAIL]
+    
+    test-count_character_n.py .............................................[FAIL]
+    
+    test-count_contains_only_spaces.py ....................................[FAIL]
+    
+    test-count_newline_n.py ...............................................[FAIL]
+
+ -- StateMachine:
+
+    Cloning
+    test-StateMachine-clone.py ..............................................[OK]
+
+ -- NFA:
+
+    Conversion to DFA (subset construction)
+    test-StateMachine-create-DFA.py .........................................[OK]
+    Get elementary trigger sets II
+    test-StateMachine-elementary_trigger_sets-2.py ..........................[OK]
+    Get elementary trigger sets (target index --> trigger sets)
+    test-StateMachine-elementary_trigger_sets.py ............................[OK]
+    Epsilon closure (single state)
+    test-StateMachine-epsilon-closure.py ....................................[OK]
+
+ -- Tracing origin:
+
+    Cloning
+    test-StateMachine-trace-origin-clone.py .................................[OK]
+    NFA to DFA (subset construction)
+    test-StateMachine-trace-origin-create-DFA.py ............................[OK]
+    Hopcroft optimization (minimize state set)
+    test-StateMachine-trace-origin-hopcroft-optimization.py .................[OK]
+    Inverse
+    test-StateMachine-trace-origin-inverse.py ...............................[OK]
+    Paralellization
+    test-parallelize-trace-origin.py ........................................[OK]
+
+ -- StateMachine Operations:
+
+    Inverse
+    test-StateMachine-inverse.py ............................................[OK]
+    Paralell
+    test-parallelize.py .....................................................[OK]
+    Repetitions Kleene closure 0 or arbitrary repetitions
+    test-repeat-pure.py .....................................................[OK]
+    Repetition with min and max repetition numbers
+    test-repeat.py ..........................................................[OK]
+    Sequence
+    test-sequentialize.py ...................................................[OK]
+    Append Post Condition
+    test-setup_border_conditions.py .........................................[OK]
+    Append Post Condition
+    test-setup_post_condition.py ............................................[OK]
+    Setup Pre-Condition
+    test-setup_pre_condition.py .............................................[OK]
+
+ -- Ranking of state machines:
+
+    Filter dominated origins
+    test-StateMachine-filter-dominated-origins.py ...........................[OK]
+    Pattern priorization
+    test-ranking.py .........................................................[OK]
+
+ -- DFA:
+
+    Get Trigger Map (intervals --> target states)
+    test-StateInfo-trigger-map.py ...........................................[OK]
+    Hopcroft optimization (minimize state set)
+    test-StateMachine-hopcroft-optimization.py ..............................[OK]
+---------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+error: 000.sh NDEBUG
+error: 000.sh DEBUG
+error: 001.sh NDEBUG
+error: 001.sh DEBUG
+error: 002.sh NDEBUG
+error: 002.sh DEBUG
+error: 003.sh BPC=2
+error: 003.sh BPC=2_NDEBUG
+error: 003.sh BPC=4
+error: 003.sh BPC=4_NDEBUG
+error: 003.sh BPC=wchar_t
+error: 005.sh 1
+error: 005.sh 1_NDEBUG
+error: 005.sh 2
+error: 005.sh 2_NDEBUG
+error: test-coder-get_generator_input.py
+error: test-pre-post-condition.py PlainMemory
+error: test-pre-post-condition.py QuexBuffer
+error: test-bol-eol.py PlainMemory
+error: test-bol-eol.py QuexBuffer
+error: test-simple-2.py PlainMemory
+error: test-simple-2.py QuexBuffer
+error: test-simple-3.py PlainMemory
+error: test-simple-3.py QuexBuffer
+error: test-simple.py PlainMemory
+error: test-simple.py QuexBuffer
+error: test-pre-conditions-2.py PlainMemory
+error: test-pre-conditions-2.py QuexBuffer
+error: test-pre-conditions.py PlainMemory
+error: test-pre-conditions.py QuexBuffer
+error: test-continue-without-return-2.py PlainMemory
+error: test-continue-without-return-2.py QuexBuffer
+error: test-continue-without-return.py PlainMemory
+error: test-continue-without-return.py QuexBuffer
+error: test-mode-changes.py PlainMemory
+error: test-mode-changes.py QuexBuffer
+error: test-post-conditions-2.py PlainMemory
+error: test-post-conditions-2.py QuexBuffer
+error: test-post-conditions.py PlainMemory
+error: test-post-conditions.py QuexBuffer
+error: test-backward_loading.py No_NDEBUG
+error: test-backward_loading.py NDEBUG
+error: test-no-backward-reloading.py No_NDEBUG
+error: test-no-backward-reloading.py NDEBUG
+error: test-position_adaption.py No_NDEBUG
+error: test-position_adaption.py NDEBUG
+error: test-pattern-matching.py
+error: test-set-expressions.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-lonely-characters.py
+error: test-replacement.py
+error: test-set.py
+error: test-snap_until.py
+error: test-alternatives.py
+error: test-repeated-expressions.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+error: test-coder-get_generator_input.py
+error: test-backward_loading.py
+error: test-bol-eol.py
+error: test-no-backward-reloading.py
+error: test-position_adaption.py
+error: test-post-conditions-2.py
+error: test-post-conditions.py
+error: test-pre-conditions-2.py
+error: test-pre-conditions.py
+error: test-pre-post-condition.py
+error: test-simple-2.py
+error: test-simple.py
+error: test-alternatives.py
+error: test-bol-eol.py
+error: test-eol-carriage-return-newline.py
+error: test-lonely-characters.py
+error: test-pattern-matching.py
+error: test-post-condition.py
+error: test-pre-and-post-condition.py
+error: test-pre-condition.py
+error: test-repeated-expressions.py
+error: test-replacement.py
+error: test-set-expressions.py
+error: test-set.py
+error: test-snap_until.py
+error: test-StateInfo-has_trigger.py
+error: test-count_character_n.py
+error: test-count_contains_only_spaces.py
+error: test-count_newline_n.py
+---------------------------------------------------------------------------------
+<no file 'TITLE.hwut'>
 DIR:  ./quex/frs_py/TEST
-DATE: Sat Sep 29 00:27:43 2007
+DATE: Sun Sep 30 16:30:37 2007
 
 
  -- file_in/read_until_closing_bracket:
@@ -427,14 +1347,51 @@ DATE: Sat Sep 29 00:27:43 2007
 
 ---------------------------------------------------------------------------------
 SUMMARY:
-./quex/core_engine/generator/TEST.............[OK]
-./quex/core_engine/TEST.......................[OK]
-./demo/TEST...................................[OK]
-./quex/code_base/template/TEST................[OK]
-./quex/frs_py/TEST............................[OK]
-./quex/code_base/buffer/iconv/TEST............[OK]
-./quex/core_engine/state_machine/TEST.........[OK]
-./quex/TEST...................................[OK]
-./quex/code_base/buffer/TEST..................[OK]
-./quex/core_engine/regular_expression/TEST....[OK]
+./quex-ChecksumError/code_base/buffer/iconv/TEST............[OK]
+./quex-ChecksumError/core_engine/TEST.......................[OK]
+./quex/TEST.................................................[FAIL]
+./quex/core_engine/generator/TEST...........................[FAIL]
+./demo/TEST.................................................[FAIL]
+./quex/frs_py/TEST..........................................[OK]
+./quex-ChecksumError/code_base/template/TEST................[OK]
+./quex-ChecksumError/core_engine/regular_expression/TEST....[FAIL]
+./quex-ChecksumError/core_engine/generator/TEST.............[FAIL]
+./quex-ChecksumError/core_engine/state_machine/TEST.........[FAIL]
+./quex-ChecksumError/TEST...................................[FAIL]
+./quex/core_engine/state_machine/TEST.......................[FAIL]
+./quex-ChecksumError/code_base/buffer/TEST..................[OK]
+./quex/code_base/buffer/iconv/TEST..........................[OK]
+./quex/code_base/buffer/TEST................................[FAIL]
+./quex-ChecksumError/frs_py/TEST............................[OK]
+./quex/core_engine/regular_expression/TEST..................[FAIL]
+./quex/code_base/template/TEST..............................[OK]
+./quex/core_engine/TEST.....................................[OK]
+DIR: /home/fschaef/prj/quex/trunk/quex/core_engine/generator/TEST
+The following files have no entry in their 'GOOD' directories:
+
+    test-continue-without-return-2.py.txt
+    test-continue-without-return.py.txt
+    test-mode-changes.py.txt
+    test-simple-3.py.txt
+
+
+Copy:  ./quex/core_engine/generator/TEST/OUT/test-continue-without-return-2.py.txt
+to:    ./quex/core_engine/generator/TEST/GOOD/ ?
+Note, that this means that it is taken for reference during any later unit test!
+('yes', 'all', 'no', 'none')
+
+Copy:  ./quex/core_engine/generator/TEST/OUT/test-continue-without-return.py.txt
+to:    ./quex/core_engine/generator/TEST/GOOD/ ?
+Note, that this means that it is taken for reference during any later unit test!
+('yes', 'all', 'no', 'none')
+
+Copy:  ./quex/core_engine/generator/TEST/OUT/test-mode-changes.py.txt
+to:    ./quex/core_engine/generator/TEST/GOOD/ ?
+Note, that this means that it is taken for reference during any later unit test!
+('yes', 'all', 'no', 'none')
+
+Copy:  ./quex/core_engine/generator/TEST/OUT/test-simple-3.py.txt
+to:    ./quex/core_engine/generator/TEST/GOOD/ ?
+Note, that this means that it is taken for reference during any later unit test!
+('yes', 'all', 'no', 'none')
 <terminated>
