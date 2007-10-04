@@ -1,6 +1,3 @@
-(*) 07y9m28d:
-    tracker.consider_interval(tracker.last_letter, value)
-
 (*) 07y9m23d:
 
     In the 'history' computation the 'union' member function is used. 
@@ -13,10 +10,6 @@
 
     name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
 
-
-(*) 07y9m19h:
-
-    Check what happens if [z-a] is specified as a range
 
 (*) 07y9m9d:
 

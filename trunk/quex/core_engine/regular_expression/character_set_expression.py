@@ -76,7 +76,11 @@ def snap_set_expression(stream):
         stream.seek(-1, 1)
         result = snap_traditional_character_set(stream)
     elif x == "\\P": 
-        result = snap_propperty_string(stream)
+        result = snap_property_string.do(stream)
+    elif x == "\\N": 
+        result = snap_property_string.do_name(stream)
+    elif x == "\\G": 
+        result = snap_property_string.do_general_category(stream)
     else:
         result = None
 
