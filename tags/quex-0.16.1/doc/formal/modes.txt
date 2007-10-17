@@ -1,0 +1,98 @@
+Quex allows to specify characteristics of modes concerning 
+transitions and inheritance. The keyword `mode` starts the
+definition of a lexical analyser mode. Then it can be directly followed by a
+curly bracket that starts the pattern-action pair definitions as shown in
+figure <<fig:formal-mode-definition, style=ref>>a. This is the most simple way to
+define a mode.
+
+a)
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   mode MY_MODE {
+     ...
+     // pattern-action pairs of MY_MODE
+     ...
+   }          
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+b)
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   mode MY_MODE :
+      END_OF_FILE
+      WHITESPACE_EATER
+      DOCUMENTATION_TRIGGER
+      {
+     ...
+     // pattern-action pairs of MY_MODE
+     ...
+   }          
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+c)
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   mode MY_MODE :
+      END_OF_FILE
+      <inheritable: yes>
+      <exit:        OTHER_MODE>      
+      <restrict:    exit>
+      {
+     ...
+     // pattern-action pairs of MY_MODE
+     ...
+   }          
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to define options or base modes the name of the mode has to be
+followed by a colon as in the examples in figure
+<<:formal-mode-definition, style=ref>>b and \ref{fig:formal-mode-definition, style=ref>>c.
+Note, that if a mode specifies base modes and options, the options are
+specified after the base modes. 
+
+Base modes directly follow the ':' sign. The list of base modes is whitespace
+separated. When the first $<$ sign arrives, quex starts reading the
+options. Options are bracketed by $<$ and $>$ signs and multiple options 
+are also listed whitespace separatedly. The following options can be
+specified:
+
+`<inheritable: [_yes_, _no_, _only_]>`::
+
+  restricts the inheritance relationships. If `yes` is specified, it is allowed
+  for any other mode to be derived from this mode. If `no` is specified and
+  another mode tries to derive from this mode, an error will be printed.
+  Specifying `only` tells that this mode cannot be a lexical analyser mode.
+  Its reason for existance is to support derived modes. This is similar to the
+  concept of abstract classes in C++ or interfaces in Java.
+  
+`<entry: _mode-name_>`::
+
+  tells that it is allowed that the lexical analyser enters this mode from mode
+  _mode-name_ or one of its derived modes. If no entry mode is specified, then
+  all modes are allowed.
+  
+`<exit: _mode-name_>`::
+
+  tells that it is allowed that the lexical analyser exits from this mode to
+  mode _mode-name_ or one of its derived modes. If no exit mode is specified,
+  then all modes are allowed.
+  
+`<restrict: [ _entry_, _exit_ ]>`::
+
+  turns of the admissibility of derived modes for entry or exit.  If `entry` is
+  specified the entry is restricted, so any other mode than the the listed
+  entry modes is forbidden even if it is derived from one of them.
+  Respectively, specifying `exit` restricts the list of exit modes.
+
+Options are optional, i.e. they do not need to be specified. But, they
+facilitate the debugging and add confidence that the mode transitions are 
+safe and sound. The list of options is then to be followed by an opening
+curly bracket '\{' that opens the list of pattern-action pairs. These are
+discussed in the following section.
+
+
+
+

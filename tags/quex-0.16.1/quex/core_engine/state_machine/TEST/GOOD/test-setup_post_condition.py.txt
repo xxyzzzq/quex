@@ -1,0 +1,132 @@
+-------------------------------------------------------------------------------
+EXPRESSION =  init-state = 18L
+00018 <~ (4, 18)
+      == 'a' ==> 00019
+      <no epsilon>
+00019* <~ (4, 19, S)
+      <no epsilon>
+
+POST CONDITION =  init-state = 20L
+00020 == ';' ==> 00021
+      <no epsilon>
+00021* <no epsilon>
+
+APPENDED =  init-state = 18L
+00018 <~ (4, 18)
+      == 'a' ==> 00019
+      <no epsilon>
+00019 <~ (4, 19, S, post)
+      epsilon == [-oo, oo] ==> 00022
+00022 == ';' ==> 00023
+      <no epsilon>
+00023* <~ (4, 23, post)
+      <no epsilon>
+
+DFA =  init-state = 24L
+00024 <~ (4, 18)
+      == 'a' ==> 00025
+      <no epsilon>
+00025 <~ (4, 19, S, post)
+      == ';' ==> 00026
+      <no epsilon>
+00026* <~ (4, 23, post)
+      <no epsilon>
+
+HOPKINS =  init-state = 28L
+00028 <~ (4, 18)
+      == 'a' ==> 00030
+      <no epsilon>
+00029* <~ (4, 23, post)
+      <no epsilon>
+00030 <~ (4, 19, S, post)
+      == ';' ==> 00029
+      <no epsilon>
+
+-------------------------------------------------------------------------------
+EXPRESSION =  init-state = 5L
+00005 <~ (1, 5)
+      == ['a', 'g'] ==> 00006
+      <no epsilon>
+00006 <~ (1, 6)
+      == [-oo, 'd'], ['f', oo] ==> 00006
+      == 'e' ==> 00007
+      <no epsilon>
+00007 <~ (1, 7)
+      == 'f' ==> 00008
+      <no epsilon>
+00008* <~ (1, 8, S)
+      <no epsilon>
+
+POST CONDITION =  init-state = 31L
+00031 == 'a' ==> 00032
+      <no epsilon>
+00032 == 'b' ==> 00033
+      <no epsilon>
+00033 == 'c' ==> 00034
+      <no epsilon>
+00034* <no epsilon>
+
+APPENDED =  init-state = 5L
+00005 <~ (1, 5)
+      == ['a', 'g'] ==> 00006
+      <no epsilon>
+00006 <~ (1, 6)
+      == [-oo, 'd'], ['f', oo] ==> 00006
+      == 'e' ==> 00007
+      <no epsilon>
+00007 <~ (1, 7)
+      == 'f' ==> 00008
+      <no epsilon>
+00008 <~ (1, 8, S, post)
+      epsilon == [-oo, oo] ==> 00035
+00035 == 'a' ==> 00036
+      <no epsilon>
+00036 == 'b' ==> 00037
+      <no epsilon>
+00037 == 'c' ==> 00038
+      <no epsilon>
+00038* <~ (1, 38, post)
+      <no epsilon>
+
+DFA =  init-state = 39L
+00039 <~ (1, 5)
+      == ['a', 'g'] ==> 00040
+      <no epsilon>
+00040 <~ (1, 6)
+      == [-oo, 'd'], ['f', oo] ==> 00040
+      == 'e' ==> 00041
+      <no epsilon>
+00041 <~ (1, 7)
+      == 'f' ==> 00042
+      <no epsilon>
+00042 <~ (1, 8, S, post)
+      == 'a' ==> 00043
+      <no epsilon>
+00043 == 'b' ==> 00044
+      <no epsilon>
+00044 == 'c' ==> 00045
+      <no epsilon>
+00045* <~ (1, 38, post)
+      <no epsilon>
+
+HOPKINS =  init-state = 47L
+00047 <~ (1, 5)
+      == ['a', 'g'] ==> 00049
+      <no epsilon>
+00048* <~ (1, 38, post)
+      <no epsilon>
+00049 <~ (1, 6)
+      == [-oo, 'd'], ['f', oo] ==> 00049
+      == 'e' ==> 00050
+      <no epsilon>
+00050 <~ (1, 7)
+      == 'f' ==> 00051
+      <no epsilon>
+00051 <~ (1, 8, S, post)
+      == 'a' ==> 00052
+      <no epsilon>
+00052 == 'b' ==> 00053
+      <no epsilon>
+00053 == 'c' ==> 00048
+      <no epsilon>
+
