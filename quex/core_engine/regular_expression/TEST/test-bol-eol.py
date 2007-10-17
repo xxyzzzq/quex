@@ -18,7 +18,7 @@ def test(TestString):
 def test_core(TestString):
     print "___________________________________________________________________________"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString)
+    sm = core.do(TestString, AllowNothingIsFineF=True)
     if sm == None: 
         print "pattern syntax error"
     else:

@@ -3,15 +3,19 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-import quex.core_engine.regular_expression.character_set as character_set
+import quex.core_engine.regular_expression.traditional_character_set as character_set
+from   quex.core_engine.state_machine.core import StateMachine
 
 if "--hwut-info" in sys.argv:
     print "Basics: Map character *range* to state machine"
     sys.exit(0)
     
 def test(TestString):
-        print "expression    = \"" + TestString + "\""
-        print "state machine\n", character_set.do(TestString)
+    print "expression    = \"" + TestString + "\""
+    sm = StateMachine()
+    trigger_set = character_set.do(TestString)
+    sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
+    print "state machine\n", sm 
 
 test("a-z")
 test("ABCDE0-9")

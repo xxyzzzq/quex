@@ -25,6 +25,7 @@
 #                 set_expression
 # 
 import quex.core_engine.regular_expression.traditional_character_set as traditional_character_set
+import quex.core_engine.regular_expression.property                  as property
 import quex.core_engine.regular_expression.auxiliary                 as aux
 #
 from quex.core_engine.state_machine.core import StateMachine
@@ -59,7 +60,7 @@ def do(stream):
         raise RegularExpressionException("Regular Expression: character_set_expression called for something\n" + \
                                          "that does not start with ']' or '\\P'")
 
-    # create state machine that triggers with the trigger set to SUCCESS
+    # Create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.
     sm = StateMachine()
     sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
@@ -76,11 +77,14 @@ def snap_set_expression(stream):
         stream.seek(-1, 1)
         result = snap_traditional_character_set(stream)
     elif x == "\\P": 
-        result = snap_property_string.do(stream)
+        stream.seek(-2, 1)
+        result = property.do(stream)
     elif x == "\\N": 
-        result = snap_property_string.do_name(stream)
+        stream.seek(-2, 1)
+        result = property.do_shortcut(stream, "N", "na") # UCS Property: Name
     elif x == "\\G": 
-        result = snap_property_string.do_general_category(stream)
+        stream.seek(-2, 1)
+        result = property.do_shortcut(stream, "G", "gc") # UCS Property: General_Category
     else:
         result = None
 

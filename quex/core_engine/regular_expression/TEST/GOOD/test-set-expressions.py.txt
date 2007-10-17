@@ -2,6 +2,9 @@
 expression = "[: alnum :]"
 result     = [[48, 57], [65, 91], [93], [97, 122]]
 
+expression = "[: [\100-\0] :]"
+result     = [[0L, 64L]]
+
 expression = "[: [\x10-\x40] :]"
 result     = [[16L, 64L]]
 

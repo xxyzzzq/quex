@@ -95,11 +95,20 @@ Context free regular expressions match against an input independent on what
 `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\r`, or `\v`::
      the ANSI-C interpretation of the backslashed character.
 
-`\N{ UNICODE CHARACTER NAME }`::
-     the code of the character with the given Unicode character name. 
-
 `\P{ Unicode Property Expression }`::
      the set of characters for which the `Unicode Property Expression` holds.
+     Note, that these expressions cannot be used inside quoted strings.
+
+`\N{ UNICODE CHARACTER NAME }`::
+     the code of the character with the given Unicode character name. This is 
+     a shortcut for `$$\P{Name=UNICODE CHARACTER NAME}$$`. For possible
+     settings of this character see \cite{Unicode 5.0}.
+
+`\G{ X }`::
+     the code of the character with the given _General Category_ \cite{}. This is 
+     a shortcut for `$$\P{General_Category=X}$$`. Note, that these expressions 
+     cannot be used inside quoted strings. For possible settings of the 
+     General_Category property, see section <<sec:formal-unicode-properties>>.
 
 
 Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`

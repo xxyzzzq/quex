@@ -10,6 +10,8 @@ import quex.token_id_maker                      as token_id_maker
 import quex.lexer_mode                          as lexer_mode
 from   quex.lexer_mode                          import ReferencedCodeFragment_straighten_open_line_pragmas, \
                                                        ReferencedCodeFragment
+from quex.token_id_maker                        import TokenInfo
+
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
 import quex.input.quex_file_parser              as quex_file_parser
@@ -31,6 +33,9 @@ def do(Setup):
     #       functions also need 'connection' to the lexer class, so we include the header
     #       of the generated lexical analyser at this place.
     QuexEngineHeaderDefinitionFile = Setup.output_file_stem 
+
+    lexer_mode.token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
+    lexer_mode.token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
 
     # (0) check basic assumptions
     if Setup.input_mode_files == []:

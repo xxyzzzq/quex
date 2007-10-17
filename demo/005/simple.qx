@@ -1,11 +1,5 @@
 // -*- C++ -*-
 
-define {
-    // need to define whitespace, since current version 0.10.0 is not able
-    // to parse ' ' in a regular expression inside a mode.
-    P_WHITESPACE   [ \t\r\n]+
-}
-
 token {
    INCLUDE
    IDENTIFIER
@@ -16,7 +10,7 @@ token {
 
 mode ONE_AND_ONLY
 {
-    <<EOF>>     => quex::token::ID_TERMINATION;
+    <<EOF>>     => TKN_TERMINATION;
 
     "("         => TKN_BRACKET_OPEN;
     ")"         => TKN_BRACKET_CLOSE;
@@ -24,7 +18,7 @@ mode ONE_AND_ONLY
     "include"   => TKN_INCLUDE;
     //
     ([_a-zA-Z]|("/"|"."|"'"))+  => TKN_IDENTIFIER(Lexeme); 
-    {P_WHITESPACE} { }
+    [ \t\r\n]+                  { }
 }
 
 

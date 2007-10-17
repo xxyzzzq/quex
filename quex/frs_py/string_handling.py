@@ -8,14 +8,14 @@ def trim(Str):
     if Str == "": return ""
     L = len(Str)
     for i in range(L):
-        if Str[i] not in [" ", "\t", "\n"]:
+        if not Str[i].isspace():
             break
     else:
         # reached end of string --> empty string
         return ""
 
-    for k in range(1, L-i):
-        if Str[-k] not in [" ", "\t", "\n"]:
+    for k in range(1, L-i+1):
+        if not Str[L-k].isspace():
             break
 
     # note, if k = 1 then we would return Str[i:0]

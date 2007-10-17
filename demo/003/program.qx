@@ -1,12 +1,3 @@
-mode END_OF_FILE :
-<inheritable: only>  
-{    
-    <<EOF>> {
-	self.send(quex::token::ID_TERMINATION);
-        RETURN;
-    }
-}
-
 mode PROGRAM :
      END_OF_FILE
 {
@@ -29,7 +20,7 @@ mode PROGRAM :
     [۰-۹]+("."[۰-۹]+)?    => TKN_NUMBER;   // eastern arabic ($6F0-$6F9)
     [०-९]+("."[०-९]+)?    => TKN_NUMBER;   // devangari      ($966-$96F)
     [๐-๙]+("."[๐-๙]+)?    => TKN_NUMBER;   // thai           ($E50-$E5F)
-    ([A-Za-z]|[äüö])+     { self.send(TKN_IDENTIFIER, Lexeme); }
+    ([A-Za-z]|[äüö])+     => TKN_IDENTIFIER(Lexeme); 
     {P_WHITESPACE} { }
 }
 

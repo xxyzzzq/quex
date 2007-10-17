@@ -7,7 +7,7 @@ from quex.frs_py.file_in import read_until_closing_bracket
 from StringIO            import StringIO
 
 if "--hwut-info" in sys.argv:
-    print "file_in/read_until_closing_bracket: Test also for ignored regions"
+    print "File Input: Function read_until_closing_bracket(...)"
     sys.exit(0)
 
 def test(Text, Opener, Closer, IgnoreRegions=[]):

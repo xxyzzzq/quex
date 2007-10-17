@@ -1,3 +1,0 @@
-rm -f *.o
-rm -f real-code.cpp
-rm -f test-simple test-simple-2

@@ -32,6 +32,7 @@ import StringIO
 
 
 from quex.frs_py.string_handling import trim
+from quex.exception              import RegularExpressionException
 from quex.core_engine.interval_handling import *
 from quex.core_engine.state_machine.core import StateMachine
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
@@ -60,7 +61,7 @@ class something:
 __SETUP = something()
 
 def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0, 
-       DOS_CarriageReturnNewlineF=False):
+       DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
     global __SETUP
 
     if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)
@@ -103,6 +104,16 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
     #   raise "state machine does not have a unique origin:\n" + repr(sm) 
 
     if begin_of_line_f or end_of_line_f: sm = __beautify(sm)
+
+    # -- 'Nothing is find' is not a pattern that we can accept. See the discussion
+    #    in the module "quex.core_engine.generator.core.py"
+    init_state = sm.states[sm.init_state_index]
+    if init_state.is_acceptance() and AllowNothingIsFineF == False: 
+        raise RegularExpressionException("Pattern results in a 'nothing is acceptable' state machine.\n" + \
+                                         "This means, that no step forward in the input still sets the analyzer\n" + \
+                                         "into an acceptance state. Thus, as soon as no other input matches\n" + \
+                                         "the analyzer ends up in an infinite loop.")
+
     return sm
 
 def snap_conditional_expression(stream, PatternDict):
@@ -215,8 +226,8 @@ def snap_primary(stream, PatternDict):
 
     def eat_this(supposed_first_char, the_string):
         if len(the_string) < 1 or the_string[0] != supposed_first_char:
-            raise "missing '%s'" % supposed_first_char + "\n" + \
-                  "remaining string = '%s'" % the_string 
+            raise RegularExpressionException("missing '%s'" % supposed_first_char + "\n" + \
+                                             "remaining string = '%s'" % the_string) 
         return the_string[1:]    
 
     # -- 'primary' primary
@@ -378,7 +389,8 @@ def __snap_repetition_range(the_state_machine, stream):
             result = repeat.do(the_state_machine, number_1, number_2)
             return result
         except:
-            raise "error while parsing repetition range expression '%s'" % repetition_range_str 
+            raise RegularExpressionException("error while parsing repetition range expression '%s'" \
+                                             % repetition_range_str)
     else:
         # no repetition range, so everything remains as it is
         stream.seek(position_0)

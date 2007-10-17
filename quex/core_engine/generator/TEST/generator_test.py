@@ -3,7 +3,8 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
-from quex.frs_py.string_handling                import blue_print
+from quex.frs_py.string_handling import blue_print
+from quex.exception              import RegularExpressionException
 #
 import quex.core_engine.generator.core          as generator
 import quex.core_engine.regular_expression.core as regex
@@ -97,11 +98,15 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     for pair in PatternActionPairList:
         print "%20s --> %s" % (pair[0], pair[1])
     # -- create default action that prints the name and the content of the token
-    PatternActionPairList = map(lambda x: 
-                                generator.ActionInfo(regex.do(x[0], PatternDictionary, 
-                                                              BeginOfFile_Code, EndOfFile_Code), 
-                                                     action(x[1])),
-                                PatternActionPairList)
+    try:
+        PatternActionPairList = map(lambda x: 
+                                    generator.ActionInfo(regex.do(x[0], PatternDictionary, 
+                                                                  BeginOfFile_Code, EndOfFile_Code), 
+                                                         action(x[1])),
+                                    PatternActionPairList)
+    except RegularExpressionException, x:
+        print "Regular expression parsing:\n" + x.message
+        sys.exit(0)
 
     print "## (1) code generation"    
     txt  = "#include<stdio.h>\n"

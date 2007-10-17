@@ -170,6 +170,11 @@ include::formal/macro.txt[]
 === Command Line Options
 include::formal/command-line-options.txt[]
 
+== Appendix: Unicode Character Properties
+include::appendix/ucs_properties/intro.txt[]
+
+=== Unicode Character Property Settings
+include::appendix/ucs_properties/property-settings.txt[]
 
 == Appendix: Quex Intern: Generation of the Core Engine
 include::inside-quex/intro.txt[]
