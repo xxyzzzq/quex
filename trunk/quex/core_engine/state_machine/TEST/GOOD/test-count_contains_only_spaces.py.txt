@@ -6,5 +6,5 @@ expr.  = "    "[ \t]
 result =  False
 expr.  = ("    ")|([ \t])
 result =  False
-expr.  = " "{4, 10}|(" "*)
+expr.  = " "{4, 10}|(" "+)
 result =  True

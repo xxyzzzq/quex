@@ -245,13 +245,16 @@ def __check_for_nothing_is_fine(sm, EndOfFile_Code):
                 the whole discussion above and simply forbid pattern definitions
                 with 'nothing is just fine'.
     """
+    # NOTE: At this point this should never appear, since the problem is supposed
+    #       to be checked against at the level of parsing the regular expression.
     init_state = sm.states[sm.init_state_index]
     if init_state.is_acceptance() == False: 
         return
 
     assert False == True, \
           "error: A pattern (such as '.*' or 'x*') allows no input to be acceptable.\n" + \
-          "error: This does not make sense!"
+          "error: This does not make sense! THIS SHOULD HAVE BEEN CHECKED AGAINST WHEN\n" + \
+          "error: the state machine was created for the regular expression!"
 
 #   That is what was necessary to implement the superflous ideas introduced in the 
 #   huge comment:

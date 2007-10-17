@@ -8,6 +8,15 @@ import quex.lexer_mode      as lexer_mode
 
 from quex.frs_py.string_handling import blue_print
 
+class TokenInfo:
+    def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
+        self.name         = Name
+        self.number       = ID
+        self.related_type = TypeName
+        self.positions    = [ Filename, LineN ]
+        self.id           = None
+
+
 
 class Setup:
     def __init__(self, GlobalSetup):
@@ -74,8 +83,8 @@ func_str = \
            %%TOKEN_ID_CASES%%
        }
 
-       if     ( TokenID == %%TOKEN_PREFIX%%ID_TERMINATION )   return termination_string;
-       else if( TokenID == %%TOKEN_PREFIX%%ID_UNINITIALIZED ) return uninitialized_string;
+       if     ( TokenID == %%TOKEN_PREFIX%%TERMINATION )   return termination_string;
+       else if( TokenID == %%TOKEN_PREFIX%%UNINITIALIZED ) return uninitialized_string;
        std::map<%%TOKEN_CLASS%%::id_type, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
@@ -87,14 +96,6 @@ func_str = \
     }
 """
 
-class TokenInfo:
-    def __init__(self, Name, IDNumber, TypeName, Filename, LineN):
-        self.name         = Name
-        self.number       = IDNumber
-        self.related_type = TypeName
-        self.positions    = [ Filename, LineN ]
-
-
 def do(global_setup):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
@@ -105,6 +106,7 @@ def do(global_setup):
     output(global_setup)
     return
 
+    # THIS IS A FIRST ATTEMPT TO PARSE FOREIGN TOKEN ID DEFINITIONS
     for input_file in global_setup.input_token_id_db:
         curr_tokens = file_in.open_file_or_die(input_file).read().split(";")        
         curr_token_infos = map(lambda x: TokenInfo(x.split(), input_file), curr_tokens)
@@ -122,6 +124,10 @@ def do(global_setup):
     
 
 def output(global_setup):
+    assert lexer_mode.token_id_db.has_key("TERMINATION"), \
+           "TERMINATION token id must be defined by setup or user."
+    assert lexer_mode.token_id_db.has_key("UNINITIALIZED"), \
+           "UNINITIALIZED token id must be defined by setup or user."
     # (*) Token ID File ________________________________________________________________
     #
     #     The token id file can either be specified as database of
@@ -135,7 +141,8 @@ def output(global_setup):
     #     plus the suffix "--token-ids". Note, that the token id file is a
     #     header file.
     #
-    if lexer_mode.token_id_db.keys() == []:
+    if len(lexer_mode.token_id_db.keys()) == 2:
+        # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
         print "error: empty token-id list. quex cannot proceed."
         print "error: use the 'token { ... }' section to specify at least one token id."
         sys.exit(-1)
@@ -175,15 +182,15 @@ def output(global_setup):
     token_names = lexer_mode.token_id_db.keys()
     token_names.sort()
 
-    i   = setup.id_count_offset
+    i = setup.id_count_offset
     for token_name in token_names:
         token_info = lexer_mode.token_id_db[token_name] 
-        id = i
-        if token_info.number != None: id = token_info.number
+        if token_info.number == None: 
+            token_info.number = i; i+= 1
         token_id_txt += "const quex::%s::id_type %s%s %s= %i;\n" % (setup.token_class,
                                                                     setup.token_prefix,
-                                                                    token_name, space(token_name), id)
-        i += 1
+                                                                    token_name, space(token_name), 
+                                                                    token_info.number)
     token_id_txt += "#endif // QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
 
     # -- define the function for token names
@@ -194,7 +201,8 @@ def output(global_setup):
                                                                           space(token_name),
                                                                           token_name)
     
-    txt = blue_print(func_str, [["%%TOKEN_ID_CASES%%", db_build_txt]])
+    txt = blue_print(func_str, [["%%TOKEN_ID_CASES%%", db_build_txt],
+                                ["%%TOKEN_PREFIX%%",   setup.token_prefix]])
 
 
     # -- define the token traits

@@ -15,7 +15,7 @@ token {
 
 mode ONE_AND_ONLY
 {
-    <<EOF>>     => quex::token::ID_TERMINATION;
+    <<EOF>>     => TKN_TERMINATION;
 
     [ \t\r\n]+  { }
     "struct"    => TKN_STRUCT;

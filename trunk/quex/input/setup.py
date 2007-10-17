@@ -4,6 +4,9 @@ from copy import copy
 import sys
 
 from GetPot import GetPot
+
+import quex.lexer_mode as lexer_mode
+
 from quex.frs_py.string_handling import trim
 from quex.frs_py.file_in         import open_file_or_die, error_msg
 
@@ -31,6 +34,8 @@ SETUP_INFO = {
     "input_token_class_file":         [["--token-class-file"],               QUEX_TEMPLATE_DB_DIR + "/token"],
     "input_token_class_name":         [["--token-class"],                    "token"],
     "input_token_counter_offset":     [["--token-offset"],                   10000],
+    "token_id_termination":           [["--token-id-termination"],           0],
+    "token_id_uninitialized":         [["--token-id-uninitialized"],         1],
     "input_token_id_prefix":          [["--token-prefix"],                   "TKN_"],
     "input_user_token_id_file":       [["--user-token-id-file"],             ""],
     "no_mode_transition_check_f":     [["--no-mode-transition-check"],       FLAG],
@@ -125,6 +130,13 @@ def do(argv):
     setup.begin_of_stream_code = __get_integer(setup.begin_of_stream_code, "--begin-of-stream")
     setup.end_of_stream_code   = __get_integer(setup.end_of_stream_code, "--end-of-stream")
 
+    setup.input_token_counter_offset = __get_integer(setup.input_token_counter_offset,
+                                                     "--token-offset")
+    setup.token_id_termination       = __get_integer(setup.token_id_termination, 
+                                                     "--token-id-termination")
+    setup.token_id_uninitialized     = __get_integer(setup.token_id_uninitialized, 
+                                                     "--token-id-uninitialized")
+
     validate(setup, command_line, argv)
 
     # (*) return setup ___________________________________________________________________
@@ -179,8 +191,24 @@ def validate(setup, command_line, argv):
         setup.byte_order = sys.byteorder 
     elif setup.byte_order not in ["<system>", "little", "big"]:
         error_msg("Byte order (option --endian) must be 'little' or 'big'.\n" + \
-                  "error: Note, that this option is only interesting for cross plattform development.\n" + \
-                  "error: By default, quex automatically chooses the endian type of your system.")
+                  "Note, that this option is only interesting for cross plattform development.\n" + \
+                  "By default, quex automatically chooses the endian type of your system.")
+
+    # token offset and several ids
+    if setup.input_token_counter_offset == setup.token_id_termination:
+        error_msg("Token id offset (--token-offset) == token id for termination (--token-id-termination)\n")
+    if setup.input_token_counter_offset == setup.token_id_uninitialized:
+        error_msg("Token id offset (--token-offset) == token id for uninitialized (--token-id-uninitialized)\n")
+    if setup.token_id_termination == setup.token_id_uninitialized:
+        error_msg("Token id for termination (--token-id-termination) and uninitialized (--token-id-uninitialized)\n" + \
+                  "are chosen to be the same. Maybe it works.", DontExitF=True)
+    if setup.input_token_counter_offset < setup.token_id_uninitialized:
+        error_msg("Token id offset (--token-offset) < token id uninitialized (--token-id-uninitialized).\n" + \
+                  "Maybe it works.", DontExitF=True)
+    if setup.input_token_counter_offset < setup.token_id_termination:
+        error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
+                  "Maybe it works.", DontExitF=True)
+
         
 
 def __get_integer(code, option_name):

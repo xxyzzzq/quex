@@ -1,4 +1,7 @@
-Main options to control the behavior of the generated lexical analyzer are:
+This section lists the command line options to control the behavior of the
+generated lexical analyzer.  Numbers following these options can be either
+decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
+'0o' prefix.  
 
 `-i`, `--mode-files` _file-list_::
         
@@ -18,6 +21,19 @@ Main options to control the behavior of the generated lexical analyzer are:
         
 	    _number_ = Number where the numeric values for the token-ids start
 	    to count. DEFAULT = `"10000"`
+
+`--token-id-termination` _number_::
+        
+	    _number_ = Token identifier for the event of 'end of token stream'.
+	    DEFAULT = `"0"`.
+
+`--token-id-uninitialized` _number_::
+        
+        _number_ = Token identifier of a token that has not yet been
+        initialized.  Any token that arives the user 'by purpose' should not
+        contain this identifier.  It is basically a means for debuggin in order
+        to check wether tokens slip through due to whatever erroneous behavior.
+        DEFAULT = `"1"`.
 
 `--version-id` _name_::
 
@@ -111,9 +127,8 @@ There may be cases where the characters used to indicate buffer limit,
       begin-of-buffer and end-of-buffer in the general case. Giving both the
       same value may come with some speedup, and does not hurt. None of these
       values should be equal to the buffer limit delimiter. The following
-      options allow to modify the values discussed above.  The numbers
-      following these options can be either decimal, without any prefix,
-      hexadecimal with a '0x' prefix or octal with a '0o' prefix.  
+      options allow to modify the values discussed above.  
+      
 
 `--buffer-limit` _number_:: DEFAULT = `"0x0"`
 

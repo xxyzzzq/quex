@@ -78,7 +78,7 @@ init {
 mode END_OF_FILE :
 <inheritable: only>  
 {    
-    <<EOF>> => quex::token::ID_TERMINATION;
+    <<EOF>> => TKN_TERMINATION;
 }
 
 
