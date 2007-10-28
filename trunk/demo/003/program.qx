@@ -1,26 +1,6 @@
 mode PROGRAM :
      END_OF_FILE
 {
-    "✓"                   => TKN_OK;
-    "©"                   => TKN_COPYRIGHT;
-    "ليمج"                => TKN_DJAMEEL;
-    "α"                   => TKN_ALPHA;
-    "π"                   => TKN_PI;
-    "∞"                   => TKN_INFINITY;
-    "»"                   => TKN_CLOSE_FRENCH_QUOTE;
-    "«"                   => TKN_OPEN_FRENCH_QUOTE;
-    "→"                   => TKN_ARROW;
-    "("                   => TKN_L_BRACKET;
-    ")"                   => TKN_R_BRACKET;
-    "≈"                   => TKN_ALLMOST_EQUAL;
-    "°"{P_WHITESPACE}*"C" => TKN_DEGREE_CELSIUS;
-
-    [0-9]+("."[0-9]+)?    => TKN_NUMBER;
-    [٠-٩]+("."[٠-٩]+)?    => TKN_NUMBER;   // arabic         ($660-$669)
-    [۰-۹]+("."[۰-۹]+)?    => TKN_NUMBER;   // eastern arabic ($6F0-$6F9)
-    [०-९]+("."[०-९]+)?    => TKN_NUMBER;   // devangari      ($966-$96F)
-    [๐-๙]+("."[๐-๙]+)?    => TKN_NUMBER;   // thai           ($E50-$E5F)
-    ([A-Za-z]|[äüö])+     => TKN_IDENTIFIER(Lexeme); 
-    {P_WHITESPACE} { }
+    LATIN_IDENTIFIER    => TKN_LATIN_IDENTIFIER(Lexeme);
 }
 

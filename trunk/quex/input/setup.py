@@ -1,14 +1,13 @@
 #! /usr/bin/env python
-from quex.DEFINITIONS import *
-from copy import copy
+from   quex.DEFINITIONS import *
+from   copy import copy
 import sys
 
-from GetPot import GetPot
-
+from   quex.GetPot                 import GetPot
+from   quex.frs_py.file_in         import open_file_or_die, error_msg
 import quex.lexer_mode as lexer_mode
+import quex.input.query as query
 
-from quex.frs_py.string_handling import trim
-from quex.frs_py.file_in         import open_file_or_die, error_msg
 
 class something:
     pass
@@ -163,8 +162,8 @@ def validate(setup, command_line, argv):
     ufos = command_line.unidentified_options(options)
     if ufos != []:
         options.sort(lambda a,b: cmp(a.replace("-",""),b.replace("-","")))
-        error_msg("unidentified option(s) = ", repr(ufos) + "\n" + \
-                  "accepted options = ", repr(options)[1:-1])
+        error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
+                  "Accepted options = " +  repr(options + query.get_supported_command_line_options())[1:-1])
 
     if setup.input_derived_class_name != "" and \
        setup.input_derived_class_file == "":

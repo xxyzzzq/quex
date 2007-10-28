@@ -17,8 +17,8 @@
 import subprocess
 #
 from   quex.frs_py.file_in          import *
-from   quex.frs_py.string_handling  import trim
 from   quex.token_id_maker          import TokenInfo
+from   quex.exception               import RegularExpressionException
 import quex.lexer_mode                          as lexer_mode
 import quex.core_engine.regular_expression.core as regex
 
@@ -88,7 +88,7 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
         if line == "": 
             error_msg("found end of file while parsing a '%s' range.\n" % CodeFragmentName + \
                       "range started here.", fh, start_line_n)    
-        line = trim(line)
+        line = line.strip()
         if line == "":                           continue           # empty line
         elif line[0] == '}':                     return record_list # end of define range
         elif len(line) > 1 and line[:2] == "//": continue           # comment
@@ -129,7 +129,7 @@ def parse_pattern_name_definitions(fh):
         line_n                 = record[-2]
         line                   = record[-1]
         name                   = record[0]
-        regular_expression_str = trim(line[len(name):])
+        regular_expression_str = line[len(name):].strip()
         #
         if db.has_key(name):    
             error_msg("pattern name defined twice: '%s'" % name, fh.name, line_n, DontExitF=True)
@@ -176,10 +176,10 @@ def parse_token_id_definitions(fh, Setup):
         # -- check the name, if it starts with the token prefix paste a warning
         token_prefix = Setup.input_token_id_prefix
         if name.find(token_prefix) == 0:
-            error_msg("Token identifier begins with token prefix '%s'.\n" % token_prefix + \
-                      "This is not forbidden, but consider that this token identifier appears in the source\n" + \
-                      "code as '%s%s'" % (token_prefix, name) + ", because quex mounts " + \
-                      "the token prefix automatically.", fh, DontExitF=True)
+            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (name, token_prefix) + \
+                      "Token prefix is mounted automatically. This token id appears in the source\n" + \
+                      "code as '%s%s'." % (token_prefix, name), \
+                      fh, DontExitF=True)
 
         #
         if len(record) - 2 > 1: 
@@ -194,7 +194,7 @@ def parse_token_id_definitions(fh, Setup):
             # is first character a letter or '_' ?      
             if candidate[0].isalpha() or candidate[0] == "_": 
                 if type_name != None:
-                    error_msg("token can only have *one* type associated with it", fh, line_n)
+                    error_msg("Token can only have *one* type associated with it", fh, line_n)
                 type_name = candidate
         #
         if not db.has_key(name): 
@@ -375,7 +375,7 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
     if bracket_i == -1: 
         error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
 
-    token_name = trim(token_name)
+    token_name = token_name.strip()
     if bracket_i == 0:
         token_constructor_args = read_until_closing_bracket(fh, "(", ")")
         token_constructor_args = ", " + token_constructor_args
@@ -390,12 +390,13 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
     prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
 
     if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
-        error_msg("Token identifier '%s' has not been declared int token {...} section.\n" % token_name + \
-                  "Quex defines this token id '%s' implicitly.\n" % token_name + \
-                  "Please, note that inside the token {...} section tokens are declared **without** prefix.\n" + \
-                  "That means, in that section ommit the '%s' at the beginning of the token identifier." % \
-                  Setup.input_token_id_prefix, \
-                  fh, DontExitF=True)
+        msg = "Token id '%s' defined implicitly." % token_name
+        if token_name in lexer_mode.token_id_db.keys():
+            msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
+                   (Setup.input_token_id_prefix + token_name)
+            msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
+        error_msg(msg, fh, DontExitF=True)
+
         lexer_mode.token_id_db[prefix_less_token_name] = \
                 TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
 

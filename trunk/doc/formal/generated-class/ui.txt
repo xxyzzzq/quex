@@ -22,13 +22,17 @@ user does not care. He simply receives a sequence of tokens through this
 function until a token arrives with the the token-id 
 
 ----------------------------------------------------------
- quex::token::ID_TERMINATION
+ quex::TKN_TERMINATION
 ----------------------------------------------------------
 
-This id is by default defined as zero, because also many parsers require that.
-This id tells that the input has been totally treated and no further token
-will arrive. In order to keep track of different versions of generated
-lexers the member function
+Note, that `TKN_` represents the token prefix. If the user decides to modify
+the token prefix to `TOK_`, for example, the identifier for termination is
+`TOK_TERMINATION`. Note, that the default action _on failure_ also sends this
+identifier, so that no second check at the end of the analyzing loop is required.
+This id is by default defined as zero, because also many
+parsers require that.  This id tells that the input has been totally treated
+and no further token will arrive. In order to keep track of different versions
+of generated lexers the member function
 
   -  `const char* version() const;`
 

@@ -13,14 +13,6 @@ context of usages of tokens, however, imposes that it complies to some policies:
   -  A `typedef` inside the class must define a type for` 
       id\_type`.
 
-    -  The following token-ids need to be defined inside the class:
-
-        + `ID\_UNINITIALIZED` which is preferably set to '-1' so that 
-          no interference can occur with positive valued token-ids.
-
-        + `ID\_TERMINATION` which is preferably set to '0' because many parser
-          generators require a token-id of zero to terminate.
-
     -  A member function that maps token-ids to token-names
        +
        static const std::string&  map_id_to_name(token::id_type);

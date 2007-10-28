@@ -10,29 +10,37 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
     else:
         CodeFragment = CodeFragment_or_CodeFragments
 
-    txt = "{"
-    txt += "\n"
+    txt = "{\n"
 
+    # -- special code to be executed on any match
     for code_info in Mode.on_match_code_fragments():
         txt += code_info.get("C")
 
+    # -- line number counting code
     if Mode.on_indentation.line_n != -1:
         txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
     else:
         txt += __get_line_and_column_counting(PatternStateMachine)
 
+    # -- debug match display code
     if Setup.output_debug_f == True:
         txt += '#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES\n'
         txt += '    std::cerr << "(" << self.line_number_at_begin() << ", " << self.column_number_at_begin()'
         txt += '<< ") %s: %s \'" << Lexeme << "\'\\n";\n' % (Mode.name, SafePatternStr)
         txt += '#endif\n'
         
+    # -- THE action code as specified by the user
     if DefaultActionF == False: 
-        txt += CodeFragment.get("C") + "\n}"
+        txt += CodeFragment.get("C")
     else:                       
-        for code_info in Mode.on_failure_code_fragments():
-            txt += code_info.get("C")
-        txt += "\n}"
+        if CodeFragementList != []:
+            for code_info in CodeFragementList:
+                txt += code_info.get("C")
+        else:
+            txt += "self.send(%sTERMINATION);\n"   % Setup.input_token_id_prefix 
+            txt += "return quex::%sTERMINATION;\n" % Setup.input_token_id_prefix 
+
+    txt += "\n}"
 
     return txt
 

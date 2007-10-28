@@ -28,7 +28,7 @@ in at the head of the file.
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   mode ONE_AND_ONLY { 
 
-    <<EOF>> => quex::token::ID_TERMINATION;
+    <<EOF>>     => TKN_TERMINATION;
 
     "set"       => TKN_TIMEOUT;
     "print"     => TKN_ADDRESS;

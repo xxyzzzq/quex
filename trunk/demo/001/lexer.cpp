@@ -24,19 +24,19 @@ main(int argc, char** argv)
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
     do {
-	// (*) get next token from the token stream
-	qlex->get_token(&Token);
+        // (*) get next token from the token stream
+        qlex->get_token(&Token);
 
-	// (*) print out token information
-	//     -- line number and column number
-	cout << "(" << qlex->line_number() << ", " << qlex->column_number() << ")  \t";
-	//     -- name of the token
-	cout << Token.type_id_name() << endl;
+        // (*) print out token information
+        //     -- line number and column number
+        cout << "(" << qlex->line_number() << ", " << qlex->column_number() << ")  \t";
+        //     -- name of the token
+        cout << Token.type_id_name() << endl;
 
-	++number_of_tokens;
+        ++number_of_tokens;
 
-	// (*) check against 'termination'
-    } while( Token.type_id() != quex::token::ID_TERMINATION );
+        // (*) check against 'termination'
+    } while( Token.type_id() != quex::TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";
