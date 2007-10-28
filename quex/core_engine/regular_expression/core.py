@@ -31,7 +31,6 @@ import sys
 import StringIO
 
 
-from quex.frs_py.string_handling import trim
 from quex.exception              import RegularExpressionException
 from quex.core_engine.interval_handling import *
 from quex.core_engine.state_machine.core import StateMachine
@@ -331,7 +330,7 @@ def snap_replacement(stream, PatternDict):
        state machine.
     """ 
     pattern_name = __snap_until(stream, "}")  
-    pattern_name = trim(pattern_name)    
+    pattern_name = pattern_name.strip()    
     if PatternDict.has_key(pattern_name) == False:
         raise RegularExpressionException("Pattern of name '%s' was not defined in any preceding 'define { }' section" \
                                          % pattern_name)
@@ -380,11 +379,11 @@ def __snap_repetition_range(the_state_machine, stream):
                 return result
             # a range of numbers is given       
             fields = repetition_range_str.split(",")
-            fields = map(trim, fields)
+            fields = map(lambda x: x.strip(), fields)
 
-            number_1 = int(trim(fields[0]))
-            if fields[1] == "": number_2 = -1                    # e.g. {2,}
-            else:               number_2 = int(trim(fields[1]))  # e.g. {2,5}  
+            number_1 = int(fields[0].strip())
+            if fields[1] == "": number_2 = -1                      # e.g. {2,}
+            else:               number_2 = int(fields[1].strip())  # e.g. {2,5}  
             # produce repeated state machine 
             result = repeat.do(the_state_machine, number_1, number_2)
             return result

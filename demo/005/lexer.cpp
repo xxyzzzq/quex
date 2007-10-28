@@ -52,7 +52,7 @@ main(int argc, char** argv)
                 break;
                 
             }
-        case quex::token::ID_TERMINATION:
+        case quex::TKN_TERMINATION:
             if( qlex->include_stack_pop() == false ) continue_lexing_f = false;
             else                                     cout << "<< return from include\n";
             break;

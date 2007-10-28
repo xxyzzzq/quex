@@ -1,6 +1,5 @@
 from quex.input.ucs_db_parser    import ucs_property_db
 from quex.frs_py.file_in         import skip_whitespace
-from quex.frs_py.string_handling import trim
 from quex.exception              import RegularExpressionException
 
 from quex.core_engine.regular_expression.auxiliary import __snap_until 
@@ -80,4 +79,4 @@ def __parse_property_expression(stream, PropertyLetter, EqualConditionPossibleF=
     if not EqualConditionPossibleF and len(fields) == 2:
         raise RegularExpressionException("Unicode property expression '\\%s' does not allow '=' conditions")
 
-    return map(trim, fields)
+    return map(lambda x: x.strip(), fields)

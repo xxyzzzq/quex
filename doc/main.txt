@@ -163,9 +163,20 @@ include::formal/user-token-class.txt[]
 === Summary of Code Sections
 include::formal/code-sections.txt[]
 
-
 === Macro Switches
 include::formal/macro.txt[]
+
+== Query Mode
+include::query/intro.txt[]
+
+=== Unicode Properties
+include::query/properties.txt[]
+
+=== Character Set Expressions
+include::query/character-set-expressions.txt[]
+
+=== Wilcard Expansions
+include::query/property-wilcard-expansions.txt[]
 
 === Command Line Options
 include::formal/command-line-options.txt[]

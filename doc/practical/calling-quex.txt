@@ -112,7 +112,7 @@ main(int argc, char** argv)
         ++number_of_tokens;
 
         // (*) check against 'termination'
-    } while( Token.type_id() != quex::token::ID_TERMINATION );
+    } while( Token.type_id() != quex::TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << ",------------------------------------------------------\n";
@@ -133,7 +133,7 @@ starts. In the sample application it does not more than getting the a token
 using `get\_token()` and printing it out. In a more realistic application
 this token is to be passed to a parser that does its syntactic analysis on it.
 When a token arrives with an identifier equal to` 
-  quex::token::ID\_TERMINATION`, then the loop exits and the program
+  quex::TKN_TERMINATION`, then the loop exits and the program
 terminates.
 
 At this point in time everything is ready for compilation. Using the Makefile

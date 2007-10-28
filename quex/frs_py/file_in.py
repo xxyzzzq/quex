@@ -345,7 +345,10 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False):
             else:
                 line_n = -1
                 Filename = ""
-        prefix = "%s:%i:error" % (Filename, line_n + 1)   
+        if DontExitF: 
+            prefix = "%s:%i:warning" % (Filename, line_n + 1)   
+        else:
+            prefix = "%s:%i:error" % (Filename, line_n + 1)   
         
     for line in split(ErrMsg, "\n"):
         print prefix + ": %s" % line

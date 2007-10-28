@@ -1,0 +1,28 @@
+This chapter focuses on the Unicode Character Properties as they are provied by
+quex. The curren version of Quex is based on Unicode 5.0. It uses the databases
+as provided by the Unicode Consortium it is likely that Quex integrates the
+property system of any later standard as soon as it is in a major state. In
+particular Unicode Character Properties are used to define _sets of characters_
+to be matched during lexical analysis. This excludes some properties from 
+consideration, namely the properties tagged as `string` property types and
+the 'quick-check' properties (see <<UCS#15>>). The following properties
+are explicitly supported by quex. The expressions in brackets are the aliases
+that can be used as a shorthand for the full name of the property.
+
+//////////////////////////
+The content of the subsequent sections can be created by running the
+script quex/input/ucs_property_parse.py! Thus updating to newer 
+versions is made easy.
+/////////////////////////
+
+Binary Properties::
+
+    ASCII_Hex_Digit(AHex), Alphabetic(Alpha), Bidi_Control(Bidi_C), Bidi_Mirrored(Bidi_M), Composition_Exclusion(CE), Dash(Dash), Default_Ignorable_Code_Point(DI), Deprecated(Dep), Diacritic(Dia), Expands_On_NFC(XO_NFC), Expands_On_NFD(XO_NFD), Expands_On_NFKC(XO_NFKC), Expands_On_NFKD(XO_NFKD), Extender(Ext), Full_Composition_Exclusion(Comp_Ex), Grapheme_Base(Gr_Base), Grapheme_Extend(Gr_Ext), Grapheme_Link(Gr_Link), Hex_Digit(Hex), Hyphen(Hyphen), IDS_Binary_Operator(IDSB), IDS_Trinary_Operator(IDST), ID_Continue(IDC), ID_Start(IDS), Ideographic(Ideo), Join_Control(Join_C), Logical_Order_Exception(LOE), Lowercase(Lower), Math(Math), Noncharacter_Code_Point(NChar), Other_Alphabetic(OAlpha), Other_Default_Ignorable_Code_Point(ODI), Other_Grapheme_Extend(OGr_Ext), Other_ID_Continue(OIDC), Other_ID_Start(OIDS), Other_Lowercase(OLower), Other_Math(OMath), Other_Uppercase(OUpper), Pattern_Syntax(Pat_Syn), Pattern_White_Space(Pat_WS), Quotation_Mark(QMark), Radical(Radical), STerm(STerm), Soft_Dotted(SD), Terminal_Punctuation(Term), Unified_Ideograph(UIdeo), Uppercase(Upper), Variation_Selector(VS), White_Space(WSpace), XID_Continue(XIDC), XID_Start(XIDS), 
+
+Non-Binary Properties::
+
+    Age(age), Bidi_Class(bc), Bidi_Mirroring_Glyph(bmg), Block(blk), Canonical_Combining_Class(ccc), Case_Folding(cf), Decomposition_Mapping(dm), Decomposition_Type(dt), East_Asian_Width(ea), FC_NFKC_Closure(FC_NFKC), General_Category(gc), Grapheme_Cluster_Break(GCB), Hangul_Syllable_Type(hst), ISO_Comment(isc), Joining_Group(jg), Joining_Type(jt), Line_Break(lb), Lowercase_Mapping(lc), NFC_Quick_Check(NFC_QC), NFD_Quick_Check(NFD_QC), NFKC_Quick_Check(NFKC_QC), NFKD_Quick_Check(NFKD_QC), Name(na), Numeric_Type(nt), Numeric_Value(nv), Script(sc), Sentence_Break(SB), Simple_Case_Folding(sfc), Simple_Lowercase_Mapping(slc), Simple_Titlecase_Mapping(stc), Simple_Uppercase_Mapping(suc), Special_Case_Condition(scc), Titlecase_Mapping(tc), Unicode_1_Name(na1), Unicode_Radical_Stroke(URS), Uppercase_Mapping(uc), Word_Break(WB), 
+
+Binary properties can simply be applied using the `\P{...}` expression. Thus for example,
+`\P{ID_Start}` results in the set of characters that can build the beginning of an identifier
+in usual programming languages.

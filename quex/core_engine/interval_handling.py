@@ -163,36 +163,44 @@ class Interval:
         return self.end - self.begin
 
     def __repr__(self):
+        return self.get_string(Option="")
+
+    def __utf8_char(self, Code):
+        if   Code == - sys.maxint:   return "-oo"
+        elif Code == sys.maxint:     return "oo"            
+        elif Code == ord(' '):       return "' '"
+        elif Code == ord('\n'):      return "'\\n'"
+        elif Code == ord('\t'):      return "'\\t'"
+        elif Code == ord('\r'):      return "'\\r'"
+        elif Code < ord('0'):        return "\\" + repr(Code) 
+        else:
+            char_str = utf8.map_unicode_to_utf8(Code)
+            return "'" + char_str + "'"
+        # elif Code < ord('0') or Code > ord('z'): return "\\" + repr(Code)
+        # else:                                    return "'" + chr(Code) + "'"
+
+    def get_string(self, Option="", Delimiter=", "):
+        if Option == "hex":    __repr = lambda x: "%05X" % x
+        elif Option == "utf8": __repr = lambda x: self.__utf8_char(x)
+        else:                  __repr = repr
+        
         if self.begin == self.end:       return "[]"
-        elif self.end - self.begin == 1: return "[" + repr(self.begin) + "]" 
-        else:                            return "[" + repr(self.begin) + ", " + repr(self.end-1) + "]"
+        elif self.end - self.begin == 1: return "[" + __repr(self.begin) + "]" 
+        else:                            return "[" + __repr(self.begin) + Delimiter + __repr(self.end-1) + "]"
 
     def get_utf8_string(self):
         #_____________________________________________________________________________
         assert self.begin <= self.end
         
-        def utf8_char(Code):
-            if   Code == - sys.maxint:   return "-oo"
-            elif Code == sys.maxint:     return "oo"            
-            elif Code == ord('\n'):      return "'\\n'"
-            elif Code == ord('\t'):      return "'\\t'"
-            elif Code == ord('\r'):      return "'\\r'"
-            elif Code < ord('0'):        return "\\" + repr(Code) 
-            else:
-                char_str = utf8.map_unicode_to_utf8(Code)
-                return "'" + char_str + "'"
-            # elif Code < ord('0') or Code > ord('z'): return "\\" + repr(Code)
-            # else:                                    return "'" + chr(Code) + "'"
-
         if self.begin == self.end: 
             return "''"
         elif self.end - self.begin == 1: 
-            return utf8_char(self.begin) 
+            return self.__utf8_char(self.begin) 
         else:                          
             if   self.end == -sys.maxint: end_char = "-oo"
             elif self.end == sys.maxint:  end_char = "oo"
-            else:                         end_char = utf8_char(self.end-1)
-            return "[" + utf8_char(self.begin) + ", " + end_char + "]"
+            else:                         end_char = self.__utf8_char(self.end-1)
+            return "[" + self.__utf8_char(self.begin) + ", " + end_char + "]"
 
     def gnuplot_string(self, y_coordinate):
         if self.begin == self.end: return ""
@@ -340,7 +348,8 @@ class NumberSet:
 
     def union(self, Other):
         Other_type = Other.__class__.__name__
-        assert Other_type == "Interval" or Other_type == "NumberSet"
+        assert Other_type == "Interval" or Other_type == "NumberSet", \
+               "Error, argument of type %s" % Other.__class__.__name__
 
         shadow_of_self = deepcopy(self)
 

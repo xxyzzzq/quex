@@ -176,5 +176,44 @@ options:
 Note, that for well tempered patterns this should be safe even on Unix
 machines. The generated lexical analyzer, though, might be a litter slower.
 For version information pass option `--version`' or `-v`'. The
-options `--help` and `-h`' are reserved for requesting a help text.
+options `--help` and `-h`' are reserved for requesting a help text. Those
+are the options for using quex in the 'normal' mode where it creates
+lexical analyzers. However, quex provides some services to query and 
+test character sets. If one of those options is called, then quex does not
+create a lexical analyzer but responds with some information requested 
+by the user. Those options are the following.
 
+`--property` _[name]_::
+
+   If _name_ is specified, then information about the property with the given
+   name is displayed. Note, that _name_ can also be a property alias.
+
+`--set-by-property` _setting_::
+
+   For binary properties only the property name has to be specified. All other
+   properties require a term of the form `property-name = value`. Quex then
+   displays the set of character that has this particular property.
+
+`--set-by-expression` _expression_::
+
+   Character set expressions that are ususally specified in '$$[:$$' ... '$$:]$$' brackets
+   can be specified as _expression_. Quex then displays the set of characters that results
+   from it.
+
+`--property-match` _wildcard-expression_::
+
+   Quex allows to use wildcards in property values. Using this option allows
+   to displays the list of values to which the given wildcard expression 
+   expands. Example: The wildcard-expression `Name=*LATIN*` gives all settings of property `Name` that
+   contain the string `LATIN`.
+
+`--numeric`::
+
+   If this option is specified the numeric character codes are displayed rather
+   then the utf8 characters.
+
+`--intervals`::
+
+   This option disables the display of single character or single character codes.
+   In this case sets of adjacent characters are displayed as intervals. This provides
+   a some more brief display.

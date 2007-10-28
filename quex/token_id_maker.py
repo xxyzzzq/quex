@@ -169,7 +169,8 @@ def output(global_setup):
         return " " * (L - len(Name))
 
     # -- define values for the token ids
-    token_id_txt = "#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
+    token_id_txt  = "namespace quex {\n"  
+    token_id_txt += "#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
     if setup.input_foreign_token_id_file != "":
         token_id_txt += "// If token ids come from somewhere else (e.g. the parser)\n"
         token_id_txt += "#include<%s>\n" % setup.input_foreign_token_id_file
@@ -192,6 +193,7 @@ def output(global_setup):
                                                                     token_name, space(token_name), 
                                                                     token_info.number)
     token_id_txt += "#endif // QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
+    token_id_txt += "} // namespace quex\n" 
 
     # -- define the function for token names
     db_build_txt = ""

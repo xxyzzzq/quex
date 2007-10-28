@@ -19,13 +19,19 @@
 import sys
 import tempfile
 
-# this script needs to be located one directory above 'quex.'
-# so that it ca get the imports
+# This script needs to be located one directory above 'quex.'
+# so that it ca get the imports straight.
 import quex.DEFINITIONS
 import quex.input.setup as setup_parser
+import quex.input.query as query_parser
 import quex.core        as core
 
 if __name__ == "__main__":
+
+    # (*) Call only for query? ___________________________________________________________
+    if query_parser.do(sys.argv):   # if quex has been called for UCS property
+        sys.exit(0)                 # query, then no further processing is performed
+
     # (*) Get Setup from Command Line and Config File ____________________________________
     setup = setup_parser.do(sys.argv)
 

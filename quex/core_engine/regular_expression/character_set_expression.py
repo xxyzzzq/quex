@@ -30,7 +30,6 @@ import quex.core_engine.regular_expression.auxiliary                 as aux
 #
 from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
-from quex.frs_py.string_handling         import trim
 from quex.frs_py.file_in                 import read_until_letter, \
                                                 read_until_non_letter, \
                                                 skip_whitespace
@@ -103,7 +102,7 @@ def snap_set_term(stream):
     except: 
         word = "not a valid word"
 
-    word = trim(word)
+    word = word.strip()
 
     if word in [ "union", "intersection", "difference", "inverse"]: 
         set_list = snap_set_list(stream, word)
@@ -149,7 +148,7 @@ def __snap_word(stream):
     except: 
         raise RegularExpressionException("Missing opening bracket.")
     stream.seek(-1,1)
-    return trim(the_word)
+    return the_word.strip()
 
 def snap_set_list(stream, set_operation_name):
     __debug_entry("set_list", stream)

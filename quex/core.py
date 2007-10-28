@@ -87,9 +87,6 @@ def do(Setup):
         # -- default action
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
                                                   "on_failure", None, DefaultActionF=True)
-        for code_info in mode.on_failure_code_fragments():
-            default_action += code_info.get("C")
-            if default_action[-1] == "\n": default_action = default_action[:-1]
 
         # -- pattern-action pairs
         dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
@@ -98,7 +95,8 @@ def do(Setup):
         # accumulate inheritance information for comment
         inheritance_info_str += dummy + "**\n"
 
-        analyzer_code += generator.do(pattern_action_pair_list, default_action, 
+        analyzer_code += generator.do(pattern_action_pair_list, 
+                                      default_action, 
                                       PrintStateMachineF             = True,
                                       StateMachineName               = mode.name,
                                       AnalyserStateClassName         = Setup.output_engine_name,
