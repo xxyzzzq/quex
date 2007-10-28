@@ -37,11 +37,11 @@ main(int argc, char** argv)
         default: 
             break;
 
-        case TKN_INCLUDE: 
+        case quex::TKN_INCLUDE: 
             {
                 qlex->get_token(&Token);
                 cout << Token.type_id_name() << "\t" << Token.text() << endl;
-                if( Token.type_id() != TKN_IDENTIFIER ) {
+                if( Token.type_id() != quex::TKN_IDENTIFIER ) {
                     cout << "found 'include' without a subsequent filename. hm?\n";
                     break;
                 }

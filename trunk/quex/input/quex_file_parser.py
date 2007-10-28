@@ -387,8 +387,9 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
     if token_name.find(Setup.input_token_id_prefix) != 0:
         error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
                   "found: '%s'" % token_name, fh)
-    prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
 
+    prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
+    print "##", prefix_less_token_name
     if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
         msg = "Token id '%s' defined implicitly." % token_name
         if token_name in lexer_mode.token_id_db.keys():

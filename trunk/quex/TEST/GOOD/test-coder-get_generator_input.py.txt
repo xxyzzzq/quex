@@ -45,10 +45,10 @@ ActionInfo:
    state machine of pattern = 
       init-state = 32L
       00032 <~ (11, 32)
-            == ['\t', '\n'], \32 ==> 00033
+            == ['\t', '\n'], ' ' ==> 00033
             <no epsilon>
       00033* <~ (11, 33, S)
-            == ['\t', '\n'], \32 ==> 00033
+            == ['\t', '\n'], ' ' ==> 00033
             <no epsilon>
       
    action = 
