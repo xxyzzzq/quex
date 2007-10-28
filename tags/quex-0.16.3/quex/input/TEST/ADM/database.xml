@@ -1,0 +1,29 @@
+<test-database execution-time-sec="20.29" date="Sun Oct 28 13:41:56 2007">
+    <group name="Quex Queries">
+        <test title="Wildcard Property Values" make-required="False" time-sum-sec="1.52"> 
+            <application file-name="test-query-property-wildcard-values.py" info-request-time="1193326686L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.52"/>
+            </choice-list>
+        </test>
+        <test title="Information about Properties" make-required="False" time-sum-sec="13.00"> 
+            <application file-name="test-query.py" info-request-time="1193304980L"/>
+            <choice-list number="2">
+               <choice name="PropertyList" result="OK" time-sec="11.54"/>
+               <choice name="PropertyInfo" result="OK" time-sec="1.46"/>
+            </choice-list>
+        </test>
+        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="1.59"> 
+            <application file-name="test-query-character-set-by-expression.py" info-request-time="1193298250L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.59"/>
+            </choice-list>
+        </test>
+        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="4.18"> 
+            <application file-name="test-query-character-set.py" info-request-time="1193386750L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="4.18"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

@@ -1,0 +1,6 @@
+mode PROGRAM :
+     END_OF_FILE
+{
+    LATIN_IDENTIFIER    => TKN_LATIN_IDENTIFIER(Lexeme);
+}
+

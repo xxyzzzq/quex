@@ -1,0 +1,44 @@
+#! /usr/bin/env python
+# Quex is  free software;  you can  redistribute it and/or  modify it  under the
+# terms  of the  GNU Lesser  General  Public License  as published  by the  Free
+# Software Foundation;  either version 2.1 of  the License, or  (at your option)
+# any later version.
+# 
+# This software is  distributed in the hope that it will  be useful, but WITHOUT
+# ANY WARRANTY; without even the  implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the  GNU Lesser General Public License for more
+# details.
+# 
+# You should have received a copy of the GNU Lesser General Public License along
+# with this  library; if not,  write to the  Free Software Foundation,  Inc., 59
+# Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# (C) 2007 Frank-Rene Schaefer
+#
+################################################################################
+# -*- python -*-
+import os
+import sys
+
+QUEX_VERSION = "0.16.3"
+
+try:
+    QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
+except:
+    print "error: environment variable 'QUEX_PATH' is not defined."
+    if os.name == "posix":
+        print "error: your system is 'posix'."
+        print "error: if you are using bash-shell, append the following line"
+        print "error: to your '~/.bashrc' file:"
+        print "error:"
+        print "error: export QUEX_PATH=directory-where-quex-has-been-installed"
+    else:
+        print "error: for your system '%s' it is not known how to set environment" % os.name
+        print "error: variables. if you find out, please, send an email to"
+        print "error: <fschaef@users.sourceforge.net>"
+    sys.exit(-1)
+
+sys.path.insert(0, os.environ["QUEX_PATH"])
+QUEX_TEMPLATE_DB_DIR  = QUEX_INSTALLATION_DIR + "/quex/code_base"
+
+#license-info Sat Aug  5 14:10:32 2006#
