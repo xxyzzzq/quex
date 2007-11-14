@@ -6,22 +6,13 @@
     and fast, quick_add_interval + clean() could probably provide 
     tremendous speed-up.
 
-(*) 07y9m20d:
-
-    name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
-
-
-(*) 07y9m9d:
-
-    line up the quex::token::ID_TERMINATION
-
 (*) 07y7m2d:
 
     NOTE: If some day the 'state counting' feature is implemented for states to solve
           the 'x*/x+' problem. then the functions 
 
            get_fixed_number_of_newlines_to_acceptance 
-	   get_fixed_number_of_characters_to_acceptance
+	       get_fixed_number_of_characters_to_acceptance
 
 	   need to return None, in case that there are such states involved.
 	   if counting states appear only in post or pre-conditions this does
@@ -102,7 +93,7 @@ ENTRY_INTO_MACHINE:
 
 (*) 07y8m11d:
 
-    support internal codings other than ASCII, UCS-2 and UCS-4
+    support **internal** codings other than ASCII, UCS-2 and UCS-4
 
 (*) 07y8m4d:
 

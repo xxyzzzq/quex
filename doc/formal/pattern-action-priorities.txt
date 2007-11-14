@@ -25,24 +25,48 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       [a-z]+  { ... /* identifier    */ }
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-match in a character stream '`print(`' exactly five characters. So do we
-deal with a print keyword or with an identifier? The rule here is: _first
-  come, first serve - patterns that are mentioned first in the code win!_.
-If a pattern in a base mode and a pattern in a derived mode match with the
-same number of characters, than _the base mode' pattern proceeds!_. This
+match in a character stream '`print`' exactly five characters. How can be
+decided wether to vote for a keyword or an identifier?  The rule here is:
+_first come, first serve__ -- patterns that are mentioned first in the code
+win!.  If a pattern in a base mode and a pattern in a derived mode match with
+the same number of characters, than _the base mode' pattern proceeds!_. This
 follows the philosophie that the base mode imposes behavior on the derived
-modes. Figure <<fig:pattern-priorities, style=ref>> shows how a pattern is matched in
-case of multiple patterns matching the current character input stream.
+modes. Figure <<fig:pattern-priorities, style=ref>> shows how a pattern is
+matched in case of multiple patterns matching the current character input
+stream.
 
 [[fig:pattern-priorities]]
 .Dispatch of pattern actions in case of concurrent matches.
 image::figures/pattern-priorities.png[]
 
+With respect to pre- and post-conditioned patterns, the rules remain the same.
+However, some things need to be clarified. For a pre-conditioned pattern
+'$$Q/R/$$' the string matching the pre-condition '$$Q$$' does _not_ contribute
+to the length of the pattern match. For a post-conditioned pattern '$$R/S$$'
+the matching characters of the post-condition '$$S$$' _do_ contribute to the
+length of the pattern match. Note, that the last rule is, on the first glance,
+counter-intuitive to the fact that the `Lexeme` variable in a
+post-conditioned pattern match action contains only the length of the
+core pattern and not the length of the post-condition. There is a rational, though,
+     behind this distinction:
 
-For cases of real urgency, a keyword allows to struck the philosophie of base
-and derived classes: `PRIORITY-MARK`. A pattern followed by this keyword
-is _lifted_ into the current mode, thus having the priority according to
-the position in the current mode not of the base mode. For example:
+- Pattern length of the action dispatcher is based on the _reach_ of a pattern
+  starting from the last input position, i.e. the end of the last match.
+
+- Lexeme length is considered to frame the _information_ of a pattern match.
+  The matching part of the post-condition is not considered to be part of the
+  core information of the pattern, otherwise it should be included in the core
+  pattern. Moreover, since the lexical analyzer restarts from the end of the
+  core pattern, the characters matching the post-condition are to match
+  again and then they will be part of a core pattern and their information is
+  to be considered.
+
+
+For cases of real urgency, a keyword allows to struck the ruleset of
+pattern-action dispatching: `PRIORITY-MARK`. A pattern followed by this keyword
+is _lifted_ into the current mode, thus having the priority according to the
+position in the current mode not of the base mode. This requires, of course,
+for the pattern to be defined before. For example:
 
 [cpp]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

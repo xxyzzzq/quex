@@ -106,7 +106,7 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
 
     assert True == False, "this code section should have never been reached!"
 
-def parse_pattern_name_definitions(fh):
+def parse_pattern_name_definitions(fh, Setup):
     """Parses pattern definitions of the form:
    
           WHITESPACE  [ \t\n]
@@ -120,24 +120,43 @@ def parse_pattern_name_definitions(fh):
        One regular expression can have more than one name, but one name can 
        only have one regular expression.
     """
+    def __closing_bracket(fh):
+        position = fh.tell()
+        dummy = fh.read(1)
+        if dummy == "}": return True
+        fh.seek(position)
+        return False
+
     #
-    record_list = __parse_domain_of_whitespace_separated_elements(fh, "define", 
-                                                                  ["NAME", "REGULAR-EXPRESSION"], 2)
-    
-    db = lexer_mode.shorthand_db
-    for record in record_list:
-        line_n                 = record[-2]
-        line                   = record[-1]
-        name                   = record[0]
-        regular_expression_str = line[len(name):].strip()
-        #
-        if db.has_key(name):    
-            error_msg("pattern name defined twice: '%s'" % name, fh.name, line_n, DontExitF=True)
-            error_msg("previously define here.", db[name].filename, db[name].line_n)
-        else:    
-            db[name] = lexer_mode.PatternShorthand(name, regular_expression_str, 
-                                                   fh.name, line_n)
-        line_n += 1
+    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
+
+    while 1 + 1 == 2:
+        skip_whitespace(fh)
+
+        if __closing_bracket(fh): 
+            return
+        
+        # -- get the name of the pattern
+        pattern_name = read_next_word(fh)
+
+        skip_whitespace(fh)
+
+        if __closing_bracket(fh): 
+            raise RegularExpressionException("Missing regular expression for pattern definition '%s'." % \
+                                             pattern_name)
+
+        # -- parse regular expression, build state machine
+        regular_expression, state_machine = parse_regular_expression_specification(fh, Setup)
+        # It is ESSENTIAL that the state machines of defined patterns do not 
+        # have origins! Actually, there are not more than patterns waiting
+        # to be applied in regular expressions. The regular expressions 
+        # can later be origins.
+        state_machine.delete_state_origins()
+        
+        lexer_mode.shorthand_db[pattern_name] = \
+                lexer_mode.PatternShorthand(pattern_name, state_machine, 
+                                            fh.name, get_current_line_info_number(fh),
+                                            regular_expression)
 
 def parse_token_id_definitions(fh, Setup):
     """Parses token definitions of the form:
@@ -254,7 +273,7 @@ def parse_section(fh, Setup):
         return
         
     elif word == "define":
-        parse_pattern_name_definitions(fh)
+        parse_pattern_name_definitions(fh, Setup)
         return
 
     elif word == "token":       
@@ -318,13 +337,14 @@ def parse_mode_definition(fh, Setup):
                 error_msg("mode '%s' does not contain any pattern" % new_mode.name, fh)
             break
 
+        # -- check for 'on_entry', 'on_exit', ...
         result = check_for_event_specification(word, fh, new_mode, Setup, pattern_i)
         if result == True: 
-            continue
+            continue # all work has been done in check_for_event_specification()
 
-        elif type(result) == str:
-            pattern = result
-            pattern_state_machine = regex.do(pattern, {}, 
+        elif result == "<<EOF>>":
+            pattern = "<<EOF>>"
+            pattern_state_machine = regex.do("<<EOF>>", {}, 
                                              Setup.begin_of_stream_code, Setup.end_of_stream_code,
                                              DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
 
@@ -389,7 +409,6 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
                   "found: '%s'" % token_name, fh)
 
     prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
-    print "##", prefix_less_token_name
     if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
         msg = "Token id '%s' defined implicitly." % token_name
         if token_name in lexer_mode.token_id_db.keys():
@@ -458,14 +477,8 @@ def parse_regular_expression_specification(fh, Setup):
 
     start_position = fh.tell()
     try:
-        # -- adapt pattern dictionary: 
-        #    (this may be superfluous if the it was organized differently)
-        pattern_dictionary = {}
-        for item in lexer_mode.shorthand_db.values():
-            pattern_dictionary[item.name] = item.regular_expression         
-
         # -- parse regular expression, build state machine
-        pattern_state_machine = regex.do(fh, pattern_dictionary, 
+        pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          Setup.begin_of_stream_code, Setup.end_of_stream_code,
                                          DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
     except RegularExpressionException, x:
@@ -474,7 +487,7 @@ def parse_regular_expression_specification(fh, Setup):
     end_position = fh.tell()
 
     fh.seek(start_position)
-    pattern = fh.read(end_position - start_position)
+    regular_expression = fh.read(end_position - start_position)
 
-    return pattern, pattern_state_machine
+    return regular_expression, pattern_state_machine
 

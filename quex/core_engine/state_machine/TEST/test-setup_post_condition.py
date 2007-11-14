@@ -3,7 +3,6 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-
 import quex.core_engine.state_machine.setup_post_condition as setup_post_condition
 from quex.core_engine.state_machine.TEST.test_state_machines import *
 

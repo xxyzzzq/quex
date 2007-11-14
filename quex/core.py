@@ -74,12 +74,6 @@ def do(Setup):
     inheritance_info_str = "/* [dominating inheritance level] [pattern index] [pattern]\n"
     analyzer_code = ""
     for mode in mode_list:        
-        # -- adapt the shorthand information, so that it can be treated
-        #    by the code generator.
-        pattern_dictionary = {}
-        for item in lexer_mode.shorthand_db.values():
-            pattern_dictionary[item.name] = item.regular_expression         
-
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
         pattern_action_pair_info_list   = mode.pattern_action_pairs().values()
@@ -101,7 +95,6 @@ def do(Setup):
                                       StateMachineName               = mode.name,
                                       AnalyserStateClassName         = Setup.output_engine_name,
                                       StandAloneAnalyserF            = False, 
-                                      PatternDictionary              = pattern_dictionary,
                                       QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
                                       ModeNameList                   = mode_name_list)   
         

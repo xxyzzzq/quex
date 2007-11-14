@@ -1,10 +1,13 @@
 #! /usr/bin/env python
 import sys
 import os
+from StringIO import StringIO
+from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
 #
 from quex.frs_py.string_handling import blue_print
 from quex.exception              import RegularExpressionException
+from quex.lexer_mode             import PatternShorthand
 #
 import quex.core_engine.generator.core          as generator
 import quex.core_engine.regular_expression.core as regex
@@ -115,7 +118,6 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     txt += generator.do(PatternActionPairList, default_action, PrintStateMachineF=True,
                         AnalyserStateClassName         = "analyser",
                         StandAloneAnalyserF            = True, 
-                        PatternDictionary              = PatternDictionary,
                         QuexEngineHeaderDefinitionFile = core_engine_definition_file,
                         EndOfFile_Code                 = EndOfFile_Code)   
 
@@ -127,6 +129,21 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMemory", QuexBufferSize=15,
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
        NDEBUG_str=""):    
+
+    try:
+        adapted_dict = {}
+        for key, regular_expression in PatternDictionary.items():
+            string_stream = StringIO(regular_expression)
+            state_machine = regex.do(string_stream, adapted_dict)
+            # It is ESSENTIAL that the state machines of defined patterns do not 
+            # have origins! Actually, there are not more than patterns waiting
+            # to be applied in regular expressions. The regular expressions 
+            # can later be origins.
+            state_machine.delete_state_origins()
+
+            adapted_dict[key] = PatternShorthand(key, state_machine)
+    except RegularExpressionException, x:
+        print "Dictionary Creation:\n" + repr(x)
     
     test_program, core_engine_definition_file = create_main_function(BufferType, TestStr,
                                                                      QuexBufferSize, QuexBufferFallbackN)
@@ -135,7 +152,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     else:                        BeginOfFile_Code = 0;    EndOfFile_Code = 0
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
-                                                       PatternDictionary, 
+                                                       adapted_dict, 
                                                        BeginOfFile_Code, EndOfFile_Code, 
                                                        core_engine_definition_file)
 
@@ -153,20 +170,28 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                              "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n" + \
                              state_machine_code
 
-    fh = open("tmp.cpp", "w")
-    fh.write(test_program_common_declarations)
-    fh.write(state_machine_code)
-    fh.write(test_program)    
-    fh.close()    
+    fd, filename_tmp = mkstemp(".cpp", "tmp-", dir=os.getcwd())
+    os.write(fd, test_program_common_declarations)
+    os.write(fd, state_machine_code)
+    os.write(fd, test_program)    
+    os.close(fd)    
 
     print "## (2) compiling generated engine code and test"    
-    # os.system("g++ tmp.cpp -ggdb -I./. -o tmp.executable")    
-    NDEBUG_str = ""
-    os.system("g++ %s tmp.cpp -I./. -I../../../../ -o tmp.executable -D __QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION -ggdb" % NDEBUG_str)    
+    compile_str = "g++ %s %s " % (NDEBUG_str, filename_tmp) + \
+                  "-I./. -I$QUEX_PATH " + \
+                  "-o %s.exe " % filename_tmp + \
+                  "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " # + "-ggdb"    
+
+    ## print compile_str
+    os.system(compile_str)
+
     print "## (3) running the test"
-    os.system("./tmp.executable")
+    try:
+        os.system("%s.exe" % filename_tmp)
+        os.remove("%s.exe" % filename_tmp)
+    except:
+        print "<<compilation failed>>"
     print "## (4) cleaning up"
-    os.remove("./tmp.executable")
-    # os.remove("./tmp.cpp")
+    # os.remove(filename_tmp)
 
 

@@ -169,7 +169,8 @@ def snap_expression(stream, PatternDict):
     __debug_entry("expression", stream)    
     # -- term
     result = snap_term(stream, PatternDict) 
-    if result == None: return __debug_exit(None, stream)
+    if result == None: 
+        return __debug_exit(None, stream)
 
     # -- optional '|'
     if stream.read(1) != '|': 
@@ -237,10 +238,17 @@ def snap_primary(stream, PatternDict):
     elif x == "{":  result = snap_replacement(stream, PatternDict)
     elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
     elif x == "(": 
+        __start_position = stream.tell()
         result = snap_expression(stream, PatternDict)
         if stream.read(1) != ")": 
             stream.seek(-1, 1)
             raise RegularExpressionException("missing closing ')' after expression. found '%s'" % stream.read())
+
+        if result == None:
+            __expression_length = stream.tell() - __start_position
+            stream.seek(__start_position)
+            raise RegularExpressionException("expression in brackets has invalid syntax '%s'" % \
+                                             stream.read(__expression_length))
 
     elif x.isspace():
         # a lonestanding space ends the regular expression
@@ -334,15 +342,15 @@ def snap_replacement(stream, PatternDict):
     if PatternDict.has_key(pattern_name) == False:
         raise RegularExpressionException("Pattern of name '%s' was not defined in any preceding 'define { }' section" \
                                          % pattern_name)
-        
-    # transform string into state machine        
-    # NOTE: The result may again contain a pattern identifier, etc.     
-    regular_expression = StringIO.StringIO(PatternDict[pattern_name])
-    result = snap_expression(regular_expression, PatternDict) 
-    pos = stream.tell()
-    stream.seek(pos)
 
-    return __beautify(result)
+    state_machine = PatternDict[pattern_name].state_machine
+    # It is essential that state machines defined as patterns do not 
+    # have origins. Otherwise, the optimization of patterns that
+    # contain pattern replacements might get confused and can
+    # not find all optimizations.
+    assert state_machine.has_origins() == False
+        
+    return state_machine
 
 def __snap_repetition_range(the_state_machine, stream):    
     """Snaps a string that represents a repetition range. The following 

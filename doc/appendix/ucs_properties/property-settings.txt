@@ -1,6 +1,6 @@
 This section elaborates on possible property settings for non-binary
 properties.  In quex's regular expression syntax they can be used using the
-`\P{..}` expressions.  For example, `\P{Age=3.1}` selects the set of character
+`\P{..}` expressions.  For example, `$$\P{Age=3.1}$$` selects the set of character
 that exists since Unicode Version 3.1. For reasons mentioned in the previous
 section some Unicode Character Code properties are not supported.  Note also,
 that some settings can be provided using value aliases. Those aliases

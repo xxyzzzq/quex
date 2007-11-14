@@ -74,6 +74,7 @@ def __check_for_EOF_or_FAIL_pattern(stream, InitialPosition, EndOfFile_Code):
     # -- is it the <<EOF>> rule?
     if stream.read(len("<<EOF>>")) == "<<EOF>>":  
         return create_EOF_detecting_state_machine(EndOfFile_Code)
+
     stream.seek(InitialPosition)
     # -- is it the <<FAIL>> rule?
     assert stream.read(len("<<FAIL>>")) != "<<FAIL>>", \

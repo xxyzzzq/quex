@@ -7,9 +7,7 @@ import quex.core_engine.generator.languages.core as languages
 import quex.core_engine.generator.languages.label as languages_label
 #
 from quex.core_engine.state_machine.index import map_state_combination_to_index, \
-                                            state_machine_ranking_get_dominating_state_machine, \
-                                            get_state_machine_by_id, \
-                                            state_machine_ranking_db_sort
+                                                 get_state_machine_by_id
 
 
 # definitions for 'history items':
@@ -91,26 +89,38 @@ StateOriginInfo_ERROR                       = -1
 class StateOriginInfo:
     """-- store input position: if an origin is flagged that way it 
           imposes that the input position is to be stored.
+
        -- post conditioned acceptance: 
           indicates that the original pattern was a 'post-conditioned'
           pattern. It follows:
+
        -- if store input position is required, then it has to be 
           stored in a dedicated variable, because, multiple 
           patterns may be post conditioned and only the one (if one)
           succeeds, has to store set the input position to the position
           where the first post conditioned acceptance occured.
+
        -- if store input position is not required, this implies that
           the original state was the 'final acceptance' state, i.e.
           the end of the post condition. no input position is to be
           stored in this case, because the position of the first
           success is to be restored.
+
        -- pre condition id:
           id of the state machine that constitutes the pre-condition. 
           if not pre-condition is set it is -1L. 
+
+       -- pseudo ambiguous post condition id:
+          id of the state machine that constitutes the state machine 
+          that is used to go backwards to search the end of the core
+          condition.
+          In the large majority of cases, where there is no pseudo 
+          ambiguous post condition (e.g. x*/x), it is set it is -1L. 
     """    
     def __init__(self, StateMachineIdx, StateIdx, StoreInputPositionF=False, 
                  PostConditionedAcceptanceF=False, PreConditionedStateMachineID=-1L,
-                 PreConditionBeginOfLineF=False):
+                 PreConditionBeginOfLineF=False,
+                 PseudoAmbiguousPostConditionID=-1L):
         self.state_machine_id = StateMachineIdx
         self.state_index      = StateIdx
         # Input position of the current input stream is to be stored in 
@@ -136,6 +146,10 @@ class StateOriginInfo:
         #
         # -- trivial pre-condition: begin of line
         self.__pre_condition_begin_of_line_f = PreConditionBeginOfLineF
+
+        # -- id of state machine that is used to go backwards from the end
+        #    of a post condition that is pseudo-ambiguous. 
+        self.__pseudo_ambiguous_post_condition_id = PseudoAmbiguousPostConditionID
         
     def is_acceptance(self):
         """Use state machine id and state id to get access to the state.
@@ -189,6 +203,7 @@ class StateOriginInfo:
         return result     
 
     def set_store_input_position_f(self, Value=True):
+        assert type(Value) == bool
         self.__store_input_position_f = Value
 
     def set_pre_condition_id(self, Value=True):
@@ -202,6 +217,10 @@ class StateOriginInfo:
         assert type(Value) == bool
         self.__post_conditioned_acceptance_f = Value
 
+    def set_pseudo_ambiguous_post_condition_id(self, Value):
+        assert type(Value) == long
+        self.__pseudo_ambiguous_post_condition_id = Value
+
     def pre_condition_id(self):
         return self.__pre_condition_id  
 
@@ -213,6 +232,12 @@ class StateOriginInfo:
 
     def store_input_position_f(self):
         return self.__store_input_position_f    
+
+    def pseudo_ambiguous_post_condition_id(self):
+        return self.__pseudo_ambiguous_post_condition_id
+
+    def is_end_of_post_conditioned_core_pattern(self):
+        return self.post_conditioned_acceptance_f() and self.store_input_position_f()
                             
     def __repr__(self):
         appendix = ""
@@ -238,6 +263,14 @@ class StateOriginInfo:
         if     Acc and     Store and not Post and     Pre: return StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE
         # the constitution of the state origin is not valid --> return error
         return StateOriginInfo_ERROR    
+
+    def __cmp__(self, Other):
+        if self.is_acceptance() == True  and Other.is_acceptance() == False: return -1
+        if self.is_acceptance() == False and Other.is_acceptance() == True:  return 1
+
+        # NOTE: The state machine ID directly corresponds to the 'position in the list'
+        #       where the pattern was specified. Low ID == early specification.
+        return cmp(self.state_machine_id, Other.state_machine_id)
             
                     
         
@@ -438,7 +471,7 @@ class StateInfo:
 
            The intervals are sorted and non-overlapping (use this function only for DFA).
         """
-        # NOTE: The response '[]' is a **signal** that there is only an epsilong
+        # NOTE: The response '[]' is a **signal** that there is only an epsilon
         #       transition. The response as such would be incorrect. But the signal
         #       'empty reply' needs to be treated by the caller.
         if self.__transition_list == []: return []
@@ -447,7 +480,7 @@ class StateInfo:
         
         def query_trigger_map(EndPosition, TargetIdx):
             """Find all map entries that have or have not an open interval and
-                point to the given TargetIdx. If TargetIdx = None it is not checked.
+               point to the given TargetIdx. If TargetIdx = None it is not checked.
             """
             entry_list = []
             for entry in trigger_map:
@@ -749,6 +782,36 @@ class StateInfo:
             # add the replaced index to it
             self.__epsilon.target_state_indices.append(NewTargetIdx)
 
+    def replace_drop_out_target_states_with_adjacent_targets(self):
+        trigger_map = self.get_trigger_map() 
+
+        if trigger_map == []:  # Nothing to be done, since there is nothing adjacent 
+            return             # to the 'drop out' trigger. There is only an epsilon transition.
+
+        assert len(trigger_map) >= 2
+
+        # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
+        # code points below 0.
+        assert trigger_map[0][1] == None
+        assert trigger_map[0][0].begin == - sys.maxint
+
+
+        # The first interval mentioned after that must not point to 'drop out' since
+        # the trigger map must collect the same targets into one single interval.
+        assert trigger_map[1][1] != None
+
+        non_drop_out_target = trigger_map[1][1]
+        self.add_transition(trigger_map[0][0], non_drop_out_target)
+        
+        # NOTE: Here we know that len(trigger_map) >= 2
+        for trigger_set, target in trigger_map[2:]:
+
+            if target == None: target = non_drop_out_target
+            else:              non_drop_out_target = target
+
+            self.add_transition(trigger_set, target)
+
+
     def delete_epsilon_target_state(self, TargetStateIdx):
         if TargetStateIdx in self.__epsilon.target_state_indices:
             del self.__epsilon.target_state_indices[self.__epsilon.target_state_indices.index(TargetStateIdx)]
@@ -794,87 +857,37 @@ class StateInfo:
             origin.state_index      = StateIndex 
 
     def filter_dominated_origins(self):
-        """Any state in the state machine can have one or more original states
-           (i.e. patterns) which have been combined during NFA to DFA conversion
-           or Hopcroft optimization. In lexical analysis patterns need to be priorized,
-           i.e. it has to be clear what pattern match is 'reported' if two patterns
-           match.
+        """This function is a simplification in order to allow the Hopcroft Optimization
+           to be more efficient. It 'simulates' the code generation where the first unconditional
+           pattern matches. The remaining origins of a state are redundant.
 
-           State machines can either be 'ranked' with respect to each other with the
-           function index.state_machine_ranking_db_register(SupSM, InfSM) or by their
-           id. Note, that state machines that are created earlier have lower ids and
-           are ranked higher. This corresponds the idea that patterns that are defined
-           first have a higher precedence than patterns that are defined later.
+           This function is to be seen in analogy with the function 'get_acceptance_detector'. 
+           Except for the fact that it requires the 'end of core pattern' markers of post
+           conditioned patterns. If the markers are not set, the store input position commands
+           are not called properly, and when restoring the input position bad bad things happen 
+           ... i.e. segmentation faults.
+        """
+        # NOTE: Acceptance origins sort before non-acceptance origins
+        self.__origin_list.sort()
+        new_origin_list = []
+        unconditional_acceptance_found_f = False
+        for origin in self.__origin_list:
 
-           NOTE: It would generally be a good idea to avoid the explicit ranking and
-                 ensure that the patterns of higher precendence are defined earlier.
+            if origin.is_acceptance():
+                # Only append acceptance origins until the first unconditional acceptance state 
+                # is found. 
+                if not unconditional_acceptance_found_f:
+                    if origin.pre_condition_id() == -1L and not origin.pre_condition_begin_of_line_f():
+                        unconditional_acceptance_found_f = True # prevent entering this part again
+                    new_origin_list.append(origin)
 
-           NOTE:
+            else:
+                # Non-Acceptance origins do not harm in any way. Actually, the origins
+                # with 'origin.is_end_of_post_conditioned_core_pattern() == True' **need**
+                # to be in there. See the comment at the entry of this function.
+                new_origin_list.append(origin)
 
-            -- origin = acceptance state 
-               --> determine winner (also post or non-post condition, for a post condition end
-                  the input position is not stored)
-            -- origin = non-acceptance state 
-               --> let all of them live. the code generator will only store positions that 
-                   say: store input position. 
-
-           Thus, the winners list can contain more than one state in case of non-acceptance.
-           In case of acceptance only one winner origin is determined.
-        """        
-        # -- split origins into two groups: totally acceptance states and non-acceptance states
-        acceptance_origin_list                   = filter(lambda x: x.is_acceptance(), self.__origin_list)
-        postconditioned_acceptance_origin_list   = filter(lambda x: x.post_conditioned_acceptance_f(),
-                                                           acceptance_origin_list)
-        unpostconditioned_acceptance_origin_list = filter(lambda x: not x.post_conditioned_acceptance_f(),
-                                                          acceptance_origin_list)
-        non_acceptance_origin_list               = filter(lambda x: not x.is_acceptance(), self.__origin_list)
-
-        result = []
-        # print "##-------"
-        # print "##acol:   ", acceptance_origin_list  
-        # print "##pacol:  ", postconditioned_acceptance_origin_list
-        # print "##upaol:  ", unpostconditioned_acceptance_origin_list
-        # print "##naol:   ", non_acceptance_origin_list
-
-        if unpostconditioned_acceptance_origin_list != []:
-            # -- Here, pre-conditioned and non-pre-conditioned acceptance states occur. The way
-            #    to go here is to allow any pre-condition that has a higher priviledge than the
-            #    first non-preconditioned acceptance. 
-            # -- filter out origins that are neither pre conditioned nor store the input position
-            filtered_list = filter(lambda x: x.store_input_position_f() or x.pre_condition_id() != -1,
-                                   unpostconditioned_acceptance_origin_list)
-            
-            if filtered_list != []:
-                sm_id_list = map(lambda x: x.state_machine_id, filtered_list)
-                state_machine_ranking_db_sort(sm_id_list) 
-
-                for sm_id in sm_id_list:
-                    origin = filter(lambda x: x.state_machine_id == sm_id, filtered_list)[0]
-                    result.append(origin)
-                    if origin.type() != StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE:
-                        break
-
-        if postconditioned_acceptance_origin_list != []:
-            # -- post conditioned acceptance origins do not compete at all
-            result.extend(postconditioned_acceptance_origin_list)
-
-    
-        # (*) sort the result, so that the most priviledged origins swim on top
-        sorted_id_list = state_machine_ranking_db_sort(map(lambda x: x.state_machine_id, result))
-        sorted_result = []
-        for id in sorted_id_list:
-            for origin in result:
-                if origin.state_machine_id == id and origin not in sorted_result: 
-                    sorted_result.append(origin)
-
-        # -- for non-acceptance origins there can be two cases:
-        #    (i)  the input position is to be stored. in this case they cannot be deleted.
-        #    (ii) the input position is not to be stored. in this case they do not harm.
-        #         (however, they might provide useful debugging information).
-        # => simply leave all of them.
-        sorted_result += non_acceptance_origin_list
-
-        self.set_origin_list(sorted_result, StoreInputPositionFollowsAcceptanceF=False)
+        self.__origin_list = new_origin_list 
 
     def clone(self, ReplacementDictionary=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
@@ -1685,6 +1698,11 @@ class StateMachine:
         for state_info in self.states.values():
             if StateIdx in state_info.get_target_state_indices():
                 return True
+        return False
+
+    def has_origins(self):
+        for state in self.states.values():
+            if state.get_origin_list() != []: return True
         return False
 
     def delete_state_origins(self):
