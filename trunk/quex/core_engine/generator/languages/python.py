@@ -42,5 +42,6 @@ def __label_definition(LabelName):
 def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           BufferReloadRequiredOnDropOutF,
                           CurrentStateIsAcceptanceF = None,
-                          OriginList                = None):
+                          OriginList                = None,
+                          LanguageDB                = None):
     return ""

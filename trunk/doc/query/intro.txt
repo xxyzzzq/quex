@@ -14,8 +14,8 @@ define {
     LATIN_ID_CONT    [: intersection(\P{ID_Continue}, \P{Script=Latin}) :]
     GREEK_ID_CONT    [: intersection(\P{ID_Continue}, \P{Script=Greek}) :]
 
-    LATIN_ID   ${LATIN_ID_START}(${LATIN_ID_CONT})*
-    GREEK_ID   ${GREEK_ID_START}(${GREEK_ID_CONT})*
+    LATIN_ID   {LATIN_ID_START}({LATIN_ID_CONT})*
+    GREEK_ID   {GREEK_ID_START}({GREEK_ID_CONT})*
 }
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

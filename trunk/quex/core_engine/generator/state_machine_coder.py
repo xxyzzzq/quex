@@ -38,7 +38,7 @@ def do(state_machine, Language = "C", UserDefinedStateMachineName="", BackwardLe
     
     # -- for backward lexing a terminal state has to be provided    
     if BackwardLexingF:
-        LabelName = "QUEX_LABEL_%s_TERMINAL" % UserDefinedStateMachineName      
+        LabelName = languages_label.get_terminal(UserDefinedStateMachineName)      
         txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyser went backwards, so it needs to be reset.

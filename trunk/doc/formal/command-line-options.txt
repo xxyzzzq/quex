@@ -61,7 +61,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 	    standard error output. Note, that this options produces considerable
 	    code overhead. DEFAULT = `<disabled>`
 
-`--no-mode-transition-check:: 
+`--no-mode-transition-check`:: 
 
 	    Turns off the mode transition check and makes the engine a little faster.
 	    During development this option should not be used. But the final lexical
@@ -172,9 +172,6 @@ options:
 	    If you create an engine for a different plattform, you must know its byte ordering
 	    scheme, i.e. little endian or big endian, and specify it after `--endian`'. DEFAULT=i`"<system>"`
 
-
-Note, that for well tempered patterns this should be safe even on Unix
-machines. The generated lexical analyzer, though, might be a litter slower.
 For version information pass option `--version`' or `-v`'. The
 options `--help` and `-h`' are reserved for requesting a help text. Those
 are the options for using quex in the 'normal' mode where it creates
@@ -186,7 +183,9 @@ by the user. Those options are the following.
 `--property` _[name]_::
 
    If _name_ is specified, then information about the property with the given
-   name is displayed. Note, that _name_ can also be a property alias.
+   name is displayed. Note, that _name_ can also be a property alias. If _name_
+   is not specified, then brief information about all available unicode
+   properties is displayed.
 
 `--set-by-property` _setting_::
 

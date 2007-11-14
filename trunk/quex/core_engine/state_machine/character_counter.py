@@ -19,7 +19,7 @@ def get_newline_n(state_machine):
 
 def get_character_n(state_machine):
     """
-       Counts the number of newlines that appear until the acceptance state. 
+       Counts the number of characters that appear until the acceptance state. 
        The part of the post condition is omitted. 
 
        RETURNS:  0      if statemachine / pattern does not contain the newline
@@ -61,8 +61,6 @@ def contains_only_spaces(state_machine):
         if state.is_store_input_position(): return True
 
         if next_state in done_state_index_list: return False
-
-
 
 
 def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx, Character):

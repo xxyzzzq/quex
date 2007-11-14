@@ -1,0 +1,174 @@
+<test-database execution-time-sec="22.08" date="Wed Nov 14 04:54:18 2007">
+    <group name="DFA">
+        <test title="Get Trigger Map (intervals --> target states)" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateInfo-trigger-map.py" info-request-time="1194926194L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization (minimize state set)" make-required="False" time-sum-sec="0.10"> 
+            <application file-name="test-StateMachine-hopcroft-optimization.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.10"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="NFA">
+        <test title="Conversion to DFA (subset construction)" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-create-DFA.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Get elementary trigger sets (target index --> trigger sets)" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Epsilon closure (single state)" make-required="False" time-sum-sec="0.07"> 
+            <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.07"/>
+            </choice-list>
+        </test>
+        <test title="Get elementary trigger sets II" make-required="False" time-sum-sec="0.03"> 
+            <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.03"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="Predetermined Character Count">
+        <test title="Characters" make-required="False" time-sum-sec="6.68"> 
+            <application file-name="test-count_character_n.py" info-request-time="1192289550L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="6.68"/>
+            </choice-list>
+        </test>
+        <test title="Contains only Spaces" make-required="False" time-sum-sec="0.69"> 
+            <application file-name="test-count_contains_only_spaces.py" info-request-time="1192289360L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.69"/>
+            </choice-list>
+        </test>
+        <test title="Newlines" make-required="False" time-sum-sec="11.64"> 
+            <application file-name="test-count_newline_n.py" info-request-time="1192289221L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="11.64"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="Pseudo Ambigous Post Condition">
+        <test title="Replace Drop-Out with Adjacent Target" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateInfo-replace_drop_out_with_adjacent_target.py" info-request-time="1195012389L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Detection" make-required="False" time-sum-sec="1.61"> 
+            <application file-name="test-detect-pseudo-ambiguous-post-condition.py" info-request-time="1193774798L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.61"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="StateMachine">
+        <test title="Cloning" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-clone.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="StateMachine Operations">
+        <test title="Setup Pre-Condition" make-required="False" time-sum-sec="0.05"> 
+            <application file-name="test-setup_pre_condition.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05"/>
+            </choice-list>
+        </test>
+        <test title="Inverse" make-required="False" time-sum-sec="0.05"> 
+            <application file-name="test-StateMachine-inverse.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05"/>
+            </choice-list>
+        </test>
+        <test title="Repetition with min and max repetition numbers" make-required="False" time-sum-sec="0.06"> 
+            <application file-name="test-repeat.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.06"/>
+            </choice-list>
+        </test>
+        <test title="Paralell" make-required="False" time-sum-sec="0.05"> 
+            <application file-name="test-parallelize.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05"/>
+            </choice-list>
+        </test>
+        <test title="Repetitions Kleene closure 0 or arbitrary repetitions" make-required="False" time-sum-sec="0.08"> 
+            <application file-name="test-repeat-pure.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.08"/>
+            </choice-list>
+        </test>
+        <test title="Append Post Condition" make-required="False" time-sum-sec="0.09"> 
+            <application file-name="test-setup_post_condition.py" info-request-time="1193742392L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.09"/>
+            </choice-list>
+        </test>
+        <test title="Sequence" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-sequentialize.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Append Post Condition" make-required="False" time-sum-sec="0.25"> 
+            <application file-name="test-setup_border_conditions.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.25"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="Tracing origin">
+        <test title="Paralellization" make-required="False" time-sum-sec="0.05"> 
+            <application file-name="test-parallelize-trace-origin.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization (minimize state set)" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Cloning" make-required="False" time-sum-sec="0.04"> 
+            <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.04"/>
+            </choice-list>
+        </test>
+        <test title="Inverse" make-required="False" time-sum-sec="0.09"> 
+            <application file-name="test-StateMachine-trace-origin-inverse.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.09"/>
+            </choice-list>
+        </test>
+        <test title="NFA to DFA (subset construction)" make-required="False" time-sum-sec="0.03"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.03"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="Trigger Set Check">
+        <test title="Has Trigger" make-required="False" time-sum-sec="0.14"> 
+            <application file-name="test-StateInfo-has_trigger.py" info-request-time="1191162420L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.14"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

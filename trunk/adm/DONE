@@ -1,3 +1,17 @@
+(*) 07y9m20d:
+
+    name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
+
+
+(*) 07y9m9d:
+
+    line up the quex::token::ID_TERMINATION
+
+(*) 07y11m8d:
+
+    sort out the rules for priviledges and document them well.
+
+
 (*) 07y9m19h:
 
     Check what happens if [z-a] is specified as a range

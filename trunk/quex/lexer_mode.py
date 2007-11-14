@@ -501,11 +501,15 @@ class_init = ReferencedCodeFragment()
 
 
 class PatternShorthand:
-    def __init__(self, Name="", RegularExpressionStr="", Filename="", LineN=-1):
+    def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
+        assert StateMachine.has_origins() == False
+        assert StateMachine.__class__.__name__ == "StateMachine"
+
         self.name               = Name
-        self.regular_expression = RegularExpressionStr
+        self.state_machine      = StateMachine
         self.filename           = Filename
         self.line_n             = LineN
+        self.regular_expression = RE
 
 #-----------------------------------------------------------------------------------------
 # shorthand_db: user defined names for regular expressions.

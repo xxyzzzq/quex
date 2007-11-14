@@ -31,7 +31,8 @@ main(int argc, char** argv)
         //     -- line number and column number
         cout << "(" << qlex->line_number() << ", " << qlex->column_number() << ")  \t";
         //     -- name of the token
-        cout << Token.type_id_name() << endl;
+        cout << string(Token);
+        cout << endl;
 
         ++number_of_tokens;
 

@@ -110,3 +110,15 @@ init-state = 392L
       == ['a', 'b'] ==> 00393
       <no epsilon>
 
+expression    = "[: [0-9] :]z"
+state machine
+init-state = 413L
+00413 <~ (131, 413)
+      == ['0', '9'] ==> 00415
+      <no epsilon>
+00414* <~ (131, 414, S)
+      <no epsilon>
+00415 <~ (131, 415)
+      == 'z' ==> 00414
+      <no epsilon>
+

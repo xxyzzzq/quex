@@ -57,7 +57,9 @@ def do(stream):
 
     if trigger_set == None: 
         raise RegularExpressionException("Regular Expression: character_set_expression called for something\n" + \
-                                         "that does not start with ']' or '\\P'")
+                                         "that does not start with '[:', '[' or '\\P'")
+    if trigger_set.is_empty():
+        raise RegularExpressionException("Regular Expression: Character set expression results in empty set.")
 
     # Create state machine that triggers with the trigger set to SUCCESS
     # NOTE: The default for the ELSE transition is FAIL.
@@ -72,6 +74,11 @@ def snap_set_expression(stream):
     x = stream.read(2)
     if   x == "[:":
         result = snap_set_term(stream)
+        skip_whitespace(stream)
+        x = stream.read(2)
+        if x != ":]":
+            raise RegularExpressionException("Missing closing ':]' for character set expression.\n" + \
+                                             "found: '%s'" % x)
     elif x[0] == "[":
         stream.seek(-1, 1)
         result = snap_traditional_character_set(stream)

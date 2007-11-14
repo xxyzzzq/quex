@@ -8,7 +8,6 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
        PrintStateMachineF=False,
        AnalyserStateClassName="analyser_state",
        StandAloneAnalyserF=False,
-       PatternDictionary={},
        QuexEngineHeaderDefinitionFile="",
        ModeNameList=[],
        EndOfFile_Code=None):    
@@ -132,7 +131,7 @@ def __get_code(sm, pre_condition_sm, pre_condition_sm_id_list,
             txt += "    // " + repr(pre_condition_sm).replace("\n", "\n    // ") + "\n"
         txt += state_machine_coder.do(pre_condition_sm, 
                                       Language=Language, 
-                                      UserDefinedStateMachineName=StateMachineName + "__PRE_CONDITION__",
+                                      UserDefinedStateMachineName=StateMachineName + "_PRE_CONDITION_",
                                       BackwardLexingF=True)
         
     txt += "    // state machine for pattern analysis:\n"

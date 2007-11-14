@@ -17,8 +17,11 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
     LanguageDB = languages.db[Language]
     
     # note down information about success, if state is an acceptance state
-    code_str = "    "   
-    code_str += LanguageDB["$acceptance-info"](state.get_origin_list(), LanguageDB, BackwardLexingF)
+    acceptance_info = LanguageDB["$acceptance-info"](state.get_origin_list(), LanguageDB, BackwardLexingF)
+    code_str = ""
+    if acceptance_info != "":
+        code_str = "    " + acceptance_info.replace("\n", "\n    ")
+        if code_str[-4:] == "    ": code_str = code_str[:-4]
     
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
@@ -31,6 +34,7 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
         input_label = languages_label.get_input(StateMachineName, StateIdx)
         code_str += LanguageDB["$label-definition"](input_label) + "\n"
         #
+        code_str += "    "
         if not BackwardLexingF: code_str += "%s\n" % LanguageDB["$input/get"] 
         else:                   code_str += "%s\n" % LanguageDB["$input/get-backwards"] 
 
@@ -41,7 +45,8 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
     else:
         empty_trigger_map_f = True
         # Empty State (no transitions, but the epsilon transition)
-        txt = "$/* no trigger set $*/"
+        txt  = "    "
+        txt += "$/* no trigger set $*/"
 
         # trigger outside the trigger intervals
         txt += "\n" + LanguageDB["$transition"](StateMachineName, StateIdx,
@@ -50,8 +55,8 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
                                                 state.get_origin_list(),
                                                 BackwardLexingF                = BackwardLexingF, 
                                                 BufferReloadRequiredOnDropOutF = False)
-
-        txt = txt.replace("\n", "\n    ")
+        txt += "\n"
+        txt  = txt.replace("\n", "\n    ")
 
     code_str += txt + "\n"
 
@@ -61,13 +66,13 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = not empty_trigger_map_f,
                                    CurrentStateIsAcceptanceF      = state.is_acceptance(),
-                                   OriginList                     = state.get_origin_list())
+                                   OriginList                     = state.get_origin_list(),
+                                   LanguageDB                     = LanguageDB)
         
     txt = txt.replace("\n", "\n    ")
     code_str += txt + "\n"
 
     return languages.replace_keywords(code_str, LanguageDB, NoIndentF=True)
-
 
 def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, BackwardLexingF):
     """Creates code for state transitions from this state. This function is very
@@ -130,7 +135,6 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
     # return program text for given language
     return languages.replace_keywords(txt, LanguageDB, NoIndentF=False)
 
-
 def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry, 
                              LanguageDB, BackwardLexingF, IndentF=False):
     """Creates the transition code to a given target based on the information in
@@ -161,21 +165,30 @@ def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
                             LanguageDB, BackwardLexingF):
     assert len(TriggerMap) == 2
 
-    interval_idx = -1  # default: no interval of size '1'
+    first  = TriggerMap[0]
+    second = TriggerMap[1]
 
-    for i in range(2):
-        interval = TriggerMap[i][0]
-        if interval.size() == 1: interval_idx = i; break
+    # If the first interval causes a 'drop out' then make it the second.
+    # If the second interval is a 'drop out' the 'goto drop out' can be spared,
+    # since it lands there anyway.
+    # if second[0] < 0: # target state index < 0 ==> drop out
+    #    tmp = first; first = second; second = tmp
 
-    # interval_idx = -1
-    if   interval_idx == 0: txt = "$if input $== %s $then\n" % repr(TriggerMap[0][0].begin)
-    elif interval_idx == 1: txt = "$if input $!= %s $then\n" % repr(TriggerMap[1][0].begin)
-    else:                   txt = "$if input $< %s $then\n"  % repr(TriggerMap[1][0].begin)
+    # find interval of size '1'
+    first_interval  = first[0]
+    second_interval = second[0]
 
-    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
+    if   first_interval.size() == 1: 
+        txt = "$if input $== %s $then\n" % repr(first_interval.begin)
+    elif second_interval.size() == 1: 
+        txt = "$if input $!= %s $then\n" % repr(second_interval.begin)
+    else:                   
+        txt = "$if input $< %s $then\n"  % repr(second_interval.begin)
+
+    txt += __create_transition_code(StateMachineName, StateIdx, state, first, 
                                     LanguageDB, BackwardLexingF, IndentF=True)
     txt += "$end$else\n"
-    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[1], 
+    txt += __create_transition_code(StateMachineName, StateIdx, state, second, 
                                     LanguageDB, BackwardLexingF, IndentF=True)
     txt += "$end\n" 
 
