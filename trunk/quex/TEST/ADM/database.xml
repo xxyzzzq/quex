@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.10" date="Mon Nov 12 04:52:12 2007">
+<test-database execution-time-sec="0.10" date="Thu Nov 15 07:35:40 2007">
     <test title="Prepare Pattern Information for Code Generation" make-required="False" time-sum-sec="0.10"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1191162389L"/>
         <choice-list number="1">

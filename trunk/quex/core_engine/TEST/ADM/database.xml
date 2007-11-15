@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.20" date="Tue Nov 13 04:34:56 2007">
+<test-database execution-time-sec="0.21" date="Thu Nov 15 07:35:41 2007">
     <group name="NumberSet">
         <test title="Inverse" make-required="False" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1191162419L"/>
@@ -12,10 +12,10 @@
                <choice name="" result="OK" time-sec="0.05"/>
             </choice-list>
         </test>
-        <test title="Intersection" make-required="False" time-sum-sec="0.03"> 
+        <test title="Intersection" make-required="False" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1191162419L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03"/>
+               <choice name="" result="OK" time-sec="0.04"/>
             </choice-list>
         </test>
         <test title="Union" make-required="False" time-sum-sec="0.03"> 
