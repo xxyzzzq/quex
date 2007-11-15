@@ -1,28 +1,28 @@
-<test-database execution-time-sec="19.88" date="Mon Nov 12 04:53:51 2007">
+<test-database execution-time-sec="19.51" date="Thu Nov 15 07:37:20 2007">
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" make-required="False" time-sum-sec="1.35"> 
+        <test title="Wildcard Property Values" make-required="False" time-sum-sec="1.37"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1193326686L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.35"/>
+               <choice name="" result="OK" time-sec="1.37"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" make-required="False" time-sum-sec="12.75"> 
+        <test title="Information about Properties" make-required="False" time-sum-sec="12.32"> 
             <application file-name="test-query.py" info-request-time="1193304980L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="11.34"/>
+               <choice name="PropertyList" result="OK" time-sec="10.91"/>
                <choice name="PropertyInfo" result="OK" time-sec="1.41"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="1.57"> 
+        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="1.56"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1193298250L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.57"/>
+               <choice name="" result="OK" time-sec="1.56"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="4.21"> 
+        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="4.26"> 
             <application file-name="test-query-character-set.py" info-request-time="1193386750L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="4.21"/>
+               <choice name="" result="OK" time-sec="4.26"/>
             </choice-list>
         </test>
     </group>
