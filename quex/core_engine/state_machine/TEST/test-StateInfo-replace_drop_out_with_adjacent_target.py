@@ -47,20 +47,20 @@ s.add_transition(NumberSet(Interval(55, 60)), 3L)
 s.add_transition(NumberSet(Interval(60,61)), 4L)
 
 print "# in gnuplot: plot [0:70] \"tmp\" w l" 
-# test(s)
+test(s)
 
 # (*) special case that appeared during other unit test: only two intervals
 #     are intermediate 'empty intervals' propperly dealt with?    
 print "#---------------------------------------------------------------------------------------"
 s = StateInfo()
 s.add_transition(NumberSet([Interval(45, 46), Interval(47, 48)]), 1L)
-# test(s)
+test(s)
 
 print "#---------------------------------------------------------------------------------------"
 s = StateInfo()
 s.add_transition(NumberSet(Interval(46, 47)), 1L)
 s.add_transition(NumberSet(Interval(48, 49)), 1L)
-# test(s)
+test(s)
         
 # (*) special case: only one interval at all
 s = StateInfo()
