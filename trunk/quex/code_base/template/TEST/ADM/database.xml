@@ -1,17 +1,17 @@
-<test-database execution-time-sec="0.03" date="Thu Nov 15 07:35:41 2007">
+<test-database execution-time-sec="0.01" date="Sat Nov 17 23:39:11 2007">
     <group name="Count Line and Column">
         <test title="Without Indentation Count" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-simple" info-request-time="1193597089L"/>
+            <application file-name="test-simple" info-request-time="1195339151L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00"/>
             </choice-list>
         </test>
-        <test title="With Indentation" make-required="True" time-sum-sec="0.02"> 
-            <application file-name="test-simple-2" info-request-time="1193597088L"/>
+        <test title="With Indentation" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="test-simple-2" info-request-time="1195339151L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.02"/>
+               <choice name="" result="OK" time-sec="0.01"/>
             </choice-list>
         </test>
     </group>

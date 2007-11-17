@@ -1,16 +1,16 @@
-<test-database execution-time-sec="0.06" date="Thu Nov 15 07:35:41 2007">
-    <test title="Converting Stream in N Tiny Beats" make-required="True" time-sum-sec="0.04"> 
-        <application file-name="n-beat" info-request-time="1193597087L"/>
+<test-database execution-time-sec="0.01" date="Sat Nov 17 23:39:10 2007">
+    <test title="Converting Stream in N Tiny Beats" make-required="True" time-sum-sec="0.00"> 
+        <application file-name="n-beat" info-request-time="1195339150L"/>
         <make-procedure success="True" />
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.04"/>
+           <choice name="" result="OK" time-sec="0.00"/>
         </choice-list>
     </test>
-    <test title="Converting Stream in One Beat" make-required="True" time-sum-sec="0.02"> 
-        <application file-name="one-beat" info-request-time="1193597087L"/>
+    <test title="Converting Stream in One Beat" make-required="True" time-sum-sec="0.00"> 
+        <application file-name="one-beat" info-request-time="1195339150L"/>
         <make-procedure success="True" />
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.02"/>
+           <choice name="" result="OK" time-sec="0.00"/>
         </choice-list>
     </test>
 </test-database>
