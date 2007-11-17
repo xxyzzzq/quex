@@ -14,7 +14,7 @@ def do(the_state_machine, pre_condition_state_machine):
 
        Instead, the following happens:
 
-          -- the pre-condition state machine is inversed, because
+          -- the pre-condition state machine is inverted, because
              it is to be walked through backwards.
           -- the inverted state machine is marked with the state machine id
              of the_state_machine.        
@@ -42,10 +42,11 @@ def do(the_state_machine, pre_condition_state_machine):
     inverse_pre_condition = inverse_pre_condition.get_DFA()
     inverse_pre_condition = inverse_pre_condition.get_hopcroft_optimization()
     # -- mark other state machine with original state machine id
-    #    so that code generation known (what did I mean here? fschaef)
+    #    so that code generation knows what flag to raise when the pre-condition succeeds.
     inverse_pre_condition.mark_state_origins(OtherStateMachineID=the_state_machine.get_id())
         
-    # (*) let the state machine refer to it
+    # (*) let the state machine refer to it 
+    #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]
     the_state_machine.pre_condition_state_machine = inverse_pre_condition
 
     # (*) create origin data, in case where there is none yet create new one.

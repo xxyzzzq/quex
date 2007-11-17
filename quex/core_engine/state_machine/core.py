@@ -247,6 +247,8 @@ class StateOriginInfo:
             appendix += ", post"
         if self.__pre_condition_id != -1L:            
             appendix += ", pre=" + repr(self.__pre_condition_id).replace("L", "")
+        if self.__pseudo_ambiguous_post_condition_id != -1L:            
+            appendix += ", papc=" + repr(self.__pseudo_ambiguous_post_condition_id).replace("L", "")
         if self.__pre_condition_begin_of_line_f:
             appendix += ", bol"
         return "(%s, %s%s)" % (repr(self.state_machine_id), repr(self.state_index), appendix)
@@ -662,6 +664,11 @@ class StateInfo:
         """Sets the 'store_input_position_flag' for all origins."""
         for origin in self.__origin_list:
             origin.set_store_input_position_f(Value)    
+
+    def set_pseudo_ambiguous_post_condition_id(self, Value):
+        """Sets a reference to the detector of the pseudo ambidguous post condition."""
+        for origin in self.__origin_list:
+            origin.set_pseudo_ambiguous_post_condition_id(Value)    
     
     def set_trivial_pre_condition_begin_of_line(self, Value=True):
         for origin in self.__origin_list:
@@ -810,7 +817,6 @@ class StateInfo:
             else:              non_drop_out_target = target
 
             self.add_transition(trigger_set, target)
-
 
     def delete_epsilon_target_state(self, TargetStateIdx):
         if TargetStateIdx in self.__epsilon.target_state_indices:
