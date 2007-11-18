@@ -19,7 +19,6 @@ def test(RE_Core, RE_PostCondition):
     string_stream_PostCondition = StringIO(RE_PostCondition)
 
     # reset the index, so that things get a litter less 'historic'
-    sm_index.__internal_state_index_counter = long(-1)
     try:
         core_sm           = regex.do(string_stream_Core)
     except RegularExpressionException, x:
@@ -56,16 +55,15 @@ def test(RE_Core, RE_PostCondition):
     print "backward detector =", sm_index.get_state_machine_by_id(backward_detector_id)
 
 
-test('"xy"+', '("ab"|"xy")')
-sys.exit()
+test('"xy"+', '(ab+|xy)')
 test('"xz"+', '[a-z]{2}')
 test('"xz"+', '"xz"+')
 test('"xyz"+', '"xyz"')
 test("(a)+", "ab")
 
-test('"xyz"+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
-test('("abc"+|"xyz")+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
-test('(("xyz")+hello)+', '"xyz"hello')
+# test('"xyz"+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
+# test('("abc"+|"xyz")+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
+# test('(("xyz")+hello)+', '"xyz"hello')
 
 
 
