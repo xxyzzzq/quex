@@ -80,8 +80,6 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
        enables some speed-up when going backwards.
     """
     result = PostConditionSM.get_inverse()
-    result = result.get_DFA()
-    result = result.get_hopcroft_optimization()
 
     # -- delete 'drop-out' transitions in non-acceptance states
     #    NOTE: When going backwards one already knows that the acceptance
@@ -91,6 +89,9 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
         if state.is_acceptance(): continue
 
         state.replace_drop_out_target_states_with_adjacent_targets()
+
+    result = result.get_DFA()
+    result = result.get_hopcroft_optimization()
 
     return result
 
