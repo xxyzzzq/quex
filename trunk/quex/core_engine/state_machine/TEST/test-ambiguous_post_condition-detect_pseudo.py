@@ -8,7 +8,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.exception import RegularExpressionException
 from quex.core_engine.state_machine.core import *
 import quex.core_engine.regular_expression.core                      as regex
-import quex.core_engine.state_machine.pseudo_ambiguous_post_condition as papc
+import quex.core_engine.state_machine.ambiguous_post_condition as apc
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Detection"
@@ -33,7 +33,7 @@ def test(RE_Core, RE_PostCondition):
     print "---------------------------------------------------------"
     print "core pattern            =", RE_Core
     print "post condition pattern  =", RE_PostCondition
-    print "ambigous post condition =", papc.detect(core_sm, post_condition_sm)
+    print "ambigous post condition =", apc.detect_pseudo(core_sm, post_condition_sm)
 
 
 test("ab", "ab")

@@ -8,7 +8,7 @@ from quex.exception import *
 
 import quex.core_engine.state_machine.index as sm_index
 import quex.core_engine.regular_expression.core as regex
-import quex.core_engine.state_machine.pseudo_ambiguous_post_condition as pa_post_condition 
+import quex.core_engine.state_machine.ambiguous_post_condition as ambiguous_post_condition 
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Mounting"
@@ -35,7 +35,7 @@ def test(RE_Core, RE_PostCondition):
     print "core pattern            =", RE_Core
     print "post condition pattern  =", RE_PostCondition
 
-    pa_post_condition.mount(core_sm, post_condition_sm)
+    ambiguous_post_condition.mount(core_sm, post_condition_sm)
     # .mount() does not transformation from NFA to DFA
     core_sm = core_sm.get_DFA()
     core_sm = core_sm.get_hopcroft_optimization()

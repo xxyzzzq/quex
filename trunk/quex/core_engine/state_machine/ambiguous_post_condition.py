@@ -7,65 +7,120 @@ from   quex.core_engine.interval_handling import NumberSet, Interval
 import quex.core_engine.state_machine.sequentialize as sequentialize
 import sys
 
-def detect(CoreStateMachine, PostConditionStateMachine):
-    CSM  = CoreStateMachine
-    PCSM = PostConditionStateMachine
 
-    assert CSM.__class__.__name__  == "StateMachine"
-    assert PCSM.__class__.__name__ == "StateMachine"
+def __assert_state_machines(SM0, SM1):
+    assert SM0.__class__.__name__ == "StateMachine"
+    assert SM1.__class__.__name__ == "StateMachine"
+
     
-    core_acceptance_state_list = CSM.get_acceptance_state_list()
+def detect_total(CoreStateMachine, PostConditionStateMachine):
+    """A post condition, where there is an possible iteration
+       starting from end of the core pattern inside both
+       state machines is TOTALLY AMBIGUOUS! For Example:  x+/x+
+       Is totally ambiguous since in the general case no judgement
+       can be made about the end of the core pattern, so the 
+       input position cannot be reset appropriately.
     
+       Detect an iteration to the BEGINNING of a post condition 
+       while remaining on a valid path of the core pattern.
+    """
+
+    __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
+
+    my_post_condition_sm = PostConditionStateMachine.clone()
+
+    # (*) Create a modified version of the post condition, where the
+    #     initial state is an acceptance state, and no other. This 
+    #     allows the detector to trigger on 'iteration'.
+    #
+    # -- delete all acceptance states in the post condition
+    for state in my_post_condition_sm.states.values():
+       state.set_acceptance(False)
+    # -- set the initial state as acceptance state
+    my_post_condition_sm.get_init_state().set_acceptance(True)
+    
+    core_acceptance_state_list = CoreStateMachine.get_acceptance_state_list()
     assert len(core_acceptance_state_list) == 1 
 
+    my_pcsm_init_state = my_pcsm_init_state.get_init_state()
     for csm_state_idx in core_acceptance_state_list[0]:
-        pcsm_state_idx = PCSM.init_state_index
-
-        if  __dive_paths(CSM, CSM.states[csm_state_idx], 
-                         PCSM, PCSM.states[pcsm_state_idx]):
+        csm_state = CoreStateMachine.states[csm_state_idx]
+        if  __dive_to_detect_iteration(my_post_condition_sm, my_pcsm_init_state, 
+                                       CoreStateMachine,     csm_states):
             return True
 
     return False
 
-def __dive_paths(CSM, csm_state, PCSM, pcsm_state):
 
-    csm_transition_list  = csm_state.get_transitions()
-    pcsm_transition_list = pcsm_state.get_transitions()
+def detect_pseudo(CoreStateMachine, PostConditionStateMachine):
+    """A pseudo ambiguous post condition is what is called in flex
+       a 'dangeruous trailing context'. An expression x*/x allows
+       to reset the input position propperly, since the length of the
+       post conditional pattern can be known. This happesn through 
+       inversion of the post condition state machine and then going
+       backwards. A mismatch will end the 'diving' into the core
+       pattern. NOTE: This diving into the core pattern is not 
+       prevented if iterations in the post condition state machine
+       match with iterations in the core pattern. For this reason,
+       after a call to this function, ensure that the two 
+       patterns are not totally ambiguous using the function above.
+    """
+    __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
+    
+    core_acceptance_state_list = CoreStateMachine.get_acceptance_state_list()
+    assert len(core_acceptance_state_list) == 1 
+
+    pcsm_init_state = PostConditionStateMachine.get_init_state()
+    for csm_state_idx in core_acceptance_state_list[0]:
+        csm_state = CoreStateMachine.states[csm_state_idx]
+        if  __dive_to_detect_iteration(CoreStateMachine,          csm_state, 
+                                       PostConditionStateMachine, pcsm_init_state):
+            return True
+
+    return False
+
+def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
+    """This function goes along all path of SM0 that lead to an 
+       acceptance state AND at the same time are valid inside SM1.
+       The search starts at the states sm0_state and sm1_state.
+    """
+
+    sm0_transition_list = sm0_state.get_transitions()
+    sm1_transition_list = sm1_state.get_transitions()
 
     # If there is no subsequent path in the core or the post condition
     # then we are at a leaf of the tree search. No 'ambigous post condition'
     # has been detected.
-    if csm_transition_list == [] or pcsm_transition_list == []:
+    if sm0_transition_list == [] or sm1_transition_list == []:
         return False
 
-    for csm_transition in csm_transition_list:
-        for pcsm_transition in pcsm_transition_list:
+    for sm0_transition in sm0_transition_list:
+        for sm1_transition in sm1_transition_list:
             # If there is no common character in the transition pair, it does not
             # have to be considered.
-            if csm_transition.trigger_set.intersection(pcsm_transition.trigger_set).is_empty():
+            if sm0_transition.trigger_set.intersection(sm1_transition.trigger_set).is_empty():
                 continue
             
             # Both trigger on the some same characters.
             #     -----------------------[xxxxxxxxxxxxxxxx]-------------
             #     -------------[yyyyyyyyyyyyyyyyyyyy]-------------------
             #
-            # If the target state in the CSM is an acceptance state
+            # If the target state in the SM0 is an acceptance state
             # => The 'ambigous post condition' problem has been detected.
             #    (It means that a valid path in the post condition pattern leads
             #     at the same time to a valid path in the core pattern).
-            csm_target_state = CSM.states[csm_transition.target_state_index]
-            if csm_target_state.is_acceptance():
+            sm0_target_state = SM0.states[sm0_transition.target_state_index]
+            if sm0_target_state.is_acceptance():
                 return True
             
             # If the state is not immediately an acceptance state, then
-            # search in the subsequent pathes of both state machines.
-            pcsm_target_state = PCSM.states[pcsm_transition.target_state_index]
-            if __dive_paths(CSM, csm_target_state, PCSM, pcsm_target_state):
+            # search in the subsequent pathes of the SM0.
+            sm1_target_state = SM1.states[sm1_transition.target_state_index]
+            if __dive_to_detect_iteration(SM0, sm0_target_state, SM1, sm1_target_state):
                 return True
 
-    # None of the investigated paths in the core and post condition leads
-    # to an acceptance stage in the core condition. Thus no 'ambigous
-    # post condition' can be stated.
+    # None of the investigated paths in the core and post condition leads to an
+    # acceptance state in SM0. Thus no 'ambigous post condition' can be stated.
     return False
     
 def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionSM):

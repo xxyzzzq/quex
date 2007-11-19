@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Sun Nov 18 08:59:14 2007">
+<test-database execution-time-sec="1.47" date="Mon Nov 19 07:10:30 2007">
     <group name="DFA">
         <test title="Get Trigger Map (intervals --> target states)" make-required="False" time-sum-sec="0.00"> 
             <application file-name="test-StateInfo-trigger-map.py" info-request-time="1195336076L"/>
@@ -40,6 +40,12 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
+        <test title="Newlines" make-required="False" time-sum-sec="0.00"> 
+            <application file-name="test-count_newline_n.py" info-request-time="1195336076L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00"/>
+            </choice-list>
+        </test>
         <test title="Characters" make-required="False" time-sum-sec="0.00"> 
             <application file-name="test-count_character_n.py" info-request-time="1195336076L"/>
             <choice-list number="1">
@@ -52,30 +58,24 @@
                <choice name="" result="OK" time-sec="0.00"/>
             </choice-list>
         </test>
-        <test title="Newlines" make-required="False" time-sum-sec="0.00"> 
-            <application file-name="test-count_newline_n.py" info-request-time="1195336076L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00"/>
-            </choice-list>
-        </test>
     </group>
     <group name="Pseudo Ambigous Post Condition">
+        <test title="Detection" make-required="False" time-sum-sec="1.47"> 
+            <application file-name="test-ambiguous_post_condition-detect_pseudo.py" info-request-time="1195449228L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.47"/>
+            </choice-list>
+        </test>
         <test title="Replace Drop-Out with Adjacent Target" make-required="False" time-sum-sec="0.00"> 
             <application file-name="test-StateInfo-replace_drop_out_with_adjacent_target.py" info-request-time="1195336076L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00"/>
             </choice-list>
         </test>
-        <test title="Detection" make-required="False" time-sum-sec="0.00"> 
-            <application file-name="test-pseudo_ambiguous_post_condition-detect.py" info-request-time="1195372569L"/>
+        <test title="Mounting" make-required="False" time-sum-sec="0.00"> 
+            <application file-name="test-ambiguous_post_condition-mount_pseudo.py" info-request-time="1195449244L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00"/>
-            </choice-list>
-        </test>
-        <test title="Mounting" make-required="False" time-sum-sec="0.00"> 
-            <application file-name="test-pseudo_ambiguous_post_condition-mount.py" info-request-time="1195372534L"/>
-            <choice-list number="1">
-               <choice name="" result="NO GOOD FILE" time-sec="0.00"/>
             </choice-list>
         </test>
     </group>
@@ -138,14 +138,8 @@
         </test>
     </group>
     <group name="Tracing origin">
-        <test title="Paralellization" make-required="False" time-sum-sec="0.00"> 
-            <application file-name="test-parallelize-trace-origin.py" info-request-time="1195336076L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00"/>
-            </choice-list>
-        </test>
-        <test title="Hopcroft optimization (minimize state set)" make-required="False" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1195336076L"/>
+        <test title="NFA to DFA (subset construction)" make-required="False" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1195336076L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00"/>
             </choice-list>
@@ -162,8 +156,14 @@
                <choice name="" result="OK" time-sec="0.00"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" make-required="False" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1195336076L"/>
+        <test title="Paralellization" make-required="False" time-sum-sec="0.00"> 
+            <application file-name="test-parallelize-trace-origin.py" info-request-time="1195336076L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization (minimize state set)" make-required="False" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1195336076L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00"/>
             </choice-list>
