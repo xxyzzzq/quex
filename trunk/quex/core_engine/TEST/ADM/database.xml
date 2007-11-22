@@ -1,27 +1,27 @@
-<test-database execution-time-sec="0.25" date="Sat Nov 17 23:39:12 2007">
+<test-database execution-time-sec="0.18" date="Thu Nov 22 05:41:38 2007">
     <group name="NumberSet">
-        <test title="Inverse" make-required="False" time-sum-sec="0.06"> 
+        <test title="Inverse" make-required="False" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06"/>
+               <choice name="" result="OK" time-sec="0.03"/>
             </choice-list>
         </test>
-        <test title="Difference" make-required="False" time-sum-sec="0.07"> 
+        <test title="Difference" make-required="False" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07"/>
+               <choice name="" result="OK" time-sec="0.03"/>
             </choice-list>
         </test>
-        <test title="Intersection" make-required="False" time-sum-sec="0.04"> 
+        <test title="Intersection" make-required="False" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04"/>
+               <choice name="" result="OK" time-sec="0.03"/>
             </choice-list>
         </test>
-        <test title="Union" make-required="False" time-sum-sec="0.03"> 
+        <test title="Union" make-required="False" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-union.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03"/>
+               <choice name="" result="OK" time-sec="0.04"/>
             </choice-list>
         </test>
         <test title="Condition Code Generation" make-required="False" time-sum-sec="0.03"> 

@@ -42,15 +42,7 @@ def test(RE_Core, RE_PostCondition):
 
     print "ambigous post condition =", core_sm
 
-    acceptance_state_list = core_sm.get_acceptance_state_list()[0]
-    one_acceptance_state = core_sm.states[acceptance_state_list[0]]
-    origin_list = one_acceptance_state.get_origin_list()
-
-    backward_detector_id = None
-    for origin in origin_list:
-        if origin.pseudo_ambiguous_post_condition_id() != -1L:
-            backward_detector_id = origin.pseudo_ambiguous_post_condition_id()
-            break
+    backward_detector_id = core_sm.get_pseudo_ambiguous_post_condition_id()
 
     print "backward detector =", sm_index.get_state_machine_by_id(backward_detector_id)
 
