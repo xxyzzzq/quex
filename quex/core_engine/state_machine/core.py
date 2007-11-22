@@ -1657,6 +1657,27 @@ class StateMachine:
 
         return original_sm_list.keys()[0]         
                 
+    def get_pseudo_ambiguous_post_condition_id(self):
+        pseudo_ambiguous_post_condition_id = -1L
+
+        for state in self.states.values():
+            if state.is_acceptance() == False: continue
+            origin_list = state.get_origin_list()
+
+            backward_detector_id = None
+            for origin in origin_list:
+                if origin.pseudo_ambiguous_post_condition_id() != -1L:
+                    sm_id = origin.pseudo_ambiguous_post_condition_id()
+                    # double check: all pseudo ambiguous post condition ids of a state
+                    # machine must point to the same state machine. Note: Normally
+                    # one could return here, but for the sake of safety let's check
+                    # the consistency at this point.
+                    if pseudo_ambiguous_post_condition_id != -1L:
+                        assert sm_id == pseudo_ambiguous_post_condition_id
+                    pseudo_ambiguous_post_condition_id = sm_id
+
+        return pseudo_ambiguous_post_condition_id
+
     def is_empty(self):
         """If state machine only contains the initial state that points nowhere,
            then it is empty.

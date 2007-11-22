@@ -1,11 +1,21 @@
-# PURPOSE: Regular expressions with a post condition that
-#          starts with the same as the end of the core expression
-#          are potentially not solveable in the 'classical' way.
-#          This module provides functions to detect this case in 
-#          a given core and post condition.
+# PURPOSE: Quex's strategy to handle post-conditions is the following:
+#          When a state is reached that is labeled with 'end of core'
+#          it stores the input position in a certain variable. This
+#          approach is 'pure' in a sense that it does not circumvent the
+#          understanding of a regular expression based state machine.
+# 
+#          A problem arises with some post-conditions, usually called
+#          'dangerous trailing context'. Some of those cases can be 
+#          handled by quex. Other's are by nature ambiguous. This
+#          file provides functions to analyse the different cases.
+# 
+# (C) Frank-Rene Schaefer
+##############################################################################
+
 from   quex.core_engine.interval_handling import NumberSet, Interval
 import quex.core_engine.state_machine.sequentialize as sequentialize
 import sys
+from   copy import deepcopy
 
 
 def __assert_state_machines(SM0, SM1):
@@ -13,57 +23,23 @@ def __assert_state_machines(SM0, SM1):
     assert SM1.__class__.__name__ == "StateMachine"
 
     
-def detect_total(CoreStateMachine, PostConditionStateMachine):
-    """A post condition, where there is an possible iteration
-       starting from end of the core pattern inside both
-       state machines is TOTALLY AMBIGUOUS! For Example:  x+/x+
-       Is totally ambiguous since in the general case no judgement
-       can be made about the end of the core pattern, so the 
-       input position cannot be reset appropriately.
-    
-       Detect an iteration to the BEGINNING of a post condition 
-       while remaining on a valid path of the core pattern.
-    """
+def detect_forward(CoreStateMachine, PostConditionStateMachine):
+    """A 'forward ambiguity' denotes a case where the quex's normal
+       post condition implementation fails. This happens if an
+       iteration in the core pattern is a valid path in the post-
+       condition pattern. In this case no decision can be be where
+       to reset the input position.
 
-    __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
+       Example:   x+/x  At the end of the post condition an incoming
+                        'x' guides through a path in the post condition
+                        and the core pattern. It cannot be determined
+                        by a flag where the input position ends.
 
-    my_post_condition_sm = PostConditionStateMachine.clone()
-
-    # (*) Create a modified version of the post condition, where the
-    #     initial state is an acceptance state, and no other. This 
-    #     allows the detector to trigger on 'iteration'.
-    #
-    # -- delete all acceptance states in the post condition
-    for state in my_post_condition_sm.states.values():
-       state.set_acceptance(False)
-    # -- set the initial state as acceptance state
-    my_post_condition_sm.get_init_state().set_acceptance(True)
-    
-    core_acceptance_state_list = CoreStateMachine.get_acceptance_state_list()
-    assert len(core_acceptance_state_list) == 1 
-
-    my_pcsm_init_state = my_pcsm_init_state.get_init_state()
-    for csm_state_idx in core_acceptance_state_list[0]:
-        csm_state = CoreStateMachine.states[csm_state_idx]
-        if  __dive_to_detect_iteration(my_post_condition_sm, my_pcsm_init_state, 
-                                       CoreStateMachine,     csm_states):
-            return True
-
-    return False
-
-
-def detect_pseudo(CoreStateMachine, PostConditionStateMachine):
-    """A pseudo ambiguous post condition is what is called in flex
-       a 'dangeruous trailing context'. An expression x*/x allows
-       to reset the input position propperly, since the length of the
-       post conditional pattern can be known. This happesn through 
-       inversion of the post condition state machine and then going
-       backwards. A mismatch will end the 'diving' into the core
-       pattern. NOTE: This diving into the core pattern is not 
-       prevented if iterations in the post condition state machine
-       match with iterations in the core pattern. For this reason,
-       after a call to this function, ensure that the two 
-       patterns are not totally ambiguous using the function above.
+       NOTE: For many cases where there is a forward ambiguity quex
+       can gnerate an inverse post-condition that goes backwards from 
+       the end of the post condition (see function 'mount()'). However,
+       there are cases where even this is not possible (see function
+       'detect_backward()').
     """
     __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
     
@@ -79,6 +55,56 @@ def detect_pseudo(CoreStateMachine, PostConditionStateMachine):
 
     return False
 
+def detect_backward(CoreStateMachine, PostConditionStateMachine):
+
+    """A 'backward ambiguity' denotes the case where it cannot be clearly be
+       determined how far to go back from the end of a post-condition. 
+       
+       NOTE: This does not mean that the post-condition is ambiguous. Many
+       cases that are backward ambiguous can be handled by quex's normal
+       post-condition handling.
+
+       Examples:  x/x+   is backward ambiguous because in a stream
+                         of 'x' one cannot determine with a pure
+                         state machine where to stop. This case,
+                         though can be handled by the normal post-
+                         condition implementation.
+
+                  x+/x+  is backward ambiguous and cannot be handled
+                         by the normal implementation. In fact, this
+                         specification does not allow any conclusions
+                         about the users intend where to reset the 
+                         input after match.
+    """
+
+    __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
+
+    my_post_condition_sm = PostConditionStateMachine.clone()
+
+    # (*) Create a modified version of the post condition, where the
+    #     initial state is an acceptance state, and no other. This 
+    #     allows the detector to trigger on 'iteration'.
+    #
+    # -- delete all acceptance states in the post condition
+    # for state in my_post_condition_sm.states.values():
+    #   state.set_acceptance(False)
+    # -- set the initial state as acceptance state
+    # my_post_condition_sm.get_init_state().set_acceptance(True)
+
+    my_core_sm = CoreStateMachine.get_inverse()
+    my_core_sm = my_core_sm.get_DFA()
+    my_core_sm = my_core_sm.get_hopcroft_optimization()
+
+    tmp = deepcopy(PostConditionStateMachine)
+    # tmp.get_init_state().set_acceptance(True)
+    my_post_condition_sm = tmp.get_inverse()
+    my_post_condition_sm = my_post_condition_sm.get_DFA()
+    my_post_condition_sm = my_post_condition_sm.get_hopcroft_optimization()
+
+    return detect_forward(my_post_condition_sm, my_core_sm)
+
+
+
 def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
     """This function goes along all path of SM0 that lead to an 
        acceptance state AND at the same time are valid inside SM1.
@@ -88,27 +114,29 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
     sm0_transition_list = sm0_state.get_transitions()
     sm1_transition_list = sm1_state.get_transitions()
 
-    # If there is no subsequent path in the core or the post condition
-    # then we are at a leaf of the tree search. No 'ambigous post condition'
-    # has been detected.
+    # If there is no subsequent path in SM0 or SM1, 
+    # then we are at a leaf of the tree search. No
+    # path to acceptance in SM0 lies in SM1.
     if sm0_transition_list == [] or sm1_transition_list == []:
         return False
 
     for sm0_transition in sm0_transition_list:
+        sm0_trigger_set = sm0_transition.trigger_set
         for sm1_transition in sm1_transition_list:
             # If there is no common character in the transition pair, it does not
             # have to be considered.
-            if sm0_transition.trigger_set.intersection(sm1_transition.trigger_set).is_empty():
+            sm1_trigger_set = sm1_transition.trigger_set
+            intersection = sm0_trigger_set.intersection(sm1_trigger_set)
+            if intersection.is_empty():
                 continue
             
             # Both trigger on the some same characters.
             #     -----------------------[xxxxxxxxxxxxxxxx]-------------
             #     -------------[yyyyyyyyyyyyyyyyyyyy]-------------------
             #
-            # If the target state in the SM0 is an acceptance state
-            # => The 'ambigous post condition' problem has been detected.
-            #    (It means that a valid path in the post condition pattern leads
-            #     at the same time to a valid path in the core pattern).
+            # If the target state in the SM0 is an acceptance state,
+            # => A valid path in SM1 leads at the same time to along 
+            #    valid path in SM0.
             sm0_target_state = SM0.states[sm0_transition.target_state_index]
             if sm0_target_state.is_acceptance():
                 return True
@@ -119,8 +147,8 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
             if __dive_to_detect_iteration(SM0, sm0_target_state, SM1, sm1_target_state):
                 return True
 
-    # None of the investigated paths in the core and post condition leads to an
-    # acceptance state in SM0. Thus no 'ambigous post condition' can be stated.
+    # None of the investigated paths in SM0 and SM1 leads to an
+    # acceptance state in SM0. 
     return False
     
 def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionSM):

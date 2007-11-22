@@ -233,7 +233,6 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
 
     return txt
 
-
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment, 
                             LanguageDB, StateMachineName=""):
         
@@ -494,6 +493,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
+
     def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4): 
         indentation = " " * IndentationOffset 
         ignored_code_regions = [["//", "\n", "\n"],   # c++ comments

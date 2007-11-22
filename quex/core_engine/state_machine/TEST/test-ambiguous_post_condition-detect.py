@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Detection"
     sys.exit(0)
 
-def test(RE_Core, RE_PostCondition):
+def __test(RE_Core, RE_PostCondition):
     string_stream_Core          = StringIO(RE_Core)
     string_stream_PostCondition = StringIO(RE_PostCondition)
 
@@ -33,8 +33,12 @@ def test(RE_Core, RE_PostCondition):
     print "---------------------------------------------------------"
     print "core pattern            =", RE_Core
     print "post condition pattern  =", RE_PostCondition
-    print "ambigous post condition =", apc.detect_pseudo(core_sm, post_condition_sm)
+    print "ambiguity (fw), (bw)    =", apc.detect_forward(core_sm, post_condition_sm), \
+                                   ", ", apc.detect_backward(core_sm, post_condition_sm)
 
+def test(RE_Core, RE_PostCondition):
+    __test(RE_Core, RE_PostCondition)
+    __test(RE_PostCondition, RE_Core)
 
 test("ab", "ab")
 test("a(b)*", "ab")

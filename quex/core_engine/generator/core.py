@@ -3,6 +3,162 @@ import quex.core_engine.generator.languages.core      as languages
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
 #
 from quex.core_engine.generator.action_info import ActionInfo
+from quex.core_engine.state_machine.index   import get_state_machine_by_id
+
+class Generator:
+
+    def __init__(self, PatternActionPair_List, EndOfFile_Code,
+                 StateMachineName, AnalyserStateClassName, Language, 
+                 DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
+                 PrintStateMachineF, StandAloneAnalyserF):
+
+        assert type(PatternActionPair_List) == list
+        assert map(lambda elm: elm.__class__.__name__ == "ActionInfo", PatternActionPair_List) \
+               == [ True ] * len(PatternActionPair_List)
+        if not StandAloneAnalyserF: 
+            assert QuexEngineHeaderDefinitionFile != "", \
+               "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
+               "a header file for the core engine define statements. See file\n" + \
+               "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
+
+        if QuexEngineHeaderDefinitionFile == "":
+            QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
+    
+        self.state_machine_name                  = StateMachineName
+        self.analyzer_state_class_name           = AnalyserStateClassName
+        self.programming_language                = Language
+        self.default_action                      = DefaultAction
+        self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
+        self.mode_name_list                      = ModeNameList
+        self.print_state_machine_f               = PrintStateMachineF
+        self.stand_alone_analyzer_f              = StandAloneAnalyserF
+
+        # -- setup of state machine lists and id lists
+        self.__extract_special_lists(PatternActionPair_List)
+        # -- create combined state machines for main and pre-conditions
+        self.__create_state_machines(EndOfFile_Code)
+        # -- collect the state machines that help out with pseudo-ambiguous
+        #    post-conditions.
+        self.__collect_pseudo_ambiguous_post_condition_state_machines()
+
+    def __extract_special_lists(self, PatternActionPair_List):
+        # (0) extract data structures:
+        #      -- state machine list: simply a list of all state machines
+        #         (the original state machine id is marked as 'origin' inside 
+        #          'get_state_machine')
+        #      -- a map from state machine id to related action (i.e. the code fragment) 
+        self.state_machine_list = []
+        self.action_db          = {}
+        # -- extract:
+        #    -- state machines that are post-conditioned
+        self.post_conditioned_sm_id_list = []
+        #    -- state machines that nore non-trivially pre-conditioned, 
+        #       i.e. they need a reverse state machine to be verified.
+        self.pre_condition_sm_id_list  = []
+        self.pre_condition_sm_list     = []
+        #    -- pre-conditions that are trivial, i.e. it is only checked for
+        #       the last character, if it was a particular one or not.
+        self.begin_of_line_condition_f = False
+        # [NOT IMPLEMENTED YET]    
+        # # trivial_pre_condition_dict = {}             # map: state machine id --> character code(s)
+        for action_info in PatternActionPair_List:
+            sm = action_info.pattern_state_machine()
+            self.state_machine_list.append(sm)
+            # -- register action information under the state machine id, where it 
+            #    belongs.
+            origins_of_acceptance_states = sm.get_origin_ids_of_acceptance_states()
+            assert len(origins_of_acceptance_states) != 0, \
+                   "error: code generation for pattern:\n" + \
+                   "error: no acceptance state contains origin information."
+            origin_state_machine_id = origins_of_acceptance_states[0]
+            self.action_db[origin_state_machine_id] = action_info
+
+            # -- collect all pre-conditions and make one single state machine out of it
+            if sm.has_non_trivial_pre_condition():
+                pre_sm = sm.pre_condition_state_machine
+                self.pre_condition_sm_list.append(pre_sm)
+                self.pre_condition_sm_id_list.append(pre_sm.get_id())
+                
+            if sm.has_trivial_pre_condition_begin_of_line():
+                self.begin_of_line_condition_f = True
+
+            # [NOT IMPLEMENTED YET]    
+            # # -- collect information about trivial (char code) pre-conditions 
+            # # if sm.get_trivial_pre_condition_character_codes() != []:
+            # #    trivial_pre_condition_dict[sm.get_id()] = sm.get_trivial_pre_condition_character_codes()
+
+            # -- collect all ids of post conditioned state machines
+            if sm.is_post_conditioned():
+                self.post_conditioned_sm_id_list.append(origin_state_machine_id)
+
+    def __create_state_machines(self, EndOfFile_Code):
+        # (1) transform all given patterns into a single state machine
+        #     (the index of the patterns remain as 'origins' inside the states)
+        self.sm = get_state_machine(self.state_machine_list)
+        #     -- check for the 'nothing is fine' problem
+        _check_for_nothing_is_fine(self.sm, EndOfFile_Code)
+
+        # (2) create the combined pre-condition state machine (if necessary)
+        self.pre_condition_sm = None
+        if self.pre_condition_sm_list != []:
+            self.pre_condition_sm = get_state_machine(self.pre_condition_sm_list, 
+                                                      FilterDominatedOriginsF=False)
+            # -- add empty actions for the pre-condition terminal states
+            for pre_sm in self.pre_condition_sm_list:
+                self.action_db[pre_sm.get_id()] = ActionInfo(pre_sm, "")
+
+    def __collect_pseudo_ambiguous_post_condition_state_machines(self):
+        # -- find state machines that contain a state flagged with 
+        #    'pseudo-ambiguous-post-condition'.
+        papc_sm_id_list = filter(lambda backward_detector_id: backward_detector_id != -1L,
+                                 map(lambda sm: sm.get_pseudo_ambiguous_post_condition_id(),
+                                     self.state_machine_list))
+
+        # -- collect all mentioned state machines in a list
+        self.papc_backward_detector_state_machine_list = \
+                map(get_state_machine_by_id, papc_sm_id_list)
+
+    def do(self):
+
+        LanguageDB = languages.db[self.programming_language]
+
+        txt = ""
+        #  -- all state machine transitions 
+        if self.pre_condition_sm_list != []:
+            txt += "    // state machine for pre-condition test:\n"
+            if self.print_state_machine_f: 
+                txt += "    // " + repr(self.pre_condition_sm).replace("\n", "\n    // ") + "\n"
+            txt += state_machine_coder.do(self.pre_condition_sm, 
+                                          Language=self.programming_language, 
+                                          UserDefinedStateMachineName=self.state_machine_name + "_PRE_CONDITION_",
+                                          BackwardLexingF=True)
+            
+        txt += "    // state machine for pattern analysis:\n"
+        if self.print_state_machine_f: 
+            txt += "    // " + repr(self.sm).replace("\n", "\n    // ") + "\n"
+        txt += state_machine_coder.do(self.sm, Language=self.programming_language, 
+                                      UserDefinedStateMachineName=self.state_machine_name, 
+                                      BackwardLexingF=False)
+        
+        #  -- terminal states: execution of pattern actions  
+        txt += LanguageDB["$terminal-code"](self.state_machine_name, 
+                                            self.sm, 
+                                            self.action_db, 
+                                            self.default_action, 
+                                            self.begin_of_line_condition_f, 
+                                            self.pre_condition_sm_id_list) 
+
+        # -- pack the whole thing into a function 
+        txt = LanguageDB["$analyser-func"](self.state_machine_name, 
+                                           self.analyzer_state_class_name, 
+                                           self.stand_alone_analyzer_f,
+                                           txt, 
+                                           self.post_conditioned_sm_id_list, self.pre_condition_sm_id_list,
+                                           self.begin_of_line_condition_f,
+                                           self.core_engine_header_definitions_file, 
+                                           self.mode_name_list, 
+                                           InitialStateIndex=self.sm.init_state_index) 
+        return txt
 
 def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="",
        PrintStateMachineF=False,
@@ -30,129 +186,10 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
              must have been created **earlier** then lesser priviledged
              state machines.
     """
-    assert type(PatternActionPair_List) == list
-    assert map(lambda elm: elm.__class__.__name__ == "ActionInfo", PatternActionPair_List) \
-           == [ True ] * len(PatternActionPair_List)
-    assert StandAloneAnalyserF or QuexEngineHeaderDefinitionFile != "", \
-           "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
-           "a header file for the core engine define statements. See file\n" + \
-           "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
-
-    if QuexEngineHeaderDefinitionFile == "":
-        QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
-    
-    # (0) extract data structures:
-    #      -- state machine list: simply a list of all state machines
-    #         (the original state machine id is marked as 'origin' inside 
-    #          'get_state_machine')
-    #      -- a map from state machine id to related action (i.e. the code fragment) 
-    state_machine_list = []
-    action_db          = {}
-    
-    # -- extract:
-    #    -- state machines that are post-conditioned
-    post_conditioned_sm_id_list = []
-    #    -- state machines that nore non-trivially pre-conditioned, 
-    #       i.e. they need a reverse state machine to be verified.
-    pre_condition_sm_id_list  = []
-    pre_condition_sm_list     = []
-    #    -- pre-conditions that are trivial, i.e. it is only checked for
-    #       the last character, if it was a particular one or not.
-    begin_of_line_condition_f = False
-    # [NOT IMPLEMENTED YET]    
-    # # trivial_pre_condition_dict = {}             # map: state machine id --> character code(s)
-    for action_info in PatternActionPair_List:
-        sm = action_info.pattern_state_machine()
-        state_machine_list.append(sm)
-        # -- register action information under the state machine id, where it 
-        #    belongs.
-        origins_of_acceptance_states = sm.get_origin_ids_of_acceptance_states()
-        assert len(origins_of_acceptance_states) != 0, \
-               "error: code generation for pattern:\n" + \
-               "error: no acceptance state contains origin information."
-        origin_state_machine_id = origins_of_acceptance_states[0]
-        action_db[origin_state_machine_id] = action_info
-
-        # -- collect all pre-conditions and make one single state machine out of it
-        if sm.has_non_trivial_pre_condition():
-            pre_sm = sm.pre_condition_state_machine
-            pre_condition_sm_list.append(pre_sm)
-            pre_condition_sm_id_list.append(pre_sm.get_id())
-            
-        if sm.has_trivial_pre_condition_begin_of_line():
-            begin_of_line_condition_f = True
-
-        # [NOT IMPLEMENTED YET]    
-        # # -- collect information about trivial (char code) pre-conditions 
-        # # if sm.get_trivial_pre_condition_character_codes() != []:
-        # #    trivial_pre_condition_dict[sm.get_id()] = sm.get_trivial_pre_condition_character_codes()
-
-        # -- collect all ids of post conditioned state machines
-        if sm.is_post_conditioned():
-            post_conditioned_sm_id_list.append(origin_state_machine_id)
-                                    
-    # (1) transform all given patterns into a single state machine
-    #     (the index of the patterns remain as 'origins' inside the states)
-    sm = get_state_machine(state_machine_list)
-    #     -- check for the 'nothing is fine' problem
-    __check_for_nothing_is_fine(sm, EndOfFile_Code)
-
-
-    # -- add actions for the pre-condition terminal states:
-    #    (empty, because the flag 'pre_condition_fulfilled' is raised when the 
-    #     acceptance state is entered)
-    pre_condition_sm = None
-    if pre_condition_sm_list != []:
-        pre_condition_sm = get_state_machine(pre_condition_sm_list, FilterDominatedOriginsF=False)
-        for pre_sm in pre_condition_sm_list:
-            action_db[pre_sm.get_id()] = ActionInfo(pre_sm, "")
-
-    # (2) create code
-    return __get_code(sm, pre_condition_sm, pre_condition_sm_id_list, 
-                      StateMachineName, AnalyserStateClassName, StandAloneAnalyserF, Language, 
-                      pre_condition_sm_list, post_conditioned_sm_id_list, 
-                      action_db, DefaultAction, begin_of_line_condition_f, 
-                      QuexEngineHeaderDefinitionFile, ModeNameList, PrintStateMachineF)
-
-def __get_code(sm, pre_condition_sm, pre_condition_sm_id_list,
-               StateMachineName, AnalyserStateClassName, 
-               StandAloneAnalyserF, Language,
-               pre_condition_sm_list, post_conditioned_sm_id_list, 
-               action_db, DefaultAction, begin_of_line_condition_f, 
-               QuexEngineHeaderDefinitionFile, ModeNameList, PrintStateMachineF):
-
-    LanguageDB = languages.db[Language]
-
-    txt = ""
-    #  -- all state machine transitions 
-    if pre_condition_sm_list != []:
-        txt += "    // state machine for pre-condition test:\n"
-        if PrintStateMachineF: 
-            txt += "    // " + repr(pre_condition_sm).replace("\n", "\n    // ") + "\n"
-        txt += state_machine_coder.do(pre_condition_sm, 
-                                      Language=Language, 
-                                      UserDefinedStateMachineName=StateMachineName + "_PRE_CONDITION_",
-                                      BackwardLexingF=True)
-        
-    txt += "    // state machine for pattern analysis:\n"
-    if PrintStateMachineF: 
-        txt += "    // " + repr(sm).replace("\n", "\n    // ") + "\n"
-    txt += state_machine_coder.do(sm, Language=Language, 
-                                  UserDefinedStateMachineName=StateMachineName, 
-                                  BackwardLexingF=False)
-    
-    #  -- terminal states: execution of pattern actions  
-    txt += LanguageDB["$terminal-code"](StateMachineName, sm, action_db, DefaultAction, 
-                                        begin_of_line_condition_f, pre_condition_sm_id_list) 
-
-    # -- pack the whole thing into a function 
-    txt = LanguageDB["$analyser-func"](StateMachineName, AnalyserStateClassName, StandAloneAnalyserF,
-                                       txt, 
-                                       post_conditioned_sm_id_list, pre_condition_sm_id_list,
-                                       begin_of_line_condition_f,
-                                       QuexEngineHeaderDefinitionFile, 
-                                       ModeNameList, InitialStateIndex=sm.init_state_index) 
-    return txt
+    return Generator(PatternActionPair_List, EndOfFile_Code,
+                     StateMachineName, AnalyserStateClassName, Language, 
+                     DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
+                     PrintStateMachineF, StandAloneAnalyserF).do()
     
 def get_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
     """Creates a DFA state machine that incorporates the paralell
@@ -199,7 +236,7 @@ def get_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
 
     return sm
 
-def __check_for_nothing_is_fine(sm, EndOfFile_Code):
+def _check_for_nothing_is_fine(sm, EndOfFile_Code):
     """NOTE: This discussion is lengthy and the result is short. Please, 
              go to the end of this comment to get to the point quickly.
     
