@@ -36,6 +36,8 @@ db["C++"] = {
     "$!=":     "!=",
     "$/*":     "//",
     "$*/":     "\n",
+    "$*/\n":   "\n",    # make sure, that we do not introduce an extra '\n' in case that end of comment
+    #                   # is followed directly by newline.
     "$input":               "input",
     "$input/get":           "QUEX_STREAM_GET(input);",
     "$input/get-backwards": "QUEX_STREAM_GET_BACKWARDS(input);",
@@ -85,7 +87,9 @@ db["Python"] = {
     "$else":   "else:",                                              
     "$and":    "and",
     "$/*":     "#",
-    "$*/":     "\n",
+    "$*/":     "\n",  
+    "$*/\n":   "\n",    # make sure, that we do not introduce an extra '\n' in case that end of comment
+    #                   # is followed directly by newline.
     "$input":         "input",
     "$input/get":     "# TODO: getting input into parser",
     "$return_true":   "return True",

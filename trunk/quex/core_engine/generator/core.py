@@ -1,6 +1,7 @@
 import quex.core_engine.state_machine.parallelize     as parallelize
 import quex.core_engine.generator.languages.core      as languages
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
+import quex.core_engine.generator.input_position_backward_detector as backward_detector
 #
 from quex.core_engine.generator.action_info import ActionInfo
 from quex.core_engine.state_machine.index   import get_state_machine_by_id
@@ -122,23 +123,29 @@ class Generator:
 
         LanguageDB = languages.db[self.programming_language]
 
+        # -- write the combined pre-condition state machine
         txt = ""
-        #  -- all state machine transitions 
         if self.pre_condition_sm_list != []:
-            txt += "    // state machine for pre-condition test:\n"
+            txt += "    $/* state machine for pre-condition test: $*/\n"
             if self.print_state_machine_f: 
-                txt += "    // " + repr(self.pre_condition_sm).replace("\n", "\n    // ") + "\n"
+                txt += "    $/* " + repr(self.pre_condition_sm).replace("\n", "$*/\n    $/* ") + "$*/\n"
             txt += state_machine_coder.do(self.pre_condition_sm, 
-                                          Language=self.programming_language, 
-                                          UserDefinedStateMachineName=self.state_machine_name + "_PRE_CONDITION_",
-                                          BackwardLexingF=True)
+                                          LanguageDB                  = LanguageDB, 
+                                          UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONDITION_",
+                                          BackwardLexingF             = True)
             
-        txt += "    // state machine for pattern analysis:\n"
+        #  -- comment all state machine transitions 
+        txt += "    $/* state machine for pattern analysis:$*/\n"
         if self.print_state_machine_f: 
-            txt += "    // " + repr(self.sm).replace("\n", "\n    // ") + "\n"
-        txt += state_machine_coder.do(self.sm, Language=self.programming_language, 
-                                      UserDefinedStateMachineName=self.state_machine_name, 
-                                      BackwardLexingF=False)
+            txt += "    $/* " + repr(self.sm).replace("\n", "$*/\n    $/* ") + "\n"
+        txt += state_machine_coder.do(self.sm, 
+                                      LanguageDB                  = LanguageDB, 
+                                      UserDefinedStateMachineName = self.state_machine_name, 
+                                      BackwardLexingF             = False)
+
+        #  -- state machines for backward input position detection (pseudo ambiguous post conditions)
+        for sm in self.papc_backward_detector_state_machine_list:
+            txt += backward_detector.do(sm, LanguageDB) 
         
         #  -- terminal states: execution of pattern actions  
         txt += LanguageDB["$terminal-code"](self.state_machine_name, 
@@ -158,7 +165,8 @@ class Generator:
                                            self.core_engine_header_definitions_file, 
                                            self.mode_name_list, 
                                            InitialStateIndex=self.sm.init_state_index) 
-        return txt
+
+        return languages.replace_keywords(txt, LanguageDB, NoIndentF=True)
 
 def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="",
        PrintStateMachineF=False,
@@ -284,10 +292,8 @@ def _check_for_nothing_is_fine(sm, EndOfFile_Code):
     # NOTE: At this point this should never appear, since the problem is supposed
     #       to be checked against at the level of parsing the regular expression.
     init_state = sm.states[sm.init_state_index]
-    if init_state.is_acceptance() == False: 
-        return
 
-    assert False == True, \
+    assert init_state.is_acceptance() == False, \
           "error: A pattern (such as '.*' or 'x*') allows no input to be acceptable.\n" + \
           "error: This does not make sense! THIS SHOULD HAVE BEEN CHECKED AGAINST WHEN\n" + \
           "error: the state machine was created for the regular expression!"

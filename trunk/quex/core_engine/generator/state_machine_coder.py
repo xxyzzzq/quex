@@ -3,7 +3,7 @@ import quex.core_engine.generator.languages.label as languages_label
 
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
-def do(state_machine, Language = "C", UserDefinedStateMachineName="", BackwardLexingF=False): 
+def do(state_machine, LanguageDB, UserDefinedStateMachineName="", BackwardLexingF=False): 
     """Returns the program code implementing the StateMachine's behavior.
        NOTE: This function should only be called on a DFA after the call
              to 'filter_dominated_origins'. The latter is important
@@ -15,8 +15,6 @@ def do(state_machine, Language = "C", UserDefinedStateMachineName="", BackwardLe
             ii) state transition code (include marking of last success state
                 and last success stream position).                  
     """
-    LanguageDB = languages.db[Language]
-
     txt = ""
     # -- treat initial state separately 
     LabelName = languages_label.get(UserDefinedStateMachineName, state_machine.init_state_index)
@@ -24,7 +22,8 @@ def do(state_machine, Language = "C", UserDefinedStateMachineName="", BackwardLe
     txt += "%s\n"  % LanguageDB["$label-definition"](LabelName)
     init_state = state_machine.states[state_machine.init_state_index]
     #
-    txt += state_transition_coder.do(Language, UserDefinedStateMachineName, init_state, state_machine.init_state_index,
+    txt += state_transition_coder.do(LanguageDB, 
+                                     UserDefinedStateMachineName, init_state, state_machine.init_state_index,
                                      BackwardLexingF=BackwardLexingF)
 
     # -- all other states
@@ -32,7 +31,7 @@ def do(state_machine, Language = "C", UserDefinedStateMachineName="", BackwardLe
         if state_index == state_machine.init_state_index: continue
         LabelName = languages_label.get(UserDefinedStateMachineName, state_index)
         txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
-        txt += state_transition_coder.do(Language, UserDefinedStateMachineName, state, state_index,
+        txt += state_transition_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
                                          BackwardLexingF=BackwardLexingF)
         txt += "\n"
     

@@ -19,6 +19,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.core_engine.interval_handling import NumberSet, Interval
 from quex.core_engine.state_machine.core import StateInfo
 
+import quex.core_engine.generator.languages.core         as languages
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
 if "--hwut-info" in sys.argv:
@@ -38,7 +39,7 @@ for i in range(300):
     state.add_transition(Interval(interval_start, interval_end), long(i % 24))
     interval_start = interval_end
 
-function = "def example_func(input):\n" + state_transition_coder.do("Python", "", state, -1, False)
+function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
 exec(function)
 
 differences = []    
