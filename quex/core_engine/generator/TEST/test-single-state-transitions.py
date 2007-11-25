@@ -18,6 +18,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.core_engine.interval_handling import NumberSet, Interval
 from quex.core_engine.state_machine.core import StateInfo
 
+import quex.core_engine.generator.languages.core         as languages
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
 if "--hwut-info" in sys.argv:
@@ -35,7 +36,7 @@ state.add_transition(NumberSet([Interval(200,230),  Interval(231,240)]),  7L)
 state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71,71)]),  8L)
 
 
-function = "def example_func(input):\n" + state_transition_coder.do("Python", "", state, -1, False)
+function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
 # print "#" + function.replace("\n", "\n#")
 exec(function)
 

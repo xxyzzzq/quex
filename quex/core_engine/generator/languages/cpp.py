@@ -537,7 +537,12 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
         #
         txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
         #
-        txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % post_condition_number_str
+        if state_machine.get_pseudo_ambiguous_post_condition_id() == -1L:
+            txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % \
+                   post_condition_number_str
+        else:
+            txt += "    INPUT_POSITION_BACKWARD_DETECTOR_%i(me);\n" % \
+                   state_machine_id.pseudo_ambiguous_post_condition_id().replace("L", "")
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
         txt += "    goto __REENTRY_PREPARATION;\n" # % StateMachineName

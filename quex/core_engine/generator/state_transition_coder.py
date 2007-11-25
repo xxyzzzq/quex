@@ -3,7 +3,7 @@ import quex.core_engine.generator.languages.label as languages_label
 from copy import deepcopy
 
 
-def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
+def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -14,7 +14,6 @@ def do(Language, StateMachineName, state, StateIdx, BackwardLexingF):
        
     #_________________________________________________________________________________________    
     TriggerMap = state.get_trigger_map()
-    LanguageDB = languages.db[Language]
     
     # note down information about success, if state is an acceptance state
     acceptance_info = LanguageDB["$acceptance-info"](state.get_origin_list(), LanguageDB, BackwardLexingF)

@@ -192,6 +192,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     except:
         print "<<compilation failed>>"
     print "## (4) cleaning up"
-    os.remove(filename_tmp)
+    # os.remove(filename_tmp)
 
 
