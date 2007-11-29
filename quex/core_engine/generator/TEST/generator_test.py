@@ -13,6 +13,7 @@ import quex.core_engine.generator.core          as generator
 import quex.core_engine.regular_expression.core as regex
 
 def action(PatternName): 
+    # txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
     if   "->1" in PatternName: txt += "me->__current_mode_analyser_function_p = analyser_do;\n"
@@ -176,13 +177,17 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     os.write(fd, test_program)    
     os.close(fd)    
 
+    # os.system("mv -f %s tmp.cpp" % filename_tmp); filename_tmp = "./tmp.cpp" # DEBUG
+
     print "## (2) compiling generated engine code and test"    
     compile_str = "g++ %s %s " % (NDEBUG_str, filename_tmp) + \
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
-                  "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " # + "-ggdb"    
+                  "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
+                  "-ggdb"    
+                  # "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " + \
 
-    ## print compile_str
+    # print compile_str # DEBUG
     os.system(compile_str)
 
     print "## (3) running the test"
@@ -192,6 +197,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     except:
         print "<<compilation failed>>"
     print "## (4) cleaning up"
-    # os.remove(filename_tmp)
+    os.remove(filename_tmp)
 
 

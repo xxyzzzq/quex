@@ -1630,7 +1630,9 @@ class StateMachine:
 
             # -- do not care about 'traces of loosers' (i.e. non-acceptance states)
             filtered_list = filter(lambda origin:
-                                   origin.store_input_position_f() or origin.post_conditioned_acceptance_f(),
+                                   origin.store_input_position_f() 
+                                   or origin.post_conditioned_acceptance_f()
+                                   or origin.pseudo_ambiguous_post_condition_id(),
                                    origin_list)
 
             # extract the state machine ids out of the origin informations

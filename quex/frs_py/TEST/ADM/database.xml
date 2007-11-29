@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.05" date="Thu Nov 22 05:42:58 2007">
+<test-database execution-time-sec="0.05" date="Mon Nov 26 05:21:49 2007">
     <group name="File Input">
         <test title="Function read_until_closing_bracket(...)" make-required="False" time-sum-sec="0.03"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1195336072L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03"/>
+               <choice name="" result="OK" time-sec="0.03" good-file-crc="1489533151"/>
             </choice-list>
         </test>
     </group>
@@ -11,7 +11,7 @@
         <test title="Trim (replaced by string.strip(..))" make-required="False" time-sum-sec="0.02"> 
             <application file-name="test-trim.py" info-request-time="1195336072L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.02"/>
+               <choice name="" result="OK" time-sec="0.02" good-file-crc="-964243626"/>
             </choice-list>
         </test>
     </group>

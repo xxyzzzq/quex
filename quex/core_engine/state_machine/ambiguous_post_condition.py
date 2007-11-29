@@ -231,10 +231,14 @@ def mount(the_state_machine, PostConditionSM):
     #       task is to reset the input stream.
     # NOTE: It is not necessary that the state machine directly refers to
     #       the backward detector. The origins of the acceptance state will do so.
+    acceptance_state_list = the_state_machine.get_acceptance_state_list()
+    assert len(acceptance_state_list) != 0, \
+            "error: mounting pseudo-ambiguous post condition:\n" + \
+            "error: no acceptance state in sequentialized state machine."
 
     # (*) create origin data, in case where there is none yet create new one.
     #     (do not delete, otherwise existing information gets lost)
-    for state_idx in the_state_machine.get_acceptance_state_list()[0]:
+    for state_idx in acceptance_state_list[0]: 
         state = the_state_machine.states[state_idx]
         if not state.has_origin(): 
             state.add_origin(the_state_machine.get_id(), state_idx)
