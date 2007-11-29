@@ -1,0 +1,52 @@
+<test-database execution-time-sec="279.48" date="Thu Nov 29 05:34:51 2007">
+    <group name="demo/000">
+        <test title="Single Mode Example" make-required="False" time-sum-sec="7.64"> 
+            <application file-name="000.sh" info-request-time="1195336078L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="4.34" good-file-crc="-669900539"/>
+               <choice name="DEBUG" result="OK" time-sec="3.31" good-file-crc="-253783980"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/001">
+        <test title="Multiple Modes, Mode Transitions" make-required="False" time-sum-sec="6.05"> 
+            <application file-name="001.sh" info-request-time="1195336078L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.87" good-file-crc="1854620741"/>
+               <choice name="DEBUG" result="OK" time-sec="3.18" good-file-crc="200015176"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/002">
+        <test title="Indentation Based Scopes" make-required="False" time-sum-sec="11.24"> 
+            <application file-name="002.sh" info-request-time="1195336078L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="5.91" good-file-crc="-1830736552"/>
+               <choice name="DEBUG" result="OK" time-sec="5.33" good-file-crc="-1234760276"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/003">
+        <test title="Unicode Based Lexical Analyzis" make-required="False" time-sum-sec="241.60"> 
+            <application file-name="003.sh" info-request-time="1195336078L"/>
+            <choice-list number="5">
+               <choice name="BPC=2" result="OK" time-sec="49.04" good-file-crc="-1038451616"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time-sec="45.94" good-file-crc="507224024"/>
+               <choice name="BPC=4" result="OK" time-sec="52.31" good-file-crc="-1038451616"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time-sec="47.88" good-file-crc="-560165539"/>
+               <choice name="BPC=wchar_t" result="OK" time-sec="46.43" good-file-crc="-1038451616"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/005">
+        <test title="Including Files" make-required="False" time-sum-sec="12.95"> 
+            <application file-name="005.sh" info-request-time="1195336078L"/>
+            <choice-list number="4">
+               <choice name="1" result="OK" time-sec="3.75" good-file-crc="255489670"/>
+               <choice name="1_NDEBUG" result="OK" time-sec="3.11" good-file-crc="822176949"/>
+               <choice name="2" result="OK" time-sec="3.13" good-file-crc="501878589"/>
+               <choice name="2_NDEBUG" result="OK" time-sec="2.96" good-file-crc="1983032887"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
