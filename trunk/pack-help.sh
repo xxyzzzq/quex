@@ -64,4 +64,5 @@ cd $orig_directory
 
 # (*) branch on sourceforge subversion
 svn copy https://quex.svn.sourceforge.net/svnroot/quex/trunk \
-         https://quex.svn.sourceforge.net/svnroot/quex/tags/quex-$1
+         https://quex.svn.sourceforge.net/svnroot/quex/tags/quex-$1 \
+         -m "Release $1"
