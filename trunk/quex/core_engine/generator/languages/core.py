@@ -43,6 +43,7 @@ db["C++"] = {
     "$input/get-backwards": "QUEX_STREAM_GET_BACKWARDS(input);",
     "$input/tell_position": cpp.__tell_position, 
     "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
+    "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$transition":          cpp.__transition,
@@ -51,7 +52,11 @@ db["C++"] = {
     "$analyser-func":       cpp.__analyser_function,
     "$terminal-code":       cpp.__terminal_states,      
     "$pre-condition-ok":    cpp.__pre_condition_ok,                                                  
-    "$drop-out":            cpp.__state_drop_out_code
+    "$drop-out":            cpp.__state_drop_out_code,
+    "$include":           lambda include_file: "#include <%s>" % include_file,
+    "$compile-option":    lambda option: "#define %s\n" % option,
+    "$assignment":        lambda variable, value: "%s = %s;\n" % (variable, value),
+    "$begin-of-line-flag-true":  "me->begin_of_line_f",
     }
 
 #________________________________________________________________________________
@@ -100,6 +105,7 @@ db["Python"] = {
     "$acceptance-info":   python.__note_acceptance,                    
     "$label":             "",   
     "$drop-out":          python.__state_drop_out_code,
+    "$include":           lambda include_file: "#include <%s>" % include_file,
 }
 
 #________________________________________________________________________________

@@ -4,6 +4,7 @@ from copy import deepcopy
 sys.path.append("../")
 
 from quex.core_engine.state_machine.core import *
+import quex.core_engine.state_machine.ambiguous_post_condition as ambiguous_post_condition
 
 
 def do(the_state_machine, post_condition_state_machine):
@@ -44,19 +45,35 @@ def do(the_state_machine, post_condition_state_machine):
 
     # -- state machines with no states are senseless here. 
     if the_state_machine.is_empty():
-        raise  "empty state machine can have no post condition"
+        raise "empty state machine can have no post condition"
     if post_condition_state_machine.is_empty():
-        raise  "empty state machine cannot be a post-condition"
+        raise "empty state machine cannot be a post-condition"
 
     # -- a post condition with an initial state that is acceptance is not
     #    really a 'condition' since it accepts anything. The state machine remains
     #    un-post conditioned.
-    if post_condition_state_machine.is_acceptance(post_condition_state_machine.init_state_index):
+    if post_condition_state_machine.get_init_state().is_acceptance():
         print "warning: post condition accepts anything---replaced by no post condition."
         the_state_machine.mark_state_origins()
         return the_state_machine
+    
+    # (*) Two ways of handling post-conditions:
+    #
+    #     -- Seldom Exception: 
+    #        Pseudo-Ambiguous Post Conditions (x+/x) -- detecting the end of the 
+    #        core pattern after the end of the post condition
+    #        has been reached.
+    #
+    if ambiguous_post_condition.detect_forward(the_state_machine, post_condition_state_machine):
+        if ambiguous_post_condition.detect_backward(the_state_machine, post_condition_state_machine):
+            raise "totally ambiguous post condition cannot be handled by current version of quex."
+        ambiguous_post_condition.mount(the_state_machine, post_condition_state_machine)
+        return the_state_machine
 
         
+    #     -- The 'normal' way: storing the input position at the end of the core
+    #        pattern.
+    #
     # (*) need to clone the state machines, i.e. provide their internal
     #     states with new ids, but the 'behavior' remains. This allows
     #     state machines to appear twice, or being used in 'larger'

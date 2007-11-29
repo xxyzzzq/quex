@@ -3,7 +3,10 @@ import quex.core_engine.generator.languages.label as languages_label
 
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
-def do(state_machine, LanguageDB, UserDefinedStateMachineName="", BackwardLexingF=False): 
+def do(state_machine, LanguageDB, 
+       UserDefinedStateMachineName="", 
+       BackwardLexingF=False, 
+       BackwardInputPositionDetectionF=False): 
     """Returns the program code implementing the StateMachine's behavior.
        NOTE: This function should only be called on a DFA after the call
              to 'filter_dominated_origins'. The latter is important
@@ -15,6 +18,8 @@ def do(state_machine, LanguageDB, UserDefinedStateMachineName="", BackwardLexing
             ii) state transition code (include marking of last success state
                 and last success stream position).                  
     """
+    if BackwardInputPositionDetectionF: assert BackwardLexingF
+
     txt = ""
     # -- treat initial state separately 
     LabelName = languages_label.get(UserDefinedStateMachineName, state_machine.init_state_index)
@@ -35,13 +40,5 @@ def do(state_machine, LanguageDB, UserDefinedStateMachineName="", BackwardLexing
                                          BackwardLexingF=BackwardLexingF)
         txt += "\n"
     
-    # -- for backward lexing a terminal state has to be provided    
-    if BackwardLexingF:
-        LabelName = languages_label.get_terminal(UserDefinedStateMachineName)      
-        txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
-        # -- set the input stream back to the real current position.
-        #    during backward lexing the analyser went backwards, so it needs to be reset.
-        txt += "    QUEX_CORE_SEEK_ANALYSER_START_POSITION;\n"
-
     return txt
 

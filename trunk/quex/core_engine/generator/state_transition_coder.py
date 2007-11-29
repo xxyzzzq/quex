@@ -45,7 +45,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
         empty_trigger_map_f = True
         # Empty State (no transitions, but the epsilon transition)
         txt  = "    "
-        txt += "$/* no trigger set $*/"
+        txt += "$/* no trigger set, no 'get character' $*/"
 
         # trigger outside the trigger intervals
         txt += "\n" + LanguageDB["$transition"](StateMachineName, StateIdx,

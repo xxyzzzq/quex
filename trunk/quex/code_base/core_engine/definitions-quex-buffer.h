@@ -149,8 +149,11 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
         assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());
 
 #define QUEX_STREAM_GET_BACKWARDS(character)        \
-        (character) = me->__buffer->get_backward(); \
-        assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
+        (character) = me->__buffer->get_backward(); 
+// NOTE: assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
+//       Does not make sense here, since the macro may be used for backward input
+//       position detection after a post condition has triggered (pseudo ambiguous
+//       post conditions).
 
 #define QUEX_STREAM_TELL(position)            \
         (position)  = me->__buffer->tell_adr();

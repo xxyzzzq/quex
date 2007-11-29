@@ -221,7 +221,7 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
             final_acceptance_origin_list.append(origin)
    
     def __on_detection_code(StateMachineName, Origin):
-        info  = "last_acceptance = %s;\n" % Origin.state_machine_id
+        info  = LanguageDB["$assignment"]("last_acceptance", repr(Origin.state_machine_id).replace("L", ""))
         # NOTE: When post conditioned patterns end they do not store the input position.
         #       Rather, the acceptance position of the core pattern is considered.
         if Origin.store_input_position_f():
@@ -254,7 +254,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
             txt += "$end\n"
         
         elif origin.pre_condition_begin_of_line_f():
-            txt += if_statement + " me->begin_of_line_f $then\n" 
+            txt += if_statement + " $begin-of-line-flag-true $then\n" 
             txt += indent_this(info)
             txt += "$end\n"
         
@@ -350,8 +350,7 @@ __function_local_variable_definitions = """
 
 def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                         function_body, PostConditionedStateMachineID_List, PreConditionIDList,
-                        SupportBeginOfLineF, 
-                        QuexEngineHeaderDefinitionFile, ModeNameList=[], InitialStateIndex=-1):   
+                        ModeNameList=[], InitialStateIndex=-1):   
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
@@ -374,10 +373,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                      it is stored in 'me'.
     """              
     txt = ""
-    if SupportBeginOfLineF: 
-        txt += "#define __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION\n"
-
-    txt += "#include<%s>\n" % QuexEngineHeaderDefinitionFile
     if StandAloneEngineF: 
         txt += __function_header_stand_alone
     else:                 
@@ -541,8 +536,8 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
             txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % \
                    post_condition_number_str
         else:
-            txt += "    INPUT_POSITION_BACKWARD_DETECTOR_%i(me);\n" % \
-                   state_machine_id.pseudo_ambiguous_post_condition_id().replace("L", "")
+            txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
+                   repr(state_machine.get_pseudo_ambiguous_post_condition_id()).replace("L", "")
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
         txt += "    goto __REENTRY_PREPARATION;\n" # % StateMachineName
