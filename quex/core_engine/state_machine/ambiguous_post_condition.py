@@ -96,14 +96,11 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
     my_core_sm = my_core_sm.get_hopcroft_optimization()
 
     tmp = deepcopy(PostConditionStateMachine)
-    # tmp.get_init_state().set_acceptance(True)
     my_post_condition_sm = tmp.get_inverse()
     my_post_condition_sm = my_post_condition_sm.get_DFA()
     my_post_condition_sm = my_post_condition_sm.get_hopcroft_optimization()
 
     return detect_forward(my_post_condition_sm, my_core_sm)
-
-
 
 def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
     """This function goes along all path of SM0 that lead to an 
@@ -126,7 +123,7 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
             # If there is no common character in the transition pair, it does not
             # have to be considered.
             sm1_trigger_set = sm1_transition.trigger_set
-            intersection = sm0_trigger_set.intersection(sm1_trigger_set)
+            intersection    = sm0_trigger_set.intersection(sm1_trigger_set)
             if intersection.is_empty():
                 continue
             
@@ -252,6 +249,80 @@ def mount(the_state_machine, PostConditionSM):
     # 'mount' something on an existing state machine, i.e. change the object
     # that is referenced by the first argument.
     return the_state_machine
-    
 
+def philosophical_cut(core_sm, post_condition_sm):
+    """The 'philosophical cut' is a technique introduced by Frank-Rene Schaefer
+       to produce a pair of a core- and a post-condition that otherwise would 
+       be forward and backward ambiguous. The philosophical ground for this
+       cut is 'greed', i.e. a core pattern should eat as much characters as
+       it can. This idea is followed during the whole construction of the lexical
+       analyzer. 
+       
+       For the case of total ambiguity 'x+/x+', this idea translates into leaving
+       the iteration in the core condition and cutting the iteration in the post
+       condition. Thus 'x+/x+' is transformed into 'x+/x' and can be solved by
+       the technique for forward ambiguous post conditions.
+    """
+    core_acceptance_state_list = core_sm.get_acceptance_state_list()
+    assert len(core_acceptance_state_list) == 1 
+
+    pcsm_init_state = post_condition_sm.get_init_state()
+    for csm_state_idx in core_acceptance_state_list[0]:
+        csm_state = core_sm.states[csm_state_idx]
+        __dive_to_cut_iteration(core_sm, csm_state, post_condition_sm, pcsm_init_state,
+                                SM1_Path=[post_condition_sm.init_state_index])
+
+    # By means of cutting, some states might have become bold. That is, they have
+    # only an epsilon transition. Thus, it is required to do a transformation NFA->DFA
+    # and add a hopcroft optimization.
+    new_post_sm = post_condition_sm.get_DFA()
+    new_post_sm = new_post_sm.get_hopcroft_optimization()
+    return new_post_sm
+
+
+
+def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
+    """Cut any trigger that allows to trigger out of SM1 that triggers 
+       back to its initial state while the path is valid in SM0. This
+       function serves the 'philosophical cut'.
+    """
+    sm0_transition_list = sm0_state.get_transitions()
+    sm1_transition_list = sm1_state.get_transitions()
+
+    # If there is no subsequent path in SM0 or SM1, then we are at a leaf of
+    # the tree search. No path to acceptance in SM0 lies in SM1.
+    if sm0_transition_list == [] or sm1_transition_list == []: return 
+
+    for sm0_transition in sm0_transition_list:
+        sm0_trigger_set = sm0_transition.trigger_set
+        for sm1_transition in sm1_transition_list:
+            sm1_trigger_set = sm1_transition.trigger_set
+            intersection    = sm0_trigger_set.intersection(sm1_trigger_set)
+
+            # Both trigger on the some same characters?
+            #     -----------------------[xxxxxxxxxxxxxxxx]-------------
+            #     -------------[yyyyyyyyyyyyyyyyyyyy]-------------------
+            if intersection.is_empty():
+                # If there is no common character in the transition pair, it does not
+                # have to be considered.
+                continue
+            
+            elif sm1_transition.target_state_index in SM1_Path:
+                # If the trigger set allows the current state to trigger to a state
+                # that has already been reached in the path of states, then this
+                # is the door to iteration. This 'door' backwards needs to be locked!
+                sm1_transition.trigger_set = sm1_trigger_set.difference(intersection)
+                sm1_state.delete_transitions_on_empty_trigger_sets()
+                # (Where there is no door, there is no way to dive deeper ...)
+
+            else:
+                # Lets see to where this path may guide us ...
+                sm0_target_state = SM0.states[sm0_transition.target_state_index]
+                sm1_target_state = SM1.states[sm1_transition.target_state_index]
+                __dive_to_cut_iteration(SM0, sm0_target_state, 
+                                        SM1, sm1_target_state,
+                                        SM1_Path + [sm1_transition.target_state_index])
+
+    # All branches considered, ... dive up
+    return 
 

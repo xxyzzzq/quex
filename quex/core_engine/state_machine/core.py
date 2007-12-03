@@ -818,6 +818,12 @@ class StateInfo:
 
             self.add_transition(trigger_set, target)
 
+    def delete_transitions_on_empty_trigger_sets(self):
+        new_transition_list = []
+        for t in self.__transition_list:
+            if not t.trigger_set.is_empty(): new_transition_list.append(t)
+        self.__transition_list = new_transition_list
+
     def delete_epsilon_target_state(self, TargetStateIdx):
         if TargetStateIdx in self.__epsilon.target_state_indices:
             del self.__epsilon.target_state_indices[self.__epsilon.target_state_indices.index(TargetStateIdx)]

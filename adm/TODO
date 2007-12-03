@@ -1,3 +1,22 @@
+(*) 07y12m1d:
+
+    When a trigger triggers to a non-acceptance state, it can be taken out.
+    This is so, since the 'remaining triggers' of a state trigger to non-acceptance
+    anyway---IF THE STATE ITSELF IS NOT ACCEPTANCE.
+
+    00125 <~ (34, 118)
+          == 'z' ==> 00126
+          == 'x' ==> 00127
+          <no epsilon>
+    00126* <~ (34, 119, S)
+          <no epsilon>
+    00127 <~ (34, 120)
+          <no epsilon>
+
+    The contrary holds probably if the state is acceptance and a trigger triggers
+    to an empty acceptance state.
+
+
 (*) 07y9m23d:
 
     In the 'history' computation the 'union' member function is used. 
