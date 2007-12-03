@@ -1,0 +1,265 @@
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = "xy"+
+post condition sm =  init-state = 45L
+00045 <~ (11, 45)
+      == 'x' ==> 00047
+      <no epsilon>
+00046* <~ (11, 46, S)
+      == 'x' ==> 00047
+      <no epsilon>
+00047 <~ (11, 47)
+      == 'y' ==> 00046
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 52L
+00052 <~ (11, 45)
+      == 'x' ==> 00054
+      <no epsilon>
+00053* <~ (11, 46, S)
+      <no epsilon>
+00054 <~ (11, 47)
+      == 'y' ==> 00053
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = (xy)+
+post condition pattern  = (xy)*z
+post condition sm =  init-state = 118L
+00118 <~ (34, 118)
+      == 'z' ==> 00119
+      == 'x' ==> 00120
+      <no epsilon>
+00119* <~ (34, 119, S)
+      <no epsilon>
+00120 <~ (34, 120)
+      == 'y' ==> 00118
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 125L
+00125 <~ (34, 118)
+      == 'z' ==> 00126
+      == 'x' ==> 00127
+      <no epsilon>
+00126* <~ (34, 119, S)
+      <no epsilon>
+00127 <~ (34, 120)
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = w(xy)*
+post condition pattern  = (xy)+
+post condition sm =  init-state = 191L
+00191 <~ (57, 191)
+      == 'x' ==> 00193
+      <no epsilon>
+00192* <~ (57, 192, S)
+      == 'x' ==> 00193
+      <no epsilon>
+00193 <~ (57, 193)
+      == 'y' ==> 00192
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 197L
+00197 <~ (57, 191)
+      == 'x' ==> 00199
+      <no epsilon>
+00198* <~ (57, 192, S)
+      <no epsilon>
+00199 <~ (57, 193)
+      == 'y' ==> 00198
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = w(xy)+
+post condition pattern  = (xy)*z
+post condition sm =  init-state = 282L
+00282 <~ (87, 282)
+      == 'z' ==> 00283
+      == 'x' ==> 00284
+      <no epsilon>
+00283* <~ (87, 283, S)
+      <no epsilon>
+00284 <~ (87, 284)
+      == 'y' ==> 00282
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 288L
+00288 <~ (87, 282)
+      == 'z' ==> 00289
+      == 'x' ==> 00290
+      <no epsilon>
+00289* <~ (87, 283, S)
+      <no epsilon>
+00290 <~ (87, 284)
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = w(xy)*
+post condition pattern  = (xy)+z
+post condition sm =  init-state = 372L
+00372 <~ (117, 372)
+      == 'x' ==> 00375
+      <no epsilon>
+00373* <~ (117, 373, S)
+      <no epsilon>
+00374 <~ (117, 374)
+      == 'z' ==> 00373
+      == 'x' ==> 00375
+      <no epsilon>
+00375 <~ (117, 375)
+      == 'y' ==> 00374
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 381L
+00381 <~ (117, 372)
+      == 'x' ==> 00383
+      <no epsilon>
+00382* <~ (117, 373, S)
+      <no epsilon>
+00383 <~ (117, 375)
+      == 'y' ==> 00384
+      <no epsilon>
+00384 <~ (117, 374)
+      == 'z' ==> 00382
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = ("ab"|"xy")+
+post condition sm =  init-state = 467L
+00467 <~ (141, 467)
+      == 'x' ==> 00469
+      == 'a' ==> 00470
+      <no epsilon>
+00468* <~ (141, 468, S)
+      == 'x' ==> 00469
+      == 'a' ==> 00470
+      <no epsilon>
+00469 <~ (141, 469)
+      == 'y' ==> 00468
+      <no epsilon>
+00470 <~ (141, 470)
+      == 'b' ==> 00468
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 476L
+00476 <~ (141, 467)
+      == 'a' ==> 00478
+      == 'x' ==> 00479
+      <no epsilon>
+00477* <~ (141, 468, S)
+      == 'a' ==> 00478
+      <no epsilon>
+00478 <~ (141, 470)
+      == 'b' ==> 00477
+      <no epsilon>
+00479 <~ (141, 469)
+      == 'y' ==> 00477
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = ("abc")|((x[a-z])+z)
+post condition sm =  init-state = 611L
+00611 <~ (183, 611)
+      == 'x' ==> 00613
+      == 'a' ==> 00614
+      <no epsilon>
+00612* <~ (183, 612, S)
+      <no epsilon>
+00613 <~ (183, 613)
+      == ['a', 'z'] ==> 00616
+      <no epsilon>
+00614 <~ (183, 614)
+      == 'b' ==> 00615
+      <no epsilon>
+00615 <~ (183, 615)
+      == 'c' ==> 00612
+      <no epsilon>
+00616 <~ (183, 616)
+      == 'z' ==> 00612
+      == 'x' ==> 00613
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 624L
+00624 <~ (183, 611)
+      == 'x' ==> 00626
+      == 'a' ==> 00627
+      <no epsilon>
+00625* <~ (183, 612, S)
+      <no epsilon>
+00626 <~ (183, 613)
+      == ['a', 'z'] ==> 00628
+      <no epsilon>
+00627 <~ (183, 614)
+      == 'b' ==> 00629
+      <no epsilon>
+00628 <~ (183, 616)
+      == 'z' ==> 00625
+      <no epsilon>
+00629 <~ (183, 615)
+      == 'c' ==> 00625
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = ("abc")|(([a-z]y)+z)
+post condition sm =  init-state = 761L
+00761 <~ (225, 761)
+      == ['b', 'z'] ==> 00765
+      == 'a' ==> 00766
+      <no epsilon>
+00762* <~ (225, 762, S)
+      == 'y' ==> 00763
+      <no epsilon>
+00763 <~ (225, 763)
+      == 'z' ==> 00762
+      == ['a', 'y'] ==> 00765
+      <no epsilon>
+00764* <~ (225, 764, S)
+      <no epsilon>
+00765 <~ (225, 765)
+      == 'y' ==> 00763
+      <no epsilon>
+00766 <~ (225, 766)
+      == 'y' ==> 00763
+      == 'b' ==> 00767
+      <no epsilon>
+00767 <~ (225, 767)
+      == 'c' ==> 00764
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 776L
+00776 <~ (225, 761)
+      == ['b', 'z'] ==> 00780
+      == 'a' ==> 00781
+      <no epsilon>
+00777* <~ (225, 762, S)
+      == 'y' ==> 00778
+      <no epsilon>
+00778 <~ (225, 763)
+      == 'z' ==> 00777
+      == ['a', 'w'], 'y' ==> 00780
+      <no epsilon>
+00779* <~ (225, 764, S)
+      <no epsilon>
+00780 <~ (225, 765)
+      == 'y' ==> 00778
+      <no epsilon>
+00781 <~ (225, 766)
+      == 'y' ==> 00778
+      == 'b' ==> 00782
+      <no epsilon>
+00782 <~ (225, 767)
+      == 'c' ==> 00779
+      <no epsilon>
+
