@@ -27,6 +27,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       i.e states with no transition trigger map. If those can be avoided, then
     #       this variable can be replaced by 'True'
+    drop_out_target_state_id = -1L
     if TriggerMap != []:
         empty_trigger_map_f = False
 
@@ -37,9 +38,18 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
         if not BackwardLexingF: code_str += "%s\n" % LanguageDB["$input/get"] 
         else:                   code_str += "%s\n" % LanguageDB["$input/get-backwards"] 
 
-        txt = __get_code(state,TriggerMap, LanguageDB, 
-                         StateMachineName, StateIdx, 
-                         BackwardLexingF = BackwardLexingF)
+        if len(TriggerMap) > 1:
+            txt = __get_code(state,TriggerMap, LanguageDB, 
+                             StateMachineName, StateIdx, 
+                             BackwardLexingF = BackwardLexingF)
+        else:
+            # We cannot transit to any subsequent state without checking wether
+            # the received character was a buffer limit code. To prevent an 
+            # unconditional goto, rewrite the drop out in such a way that by
+            # default it moves to the given target state. In case of buffer limit
+            # code it returns in order to read the next character.
+            txt = ""
+            drop_out_target_state_id = TriggerMap[0][1]
 
     else:
         empty_trigger_map_f = True
@@ -66,7 +76,8 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
                                    BufferReloadRequiredOnDropOutF = not empty_trigger_map_f,
                                    CurrentStateIsAcceptanceF      = state.is_acceptance(),
                                    OriginList                     = state.get_origin_list(),
-                                   LanguageDB                     = LanguageDB)
+                                   LanguageDB                     = LanguageDB,
+                                   DropOutTargetStateID           = drop_out_target_state_id)
         
     txt = txt.replace("\n", "\n    ")
     code_str += txt + "\n"

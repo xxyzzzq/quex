@@ -51,7 +51,7 @@ def do(Modes, setup):
 
     count_line_column_implementation_file = (setup.QUEX_TEMPLATE_DB_DIR 
                                              + "/template/count_line_column.i").replace("//","/")
-    fh_clc = open_file_or_die(count_line_column_implementation_file)
+    fh_clc = open_file_or_die(count_line_column_implementation_file, Env="QUEX_PATH")
     count_line_column_implementation_str = fh_clc.read()
     fh_clc.close()
 
@@ -59,7 +59,7 @@ def do(Modes, setup):
         count_line_column_implementation_file = (setup.QUEX_TEMPLATE_DB_DIR 
                                                  + "/template/count_line_column-with-indentation.i").replace("//","/")
 
-        fh_clc = open_file_or_die(count_line_column_implementation_file)
+        fh_clc = open_file_or_die(count_line_column_implementation_file, Env="QUEX_PATH")
         count_line_column_implementation_str += fh_clc.read()
         fh_clc.close()
 

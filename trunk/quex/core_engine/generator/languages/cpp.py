@@ -136,20 +136,24 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           BufferReloadRequiredOnDropOutF,
                           CurrentStateIsAcceptanceF = None,
                           OriginList                = None,
-                          LanguageDB                = None):
+                          LanguageDB                = None,
+                          DropOutTargetStateID      = -1L):
 
     if BackwardLexingF: 
         return __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
-                                                     BufferReloadRequiredOnDropOutF)
+                                                     BufferReloadRequiredOnDropOutF,
+                                                     DropOutTargetStateID)
     else:
         return __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
                                                     BufferReloadRequiredOnDropOutF,
                                                     CurrentStateIsAcceptanceF = CurrentStateIsAcceptanceF,
-                                                    OriginList                = OriginList,
-                                                    LanguageDB                = LanguageDB)     
+                                                    OriginList           = OriginList,
+                                                    LanguageDB           = LanguageDB,
+                                                    DropOutTargetStateID = DropOutTargetStateID)     
 
 def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx, 
-                                          BufferReloadRequiredOnDropOutF):      
+                                          BufferReloadRequiredOnDropOutF, 
+                                          DropOutTargetStateID):      
     txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
@@ -157,6 +161,12 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
         txt += "goto %s; /* no adr. adaptions necessary */\n" % label.get_input(StateMachineName, CurrentStateIdx)
         txt += "#endif\n"
 
+    if DropOutTargetStateID != -1L:
+        # -- A 'match all' is implemented as 'drop out to target'. This happens
+        #    in order to ensure that the buffer limits are checked.
+        txt += "goto %s;" % label.get(StateMachineName, DropOutTargetStateID)
+        return txt
+    
     #  -- general drop out: goto general terminal state
     txt += "goto %s;\n" % label.get_terminal(StateMachineName) 
 
@@ -164,7 +174,8 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
 
 def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx, 
                                          BufferReloadRequiredOnDropOutF,
-                                         CurrentStateIsAcceptanceF, OriginList, LanguageDB):        
+                                         CurrentStateIsAcceptanceF, OriginList, LanguageDB,
+                                         DropOutTargetStateID):      
     txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
@@ -177,6 +188,11 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
 
     # From here on: input is not a 'buffer limit code' 
     #               (i.e. input does **not** mean: 'load buffer')
+    if DropOutTargetStateID != -1L:
+        # -- A 'match all' is implemented as 'drop out to target'. This happens
+        #    in order to ensure that the buffer limits are checked.
+        txt += "goto %s;" % label.get(StateMachineName, DropOutTargetStateID)
+        return txt
     
     #     -- 'drop out' in non-acceptance --> goto general terminal
     if CurrentStateIsAcceptanceF == False:  
