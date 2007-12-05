@@ -1,5 +1,12 @@
 HOW TO USE THE buffer CLASS:
 
+IMPORTANT: You cannot make two moves forward or backward without
+           checking if the result is a border character!
+
+IDEA: This might be optimized, but the code size to implement this
+      would probably grow so drastically, that the program would 
+      finally run slower.
+
 (*) getting a character in forward direction
 
 	const int tmp = x.get_forward();

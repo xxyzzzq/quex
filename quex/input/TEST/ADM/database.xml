@@ -1,22 +1,22 @@
-<test-database execution-time-sec="13.94" date="Sun Dec  2 13:44:14 2007">
+<test-database execution-time-sec="0.06" date="Wed Dec  5 08:38:02 2007">
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" make-required="False" time-sum-sec="1.27"> 
+        <test title="Wildcard Property Values" make-required="False" time-sum-sec="0.02"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1195336071L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.27" good-file-crc="-989951512"/>
+               <choice name="" result="FAIL" time-sec="0.02" good-file-crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" make-required="False" time-sum-sec="11.22"> 
+        <test title="Information about Properties" make-required="False" time-sum-sec="0.03"> 
             <application file-name="test-query.py" info-request-time="1195336071L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="9.92" good-file-crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="1.30" good-file-crc="86685460"/>
+               <choice name="PropertyList" result="FAIL" time-sec="0.02" good-file-crc="-1044464938"/>
+               <choice name="PropertyInfo" result="FAIL" time-sec="0.02" good-file-crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="1.45"> 
+        <test title="Character Sets for Property Settings" make-required="False" time-sum-sec="0.02"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1195336071L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.45" good-file-crc="-1719645304"/>
+               <choice name="" result="FAIL" time-sec="0.02" good-file-crc="-1719645304"/>
             </choice-list>
         </test>
     </group>

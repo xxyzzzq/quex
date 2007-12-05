@@ -227,12 +227,14 @@ def clean_up():
     for file in temporary_files:
         os.system("rm %s" % file)
 
-def open_file_or_die(FileName, Mode="r"):
+def open_file_or_die(FileName, Mode="r", Env=None):
     try:
         fh = open(FileName, Mode)
         return fh
     except:
         print "error: opening file '%s' failed" % (FileName)
+        if Env != None:
+            print "error: is environment variable '%s' set propperly?" % Env
         sys.exit(-1)
 
 def indented_open(Filename, Indentation = 3):

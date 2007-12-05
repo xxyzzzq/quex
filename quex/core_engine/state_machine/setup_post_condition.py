@@ -4,10 +4,10 @@ from copy import deepcopy
 sys.path.append("../")
 
 from quex.core_engine.state_machine.core import *
-import quex.core_engine.state_machine.ambiguous_post_condition as ambiguous_post_condition
+import quex.core_engine.state_machine.ambiguous_post_condition as apc
 
 
-def do(the_state_machine, post_condition_state_machine):
+def do(the_state_machine, post_condition_sm):
     """ Appends a post condition to the given state machine. This process is very
         similar to sequentialization. There is a major difference, though:
        
@@ -36,9 +36,9 @@ def do(the_state_machine, post_condition_state_machine):
     if the_state_machine.__class__.__name__ != "StateMachine":
         raise "expected 1st argument as objects of class StateMachine\n" + \
               "received: " + the_state_machine.__class__.__name__
-    if post_condition_state_machine.__class__.__name__ != "StateMachine":
+    if post_condition_sm.__class__.__name__ != "StateMachine":
         raise "expected 2nd argument as objects of class StateMachine\n" + \
-              "received: " + post_condition_state_machine.__class__.__name__
+              "received: " + post_condition_sm.__class__.__name__
 
     if the_state_machine.is_post_conditioned():
         raise "post conditioned state machine cannot be post-conditioned again."
@@ -46,13 +46,13 @@ def do(the_state_machine, post_condition_state_machine):
     # -- state machines with no states are senseless here. 
     if the_state_machine.is_empty():
         raise "empty state machine can have no post condition"
-    if post_condition_state_machine.is_empty():
+    if post_condition_sm.is_empty():
         raise "empty state machine cannot be a post-condition"
 
     # -- a post condition with an initial state that is acceptance is not
     #    really a 'condition' since it accepts anything. The state machine remains
     #    un-post conditioned.
-    if post_condition_state_machine.get_init_state().is_acceptance():
+    if post_condition_sm.get_init_state().is_acceptance():
         print "warning: post condition accepts anything---replaced by no post condition."
         the_state_machine.mark_state_origins()
         return the_state_machine
@@ -64,10 +64,12 @@ def do(the_state_machine, post_condition_state_machine):
     #        core pattern after the end of the post condition
     #        has been reached.
     #
-    if ambiguous_post_condition.detect_forward(the_state_machine, post_condition_state_machine):
-        if ambiguous_post_condition.detect_backward(the_state_machine, post_condition_state_machine):
-            raise "totally ambiguous post condition cannot be handled by current version of quex."
-        ambiguous_post_condition.mount(the_state_machine, post_condition_state_machine)
+    if apc.detect_forward(the_state_machine, post_condition_sm):
+        if apc.detect_backward(the_state_machine, post_condition_sm):
+            # -- for post coinditions that are forward and backward ambiguous
+            #    a philosophical cut is necessary.
+            post_condition_sm = apc.philosophical_cut(the_state_machine, post_condition_sm)
+        apc.mount(the_state_machine, post_condition_sm)
         return the_state_machine
 
         
@@ -79,7 +81,7 @@ def do(the_state_machine, post_condition_state_machine):
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
     result     = the_state_machine
-    post_clone = post_condition_state_machine.clone() 
+    post_clone = post_condition_sm.clone() 
     #     origins of the post condition are **irrelevant**
     post_clone.delete_state_origins()
 

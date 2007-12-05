@@ -4,7 +4,7 @@ import generator_test
 from generator_test import action
 
 if "--hwut-info" in sys.argv:
-    print "Pseudo Ambgiguous Post Condition: Part I"
+    print "Pseudo Ambgiguous Post Condition: Part II"
     print "CHOICES: PlainMemory, QuexBuffer"
     sys.exit(0)
 
@@ -26,7 +26,9 @@ pattern_list = [
     #    patterns, since they are always longer.
     #
     # normal repetition (one or more) of 'x'
-    'x+/x',
+    'hey/h',
+    'hey+/hey',
+    'hey',
     # other characters
     '[a-z]+',
     # whitespace
@@ -34,8 +36,8 @@ pattern_list = [
 ]
 pattern_action_pair_list = map(lambda x: [x, x.replace("\\", "\\\\")], pattern_list)
 
-test_str = "xxx x xx x"
+test_str = "heyheyhey hey yhey eyhey heyhey heyhe"
 
 
-generator_test.do(pattern_action_pair_list, test_str, {}, choice, QuexBufferSize=10)    
+generator_test.do(pattern_action_pair_list, test_str, {}, choice, QuexBufferSize=20)    
 

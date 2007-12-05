@@ -43,5 +43,6 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           BufferReloadRequiredOnDropOutF,
                           CurrentStateIsAcceptanceF = None,
                           OriginList                = None,
-                          LanguageDB                = None):
+                          LanguageDB                = None,
+                          DropOutTargetStateID      = -1):
     return ""

@@ -177,7 +177,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     os.write(fd, test_program)    
     os.close(fd)    
 
-    # os.system("mv -f %s tmp.cpp" % filename_tmp); filename_tmp = "./tmp.cpp" # DEBUG
+    os.system("mv -f %s tmp.cpp" % filename_tmp); filename_tmp = "./tmp.cpp" # DEBUG
 
     print "## (2) compiling generated engine code and test"    
     compile_str = "g++ %s %s " % (NDEBUG_str, filename_tmp) + \
@@ -197,6 +197,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     except:
         print "<<compilation failed>>"
     print "## (4) cleaning up"
-    os.remove(filename_tmp)
+    # os.remove(filename_tmp)
 
 

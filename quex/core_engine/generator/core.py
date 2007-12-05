@@ -197,9 +197,9 @@ class Generator:
             option_str = LanguageDB["$compile-option"]("__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
 
         #  -- paste the papc functions (if there are some) in front of the analyzer functions
-        txt = papc_input_postion_backward_detector_functions \
-              + option_str \
+        txt =   option_str                                                              \
               + LanguageDB["$include"](self.core_engine_header_definitions_file) + "\n" \
+              + papc_input_postion_backward_detector_functions                          \
               + analyzer_function
 
         return languages.replace_keywords(txt, LanguageDB, NoIndentF=True)
