@@ -27,6 +27,8 @@ import quex.input.query as query_parser
 import quex.core        as core
 
 if __name__ == "__main__":
+    # (*) Check if everything is correctly installed
+    quex.DEFINITIONS.check()
 
     # (*) Call only for query? ___________________________________________________________
     if query_parser.do(sys.argv):   # if quex has been called for UCS property
