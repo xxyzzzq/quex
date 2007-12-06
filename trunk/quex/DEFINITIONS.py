@@ -38,7 +38,17 @@ except:
         print "error: <fschaef@users.sourceforge.net>"
     sys.exit(-1)
 
-sys.path.insert(0, os.environ["QUEX_PATH"])
-QUEX_TEMPLATE_DB_DIR  = QUEX_INSTALLATION_DIR + "/quex/code_base"
+sys.path.insert(0, QUEX_INSTALLATION_DIR)
+QUEX_TEMPLATE_DB_DIR = QUEX_INSTALLATION_DIR + "/quex/code_base"
 
-#license-info Sat Aug  5 14:10:32 2006#
+def check():
+    global QUEX_INSTALLATION_DIR
+
+    # -- try to acces the file 'quex-exe.py' in order to verify
+    if os.access(QUEX_INSTALLATION_DIR + "/quex-exe.py", os.F_OK) == False:
+        print "error: environment variable 'QUEX_PATH' does not point to"
+        print "error: a valid installation directory of quex."
+        print "error: current setting of 'QUEX_PATH':"
+        print "error:", path
+        sys.exit(-1)
+
