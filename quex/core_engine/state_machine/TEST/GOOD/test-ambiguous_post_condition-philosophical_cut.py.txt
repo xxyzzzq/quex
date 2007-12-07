@@ -263,3 +263,36 @@ init-state = 776L
       == 'c' ==> 00779
       <no epsilon>
 
+---------------------------------------------------------
+core pattern            = hey+
+post condition pattern  = (he[y]?)+
+post condition sm =  init-state = 865L
+00865 <~ (248, 865)
+      == 'h' ==> 00867
+      <no epsilon>
+00866* <~ (248, 866, S)
+      == 'h' ==> 00867
+      == 'y' ==> 00868
+      <no epsilon>
+00867 <~ (248, 867)
+      == 'e' ==> 00866
+      <no epsilon>
+00868* <~ (248, 868, S)
+      == 'h' ==> 00867
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 874L
+00874 <~ (248, 865)
+      == 'h' ==> 00877
+      <no epsilon>
+00875* <~ (248, 866, S)
+      == 'y' ==> 00876
+      == 'h' ==> 00877
+      <no epsilon>
+00876* <~ (248, 868, S)
+      <no epsilon>
+00877 <~ (248, 867)
+      == 'e' ==> 00875
+      <no epsilon>
+
