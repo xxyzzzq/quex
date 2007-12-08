@@ -17,10 +17,8 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
     
     # note down information about success, if state is an acceptance state
     acceptance_info = LanguageDB["$acceptance-info"](state.get_origin_list(), LanguageDB, BackwardLexingF)
-    code_str = ""
     if acceptance_info != "":
-        code_str = "    " + acceptance_info.replace("\n", "\n    ")
-        if code_str[-4:] == "    ": code_str = code_str[:-4]
+        code_str = acceptance_info
     
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
@@ -37,6 +35,8 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
         code_str += "    "
         if not BackwardLexingF: code_str += "%s\n" % LanguageDB["$input/get"] 
         else:                   code_str += "%s\n" % LanguageDB["$input/get-backwards"] 
+
+        code_str += "    " + LanguageDB["$debug-info-input"]
 
         if len(TriggerMap) > 1:
             txt = __get_code(state,TriggerMap, LanguageDB, 

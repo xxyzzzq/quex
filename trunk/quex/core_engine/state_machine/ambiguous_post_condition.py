@@ -299,6 +299,7 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
             sm1_trigger_set = sm1_transition.trigger_set
             intersection    = sm0_trigger_set.intersection(sm1_trigger_set)
 
+            ## print "##", intersection.get_utf8_string(), sm1_transition.target_state_index, SM1_Path
             # Both trigger on the some same characters?
             #     -----------------------[xxxxxxxxxxxxxxxx]-------------
             #     -------------[yyyyyyyyyyyyyyyyyyyy]-------------------

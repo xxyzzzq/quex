@@ -1,5 +1,6 @@
 import quex.core_engine.generator.languages.core  as languages
 import quex.core_engine.generator.languages.label as languages_label
+from   quex.core_engine.generator.languages.label import __nice
 
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
@@ -36,6 +37,7 @@ def do(state_machine, LanguageDB,
         if state_index == state_machine.init_state_index: continue
         LabelName = languages_label.get(UserDefinedStateMachineName, state_index)
         txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
+        txt += "    __QUEX_DEBUG_INFO_ENTER(%s);\n" % __nice(state_index)
         txt += state_transition_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
                                          BackwardLexingF=BackwardLexingF)
         txt += "\n"

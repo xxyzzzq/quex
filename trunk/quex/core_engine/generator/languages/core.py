@@ -53,10 +53,12 @@ db["C++"] = {
     "$terminal-code":       cpp.__terminal_states,      
     "$pre-condition-ok":    cpp.__pre_condition_ok,                                                  
     "$drop-out":            cpp.__state_drop_out_code,
-    "$include":           lambda include_file: "#include <%s>" % include_file,
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value: "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",
+    "$debug-info-input":    "__QUEX_DEBUG_INFO_INPUT(input);\n",
+    #
+    "$header-definitions":  cpp.__header_definitions,
     }
 
 #________________________________________________________________________________
@@ -106,6 +108,8 @@ db["Python"] = {
     "$label":             "",   
     "$drop-out":          python.__state_drop_out_code,
     "$include":           lambda include_file: "#include <%s>" % include_file,
+    "$debug-info-input":  "",
+    "$header-definitions": "",
 }
 
 #________________________________________________________________________________
