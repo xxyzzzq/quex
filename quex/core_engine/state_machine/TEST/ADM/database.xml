@@ -1,4 +1,4 @@
-<test-database execution-time-sec="2.43" date="Fri Dec  7 08:33:26 2007">
+<test-database execution-time-sec="0.00" date="Sat Dec  8 22:38:17 2007">
     <group name="DFA">
         <test title="Get Trigger Map (intervals --> target states)" make-required="False" time-sum-sec="0.00"> 
             <application file-name="test-StateInfo-trigger-map.py" info-request-time="1195336076L"/>
@@ -75,13 +75,13 @@
         <test title="Mounting" make-required="False" time-sum-sec="0.00"> 
             <application file-name="test-ambiguous_post_condition-mount_pseudo.py" info-request-time="1195708987L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" good-file-crc="683990102"/>
+               <choice name="" result="FAIL" time-sec="0.00" good-file-crc="683990102"/>
             </choice-list>
         </test>
-        <test title="The Philosophical Cut" make-required="False" time-sum-sec="2.43"> 
-            <application file-name="test-ambiguous_post_condition-philosophical_cut.py" info-request-time="1197012500L"/>
+        <test title="The Philosophical Cut" make-required="False" time-sum-sec="0.00"> 
+            <application file-name="test-ambiguous_post_condition-philosophical_cut.py" info-request-time="1197012787L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="2.43" good-file-crc="1758949784"/>
+               <choice name="" result="OK" time-sec="0.00" good-file-crc="1758949784"/>
             </choice-list>
         </test>
     </group>
