@@ -5,7 +5,7 @@ from generator_test import action
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambgiguous Post Condition: Part I"
-    print "CHOICES: PlainMemory, QuexBuffer"
+    print "CHOICES: PlainMemory, QuexBuffer;"
     sys.exit(0)
 
 if len(sys.argv) < 2:

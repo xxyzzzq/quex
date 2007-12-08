@@ -49,6 +49,6 @@ def check():
         print "error: environment variable 'QUEX_PATH' does not point to"
         print "error: a valid installation directory of quex."
         print "error: current setting of 'QUEX_PATH':"
-        print "error:", path
+        print "error:", QUEX_INSTALLATION_DIR
         sys.exit(-1)
 
