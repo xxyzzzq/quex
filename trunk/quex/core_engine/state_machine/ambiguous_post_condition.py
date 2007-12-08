@@ -240,9 +240,10 @@ def mount(the_state_machine, PostConditionSM):
         if not state.has_origin(): 
             state.add_origin(the_state_machine.get_id(), state_idx)
         state.set_pseudo_ambiguous_post_condition_id(backward_detector_sm.get_id())
-        # At the end of the post condition, no input positions are stored.
-        # (remember we need to go backwards to set the input position)
-        state.set_store_input_position_f(False)
+        # At the end of the post condition, the input positions needs to be stored.
+        # Before we can go backwards, we need to know where the post condition actually 
+        # ended.
+        state.set_store_input_position_f(True)
 
     # We cannot do a NFA to DFA and Hopcroft Optimization, because otherwise we
     # would create a new state machine. This function, though, is considered to 
