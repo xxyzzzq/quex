@@ -312,33 +312,33 @@ __header_definitions_txt = """
 
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
-#      define __QUEX_PRINT_SOURCE_POSITION()                 \
+#      define __QUEX_PRINT_SOURCE_POSITION()                 \\
               fprintf(stderr, "%s:%i: \\t", __FILE__, __LINE__);            
 
-#      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \
-              __QUEX_PRINT_SOURCE_POSITION()                    \
+#      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
+              __QUEX_PRINT_SOURCE_POSITION()                    \\
               fprintf(stderr, "START:    %s\\n", #Name)
 
-#      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \
-              __QUEX_PRINT_SOURCE_POSITION()                    \
+#      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \\
+              __QUEX_PRINT_SOURCE_POSITION()                    \\
               fprintf(stderr, "enter:    %i\\n", (int)StateIdx)
 
-#      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \
-              __QUEX_PRINT_SOURCE_POSITION()                    \
+#      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \\
+              __QUEX_PRINT_SOURCE_POSITION()                    \\
               fprintf(stderr, "drop:     %i\\n", (int)StateIdx)
 
-#      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \
-              __QUEX_PRINT_SOURCE_POSITION()                    \
+#      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \\
+              __QUEX_PRINT_SOURCE_POSITION()                    \\
               fprintf(stderr, "accept:   %i\\n", (int)StateIdx)
 
-#      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \
-              __QUEX_PRINT_SOURCE_POSITION()                   \
+#      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \\
+              __QUEX_PRINT_SOURCE_POSITION()                   \\
               fprintf(stderr, "terminal: %s\\n", #Terminal)
 
-#      define __QUEX_DEBUG_INFO_INPUT(Character)                             \
-              __QUEX_PRINT_SOURCE_POSITION()                                 \
-                Character == '\\n' ? fprintf(stderr, "input:    '\\\\n'\\n") \
-              : Character == '\\t' ? fprintf(stderr, "input:    '\\\\t'\\n") \
+#      define __QUEX_DEBUG_INFO_INPUT(Character)                             \\
+              __QUEX_PRINT_SOURCE_POSITION()                                 \\
+                Character == '\\n' ? fprintf(stderr, "input:    '\\\\n'\\n") \\
+              : Character == '\\t' ? fprintf(stderr, "input:    '\\\\t'\\n") \\
               :                      fprintf(stderr, "input:    '%c'\\n", (char)Character) 
 #   else
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
@@ -604,7 +604,8 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
         # -- if the pattern is terminated after the post-condition, then the input
         #    has to be put back to the end of the 'core expression'.    
         post_condition_number_str = ""  
-        if state_machine.is_post_conditioned(): post_condition_number_str =  state_machine_id_str + "_"
+        if state_machine.is_post_conditioned(): 
+            post_condition_number_str = state_machine_id_str + "_"
         #
         txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
@@ -613,6 +614,11 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
             txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % \
                    post_condition_number_str
         else:
+            # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
+            #       pattern. However, after a match a backward detection of the end
+            #       of the core pattern is done. Here, we first need to go to the point
+            #       where the 'normal' pattern ended, then we can do a backward detection.
+            txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);\n"
             txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
                    __nice(state_machine.get_pseudo_ambiguous_post_condition_id())
         # -- paste the action code that correponds to the pattern   

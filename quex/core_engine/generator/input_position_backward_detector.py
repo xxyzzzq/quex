@@ -35,8 +35,8 @@ def do(sm, LanguageDB, PrintStateMachineF):
     # -- input position detectors simply the next 'catch' and return
     LabelName = languages_label.get_terminal("")
     function_body += "%s\n" % LanguageDB["$label-definition"](LabelName) 
-    function_body += "    $/* ... rely on the compiler to delete the unnecessary assignment ... $*/\n"
-    function_body += "    QUEX_STREAM_GET_BACKWARDS($input);\n"
+    ## function_body += "    $/* ... rely on the compiler to delete the unnecessary assignment ... $*/\n"
+    ## function_body += "    QUEX_STREAM_GET_BACKWARDS($input);\n"
     function_body += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
     function_body += "    backward_lexing_drop_out(me, input);\n" 
     function_body += "#   endif\n"

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.16" date="Wed Dec  5 08:39:08 2007">
+<test-database execution-time-sec="0.16" date="Sun Dec  9 08:59:34 2007">
     <group name="NumberSet">
         <test title="Inverse" make-required="False" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1195336075L"/>
