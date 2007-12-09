@@ -36,7 +36,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF):
         if not BackwardLexingF: code_str += "%s\n" % LanguageDB["$input/get"] 
         else:                   code_str += "%s\n" % LanguageDB["$input/get-backwards"] 
 
-        code_str += "    " + LanguageDB["$debug-info-input"]
+        code_str += "    " + LanguageDB["$debug-info-input"] + "\n"
 
         if len(TriggerMap) > 1:
             txt = __get_code(state,TriggerMap, LanguageDB, 

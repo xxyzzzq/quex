@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.04" date="Wed Dec  5 08:39:08 2007">
+<test-database execution-time-sec="0.04" date="Sun Dec  9 08:59:33 2007">
     <test title="Backwards Iteration" make-required="True" time-sum-sec="0.01"> 
         <application file-name="test-backward-get" info-request-time="1195339148L"/>
         <make-procedure success="True" />
@@ -37,20 +37,20 @@
                <choice name="stdio" result="OK" time-sec="0.00" good-file-crc="-122584819"/>
             </choice-list>
         </test>
-        <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-misc-II" info-request-time="1195339149L"/>
-            <make-procedure success="True" />
-            <choice-list number="2">
-               <choice name="istream" result="OK" time-sec="0.00" good-file-crc="1918046248"/>
-               <choice name="stdio" result="OK" time-sec="0.00" good-file-crc="1298773548"/>
-            </choice-list>
-        </test>
         <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.01"> 
             <application file-name="test-misc-III" info-request-time="1195339150L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="OK" time-sec="0.00" good-file-crc="52723627"/>
                <choice name="stdio" result="OK" time-sec="0.00" good-file-crc="1008654767"/>
+            </choice-list>
+        </test>
+        <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="test-misc-II" info-request-time="1195339149L"/>
+            <make-procedure success="True" />
+            <choice-list number="2">
+               <choice name="istream" result="OK" time-sec="0.00" good-file-crc="1918046248"/>
+               <choice name="stdio" result="OK" time-sec="0.00" good-file-crc="1298773548"/>
             </choice-list>
         </test>
     </group>
