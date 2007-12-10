@@ -30,7 +30,8 @@ def do(state_machine, LanguageDB,
     #
     txt += state_transition_coder.do(LanguageDB, 
                                      UserDefinedStateMachineName, init_state, state_machine.init_state_index,
-                                     BackwardLexingF=BackwardLexingF)
+                                     BackwardLexingF=BackwardLexingF,
+                                     BackwardInputPositionDetectionF=BackwardInputPositionDetectionF)
 
     # -- all other states
     for state_index, state in state_machine.states.items():
@@ -39,7 +40,8 @@ def do(state_machine, LanguageDB,
         txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
         txt += "    __QUEX_DEBUG_INFO_ENTER(%s);\n" % __nice(state_index)
         txt += state_transition_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
-                                         BackwardLexingF=BackwardLexingF)
+                                         BackwardLexingF=BackwardLexingF,
+                                         BackwardInputPositionDetectionF=BackwardInputPositionDetectionF)
         txt += "\n"
     
     return txt

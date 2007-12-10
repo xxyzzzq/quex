@@ -17,6 +17,7 @@ static void
 PAPC_input_postion_backward_detector_$$ID$$(QUEX_CORE_ANALYSER_STRUCT* me) 
 {
     QUEX_CHARACTER_TYPE      input = (QUEX_CHARACTER_TYPE)(0x00);\n
+    QUEX_CHARACTER_POSITION  end_of_core_pattern_position = (QUEX_CHARACTER_TYPE*)(0x00);
 $$STATE_MACHINE$$
 $$FUNCTION_BODY$$ 
 }
@@ -37,11 +38,11 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body += "%s\n" % LanguageDB["$label-definition"](LabelName) 
     ## function_body += "    $/* ... rely on the compiler to delete the unnecessary assignment ... $*/\n"
     ## function_body += "    QUEX_STREAM_GET_BACKWARDS($input);\n"
-    function_body += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-    function_body += "    backward_lexing_drop_out(me, input);\n" 
-    function_body += "#   endif\n"
-    function_body += "    $return\n"
-
+    ## function_body += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
+    ## function_body += "    backward_lexing_drop_out(me, input);\n" 
+    ## function_body += "#   endif\n"
+    ## function_body += "    $return\n"
+    function_body += "    QUEX_STREAM_SEEK(end_of_core_pattern_position);\n"
 
     return blue_print(function_str, 
                       [["$$ID$$",            repr(sm.get_id()).replace("L", "")],

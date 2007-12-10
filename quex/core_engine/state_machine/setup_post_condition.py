@@ -66,7 +66,7 @@ def do(the_state_machine, post_condition_sm):
     #
     if apc.detect_forward(the_state_machine, post_condition_sm):
         if apc.detect_backward(the_state_machine, post_condition_sm):
-            # -- for post coinditions that are forward and backward ambiguous
+            # -- for post conditions that are forward and backward ambiguous
             #    a philosophical cut is necessary.
             post_condition_sm = apc.philosophical_cut(the_state_machine, post_condition_sm)
         apc.mount(the_state_machine, post_condition_sm)
