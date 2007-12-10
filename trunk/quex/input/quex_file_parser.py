@@ -395,7 +395,6 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
     if bracket_i == -1: 
         error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
 
-    token_name = token_name.strip()
     if bracket_i == 0:
         token_constructor_args = read_until_closing_bracket(fh, "(", ")")
         token_constructor_args = ", " + token_constructor_args
@@ -404,6 +403,7 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
         token_constructor_args = ""
         
     # after 'send' the token queue is filled and one can safely return
+    token_name = token_name.strip()
     if token_name.find(Setup.input_token_id_prefix) != 0:
         error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
                   "found: '%s'" % token_name, fh)
