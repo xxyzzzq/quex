@@ -121,7 +121,6 @@ def read_until_closing_bracket(fh, Opener, Closer,
             backslash_f = not backslash_f   # every second backslash switches to 'non-escape char'
             continue
 
-
         if not backslash_f:
             result = match_against_cache(Opener)
             if   match_against_cache(Opener):

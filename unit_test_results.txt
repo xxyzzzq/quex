@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:06:11 2007
+DATE:  Mon Dec 10 22:28:59 2007
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -39,6 +39,12 @@ TITLE: Demo-Applications
                1_NDEBUG .................................................[OK]
                2 ........................................................[OK]
                2_NDEBUG .................................................[OK]
+
+ -- demo/006:
+
+    Multiple Modes, Mode Transitions
+        006.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -46,10 +52,9 @@ TITLE: Demo-Applications
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:16:54 2007
+DATE:  Mon Dec 10 22:29:52 2007
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -62,10 +67,9 @@ TITLE: Miscellaneous Basic Tests
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:16:55 2007
+DATE:  Mon Dec 10 22:29:52 2007
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -103,10 +107,9 @@ TITLE: Input Buffers
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:16:56 2007
+DATE:  Mon Dec 10 22:29:52 2007
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -121,15 +124,11 @@ TITLE: Input Buffers Based on the IConv - Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:16:56 2007
+DATE:  Mon Dec 10 22:29:52 2007
 TITLE: Lexical Analyzer Class Template
 
-Warning: The following executable names have been found, but they have unusual 
-Warning: names or extensions. HWUT ignores those files if it is not forced to 
-Warning: consider them. The list consists of the following: 'real-code.cpp' 
 -------------------------------------------------------------------------------
 
  -- Count Line and Column:
@@ -145,10 +144,9 @@ Warning: consider them. The list consists of the following: 'real-code.cpp'
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:16:57 2007
+DATE:  Mon Dec 10 22:29:52 2007
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -177,10 +175,9 @@ TITLE: Core Functionalities
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:16:58 2007
+DATE:  Mon Dec 10 22:31:37 2007
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -237,6 +234,15 @@ TITLE: Code Generation for Lexical Analyzer
         test-pre-post-condition.py PlainMemory ..........................[OK]
                                    QuexBuffer ...........................[OK]
 
+ -- Pseudo Ambgiguous Post Condition:
+
+    Part II
+        test-pseudo_ambiguous_post_conditions-2.py PlainMemory ..........[OK]
+                                                   QuexBuffer ...........[OK]
+    Part I
+        test-pseudo_ambiguous_post_conditions.py PlainMemory ............[OK]
+                                                 QuexBuffer .............[OK]
+
  -- Simple:
 
     Special Case '.' (drop out on valid target state)
@@ -255,20 +261,21 @@ TITLE: Code Generation for Lexical Analyzer
  -- Single State:
 
     Transition Code Generation
-        test-single-state-transitions.py ................................[OK]
+        test-single-state-transitions.py ..............................[FAIL]
     Extensive Transition Code Generation
-        test-single-state-transitions-x.py ..............................[OK]
+        test-single-state-transitions-x.py ............................[FAIL]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
-EXIT:  ./
+Error: test-single-state-transitions.py 
+Error: test-single-state-transitions-x.py 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:18:42 2007
+DATE:  Mon Dec 10 22:31:52 2007
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -282,16 +289,16 @@ TITLE: Regular Expression Parsing
 
  -- Basics:
 
-    Lonestanding characters
-        test-lonely-characters.py .......................................[OK]
+    Pattern identifier replacement
+        test-replacement.py .............................................[OK]
     Map character *string* to state machine
         test-string.py ..................................................[OK]
     Snap string until (low level function)
         test-snap_until.py ..............................................[OK]
     Map character *range* to state machine
         test-set.py .....................................................[OK]
-    Pattern identifier replacement
-        test-replacement.py .............................................[OK]
+    Lonestanding characters
+        test-lonely-characters.py .......................................[OK]
 
  -- Combination:
 
@@ -304,10 +311,10 @@ TITLE: Regular Expression Parsing
 
  -- Conditional Analysis:
 
-    pre conditions
-        test-pre-condition.py ...........................................[OK]
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
+    pre conditions
+        test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
     pre- and post-conditions
@@ -328,10 +335,9 @@ TITLE: Regular Expression Parsing
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:18:58 2007
+DATE:  Mon Dec 10 22:32:51 2007
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -370,7 +376,7 @@ TITLE: State Machine Operations
     Detection
         test-ambiguous_post_condition-detect.py .........................[OK]
     Mounting
-        test-ambiguous_post_condition-mount_pseudo.py ...................[OK]
+        test-ambiguous_post_condition-mount_pseudo.py .................[FAIL]
     The Philosophical Cut
         test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
 
@@ -416,16 +422,16 @@ TITLE: State Machine Operations
     Has Trigger
         test-StateInfo-has_trigger.py ...................................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
-EXIT:  ./
+Error: test-ambiguous_post_condition-mount_pseudo.py 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:19:58 2007
+DATE:  Mon Dec 10 22:32:51 2007
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -446,10 +452,9 @@ TITLE: Frank-Rene Schaefers Little Python Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec  3 22:19:58 2007
+DATE:  Mon Dec 10 22:33:23 2007
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -470,7 +475,6 @@ TITLE: Character Set Queries
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  ./
 ===============================================================================
 SUMMARY:
 ./demo/TEST .............................................................[OK]
@@ -479,9 +483,9 @@ SUMMARY:
 ./quex/code_base/buffer/iconv/TEST ......................................[OK]
 ./quex/code_base/template/TEST ..........................................[OK]
 ./quex/core_engine/TEST .................................................[OK]
-./quex/core_engine/generator/TEST .......................................[OK]
+./quex/core_engine/generator/TEST .....................................[FAIL]
 ./quex/core_engine/regular_expression/TEST ..............................[OK]
-./quex/core_engine/state_machine/TEST ...................................[OK]
+./quex/core_engine/state_machine/TEST .................................[FAIL]
 ./quex/frs_py/TEST ......................................................[OK]
 ./quex/input/TEST .......................................................[OK]
 ===============================================================================
