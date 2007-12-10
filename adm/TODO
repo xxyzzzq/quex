@@ -1,3 +1,9 @@
+(*) 07y12m10d:
+
+    The short token sender 'TKN_XYZ()', i.e. with empty argument list does
+    not work. Check this out.
+
+
 (*) 07y12m1d:
 
     When a trigger triggers to a non-acceptance state, it can be taken out.
