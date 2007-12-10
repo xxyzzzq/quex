@@ -18,11 +18,6 @@ import sys
 from   copy import deepcopy
 
 
-def __assert_state_machines(SM0, SM1):
-    assert SM0.__class__.__name__ == "StateMachine"
-    assert SM1.__class__.__name__ == "StateMachine"
-
-    
 def detect_forward(CoreStateMachine, PostConditionStateMachine):
     """A 'forward ambiguity' denotes a case where the quex's normal
        post condition implementation fails. This happens if an
@@ -170,10 +165,17 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
         # -- acceptance states can have 'drop-out' (actually, they need to have)
         if state.is_acceptance(): continue
 
-        state.replace_drop_out_target_states_with_adjacent_targets()
+        ## state.replace_drop_out_target_states_with_adjacent_targets()
 
     result = result.get_DFA()
     result = result.get_hopcroft_optimization()
+
+    # Acceptance States need to be marked: Store input position.
+    # NOTE: When tracing backwards the match is guaranteed, but there might
+    #       still be some 'trail' in case of iterations that are not directly
+    #       iterated to the ambiguous post condition. Thus drop out may
+    #       happen and it must be clear where to put the input pointer in this case.
+    result.mark_state_origins()
 
     return result
 
@@ -282,8 +284,6 @@ def philosophical_cut(core_sm, post_condition_sm):
     new_post_sm = new_post_sm.get_hopcroft_optimization()
     return new_post_sm
 
-
-
 def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
     """Cut any trigger that allows to trigger out of SM1 that triggers 
        back to its initial state while the path is valid in SM0. This
@@ -329,4 +329,8 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
 
     # All branches considered, ... dive up
     return 
+
+def __assert_state_machines(SM0, SM1):
+    assert SM0.__class__.__name__ == "StateMachine"
+    assert SM1.__class__.__name__ == "StateMachine"
 
