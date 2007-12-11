@@ -1,0 +1,25 @@
+(*) test string: 
+'HERE: THERE:
+THIS  THAT
+HERE: THERE:
+THIS  THAT'
+(*) result:
+          BOL-LABEL  'HERE:'
+         WHITESPACE  ' '
+              LABEL  'THERE:'
+           NEWNLINE  '
+'
+         IDENTIFIER  'THIS'
+         WHITESPACE  '  '
+     EOL-IDENTIFIER  'THAT'
+           NEWNLINE  '
+'
+          BOL-LABEL  'HERE:'
+         WHITESPACE  ' '
+              LABEL  'THERE:'
+           NEWNLINE  '
+'
+         IDENTIFIER  'THIS'
+         WHITESPACE  '  '
+     EOL-IDENTIFIER  'THAT'
+  ''
