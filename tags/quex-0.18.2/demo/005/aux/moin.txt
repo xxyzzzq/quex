@@ -1,0 +1,3 @@
+Moin Moin
+include aux/hallo.txt
+Tschuess

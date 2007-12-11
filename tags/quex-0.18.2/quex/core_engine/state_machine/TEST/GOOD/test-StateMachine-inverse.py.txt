@@ -1,0 +1,94 @@
+-------------------------------------------------------------------------------
+sm       =  init-state = 0L
+00000 == 'a' ==> 00001
+      <no epsilon>
+00001 == 'b' ==> 00002
+      == 'd' ==> 00003
+      <no epsilon>
+00002 == 'c' ==> 00003
+      <no epsilon>
+00003 == 'e' ==> 00004
+      <no epsilon>
+00004* <no epsilon>
+
+inverse  =  init-state = 19L
+00019 epsilon == [-oo, oo] ==> 00024
+00020* <no epsilon>
+00021 == 'a' ==> 00020
+      <no epsilon>
+00022 == 'b' ==> 00021
+      <no epsilon>
+00023 == 'd' ==> 00021
+      == 'c' ==> 00022
+      <no epsilon>
+00024 == 'e' ==> 00023
+      <no epsilon>
+
+-------------------------------------------------------------------------------
+sm       =  init-state = 5L
+00005 == ['a', 'g'] ==> 00006
+      <no epsilon>
+00006 == [-oo, 'd'], ['f', oo] ==> 00006
+      == 'e' ==> 00007
+      <no epsilon>
+00007 == 'f' ==> 00008
+      <no epsilon>
+00008* <no epsilon>
+
+inverse  =  init-state = 26L
+00026 epsilon == [-oo, oo] ==> 00030
+00027* <no epsilon>
+00028 == ['a', 'g'] ==> 00027
+      == [-oo, 'd'], ['f', oo] ==> 00028
+      <no epsilon>
+00029 == 'e' ==> 00028
+      <no epsilon>
+00030 == 'f' ==> 00029
+      <no epsilon>
+
+-------------------------------------------------------------------------------
+sm       =  init-state = 9L
+00009 == 'g' ==> 00010
+      <no epsilon>
+00010 == 'e' ==> 00011
+      <no epsilon>
+00011 == 'h' ==> 00012
+      <no epsilon>
+00012 == 'g' ==> 00010
+      == 'e' ==> 00013
+      <no epsilon>
+00013* <no epsilon>
+
+inverse  =  init-state = 32L
+00032 epsilon == [-oo, oo] ==> 00037
+00033* <no epsilon>
+00034 == 'g' ==> 00033
+      == 'g' ==> 00036
+      <no epsilon>
+00035 == 'e' ==> 00034
+      <no epsilon>
+00036 == 'h' ==> 00035
+      <no epsilon>
+00037 == 'e' ==> 00036
+      <no epsilon>
+
+-------------------------------------------------------------------------------
+sm       =  init-state = 14L
+00014 == 'a' ==> 00015
+      <no epsilon>
+00015 == 'b' ==> 00016
+      <no epsilon>
+00016 == 'c' ==> 00017
+      <no epsilon>
+00017* <no epsilon>
+
+inverse  =  init-state = 39L
+00039 epsilon == [-oo, oo] ==> 00043
+00040* <no epsilon>
+00041 == 'a' ==> 00040
+      <no epsilon>
+00042 == 'b' ==> 00041
+      <no epsilon>
+00043 == 'c' ==> 00042
+      <no epsilon>
+
