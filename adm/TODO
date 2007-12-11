@@ -1,3 +1,9 @@
+(*) 07y12m11d:
+
+    Use the functions to determine fixed character count in order to handle
+    some backward detections (ambiguous post condition) with just one single
+    addition (instead of going backwards 3 times).
+
 (*) 07y12m10d:
 
     The short token sender 'TKN_XYZ()', i.e. with empty argument list does

@@ -1,0 +1,14 @@
+<history date="Tue Dec 11 06:20:27 2007" element-n="8">
+    <day year="2007" month="12" day="10">
+        <test time="07:34:47" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="07:34:47" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="07:34:48" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="15" ok-n="15" fail-n="0" else-n="0"/>
+    </day>
+    <day year="2007" month="12" day="11">
+        <test time="05:20:27" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="05:20:27" n="15" ok-n="15" fail-n="0" else-n="0"/>
+    </day>
+</history>

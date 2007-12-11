@@ -54,7 +54,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:29:52 2007
+DATE:  Tue Dec 11 06:20:27 2007
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:29:52 2007
+DATE:  Tue Dec 11 06:20:27 2007
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -94,12 +94,12 @@ TITLE: Input Buffers
     Content Size = 11, Fallback Size = 10
         test-misc-I istream .............................................[OK]
                     stdio ...............................................[OK]
-    Content Size = 11, Fallback Size = 1
-        test-misc-II istream ............................................[OK]
-                     stdio ..............................................[OK]
     Content Size = 11, Fallback Size = 0
         test-misc-III istream ...........................................[OK]
                       stdio .............................................[OK]
+    Content Size = 11, Fallback Size = 1
+        test-misc-II istream ............................................[OK]
+                     stdio ..............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -109,7 +109,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:29:52 2007
+DATE:  Tue Dec 11 06:20:27 2007
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:29:52 2007
+DATE:  Tue Dec 11 06:20:27 2007
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:29:52 2007
+DATE:  Tue Dec 11 06:25:45 2007
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:31:37 2007
+DATE:  Tue Dec 11 06:26:31 2007
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -261,21 +261,19 @@ TITLE: Code Generation for Lexical Analyzer
  -- Single State:
 
     Transition Code Generation
-        test-single-state-transitions.py ..............................[FAIL]
+        test-single-state-transitions.py ................................[OK]
     Extensive Transition Code Generation
-        test-single-state-transitions-x.py ............................[FAIL]
+        test-single-state-transitions-x.py ..............................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-Error: test-single-state-transitions.py 
-Error: test-single-state-transitions-x.py 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:31:52 2007
+DATE:  Tue Dec 11 06:26:37 2007
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -337,7 +335,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:32:51 2007
+DATE:  Tue Dec 11 06:40:21 2007
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -376,7 +374,7 @@ TITLE: State Machine Operations
     Detection
         test-ambiguous_post_condition-detect.py .........................[OK]
     Mounting
-        test-ambiguous_post_condition-mount_pseudo.py .................[FAIL]
+        test-ambiguous_post_condition-mount_pseudo.py ...................[OK]
     The Philosophical Cut
         test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
 
@@ -408,30 +406,29 @@ TITLE: State Machine Operations
 
     Paralellization
         test-parallelize-trace-origin.py ................................[OK]
-    NFA to DFA (subset construction)
-        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
     Cloning
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Inverse
         test-StateMachine-trace-origin-inverse.py .......................[OK]
-    Hopcroft optimization (minimize state set)
-        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
 
  -- Trigger Set Check:
 
     Has Trigger
         test-StateInfo-has_trigger.py ...................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-Error: test-ambiguous_post_condition-mount_pseudo.py 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:32:51 2007
+DATE:  Tue Dec 11 06:21:45 2007
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -454,7 +451,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Dec 10 22:33:23 2007
+DATE:  Tue Dec 11 06:21:59 2007
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -483,9 +480,9 @@ SUMMARY:
 ./quex/code_base/buffer/iconv/TEST ......................................[OK]
 ./quex/code_base/template/TEST ..........................................[OK]
 ./quex/core_engine/TEST .................................................[OK]
-./quex/core_engine/generator/TEST .....................................[FAIL]
+./quex/core_engine/generator/TEST .......................................[OK]
 ./quex/core_engine/regular_expression/TEST ..............................[OK]
-./quex/core_engine/state_machine/TEST .................................[FAIL]
+./quex/core_engine/state_machine/TEST ...................................[OK]
 ./quex/frs_py/TEST ......................................................[OK]
 ./quex/input/TEST .......................................................[OK]
 ===============================================================================

@@ -1,0 +1,7 @@
+<history date="Mon Dec 10 22:28:59 2007" element-n="3">
+    <day year="2007" month="12" day="10">
+        <accept time="21:18:32" application="006.sh" choice="NDEBUG" crc="-1081463868" />
+        <accept time="21:18:39" application="006.sh" choice="DEBUG" crc="1201667388" />
+        <test time="21:28:59" n="17" ok-n="17" fail-n="0" else-n="0"/>
+    </day>
+</history>
