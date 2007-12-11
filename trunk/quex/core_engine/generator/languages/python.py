@@ -28,7 +28,7 @@ def __goto_terminal_state(UserDefinedStateMachineName, SuccessfulOriginalStateMa
                                                        repr(SuccessfulOriginalStateMachineID).replace("L",""))
     return txt + "return -1"    
 
-def __note_acceptance(SuccessfulOriginalStateMachineID, LanguageDB, BackwardLexingF=False):
+def __note_acceptance(SuccessfulOriginalStateMachineID, LanguageDB, BackwardLexingF=False, BackwardInputPositionDetectionF=False):
     if SuccessfulOriginalStateMachineID != None:
         txt =  "# last_acceptance = %s\n" % SuccessfulOriginalStateMachineID
         txt += "# last_acceptance_input_position = stream.tell()\n"

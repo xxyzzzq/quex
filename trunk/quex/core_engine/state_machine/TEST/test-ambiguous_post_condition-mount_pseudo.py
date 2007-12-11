@@ -49,10 +49,10 @@ def test(RE_Core, RE_PostCondition):
 
 test('"xy"+', '(ab+|xy)')
 test('"xz"+', '[a-z]{2}')
-test('"xz"+', '"xz"+')
 test('"xyz"+', '"xyz"')
-test("(a)+", "ab")
+test("(a)+",   "ab")
 
+# test('"xz"+', '"xz"+')
 # test('"xyz"+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
 # test('("abc"+|"xyz")+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
 # test('(("xyz")+hello)+', '"xyz"hello')
