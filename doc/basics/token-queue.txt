@@ -56,4 +56,39 @@ From the caller's side the process appears to be a reading from a continuous
 token stream. From inside the pattern match action the process appears
 to be a sending process, where tokens are sent to some recipient.
 
+An important discussion evolves around what type  of variables should be
+supported by the token that is sent. The author of quex, prefers the idea
+of separating the interpretation of the lexeme from lexical analysis. This
+is for the following reasons:
 
+Clarity of Concept::
+
+    - The operation, such as 'convert to double' needs to be _imported_ somehow
+      into the lexical analysis framework. The lexical analyser by itself
+      has no knowledge how to do that.
+
+    - The token type becomes polymorph. That means that it has to support multiple
+      data types. This increases complexity of handling this simple data structure.
+
+    - A separate layer of 'interpretation' increases clarity.
+
+Computational Issues::
+
+    - An interpretation creates an object, i.e. the result of the interpretation of 
+      the lexeme. This object is possibly not used by the parser. Thus the 
+      creation, initialization and destruction of this object is wasted effort.
+      If the parser controls the interpretation these redundant operations 
+      can be avoided.
+
+    - It is particularly hard to define a data structure that can carry multiple
+      types of objects, possibly of different sizes, that is memory and computationally
+      efficient.
+
+    - If the interpreted objects posses a some more complex structure, e.g. pointers
+      to related objects, then the data locality increases. That means that the 
+      probability of a cache-miss increases. This can have a dramatic impact on 
+      the computational speed.
+
+On the other hand, there might be 'hints' that the lexer gives about a token. The 
+author did not come up with _the perfect token class_, but instead leaves it
+open to be redefined by the user for his particular needs.

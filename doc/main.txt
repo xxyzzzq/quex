@@ -69,7 +69,6 @@ include::practical/calling-quex.txt[]
 === Summary
 include::practical/summary.txt[]
 
-
 == Formal Usage
 include::formal/intro.txt[]
 

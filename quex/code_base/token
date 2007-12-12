@@ -1,4 +1,4 @@
-// -*- C++ -*-    :vim set syntax=cpp:
+// -*- C++ -*-    vimi: set syntax=cpp:
 //
 // Token handling is **very** time critical ! We have two types of tokens:
 //
@@ -16,7 +16,6 @@
 //   token classes.
 //
 //
-//   (C) 1425 AH Frank R. Schaefer
 //   (C) 2006-2007 Frank R. Schaefer
 //////////////////////////////////////////////////////////////////////////////////////////
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN__
@@ -163,9 +162,6 @@ namespace quex {
         const __string&      text() const         { return _text; }
         const int            number()             { return _number; }
 
-        //     -- status
-        bool                 is_unitialized() const { return _id == token::ID_UNINITIALIZED; }
-
         //     -- write 
         void    set(token::id_type ID);
         void    set(token::id_type ID, const QUEX_LEXEME_CHARACTER_TYPE* Text);
@@ -213,7 +209,7 @@ namespace quex {
 
             if( tmp2.length() > 32 ) tmp2 = tmp2.substr(0, 32);
 
-            // maybe, later on we will do a real conversion to utf-8, since most terminals understand that
+            // Convert Character To UTF-8
             tmp += " '";
             for(__string::iterator it = tmp2.begin(); it != tmp2.end() ; ++it) {
                 utf8_length = unicode_to_utf8(*it, utf8);
