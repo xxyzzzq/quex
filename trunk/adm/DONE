@@ -1,11 +1,17 @@
+(*) 07y9m9d:
+
+    line up the quex::token::ID_TERMINATION
+
+(*) 07y12m10d:
+
+    The short token sender 'TKN_XYZ()', i.e. with empty argument list does
+    not work. Check this out.
+
+
 (*) 07y9m20d:
 
     name property \N{LATIN LETTER V} and general unicode property \P{Script=Arabic}
 
-
-(*) 07y9m9d:
-
-    line up the quex::token::ID_TERMINATION
 
 (*) 07y11m8d:
 

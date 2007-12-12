@@ -12,7 +12,7 @@ mode ONE_AND_ONLY
     hey+/((he[y]?)|hallo)+ => TKN_HEY_P___HEY_ETC____(Lexeme);
     hey/hey                => TKN_HEY_____HEY________(Lexeme);
     heyhey                 => TKN_HEY_HEY____________(Lexeme);
-    [ \n]+                 => TKN_WHITESPACE;
+    [ \n]+                 => TKN_WHITESPACE();
 }
 
 

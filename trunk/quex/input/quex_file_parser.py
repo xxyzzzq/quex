@@ -397,7 +397,10 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
 
     if bracket_i == 0:
         token_constructor_args = read_until_closing_bracket(fh, "(", ")")
-        token_constructor_args = ", " + token_constructor_args
+        # NOTE: empty brackets do not need a comma ...
+        token_constructor_args = token_constructor_args.strip()
+        if token_constructor_args != "":
+            token_constructor_args = ", " + token_constructor_args
         verify_next_word(fh, ";")
     else:
         token_constructor_args = ""

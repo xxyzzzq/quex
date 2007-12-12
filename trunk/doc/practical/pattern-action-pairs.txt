@@ -1,13 +1,20 @@
 The previous sections explained the definitions of patterns, token-ids, and
 mode characteristics. In this section the core of the lexical analysis is
-discussed: pattern-action pairs. Lexical analysis has as a result a stream of
-tokens that tell about atomic information chunks in the input stream. The most
-simple pattern-action pair consists of sending a specific token whenever a
-particular pattern occurs. Consider for example figure
-<<fig:eof-pattern-action-pairs, style=ref>>. It shows the definition of a mode that can
-handle the end of a file. The only pattern of this mode is $$<<`EOF`>>$$.  The action
-to be executed if this pattern occurs is embraced by curly brackets.
-Inside the brackets a special token is sent, a token with the id:
+discussed: pattern-action pairs. It is a basic concept in lexical analysis
+that a pattern triggers and action. This action has the following goals:
+
+- Preparing and sending of a token.
+
+- Modifying the internal state of the lexical analyzer. In this
+  category falls also mode transition handling, indentation handling, etc.
+
+The most simple pattern-action pair consists of sending a specific token
+whenever a particular pattern occurs.  Consider for example figure
+<<fig:eof-pattern-action-pairs, style=ref>>. It shows the definition of a mode
+that can handle the end of a file. The only pattern of this mode is
+$$<<`EOF`>>$$.  The action to be executed if this pattern occurs is embraced by
+curly brackets.  Inside the brackets a special token is sent, a token with the
+id:
 
 -------------------------------------------
           quex::TKN_TERMINATION
@@ -93,8 +100,8 @@ means, that if the accumulated text is not empty, it is send as a token with a
 user defined token-id. The `STRING\_READER` mode sends the accumulated
 text with a token-id `TKN\_STRING`.
 
-The arrival of a string delimiter causes a mode transition back to mode` 
-  PROGRAM`. A backslashed string delimiter allows to have a string delimter
+The arrival of a string delimiter causes a mode transition back to mode
+`PROGRAM`. A backslashed string delimiter allows to have a string delimter
 inside the the string, so it does not cause a return to `PROGRAM` mode.
 instead, it adds a quote to the accumulator. The default action '.' specifies
 that any other incoming text is simply accumulated. Even in this simple

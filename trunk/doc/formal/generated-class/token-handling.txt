@@ -13,9 +13,14 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         void        send(const token::id_type TokenID, const int Number1);
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Figure <<fig:token-queue, style=ref>>, page \pageref{fig:token-queue}, displayed a sequence diagram depicting the
-communication of tokens. Using the `send` function group the writer of
-pattern-action pairs does not need to care about the `get\_token()`
-function call. He sends tokens and leaves the responsibility of delivery
-to the engine.
+As mentioned before, the author of quex is in favor for the idea that the
+lexical analyzer should only find out for what a string in the input stream
+stands for. It should not interpret it, but leave the interpretation to the
+user or the parser.
+
+Figure <<fig:token-queue, style=ref>>, page \pageref{fig:token-queue},
+displayed a sequence diagram depicting the communication of tokens.
+Using the `send` function group the writer of pattern-action pairs does
+not need to care about the `get\_token()` function call. He sends tokens
+and leaves the responsibility of delivery to the engine.
 
