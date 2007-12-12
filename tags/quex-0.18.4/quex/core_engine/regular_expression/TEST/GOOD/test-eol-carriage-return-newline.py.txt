@@ -1,0 +1,96 @@
+___________________________________________________________________________
+expression    = "^[a-z]+$"
+state machine
+init-state = 29L
+00029 <~ (5, 15)
+      == ['a', 'z'] ==> 00031
+      <no epsilon>
+00030* <~ (5, 22, post, bol)
+      <no epsilon>
+00031 <~ (5, 16, S, post, bol)
+      == \0 ==> 00030
+      == ['a', 'z'] ==> 00031
+      == '\r' ==> 00032
+      <no epsilon>
+00032 == '\n' ==> 00030
+      <no epsilon>
+
+begin of line =  True
+___________________________________________________________________________
+expression    = "^[a-z]*$"
+state machine
+init-state = 54L
+00054 <~ (14, 41, S, post, bol)
+      == ['a', 'z'] ==> 00054
+      == \0 ==> 00055
+      == '\r' ==> 00056
+      <no epsilon>
+00055* <~ (14, 47, post, bol)
+      <no epsilon>
+00056 == '\n' ==> 00055
+      <no epsilon>
+
+begin of line =  True
+___________________________________________________________________________
+expression    = "^[a-z]?$"
+state machine
+init-state = 74L
+00074 <~ (22, 61, S, post, bol)
+      == \0 ==> 00075
+      == '\r' ==> 00076
+      == ['a', 'z'] ==> 00077
+      <no epsilon>
+00075* <~ (22, 68, post, bol)
+      <no epsilon>
+00076 == '\n' ==> 00075
+      <no epsilon>
+00077 <~ (22, 62, S, post, bol)
+      == \0 ==> 00075
+      == '\r' ==> 00076
+      <no epsilon>
+
+begin of line =  True
+___________________________________________________________________________
+expression    = "^[a-z]?/[a-z]/$"
+state machine
+init-state = 116L
+00116 == ['a', 'z'] ==> 00118
+      <no epsilon>
+00117* <~ (39, 109, post, pre=37)
+      <no epsilon>
+00118 <~ (33, 89, S, post)
+      == \0 ==> 00117
+      == '\r' ==> 00119
+      <no epsilon>
+00119 == '\n' ==> 00117
+      <no epsilon>
+pre-condition inverted = init-state = 96L
+00096 <~ (33, 96)
+      == ['a', 'z'] ==> 00097
+      == \0, '\n' ==> 00103
+      <no epsilon>
+00097 <~ (33, 97)
+      == \0, '\n' ==> 00103
+      <no epsilon>
+00103* <no epsilon>
+
+begin of line =  False
+___________________________________________________________________________
+expression    = "^[a-b]/[c-z]$"
+state machine
+init-state = 148L
+00148 == ['a', 'b'] ==> 00152
+      <no epsilon>
+00149* <~ (53, 140, post, bol)
+      <no epsilon>
+00150 <~ (47, 133)
+      == \0 ==> 00149
+      == '\r' ==> 00151
+      <no epsilon>
+00151 == '\n' ==> 00149
+      <no epsilon>
+00152 <~ (47, 125, S, post)
+      == ['c', 'z'] ==> 00150
+      <no epsilon>
+
+begin of line =  True

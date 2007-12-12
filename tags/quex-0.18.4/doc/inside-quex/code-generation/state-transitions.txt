@@ -1,0 +1,99 @@
+The dynamic behavior of a state machine is uniquely determined by the
+transitions of its states. For a DFA, it can be assumed that it is in one
+distinct state when an incoming character arrives. The incoming character
+determines, according to the triggers of the state, what the subsequent state
+will be.  The next to sections discuss the code generation for a 
+state of the lexical analyser state machine.
+The operations to be coded for a state can be subdivided into writing
+a state header (section \ref{}) which does some bookkeeping and writing
+code for the trigger transitions (section \ref{}).
+
+
+As mentioned earlier, \quex's engine is based on character ranges. This enables
+a fast algorithm to bracket the incoming character. Similar to binary search\cite{},
+  it determines if the incoming character lies above a border of the
+  middle interval, then higher and lower intervals are checked. Of course, 
+  one first checks if the character fits any interval. Imagine an acceptance state
+  for pattern 21 that has the following trigger map:
+
+\begin{tabular}{lll}
+    mismatch             & $\longrightarrow$  & terminal 21 \\
+    $[$A-H$]$, $[$J-Z$]$ & $\longrightarrow$  & state 94 \\
+    ':'                  & $\longrightarrow$  & state 95 \\
+    I                    & $\longrightarrow$  & state 99 
+\end{tabular}
+
+The current implementation produces the following code to implement 
+these transition rules:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    if( input >= 58 && input < 91 ) {
+        if( input < 65 ) {
+            if( input < 59 ) {
+                goto QUEX_LABEL__ENTRY_95;
+            } else {
+                goto QUEX_LABEL__TERMINAL_21;
+            }
+        } else {
+            if( input < 73 ) {
+                goto QUEX_LABEL__ENTRY_94;  
+            } else {
+                if( input < 74 ) {
+                    goto QUEX_LABEL__ENTRY_99;
+                } else {
+                    goto QUEX_LABEL__ENTRY_94;
+                }
+            }
+        }
+    }
+    // no trigger triggered 
+    goto QUEX_LABEL__TERMINAL_21;
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first if-statement checks wether the`input` lies in the borders of the
+trigger map. If not, one can directly jump to the terminal state 21. Then one
+checks wether the input is less than 65, i.e. an A, and then brackets the input
+down for each interval. This way of generating code seems to leave room for
+improvement, though.  To check wether the input is ':' (character code 58) we
+test against $>=\,58$, $<\,91$, $<\,65$, and $<\,59$, instead of a simple check
+$==\,58$. A hand written transition code may look like the following:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    if( input == 58 ) goto QUEX_LABEL_ENTRY_95;
+    if( input == 73 ) goto QUEX_LABEL_ENTRZ_99;
+    // HERE: input != 73, therefore we can check against A-Z
+    if( input >= 65 && input < 91 ) goto QUEX_LABEL_ENTRY_94;
+    // no trigger triggered 
+    goto QUEX_LABEL__TERMINAL_21;
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+However, if one does too many single checks one would loose the advantage of
+binary bracketting and the result would be much less efficient. The following
+table shows an estimated cost in terms of comparisons with respect to the two
+approaches:
+
+\begin{center}
+\begin{tabular}{l|c|c}
+                         & \multicolumn{2}{c}{\bf comparisons} \\
+                         & automatic & hand-written \\ \hline
+    mismatch (before)    & 1 &  3 \\
+    mismatch (after)     & 2 &  4 \\
+    mismatch (inside)    & 4 &  4 \\	
+    $[$A-H$]$            & 5 &  4 \\
+    $[$J-Z$]$            & 4 &  4 \\
+    ':'                  & 4 &  1 \\
+    I                    & 5 &  2 \\  \hline \hline
+\end{tabular}
+\end{center}
+
+A meaningful comparison of the efficiency of the two approaches, one would have
+to multiply the results with the probabilities that these characters sets
+occur. In the above example, the code size of the handwritten transition is
+much less than the solution created automatically. Determining the optimal
+algorithm that takes a parameters 'memory-size-speed-tradeoff' and computes the
+optimal state transition would be an interesting contribution to the \quex
+project. The author of this text welcomes any propositions to improve the
+generation of transition code.  
+

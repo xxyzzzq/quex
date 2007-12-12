@@ -1,0 +1,23 @@
+<history date="Tue Dec 11 08:13:18 2007" element-n="17">
+    <day year="2007" month="12" day="10">
+        <test time="07:34:47" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="07:34:47" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="07:34:47" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="07:34:48" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <accept time="21:18:32" application="006.sh" choice="NDEBUG" crc="-1081463868" />
+        <accept time="21:18:39" application="006.sh" choice="DEBUG" crc="1201667388" />
+        <test time="21:28:59" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="21:29:52" n="15" ok-n="15" fail-n="0" else-n="0"/>
+    </day>
+    <day year="2007" month="12" day="11">
+        <test time="05:20:27" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="05:20:27" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="05:20:27" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <test time="07:13:17" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test time="07:13:17" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test time="07:13:18" n="15" ok-n="15" fail-n="0" else-n="0"/>
+    </day>
+</history>
