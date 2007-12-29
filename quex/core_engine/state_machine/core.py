@@ -36,12 +36,15 @@ class Transition:
         # target state index (where one lands if transition is performed)
         self.target_state_index = TargetStateIdx
 
-    def get_string(self, ElseTransitionF=False):
+    def get_string(self, ElseTransitionF=False, StateIndexMap=None):
         """Return a string representation of the Transition. If 'ElseTransitionF' is 
            True, then the string ELSE is printed instead of the trigger set.
         """
         trigger_str = self.trigger_set.get_utf8_string()
-        target_str  = "%05i" % self.target_state_index
+        if StateIndexMap == None:
+            target_str  = "%05i" % self.target_state_index
+        else:
+            target_str  = "%05i" % StateIndexMap[self.target_state_index]
             
         return "== %s ==> %s" % (trigger_str, target_str)
  
@@ -67,14 +70,17 @@ class EpsilonTransition:
     def is_empty(self):
         return self.trigger_set.is_all() and self.target_state_indices == []
         
-    def get_string(self):
+    def get_string(self, StateIndexMap=None):
         if self.target_state_indices == [ ]: return "<no epsilon>"
 
         trigger_str = self.trigger_set.get_utf8_string()
         self.target_state_indices.sort()
+
         target_str = ""
         for ti in self.target_state_indices:
-            target_str += "%05i, " % int(ti) 
+            if StateIndexMap == None: target_str += "%05i, " % int(ti) 
+            else:                     target_str += "%05i, " % int(StateIndexMap[ti]) 
+
         if target_str != "": target_str = target_str[:-2]
         return "epsilon == %s ==> %s" % (trigger_str, target_str)
 
@@ -928,6 +934,9 @@ class StateInfo:
         return True
         
     def __repr__(self):
+        return self.get_string()
+
+    def get_string(self, StateIndexMap=None):
         msg = ""
         fill_str = ""
         # if information about origins of the state is present, then print
@@ -937,6 +946,8 @@ class StateInfo:
                 msg += repr(origin) + ", "
             msg = (msg[:-2] + "\n").replace("L","")     
             fill_str = "     "
+
+        # print out transitionts
         sorted_transitions = self.__transition_list
         sorted_transitions.sort(lambda a, b: cmp(a.target_state_index, b.target_state_index))
 
@@ -944,11 +955,11 @@ class StateInfo:
         for t in sorted_transitions:
             # note: the fill string for the first line printed is empty, because
             #       the start stae is printed before  this.
-            msg += "%s %s\n" % (fill_str, t.get_string())
+            msg += "%s %s\n" % (fill_str, t.get_string(StateIndexMap=StateIndexMap))
             fill_str = "     "
 
         # the else transition
-        msg += "%s %s\n" % (fill_str, self.__epsilon.get_string())
+        msg += "%s %s\n" % (fill_str, self.__epsilon.get_string(StateIndexMap=StateIndexMap))
         return msg
 
 
@@ -1932,13 +1943,31 @@ class StateMachine:
         return True    
 
     def __repr__(self):
-        msg = "init-state = " + repr(self.init_state_index) + "\n"
-        sorted_state_infos = self.states.keys()
-        sorted_state_infos.sort()
-        for state_i in sorted_state_infos:
-            state = self.states[state_i]
-            if state.is_acceptance(): msg += "%05i*" % state_i + repr(state)
-            else:                     msg += "%05i" % state_i + repr(state)
+        return self.get_string(NormalizeF=True)
+
+    def get_string(self, NormalizeF=False):
+
+        # (*) normalize the state indices
+        index_map         = {}
+        inverse_index_map = {}
+        counter           = -1L
+        for state_i in self.states.keys():
+            if NormalizeF:
+                counter += 1L
+                index_map[state_i]         = counter
+                inverse_index_map[counter] = state_i
+            else:
+                index_map[state_i]         = state_i
+                inverse_index_map[state_i] = state_i
+    
+        # (*) construct text 
+        msg = "init-state = " + repr(index_map[self.init_state_index]) + "\n"
+        for printed_state_i in range(0, counter+1):
+            printed_state_i = long(printed_state_i)
+            real_state_i    = inverse_index_map[printed_state_i]
+            state           = self.states[real_state_i]
+            if state.is_acceptance(): msg += "%05i*" % printed_state_i + state.get_string(index_map)
+            else:                     msg += "%05i"  % printed_state_i + state.get_string(index_map)
             
         if self.pre_condition_state_machine != None:
             msg += "pre-condition inverted = "

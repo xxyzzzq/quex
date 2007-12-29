@@ -1,78 +1,78 @@
 -------------------------------------------------------------------
 expression    = ""a"/";"/"b""
 state machine
-init-state = 32L
-00032 == ';' ==> 00034
+init-state = 0L
+00000 == ';' ==> 00002
       <no epsilon>
-00033* <~ (5, 19, post, pre=13)
+00001* <~ (5, 19, post, pre=13)
       <no epsilon>
-00034 <~ (5, 11, S, post)
-      == 'b' ==> 00033
+00002 <~ (5, 11, S, post)
+      == 'b' ==> 00001
       <no epsilon>
-pre-condition inverted = init-state = 26L
-00026 <~ (5, 26)
-      == 'a' ==> 00027
+pre-condition inverted = init-state = 0L
+00000 <~ (5, 26)
+      == 'a' ==> 00001
       <no epsilon>
-00027* <~ (5, 27, S)
+00001* <~ (5, 27, S)
       <no epsilon>
 
 -------------------------------------------------------------------
 expression    = "(d|e)/(a|z)/c"
 state machine
-init-state = 109L
-00109 == 'a', 'z' ==> 00111
+init-state = 0L
+00000 == 'a', 'z' ==> 00002
       <no epsilon>
-00110* <~ (41, 96, post, pre=49)
+00001* <~ (41, 96, post, pre=49)
       <no epsilon>
-00111 <~ (41, 88, S, post)
-      == 'c' ==> 00110
+00002 <~ (41, 88, S, post)
+      == 'c' ==> 00001
       <no epsilon>
-pre-condition inverted = init-state = 103L
-00103 <~ (41, 103)
-      == ['d', 'e'] ==> 00104
+pre-condition inverted = init-state = 1L
+00000* <~ (41, 104, S)
       <no epsilon>
-00104* <~ (41, 104, S)
+00001 <~ (41, 103)
+      == ['d', 'e'] ==> 00000
       <no epsilon>
 
 -------------------------------------------------------------------
 expression    = ""123"/"aac"|"bad"/"z"|congo"
 state machine
-init-state = 250L
-00250 == 'a' ==> 00254
-      == 'b' ==> 00255
+init-state = 5L
+00000 == 'd' ==> 00007
       <no epsilon>
-00251* <~ (65, 219, post, pre=81)
+00001 == 'c' ==> 00007
       <no epsilon>
-00252 <~ (65, 166, S, post)
-      == 'z' ==> 00251
-      == 'c' ==> 00253
+00002 == 'n' ==> 00003
       <no epsilon>
-00253 == 'o' ==> 00258
+00003 == 'g' ==> 00004
       <no epsilon>
-00254 == 'a' ==> 00257
+00004 == 'o' ==> 00006
       <no epsilon>
-00255 == 'a' ==> 00256
+00005 == 'a' ==> 00009
+      == 'b' ==> 00010
       <no epsilon>
-00256 == 'd' ==> 00252
+00006* <~ (65, 219, post, pre=81)
       <no epsilon>
-00257 == 'c' ==> 00252
+00007 <~ (65, 166, S, post)
+      == 'z' ==> 00006
+      == 'c' ==> 00008
       <no epsilon>
-00258 == 'n' ==> 00259
+00008 == 'o' ==> 00002
       <no epsilon>
-00259 == 'g' ==> 00260
+00009 == 'a' ==> 00001
       <no epsilon>
-00260 == 'o' ==> 00251
+00010 == 'a' ==> 00000
       <no epsilon>
-pre-condition inverted = init-state = 234L
-00234 <~ (65, 234)
-      == '3' ==> 00237
+pre-condition inverted = init-state = 0L
+00000 <~ (65, 234)
+      == '3' ==> 00003
       <no epsilon>
-00235* <~ (65, 235, S)
+00001* <~ (65, 235, S)
       <no epsilon>
-00236 <~ (65, 236)
-      == '1' ==> 00235
+00002 <~ (65, 236)
+      == '1' ==> 00001
       <no epsilon>
-00237 <~ (65, 237)
-      == '2' ==> 00236
+00003 <~ (65, 237)
+      == '2' ==> 00002
       <no epsilon>
 
