@@ -20,7 +20,7 @@
 import os
 import sys
 
-QUEX_VERSION = '0.18.4'
+QUEX_VERSION = '0.19.1'
 
 try:
     QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
