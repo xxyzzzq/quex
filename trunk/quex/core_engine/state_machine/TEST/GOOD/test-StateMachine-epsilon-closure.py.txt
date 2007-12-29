@@ -1,26 +1,26 @@
-## state machine =  init-state = 25L
-00025 == 'a' ==> 00026
+## state machine =  init-state = 5L
+00000 == 'b' ==> 00001
+      == 'd' ==> 00002
       <no epsilon>
-00026 == 'b' ==> 00027
-      == 'd' ==> 00028
+00001 == 'c' ==> 00002
       <no epsilon>
-00027 == 'c' ==> 00028
+00002 == 'e' ==> 00003
       <no epsilon>
-00028 == 'e' ==> 00029
+00003 epsilon == [-oo, oo] ==> 00011, 00004
+00004* <no epsilon>
+00005 == 'a' ==> 00006
       <no epsilon>
-00029* epsilon == [-oo, oo] ==> 00030
-00030 epsilon == [-oo, oo] ==> 00031, 00036
-00031 == 'a' ==> 00032
+00006 == 'b' ==> 00007
+      == 'd' ==> 00008
       <no epsilon>
-00032 == 'b' ==> 00033
-      == 'd' ==> 00034
+00007 == 'c' ==> 00008
       <no epsilon>
-00033 == 'c' ==> 00034
+00008 == 'e' ==> 00009
       <no epsilon>
-00034 == 'e' ==> 00035
+00009* epsilon == [-oo, oo] ==> 00010
+00010 epsilon == [-oo, oo] ==> 00011, 00004
+00011 == 'a' ==> 00000
       <no epsilon>
-00035 epsilon == [-oo, oo] ==> 00031, 00036
-00036* <no epsilon>
 
 ## compute epsilon closures of all states:
 state =  35 epsilon-closure =  [35L, 31L, 36L]
