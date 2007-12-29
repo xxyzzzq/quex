@@ -27,7 +27,7 @@ pattern_list = [
     #
     # normal repetition (one or more) of 'x'
     'hey/h',
-    'hey+/hey',
+    '(hey)+/hey',
     'hey',
     # other characters
     '[a-z]+',

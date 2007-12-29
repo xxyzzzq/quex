@@ -12,10 +12,10 @@ public:
 
 try {
     if( 1 + x == 23 ) {
-	printf("hello world");
+        printf("hello world");
     } else {
-	printf("never mind, world");
-	throw this;
+        printf("never mind, world");
+        throw this;
     }
 } catch {
 }
