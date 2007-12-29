@@ -1,3 +1,19 @@
+(*) 07y12m28d:
+
+    There is an inconsistency with respect to drop out. sometimes
+    '-1' is used to indicate drop out, sometime 'None'. Unify this.
+
+
+(*) 07y12,17d:
+
+    When creating the backward iterator, delete recursions, i.e. if an 
+    acceptance state is reached, there is no need to go further. This is 
+    important because one needs to implement the 'greedy' approach,
+    where as many characters are swallowed as possible. This means that
+    one tries to enter the core pattern as less as possible. Practically
+    this has no significance since it cannot enter backwards because it 
+    does not interfere .... but it makes the machine a little smaller.
+
 (*) 07y12m11d:
 
     Use the functions to determine fixed character count in order to handle

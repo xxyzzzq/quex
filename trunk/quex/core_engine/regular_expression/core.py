@@ -291,30 +291,36 @@ def snap_non_double_quote(stream):
 def snap_non_control_characters(stream):
     """Snaps any 'non_control_character' using UTF8 encoding from the given string. Note, that 
        in UTF8 a character may consist of more than one byte. Creates a state machine 
-       than contains solely a trigger from this character to a acceptance state.
-    """
-    __debug_entry("else characters", stream)
+       than contains solely one trigger for each character to a acceptance state.
 
-    result = StateMachine()
-    pos = stream.tell()
-    stream.seek(pos)
-    #
+       This function **concatinates** incoming characters, but **repetition** has preceedence
+       over concatination, so it checks after each character whether it is followed by
+       a repetition ('*', '+', '?', '{..}'). In such a case, the repetition of the character
+       is appended.
+    """
+    __debug_entry("non-control characters", stream)
+
+    result      = StateMachine()
     state_index = result.init_state_index
+    # (*) read first character
+    position  = stream.tell()
+    char_code = utf8.map_utf8_to_unicode(stream)
     while 1 + 1 == 2: 
-        position = stream.tell()
-        stream.seek(position)
-        char_code = utf8.map_utf8_to_unicode(stream)
-        #
+        #    (1) break up condition
         if char_code == 0xFF: break
 
-        # ask < 0xFF to protect against overflow in char() function
-        elif char_code < 0xFF: 
-            if chr(char_code) in CONTROL_CHARACTERS or chr(char_code).isspace():
-                stream.seek(-1, 1) 
-                break 
+        #    (2) check against occurence of control characters
+        #        this needs to come **before** the backslashed character interpretation.
+        #        NOTE: A backslashed character can be a whitespace (for example '\n'). 
+        #        (check against 0xFF to avoid overflow in function 'chr()') 
+        if     char_code < 0xFF                                                  \
+           and (chr(char_code) in CONTROL_CHARACTERS or chr(char_code).isspace()):
+               stream.seek(-1, 1) 
+               break 
 
+        #    (3) treat backslashed characters
         if chr(char_code) == "\\":
-            position = stream.tell()
+            position               = stream.tell()
             what_follows_backslash = stream.read(16)
             interpreted_backslashed_char_code, i = snap_backslashed_character.do(what_follows_backslash, -1)
             if interpreted_backslashed_char_code == None: 
@@ -323,10 +329,33 @@ def snap_non_control_characters(stream):
             else:
                 stream.seek(position + i)
                 char_code = interpreted_backslashed_char_code
-                
-        # add new transition from current state to a new state triggering
-        # on the given character.
-        state_index = result.add_transition(state_index, char_code)
+
+        # (*) read next character
+        position       = stream.tell()
+        next_char_code = utf8.map_utf8_to_unicode(stream)
+        #    -- check for repetition (repetition has preceedence over concatination)
+        if next_char_code in [ord("+"), ord("*"), ord("?"), ord("{")]:
+            # (*) create state machine that consist of a single transition 
+            tmp = StateMachine()
+            tmp.add_transition(tmp.init_state_index, char_code, AcceptanceF=True)
+            # -- repeat the single character state machine
+            stream.seek(position)
+            tmp_repeated = __snap_repetition_range(tmp, stream) 
+            # -- append it to the result (last state must be set to acceptance for concatenation)
+            result.set_acceptance(state_index)
+            result = sequentialize.do([result, tmp_repeated], MountToFirstStateMachineF=True)
+            # as soon as there is repetition there might be more than one acceptance
+            # state and thus simple concatination via 'add_transition' fails.
+            # let us return and check treat the remaining chars
+            # at the next call to this function.
+            return __debug_exit(result, stream)
+
+        else:
+            # (*) add new transition from current state to a new state triggering
+            #     on the given character.
+            state_index = result.add_transition(state_index, char_code)
+
+        char_code = next_char_code
 
     # last character in the chain triggers an 'acceptance state'
     result.set_acceptance(state_index)
@@ -434,7 +463,7 @@ def __beautify(the_state_machine):
 
 def __construct(core_sm, pre_condition=None, post_condition=None):
 
-    if pre_condition == None and post_condition == None:
+    if   pre_condition == None and post_condition == None:
         core_sm.mark_state_origins()
         result = core_sm
         # -- can't get more beautiful ...

@@ -1,7 +1,7 @@
 (*) test string: 
 'heyheyhey hey yhey eyhey heyhey heyhe'
 (*) result:
-           hey+/hey  'heyhey'
+         (hey)+/hey  'heyhey'
                 hey  'hey'
          [ \t\n]+  ' '
                 hey  'hey'
@@ -10,14 +10,14 @@
          [ \t\n]+  ' '
              [a-z]+  'eyhey'
          [ \t\n]+  ' '
-           hey+/hey  'hey'
+         (hey)+/hey  'hey'
                 hey  'hey'
          [ \t\n]+  ' '
              [a-z]+  'heyhe'
   ''
 (*) Lexical Analyser Patterns:
                hey/h --> hey/h
-            hey+/hey --> hey+/hey
+          (hey)+/hey --> (hey)+/hey
                  hey --> hey
               [a-z]+ --> [a-z]+
             [ \t\n]+ --> [ \\t\\n]+

@@ -52,7 +52,9 @@ def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False,
         # machine via epsilon transition
         result.mount_to_acceptance_states(next_clone.init_state_index, 
                                           CancelStartAcceptanceStateF = not LeaveIntermediateAcceptanceStatesF)
-        for start_state_index, states in next_clone.states.items():        
-            result.states[start_state_index] = deepcopy(states)
-        
+        for state_index, state in next_clone.states.items():        
+            result.states[state_index] = deepcopy(state)
+
+    # (*) double check for consistency (each target state is contained in state machine)
+    result.assert_consistency()
     return result

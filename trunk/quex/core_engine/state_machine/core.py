@@ -857,14 +857,6 @@ class StateInfo:
                                     origin.pre_condition_begin_of_line_f(),
                                     self.__origin_list)
 
-    def consistency_check(self, DesireCodeGenerationF=True):
-        if self.is_acceptance():
-            # there can be only one original state for code generation
-            # THIS IS NOT CORRECT for post conditions (does this function still make sense? fschaef)
-            if DesireCodeGenerationF:
-                assert len(self.__origin_list) == 1, \
-                       "list of origins must contain exactly one 'winner state' for acceptance"
-                    
     def adapt_origins(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
            'StateMachineID'. Post- and pre-condition flags remain, and so the store input 
@@ -1715,6 +1707,15 @@ class StateMachine:
         for state in self.states.values():
             if state.is_post_conditioned(): return True
         return False                                
+
+    def assert_consistency(self):
+        """Check: -- whether each target state in contained inside the state machine.
+        """
+        target_state_index_list = self.states.keys()
+        for index, state in self.states.items():
+            for target_state_index in state.get_target_state_indices():
+                assert target_state_index in target_state_index_list, \
+                       "state machine contains target state that is not contained in itself."
 
     def has_non_trivial_pre_condition(self):
         return self.pre_condition_state_machine != None

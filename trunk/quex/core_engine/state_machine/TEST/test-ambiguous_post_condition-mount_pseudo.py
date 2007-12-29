@@ -47,7 +47,7 @@ def test(RE_Core, RE_PostCondition):
     print "backward detector =", sm_index.get_state_machine_by_id(backward_detector_id)
 
 
-test('"xy"+', '(ab+|xy)')
+test('"xy"+', '((ab)+|xy)')
 test('"xz"+', '[a-z]{2}')
 test('"xyz"+', '"xyz"')
 test("(a)+",   "ab")
