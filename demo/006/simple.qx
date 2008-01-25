@@ -1,5 +1,4 @@
 // -*- C++ -*-
-
 mode ONE_AND_ONLY
 {
     <<EOF>>   => TKN_TERMINATION;
@@ -14,6 +13,4 @@ mode ONE_AND_ONLY
     heyhey                   => TKN_HEY_HEY____________(Lexeme);
     [ \n]+                   => TKN_WHITESPACE();
 }
-
-
 

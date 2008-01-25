@@ -7,7 +7,7 @@ from quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.ambiguous_post_condition as apc
 
 
-def do(the_state_machine, post_condition_sm):
+def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False):
     """ Appends a post condition to the given state machine. This process is very
         similar to sequentialization. There is a major difference, though:
        
@@ -64,13 +64,14 @@ def do(the_state_machine, post_condition_sm):
     #        core pattern after the end of the post condition
     #        has been reached.
     #
-    if apc.detect_forward(the_state_machine, post_condition_sm):
-        if apc.detect_backward(the_state_machine, post_condition_sm):
-            # -- for post conditions that are forward and backward ambiguous
-            #    a philosophical cut is necessary.
-            post_condition_sm = apc.philosophical_cut(the_state_machine, post_condition_sm)
-        apc.mount(the_state_machine, post_condition_sm)
-        return the_state_machine
+    if not DEMONSTRATION_TurnOffSpecialSolutionF:
+        if apc.detect_forward(the_state_machine, post_condition_sm):
+            if apc.detect_backward(the_state_machine, post_condition_sm):
+                # -- for post conditions that are forward and backward ambiguous
+                #    a philosophical cut is necessary.
+                post_condition_sm = apc.philosophical_cut(the_state_machine, post_condition_sm)
+            apc.mount(the_state_machine, post_condition_sm)
+            return the_state_machine
 
         
     #     -- The 'normal' way: storing the input position at the end of the core
