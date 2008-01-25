@@ -1,0 +1,7 @@
+<history date="Fri Jan 25 21:52:58 2008" element-n="3">
+    <day year="2008" month="01" day="25">
+        <crc-error time="20:52:31" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
+        <crc-error time="20:52:33" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="-1275287335" real-crc="885683181"/>
+        <test      time="20:52:58" n="38" ok-n="38" fail-n="0" else-n="0"/>
+    </day>
+</history>

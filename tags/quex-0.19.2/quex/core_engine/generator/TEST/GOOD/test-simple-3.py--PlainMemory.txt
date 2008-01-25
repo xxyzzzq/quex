@@ -1,0 +1,20 @@
+(*) test string: 
+'aber-hallo'
+(*) result:
+                  .  'a'
+                  .  'b'
+                  .  'e'
+                  .  'r'
+                  .  '-'
+                  .  'h'
+                  .  'a'
+                  .  'l'
+                  .  'l'
+                  .  'o'
+  ''
+(*) Lexical Analyser Patterns:
+                   . --> .
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

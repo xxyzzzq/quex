@@ -1,0 +1,7 @@
+<history date="Fri Jan 25 21:53:45 2008" element-n="3">
+    <day year="2008" month="01" day="25">
+        <crc-error time="20:53:28" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="421356511" real-crc="914566778"/>
+        <crc-error time="20:53:44" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
+        <test      time="20:53:45" n="28" ok-n="28" fail-n="0" else-n="0"/>
+    </day>
+</history>

@@ -1,0 +1,488 @@
+===============================================================================
+ENTER: ./
+DATE:  Mon Dec 10 22:28:59 2007
+TITLE: Demo-Applications
+
+-------------------------------------------------------------------------------
+
+ -- demo/000:
+
+    Single Mode Example
+        000.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+
+ -- demo/001:
+
+    Multiple Modes, Mode Transitions
+        001.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+
+ -- demo/002:
+
+    Indentation Based Scopes
+        002.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+
+ -- demo/003:
+
+    Unicode Based Lexical Analyzis
+        003.sh BPC=2 ....................................................[OK]
+               BPC=2_NDEBUG .............................................[OK]
+               BPC=4 ....................................................[OK]
+               BPC=4_NDEBUG .............................................[OK]
+               BPC=wchar_t ..............................................[OK]
+
+ -- demo/005:
+
+    Including Files
+        005.sh 1 ........................................................[OK]
+               1_NDEBUG .................................................[OK]
+               2 ........................................................[OK]
+               2_NDEBUG .................................................[OK]
+
+ -- demo/006:
+
+    Multiple Modes, Mode Transitions
+        006.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:20:27 2007
+TITLE: Miscellaneous Basic Tests
+
+-------------------------------------------------------------------------------
+ -- Prepare Pattern Information for Code Generation
+        test-coder-get_generator_input.py ...............................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:20:27 2007
+TITLE: Input Buffers
+
+-------------------------------------------------------------------------------
+ -- Backwards Iteration
+        test-backward-get Normal ........................................[OK]
+                          EOFC=1_BOFC=2_BLC=0 ...........................[OK]
+                          EOFC=1_BOFC=0_BLC=2 ...........................[OK]
+                          EOFC=0_BOFC=1_BLC=2 ...........................[OK]
+
+ -- Forward Iteration:
+
+    EOF at first load.
+        test-forward-get-2 ..............................................[OK]
+    Multiple Loads.
+        test-forward-get Normal .........................................[OK]
+                         EOFC=1_BOFC=2_BLC=0 ............................[OK]
+                         EOFC=1_BOFC=0_BLC=2 ............................[OK]
+                         EOFC=0_BOFC=1_BLC=2 ............................[OK]
+
+ -- Miscenllaneous Scenarios:
+
+    Content Size = 11, Fallback Size = 10
+        test-misc-I istream .............................................[OK]
+                    stdio ...............................................[OK]
+    Content Size = 11, Fallback Size = 0
+        test-misc-III istream ...........................................[OK]
+                      stdio .............................................[OK]
+    Content Size = 11, Fallback Size = 1
+        test-misc-II istream ............................................[OK]
+                     stdio ..............................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:20:27 2007
+TITLE: Input Buffers Based on the IConv - Library
+
+-------------------------------------------------------------------------------
+ -- Converting Stream in N Tiny Beats
+        n-beat ..........................................................[OK]
+ -- Converting Stream in One Beat
+        one-beat ........................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:20:27 2007
+TITLE: Lexical Analyzer Class Template
+
+-------------------------------------------------------------------------------
+
+ -- Count Line and Column:
+
+    Without Indentation Count
+        test-simple .....................................................[OK]
+    With Indentation
+        test-simple-2 ...................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:25:45 2007
+TITLE: Core Functionalities
+
+-------------------------------------------------------------------------------
+
+ -- NumberSet:
+
+    Inverse
+        test-NumberSet-inverse.py .......................................[OK]
+    Difference
+        test-NumberSet-difference.py ....................................[OK]
+    Intersection
+        test-NumberSet-intersection.py ..................................[OK]
+    Union
+        test-NumberSet-union.py .........................................[OK]
+    Condition Code Generation
+        test-NumberSet-condition-code.py ................................[OK]
+
+ -- Utf8-Module:
+
+    Map UTF8 String To Unicode Values
+        test-utf8-UCS-to-UTF8.py ........................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:26:31 2007
+TITLE: Code Generation for Lexical Analyzer
+
+
+-------------------------------------------------------------------------------
+
+ -- Buffer Reload:
+
+    Backwards
+        test-backward_loading.py No_NDEBUG ..............................[OK]
+                                 NDEBUG .................................[OK]
+    Forward Position Adaption
+        test-position_adaption.py No_NDEBUG .............................[OK]
+                                  NDEBUG ................................[OK]
+    No Backward Reload -- Precondition at Border
+        test-no-backward-reloading.py No_NDEBUG .........................[OK]
+                                      NDEBUG ............................[OK]
+
+ -- CONTINUE:
+
+    Reentry analysis without return from function
+        test-continue-without-return.py PlainMemory .....................[OK]
+                                        QuexBuffer ......................[OK]
+    Mode Changes
+        test-mode-changes.py PlainMemory ................................[OK]
+                             QuexBuffer .................................[OK]
+    (special use case)
+        test-continue-without-return-2.py PlainMemory ...................[OK]
+                                          QuexBuffer ....................[OK]
+
+ -- Post Conditions:
+
+    Part 1
+        test-post-conditions.py PlainMemory .............................[OK]
+                                QuexBuffer ..............................[OK]
+    Part 2
+        test-post-conditions-2.py PlainMemory ...........................[OK]
+                                  QuexBuffer ............................[OK]
+
+ -- Pre Conditions:
+
+    Multiple Identical Pre-Conditions
+        test-pre-conditions-3.py PlainMemory ............................[OK]
+                                 QuexBuffer .............................[OK]
+    Part 1
+        test-pre-conditions.py PlainMemory ..............................[OK]
+                               QuexBuffer ...............................[OK]
+    Part 2
+        test-pre-conditions-2.py PlainMemory ............................[OK]
+                                 QuexBuffer .............................[OK]
+
+ -- Pre- and Post- Conditions:
+
+    Simple
+        test-pre-post-condition.py PlainMemory ..........................[OK]
+                                   QuexBuffer ...........................[OK]
+
+ -- Pseudo Ambgiguous Post Condition:
+
+    Part II
+        test-pseudo_ambiguous_post_conditions-2.py PlainMemory ..........[OK]
+                                                   QuexBuffer ...........[OK]
+    Part I
+        test-pseudo_ambiguous_post_conditions.py PlainMemory ............[OK]
+                                                 QuexBuffer .............[OK]
+
+ -- Simple:
+
+    Special Case '.' (drop out on valid target state)
+        test-simple-3.py PlainMemory ....................................[OK]
+                         QuexBuffer .....................................[OK]
+    Begin of Line (BOL), End of Line (EOL)
+        test-bol-eol.py PlainMemory .....................................[OK]
+                        QuexBuffer ......................................[OK]
+    Tiny Expressions
+        test-simple.py PlainMemory ......................................[OK]
+                       QuexBuffer .......................................[OK]
+    Maximum Length Match
+        test-simple-2.py PlainMemory ....................................[OK]
+                         QuexBuffer .....................................[OK]
+
+ -- Single State:
+
+    Transition Code Generation
+        test-single-state-transitions.py ................................[OK]
+    Extensive Transition Code Generation
+        test-single-state-transitions-x.py ..............................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:26:37 2007
+TITLE: Regular Expression Parsing
+
+-------------------------------------------------------------------------------
+ -- State Machine Pattern Matching
+        test-pattern-matching.py ........................................[OK]
+
+ -- Backslashed Characters:
+
+    General
+        test-snap_backslashed_character.py ..............................[OK]
+
+ -- Basics:
+
+    Pattern identifier replacement
+        test-replacement.py .............................................[OK]
+    Map character *string* to state machine
+        test-string.py ..................................................[OK]
+    Snap string until (low level function)
+        test-snap_until.py ..............................................[OK]
+    Map character *range* to state machine
+        test-set.py .....................................................[OK]
+    Lonestanding characters
+        test-lonely-characters.py .......................................[OK]
+
+ -- Combination:
+
+    Alternative Expressions
+        test-alternatives.py ............................................[OK]
+    Simple repeated expressions
+        test-repeated-expressions.py ....................................[OK]
+    Alternative Expressions
+        test-set-expressions.py .........................................[OK]
+
+ -- Conditional Analysis:
+
+    Begin of Line '^', End of Line '$'
+        test-bol-eol.py .................................................[OK]
+    pre conditions
+        test-pre-condition.py ...........................................[OK]
+    post conditions
+        test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
+    End of Line '$' (with DOS/Windows '\r\n')
+        test-eol-carriage-return-newline.py .............................[OK]
+
+ -- Unicode properties:
+
+    Simple
+        test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:40:21 2007
+TITLE: State Machine Operations
+
+-------------------------------------------------------------------------------
+
+ -- DFA:
+
+    Get Trigger Map (intervals --> target states)
+        test-StateInfo-trigger-map.py ...................................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-hopcroft-optimization.py ......................[OK]
+
+ -- NFA:
+
+    Conversion to DFA (subset construction)
+        test-StateMachine-create-DFA.py .................................[OK]
+    Get elementary trigger sets (target index --> trigger sets)
+        test-StateMachine-elementary_trigger_sets.py ....................[OK]
+    Epsilon closure (single state)
+        test-StateMachine-epsilon-closure.py ............................[OK]
+    Get elementary trigger sets II
+        test-StateMachine-elementary_trigger_sets-2.py ..................[OK]
+
+ -- Predetermined Character Count:
+
+    Characters
+        test-count_character_n.py .......................................[OK]
+    Contains only Spaces
+        test-count_contains_only_spaces.py ..............................[OK]
+    Newlines
+        test-count_newline_n.py .........................................[OK]
+
+ -- Pseudo Ambigous Post Condition:
+
+    Replace Drop-Out with Adjacent Target
+        test-StateInfo-replace_drop_out_with_adjacent_target.py .........[OK]
+    Detection
+        test-ambiguous_post_condition-detect.py .........................[OK]
+    Mounting
+        test-ambiguous_post_condition-mount_pseudo.py ...................[OK]
+    The Philosophical Cut
+        test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
+
+ -- StateMachine:
+
+    Cloning
+        test-StateMachine-clone.py ......................................[OK]
+
+ -- StateMachine Operations:
+
+    Setup Pre-Condition
+        test-setup_pre_condition.py .....................................[OK]
+    Inverse
+        test-StateMachine-inverse.py ....................................[OK]
+    Repetition with min and max repetition numbers
+        test-repeat.py ..................................................[OK]
+    Paralell
+        test-parallelize.py .............................................[OK]
+    Repetitions Kleene closure 0 or arbitrary repetitions
+        test-repeat-pure.py .............................................[OK]
+    Append Post Condition
+        test-setup_post_condition.py ....................................[OK]
+    Sequence
+        test-sequentialize.py ...........................................[OK]
+    Append Post Condition
+        test-setup_border_conditions.py .................................[OK]
+
+ -- Tracing origin:
+
+    Paralellization
+        test-parallelize-trace-origin.py ................................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    Cloning
+        test-StateMachine-trace-origin-clone.py .........................[OK]
+    Inverse
+        test-StateMachine-trace-origin-inverse.py .......................[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+
+ -- Trigger Set Check:
+
+    Has Trigger
+        test-StateInfo-has_trigger.py ...................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:21:45 2007
+TITLE: Frank-Rene Schaefers Little Python Library
+
+-------------------------------------------------------------------------------
+
+ -- File Input:
+
+    Function read_until_closing_bracket(...)
+        test-read_until_closing_bracket.py ..............................[OK]
+
+ -- String Handling:
+
+    Trim (replaced by string.strip(..))
+        test-trim.py ....................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Dec 11 06:21:59 2007
+TITLE: Character Set Queries
+
+-------------------------------------------------------------------------------
+
+ -- Quex Queries:
+
+    Wildcard Property Values
+        test-query-property-wildcard-values.py ..........................[OK]
+    Information about Properties
+        test-query.py PropertyList ......................................[OK]
+                      PropertyInfo ......................................[OK]
+    Character Sets for Property Settings
+        test-query-character-set-by-expression.py .......................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+SUMMARY:
+./demo/TEST .............................................................[OK]
+./quex/TEST .............................................................[OK]
+./quex/code_base/buffer/TEST ............................................[OK]
+./quex/code_base/buffer/iconv/TEST ......................................[OK]
+./quex/code_base/template/TEST ..........................................[OK]
+./quex/core_engine/TEST .................................................[OK]
+./quex/core_engine/generator/TEST .......................................[OK]
+./quex/core_engine/regular_expression/TEST ..............................[OK]
+./quex/core_engine/state_machine/TEST ...................................[OK]
+./quex/frs_py/TEST ......................................................[OK]
+./quex/input/TEST .......................................................[OK]
+===============================================================================
