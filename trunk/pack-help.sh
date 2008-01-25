@@ -62,6 +62,9 @@ rm $input $output
 echo "Files are located in /tmp"
 cd $orig_directory
 
+# (*) make sure that the new version information is checked in
+svn commit ./quex/DEFINITIONS.py -m 'version info'
+
 # (*) branch on sourceforge subversion
 svn copy https://quex.svn.sourceforge.net/svnroot/quex/trunk \
          https://quex.svn.sourceforge.net/svnroot/quex/tags/quex-$1 \
