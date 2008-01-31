@@ -1,5 +1,10 @@
-<history date="Fri Jan 25 21:52:04 2008" element-n="1">
+<history date="Thu Jan 31 05:06:11 2008" element-n="4">
     <day year="2008" month="01" day="25">
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
+    </day>
+    <day year="2008" month="01" day="31">
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
     </day>
 </history>
