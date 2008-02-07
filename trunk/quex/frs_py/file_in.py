@@ -64,7 +64,7 @@ def read_until_whitespace(fh):
     while 1 + 1 == 2:
         tmp = fh.read(1)
         if   tmp == "": raise EndOfStreamException()
-        elif tmp in [' ', '\t', '\n']:                     fh.seek(-1, 1); return txt
+        elif tmp.isspace():                                fh.seek(-1, 1); return txt
         elif previous_tmp == "/" and (tmp in ["*",  "/"]): fh.seek(-2, 1); return txt[:-1]
         txt += tmp
         previous_tmp = tmp
