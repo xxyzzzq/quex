@@ -1,0 +1,8 @@
+<test-database execution-time-sec="0.19" date="Thu Feb  7 20:11:14 2008">
+    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.19"> 
+        <application file-name="test-coder-get_generator_input.py" info-request-time="1195336071L"/>
+        <choice-list number="1">
+           <choice name="" result="OK" time-sec="0.19" crc="2138674050"/>
+        </choice-list>
+    </test>
+</test-database>
