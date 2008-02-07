@@ -29,7 +29,7 @@ def skip_whitespace(fh):
     while 1 + 1 == 2:
         tmp = fh.read(1)
 
-        if tmp in [' ', '\t', '\n']: continue
+        if tmp.isspace(): continue
         elif tmp == "": raise EndOfStreamException()
 
         # -- character was not a whitespace character

@@ -1,17 +1,17 @@
-<test-database execution-time-sec="0.09" date="Thu Jan 31 05:09:10 2008">
+<test-database execution-time-sec="0.00" date="Thu Feb  7 17:48:49 2008">
     <group name="File Input">
-        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.06"> 
+        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.00"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1195336072L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="1489533151"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1489533151"/>
             </choice-list>
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.03"> 
+        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.00"> 
             <application file-name="test-trim.py" info-request-time="1195336072L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-964243626"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-964243626"/>
             </choice-list>
         </test>
     </group>
