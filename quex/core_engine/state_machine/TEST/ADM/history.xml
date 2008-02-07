@@ -1,4 +1,4 @@
-<history date="Thu Jan 31 05:09:10 2008" element-n="43">
+<history date="Thu Feb  7 03:31:56 2008" element-n="46">
     <day year="2007" month="12" day="29">
         <accept    time="22:29:47" application="test-replacement.py" choice="" crc="-1076731964" />
         <crc-error time="22:29:55" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -47,5 +47,10 @@
         <crc-error time="04:09:05" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="421356511" real-crc="914566778"/>
         <crc-error time="04:09:08" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
         <test      time="04:09:10" n="28" ok-n="28" fail-n="0" else-n="0"/>
+    </day>
+    <day year="2008" month="02" day="07">
+        <crc-error time="02:31:51" application="test-ambiguous_post_condition-mount_pseudo.py" choice="" database-crc="421356511" real-crc="914566778"/>
+        <crc-error time="02:31:53" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
+        <test      time="02:31:56" n="28" ok-n="28" fail-n="0" else-n="0"/>
     </day>
 </history>
