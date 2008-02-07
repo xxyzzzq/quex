@@ -1,6 +1,14 @@
+Warning: No database file for hwut-information found for directory: 
+Warning: /home/fschaef/prj/quex/trunk/TEST 
+Warning: no history file found. 
 ===============================================================================
-ENTER: ./
-DATE:  Mon Dec 10 22:28:59 2007
+ENTER: TEST
+DATE:  
+TITLE: Regression Tests for Fixed Defects
+
+===============================================================================
+ENTER: demo/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -42,7 +50,7 @@ TITLE: Demo-Applications
 
  -- demo/006:
 
-    Multiple Modes, Mode Transitions
+    Pseudo Ambiguous Post Conditions
         006.sh NDEBUG ...................................................[OK]
                DEBUG ....................................................[OK]
 -------------------------------------------------------------------------------
@@ -53,8 +61,8 @@ TITLE: Demo-Applications
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:20:27 2007
+ENTER: quex/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -68,8 +76,8 @@ TITLE: Miscellaneous Basic Tests
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:20:27 2007
+ENTER: quex/code_base/buffer/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -108,8 +116,8 @@ TITLE: Input Buffers
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:20:27 2007
+ENTER: quex/code_base/buffer/iconv/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -125,8 +133,8 @@ TITLE: Input Buffers Based on the IConv - Library
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:20:27 2007
+ENTER: quex/code_base/template/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -145,8 +153,8 @@ TITLE: Lexical Analyzer Class Template
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:25:45 2007
+ENTER: quex/core_engine/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -176,8 +184,8 @@ TITLE: Core Functionalities
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:26:31 2007
+ENTER: quex/core_engine/generator/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -272,8 +280,8 @@ TITLE: Code Generation for Lexical Analyzer
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:26:37 2007
+ENTER: quex/core_engine/regular_expression/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -334,8 +342,8 @@ TITLE: Regular Expression Parsing
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:40:21 2007
+ENTER: quex/core_engine/state_machine/TEST
+DATE:  Thu Feb  7 03:31:56 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -406,14 +414,14 @@ TITLE: State Machine Operations
 
     Paralellization
         test-parallelize-trace-origin.py ................................[OK]
-    Hopcroft optimization (minimize state set)
-        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     Cloning
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Inverse
         test-StateMachine-trace-origin-inverse.py .......................[OK]
-    NFA to DFA (subset construction)
-        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
 
  -- Trigger Set Check:
 
@@ -427,8 +435,8 @@ TITLE: State Machine Operations
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:21:45 2007
+ENTER: quex/frs_py/TEST
+DATE:  Thu Feb  7 17:48:49 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -450,8 +458,8 @@ TITLE: Frank-Rene Schaefers Little Python Library
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: ./
-DATE:  Tue Dec 11 06:21:59 2007
+ENTER: quex/input/TEST
+DATE:  Thu Feb  7 17:48:50 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------

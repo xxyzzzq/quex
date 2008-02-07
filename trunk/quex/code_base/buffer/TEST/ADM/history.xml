@@ -1,12 +1,37 @@
-<history date="Thu Jan 31 05:06:11 2008" element-n="6">
+<history date="Thu Feb  7 17:48:49 2008" element-n="29">
     <day year="2008" month="01" day="25">
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="20:52:05" n="15" ok-n="15" fail-n="0" else-n="0"/>
     </day>
     <day year="2008" month="01" day="31">
         <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="04:06:11" n="15" ok-n="15" fail-n="0" else-n="0"/>
+    </day>
+    <day year="2008" month="02" day="07">
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="16:41:38" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="7" ok-n="7" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
     </day>
 </history>

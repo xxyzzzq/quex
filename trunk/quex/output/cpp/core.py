@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import os
 from copy import copy
 import time
 
@@ -177,18 +178,17 @@ def do(Modes, setup):
              ])
 
     fh_out = open(QuexClassHeaderFileOutput, "w")
+    if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     fh_out.write(txt)
     fh_out.close()
 
-    fh_out = open(ModeClassImplementationFile, "w")
-    fh_out.write(lexer_mode.header.get() + "\n")
-    
+    txt = lexer_mode.header.get() + "\n"
     if DerivedClassHeaderFileName != "":
-        fh_out.write("#include<" + DerivedClassHeaderFileName +">\n")
+        txt += "#include<" + DerivedClassHeaderFileName +">\n"
     else:
-        fh_out.write("#include<" + setup.output_file_stem +">\n")
+        txt += "#include<" + setup.output_file_stem +">\n"
     
-    fh_out.write("namespace quex {\n")
+    txt += "namespace quex {\n"
 
     mode_class_member_functions_txt = \
          blue_print(mode_class_member_functions_txt,
@@ -196,8 +196,12 @@ def do(Modes, setup):
                  ["%%TOKEN_CLASS%%",              setup.input_token_class_name],
                  ["%%LEXER_DERIVED_CLASS_NAME%%", setup.input_derived_class_name]])
     
-    fh_out.write(mode_class_member_functions_txt)
-    fh_out.write("} // END: namespace quex\n")
+    txt += mode_class_member_functions_txt
+    txt += "} // END: namespace quex\n"
+
+    fh_out = open(ModeClassImplementationFile, "w")
+    if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
+    fh_out.write(txt)
     fh_out.close()
 
 
