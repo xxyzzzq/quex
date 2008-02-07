@@ -1,0 +1,10 @@
+<history date="Thu Feb  7 20:00:46 2008" element-n="6">
+    <day year="2008" month="02" day="07">
+        <history-init time="19:00:24"/>
+        <database-init time="19:00:24"/>
+        <add       time="19:00:24" application="bug-1885304.sh"/>
+        <test      time="19:00:26" n="1" ok-n="0" fail-n="0" else-n="1"/>
+        <accept    time="19:00:39" application="bug-1885304.sh" choice="" crc="1638578037" />
+        <test      time="19:00:46" n="1" ok-n="0" fail-n="1" else-n="0"/>
+    </day>
+</history>
