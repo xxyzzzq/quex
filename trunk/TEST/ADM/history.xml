@@ -1,4 +1,4 @@
-<history date="Thu Feb  7 20:00:46 2008" element-n="6">
+<history date="Thu Feb  7 20:19:25 2008" element-n="18">
     <day year="2008" month="02" day="07">
         <history-init time="19:00:24"/>
         <database-init time="19:00:24"/>
@@ -6,5 +6,17 @@
         <test      time="19:00:26" n="1" ok-n="0" fail-n="0" else-n="1"/>
         <accept    time="19:00:39" application="bug-1885304.sh" choice="" crc="1638578037" />
         <test      time="19:00:46" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <test      time="19:03:07" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <test      time="19:14:26" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <accept    time="19:16:12" application="bug-1885304.sh" choice="" crc="345845752" />
+        <test      time="19:16:23" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <accept    time="19:17:07" application="bug-1885304.sh" choice="" crc="-688395551" />
+        <test      time="19:17:15" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <accept    time="19:17:59" application="bug-1885304.sh" choice="" crc="1121279072" />
+        <test      time="19:18:05" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <accept    time="19:18:56" application="bug-1885304.sh" choice="" crc="-2061475437" />
+        <test      time="19:19:02" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <accept    time="19:19:20" application="bug-1885304.sh" choice="" crc="-1988207487" />
+        <test      time="19:19:25" n="1" ok-n="1" fail-n="0" else-n="0"/>
     </day>
 </history>
