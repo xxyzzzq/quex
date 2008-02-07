@@ -1,13 +1,16 @@
 import sys
 from copy import copy, deepcopy
-from quex.core_engine.interval_handling import NumberSet, Interval
-import quex.core_engine.state_machine.index as state_machine_index
+
+from   quex.frs_py.string_handling import blue_print
 #
-import quex.core_engine.generator.languages.core as languages
+from   quex.core_engine.interval_handling   import NumberSet, Interval
+import quex.core_engine.state_machine.index as     state_machine_index
+#
+import quex.core_engine.generator.languages.core  as languages
 import quex.core_engine.generator.languages.label as languages_label
 #
-from quex.core_engine.state_machine.index import map_state_combination_to_index, \
-                                                 get_state_machine_by_id
+from   quex.core_engine.state_machine.index import map_state_combination_to_index, \
+                                                   get_state_machine_by_id
 
 
 # definitions for 'history items':
@@ -36,10 +39,8 @@ class Transition:
         # target state index (where one lands if transition is performed)
         self.target_state_index = TargetStateIdx
 
-    def get_string(self, ElseTransitionF=False, StateIndexMap=None):
-        """Return a string representation of the Transition. If 'ElseTransitionF' is 
-           True, then the string ELSE is printed instead of the trigger set.
-        """
+    def get_string(self, StateIndexMap=None):
+        """Return a string representation of the Transition."""
         trigger_str = self.trigger_set.get_utf8_string()
         if StateIndexMap == None:
             target_str  = "%05i" % self.target_state_index
@@ -47,6 +48,16 @@ class Transition:
             target_str  = "%05i" % StateIndexMap[self.target_state_index]
             
         return "== %s ==> %s" % (trigger_str, target_str)
+
+    def get_graphviz_string(self, StateIndexMap=None):
+        trigger_str = self.trigger_set.get_utf8_string()
+        if StateIndexMap == None:
+            target_str  = "%i" % self.target_state_index
+        else:
+            target_str  = "%i" % StateIndexMap[self.target_state_index]
+            
+        return "-> %s [label =\"%s\"];\n" % (target_str, trigger_str.replace("\"", "\\\""))
+
  
     def set(self, TriggerSet=None, TargetIdx=None):
         if TriggerSet != None:  self.trigger_set = TriggerSet
@@ -83,6 +94,14 @@ class EpsilonTransition:
 
         if target_str != "": target_str = target_str[:-2]
         return "epsilon == %s ==> %s" % (trigger_str, target_str)
+
+    def get_graphviz_string(self, OwnStateIndex, StateIndexMap=None):
+        msg = ""
+        for ti in self.target_state_indices:
+            if StateIndexMap == None: target_str = "%i" % int(ti) 
+            else:                     target_str = "%i" % int(StateIndexMap[ti]) 
+            msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIndex, target_str)
+        return msg
 
 
 StateOriginInfo_POST_CONDITION_END          = 1
@@ -954,6 +973,17 @@ class StateInfo:
         msg += "%s %s\n" % (fill_str, self.__epsilon.get_string(StateIndexMap=StateIndexMap))
         return msg
 
+    def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
+        msg = ""
+        for t in self.__transition_list:
+            # note: the fill string for the first line printed is empty, because
+            #       the start stae is printed before  this.
+            msg += "%i %s" % (OwnStateIdx, t.get_graphviz_string(StateIndexMap))
+
+        # the epsilon transition
+        if self.__epsilon.target_state_indices != []:
+            msg += "%s" % self.__epsilon.get_graphviz_string(OwnStateIdx, StateIndexMap)
+        return msg
 
 class StateMachine:
 
@@ -1946,9 +1976,7 @@ class StateMachine:
     def __repr__(self):
         return self.get_string(NormalizeF=True)
 
-    def get_string(self, NormalizeF=False):
-
-        # (*) normalize the state indices
+    def __get_state_index_normalization(self, NormalizeF):
         index_map         = {}
         inverse_index_map = {}
         counter           = -1L
@@ -1960,6 +1988,13 @@ class StateMachine:
             else:
                 index_map[state_i]         = state_i
                 inverse_index_map[state_i] = state_i
+
+        return index_map, inverse_index_map, counter
+
+    def get_string(self, NormalizeF=False):
+
+        # (*) normalize the state indices
+        index_map, inverse_index_map, counter = self.__get_state_index_normalization(NormalizeF)
     
         # (*) construct text 
         msg = "init-state = " + repr(index_map[self.init_state_index]) + "\n"
@@ -1976,3 +2011,32 @@ class StateMachine:
 
         return msg
 
+    def get_graphviz_string(self, NormalizeF=False):
+        # (*) normalize the state indices
+        index_map, inverse_index_map, counter = self.__get_state_index_normalization(NormalizeF)
+
+        # (*) Border of plot block
+        frame_txt = """
+        digraph state_machine_%i {
+	       rankdir=LR;
+	       size="8,5"
+	       node [shape = doublecircle]; $$ACCEPTANCE_STATES$$;
+           node [shape = circle];
+           $$TRANSITIONS$$
+        }
+        """ % self.get_id()
+
+        transition_str       = ""
+        acceptance_state_str = ""
+        for printed_state_i in range(0, counter+1):
+            printed_state_i = long(printed_state_i)
+            real_state_i    = inverse_index_map[printed_state_i]
+            state           = self.states[real_state_i]
+            if state.is_acceptance(): 
+                acceptance_state_str += "%i, " % int(printed_state_i)
+            transition_str += state.get_graphviz_string(printed_state_i, index_map)
+
+        return blue_print(frame_txt, [["$$ACCEPTANCE_STATES$$", acceptance_state_str],
+                                      ["$$TRANSITIONS$$",       transition_str]])
+        
+            
