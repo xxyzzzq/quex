@@ -1,0 +1,10 @@
+<test-database execution-time-sec="2.44" date="Thu Feb  7 20:00:46 2008">
+    <group name="1885304 by 'sphericalcow'">
+        <test title="Problems with files with DOS CR/LF line endings" time-sum-sec="2.44"> 
+            <application file-name="bug-1885304.sh" info-request-time="1202410812L"/>
+            <choice-list number="1">
+               <choice name="" result="FAIL" time-sec="2.44" crc="None"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
