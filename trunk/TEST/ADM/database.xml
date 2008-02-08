@@ -1,9 +1,17 @@
-<test-database execution-time-sec="2.59" date="Thu Feb  7 20:19:25 2008">
+<test-database execution-time-sec="2.67" date="Fri Feb  8 02:04:44 2008">
     <group name="1885304 by 'sphericalcow'">
-        <test title="Problems with files with DOS CR/LF line endings" time-sum-sec="2.59"> 
-            <application file-name="bug-1885304.sh" info-request-time="1202411931L"/>
+        <test title="Problems with files with DOS CR/LF line endings" time-sum-sec="2.54"> 
+            <application file-name="bug-1885304.sh" info-request-time="1202432642L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.59" crc="-1988207487"/>
+               <choice name="" result="OK" time-sec="2.54" crc="-1988207487"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="1885846 by 'sphericalcow'">
+        <test title="Empty RE in define section" time-sum-sec="0.13"> 
+            <application file-name="bug-1885846.sh" info-request-time="1202432500L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.13" crc="2110266544"/>
             </choice-list>
         </test>
     </group>

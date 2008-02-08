@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import time
+import os
 import sys
 from GetPot import GetPot
 
@@ -231,6 +232,7 @@ def output(global_setup):
     content = content.replace("%%TOKEN_CLASS%%", setup.token_class)
 
     fh = open(setup.output_file, "w")
+    if os.linesep == "\n": content = content.replace("\n", os.linesep)
     fh.write(content)
     fh.close()
 

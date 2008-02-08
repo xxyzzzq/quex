@@ -2,6 +2,7 @@
 #            important to the code generator. They differ slightly from
 #            the 'Match' objects created for the 'LexMode' description.
 from copy import copy
+import os
 import sys
 
 from   quex.frs_py.file_in import error_msg
@@ -100,6 +101,7 @@ def do(Setup):
         
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "w")
+    if os.linesep == "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + "-core-engine.cpp", "C")
