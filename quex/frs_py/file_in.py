@@ -58,6 +58,37 @@ def skip_whitespace(fh):
             fh.seek(-2, 1)
             return                
 
+def is_identifier_start(character):
+    char_value = ord(character)
+    return    character == "_" \
+           or (char_value >= ord('a') and char_value <= ord('z')) \
+           or (char_value >= ord('A') and char_value <= ord('Z'))
+
+def is_identifier_continue(character):
+    char_value = ord(character)
+    return    is_identifier_start(character) \
+           or (char_value >= ord('0') and char_value <= ord('9'))
+
+def is_identifier(identifier):
+    if identifier == "": return False
+
+    if is_identifier_start(identifier[0]) == False: return False
+    if len(identifier) == 1: return True
+
+    for letter in identifier[1:]:
+        if is_identifier_continue(letter) == False: return False
+
+    return True
+
+def read_identifier(fh):
+    txt = ""
+    while 1 + 1 == 2:
+        tmp = fh.read(1)
+        if tmp == "": return txt
+
+        if is_identifier_continue(tmp): txt += tmp
+        else:                           fh.seek(-1, 1); return txt
+
 def read_until_whitespace(fh):
     txt = ""
     previous_tmp = ""
@@ -175,7 +206,10 @@ def read_until_letter(fh, EndMarkers, Verbose=False):
     txt = ""
     while 1 + 1 == 2:
         tmp = fh.read(1)
-        if tmp == "": raise EndOfStreamException()
+        if tmp == "":   
+            if Verbose: return "", -1
+            else:       return ""
+
         if tmp in EndMarkers:
             if Verbose: return txt, EndMarkers.index(tmp)
             else:       return txt
