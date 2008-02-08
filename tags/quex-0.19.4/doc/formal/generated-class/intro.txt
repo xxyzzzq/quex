@@ -1,0 +1,14 @@
+Quex generates a C++ class that implements a lexical analyser as specified
+by the user. This section discusses the class members and member functions with
+which the user may interacts. Section \ref{sec:formal/generated-class/ui}
+discusses the usage of the lexical analyser from outside, i.e. how the end
+user of the engine is going to create a lexical analyser and how a character
+stream is transformed into a token stream. The subsequent sections discuss how
+modes can be handled using member functions, token handling, the_ 
+accumulator_, and some virtual functions to be possibly overriden by a derived
+class. Any member function can theoretically be used in any
+context footnote:[This is, of course, only true as long as acces rights of` 
+private` or `public` do not forbid it.].
+
+
+
