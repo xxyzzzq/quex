@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
-    echo "1885304 by 'sphericalcow': Problems with files with DOS CR/LF line endings"
+    echo "sphericalcow: 1885304 Problems with files with DOS CR/LF line endings"
     exit
 fi
 

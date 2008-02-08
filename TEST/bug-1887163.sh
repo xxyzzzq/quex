@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
-bug=1885846
+bug=1887163
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug Empty RE in define section"
+    echo "sphericalcow: $bug Single state mode causes quex to crash"
     exit
 fi
 

@@ -1,0 +1,77 @@
+// -*- C++ -*-
+// PURPOSE: File containing definition of token-identifier and
+//          a function that maps token identifiers to a string
+//          name.
+//
+// NOTE: This file has been created automatically by a
+//       quex program.
+//
+// DATE: Fri Feb  8 03:02:42 2008
+//
+/////////////////////////////////////////////////////////////////////////////////////////
+#ifndef __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_2008y2m8d_3h02m42s__
+#define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_2008y2m8d_3h02m42s__
+
+#include<cstdio> // for: 'sprintf'
+#include<map>    // for: 'token-id' <-> 'name map'
+#include</home/fschaef/prj/quex/trunk/quex/code_base/token>
+
+
+namespace quex {
+#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION
+// No file provided that contains potentially a foreign token-id
+// definition. Use quex command line option '--foreign-token-id-file'
+#else // QUEX_FOREIGN_TOKEN_ID_DEFINITION
+const quex::token::id_type TKN_A             = 10000;
+const quex::token::id_type TKN_TERMINATION   = 0;
+const quex::token::id_type TKN_UNINITIALIZED = 1;
+#endif // QUEX_FOREIGN_TOKEN_ID_DEFINITION
+} // namespace quex
+
+
+namespace quex {
+
+
+    inline const std::string&
+    token::map_id_to_name(const token::id_type TokenID)
+    {
+       static bool virginity_f = true;
+       static std::map<token::id_type, std::string>  db;
+       static std::string  error_string("");
+       static std::string  uninitialized_string("<UNINITIALIZED>");
+       static std::string  termination_string("<TERMINATION>");
+       
+       // NOTE: In general no assumptions can be made that the token::id_type
+       //       is an integer. Thus, no switch statement is used. 
+       if( virginity_f ) {
+           virginity_f = false;
+           // Create the Database mapping TokenID -> TokenName
+           
+           db[TKN_UNINITIALIZED] = std::string("UNINITIALIZED");
+           db[TKN_TERMINATION]   = std::string("TERMINATION");
+           db[TKN_A]             = std::string("A");
+       }
+
+       if     ( TokenID == TKN_TERMINATION )   return termination_string;
+       else if( TokenID == TKN_UNINITIALIZED ) return uninitialized_string;
+       std::map<token::id_type, std::string>::const_iterator it = db.find(TokenID);
+       if( it != db.end() ) return (*it).second;
+       else {
+          char tmp[64];
+          sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+          error_string = std::string(tmp);
+          return error_string;
+       }
+    }
+
+
+// NOT YET:
+//   template <token::id_type TokenT>
+//   struct token_trait;
+//
+//    template<> struct token_trait <TKN_UNINITIALIZED> { typedef None type; };
+//    template<> struct token_trait <TKN_TERMINATION>   { typedef None type; };
+//    template<> struct token_trait <TKN_A>             { typedef None type; };
+
+}
+#endif // __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_GENERATED__
