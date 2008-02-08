@@ -1,4 +1,4 @@
-<history date="Fri Feb  8 01:48:38 2008" element-n="15">
+<history date="Fri Feb  8 03:59:04 2008" element-n="16">
     <day year="2008" month="01" day="25">
         <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
@@ -21,5 +21,6 @@
     </day>
     <day year="2008" month="02" day="08">
         <test      time="00:48:38" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="02:59:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
     </day>
 </history>

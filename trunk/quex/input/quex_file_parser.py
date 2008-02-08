@@ -207,17 +207,19 @@ def parse_token_id_definitions(fh, Setup):
             candidate = record[1]
             # does candidate consist only of digits ? --> number
             # is first character a letter or '_' ?    --> type_name     
-            if candidate.isdigit():                             number = long(candidate)
-            elif candidate[0].isalpha() or candidate[0] == "_": type_name = candidate
+            if candidate.isdigit():           number    = long(candidate)
+            elif is_identifier(candidate[0]): type_name = candidate
         #
         if len(record) - 2 > 2:
             candidate = record[2]
             # is first character a letter or '_' ?      
-            if candidate[0].isalpha() or candidate[0] == "_": 
+            if is_identifier(candidate[0]): 
                 if type_name != None:
                     error_msg("Token can only have *one* type associated with it", fh, line_n)
                 type_name = candidate
         #
+        if not is_identifier(name):      error_msg("no valid token identifier found", fh)
+
         if not db.has_key(name): 
             db[name] = TokenInfo(name, number, type_name, fh.name, line_n)
         else:
@@ -392,10 +394,15 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
 
 def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx, Setup):
     skip_whitespace(fh)
+
     # shorthand for { self.send(TKN_SOMETHING); RETURN; }
-    token_name, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
-    if bracket_i == -1: 
-        error_msg("missing ending ';' at end of '=>' token sending statement.", fh)
+    token_name = read_identifier(fh)
+    if token_name == "":
+        error_msg("missing token identifier after '=>' shortcut.", fh)
+
+    dummy, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
+    if bracket_i == -1 or (dummy != "" and dummy.isspace() == False): 
+        error_msg("missing '(' or ';' at end of '=>' token sending statement.", fh)
 
     if bracket_i == 0:
         token_constructor_args = read_until_closing_bracket(fh, "(", ")")

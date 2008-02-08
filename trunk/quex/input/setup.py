@@ -4,7 +4,7 @@ from   copy import copy
 import sys
 
 from   quex.GetPot                 import GetPot
-from   quex.frs_py.file_in         import open_file_or_die, error_msg
+from   quex.frs_py.file_in         import open_file_or_die, error_msg, is_identifier
 import quex.lexer_mode as lexer_mode
 import quex.input.query as query
 
@@ -207,6 +207,10 @@ def validate(setup, command_line, argv):
     if setup.input_token_counter_offset < setup.token_id_termination:
         error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
                   "Maybe it works.", DontExitF=True)
+    
+    if is_identifier(setup.input_token_id_prefix) == False:
+        error_msg("Token prefix must be a valid identifier (--token-prefix).\n" + \
+                  "Received: '%s'" % setup.input_token_id_prefix)
 
         
 
