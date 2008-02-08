@@ -1,17 +1,21 @@
-<test-database execution-time-sec="2.67" date="Fri Feb  8 02:04:44 2008">
-    <group name="1885304 by 'sphericalcow'">
-        <test title="Problems with files with DOS CR/LF line endings" time-sum-sec="2.54"> 
-            <application file-name="bug-1885304.sh" info-request-time="1202432642L"/>
+<test-database execution-time-sec="0.00" date="Fri Feb  8 03:18:46 2008">
+    <group name="sphericalcow">
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
+            <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.54" crc="-1988207487"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1988207487"/>
             </choice-list>
         </test>
-    </group>
-    <group name="1885846 by 'sphericalcow'">
-        <test title="Empty RE in define section" time-sum-sec="0.13"> 
-            <application file-name="bug-1885846.sh" info-request-time="1202432500L"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.00"> 
+            <application file-name="bug-1885846.sh" info-request-time="1202435698L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.13" crc="2110266544"/>
+               <choice name="" result="OK" time-sec="0.00" crc="2110266544"/>
+            </choice-list>
+        </test>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.00"> 
+            <application file-name="bug-1887163.sh" info-request-time="1202437087L"/>
+            <choice-list number="1">
+               <choice name="" result="NO GOOD FILE" time-sec="0.00" crc="None"/>
             </choice-list>
         </test>
     </group>
