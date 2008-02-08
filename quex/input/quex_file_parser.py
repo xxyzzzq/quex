@@ -34,6 +34,8 @@ def do(file_list, Setup):
                 parse_section(fh, Setup)
         except EndOfStreamException:
             pass
+        except RegularExpressionException, x:
+            error_msg(x.message, fh)
         
     return lexer_mode.mode_db
 
