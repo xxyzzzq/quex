@@ -1,7 +1,7 @@
 warning: no initial mode defined via 'start'
 warning: using mode 'ONE_AND_ONLY' as initial mode
 (0) create token id file
-   token class file = '/home/fschaef/prj/quex/trunk/quex/code_base/token'
+   token class file = 'quex/code_base/token'
    => 'Simple-token_ids'
 // -*- C++ -*-   :vim set syntax=cpp:
 #ifndef __INCLUDE_GUARD__QUEX__SIMPLE
@@ -150,7 +150,7 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
 #include <quex/code_base/token_queue>
 // Quex/User
 #include <Simple-token_ids>
-#include </home/fschaef/prj/quex/trunk/quex/code_base/token>
+#include <quex/code_base/token>
 
 // RETURN: _____________________________________________________________________
 //
@@ -3500,7 +3500,7 @@ assert(Indentation >= 0);
 
 #include<cstdio> // for: 'sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
-#include</home/fschaef/prj/quex/trunk/quex/code_base/token>
+#include<quex/code_base/token>
 
 
 namespace quex {

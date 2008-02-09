@@ -4,3 +4,7 @@ error.qx:7:error: missing '(' or ';' at end of '=>' token sending statement.
 Second Use Case:
 error-2.qx:5:error: End of file reached while parsing token shortcut.
 
+Third Use Case:
+error-3.qx:6:error: End of file reached while parsing Pattern or event handler name.
+error-3.qx:6:error: Missing closing '}' for end of mode.
+

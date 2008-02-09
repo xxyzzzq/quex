@@ -14,4 +14,8 @@ echo
 echo "Second Use Case:"
 quex -i error-2.qx --engine Simple
 echo
+
+echo "Third Use Case:"
+quex -i error-3.qx --engine Simple
+echo
 cd $tmp
