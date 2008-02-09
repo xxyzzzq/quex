@@ -1,27 +1,33 @@
-<test-database execution-time-sec="3.45" date="Sat Feb  9 07:41:46 2008">
+<test-database execution-time-sec="1.66" date="Sat Feb  9 12:18:30 2008">
     <group name="sphericalcow">
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="2.55"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="1.16"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.55" crc="-1988207487"/>
+               <choice name="" result="OK" time-sec="1.16" crc="-1988207487"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.13"> 
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.07"> 
             <application file-name="bug-1885846.sh" info-request-time="1202439526L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.13" crc="2110266544"/>
+               <choice name="" result="OK" time-sec="0.07" crc="2110266544"/>
             </choice-list>
         </test>
-        <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.54"> 
+        <test title="1889089 Single state mode causes quex to crash" time-sum-sec="0.05"> 
+            <application file-name="bug-1889089.sh" info-request-time="1202555658L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05" crc="373655619"/>
+            </choice-list>
+        </test>
+        <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.27"> 
             <application file-name="bug-1889086.sh" info-request-time="1202526432L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.54" crc="1778031731"/>
+               <choice name="" result="OK" time-sec="0.27" crc="1778031731"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.23"> 
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.11"> 
             <application file-name="bug-1887163.sh" info-request-time="1202525609L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.23" crc="-459991841"/>
+               <choice name="" result="OK" time-sec="0.11" crc="-459991841"/>
             </choice-list>
         </test>
     </group>
