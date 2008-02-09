@@ -1,5 +1,13 @@
-<history date="Sat Feb  9 04:21:52 2008" element-n="114">
+<history date="Sat Feb  9 07:41:59 2008" element-n="155">
     <day year="2008" month="01" day="25">
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="20:52:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="20:52:04" n="17" ok-n="17" fail-n="0" else-n="0"/>
@@ -53,6 +61,14 @@
         <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
         <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:10" n="17" ok-n="17" fail-n="0" else-n="0"/>
+        <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="04:06:11" n="1" ok-n="1" fail-n="0" else-n="0"/>
@@ -64,6 +80,12 @@
         <test      time="04:06:11" n="15" ok-n="15" fail-n="0" else-n="0"/>
     </day>
     <day year="2008" month="02" day="07">
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
+        <test      time="16:41:37" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
         <test      time="16:41:37" n="17" ok-n="10" fail-n="7" else-n="0"/>
         <test      time="16:41:37" n="1" ok-n="1" fail-n="0" else-n="0"/>
@@ -97,7 +119,13 @@
         <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
         <test      time="16:48:49" n="7" ok-n="7" fail-n="0" else-n="0"/>
         <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="7" ok-n="7" fail-n="0" else-n="0"/>
         <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="7" ok-n="7" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
+        <test      time="16:48:49" n="0" ok-n="0" fail-n="0" else-n="0"/>
+        <test      time="19:11:14" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="19:11:14" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="19:11:14" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="19:11:14" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="19:11:14" n="1" ok-n="1" fail-n="0" else-n="0"/>
@@ -110,7 +138,11 @@
         <test      time="00:48:38" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="00:48:38" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="00:48:38" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="00:48:38" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="00:48:38" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="00:48:38" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <test      time="02:59:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="02:59:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="02:59:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="02:59:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="02:59:04" n="1" ok-n="1" fail-n="0" else-n="0"/>
@@ -119,8 +151,17 @@
     <day year="2008" month="02" day="09">
         <test      time="02:15:07" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="02:15:07" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="02:15:07" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="02:15:07" n="1" ok-n="1" fail-n="0" else-n="0"/>
         <test      time="02:15:07" n="15" ok-n="15" fail-n="0" else-n="0"/>
         <test      time="03:21:51" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <test      time="03:21:51" n="1" ok-n="0" fail-n="1" else-n="0"/>
+        <test      time="03:21:51" n="1" ok-n="0" fail-n="1" else-n="0"/>
         <test      time="03:21:51" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <test      time="04:31:21" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="04:31:21" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="04:31:22" n="15" ok-n="15" fail-n="0" else-n="0"/>
+        <test      time="06:41:59" n="1" ok-n="1" fail-n="0" else-n="0"/>
+        <test      time="06:41:59" n="15" ok-n="15" fail-n="0" else-n="0"/>
     </day>
 </history>

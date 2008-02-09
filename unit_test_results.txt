@@ -1,14 +1,20 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Thu Feb  7 20:19:25 2008
+DATE:  Sat Feb  9 07:41:46 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
 
- -- 1885304 by 'sphericalcow':
+ -- sphericalcow:
 
-    Problems with files with DOS CR/LF line endings
+    1885304 Problems with files with DOS CR/LF line endings
         bug-1885304.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
+    1889086 Single state mode causes quex to crash
+        bug-1889086.sh ..................................................[OK]
+    1887163 Single state mode causes quex to crash
+        bug-1887163.sh ..................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -18,7 +24,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Thu Feb  7 20:22:34 2008
+DATE:  Sat Feb  9 07:56:42 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -72,7 +78,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Thu Feb  7 20:11:14 2008
+DATE:  Sat Feb  9 07:41:59 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -87,7 +93,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Thu Feb  7 20:11:14 2008
+DATE:  Sat Feb  9 07:41:59 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -127,7 +133,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Thu Feb  7 20:11:14 2008
+DATE:  Sat Feb  9 07:41:59 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -144,7 +150,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Thu Feb  7 20:11:14 2008
+DATE:  Sat Feb  9 07:42:00 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -164,7 +170,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Thu Feb  7 20:11:15 2008
+DATE:  Sat Feb  9 07:42:01 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -195,7 +201,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Thu Feb  7 20:13:14 2008
+DATE:  Sat Feb  9 07:43:52 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -291,7 +297,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Thu Feb  7 20:13:29 2008
+DATE:  Sat Feb  9 07:44:11 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -329,21 +335,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Set Operations
-        test-properties-2.py ............................................[OK]
     Simple
         test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -446,7 +452,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Thu Feb  7 20:13:30 2008
+DATE:  Sat Feb  9 07:44:21 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -469,7 +475,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Thu Feb  7 20:14:04 2008
+DATE:  Sat Feb  9 07:45:12 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
