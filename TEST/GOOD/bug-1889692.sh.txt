@@ -1,0 +1,7 @@
+Use Case (1)
+error.qx:1:error: End of file reached while parsing 'define' section
+
+Use Case (2)
+error-2.qx:3:warning: Token id 'TKN_A' defined implicitly.
+error-2.qx:4:error: End of file reached while parsing token shortcut.
+

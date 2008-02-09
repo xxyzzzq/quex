@@ -1,0 +1,16 @@
+Use Case 1:
+warning: no initial mode defined via 'start'
+warning: using mode 'START' as initial mode
+(0) create token id file
+   token class file = '/home/fschaef/prj/quex/trunk/quex/code_base/token'
+   => 'lexer-token_ids'
+
+Use Case 2:
+error-2.qx:9:warning: Mode without pattern needs to be 'inheritable only'.
+error-2.qx:9:warning: <inheritable: only> has been added automatically.
+warning: no initial mode defined via 'start'
+warning: using mode 'A' as initial mode
+(0) create token id file
+   token class file = '/home/fschaef/prj/quex/trunk/quex/code_base/token'
+   => 'lexer-token_ids'
+

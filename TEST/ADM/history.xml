@@ -1,4 +1,4 @@
-<history date="Sat Feb  9 12:44:32 2008" element-n="73">
+<history date="Sat Feb  9 12:54:16 2008" element-n="86">
     <day year="2008" month="02" day="07">
         <history-init time="19:00:24"/>
         <database-init time="19:00:24"/>
@@ -77,5 +77,18 @@
         <test      time="11:18:30" n="5" ok-n="5" fail-n="0" else-n="0"/>
         <add       time="11:44:29" application="bug-1889692.sh"/>
         <accept    time="11:44:32" application="bug-1889692.sh" choice="" crc="-1237584754" />
+        <add       time="11:51:50" application="bug-1889321.sh"/>
+        <crc-error time="11:51:51" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
+        <crc-error time="11:51:52" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="11:51:54" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="448817424"/>
+        <test      time="11:51:54" n="7" ok-n="6" fail-n="0" else-n="1"/>
+        <database-init time="11:52:49"/>
+        <add       time="11:52:49" application="bug-1889321.sh"/>
+        <accept    time="11:52:51" application="bug-1889321.sh" choice="" crc="-1471372117" />
+        <add       time="11:54:10" application="bug-1889321.sh"/>
+        <crc-error time="11:54:14" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
+        <crc-error time="11:54:14" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="11:54:16" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="448817424"/>
+        <test      time="11:54:16" n="7" ok-n="7" fail-n="0" else-n="0"/>
     </day>
 </history>
