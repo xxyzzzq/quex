@@ -1,4 +1,4 @@
-<history date="Sat Feb  9 04:08:45 2008" element-n="50">
+<history date="Sat Feb  9 07:41:46 2008" element-n="65">
     <day year="2008" month="02" day="07">
         <history-init time="19:00:24"/>
         <database-init time="19:00:24"/>
@@ -54,5 +54,20 @@
         <test      time="03:08:10" n="4" ok-n="2" fail-n="2" else-n="0"/>
         <crc-error time="03:08:16" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
         <accept    time="03:08:45" application="bug-1887163.sh" choice="" crc="448817424" />
+        <crc-error time="03:17:05" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
+        <crc-error time="03:17:06" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="03:17:06" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="448817424"/>
+        <test      time="03:17:06" n="4" ok-n="3" fail-n="1" else-n="0"/>
+        <crc-error time="03:17:10" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
+        <crc-error time="03:22:31" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="03:22:31" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="448817424"/>
+        <crc-error time="04:44:12" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
+        <crc-error time="04:44:13" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="04:44:13" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="448817424"/>
+        <test      time="04:44:13" n="4" ok-n="3" fail-n="1" else-n="0"/>
+        <crc-error time="06:41:45" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="-896722883"/>
+        <crc-error time="06:41:45" application="bug-1889086.sh" choice="" database-crc="1778031731" real-crc="-994839883"/>
+        <crc-error time="06:41:46" application="bug-1887163.sh" choice="" database-crc="-459991841" real-crc="448817424"/>
+        <test      time="06:41:46" n="4" ok-n="4" fail-n="0" else-n="0"/>
     </day>
 </history>

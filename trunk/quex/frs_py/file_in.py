@@ -26,23 +26,26 @@ temporary_files  = []
 
 
 def skip_whitespace(fh):
+    def __skip_until_newline(fh):
+        tmp = ""
+        while tmp != '\n':
+            tmp = fh.read(1)
+            if tmp == "": raise EndOfStreamException()
+
     while 1 + 1 == 2:
         tmp = fh.read(1)
 
-        if tmp.isspace(): continue
+        if   tmp.isspace(): continue
         elif tmp == "": raise EndOfStreamException()
 
         # -- character was not a whitespace character
         #    => is there a '//' or a '/*' -comment ?
         tmp2 = fh.read(1)
-        if tmp2 == "": raise EndOfStreamException()
+        if tmp2 == "": fh.seek(-1, 1); return
 
         tmp += tmp2
         if tmp == "//":   
-            # skip until '\n'
-            while tmp != '\n':
-                tmp = fh.read(1)
-                if tmp == "": raise EndOfStreamException()
+            __skip_until_newline(fh)
 
         elif tmp == "/*":
             # skip until '*/'
@@ -94,7 +97,10 @@ def read_until_whitespace(fh):
     previous_tmp = ""
     while 1 + 1 == 2:
         tmp = fh.read(1)
-        if   tmp == "": raise EndOfStreamException()
+        if   tmp == "": 
+            if txt == "": raise EndOfStreamException()
+            else:         return txt
+
         elif tmp.isspace():                                fh.seek(-1, 1); return txt
         elif previous_tmp == "/" and (tmp in ["*",  "/"]): fh.seek(-2, 1); return txt[:-1]
         txt += tmp
@@ -102,6 +108,7 @@ def read_until_whitespace(fh):
 
 def read_until_closing_bracket(fh, Opener, Closer,
                                IgnoreRegions = [ ['"', '"'],      # strings
+                                                 ['\'', '\''],    # characters
                                                  ["//", "\n"],    # c++ comments
                                                  ["/*", "*/"] ],  # c comments
                                SkipClosingDelimiterF = True):                    
@@ -300,27 +307,6 @@ def indented_open(Filename, Indentation = 3):
 
     return fh
 
-def delete_framing_whitespace(Str):
-
-    if Str == "": return ""
-    L = len(Str)
-    for i in range(L):
-        if Str[i] not in [" ", "\t", "\n"]:
-            break
-    else:
-        # reached end of string --> empty string
-        return ""
-
-    for k in range(1, L-i):
-        if Str[-k] not in [" ", "\t", "\n"]:
-            break
-
-    # note, if k = 1 then we would return Str[i:0]
-    if L-i != 1:
-        if k == 1:   return Str[i:]
-        else:        return Str[i:-k + 1]
-    else:            return Str[i:]
-    
 def read_next_word(fh):
     skip_whitespace(fh)
     word = read_until_whitespace(fh)

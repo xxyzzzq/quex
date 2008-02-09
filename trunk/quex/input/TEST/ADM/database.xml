@@ -1,22 +1,22 @@
-<test-database execution-time-sec="32.31" date="Sat Feb  9 03:17:53 2008">
+<test-database execution-time-sec="32.24" date="Sat Feb  9 07:45:12 2008">
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" time-sum-sec="2.87"> 
+        <test title="Wildcard Property Values" time-sum-sec="3.03"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1195336071L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.87" crc="-989951512"/>
+               <choice name="" result="OK" time-sec="3.03" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="26.15"> 
+        <test title="Information about Properties" time-sum-sec="25.89"> 
             <application file-name="test-query.py" info-request-time="1195336071L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="23.13" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="3.02" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time-sec="22.88" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="3.01" crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="3.30"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="3.33"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1195336071L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="3.30" crc="-1719645304"/>
+               <choice name="" result="OK" time-sec="3.33" crc="-1719645304"/>
             </choice-list>
         </test>
     </group>

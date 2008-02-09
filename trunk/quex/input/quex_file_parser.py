@@ -21,6 +21,7 @@ from   quex.exception               import RegularExpressionException
 import quex.lexer_mode               as lexer_mode
 import quex.input.mode_definition    as mode_definition
 import quex.input.regular_expression as regular_expression
+import quex.input.code_fragment      as code_fragment
 
 
 def do(file_list, Setup):
@@ -38,34 +39,6 @@ def do(file_list, Setup):
             error_msg(x.message, fh)
         
     return lexer_mode.mode_db
-
-def parse_unique_code_fragment(fh, code_fragment_name, possible_code_fragment_carrier):
-    """Parse a code fragment that can only be defined once. That includes that
-       and error is sent, if it is tried to define it a second time.
-    """   
-    if possible_code_fragment_carrier.line_n != -1:
-        error_msg("%s defined twice" % code_fragment_name, fh, DontExitF=True)
-        error_msg("previously defined here", 
-                  possible_code_fragment_carrier.filename,
-                  possible_code_fragment_carrier.line_n)
-
-    result = parse_code_fragment(fh, code_fragment_name)
-    possible_code_fragment_carrier.code     = result.code
-    possible_code_fragment_carrier.filename = result.filename
-    possible_code_fragment_carrier.line_n   = result.line_n
-    
-def parse_code_fragment(fh, code_fragment_name):
-    result = lexer_mode.ReferencedCodeFragment()
-    
-    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
-
-    if i == -1: error_message("missing open bracket after '%s' definition" % code_fragment_name, fh)
-
-    result.code = read_until_closing_bracket(fh, "{", "}")
-    result.filename = fh.name
-    result.line_n   = get_current_line_info_number(fh)
-
-    return result
 
 def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, ElementNames, MinElementN):   
     """Returns list of lists, where 
@@ -139,15 +112,15 @@ def parse_section(fh, Setup):
             return
         
         elif word == "header":
-            parse_unique_code_fragment(fh, "header", lexer_mode.header)        
+            code_fragment.parse_unique(fh, "header", lexer_mode.header)        
             return
 
         elif word == "body":
-            parse_unique_code_fragment(fh, "body", lexer_mode.class_body)        
+            code_fragment.parse_unique(fh, "body", lexer_mode.class_body)        
             return
 
         elif word == "init":
-            parse_unique_code_fragment(fh, "init", lexer_mode.class_init)
+            code_fragment.parse_unique(fh, "init", lexer_mode.class_init)
             return
             
         elif word == "define":
