@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.14" date="Fri Feb  8 03:59:05 2008">
-    <test title="Backwards Iteration" make-required="True" time-sum-sec="0.05"> 
+<test-database execution-time-sec="0.13" date="Sat Feb  9 03:15:07 2008">
+    <test title="Backwards Iteration" make-required="True" time-sum-sec="0.04"> 
         <application file-name="test-backward-get" info-request-time="1195339148L"/>
         <make-procedure success="True" />
         <choice-list number="4">
-           <choice name="Normal" result="OK" time-sec="0.03" crc="-904840909"/>
+           <choice name="Normal" result="OK" time-sec="0.02" crc="-904840909"/>
            <choice name="EOFC=1_BOFC=2_BLC=0" result="OK" time-sec="0.01" crc="-904840909"/>
            <choice name="EOFC=1_BOFC=0_BLC=2" result="OK" time-sec="0.01" crc="-904840909"/>
            <choice name="EOFC=0_BOFC=1_BLC=2" result="OK" time-sec="0.01" crc="-904840909"/>
@@ -37,20 +37,20 @@
                <choice name="stdio" result="OK" time-sec="0.01" crc="-122584819"/>
             </choice-list>
         </test>
-        <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-misc-III" info-request-time="1195339150L"/>
-            <make-procedure success="True" />
-            <choice-list number="2">
-               <choice name="istream" result="OK" time-sec="0.01" crc="52723627"/>
-               <choice name="stdio" result="OK" time-sec="0.01" crc="1008654767"/>
-            </choice-list>
-        </test>
         <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.01"> 
             <application file-name="test-misc-II" info-request-time="1195339149L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="OK" time-sec="0.01" crc="1918046248"/>
                <choice name="stdio" result="OK" time-sec="0.01" crc="1298773548"/>
+            </choice-list>
+        </test>
+        <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="test-misc-III" info-request-time="1195339150L"/>
+            <make-procedure success="True" />
+            <choice-list number="2">
+               <choice name="istream" result="OK" time-sec="0.01" crc="52723627"/>
+               <choice name="stdio" result="OK" time-sec="0.01" crc="1008654767"/>
             </choice-list>
         </test>
     </group>

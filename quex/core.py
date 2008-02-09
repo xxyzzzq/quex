@@ -75,9 +75,12 @@ def do(Setup):
     inheritance_info_str = "/* [dominating inheritance level] [pattern index] [pattern]\n"
     analyzer_code = ""
     for mode in mode_list:        
+        # -- some modes only define event handlers that are inherited
+        if mode.matches == {}: continue
+
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
-        pattern_action_pair_info_list   = mode.pattern_action_pairs().values()
+        pattern_action_pair_info_list = mode.pattern_action_pairs().values()
 
         # -- default action
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 

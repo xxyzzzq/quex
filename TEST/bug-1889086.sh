@@ -13,6 +13,8 @@ echo '(1)'
 quex -i error-1.qx --engine Simple
 echo '(2)'
 quex -i error-2.qx --engine Simple
+echo '(3)'
+quex -i error-3.qx --engine Simple
 echo 
 echo "tokens on command line __________________________________"
 echo '(1)'

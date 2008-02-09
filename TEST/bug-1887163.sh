@@ -7,5 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
+echo "Original Error:"
 quex -i error.qx --engine Simple
+echo
+
+echo "Second Use Case:"
+quex -i error-2.qx --engine Simple
+echo
 cd $tmp
