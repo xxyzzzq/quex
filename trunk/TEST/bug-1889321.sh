@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=1889321
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug Quex does not handle actions including \" literal"
+    echo "sphericalcow: $bug Quex does not handle actions including quote literal"
     exit
 fi
 
