@@ -1,0 +1,20 @@
+Ideas for the solution of the x*/x+ Problem:
+---------------------------------------------------------------------------
+
+Problem encloses a family of Regular Expressions:
+
+          x* / x{n.m} 
+          x* / x{n}
+          x* / x{n,}
+
+Basic Problem:
+
+          -- State Machine needs to count and to stack old positions and decide
+             at the end to which position to reset the input pointer. 
+
+          -- The 'dangerous' branches of the state machine need to be extracted
+             from the state machine's core and post condition.
+
+
+IDEA: Go backwards the inverse post condition. I.e create an inverted
+      post condition and then go along.
