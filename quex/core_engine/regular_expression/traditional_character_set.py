@@ -77,9 +77,12 @@ def do(UTF8_String):
             # character range:  'character0' '-' 'character1'
             #
             if tracker.last_letter == -1:
-                raise RegularExpressionException("Character range: '-' requires a preceding letter, e.g. 'a-z'")
+                raise RegularExpressionException("Character range: '-' requires a preceding character, e.g. 'a-z'")
 
             i += 1
+            if len(x) <= i:
+                raise RegularExpressionException("Character range: '-' requires a character following '-'.")
+
             if i + 1 < Lx and x[i] == ord("\\"):
                 value, i = __consider_backslash_occurence(x, i) 
                 value += 1        # value denotes 'end', i.e first character outside the interval

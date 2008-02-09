@@ -7,7 +7,7 @@
 //       Reason this header creates som adaptions.
 
 extern "C" {
-#ifdef __MSC_VER
+#ifdef _MSC_VER
 #   include <quex/code_base/compatibility/win/inttypes.h>
 #else
 #   include <inttypes.h>

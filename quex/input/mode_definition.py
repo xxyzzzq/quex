@@ -40,7 +40,7 @@ def parse(fh, Setup):
     if new_mode.matches == {}:
         if new_mode.options["inheritable:"] != "only":
             new_mode.options["inheritable:"] = "only"
-            error_msg("Mode without pattern does have needs to be 'inheritable only'.\n" + \
+            error_msg("Mode without pattern needs to be 'inheritable only'.\n" + \
                       "<inheritable: only> has been added automatically.", fh,  DontExitF=True)
 
 def parse_mode_option_list(new_mode, fh):
@@ -75,17 +75,18 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
     """Returns: False, if a closing '}' has been found.
                 True, else.
     """
+    position = fh.tell()
     try:
-        description = "pattern or event handler name"
+        description = "Pattern or event handler name.\n" + \
+                      "Missing closing '}' for end of mode"
 
         skip_whitespace(fh)
         # NOTE: Do not use 'read_word' since we need to continue directly after
         #       whitespace, if a regular expression is to be parsed.
         position = fh.tell()
+
         word     = read_until_whitespace(fh)
         if word == "}":
-            if new_mode.matches == {}:
-                error_msg("mode '%s' does not contain any pattern" % new_mode.name, fh)
             return False
 
         # -- check for 'on_entry', 'on_exit', ...
@@ -105,6 +106,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
             pattern, pattern_state_machine = regular_expression.parse(fh, Setup)
 
         position    = fh.tell()
+
         description = "start of mode element: code fragment for '%s'" % pattern
         parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, pattern_i)
 
