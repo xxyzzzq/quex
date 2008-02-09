@@ -1,21 +1,21 @@
-<test-database execution-time-sec="0.51" date="Sat Feb  9 03:15:09 2008">
+<test-database execution-time-sec="0.38" date="Sat Feb  9 04:21:53 2008">
     <group name="NumberSet">
-        <test title="Inverse" time-sum-sec="0.16"> 
+        <test title="Inverse" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.16" crc="1433382430"/>
+               <choice name="" result="OK" time-sec="0.07" crc="1433382430"/>
             </choice-list>
         </test>
-        <test title="Difference" time-sum-sec="0.10"> 
+        <test title="Difference" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.10" crc="1602787713"/>
+               <choice name="" result="OK" time-sec="0.07" crc="1602787713"/>
             </choice-list>
         </test>
-        <test title="Intersection" time-sum-sec="0.08"> 
+        <test title="Intersection" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.08" crc="1516231659"/>
+               <choice name="" result="OK" time-sec="0.07" crc="1516231659"/>
             </choice-list>
         </test>
         <test title="Union" time-sum-sec="0.07"> 
