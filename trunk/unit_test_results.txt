@@ -1,20 +1,32 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Sat Feb  9 07:41:46 2008
+DATE:  Sat Feb  9 18:17:54 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
 
  -- sphericalcow:
 
+    1889871 0.19.4 crashes if [] expression contains unescaped -
+        bug-1889871.sh ..................................................[OK]
     1885304 Problems with files with DOS CR/LF line endings
         bug-1885304.sh ..................................................[OK]
-    1885846 Empty RE in define section
-        bug-1885846.sh ..................................................[OK]
-    1889086 Single state mode causes quex to crash
-        bug-1889086.sh ..................................................[OK]
+    1889089 Single state mode causes quex to crash
+        bug-1889089.sh ..................................................[OK]
     1887163 Single state mode causes quex to crash
         bug-1887163.sh ..................................................[OK]
+    1889086 Single state mode causes quex to crash
+        bug-1889086.sh ..................................................[OK]
+    1889892 x, X or  FOLLOWED BY A NON-HEX DIGIT CRASHES 0.19.4
+        bug-1889892.sh ..................................................[OK]
+    1889321 Quex does not handle actions including quote literal
+        bug-1889321.sh ..................................................[OK]
+    1889692 0.19.4 does not gracefully handle unbalanced quotations
+        bug-1889692.sh ..................................................[OK]
+    1889877 '*' or '+' without prececing expression crashes 0.19.4
+        bug-1889877.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -24,7 +36,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sat Feb  9 07:56:42 2008
+DATE:  Sat Feb  9 12:59:26 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -78,7 +90,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sat Feb  9 07:41:59 2008
+DATE:  Sat Feb  9 18:19:18 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -93,7 +105,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Sat Feb  9 07:41:59 2008
+DATE:  Sat Feb  9 18:19:19 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -133,7 +145,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Sat Feb  9 07:41:59 2008
+DATE:  Sat Feb  9 18:19:19 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -150,7 +162,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sat Feb  9 07:42:00 2008
+DATE:  Sat Feb  9 18:19:21 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -170,7 +182,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sat Feb  9 07:42:01 2008
+DATE:  Sat Feb  9 18:19:24 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -201,7 +213,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sat Feb  9 07:43:52 2008
+DATE:  Sat Feb  9 18:21:38 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -297,7 +309,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sat Feb  9 07:44:11 2008
+DATE:  Sat Feb  9 18:22:11 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -335,21 +347,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Simple
-        test-properties.py ..............................................[OK]
     Set Operations
         test-properties-2.py ............................................[OK]
+    Simple
+        test-properties.py ..............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -359,7 +371,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Thu Feb  7 03:31:56 2008
+DATE:  Sat Feb  9 18:23:06 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -384,21 +396,17 @@ TITLE: State Machine Operations
 
  -- Predetermined Character Count:
 
+    Newlines
+        test-count_newline_n.py .........................................[OK]
     Characters
         test-count_character_n.py .......................................[OK]
     Contains only Spaces
         test-count_contains_only_spaces.py ..............................[OK]
-    Newlines
-        test-count_newline_n.py .........................................[OK]
 
  -- Pseudo Ambigous Post Condition:
 
     Replace Drop-Out with Adjacent Target
         test-StateInfo-replace_drop_out_with_adjacent_target.py .........[OK]
-    Detection
-        test-ambiguous_post_condition-detect.py .........................[OK]
-    Mounting
-        test-ambiguous_post_condition-mount_pseudo.py ...................[OK]
     The Philosophical Cut
         test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
 
@@ -428,14 +436,14 @@ TITLE: State Machine Operations
 
  -- Tracing origin:
 
-    Paralellization
-        test-parallelize-trace-origin.py ................................[OK]
     NFA to DFA (subset construction)
         test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     Cloning
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Inverse
         test-StateMachine-trace-origin-inverse.py .......................[OK]
+    Paralellization
+        test-parallelize-trace-origin.py ................................[OK]
     Hopcroft optimization (minimize state set)
         test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
 
@@ -452,7 +460,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sat Feb  9 07:44:21 2008
+DATE:  Sat Feb  9 18:23:48 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -475,7 +483,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sat Feb  9 07:45:12 2008
+DATE:  Sat Feb  9 18:25:57 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------

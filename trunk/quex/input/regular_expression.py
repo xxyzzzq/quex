@@ -1,4 +1,4 @@
-from   quex.frs_py.file_in          import EndOfStreamException
+from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 from   quex.exception               import RegularExpressionException
 import quex.lexer_mode              as lexer_mode
 import quex.core_engine.regular_expression.core as regex
@@ -11,6 +11,10 @@ def parse(fh, Setup):
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          Setup.begin_of_stream_code, Setup.end_of_stream_code,
                                          DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
+
+        if pattern_state_machine == None:
+            error_msg("No valid regular expression detected.", fh)
+
     except RegularExpressionException, x:
         error_msg("Regular expression parsing:\n" + x.message, fh)
 

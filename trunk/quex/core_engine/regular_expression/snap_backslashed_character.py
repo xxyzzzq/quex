@@ -1,5 +1,8 @@
-import quex.core_engine.utf8 as utf8
 from copy import deepcopy
+import quex.core_engine.utf8 as utf8
+from   quex.exception        import  RegularExpressionException
+
+
 backslashed_character_db = { 
         # inside string "..." and outside 
         'a': ord('\a'),   'b': ord('\b'), 'f': ord('\f'),   'n': ord('\n'),
@@ -88,6 +91,9 @@ def __parse_octal_number(x, u, MaxL):
         number_str += chr(x[u])
         u += 1
         
+    if number_str == "":
+        raise RegularExpressionException("Missing octal number.")
+
     return long(number_str, 8), u      
 
 def __parse_hex_number(x, u, MaxL):
@@ -105,4 +111,7 @@ def __parse_hex_number(x, u, MaxL):
         number_str += chr(x[u])
         u += 1
         
+    if number_str == "": 
+        raise RegularExpressionException("Missing hexadecimal number.")
+
     return long(number_str, 16), u      

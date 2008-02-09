@@ -30,7 +30,7 @@ SETUP_INFO = {
     "input_foreign_token_id_file":    [["--foreign-token-id-file"],          ""],
     "input_lexer_class_friends":      [["--friend-class"],                   LIST],
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
-    "input_token_class_file":         [["--token-class-file"],               QUEX_TEMPLATE_DB_DIR + "/token"],
+    "input_token_class_file":         [["--token-class-file"],               "quex/code_base/token"],
     "input_token_class_name":         [["--token-class"],                    "token"],
     "input_token_counter_offset":     [["--token-offset"],                   10000],
     "token_id_termination":           [["--token-id-termination"],           0],
