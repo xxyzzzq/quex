@@ -184,6 +184,7 @@ def parse_pattern_name_definitions(fh, Setup):
 
         # -- parse regular expression, build state machine
         regular_expression_obj, state_machine = regular_expression.parse(fh, Setup)
+
         # It is ESSENTIAL that the state machines of defined patterns do not 
         # have origins! Actually, there are not more than patterns waiting
         # to be applied in regular expressions. The regular expressions 

@@ -1,5 +1,6 @@
 Use Case (1)
-error.qx:1:error: End of file reached while parsing 'define' section
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: Unable to find closing delimiter '"'
 
 Use Case (2)
 error-2.qx:3:warning: Token id 'TKN_A' defined implicitly.
