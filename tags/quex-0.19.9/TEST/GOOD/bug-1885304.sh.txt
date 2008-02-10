@@ -1,0 +1,3589 @@
+warning: no initial mode defined via 'start'
+warning: using mode 'ONE_AND_ONLY' as initial mode
+(0) create token id file
+   token class file = 'quex/code_base/token'
+   => 'Simple-token_ids'
+// -*- C++ -*-   :vim set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__SIMPLE
+#define __INCLUDE_GUARD__QUEX__SIMPLE
+
+// STL (Std C++ Lib)
+#include<vector> 
+#include<map>
+#include<fstream>
+#include<cassert>
+#include<quex/code_base/compatibility/inttypes.h>
+#include<cstdio>    // provides: FILE*
+
+
+// OPTIONS: ____________________________________________________________________
+//
+// Activate/Deactivate Options via comment/uncomment. Options without a 
+// double underline '__' at the beginning can be turned off in the created 
+// engine. Options that do start with '__' configure the machine for the
+// specified behavior. Such options are better not touched.
+//
+//
+// -- Line Number / Column Number Counting:
+//    Turning counting off may result in engine speed-up.
+#ifndef QUEX_OPTION_LINE_NUMBER_COUNTING	    
+#define    QUEX_OPTION_LINE_NUMBER_COUNTING	    
+#endif
+#ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING	    
+#define    QUEX_OPTION_COLUMN_NUMBER_COUNTING	    
+#endif
+
+// -- Mode Transitions:
+//    If the engine was created without the flag '--no-mode-transition-check'
+//    then code for mode transition control is inserted. It can be deactivated
+//    by commenting the following option out.
+#ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#define    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#endif
+
+// -- Debugging: 
+//    If the engine was created with the '--debug' flag then it contains 
+//    debugging code. The effect of this code fragments can be turned off
+//    by commenting the following options out.
+#ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
+// #define QUEX_OPTION_DEBUG_TOKEN_SENDING
+#endif
+#ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+// #define QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#endif
+#ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+// #define QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+#endif
+
+// -- Include Stack Support:
+//    Easy handling of include files/streams via 'push' and 'pop'
+//    Turn this off, if you do not use 'inclusion' in your files and
+//    you want to save some bytes.
+#ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#define    QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#endif
+
+#ifndef     QUEX_SETTING_BUFFER_SIZE
+#    define QUEX_SETTING_BUFFER_SIZE  65536
+#endif
+#ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
+#    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  2048
+#endif
+
+// #define __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+//
+//   If one mode requires indentation support, then the lexical analyser
+//   class must be setup for indentation counting. The following flag is
+//   defined or undefined by the lexical analyser generator quex.
+// #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+//
+//   Quex can determine whether certain handlers are not used at all.
+//   If so, computation time can be spared and quex comments the following
+//   options out.
+// #define __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+// #define __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+// #define __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#    ifndef     QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE
+#        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE 65536
+#    endif
+#endif
+
+// 
+//   Begin of line pre-condition introduces an extra flag in the buffer
+//   structure. Only out-comment this in case of tough memory restrictions,
+//   if no begin of line pre-condition is required.
+#define    __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+
+namespace quex {
+    class Simple;
+
+const int LEX_ID_ONE_AND_ONLY = 1;
+
+}    
+
+typedef int QUEX_ANALYSER_RETURN_TYPE;
+// CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
+//                 a character. This is independent of the coding (ASCII, WinArabic, ...)
+// LEXEME_CHARACTER_TYPE: Type that results in an appropriate type for string handling
+//                        functions such as 'strlen', 'ststr', 'atoi', etc.
+//
+// Both character types are clearly related, because they are supposed to relate to the 
+// same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
+// belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
+// accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
+//
+// NOTE: If in parallel another engine is built with other bytes per character settings,
+//       then the engines will also include their own header with their own definition
+//       of QUEX_CHARACTER_TYPE, and QUEX_LEXEME_TYPE. Thus there is no danger at all. 
+//       Templatifying the lexer would be possible, but the author has in mind to bring out
+//       a 'pure C' version of the quex generated engine. Thus templating would make this 
+//       goal harder achievable.
+typedef uint8_t   QUEX_CHARACTER_TYPE;        
+typedef char         QUEX_LEXEME_CHARACTER_TYPE;        
+// IConv Coding Name for the internally used character coding. 
+//   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
+//   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
+//      e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
+const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "ASCII";
+
+// NOTE: The original design of the core engine was independent of quex's global
+//       mode oriented design. The author thinks this is a good idea, because then
+//       the analyzer functions can still used easily in isolation from the rest
+//       of the engine. They can be a starting point for an even more improved
+//       post-hand coded lexical analyzer or for embedded systems where memory
+//       resrictions are tough. THUS: We communicate the class name to the analyzer
+//       functions via a macro and NOT via traits or anything like that.
+typedef quex::Simple  QUEX_LEXER_CLASS;
+#define __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
+
+#ifdef  __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+#   include<quex/code_base/core_engine/definitions-plain-memory.h>
+#else
+#   ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#       include<quex/code_base/buffer/iconv/input_strategy>
+#   endif
+#   include<quex/code_base/buffer/buffer>
+#   include<quex/code_base/core_engine/definitions-quex-buffer.h>
+#endif
+
+#include <quex/code_base/token_queue>
+// Quex/User
+#include <Simple-token_ids>
+#include <quex/code_base/token>
+
+// RETURN: _____________________________________________________________________
+//
+//  -- Return from pattern action to the function that called the
+//     lexer - but only in case that the token stack was filled.
+//
+//     QUEX core: If not, the analyser function automatically jumps to the 
+//                initial state. This happens through a little trick,
+//                were 'break' jumps to the goto statement that guides
+//                to the entry point of the state machine that is
+//                currently active.
+//
+//     This is very handy, when dealing with functions that not
+//     necessarily fill the token queue, such as push_pure_text_token().
+//     If no pure text appeared, the stack is empty after this function
+//     call. Similar things happen with table patterns.
+//
+//  -- Note, that at some point in time End of File <<EOF>> will
+//     hit the token stack, so the lexing won't continue infinitly.
+//     
+//
+#define RETURN                                                                   \
+   if( self._token_queue->is_empty() ) { CONTINUE; }                             \
+   else {                                                                        \
+        /* since return happens voluntarily, no check for mode change will be */ \
+        /* necessary.                                                         */ \
+	self.__previous_mode_p = self.__current_mode_p;                          \
+        return self._token_queue->top()->type_id();                              \
+   }
+
+
+
+
+namespace quex {
+
+    struct quex_mode {	
+	int          id;
+	const char*  name;
+        Simple* the_lexer;
+
+        QUEX_ANALYSER_RETURN_TYPE (*analyser_function)(Simple*);
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	void (*on_indentation)(Simple*, const int Indentation);
+#endif
+	void (*on_entry)(Simple*, const quex_mode* FromMode);
+	void (*on_exit)(Simple*, const quex_mode* ToMode);
+#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK	
+	bool (*has_base)(const quex_mode* Mode);
+	bool (*has_entry_from)(const quex_mode* Mode);
+	bool (*has_exit_to)(const quex_mode* Mode);
+#endif
+    };
+    
+    extern QUEX_ANALYSER_RETURN_TYPE
+    Simple_uncallable_analyser_function(Simple*);
+    extern void
+    Simple_on_indentation_null_function(Simple*, const int);
+    extern void
+    Simple_on_entry_exit_null_function(Simple*, const quex_mode*);
+
+    extern     QUEX_ANALYSER_RETURN_TYPE Simple__ONE_AND_ONLY_analyser_function(Simple*);
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+    extern     bool Simple__ONE_AND_ONLY_has_base(const quex_mode*);
+    extern     bool Simple__ONE_AND_ONLY_has_entry_from(const quex_mode*);
+    extern     bool Simple__ONE_AND_ONLY_has_exit_to(const quex_mode*);
+#endif
+
+
+
+    class Simple :
+        protected QUEX_CORE_ANALYSER_STRUCT {
+
+	/* DISABLED */ Simple();
+	/* DISABLED */ Simple(const Simple&);
+
+    public:
+	Simple(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
+	Simple(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
+	Simple(FILE* input_fh,               const char* IConvInputCodingName = 0x0);
+
+	virtual ~Simple();
+	//
+	// -- token stream: read next token
+	token::id_type   get_token(token* p_result);
+	
+	//
+	// (*) Mode handling
+	//
+	//     -- modes: read access
+	quex_mode&    mode();
+	const int     mode_id() const;
+	const char*   mode_name() const;
+	//
+	//     -- modes: changing lexical analysis mode
+	void        set_mode_brutally(const int        LexerMode);
+	void        set_mode_brutally(const quex_mode& Mode);
+	//
+	void        operator<<(const int MODE_ID);               // not to be used in concatination
+	void        operator<<(/* NOT const*/ quex_mode& Mode);  // not to be used in concatination
+	//
+	void        pop_mode();
+	void        pop_drop_mode();
+	void        push_mode(quex_mode& new_mode);
+	//
+	void        enter_mode(/* NOT const*/ quex_mode& TargetMode);
+	//
+	//     -- map: mode id to mode and vice versa
+	quex_mode&  map_mode_id_to_mode(const int        ModeID);	
+	const int   map_mode_to_mode_id(const quex_mode& Mode) const;
+
+        // (*) buffers
+	template <class InputHandleP> 
+	quex::buffer_core<QUEX_CHARACTER_TYPE>* get_buffer(InputHandleP input_handle, 
+							   const char*  IConvInputCodingName = 0x0);
+
+	//
+        // (*) Token sending
+	void        send(const token& That);
+	void        send(const token::id_type TokenID);
+	void        send_n(const int N, const token::id_type TokenID);
+	template <typename ContentT> 
+	void        send(const token::id_type TokenID, ContentT Content);
+	//
+	// (*) Version information
+
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+	struct memento {
+	    quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
+	    QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
+            QUEX_MODE_FUNCTION_P     current_mode_analyser_function_p;
+	    bool                     continue_analysis_after_adapting_mode_function_p_f;
+#           ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+	    int                      begin_of_line_f; 
+#           endif
+#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+	    int     indentation;
+	    bool    indentation_count_enabled_f;
+	    bool    indentation_event_enabled_f;
+#           endif
+#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	    int     column_number_at_end;           // column after current pattern
+#           endif
+#           ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	    int     line_number_at_end;             // line after current pattern
+#           endif
+	};
+	std::vector<memento>  _include_stack;
+
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, const int MODE_ID = -1, 
+                                  const char* IConvInputCodingName = 0x0);
+	template <class InputHandle> 
+	void   include_stack_push(InputHandle*, const quex_mode&,
+                                  const char* IConvInputCodingName = 0x0);
+	bool   include_stack_pop();
+
+     private:
+	template <class InputHandle> 
+	void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+                                    const char* IConvInputCodingName);
+#   endif   
+
+#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+    private: 
+	int  _line_number_at_begin;   // line where current pattern starts
+	int  _line_number_at_end;     // line after current pattern
+    public:  
+	int  line_number() const          { return line_number_at_begin(); }
+	int  line_number_at_begin() const { return _line_number_at_begin; }
+	int  line_number_at_end() const   { return _line_number_at_end; }
+#   endif
+
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    private: 
+	int  _column_number_at_begin;  // column where current pattern starts
+	int  _column_number_at_end;   // column after current pattern
+    public:  
+	int  column_number() const          { return column_number_at_begin(); }
+	int  column_number_at_begin() const { return _column_number_at_begin; }
+	int  column_number_at_end() const   { return _column_number_at_end; }
+#   endif
+
+	//________________________________________________________________________________
+	// Post Categorization of Lexemes:
+	//
+	// Particular patterns may trigger a particular token type which is defined
+	// during the parsing process: example 'units' in safertex. imagine the
+	// user defined a new unit 'mB' for milli Bernoulli or whatsoever. the token
+	// action 'identifier' can compare the content against the tokens and find, that
+	// it has to send a TOKEN_UNIT_IDENTIFIER instead of a normal TOKEN_IDENTIFIER
+	//
+	// NOTE: This map has to be used inside an action, such as for {IDENTIFIER}.
+	//       The lexer itself will **not** react to any tokens entered here.
+	//
+	//       Inside the actions use:
+	//
+	//              int token_id = map_post_defined_lexeme_to_token_id(yytext);
+	//              if( token_id == -1 ) ... no known lexeme to be post-categorized.
+	//
+	//       in order to find out, if the identifier belongs to a certain type.
+	//       the return value is the token id of this identifier type. if it is
+	//       equal to '-1' then no post defined lexeme exists.
+	//________________________________________________________________________________
+	struct post_categorizer_tag {
+	    void     enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
+	    int      get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
+	private:
+	    std::map<const std::string, int>  lexeme_to_token_id_map;
+	} post_categorizer;
+
+	// (*) pure text accumulation and flushing
+	struct ACCUMULATOR_tag {
+	    // text buffer that eats **non-alien letters** until something 
+	    // occurs that makes a pure text token out of it.
+	    // (this can be a paragraph delimiter, or a command)
+	    ACCUMULATOR_tag(Simple* lex) 
+		: _the_lexer(lex) { _accumulated_text.reserve(1024); }
+	    void  flush(const token::id_type TokenID);
+	    void  clear();
+	    void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
+	    void  add(const QUEX_LEXEME_CHARACTER_TYPE);
+
+	private:
+#    ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	    int  _begin_line;
+#    endif
+#    ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	    int  _begin_column;
+#    endif
+	    std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>  _accumulated_text;
+	    Simple*                          _the_lexer;	   
+	};
+
+    private:
+	// (*) Helper
+        //      -- put whole pattern back into the 'stream to be lexed'
+	void    move_forward(const size_t);
+	void    move_backward(const size_t);
+
+	//      -- functions computing the current line and column number
+	void  count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+	void  count_NoNewline(const int LexemeLength);
+	void  count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
+				const int        LineNIncrement);
+
+#    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	void  count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
+	void  count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+	void  count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement);
+	void  count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement);
+
+	void  __count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
+				      QUEX_CHARACTER_TYPE* Begin,
+				      QUEX_CHARACTER_TYPE* End, 
+				      const bool       LicenseToCountF);
+
+	void  __count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration, 
+							 QUEX_CHARACTER_TYPE* Begin,
+							 QUEX_CHARACTER_TYPE* End,
+							 const bool       LicenseToCountF);
+#    endif 
+	void  __count_assert_consistency();
+
+	void  __count_shift_end_values_to_start_values();
+
+	void  __count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
+					  QUEX_CHARACTER_TYPE* Begin);
+
+	QUEX_CHARACTER_TYPE* __count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
+								QUEX_CHARACTER_TYPE* End,
+								const int    LexemeLength,
+								const bool   LicenseToIncrementLineCountF=false);
+
+	//      -- include events (a file is included)
+        void virtual on_include(const char* Filename) {}
+        void virtual on_include_exit() {}
+
+	// (*) Mode database: allows to match from 'lex mode id' to a real mode object.
+	//     LexModeID = 0 is not used, mode indices from 1 to ModeN 
+	//     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
+	//      to quex's start mode.)
+        quex_mode*  mode_db[1+1];  
+    public:
+        quex_mode  ONE_AND_ONLY;
+
+    private:
+        // -- keeping track of the currently active mode
+        //    Inside analyzer function of a mode, it is possible that the analyzer
+        //    does not return immediately after a mode has been set. I.e. it calls
+        //    CONTINUE. In this case, it needs to be checked wether the return has
+        //    to be forced. The caller, can then call the newly setup analyzer function
+        //    from where the current one has been called --- see get_token().
+        quex_mode*   __current_mode_p;
+	quex_mode*   __previous_mode_p;
+	// -- with the quex core engine(s) each mode has a dedicated analyser function.
+	//    (with the flex core engine, modes were modelled as start conditions
+	//     of a single engine)
+	//    The function pointer to the currently active mode's function is located in 
+	//    the base class QUEX_CORE_ANALYSER_STRUCT
+        //
+    private:
+        // (*) mode stack allows for pushing and popping of lexical analysis modes
+        std::vector<quex_mode*>   _mode_stack;
+
+	// (*) The Token Queue ___________________________________________________________
+	//
+	// Any time a token is created, it is pushed on the token queue. Lexical analysis
+	// only happens if stack is empty, so that it is filled up again.
+        //
+        // NOTE: A token stack is necessary whenever tokens are created that do not
+        //       relate directly to patterns. A token stack gives the great possibility
+        //       to 'send' tokens from anywhere inside an action or a state transition.
+        // 
+        //       Otherwise, one would be restricted to sending one token by pattern.        
+	//
+        token_queue<token>*   _token_queue;
+	// (*) All Modes are Friends _____________________________________________________
+        friend     QUEX_ANALYSER_RETURN_TYPE Simple__ONE_AND_ONLY_analyser_function(Simple*);
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+        friend     bool Simple__ONE_AND_ONLY_has_base(const quex_mode*);
+        friend     bool Simple__ONE_AND_ONLY_has_entry_from(const quex_mode*);
+        friend     bool Simple__ONE_AND_ONLY_has_exit_to(const quex_mode*);
+#endif
+
+	
+        // (*) User defined Friends ______________________________________________________
+
+        // (*) User's Lexer Class Body Extenstion ________________________________________
+
+
+    public:
+        // (*) Who and what am I ? _______________________________________________________
+	Simple&  self;
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	// (*) Python-like indentation support ___________________________________________
+    private:	
+	int     _indentation;                 // number of columns to first non-whitespace
+	//                                    // in the current line.
+	bool    _indentation_count_enabled_f; // count whitespace for indentation?
+	bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
+    public:
+	void    disable_next_indentation_event() { _indentation_event_enabled_f = false; }
+#endif 
+
+    protected:
+	// (*) Accumulator (accumulate lexemes from multiple patterns ____________________
+	ACCUMULATOR_tag     accumulator;
+
+    private:
+	void __debug_print_transition(quex_mode* Source, quex_mode* Target);
+
+	// (*) Common core of all constructors ___________________________________________
+	template <class InputHandleP> 
+	void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
+
+#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+        // (*) Translation buffer ________________________________________________________
+	// Iconv requires an intermediate buffer to read data into, before it can trans-
+	// late it into a target character coding format. However, if there are more than
+        // one input buffer, they could all use the same iconv translation buffer, since
+        // they do not translate at the same time.
+        uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
+#endif
+    };
+
+#   define CLASS Simple
+
+    inline
+    CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 0x0 */)
+    : 
+	// NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+	// Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+	self(*((Simple*)this)),
+	accumulator(this)
+    {
+	// Buffer: Size = (see macro def.), Fallback = 10 Characters
+        // prefer FILE* based buffers, because we can turn low-level buffering off.
+        // ownership of FILE* id passed to the input strategy of the buffer
+        FILE* fh = fopen(Filename.c_str(), "r");
+	setbuf(fh, 0);   // turn off system based buffering!
+	//               // this is essential to profit from the quex buffer!
+	__constructor_core(fh, IConvInputCodingName);
+    }
+
+    inline
+    CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* = 0x0 */)
+    :
+	// NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+	// Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+	self(*((Simple*)this)),
+	accumulator(this)
+    {
+        __constructor_core(p_input_stream, IConvInputCodingName);
+    }
+
+    inline
+    CLASS::CLASS(FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
+    : 
+	self(*((Simple*)this)),
+	accumulator(this)
+    {
+	setbuf(fh, 0);   // turn off system based buffering!
+	//               // this is essential to profit from the quex buffer!
+        __constructor_core(fh, IConvInputCodingName);
+    }
+ 
+    template <class InputHandleP> inline
+    quex::buffer_core<QUEX_CHARACTER_TYPE>*
+    CLASS::get_buffer(InputHandleP input_handle, const char* IConvInputCodingName /* = 0x0 */)
+    {
+        if( IConvInputCodingName != 0x0 ) {
+#           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+            // NOTE: default copy operation (== memcpy) for input_strategy_inconv is OK
+            input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE>  input_strategy(
+                input_handle, 
+                iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
+                IConvInputCodingName, QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
+
+            return new basic_buffer<input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE> >(
+                input_strategy,
+                (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
+                /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
+                /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
+                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
+#           endif
+            return 0x0;
+        }
+        else {
+            return new basic_buffer<input_strategy<InputHandleP, QUEX_CHARACTER_TYPE> >
+                   (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
+                   /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
+                   /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
+                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
+        }
+    }
+
+    template <class InputHandleP> inline void
+    CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
+    {
+        QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(input_handle, IConvInputCodingName);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+        _indentation = 0;
+        _indentation_count_enabled_f = false;
+        _indentation_event_enabled_f = true;
+#endif
+
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        _line_number_at_begin = 0;
+        _line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        _column_number_at_begin = 0;
+        _column_number_at_end   = 1; 
+#endif
+        _token_queue = new token_queue<token>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+
+        mode_db[0] = 0x0;
+        // LexModeID = 0 is not used, mode indices from 1 to ModeN
+        assert(LEX_ID_ONE_AND_ONLY <= 1);
+
+        ONE_AND_ONLY.id   = LEX_ID_ONE_AND_ONLY;
+        ONE_AND_ONLY.name = "ONE_AND_ONLY";
+        ONE_AND_ONLY.analyser_function = Simple__ONE_AND_ONLY_analyser_function;
+#    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
+        ONE_AND_ONLY.on_indentation = Simple_on_indentation_null_function;
+#    endif
+        ONE_AND_ONLY.on_entry       = Simple_on_entry_exit_null_function;
+        ONE_AND_ONLY.on_exit        = Simple_on_entry_exit_null_function;
+#    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+        ONE_AND_ONLY.has_base       = Simple__ONE_AND_ONLY_has_base;
+        ONE_AND_ONLY.has_entry_from = Simple__ONE_AND_ONLY_has_entry_from;
+        ONE_AND_ONLY.has_exit_to    = Simple__ONE_AND_ONLY_has_exit_to;
+#    endif
+        mode_db[LEX_ID_ONE_AND_ONLY] = &ONE_AND_ONLY;
+
+
+        set_mode_brutally(LEX_ID_ONE_AND_ONLY);
+
+        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
+        //                                     // pattern actions
+        __continue_analysis_after_adapting_mode_function_p_f = false;
+
+
+    }	
+
+    inline
+    CLASS::~CLASS() 
+    {
+	QUEX_CORE_ANALYSER_STRUCT::__buffer->close_input();
+	delete QUEX_CORE_ANALYSER_STRUCT::__buffer;
+	delete _token_queue;
+    }
+
+    inline int
+    CLASS::get_token(token* result_p) 
+	// NOTE: As long as the 'get_token()' function is not called there is nothing
+	//       happening to the token in the queue. But, a parser very probably
+	//       does a couple af calls to 'get_token()' before a rule triggers 
+	//       and data structures can be stored.
+	//
+	// ARGUMENTS:
+	//     result_p  points to memory where token information has to be stored.
+	// TIP:
+	//     result_p could point into the token queue directly (TODO), if a limit 
+	//     number can be defined so that the token queue does not overwrite it, as
+	//     long as the parser is chewing on it.
+	//
+	// RETURNS:
+	//    Token-ID of the currently read token.
+	//    Token-ID = 'token::ID_UNITIALIZED' is returned in 
+	//               case that no  token could be read.
+    {
+	// The framework / constructor **should** ensure that at this point the two
+	// pointers are identical. Since this function is called very often the
+	// assignment of safety (prev=current) is not done. Instead, we only check
+	// (as long as NDEBUG is not defined) that the framework assigns the variables
+	// propperly.
+	assert( self.__previous_mode_p == self.__current_mode_p );
+	
+	// (i) tokens are in queue --> take next token from stack
+	if( _token_queue->is_empty() == false ) {
+	    // DEBUG	
+	    *result_p = *(_token_queue->quick_pop());
+	    return result_p->type_id();
+	}
+    
+	// token queue is empty 
+	//    --> enter yylex() (if engine is produced by flex) or
+        //        mode specific engine (if engine was produced by quex)
+	//        to get the next token on the stack.
+	do {
+	    __current_mode_analyser_function_p(this);
+
+	    // In case a mode change happend inside the pattern actions, the function is forced
+	    // to return (see end of analyzer function at REENTRY label). If the tokenstack is
+	    // non-empty, we return to the caller (spare one check). If its empty the analyzer
+	    // function (which has recently been setup) is called again.
+	    //
+	    if( __continue_analysis_after_adapting_mode_function_p_f ) {
+		__continue_analysis_after_adapting_mode_function_p_f = false;
+		continue;
+	    }
+	    else if( _token_queue->is_empty() ) {
+		result_p->set(token::ID_UNINITIALIZED);
+	    }
+	    break;
+	    
+	} while( 1 + 1 == 2 );
+
+	*result_p = *(_token_queue->quick_pop());
+	return result_p->type_id();
+    }
+
+    inline quex_mode&
+    CLASS::mode() 
+    { return *__current_mode_p; }
+    
+    inline const int
+    CLASS::mode_id() const
+    { return __current_mode_p->id; }
+    
+    inline const char*
+    CLASS::mode_name() const
+    { return __current_mode_p->name; }
+
+    inline void
+    CLASS::set_mode_brutally(const int ModeID)
+    { set_mode_brutally(*(mode_db[ModeID])); }
+
+    inline void 
+    CLASS::set_mode_brutally(const quex_mode& Mode) 
+    { 
+	__current_mode_p                   = (quex_mode*)&Mode;
+	__current_mode_analyser_function_p = Mode.analyser_function; 
+    }
+
+    inline void
+    CLASS::__debug_print_transition(quex_mode* Source,
+                                                   quex_mode* Target)
+    {
+#   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	std::cerr << "line = " << line_number_at_begin() << std::endl;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	std::cerr << "column = " << column_number_at_begin() << std::endl;
+#       endif
+	std::cerr << "FromMode: " << Source->name << " ToMode: " << Target.Name << std::endl;
+#   endif
+    }
+    
+    inline void    
+    CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) {
+				     /* NOT const */ quex_mode& SourceMode = mode();
+  
+        /* To be optimized aways if its function body is empty (see above) */
+	__debug_print_transition(&SourceMode, &TargetMode);  
+
+#   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+	SourceMode.on_exit(this, &TargetMode);
+#   endif
+	set_mode_brutally(TargetMode.id);
+
+#   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+	TargetMode.on_entry(this, &SourceMode);         
+#   endif
+    }
+
+    inline void 
+    CLASS::operator<<(const int ModeID) 
+    { enter_mode(map_mode_id_to_mode(ModeID)); }
+
+    inline void 
+    CLASS::operator<<(/* NOT const*/ quex_mode& Mode) 
+    { enter_mode(Mode); }
+
+
+    inline void 
+    CLASS::pop_mode() 
+    { 
+	assert(_mode_stack.size() != 0);
+	quex_mode* tmp; 
+	tmp = _mode_stack.back(); 
+	_mode_stack.pop_back(); 
+	enter_mode(*tmp); 
+    }
+
+    inline void
+    CLASS::pop_drop_mode() 
+    { 
+	assert(_mode_stack.size() != 0);
+	_mode_stack.pop_back(); // do not care about what was popped
+    }
+	
+    inline void       
+    CLASS::push_mode(quex_mode& new_mode) 
+    { 
+	_mode_stack.push_back(&(mode())); 
+	enter_mode(new_mode); 
+    }
+
+
+    inline quex_mode&
+    CLASS::map_mode_id_to_mode(const int ModeID)
+    { 
+	assert(ModeID >= 0);
+	assert(ModeID < 1 + 1); // first mode is unused by quex
+	return *(mode_db[ModeID]); 
+    }
+
+    inline const int  
+    CLASS::map_mode_to_mode_id(const quex_mode& Mode) const
+    { return Mode.id; }
+
+    inline const char* 
+    CLASS::version() const
+    { 
+    }
+
+    inline void    
+    CLASS::move_forward(const size_t Distance)
+    {
+	this->__buffer->move_forward(Distance);
+    }
+
+    inline void    
+    CLASS::move_backward(const size_t Distance)
+    {
+	this->__buffer->move_backward(Distance);
+    }
+
+// NOTE: Member function count_line_column(...) functions exist in two
+//       versions: 
+//           -- lexical analysis with python indentation support
+//           -- lexical analysis without python indentation support
+//                
+// -*- C++ -*-   :vim set syntax=cpp:
+
+// NOTE: Quex is pretty intelligent in choosing the right function
+//       to count line and column numbers. If, for example, a pattern
+//       does not contain newlines, then it simply adds the LexemeLength
+//       to the column number and does not do anything to the line number.
+//       Before touching anything in this code, first look at the generated
+//       code. The author of these lines considers it rather difficult to
+//       find better implementations of these functions in the framework
+//       of the generated engine.  <fschaef 07y6m30d>
+//
+// NOTE: Those functions are not responsible for setting the begin to the
+//       last end, such as _line_number_at_begin = _line_number_at_end.
+//       This has to happen outside these functions.
+
+inline void 
+Simple::__count_assert_consistency()
+{
+    assert(_line_number_at_begin   <= _line_number_at_end);
+    // if line number remained the same, then the column number **must** have increased.
+    // there is not pattern of a length less than 1
+    assert(_line_number_at_begin != _line_number_at_end || 
+           _column_number_at_begin <  _column_number_at_end);
+}
+
+inline void             
+Simple::__count_shift_end_values_to_start_values() 
+{
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    _line_number_at_begin   = _line_number_at_end;
+#   endif
+#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    _column_number_at_begin = _column_number_at_end;
+#   endif
+}
+
+
+inline void    
+Simple::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+                            const int        LexemeLength)
+// PURPOSE:
+//   Adapts the column number and the line number according to the newlines
+//   and letters of the last line occuring in the lexeme.
+//
+// NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
+//       there is no newline in the lexeme (see below).
+//
+////////////////////////////////////////////////////////////////////////////////
+{
+    assert( LexemeLength > 0 );
+#if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
+    ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
+    return;
+#else
+    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
+    QUEX_CHARACTER_TYPE* it = __count_chars_to_newline_backwards(Begin, Begin + LexemeLength, LexemeLength,
+                                                             /* LicenseToIncrementLineCountF = */ true);
+
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    // The last function may have digested a newline (*it == '\n'), but then it 
+    // would have increased the _line_number_at_end.
+    __count_newline_n_backwards(it, Begin);
+#   endif
+
+    __count_assert_consistency();
+#endif
+}
+
+inline void  
+Simple::count_NoNewline(const int LexemeLength) 
+{
+    assert( LexemeLength > 0 );
+
+#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    _column_number_at_end += LexemeLength;
+#   endif
+
+    __count_assert_consistency();
+}
+
+inline void  
+Simple::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+                                        const int           LexemeLength, 
+                                        const int           LineNIncrement) 
+{
+    assert( LexemeLength > 0 );
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    _line_number_at_end += LineNIncrement;
+#   endif
+
+#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    __count_chars_to_newline_backwards((QUEX_CHARACTER_TYPE*)Lexeme, 
+                                       (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength), 
+                                       LexemeLength,
+                                       /* LicenseToIncrementLineCountF = */ false);
+#   endif
+
+    __count_assert_consistency();
+}
+
+
+inline void
+Simple::__count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
+                                                  QUEX_CHARACTER_TYPE* Begin)
+// NOTE: If *it == '\n' this function does **not** count it. The user must
+//       have increased the _line_number_at_end by hisself. This happens
+//       for performance reasons.
+{
+#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+    // investigate remaining part of the lexeme, i.e. before the last newline
+    // (recall the lexeme is traced from the rear)
+    while( it != Begin ) {
+        --it;
+        if( *it == '\n' ) ++_line_number_at_end; 
+    }         
+#   endif
+}
+
+inline QUEX_CHARACTER_TYPE*
+Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
+                                                         QUEX_CHARACTER_TYPE* End,
+                                                         const int        LexemeLength,
+                                                         const bool       LicenseToIncrementLineCountF /*=false*/)
+// RETURNS: Pointer to the first newline or the beginning of the lexeme.
+//
+// This function increases _line_number_at_end if a newline occurs and 
+// LicenseToIncrementLineCountF = true.
+//
+// NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
+//       from the following function or implemented unconditionally, since the decision
+//       is based, then on a condition of a constant (either true or false) -- once the 
+//       function has been inlined.   
+//
+// NOTE: Quex writes a call to this function only, if there **is** a potential
+//       newline in the lexeme. Otherwise, it adds the fixed pattern length
+//       or the LexemeLength directly.
+{
+#if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
+    ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
+    return;
+#else
+    assert(Begin >= __buffer->content_begin());
+    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    assert(Begin < End);                       // LexemeLength >= 1
+
+    // loop from [End] to [Begin]:
+    //
+    //        [Begin]xxxxxxxxxxxxxxxxxxxxxxxxxx\n
+    //     \n
+    //     \n xxxxxxxxxxxxxxxxxxxxxxxx[End]
+    //               <---------
+    //
+    QUEX_CHARACTER_TYPE* it = End - 1;
+    for(; *it != '\n' ; --it) {
+        if( it == Begin ) {
+            // -- in case NO newline occurs, the column index is to be INCREASED 
+            //    by the length of the string -1, since counting starts at zero
+            // -- _column_number_at_begin = _column_number_at_end - LexemeLength (just take the old one)
+            _column_number_at_end += LexemeLength;
+            return it;
+        }
+    }
+    // -- in case that newline occurs, the column index is equal to
+    //    the number of letters from newline to end of string
+    _column_number_at_end = End - it;
+#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+    if( LicenseToIncrementLineCountF ) ++_line_number_at_end;
+#   endif
+# endif
+    return it;
+}
+
+
+#ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING
+#   define __QUEX_DEBUG_TOKEN_SENDING \
+	std::cerr << "Simple::send " << *(_token_queue->top()) << std::endl;
+#else
+#   define __QUEX_DEBUG_TOKEN_SENDING /* nothing */
+#endif
+
+    inline void   
+    CLASS::send(const token& That) {
+	_token_queue->push(That);
+	__QUEX_DEBUG_TOKEN_SENDING;
+    }
+    inline void   
+    CLASS::send(const token::id_type ID) {
+	_token_queue->push(ID);
+	__QUEX_DEBUG_TOKEN_SENDING;
+    }
+    inline void   
+    CLASS::send_n(const int N, token::id_type ID) {
+	assert(N > 0);
+	for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
+    }
+
+    template <typename ContentT>
+    inline void   
+    CLASS::send(const token::id_type ID, ContentT Content) {
+	_token_queue->push(ID, Content);
+	__QUEX_DEBUG_TOKEN_SENDING;
+    }
+
+#undef __QUEX_DEBUG_TOKEN_SENDING
+
+
+
+/*
+    // (*) utilities for string triming
+    //
+    //     NOTE: Any better linker should be able to inline the 
+    //           condition functions, so do not worry about the 
+    //           function pointers.
+    inline void
+    trim_rear(QUEX_LEXEME_CHARACTER_TYPE*     text, 
+	      const int Length,
+	      int       (*condition)(const QUEX_CHARACTER_TYPE))
+	// PURPOSE:
+	//    Inserts a terminating zero after the first letter where a
+	//    condition hold. This is useful, for example, if strings have 
+	//    to be created and whitespace at borders shall not take space.
+	//
+	//    The length of the text may already been determined. Pass Length,
+	//    so no call to strlen is necessary here.
+	//
+	// text       = text to be parsed for condition
+	// Length     = Length of the string
+	// condition  = pointer to function that checks for condition
+	//              return 1 = condition holds
+	//              return 0 = condition does not hold
+	//              (examples: the functions isspace(..), islower(..)
+	//                         from standard <ctype.h> header)
+    {
+	QUEX_LEXEME_CHARACTER_TYPE* p = text + Length - 1;
+	for(; p > text && (*condition)(*p); --p);
+	*(++p) = '\0'; // terminating zero
+    }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim_front(QUEX_LEXEME_CHARACTER_TYPE* text, 
+	       int   (*condition)(const QUEX_CHARACTER_TYPE))
+	// PURPOSE:
+	//    Like insert_term_zero_after_condition(...) treating the string
+	//    from front to back (i.e. vice versa). Does not insert terminating
+	//    zero, but returns the pointer to the first non-whitespace.
+	//
+	// RETURNS:
+	//    pointer to first character that is not whitespace.
+	//
+    {       
+	QUEX_LEXEME_CHARACTER_TYPE* p = text; 
+	for(; *p && (*condition)(*p); ++p);
+	return p;
+    }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim(QUEX_LEXEME_CHARACTER_TYPE*     text, 
+	 const int Length,
+	 int       (*condition)(const QUEX_CHARACTER_TYPE))
+        // PURPOSE:
+        //    Delivers a string that has no whitespace at front and none at end.
+	//    For example, the string "  hello world!    " becomes "hello world!".
+	//
+	//    The length of the text may already been determined, so no call
+	//    to strlen is necessary here.
+	//
+	// ARGUMENTS:
+	//    text      = text to be trimmed. 
+	//    Length    = length of the original string.
+	//    condition = condition function
+	//
+	// ATTENTION: The same memory of text is used for the return value. 
+	//            But, it is modified! The content of 'text' may not
+	//            be the same after this function call, since a terminating
+	//            zero is forced after the last non-whitespace character.
+	//
+	// RETURNS:
+	//    Pointer to the first non-whitespace character of text. At the
+	//    end of the last non-whitespace character, there is going to be
+	//    a '\0' determining the string border.
+	//
+    { trim_rear(text, Length, condition); return trim_front(text, condition); }
+
+    inline void
+    trim_rear(QUEX_LEXEME_CHARACTER_TYPE* text, const int Length)
+    { trim_rear(text, Length, &isspace); }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim_front(QUEX_LEXEME_CHARACTER_TYPE* text)
+    { trim_front(text, &isspace); }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim(QUEX_LEXEME_CHARACTER_TYPE* text, const int Length)
+    { return trim(text, Length, &isspace); }
+*/
+
+    inline void
+    CLASS::ACCUMULATOR_tag::flush(const token::id_type TokenID)
+    {
+	if( _accumulated_text.length() == 0 ) return;
+
+	_the_lexer->send(TokenID, _accumulated_text.c_str());
+	_accumulated_text = std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>();
+    }
+
+
+    inline void
+    CLASS::ACCUMULATOR_tag::clear()
+    {
+	if( _accumulated_text.length() == 0 ) return;
+	_accumulated_text = std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>();
+    }
+
+    inline void 
+    CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE* ToBeAppended)
+    { 
+	if( _accumulated_text.length() == 0 ) {
+#     ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	    _begin_column = _the_lexer->column_number_at_begin();
+#     endif
+#     ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+	    _begin_line   = _the_lexer->line_number_at_begin();
+#     endif
+	}
+	_accumulated_text += ToBeAppended; 
+    }
+
+
+    inline void 
+    CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE ToBeAppended)
+    { 
+
+#       if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
+           defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
+	if( _accumulated_text.length() == 0 ) {
+#           ifndef  QUEX_OPTION_NO_COLUMN_NUMBER_COUNTING
+	    _begin_column = _the_lexer->column_number_at_begin();
+#           endif
+#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+	    _begin_line   = _the_lexer->line_number_at_begin();
+#           endif
+	}
+#       endif
+
+	_accumulated_text += ToBeAppended; 
+    }
+
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    template <class InputHandle> inline void	
+    CLASS::include_stack_push(InputHandle*      new_input_handle_p, 
+			      const quex_mode&  mode, 
+			      const char*       IConvInputCodingName /* = 0x0 */)
+    {
+        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+        __include_stack_push(new_input_handle_p, mode.analyser_function, IConvInputCodingName);
+    }
+    template <class InputHandle> inline void	
+    CLASS::include_stack_push(InputHandle*   new_input_handle_p, 
+			      const int      MODE_ID /* = -1 */, 
+			      const char*    IConvInputCodingName /* = 0x0 */)
+    {
+        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+	assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < 1 + 1));
+	if( MODE_ID == -1 ) 
+	    __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName);	
+        else
+	    __include_stack_push(new_input_handle_p, mode_db[MODE_ID]->analyser_function, IConvInputCodingName);
+    }
+    template <class InputHandle> inline void	
+    CLASS::__include_stack_push(InputHandle*         new_input_handle_p, 
+			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+			      const char*          IConvInputCodingName)
+    {
+        assert(StartModeAnalyzerFunction != 0x0);
+        assert(new_input_handle_p != 0x0);
+        // IConvInputCodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
+
+	_include_stack.push_back(CLASS::memento());
+	CLASS::memento&  current = _include_stack.back();
+	
+        // (1) saving the current state of the lexical analyzer (memento pattern)
+        current.buffer_p = this->__buffer;
+	current.char_covered_by_terminating_zero = this->char_covered_by_terminating_zero;
+        current.current_mode_analyser_function_p = this->__current_mode_analyser_function_p ;
+	current.continue_analysis_after_adapting_mode_function_p_f = \
+                                  this->__continue_analysis_after_adapting_mode_function_p_f;
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+	current.begin_of_line_f = this->begin_of_line_f; 
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+	current.indentation                 = this->_indentation;
+	current.indentation_count_enabled_f = this->_indentation_count_enabled_f;
+        current.indentation_event_enabled_f = this->_indentation_event_enabled_f;
+#       endif
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	current.line_number_at_end   = this->_line_number_at_end;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	current.column_number_at_end = this->_column_number_at_end;
+#       endif
+
+	// (2) initializing the new state of the lexer for reading the new input file/stream
+	QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(new_input_handle_p, IConvInputCodingName);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+	_indentation                 = 0;
+	_indentation_count_enabled_f = false;
+	_indentation_event_enabled_f = true;
+#endif
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+	_line_number_at_begin = 0;
+	_line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	_column_number_at_begin = 0;
+	_column_number_at_end   = 1; 
+#endif
+    }	
+
+    inline bool
+    CLASS::include_stack_pop() 
+    {
+	if( _include_stack.empty() ) return false;
+
+	CLASS::memento&  previous = _include_stack.back();
+
+        delete this->__buffer;
+        this->__buffer = previous.buffer_p;
+
+	this->char_covered_by_terminating_zero    = previous.char_covered_by_terminating_zero;
+	this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;
+	this->__continue_analysis_after_adapting_mode_function_p_f = \
+                                previous.continue_analysis_after_adapting_mode_function_p_f;
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+	this->begin_of_line_f = previous.begin_of_line_f; 
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+	this->_indentation                 = previous.indentation;
+	this->_indentation_count_enabled_f = previous.indentation_count_enabled_f;
+        this->_indentation_event_enabled_f = previous.indentation_event_enabled_f;
+#       endif
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+	this->_line_number_at_end   = previous.line_number_at_end;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+	this->_column_number_at_end = previous.column_number_at_end;
+#       endif
+
+	_include_stack.pop_back();
+
+	return true;
+    }
+#   endif
+
+#undef CLASS
+
+}
+
+#endif // __INCLUDE_GUARD__QUEX__SIMPLE
+
+#ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
+#   include <Simple>
+#   define __QUEX_ENGINE_HEADER_DEFINITIONS
+
+#   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+
+#      define __QUEX_PRINT_SOURCE_POSITION()                 \
+              fprintf(stderr, "%s:%i: \t", __FILE__, __LINE__);            
+
+#      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \
+              __QUEX_PRINT_SOURCE_POSITION()                    \
+              fprintf(stderr, "START:    %s\n", #Name)
+
+#      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \
+              __QUEX_PRINT_SOURCE_POSITION()                    \
+              fprintf(stderr, "enter:    %i\n", (int)StateIdx)
+
+#      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \
+              __QUEX_PRINT_SOURCE_POSITION()                    \
+              fprintf(stderr, "drop:     %i\n", (int)StateIdx)
+
+#      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \
+              __QUEX_PRINT_SOURCE_POSITION()                    \
+              fprintf(stderr, "accept:   %i\n", (int)StateIdx)
+
+#      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \
+              __QUEX_PRINT_SOURCE_POSITION()                   \
+              fprintf(stderr, "terminal: %s\n", #Terminal)
+
+#      define __QUEX_DEBUG_INFO_INPUT(Character)                             \
+              __QUEX_PRINT_SOURCE_POSITION()                                 \
+                Character == '\n' ? fprintf(stderr, "input:    '\\n'\n") \
+              : Character == '\t' ? fprintf(stderr, "input:    '\\t'\n") \
+              :                      fprintf(stderr, "input:    '%c'\n", (char)Character) 
+#   else
+#      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
+#      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
+#      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)   /* empty */
+#      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx) /* empty */
+#      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)   /* empty */
+#      define __QUEX_DEBUG_INFO_INPUT(Character)     /* empty */
+#   endif
+
+#   ifdef CONTINUE
+#      undef CONTINUE
+#   endif
+#   define CONTINUE  goto __REENTRY_PREPARATION
+
+#endif
+    
+    #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    #    define Simple_on_buffer_reload(LoadedByteN)   \
+            /* Is this condition really necessary? <fschaef 07y7m26d> */      \
+            if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \
+                last_acceptance_input_position -= LoadedByteN;                \
+                                                                              \
+                    
+    
+    #endif  
+    
+    QUEX_ANALYSER_RETURN_TYPE
+    quex::Simple__ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) {
+        // NOTE: Different modes correspond to different analyser functions. The analyser
+        //       functions are all located inside the main class as static functions. That
+        //       means, they are something like 'globals'. They receive a pointer to the 
+        //       lexical analyser, since static member do not have access to the 'this' pointer.
+        QUEX_LEXER_CLASS& self = *me;
+        // static functions cannot access members, thus: create shortcuts
+        quex::quex_mode&  ONE_AND_ONLY = self.ONE_AND_ONLY;
+    
+        /*  me = pointer to state of the lexical analyser 
+        */
+        int                      last_acceptance = -1;
+        QUEX_CHARACTER_POSITION  last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
+        /**/
+        QUEX_CHARACTER_TYPE      input = (QUEX_CHARACTER_TYPE)(0x00);
+    
+        /**/
+        QUEX_LEXEME_CHARACTER_TYPE*  Lexeme  = 0x0;
+        size_t                       LexemeL = -1;
+        /**/
+    #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        int loaded_byte_n = 0; /* At transition Drop-Out: 
+                               **    > 0  number of loaded bytes. 
+                               **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
+                               */
+    #endif
+       __QUEX_DEBUG_INFO_START_LEXING(Simple);
+       __REENTRY_POINT:
+        QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);
+        QUEX_UNDO_PREPARE_LEXEME_OBJECT;
+        // state machine 
+        // init-state = 30L
+        // 00000* <~ (42, 160, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        //       <no epsilon>
+        // 00001* <~ (42, 160, S), (9, 35), (18, 87)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00000
+        //       == 't' ==> 00002
+        //       == 'e' ==> 00003
+        //       <no epsilon>
+        // 00002* <~ (42, 160, S), (9, 36)
+        //       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00000
+        //       == 'r' ==> 00020
+        //       <no epsilon>
+        // 00003* <~ (42, 160, S), (18, 85)
+        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00000
+        //       == 'n' ==> 00021
+        //       <no epsilon>
+        // 00004* <~ (6, 18, S)
+        //       == ['\t', '\n'], '\r', ' ' ==> 00004
+        //       <no epsilon>
+        // 00005* <~ (36, 143, S)
+        //       == ['0', '9'] ==> 00005
+        //       <no epsilon>
+        // 00006* <~ (30, 126, S)
+        //       <no epsilon>
+        // 00007* <~ (0, 1, S)
+        //       <no epsilon>
+        // 00008* <~ (27, 120, S)
+        //       <no epsilon>
+        // 00009* <~ (18, 84, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        //       <no epsilon>
+        // 00010* <~ (9, 34, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        //       <no epsilon>
+        // 00011* <~ (21, 103, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        //       <no epsilon>
+        // 00012* <~ (12, 49, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        //       <no epsilon>
+        // 00013* <~ (24, 114, S)
+        //       <no epsilon>
+        // 00014* <~ (42, 160, S), (12, 50)
+        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00000
+        //       == 'n' ==> 00017
+        //       <no epsilon>
+        // 00015* <~ (42, 160, S), (15, 69)
+        //       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00000
+        //       == 'o' ==> 00018
+        //       <no epsilon>
+        // 00016* <~ (42, 160, S), (21, 104)
+        //       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00000
+        //       == 'x' ==> 00019
+        //       <no epsilon>
+        // 00017* <~ (42, 160, S), (12, 51)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00000
+        //       == 't' ==> 00012
+        //       <no epsilon>
+        // 00018* <~ (42, 160, S), (15, 70)
+        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00000
+        //       == 'u' ==> 00022
+        //       <no epsilon>
+        // 00019* <~ (42, 160, S), (21, 105)
+        //       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00000
+        //       == 'p' ==> 00023
+        //       <no epsilon>
+        // 00020* <~ (42, 160, S), (9, 37)
+        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00000
+        //       == 'u' ==> 00024
+        //       <no epsilon>
+        // 00021* <~ (42, 160, S), (18, 86)
+        //       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00000
+        //       == 'd' ==> 00009
+        //       <no epsilon>
+        // 00022* <~ (42, 160, S), (15, 71)
+        //       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00000
+        //       == 'b' ==> 00025
+        //       <no epsilon>
+        // 00023* <~ (42, 160, S), (21, 106)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00000
+        //       == 'e' ==> 00026
+        //       <no epsilon>
+        // 00024* <~ (42, 160, S), (9, 38)
+        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00000
+        //       == 'c' ==> 00027
+        //       <no epsilon>
+        // 00025* <~ (42, 160, S), (15, 72)
+        //       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00000
+        //       == 'l' ==> 00028
+        //       <no epsilon>
+        // 00026* <~ (42, 160, S), (21, 107)
+        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00000
+        //       == 'c' ==> 00029
+        //       <no epsilon>
+        // 00027* <~ (42, 160, S), (9, 39)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00000
+        //       == 't' ==> 00010
+        //       <no epsilon>
+        // 00028* <~ (42, 160, S), (15, 68)
+        //       == 'e' ==> 00031
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00000
+        //       <no epsilon>
+        // 00029* <~ (42, 160, S), (21, 108)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00000
+        //       == 't' ==> 00011
+        //       <no epsilon>
+        // 00030 <~ (0, 0), (6, 17), (9, 33), (12, 48), (15, 66), (18, 83), (21, 102), (24, 113), (27, 119), (30, 125), (36, 142), (42, 159)
+        //       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00000
+        //       == 's' ==> 00001
+        //       == ['\t', '\n'], '\r', ' ' ==> 00004
+        //       == ['0', '9'] ==> 00005
+        //       == '}' ==> 00006
+        //       == \26 ==> 00007
+        //       == '{' ==> 00008
+        //       == ';' ==> 00013
+        //       == 'i' ==> 00014
+        //       == 'd' ==> 00015
+        //       == 'e' ==> 00016
+        //       <no epsilon>
+        // 00031* <~ (15, 67, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        //       <no epsilon>
+        // 
+      STATE_254:
+    // origins = [(0L, 0L), (6L, 17L), (9L, 33L), (12L, 48L), (15L, 66L), (18L, 83L), (21L, 102L), (24L, 113L), (27L, 119L), (30L, 125L), (36L, 142L), (42L, 159L)]
+      STATE_254_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 91 ) {
+            if( input < 32 ) {
+                if( input < 13 ) {
+                    if( input < 9 ) {
+                        goto STATE_254_DROP_OUT;    // [-oo, \8] 
+                    }else {
+                        if( input < 11 ) {
+                            goto STATE_260;    // ['\t', '\n'] 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // [\11, \12] 
+                        }
+                    }
+                }else {
+                    if( input < 26 ) {
+                        if( input == 13 ) {
+                            goto STATE_260;    // '\r' 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // [\14, \25] 
+                        }
+                    }else {
+                        if( input == 26 ) {
+                            goto STATE_263;    // \26 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // [\27, \31] 
+                        }
+                    }
+                }
+            }else {
+                if( input < 58 ) {
+                    if( input < 33 ) {
+                        goto STATE_260;    // ' ' 
+                    }else {
+                        if( input < 48 ) {
+                            goto STATE_254_DROP_OUT;    // [\33, \47] 
+                        }else {
+                            goto STATE_261;    // ['0', '9'] 
+                        }
+                    }
+                }else {
+                    if( input < 60 ) {
+                        if( input == 58 ) {
+                            goto STATE_254_DROP_OUT;    // ':' 
+                        }else {
+                            goto STATE_269;    // ';' 
+                        }
+                    }else {
+                        if( input < 65 ) {
+                            goto STATE_254_DROP_OUT;    // ['<', '@'] 
+                        }else {
+                            goto STATE_256;    // ['A', 'Z'] 
+                        }
+                    }
+                }
+            }
+        }else {
+            if( input < 105 ) {
+                if( input < 97 ) {
+                    if( input < 95 ) {
+                        goto STATE_254_DROP_OUT;    // ['[', '^'] 
+                    }else {
+                        if( input == 95 ) {
+                            goto STATE_256;    // '_' 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // '`' 
+                        }
+                    }
+                }else {
+                    if( input < 101 ) {
+                        if( input != 100 ) {
+                            goto STATE_256;    // ['a', 'c'] 
+                        }else {
+                            goto STATE_271;    // 'd' 
+                        }
+                    }else {
+                        if( input == 101 ) {
+                            goto STATE_272;    // 'e' 
+                        }else {
+                            goto STATE_256;    // ['f', 'h'] 
+                        }
+                    }
+                }
+            }else {
+                if( input < 123 ) {
+                    if( input < 115 ) {
+                        if( input == 105 ) {
+                            goto STATE_270;    // 'i' 
+                        }else {
+                            goto STATE_256;    // ['j', 'r'] 
+                        }
+                    }else {
+                        if( input == 115 ) {
+                            goto STATE_257;    // 's' 
+                        }else {
+                            goto STATE_256;    // ['t', 'z'] 
+                        }
+                    }
+                }else {
+                    if( input < 125 ) {
+                        if( input == 123 ) {
+                            goto STATE_264;    // '{' 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // '|' 
+                        }
+                    }else {
+                        if( input == 125 ) {
+                            goto STATE_262;    // '}' 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // ['~', oo] 
+                        }
+                    }
+                }
+            }
+        }
+    
+      STATE_254_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(254);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_254_INPUT;
+        }
+        #endif
+        goto GENERAL_ONE_AND_ONLY_TERMINAL;
+        
+      STATE_256:
+        __QUEX_DEBUG_INFO_ENTER(256);
+    // origins = [(42L, 160L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_256_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_256_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_256_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_256;    // '_' 
+                }else {
+                    goto STATE_256_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_256;    // ['a', 'z'] 
+                }else {
+                    goto STATE_256_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
+      STATE_256_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(256);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_256_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_257:
+        __QUEX_DEBUG_INFO_ENTER(257);
+    // origins = [(42L, 160L, S), (9L, 35L), (18L, 87L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_257_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 97 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_257_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input < 95 ) {
+                    goto STATE_257_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    if( input == 95 ) {
+                        goto STATE_256;    // '_' 
+                    }else {
+                        goto STATE_257_DROP_OUT;    // '`' 
+                    }
+                }
+            }
+        }else {
+            if( input < 116 ) {
+                if( input == 101 ) {
+                    goto STATE_259;    // 'e' 
+                }else {
+                    goto STATE_256;    // ['a', 'd'] 
+                }
+            }else {
+                if( input < 117 ) {
+                    goto STATE_258;    // 't' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['u', 'z'] 
+                    }else {
+                        goto STATE_257_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_257_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(257);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_257_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_258:
+        __QUEX_DEBUG_INFO_ENTER(258);
+    // origins = [(42L, 160L, S), (9L, 36L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_258_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_258_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_258_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 114 ) {
+                if( input == 96 ) {
+                    goto STATE_258_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'q'] 
+                }
+            }else {
+                if( input < 115 ) {
+                    goto STATE_276;    // 'r' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['s', 'z'] 
+                    }else {
+                        goto STATE_258_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_258_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(258);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_258_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_259:
+        __QUEX_DEBUG_INFO_ENTER(259);
+    // origins = [(42L, 160L, S), (18L, 85L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_259_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_259_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_259_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 110 ) {
+                if( input == 96 ) {
+                    goto STATE_259_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'm'] 
+                }
+            }else {
+                if( input < 111 ) {
+                    goto STATE_277;    // 'n' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['o', 'z'] 
+                    }else {
+                        goto STATE_259_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_259_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(259);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_259_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_260:
+        __QUEX_DEBUG_INFO_ENTER(260);
+    // origins = [(6L, 18L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(6);
+    last_acceptance = 6;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_260_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 13 ) {
+            if( input < 9 ) {
+                goto STATE_260_DROP_OUT;    // [-oo, \8] 
+            }else {
+                if( input < 11 ) {
+                    goto STATE_260;    // ['\t', '\n'] 
+                }else {
+                    goto STATE_260_DROP_OUT;    // [\11, \12] 
+                }
+            }
+        }else {
+            if( input < 32 ) {
+                if( input == 13 ) {
+                    goto STATE_260;    // '\r' 
+                }else {
+                    goto STATE_260_DROP_OUT;    // [\14, \31] 
+                }
+            }else {
+                if( input == 32 ) {
+                    goto STATE_260;    // ' ' 
+                }else {
+                    goto STATE_260_DROP_OUT;    // [\33, oo] 
+                }
+            }
+        }
+    
+      STATE_260_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(260);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_260_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(6);
+        goto TERMINAL_6;
+        
+    
+      STATE_261:
+        __QUEX_DEBUG_INFO_ENTER(261);
+    // origins = [(36L, 143L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(36);
+    last_acceptance = 36;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_261_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 48 ) {
+            goto STATE_261_DROP_OUT;    // [-oo, \47] 
+        }else {
+            if( input < 58 ) {
+                goto STATE_261;    // ['0', '9'] 
+            }else {
+                goto STATE_261_DROP_OUT;    // [':', oo] 
+            }
+        }
+    
+      STATE_261_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(261);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_261_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(36);
+        goto TERMINAL_36;
+        
+    
+      STATE_262:
+        __QUEX_DEBUG_INFO_ENTER(262);
+    // origins = [(30L, 126L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(30);
+    last_acceptance = 30;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+        // no trigger set, no 'get character' 
+        goto STATE_262_DROP_OUT;
+        
+      STATE_262_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(262);
+        __QUEX_DEBUG_INFO_ACCEPTANCE(30);
+        goto TERMINAL_30;
+        
+    
+      STATE_263:
+        __QUEX_DEBUG_INFO_ENTER(263);
+    // origins = [(0L, 1L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(0);
+    last_acceptance = 0;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+        // no trigger set, no 'get character' 
+        goto STATE_263_DROP_OUT;
+        
+      STATE_263_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(263);
+        __QUEX_DEBUG_INFO_ACCEPTANCE(0);
+        goto TERMINAL_0;
+        
+    
+      STATE_264:
+        __QUEX_DEBUG_INFO_ENTER(264);
+    // origins = [(27L, 120L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(27);
+    last_acceptance = 27;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+        // no trigger set, no 'get character' 
+        goto STATE_264_DROP_OUT;
+        
+      STATE_264_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(264);
+        __QUEX_DEBUG_INFO_ACCEPTANCE(27);
+        goto TERMINAL_27;
+        
+    
+      STATE_265:
+        __QUEX_DEBUG_INFO_ENTER(265);
+    // origins = [(18L, 84L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(18);
+    last_acceptance = 18;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_265_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_265_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_265_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_256;    // '_' 
+                }else {
+                    goto STATE_265_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_256;    // ['a', 'z'] 
+                }else {
+                    goto STATE_265_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
+      STATE_265_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(265);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_265_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(18);
+        goto TERMINAL_18;
+        
+    
+      STATE_266:
+        __QUEX_DEBUG_INFO_ENTER(266);
+    // origins = [(9L, 34L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(9);
+    last_acceptance = 9;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_266_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_266_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_266_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_256;    // '_' 
+                }else {
+                    goto STATE_266_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_256;    // ['a', 'z'] 
+                }else {
+                    goto STATE_266_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
+      STATE_266_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(266);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_266_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(9);
+        goto TERMINAL_9;
+        
+    
+      STATE_267:
+        __QUEX_DEBUG_INFO_ENTER(267);
+    // origins = [(21L, 103L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(21);
+    last_acceptance = 21;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_267_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_267_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_267_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_256;    // '_' 
+                }else {
+                    goto STATE_267_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_256;    // ['a', 'z'] 
+                }else {
+                    goto STATE_267_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
+      STATE_267_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(267);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_267_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(21);
+        goto TERMINAL_21;
+        
+    
+      STATE_268:
+        __QUEX_DEBUG_INFO_ENTER(268);
+    // origins = [(12L, 49L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(12);
+    last_acceptance = 12;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_268_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_268_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_268_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_256;    // '_' 
+                }else {
+                    goto STATE_268_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_256;    // ['a', 'z'] 
+                }else {
+                    goto STATE_268_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
+      STATE_268_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(268);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_268_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(12);
+        goto TERMINAL_12;
+        
+    
+      STATE_269:
+        __QUEX_DEBUG_INFO_ENTER(269);
+    // origins = [(24L, 114L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(24);
+    last_acceptance = 24;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+        // no trigger set, no 'get character' 
+        goto STATE_269_DROP_OUT;
+        
+      STATE_269_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(269);
+        __QUEX_DEBUG_INFO_ACCEPTANCE(24);
+        goto TERMINAL_24;
+        
+    
+      STATE_270:
+        __QUEX_DEBUG_INFO_ENTER(270);
+    // origins = [(42L, 160L, S), (12L, 50L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_270_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_270_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_270_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 110 ) {
+                if( input == 96 ) {
+                    goto STATE_270_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'm'] 
+                }
+            }else {
+                if( input < 111 ) {
+                    goto STATE_273;    // 'n' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['o', 'z'] 
+                    }else {
+                        goto STATE_270_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_270_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(270);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_270_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_271:
+        __QUEX_DEBUG_INFO_ENTER(271);
+    // origins = [(42L, 160L, S), (15L, 69L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_271_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_271_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_271_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 111 ) {
+                if( input == 96 ) {
+                    goto STATE_271_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'n'] 
+                }
+            }else {
+                if( input < 112 ) {
+                    goto STATE_274;    // 'o' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['p', 'z'] 
+                    }else {
+                        goto STATE_271_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_271_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(271);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_271_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_272:
+        __QUEX_DEBUG_INFO_ENTER(272);
+    // origins = [(42L, 160L, S), (21L, 104L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_272_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_272_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_272_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 120 ) {
+                if( input == 96 ) {
+                    goto STATE_272_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'w'] 
+                }
+            }else {
+                if( input < 121 ) {
+                    goto STATE_275;    // 'x' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['y', 'z'] 
+                    }else {
+                        goto STATE_272_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_272_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(272);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_272_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_273:
+        __QUEX_DEBUG_INFO_ENTER(273);
+    // origins = [(42L, 160L, S), (12L, 51L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_273_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_273_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_273_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 116 ) {
+                if( input == 96 ) {
+                    goto STATE_273_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 's'] 
+                }
+            }else {
+                if( input < 117 ) {
+                    goto STATE_268;    // 't' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['u', 'z'] 
+                    }else {
+                        goto STATE_273_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_273_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(273);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_273_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_274:
+        __QUEX_DEBUG_INFO_ENTER(274);
+    // origins = [(42L, 160L, S), (15L, 70L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_274_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_274_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_274_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 117 ) {
+                if( input == 96 ) {
+                    goto STATE_274_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 't'] 
+                }
+            }else {
+                if( input < 118 ) {
+                    goto STATE_278;    // 'u' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['v', 'z'] 
+                    }else {
+                        goto STATE_274_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_274_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(274);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_274_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_275:
+        __QUEX_DEBUG_INFO_ENTER(275);
+    // origins = [(42L, 160L, S), (21L, 105L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_275_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_275_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_275_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 112 ) {
+                if( input == 96 ) {
+                    goto STATE_275_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'o'] 
+                }
+            }else {
+                if( input < 113 ) {
+                    goto STATE_279;    // 'p' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['q', 'z'] 
+                    }else {
+                        goto STATE_275_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_275_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(275);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_275_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_276:
+        __QUEX_DEBUG_INFO_ENTER(276);
+    // origins = [(42L, 160L, S), (9L, 37L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_276_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_276_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_276_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 117 ) {
+                if( input == 96 ) {
+                    goto STATE_276_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 't'] 
+                }
+            }else {
+                if( input < 118 ) {
+                    goto STATE_280;    // 'u' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['v', 'z'] 
+                    }else {
+                        goto STATE_276_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_276_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(276);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_276_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_277:
+        __QUEX_DEBUG_INFO_ENTER(277);
+    // origins = [(42L, 160L, S), (18L, 86L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_277_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_277_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_277_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 100 ) {
+                if( input == 96 ) {
+                    goto STATE_277_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'c'] 
+                }
+            }else {
+                if( input < 101 ) {
+                    goto STATE_265;    // 'd' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['e', 'z'] 
+                    }else {
+                        goto STATE_277_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_277_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(277);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_277_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_278:
+        __QUEX_DEBUG_INFO_ENTER(278);
+    // origins = [(42L, 160L, S), (15L, 71L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_278_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_278_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_278_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 98 ) {
+                if( input == 96 ) {
+                    goto STATE_278_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // 'a' 
+                }
+            }else {
+                if( input < 99 ) {
+                    goto STATE_281;    // 'b' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['c', 'z'] 
+                    }else {
+                        goto STATE_278_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_278_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(278);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_278_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_279:
+        __QUEX_DEBUG_INFO_ENTER(279);
+    // origins = [(42L, 160L, S), (21L, 106L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_279_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_279_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_279_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 101 ) {
+                if( input == 96 ) {
+                    goto STATE_279_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'd'] 
+                }
+            }else {
+                if( input < 102 ) {
+                    goto STATE_282;    // 'e' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['f', 'z'] 
+                    }else {
+                        goto STATE_279_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_279_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(279);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_279_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_280:
+        __QUEX_DEBUG_INFO_ENTER(280);
+    // origins = [(42L, 160L, S), (9L, 38L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_280_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_280_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_280_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 99 ) {
+                if( input == 96 ) {
+                    goto STATE_280_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'b'] 
+                }
+            }else {
+                if( input < 100 ) {
+                    goto STATE_283;    // 'c' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['d', 'z'] 
+                    }else {
+                        goto STATE_280_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_280_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(280);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_280_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_281:
+        __QUEX_DEBUG_INFO_ENTER(281);
+    // origins = [(42L, 160L, S), (15L, 72L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_281_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_281_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_281_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 108 ) {
+                if( input == 96 ) {
+                    goto STATE_281_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'k'] 
+                }
+            }else {
+                if( input < 109 ) {
+                    goto STATE_284;    // 'l' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['m', 'z'] 
+                    }else {
+                        goto STATE_281_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_281_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(281);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_281_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_282:
+        __QUEX_DEBUG_INFO_ENTER(282);
+    // origins = [(42L, 160L, S), (21L, 107L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_282_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_282_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_282_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 99 ) {
+                if( input == 96 ) {
+                    goto STATE_282_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'b'] 
+                }
+            }else {
+                if( input < 100 ) {
+                    goto STATE_285;    // 'c' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['d', 'z'] 
+                    }else {
+                        goto STATE_282_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_282_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(282);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_282_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_283:
+        __QUEX_DEBUG_INFO_ENTER(283);
+    // origins = [(42L, 160L, S), (9L, 39L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_283_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_283_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_283_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 116 ) {
+                if( input == 96 ) {
+                    goto STATE_283_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 's'] 
+                }
+            }else {
+                if( input < 117 ) {
+                    goto STATE_266;    // 't' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['u', 'z'] 
+                    }else {
+                        goto STATE_283_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_283_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(283);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_283_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_284:
+        __QUEX_DEBUG_INFO_ENTER(284);
+    // origins = [(42L, 160L, S), (15L, 68L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_284_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_284_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_284_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 101 ) {
+                if( input == 96 ) {
+                    goto STATE_284_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 'd'] 
+                }
+            }else {
+                if( input < 102 ) {
+                    goto STATE_255;    // 'e' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['f', 'z'] 
+                    }else {
+                        goto STATE_284_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_284_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(284);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_284_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_285:
+        __QUEX_DEBUG_INFO_ENTER(285);
+    // origins = [(42L, 160L, S), (21L, 108L)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+    last_acceptance = 42;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_285_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_285_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_285_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_256;    // '_' 
+                }
+            }
+        }else {
+            if( input < 116 ) {
+                if( input == 96 ) {
+                    goto STATE_285_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_256;    // ['a', 's'] 
+                }
+            }else {
+                if( input < 117 ) {
+                    goto STATE_267;    // 't' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_256;    // ['u', 'z'] 
+                    }else {
+                        goto STATE_285_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_285_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(285);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_285_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
+        goto TERMINAL_42;
+        
+    
+      STATE_255:
+        __QUEX_DEBUG_INFO_ENTER(255);
+    // origins = [(15L, 67L, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(15);
+    last_acceptance = 15;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_255_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_255_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_256;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_255_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_256;    // '_' 
+                }else {
+                    goto STATE_255_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_256;    // ['a', 'z'] 
+                }else {
+                    goto STATE_255_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
+      STATE_255_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(255);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_255_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(15);
+        goto TERMINAL_15;
+        
+    
+    
+      // (*) Terminal states _______________________________________________________
+      //
+      // Acceptance terminal states, i.e. the 'winner patterns'. This means
+      // that the last input dropped out of a state where the longest matching
+      // pattern was according to the terminal state. The terminal states are 
+      // numbered after the pattern id.
+      //
+      TERMINAL_0:
+        __QUEX_DEBUG_INFO_TERMINAL(0);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(1);
+            
+            #line 16 "dos_lf_2.qx"
+            self.send(TKN_TERMINATION); RETURN;
+#line 1863 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_36:
+        __QUEX_DEBUG_INFO_TERMINAL(36);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_PREPARE_LEXEME_OBJECT
+        QUEX_PREPARE_LEXEME_LENGTH
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(LexemeL);
+            
+            #line 27 "dos_lf_2.qx"
+            self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
+#line 1882 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_6:
+        __QUEX_DEBUG_INFO_TERMINAL(6);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_PREPARE_LEXEME_OBJECT
+        QUEX_PREPARE_LEXEME_LENGTH
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count(Lexeme, LexemeL);
+            
+            #line 18 "dos_lf_2.qx"
+             
+#line 1901 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_9:
+        __QUEX_DEBUG_INFO_TERMINAL(9);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(6);
+            
+            #line 19 "dos_lf_2.qx"
+            self.send(TKN_STRUCT); RETURN;
+#line 1919 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_42:
+        __QUEX_DEBUG_INFO_TERMINAL(42);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_PREPARE_LEXEME_OBJECT
+        QUEX_PREPARE_LEXEME_LENGTH
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(LexemeL);
+            
+            #line 28 "dos_lf_2.qx"
+             self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
+#line 1938 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_12:
+        __QUEX_DEBUG_INFO_TERMINAL(12);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(3);
+            
+            #line 20 "dos_lf_2.qx"
+            self.send(TKN_TYPE_INT); RETURN;
+#line 1956 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_15:
+        __QUEX_DEBUG_INFO_TERMINAL(15);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(6);
+            
+            #line 21 "dos_lf_2.qx"
+            self.send(TKN_TYPE_DOUBLE); RETURN;
+#line 1974 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_18:
+        __QUEX_DEBUG_INFO_TERMINAL(18);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(4);
+            
+            #line 22 "dos_lf_2.qx"
+            self.send(TKN_SEND); RETURN;
+#line 1992 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_21:
+        __QUEX_DEBUG_INFO_TERMINAL(21);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(6);
+            
+            #line 23 "dos_lf_2.qx"
+            self.send(TKN_EXPECT); RETURN;
+#line 2010 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_24:
+        __QUEX_DEBUG_INFO_TERMINAL(24);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(1);
+            
+            #line 24 "dos_lf_2.qx"
+            self.send(TKN_SEMICOLON); RETURN;
+#line 2028 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_27:
+        __QUEX_DEBUG_INFO_TERMINAL(27);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(1);
+            
+            #line 25 "dos_lf_2.qx"
+            self.send(TKN_BRACKET_OPEN); RETURN;
+#line 2046 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+      TERMINAL_30:
+        __QUEX_DEBUG_INFO_TERMINAL(30);
+        QUEX_STREAM_SEEK(last_acceptance_input_position);
+        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+        {
+            {
+            self.__count_shift_end_values_to_start_values();
+            self.count_NoNewline(1);
+            
+            #line 26 "dos_lf_2.qx"
+            self.send(TKN_BRACKET_CLOSE); RETURN;
+#line 2064 "Simple-core-engine.cpp"
+            
+            }
+        }
+    
+        goto __REENTRY_PREPARATION;
+    
+    
+    
+      GENERAL_ONE_AND_ONLY_TERMINAL: {
+            int tmp = last_acceptance;
+            //
+            //  if last_acceptance => goto correspondent acceptance terminal state
+            //  else               => execute defaul action
+            //
+            __QUEX_DEBUG_INFO_TERMINAL(General);
+            switch( tmp ) {
+                case 0L: goto TERMINAL_0;
+                case 36L: goto TERMINAL_36;
+                case 6L: goto TERMINAL_6;
+                case 9L: goto TERMINAL_9;
+                case 42L: goto TERMINAL_42;
+                case 12L: goto TERMINAL_12;
+                case 15L: goto TERMINAL_15;
+                case 18L: goto TERMINAL_18;
+                case 21L: goto TERMINAL_21;
+                case 24L: goto TERMINAL_24;
+                case 27L: goto TERMINAL_27;
+                case 30L: goto TERMINAL_30;
+    
+                default:
+                   // no acceptance state    
+                    QUEX_PREPARE_LEXEME_OBJECT
+                    QUEX_PREPARE_LEXEME_LENGTH
+                    {
+                        {
+            self.__count_shift_end_values_to_start_values();
+            self.count(Lexeme, LexemeL);
+            self.send(TKN_TERMINATION);
+            return quex::TKN_TERMINATION;
+            
+            }
+                    }
+    
+                   goto __REENTRY_PREPARATION;
+            }
+        }
+    
+      
+      __REENTRY_PREPARATION:
+        // (*) Common point for **restarting** lexical analysis.
+        //     at each time when CONTINUE is called at the end of a pattern.
+        //
+        last_acceptance = -1;
+    
+        //
+        //  If a mode change happened, then the function must first return and
+        //  indicate that another mode function is to be called. At this point, 
+        //  we to force a 'return' on a mode change. 
+        //
+        //  Pseudo Code: if( previous_mode != current_mode ) {
+        //                   return 0;
+        //               }
+        // 
+        //  When the analyzer returns, the caller function has to watch if a mode change
+        //  occured. If not it can call this function again.
+        //
+        __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
+        goto __REENTRY_POINT;
+    
+        // prevent compiler warning 'unused variable': use variables once in a part of the code
+        // that is never reached (and deleted by the compiler anyway).
+        if( 0 == 1 ) {
+            int unused = 0;
+            unused = unused + ONE_AND_ONLY.id;
+            goto STATE_254;
+        }
+    }
+
+#include<Simple>
+namespace quex {
+#define self  (*me)
+
+    QUEX_ANALYSER_RETURN_TYPE 
+    Simple_uncallable_analyser_function(Simple* me)
+    { assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
+
+    void 
+    Simple_on_indentation_null_function(Simple*, const int)
+    {}
+    
+    void 
+    Simple_on_entry_exit_null_function(Simple*, const quex_mode*)
+    {}
+
+    void
+    Simple__ONE_AND_ONLY_on_entry(Simple* me, const quex_mode* FromMode) {
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
+#endif
+
+    }
+    void
+    Simple__ONE_AND_ONLY_on_exit(Simple* me, const quex_mode* ToMode)  {
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
+#endif
+
+    }
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+    void
+    Simple__ONE_AND_ONLY_on_indentation(Simple* me, const int Indentation) {
+assert(Indentation >= 0);
+    }
+#endif
+
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+    bool
+    Simple__ONE_AND_ONLY_has_base(const quex_mode* Mode) {
+    return false;
+    }
+    bool
+    Simple__ONE_AND_ONLY_has_entry_from(const quex_mode* Mode) {
+    return true; // default
+    }
+    bool
+    Simple__ONE_AND_ONLY_has_exit_to(const quex_mode* Mode) {
+    return true; // default
+    }
+#endif    
+#undef self
+} // END: namespace quex
+// -*- C++ -*-
+// PURPOSE: File containing definition of token-identifier and
+//          a function that maps token identifiers to a string
+//          name.
+//
+// NOTE: This file has been created automatically by a
+//       quex program.
+//
+//
+/////////////////////////////////////////////////////////////////////////////////////////
+
+#include<cstdio> // for: 'sprintf'
+#include<map>    // for: 'token-id' <-> 'name map'
+#include<quex/code_base/token>
+
+
+namespace quex {
+#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION
+// No file provided that contains potentially a foreign token-id
+// definition. Use quex command line option '--foreign-token-id-file'
+#else // QUEX_FOREIGN_TOKEN_ID_DEFINITION
+const quex::token::id_type TKN_BRACKET_CLOSE = 10000;
+const quex::token::id_type TKN_BRACKET_OPEN  = 10001;
+const quex::token::id_type TKN_EXPECT        = 10002;
+const quex::token::id_type TKN_IDENTIFIER    = 10003;
+const quex::token::id_type TKN_NUMBER        = 10004;
+const quex::token::id_type TKN_SEMICOLON     = 10005;
+const quex::token::id_type TKN_SEND          = 10006;
+const quex::token::id_type TKN_STRUCT        = 10007;
+const quex::token::id_type TKN_TERMINATION   = 0;
+const quex::token::id_type TKN_TYPE_DOUBLE   = 10008;
+const quex::token::id_type TKN_TYPE_INT      = 10009;
+const quex::token::id_type TKN_UNINITIALIZED = 1;
+#endif // QUEX_FOREIGN_TOKEN_ID_DEFINITION
+} // namespace quex
+
+
+namespace quex {
+
+
+    inline const std::string&
+    token::map_id_to_name(const token::id_type TokenID)
+    {
+       static bool virginity_f = true;
+       static std::map<token::id_type, std::string>  db;
+       static std::string  error_string("");
+       static std::string  uninitialized_string("<UNINITIALIZED>");
+       static std::string  termination_string("<TERMINATION>");
+       
+       // NOTE: In general no assumptions can be made that the token::id_type
+       //       is an integer. Thus, no switch statement is used. 
+       if( virginity_f ) {
+           virginity_f = false;
+           // Create the Database mapping TokenID -> TokenName
+           
+           db[TKN_UNINITIALIZED] = std::string("UNINITIALIZED");
+           db[TKN_BRACKET_CLOSE] = std::string("BRACKET_CLOSE");
+           db[TKN_TYPE_INT]      = std::string("TYPE_INT");
+           db[TKN_STRUCT]        = std::string("STRUCT");
+           db[TKN_SEMICOLON]     = std::string("SEMICOLON");
+           db[TKN_BRACKET_OPEN]  = std::string("BRACKET_OPEN");
+           db[TKN_NUMBER]        = std::string("NUMBER");
+           db[TKN_SEND]          = std::string("SEND");
+           db[TKN_TYPE_DOUBLE]   = std::string("TYPE_DOUBLE");
+           db[TKN_EXPECT]        = std::string("EXPECT");
+           db[TKN_TERMINATION]   = std::string("TERMINATION");
+           db[TKN_IDENTIFIER]    = std::string("IDENTIFIER");
+       }
+
+       if     ( TokenID == TKN_TERMINATION )   return termination_string;
+       else if( TokenID == TKN_UNINITIALIZED ) return uninitialized_string;
+       std::map<token::id_type, std::string>::const_iterator it = db.find(TokenID);
+       if( it != db.end() ) return (*it).second;
+       else {
+          char tmp[64];
+          sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+          error_string = std::string(tmp);
+          return error_string;
+       }
+    }
+
+
+// NOT YET:
+//   template <token::id_type TokenT>
+//   struct token_trait;
+//
+//    template<> struct token_trait <TKN_UNINITIALIZED> { typedef None type; };
+//    template<> struct token_trait <TKN_BRACKET_CLOSE> { typedef None type; };
+//    template<> struct token_trait <TKN_TYPE_INT>      { typedef None type; };
+//    template<> struct token_trait <TKN_STRUCT>        { typedef None type; };
+//    template<> struct token_trait <TKN_SEMICOLON>     { typedef None type; };
+//    template<> struct token_trait <TKN_BRACKET_OPEN>  { typedef None type; };
+//    template<> struct token_trait <TKN_NUMBER>        { typedef None type; };
+//    template<> struct token_trait <TKN_SEND>          { typedef None type; };
+//    template<> struct token_trait <TKN_TYPE_DOUBLE>   { typedef None type; };
+//    template<> struct token_trait <TKN_EXPECT>        { typedef None type; };
+//    template<> struct token_trait <TKN_TERMINATION>   { typedef None type; };
+//    template<> struct token_trait <TKN_IDENTIFIER>    { typedef None type; };
+
+}
