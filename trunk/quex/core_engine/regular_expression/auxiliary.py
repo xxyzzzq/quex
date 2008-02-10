@@ -1,3 +1,4 @@
+from quex.exception import RegularExpressionException
 from quex.core_engine.state_machine.core import StateMachine
 
 __debug_recursion_depth  = -1
@@ -12,7 +13,8 @@ def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
      open_bracket_n = 1 
      while 1 + 1 == 2:
         letter = stream.read(1)
-        if letter == "": break
+        if letter == "": 
+            raise RegularExpressionException("Unable to find closing delimiter '%s'" % ClosingDelimiter)
 
         cut_string += letter    
 
@@ -30,7 +32,7 @@ def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
         # if a backslash would have appeared, we would have 'continue'd (see above)
         backslash_f = False    
      else:
-         raise "unable to find closing delimiter '%s'"  % ClosingDelimiter
+        raise RegularExpressionException("Unable to find closing delimiter '%s'" % ClosingDelimiter)
    
      return cut_string
 

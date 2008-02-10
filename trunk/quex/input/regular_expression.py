@@ -16,6 +16,7 @@ def parse(fh, Setup):
             error_msg("No valid regular expression detected.", fh)
 
     except RegularExpressionException, x:
+        fh.seek(start_position)
         error_msg("Regular expression parsing:\n" + x.message, fh)
 
     except EndOfStreamException:
