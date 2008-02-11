@@ -31,8 +31,8 @@ import sys
 import StringIO
 
 
-from quex.exception              import RegularExpressionException
-from quex.core_engine.interval_handling import *
+from quex.exception                      import RegularExpressionException
+from quex.core_engine.interval_handling  import *
 from quex.core_engine.state_machine.core import StateMachine
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __check_for_EOF_or_FAIL_pattern, \
@@ -41,9 +41,9 @@ from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_print
 
 import quex.core_engine.utf8                                  as utf8
-import quex.core_engine.regular_expression.character_string   as map_utf8_string
 import quex.core_engine.regular_expression.character_set_expression   as character_set_expression
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
+import quex.core_engine.regular_expression.snap_character_string      as snap_character_string
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat
@@ -231,7 +231,7 @@ def snap_primary(stream, PatternDict):
         return the_string[1:]    
 
     # -- 'primary' primary
-    if   x == "\"": result = snap_non_double_quote(stream)
+    if   x == "\"": result = snap_character_string.do(stream)
     elif x == "[":  
         stream.seek(-1, 1); 
         result = character_set_expression.do(stream)
@@ -277,21 +277,10 @@ def snap_primary(stream, PatternDict):
     else:                       
         return __debug_exit(__beautify(result), stream)
     
-def snap_non_double_quote(stream):
-    """Cuts an string that is bracketed by quotes from the start of
-      the 'utf8_string. Builds a state machine out of the string that 
-      was cut off."""
-    character_string = __snap_until(stream, "\"")  
-
-    # transform string into state machine        
-    result = map_utf8_string.do(character_string)        
-
-    return result
-
 def snap_non_control_characters(stream):
     """Snaps any 'non_control_character' using UTF8 encoding from the given string. Note, that 
        in UTF8 a character may consist of more than one byte. Creates a state machine 
-       than contains solely one trigger for each character to a acceptance state.
+       that contains solely one trigger for each character to a acceptance state.
 
        This function **concatinates** incoming characters, but **repetition** has preceedence
        over concatination, so it checks after each character whether it is followed by
@@ -320,15 +309,9 @@ def snap_non_control_characters(stream):
 
         #    (3) treat backslashed characters
         if chr(char_code) == "\\":
-            position               = stream.tell()
-            what_follows_backslash = stream.read(16)
-            interpreted_backslashed_char_code, i = snap_backslashed_character.do(what_follows_backslash, -1)
-            if interpreted_backslashed_char_code == None: 
-                stream.seek(position)
-                # char_code is treated 'as is', i.e. as a backslash
-            else:
-                stream.seek(position + i)
-                char_code = interpreted_backslashed_char_code
+            interpreted_backslashed_char_code = snap_backslashed_character.do(stream)
+            if interpreted_backslashed_char_code == None:
+                raise RegularExpressionException("Backslash followed by unrecognized character code.")
 
         # (*) read next character
         position       = stream.tell()

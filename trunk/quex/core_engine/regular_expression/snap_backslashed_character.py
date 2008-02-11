@@ -1,6 +1,5 @@
 from copy import deepcopy
-import quex.core_engine.utf8 as utf8
-from   quex.exception        import  RegularExpressionException
+from quex.exception        import  RegularExpressionException
 
 
 backslashed_character_db = { 
@@ -46,72 +45,39 @@ def do(x, i, ReducedSetOfBackslashedCharactersF=False):
     else:
         backslashed_character_list = backslashed_character_db.keys()
 
+    tmp = sh.read(1)
        
-    if chr(x[i+1]) in backslashed_character_list:
-        # a backslashed letter, e.g. \n, \a, \-, etc.
-        value = backslashed_character_db[chr(x[i+1])]
-        # ATE: two characters
-        return value, i+2
-
-    elif chr(x[i+1]).isdigit():
-        # octal number 
-        number, i = __parse_octal_number(x, i+1, i+5)
-        # ATE: until u 
-        return number, i
-
-    elif x[i+1] == ord('x'):
-        # 1 byte character code point
-        number, i = __parse_hex_number(x, i+2, i+4)
-        # ATE: until end of hex number 
-        return number, i
-
-    elif x[i+1] == ord('X'):
-        # 2 byte character code point
-        number, i = __parse_hex_number(x, i+2, i+6)
-        return number, i
-
-    elif x[i+1] == ord('U'):
-        # 2 byte character code point
-        number, i = __parse_hex_number(x, i+2, i+8)
-        return number, i
-
-    else:
-        return None, i
+    if   tmp in backslashed_character_list: return backslashed_character_db[tmp]
+    elif tmp.isdigit():                     return __parse_octal_number(sh, 5)
+    elif tmp == 'x':                        return __parse_hex_number(sh, 4)
+    elif tmp == 'X':                        return __parse_hex_number(sh, 6)
+    elif tmp == 'U':                        return __parse_hex_number(sh, 8)
+    else:                                   return None
 
 def __parse_octal_number(x, u, MaxL):
-    """x    = string to be parsed
-       i    = start position in string to be considered
-       MaxL = first position after end of string to be parsed
+    """MaxL = Maximum length of number to be parsed.
     """
-    Lx = len(x)
-    MaxL = min(Lx, MaxL)
-    number_str = ""
-
-    while u < MaxL and chr(x[u]).isdigit() and x[u] < ord("8"): 
-        number_str += chr(x[u])
-        u += 1
+    tmp = sh.read(1)
+    while len(number_str) < MaxL and tmp.isdigit() and ord(tmp) < ord("8"): 
+        number_str += tmp
+        tmp.read(1)
         
     if number_str == "":
         raise RegularExpressionException("Missing octal number.")
 
     return long(number_str, 8), u      
 
-def __parse_hex_number(x, u, MaxL):
-    """x    = string to be parsed
-       i    = start position in string to be considered
-       MaxL = first position after end of string to be parsed
+def __parse_hex_number(sh, MaxL):
+    """MaxL = Maximum length of number to be parsed.
     """
-    Lx = len(x)
-    MaxL = min(Lx, MaxL)
     number_str = ""
-
-    while u < MaxL and \
-         (chr(x[u]).isdigit() or 
-          chr(x[u]) in ['a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F']):
-        number_str += chr(x[u])
-        u += 1
+    tmp        = sh.read(1)
+    while len(number_str) < MaxL and 
+          (tmp.isdigit() or tmp in ['a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F']):
+        number_str += tmp
+        tmp.read(1)
         
     if number_str == "": 
         raise RegularExpressionException("Missing hexadecimal number.")
 
-    return long(number_str, 16), u      
+    return long(number_str, 16)
