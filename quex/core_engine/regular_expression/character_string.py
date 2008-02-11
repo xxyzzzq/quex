@@ -3,7 +3,7 @@ import quex.core_engine.regular_expression.snap_backslashed_character as snap_ba
 from quex.core_engine.state_machine.core import StateMachine
 
 
-def do(UTF8_String):
+def do(sh):
     """Converts a uni-code string into a state machine that parses 
        its letters sequentially. Each state in the sequence correponds
        to the sucessful triggering of a letter. Only the last state, though,
@@ -12,7 +12,7 @@ def do(UTF8_String):
 
        "hey" is translated into the state machine:
 
-           (0)-- 'h' -->(1)-- 'e' -->(2)-- 'y' --> SUCCESS
+           (0)-- 'h' -->(1)-- 'e' -->(2)-- 'y' --> ACCEPTANCE
             |            |            |
            FAIL         FAIL         FAIL
     
@@ -22,23 +22,14 @@ def do(UTF8_String):
     # resulting state machine
     result = StateMachine()
 
-    # -- interpret the given 'normal' string as utf8 encoded
-    # -- translate the string into 'int' numbers representing the 
-    #    ucs code of each letter.
-    ucs_letters = utf8.map_n_utf8_to_unicode(UTF8_String)
-
     # Only \" is a special character '"', any other backslashed character
     # remains as the sequence 'backslash' + character
-    new_ucs_letters = []
-    i = -1
-    while i < len(ucs_letters) - 1:
-        i += 1
-        letter = ucs_letters[i]
-        if letter == ord("\\") and i < len(ucs_letters) - 1: 
-            char_code, i = snap_backslashed_character.do(ucs_letters, i)
-            if char_code != None: 
-                letter = char_code
-                i -= 1
+    while 1 + 1 == 2:
+        char_code = utf8.__read_one_utf8_code_from_stream(sh)
+        if char_code == ord("\\"): 
+            char_code = snap_backslashed_character.do(ucs_letters, i)
+            if char_code == None: 
+                raise RegularExpressionException("Unidentified backslash-sequence in quoted string.")
                
         new_ucs_letters.append(letter)
 
