@@ -20,24 +20,22 @@ def do(sh):
             0, 1, 2, ... 
     """
     # resulting state machine
-    result = StateMachine()
+    result    = StateMachine()
+    state_idx = result.init_state_index
 
     # Only \" is a special character '"', any other backslashed character
     # remains as the sequence 'backslash' + character
     while 1 + 1 == 2:
         char_code = utf8.__read_one_utf8_code_from_stream(sh)
+        if char_code == 0xFF:
+            raise RegularExpressionException("End of file reached while parsing quoted string.")
+
         if char_code == ord("\\"): 
-            char_code = snap_backslashed_character.do(ucs_letters, i)
+            char_code = snap_backslashed_character.do(sh)
             if char_code == None: 
                 raise RegularExpressionException("Unidentified backslash-sequence in quoted string.")
-               
-        new_ucs_letters.append(letter)
 
-    ucs_letters = new_ucs_letters
-
-    state_idx = result.init_state_index
-    for letter_code in ucs_letters:
-        state_idx = result.add_transition(state_idx, letter_code)
+        state_idx = result.add_transition(state_idx, char_code)
 
     # when the last state has trigger it is supposed to end up in 'acceptance'
     result.set_acceptance(state_idx)
