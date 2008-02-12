@@ -767,7 +767,7 @@ class StateInfo:
         RETURNS: The target state index (may be created newly).
         """
         assert type(TargetStateIdx) == long or TargetStateIdx == None
-        assert Trigger.__class__.__name__ in ["int", "list", "Interval", "NumberSet", "NoneType"] 
+        assert Trigger.__class__.__name__ in ["int", "long", "list", "Interval", "NumberSet", "NoneType"] 
 
         if Trigger == None:
             # Trigger = None means that the remaining set of triggers is to be
@@ -777,6 +777,8 @@ class StateInfo:
                 return None
             Trigger = copy(self.__epsilon.trigger_set)
             self.__epsilon.trigger_set = NumberSet()
+
+        if type(Trigger) == long: Trigger = int(Trigger)
             
         # (*) Append Transition: StartState --- Trigger ---> TargetState
         #

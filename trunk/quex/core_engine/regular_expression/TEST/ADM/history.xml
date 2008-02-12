@@ -1,4 +1,4 @@
-<history date="Tue Feb 12 02:23:29 2008" element-n="10">
+<history date="Tue Feb 12 02:31:26 2008" element-n="10">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -13,6 +13,6 @@
     <day year="2008" month="02" day="12">
         <accept    time="00:10:26" application="test-snap_backslashed_character.py" choice="" crc="-323047032" />
         <accept    time="01:23:13" application="test-set-expressions.py" choice="" crc="103520014" />
-        <test-runs-today n="8" ok-n="2" fail-n="6" else-n="0" last-run="oll korrekt" last-time="01:23:29"/>
+        <test-runs-today n="9" ok-n="3" fail-n="6" else-n="0" last-run="oll korrekt" last-time="01:31:26"/>
     </day>
 </history>

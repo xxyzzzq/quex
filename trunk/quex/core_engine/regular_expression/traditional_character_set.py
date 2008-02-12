@@ -79,7 +79,7 @@ def do(sh):
                 raise RegularExpressionException("Character range: '-' requires a preceding character, e.g. 'a-z'")
 
             char_code = utf8.__read_one_utf8_code_from_stream(sh)
-            if char_code == 0xFF:
+            if char_code == 0xFF or char_code == ord(']'):
                 raise RegularExpressionException("Character range: '-' requires a character following '-'.")
 
             # value denotes 'end', i.e first character outside the interval

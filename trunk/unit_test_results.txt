@@ -1,6 +1,6 @@
 ===============================================================================
-ENTER: TEST
-DATE:  Sat Feb  9 18:17:54 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:52:50 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -13,8 +13,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1885304.sh ..................................................[OK]
     1889089 Single state mode causes quex to crash
         bug-1889089.sh ..................................................[OK]
-    1887163 Single state mode causes quex to crash
-        bug-1887163.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
     1889086 Single state mode causes quex to crash
         bug-1889086.sh ..................................................[OK]
     1889892 x, X or  FOLLOWED BY A NON-HEX DIGIT CRASHES 0.19.4
@@ -23,10 +23,10 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889321.sh ..................................................[OK]
     1889692 0.19.4 does not gracefully handle unbalanced quotations
         bug-1889692.sh ..................................................[OK]
+    1887163 Single state mode causes quex to crash
+        bug-1887163.sh ..................................................[OK]
     1889877 '*' or '+' without prececing expression crashes 0.19.4
         bug-1889877.sh ..................................................[OK]
-    1885846 Empty RE in define section
-        bug-1885846.sh ..................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -35,8 +35,8 @@ TITLE: Regression Tests on Fixed Bugs
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: demo/TEST
-DATE:  Sat Feb  9 12:59:26 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:53:34 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -89,8 +89,8 @@ TITLE: Demo-Applications
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/TEST
-DATE:  Sat Feb  9 18:19:18 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:29:17 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -104,8 +104,8 @@ TITLE: Miscellaneous Basic Tests
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/code_base/buffer/TEST
-DATE:  Sat Feb  9 18:19:19 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:29:17 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -144,8 +144,8 @@ TITLE: Input Buffers
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Sat Feb  9 18:19:19 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:29:17 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -161,8 +161,8 @@ TITLE: Input Buffers Based on the IConv - Library
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/code_base/template/TEST
-DATE:  Sat Feb  9 18:19:21 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:29:17 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -181,8 +181,8 @@ TITLE: Lexical Analyzer Class Template
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/core_engine/TEST
-DATE:  Sat Feb  9 18:19:24 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:29:18 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -212,8 +212,8 @@ TITLE: Core Functionalities
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/core_engine/generator/TEST
-DATE:  Sat Feb  9 18:21:38 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:31:12 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -308,8 +308,8 @@ TITLE: Code Generation for Lexical Analyzer
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sat Feb  9 18:22:11 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:31:26 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -347,21 +347,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Set Operations
-        test-properties-2.py ............................................[OK]
     Simple
         test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -370,8 +370,8 @@ TITLE: Regular Expression Parsing
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sat Feb  9 18:23:06 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:32:11 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -459,8 +459,8 @@ TITLE: State Machine Operations
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/frs_py/TEST
-DATE:  Sat Feb  9 18:23:48 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:32:11 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -482,8 +482,8 @@ TITLE: Frank-Rene Schaefers Little Python Library
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
-ENTER: quex/input/TEST
-DATE:  Sat Feb  9 18:25:57 2008
+ENTER: ./
+DATE:  Tue Feb 12 02:32:44 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
