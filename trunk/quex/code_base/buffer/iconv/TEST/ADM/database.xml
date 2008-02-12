@@ -1,17 +1,17 @@
-<test-database execution-time-sec="0.01" date="Tue Feb 12 16:58:05 2008">
+<test-database execution-time-sec="0.06" date="Tue Feb 12 18:01:08 2008">
     <last-used-diff-display-program name=""/>
-    <test title="Converting Stream in N Tiny Beats" make-required="True" time-sum-sec="0.00"> 
+    <test title="Converting Stream in N Tiny Beats" make-required="True" time-sum-sec="0.04"> 
         <application file-name="n-beat" info-request-time="1195339150L"/>
         <make-procedure success="True" />
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.00" crc="2006409243"/>
+           <choice name="" result="OK" time-sec="0.04" crc="2006409243"/>
         </choice-list>
     </test>
-    <test title="Converting Stream in One Beat" make-required="True" time-sum-sec="0.00"> 
+    <test title="Converting Stream in One Beat" make-required="True" time-sum-sec="0.02"> 
         <application file-name="one-beat" info-request-time="1195339150L"/>
         <make-procedure success="True" />
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.00" crc="-1774545455"/>
+           <choice name="" result="OK" time-sec="0.02" crc="-1774545455"/>
         </choice-list>
     </test>
 </test-database>
