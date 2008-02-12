@@ -174,7 +174,10 @@ def parse_pattern_name_definitions(fh, Setup):
             return
         
         # -- get the name of the pattern
-        pattern_name = read_next_word(fh)
+        skip_whitespace(fh)
+        pattern_name = read_identifier(fh)
+        if pattern_name == "":
+            raise RegularExpressionException("Missing identifier for pattern definition.")
 
         skip_whitespace(fh)
 

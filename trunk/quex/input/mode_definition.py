@@ -13,7 +13,7 @@ def parse(fh, Setup):
     skip_whitespace(fh)
     mode_name = read_identifier(fh)
     if mode_name == "":
-        error_message("missing identifier at beginning of mode definition.", fh)
+        error_msg("missing identifier at beginning of mode definition.", fh)
 
     # NOTE: constructor does register this mode in the mode_db
     new_mode  = lexer_mode.LexMode(mode_name, fh.name, get_current_line_info_number(fh))
@@ -23,7 +23,7 @@ def parse(fh, Setup):
     dummy, k = read_until_letter(fh, [":", "{"], Verbose=1)
 
     if k != 1 and k != 0:
-        error_message("missing ':' or '{' after mode '%s'" % mode_name, fh)
+        error_msg("missing ':' or '{' after mode '%s'" % mode_name, fh)
 
     if k == 0:
         parse_mode_option_list(new_mode, fh)
