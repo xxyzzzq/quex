@@ -40,7 +40,7 @@
 #pragma once
 #endif
 
-#include <quex/code_base/compatibility/win/inttypes.h>
+#include <quex/code_base/compatibility/win/stdint.h>
 
 // 7.8 Format conversion of integer types
 

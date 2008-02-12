@@ -256,6 +256,9 @@ def snap_primary(stream, PatternDict):
         stream.seek(-1, 1)
         return __debug_exit(None, stream)
 
+    elif x in ["*", "+", "?"]:
+        raise RegularExpressionException("lonely operator '%s' without expression proceeding." % x) 
+
     elif x not in CONTROL_CHARACTERS:
         # NOTE: The '\' is not inside the control characters---for a reason.
         #       It is used to define for example character codes using '\x' etc.

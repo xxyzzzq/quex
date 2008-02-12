@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 17:01:00 2008
+DATE:  Tue Feb 12 17:53:48 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -13,20 +13,26 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1885304.sh ..................................................[OK]
     1889089 Single state mode causes quex to crash
         bug-1889089.sh ..................................................[OK]
-    1885846 Empty RE in define section
-        bug-1885846.sh ..................................................[OK]
-    1889086 Single state mode causes quex to crash
-        bug-1889086.sh ..................................................[OK]
-    1889892 x, X or followed by a non-hex digit crashes 0.19.4
-        bug-1889892.sh ..................................................[OK]
-    1889321 Quex does not handle actions including quote literal
-        bug-1889321.sh ..................................................[OK]
-    1889692 0.19.4 does not gracefully handle unbalanced quotations
-        bug-1889692.sh ..................................................[OK]
     1887163 Single state mode causes quex to crash
         bug-1887163.sh ..................................................[OK]
     1890876 {} handled oddly in define blocks in 0.19.9
         bug-1890876.sh ..................................................[OK]
+    1892227 accepted as identifiers in def
+        bug-1892227.sh ..................................................[OK]
+    1889086 Single state mode causes quex to crash
+        bug-1889086.sh ..................................................[OK]
+    1889892 x, X or followed by a non-hex digit crashes 0.19.4
+        bug-1889892.sh ..................................................[OK]
+    1891254 Lone ? as regex does not give an error in 0.19.9
+        bug-1891254.sh ..................................................[OK]
+    1890828 0.19.9 crashes trying to call error handler in several cases
+        bug-1890828.sh ..................................................[OK]
+    1889692 0.19.4 does not gracefully handle unbalanced quotations
+        bug-1889692.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
+    1889321 Quex does not handle actions including quote literal
+        bug-1889321.sh ..................................................[OK]
     1889877 '*' or '+' without prececing expression crashes 0.19.4
         bug-1889877.sh ..................................................[OK]
 -------------------------------------------------------------------------------
