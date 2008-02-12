@@ -1,0 +1,13 @@
+In most practical application it is not a good idea to start in a void initial
+mode, so quex requires an initial mode explicitly to be specified. This
+happens using the `start` keyword, i.e. one has to type somewhere in
+between the mode definitions (but best at the very beginning):
+
+-----------------------
+  start = PROGRAM
+-----------------------
+
+Let the mode-stubs be stored in a file called `simple.qx`. The previous
+sections defined patterns, token-ids, and modes. Together with these
+definitions one can now start with the specification of pattern-action pairs
+as discussed in the following section.
