@@ -1,6 +1,7 @@
 import quex.core_engine.utf8                                          as utf8
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 from quex.core_engine.state_machine.core import StateMachine
+from quex.exception                      import  RegularExpressionException
 
 
 def do(sh):
@@ -19,6 +20,9 @@ def do(sh):
       Note: The state indices are globally unique. But, they are not necessarily
             0, 1, 2, ... 
     """
+    assert     sh.__class__.__name__ == "StringIO" \
+            or sh.__class__.__name__ == "file"
+
     # resulting state machine
     result    = StateMachine()
     state_idx = result.init_state_index
@@ -30,10 +34,13 @@ def do(sh):
         if char_code == 0xFF:
             raise RegularExpressionException("End of file reached while parsing quoted string.")
 
-        if char_code == ord("\\"): 
+        elif char_code == ord("\\"): 
             char_code = snap_backslashed_character.do(sh)
             if char_code == None: 
                 raise RegularExpressionException("Unidentified backslash-sequence in quoted string.")
+
+        elif char_code == ord('"'):
+            break
 
         state_idx = result.add_transition(state_idx, char_code)
 

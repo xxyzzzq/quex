@@ -293,29 +293,26 @@ def snap_non_control_characters(stream):
     state_index = result.init_state_index
     # (*) read first character
     position  = stream.tell()
-    char_code = utf8.map_utf8_to_unicode(stream)
-    while 1 + 1 == 2: 
-        #    (1) break up condition
-        if char_code == 0xFF: break
-
-        #    (2) check against occurence of control characters
-        #        this needs to come **before** the backslashed character interpretation.
-        #        NOTE: A backslashed character can be a whitespace (for example '\n'). 
-        #        (check against 0xFF to avoid overflow in function 'chr()') 
-        if     char_code < 0xFF                                                  \
+    char_code = utf8.__read_one_utf8_code_from_stream(stream)
+    while char_code != 0xFF:
+        # (1) check against occurence of control characters
+        #     this needs to come **before** the backslashed character interpretation.
+        #     NOTE: A backslashed character can be a whitespace (for example '\n'). 
+        #     (check against 0xFF to avoid overflow in function 'chr()') 
+        if char_code < 0xFF \
            and (chr(char_code) in CONTROL_CHARACTERS or chr(char_code).isspace()):
                stream.seek(-1, 1) 
                break 
 
-        #    (3) treat backslashed characters
-        if chr(char_code) == "\\":
-            interpreted_backslashed_char_code = snap_backslashed_character.do(stream)
-            if interpreted_backslashed_char_code == None:
+        # (2) treat backslashed characters
+        if char_code == ord('\\'):
+            char_code = snap_backslashed_character.do(stream)
+            if char_code == None:
                 raise RegularExpressionException("Backslash followed by unrecognized character code.")
 
-        # (*) read next character
+        # (3) read next character
         position       = stream.tell()
-        next_char_code = utf8.map_utf8_to_unicode(stream)
+        next_char_code = utf8.__read_one_utf8_code_from_stream(stream)
         #    -- check for repetition (repetition has preceedence over concatination)
         if next_char_code in [ord("+"), ord("*"), ord("?"), ord("{")]:
             # (*) create state machine that consist of a single transition 

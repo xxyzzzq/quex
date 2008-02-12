@@ -7,6 +7,9 @@ Hex Numbers II:
 Hex Numbers III:
     characters      = "\UA\UAB\UABC\UABCD\UABCDE\U11A001"
     character codes = ['000A', '00AB', '0ABC', 'ABCD', 'ABCDE', '11A001']
+Hex Numbers IV:
+    characters      = "\x0\X0\U0"
+    character codes = ['0000', '0000', '0000']
 Octal Numbers:
     characters      = "\1\01\20\100"
     character codes = ['0001', '0001', '0010', '0040']

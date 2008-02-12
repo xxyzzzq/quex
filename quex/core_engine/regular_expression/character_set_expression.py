@@ -38,18 +38,18 @@ from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_exit
 
 special_character_set_db = {
-        "alnum":  traditional_character_set.do("[a-zA-Z0-9]"),
-        "alpha":  traditional_character_set.do("[a-zA-Z]"),
-        "blank":  traditional_character_set.do("[ \\t]"),
-        "cntrl":  traditional_character_set.do("[\\x00-\\x1F\\x7F]"), 
-        "digit":  traditional_character_set.do("[0-9]"),
-        "graph":  traditional_character_set.do("[\\x21-\\x7E]"),
-        "lower":  traditional_character_set.do("[a-z]"),
-        "print":  traditional_character_set.do("[\\x20-\\x7E]"), 
-        "punct":  traditional_character_set.do("[!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]"),
-        "space":  traditional_character_set.do("[ \\t\\r\\n]"),
-        "upper":  traditional_character_set.do("[A-Z]"),
-        "xdigit": traditional_character_set.do("[a-fA-F0-9]"),
+        "alnum":  traditional_character_set.do_string("[a-zA-Z0-9]"),
+        "alpha":  traditional_character_set.do_string("[a-zA-Z]"),
+        "blank":  traditional_character_set.do_string("[ \\t]"),
+        "cntrl":  traditional_character_set.do_string("[\\x00-\\x1F\\x7F]"), 
+        "digit":  traditional_character_set.do_string("[0-9]"),
+        "graph":  traditional_character_set.do_string("[\\x21-\\x7E]"),
+        "lower":  traditional_character_set.do_string("[a-z]"),
+        "print":  traditional_character_set.do_string("[\\x20-\\x7E]"), 
+        "punct":  traditional_character_set.do_string("[!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]"),
+        "space":  traditional_character_set.do_string("[ \\t\\r\\n]"),
+        "upper":  traditional_character_set.do_string("[A-Z]"),
+        "xdigit": traditional_character_set.do_string("[a-fA-F0-9]"),
 }
 
 def do(stream):
@@ -69,6 +69,9 @@ def do(stream):
     return __debug_exit(sm, stream)
 
 def snap_set_expression(stream):
+    assert     stream.__class__.__name__ == "StringIO" \
+            or stream.__class__.__name__ == "file"
+
     __debug_entry("set_expression", stream)
 
     x = stream.read(2)
@@ -188,11 +191,9 @@ def snap_traditional_character_set(stream):
     """Cuts a character range bracketed by '[' ']' from the utf8_string and 
        returns the resulting state machine.
     """
-    character_string = aux.__snap_until(stream, "]")  
-
     # transform traditional character set string 'a-zA-X0-1' ... into a state machine        
     # (traditional in the sense of Unix, POSIX, flex, awk, like character ranges)
-    result = traditional_character_set.do(character_string)   
+    result = traditional_character_set.do(stream)   
 
     return result
 
