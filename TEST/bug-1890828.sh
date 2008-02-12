@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
-bug=1890876
+bug=1890828
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug {} handled oddly in define blocks in 0.19.9"
+    echo "sphericalcow: $bug 0.19.9 crashes trying to call error handler in several cases"
     exit
 fi
 

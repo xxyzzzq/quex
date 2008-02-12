@@ -6,7 +6,7 @@ def parse(fh, code_fragment_name):
     
     dummy, i = read_until_letter(fh, ["{"], Verbose=True)
 
-    if i == -1: error_message("missing open bracket after '%s' definition" % code_fragment_name, fh)
+    if i == -1: error_msg("missing open bracket after %s definition." % code_fragment_name, fh)
 
     result.code = read_until_closing_bracket(fh, "{", "}")
     result.filename = fh.name
