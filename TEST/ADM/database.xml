@@ -1,64 +1,70 @@
-<test-database execution-time-sec="6.41" date="Tue Feb 12 02:52:50 2008">
+<test-database execution-time-sec="2.56" date="Tue Feb 12 17:01:00 2008">
     <last-used-diff-display-program name=""/>
     <group name="sphericalcow">
-        <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.19"> 
+        <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.05"> 
             <application file-name="bug-1889871.sh" info-request-time="1202573865L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.19" crc="-429266748"/>
+               <choice name="" result="OK" time-sec="0.05" crc="-429266748"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="2.71"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="1.18"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.71" crc="118547486"/>
+               <choice name="" result="OK" time-sec="1.18" crc="118547486"/>
             </choice-list>
         </test>
-        <test title="1889089 Single state mode causes quex to crash" time-sum-sec="0.13"> 
+        <test title="1889089 Single state mode causes quex to crash" time-sum-sec="0.06"> 
             <application file-name="bug-1889089.sh" info-request-time="1202555658L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.13" crc="373655619"/>
+               <choice name="" result="OK" time-sec="0.06" crc="373655619"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.36"> 
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.16"> 
             <application file-name="bug-1887163.sh" info-request-time="1202571808L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.36" crc="-2036118939"/>
+               <choice name="" result="OK" time-sec="0.16" crc="-2036118939"/>
             </choice-list>
         </test>
-        <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.68"> 
+        <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.25"> 
             <application file-name="bug-1889086.sh" info-request-time="1202526432L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.68" crc="-994839883"/>
+               <choice name="" result="OK" time-sec="0.25" crc="-994839883"/>
             </choice-list>
         </test>
-        <test title="1889892 x, X or  FOLLOWED BY A NON-HEX DIGIT CRASHES 0.19.4" time-sum-sec="0.90"> 
-            <application file-name="bug-1889892.sh" info-request-time="1202780515L"/>
+        <test title="1889892 x, X or followed by a non-hex digit crashes 0.19.4" time-sum-sec="0.21"> 
+            <application file-name="bug-1889892.sh" info-request-time="1202781202L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.90" crc="1674519782"/>
+               <choice name="" result="OK" time-sec="0.21" crc="1674519782"/>
             </choice-list>
         </test>
-        <test title="1889321 Quex does not handle actions including quote literal" time-sum-sec="0.40"> 
+        <test title="1889321 Quex does not handle actions including quote literal" time-sum-sec="0.18"> 
             <application file-name="bug-1889321.sh" info-request-time="1202558032L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.40" crc="1361684450"/>
+               <choice name="" result="OK" time-sec="0.18" crc="1361684450"/>
             </choice-list>
         </test>
-        <test title="1889692 0.19.4 does not gracefully handle unbalanced quotations" time-sum-sec="0.73"> 
+        <test title="1889692 0.19.4 does not gracefully handle unbalanced quotations" time-sum-sec="0.33"> 
             <application file-name="bug-1889692.sh" info-request-time="1202557443L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.73" crc="1515421355"/>
+               <choice name="" result="OK" time-sec="0.33" crc="1515421355"/>
             </choice-list>
         </test>
-        <test title="1889877 '*' or '+' without prececing expression crashes 0.19.4" time-sum-sec="0.16"> 
+        <test title="1889877 '*' or '+' without prececing expression crashes 0.19.4" time-sum-sec="0.05"> 
             <application file-name="bug-1889877.sh" info-request-time="1202576192L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.16" crc="1870353180"/>
+               <choice name="" result="OK" time-sec="0.05" crc="1870353180"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.14"> 
+        <test title="1890876 {} handled oddly in define blocks in 0.19.9" time-sum-sec="0.05"> 
+            <application file-name="bug-1890876.sh" info-request-time="1202781615L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05" crc="-6452980"/>
+            </choice-list>
+        </test>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.05"> 
             <application file-name="bug-1885846.sh" info-request-time="1202439526L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.14" crc="2110266544"/>
+               <choice name="" result="OK" time-sec="0.05" crc="2110266544"/>
             </choice-list>
         </test>
     </group>

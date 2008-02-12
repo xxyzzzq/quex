@@ -30,6 +30,7 @@
 import sys
 import StringIO
 
+from quex.frs_py.file_in  import *
 
 from quex.exception                      import RegularExpressionException
 from quex.core_engine.interval_handling  import *
@@ -346,8 +347,17 @@ def snap_replacement(stream, PatternDict):
     """Snaps a predefined pattern from the input string and returns the resulting
        state machine.
     """ 
-    pattern_name = __snap_until(stream, "}")  
-    pattern_name = pattern_name.strip()    
+    skip_whitespace(stream)
+    pattern_name = read_identifier(stream)  
+    if pattern_name == "":
+        raise RegularExpressionException("Pattern replacement expression misses identifier after '{'.")
+    skip_whitespace(stream)
+
+    letter = stream.read(1)
+    if letter != "}":
+        raise RegularExpressionException("Pattern replacement expression misses closing '}' after '%s'." \
+                                         % pattern_name)
+
     if PatternDict.has_key(pattern_name) == False:
         raise RegularExpressionException("Pattern of name '%s' was not defined in any preceding 'define { }' section" \
                                          % pattern_name)

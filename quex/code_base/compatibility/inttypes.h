@@ -4,7 +4,7 @@
 //       compilers that do not support C99 Standard completely and
 //       do not provided 'inttypes.h' and 'stdint.h' along with their
 //       compiler package (e.g. a major Redmondian Company). For this
-//       Reason this header creates som adaptions.
+//       reason this header creates som adaptions.
 
 extern "C" {
 #ifdef _MSC_VER
