@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "expression    = \"" + TestString + "\""
     sm = StateMachine()
-    trigger_set = character_set.do(StringIO(TestString))
+    trigger_set = character_set.do(StringIO(TestString + "]"))
     sm.add_transition(sm.init_state_index, trigger_set, AcceptanceF=True)
     print "state machine\n", sm 
 
