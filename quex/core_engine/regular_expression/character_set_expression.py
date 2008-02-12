@@ -84,7 +84,7 @@ def snap_set_expression(stream):
                                              "found: '%s'" % x)
     elif x[0] == "[":
         stream.seek(-1, 1)
-        result = snap_traditional_character_set(stream)
+        result = traditional_character_set.do(stream)   
     elif x == "\\P": 
         stream.seek(-2, 1)
         result = property.do(stream)
@@ -182,19 +182,5 @@ def snap_set_list(stream, set_operation_name):
                 raise RegularExpressionException("Missing closing ')' after after '%s' operation." % set_operation_name)
             return __debug_exit(set_list, stream)
 
-def snap_set_primary(stream):
-    __debug_entry("set_primary", stream)
-
-    return __debug_entry(snap_traditional_character_set(stream), stream)
-
-def snap_traditional_character_set(stream):
-    """Cuts a character range bracketed by '[' ']' from the utf8_string and 
-       returns the resulting state machine.
-    """
-    # transform traditional character set string 'a-zA-X0-1' ... into a state machine        
-    # (traditional in the sense of Unix, POSIX, flex, awk, like character ranges)
-    result = traditional_character_set.do(stream)   
-
-    return result
 
    
