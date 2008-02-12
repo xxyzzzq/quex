@@ -26,6 +26,8 @@ import quex.input.setup as setup_parser
 import quex.input.query as query_parser
 import quex.core        as core
 
+from quex.frs_py.file_in  import error_msg
+
 if __name__ == "__main__":
     try:
         # (*) Check if everything is correctly installed
@@ -41,7 +43,7 @@ if __name__ == "__main__":
         # (*) Run the Quex ___________________________________________________________________
         core.do(setup)
 
-    except AssertionError:
+    except "": # AssertionError:
         error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")
 
 
