@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Tue Feb 12 17:36:05 2008">
+<test-database execution-time-sec="0.00" date="Tue Feb 12 17:46:02 2008">
     <last-used-diff-display-program name=""/>
     <group name="sphericalcow">
         <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.00"> 
@@ -19,10 +19,16 @@
                <choice name="" result="OK" time-sec="0.00" crc="373655619"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.00"> 
-            <application file-name="bug-1885846.sh" info-request-time="1202439526L"/>
+        <test title="1891254 Lone ? as regex does not give an error in 0.19.9" time-sum-sec="0.00"> 
+            <application file-name="bug-1891254.sh" info-request-time="1202834730L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="2110266544"/>
+               <choice name="" result="" time-sec="0.00" crc="1488678156"/>
+            </choice-list>
+        </test>
+        <test title="1889877 '*' or '+' without prececing expression crashes 0.19.4" time-sum-sec="0.00"> 
+            <application file-name="bug-1889877.sh" info-request-time="1202576192L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="1870353180"/>
             </choice-list>
         </test>
         <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.00"> 
@@ -55,10 +61,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="1515421355"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.00"> 
-            <application file-name="bug-1887163.sh" info-request-time="1202571808L"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.00"> 
+            <application file-name="bug-1885846.sh" info-request-time="1202439526L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-2036118939"/>
+               <choice name="" result="OK" time-sec="0.00" crc="2110266544"/>
             </choice-list>
         </test>
         <test title="1890876 {} handled oddly in define blocks in 0.19.9" time-sum-sec="0.00"> 
@@ -67,10 +73,10 @@
                <choice name="" result="FAIL" time-sec="0.00" crc="1086595520"/>
             </choice-list>
         </test>
-        <test title="1889877 '*' or '+' without prececing expression crashes 0.19.4" time-sum-sec="0.00"> 
-            <application file-name="bug-1889877.sh" info-request-time="1202576192L"/>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.00"> 
+            <application file-name="bug-1887163.sh" info-request-time="1202571808L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1870353180"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-2036118939"/>
             </choice-list>
         </test>
     </group>
