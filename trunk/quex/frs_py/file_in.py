@@ -333,7 +333,7 @@ def read_word_list(fh, EndMarkers, Verbose=False):
 def verify_next_word(fh, Compare, Quit=True):
     word = read_next_word(fh)
     if word != Compare:
-        error_msg("missing token '%s'. found '%s'" % (Compare, word), fh)
+        error_msg("missing token '%s'. found '%s'." % (Compare, word), fh)
     return word
         
 def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False):

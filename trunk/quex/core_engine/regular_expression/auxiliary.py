@@ -22,9 +22,10 @@ def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
             backslash_f = not backslash_f       
             continue
             
-        if letter == ClosingDelimiter and not backslash_f: 
+        elif letter == ClosingDelimiter and not backslash_f: 
             if open_bracket_n == 1: cut_string = cut_string[:-1]; break
             open_bracket_n -= 1
+
         elif letter == OpeningDelimiter and not backslash_f: 
             # NOTE: if OpeningDelimiter == None, then this can never be the case!
             open_bracket_n += 1
