@@ -1,5 +1,5 @@
-from copy import deepcopy
-from quex.exception        import  RegularExpressionException
+from copy           import deepcopy
+from quex.exception import  RegularExpressionException
 
 
 backslashed_character_db = { 
@@ -14,7 +14,7 @@ backslashed_character_db = {
         '{': ord('{'), '}': ord('}'), 
 }
         
-def do(x, i, ReducedSetOfBackslashedCharactersF=False):
+def do(sh, ReducedSetOfBackslashedCharactersF=False):
     """All backslashed characters shall enter this function. In particular 
        backslashed characters appear in:
         
@@ -33,12 +33,10 @@ def do(x, i, ReducedSetOfBackslashedCharactersF=False):
        RETURNS: UCS code of the interpreted character,
                 index of first element after the treated characters in the string
     """
-    assert type(x) == str or type(x) == list       
-    assert type(i) == int       
-    assert i >= -1 and i < len(x) -1
+    assert     sh.__class__.__name__ == "StringIO" \
+            or sh.__class__.__name__ == "file"
 
-    if type(x) == str:
-        x = map(ord, x)  # transform string into a list of ASCII values (UCS page 0)
+    assert type(ReducedSetOfBackslashedCharactersF) == bool 
 
     if ReducedSetOfBackslashedCharactersF:
         backslashed_character_list = [ 'a', 'b', 'f', 'n', 'r', 't', 'v', '\\', '"' ]
@@ -46,38 +44,41 @@ def do(x, i, ReducedSetOfBackslashedCharactersF=False):
         backslashed_character_list = backslashed_character_db.keys()
 
     tmp = sh.read(1)
-       
+    if tmp == "":
+        raise RegularExpressionException("End of file while parsing backslash sequence.")
+
     if   tmp in backslashed_character_list: return backslashed_character_db[tmp]
-    elif tmp.isdigit():                     return __parse_octal_number(sh, 5)
+    elif tmp.isdigit():                     sh.seek(-1,1); return __parse_octal_number(sh, 5)
     elif tmp == 'x':                        return __parse_hex_number(sh, 4)
     elif tmp == 'X':                        return __parse_hex_number(sh, 6)
     elif tmp == 'U':                        return __parse_hex_number(sh, 8)
     else:                                   return None
 
-def __parse_octal_number(x, u, MaxL):
-    """MaxL = Maximum length of number to be parsed.
-    """
-    tmp = sh.read(1)
-    while len(number_str) < MaxL and tmp.isdigit() and ord(tmp) < ord("8"): 
-        number_str += tmp
-        tmp.read(1)
-        
-    if number_str == "":
-        raise RegularExpressionException("Missing octal number.")
-
-    return long(number_str, 8), u      
+def __parse_octal_number(sh, MaxL):
+    return __parse_base_number(sh, MaxL, 
+                               DigitSet   = "01234567",
+                               Base       = 8,
+                               NumberName = "octal")
 
 def __parse_hex_number(sh, MaxL):
+    return __parse_base_number(sh, MaxL, 
+                               DigitSet   = "0123456789abcdefABCDEF",
+                               Base       = 16,
+                               NumberName = "hexadecimal")
+
+def __parse_base_number(sh, MaxL, DigitSet, Base, NumberName):
     """MaxL = Maximum length of number to be parsed.
     """
     number_str = ""
     tmp        = sh.read(1)
-    while len(number_str) < MaxL and 
-          (tmp.isdigit() or tmp in ['a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F']):
+    while tmp != "" and tmp in DigitSet:
         number_str += tmp
-        tmp.read(1)
+        if len(number_str) == MaxL - 1: break
+        tmp = sh.read(1)
+    else:
+        if tmp != "": sh.seek(-1,1)
         
     if number_str == "": 
-        raise RegularExpressionException("Missing hexadecimal number.")
+        raise RegularExpressionException("Missing %s number." % NumberName)
 
-    return long(number_str, 16)
+    return long(number_str, Base)

@@ -1,4 +1,5 @@
 import sys
+import StringIO
 import quex.core_engine.utf8 as utf8
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
 from quex.core_engine.interval_handling  import *
@@ -53,53 +54,48 @@ class Tracker:
         if self.negation_f: self.negation_f = False
         else:               self.negation_f = True 
 
-def do(UTF8_String):
+def do_string(UTF8_String):
+    return do(StringIO.StringIO(UTF8_String))
+
+def do(sh):
     """Transforms an expression of the form [a-z0-9A-Z] into a NumberSet of
        code points that corresponds to the characters and character ranges mentioned.
     """
+    assert     sh.__class__.__name__ == "StringIO" \
+            or sh.__class__.__name__ == "file"
 
-    def __consider_backslash_occurence(x, i):
-        value, i = snap_backslashed_character.do(x, i)
-        if value == None:
-            max_i = min(len(x), i + 3)
-            raise RegularExpressionException(
-                "Character range: backslashed character(s) %s ... cannot be backslashed" % \
-                repr(map(chr, x[i:max_i])))
-        return value, i
+    tracker   = Tracker()
+    char_code = None
+    while char_code != 0xFF:
+        char_code = utf8.__read_one_utf8_code_from_stream(sh)
 
-    tracker = Tracker()
-    x  = utf8.map_n_utf8_to_unicode(UTF8_String)
-    Lx = len(x)
-    i = 0
-    while i < Lx:
-        if x[i] == ord('-'):
+        if char_code == ord(']'): break
+
+        if char_code == ord('-'):
             #_________________________________________________________________________
             # character range:  'character0' '-' 'character1'
             #
             if tracker.last_letter == -1:
                 raise RegularExpressionException("Character range: '-' requires a preceding character, e.g. 'a-z'")
 
-            i += 1
-            if len(x) <= i:
+            char_code = utf8.__read_one_utf8_code_from_stream(sh)
+            if char_code == 0xFF:
                 raise RegularExpressionException("Character range: '-' requires a character following '-'.")
 
-            if i + 1 < Lx and x[i] == ord("\\"):
-                value, i = __consider_backslash_occurence(x, i) 
-                value += 1        # value denotes 'end', i.e first character outside the interval
-            else:
-                value = x[i] + 1  # value denotes 'end'
-                i += 1
+            # value denotes 'end', i.e first character outside the interval
+            if char_code == ord("\\"): value = snap_backslashed_character.do(sh) + 1 
+            else:                      value = char_code + 1
 
             tracker.consider_interval(tracker.last_letter, value)
 
-        elif i + 1 < Lx and x[i] == ord("\\"):
+        elif char_code == ord("\\"):
             #_________________________________________________________________________
             # Escape Character / Sophisticated Code Point Definition
             #
-            value, i = __consider_backslash_occurence(x, i)
+            value = snap_backslashed_character.do(sh)
             tracker.consider_letter(value)
 
-        elif x[i] == ord("^"):
+        elif char_code == ord("^"):
             #_________________________________________________________________________
             # Negation
             #
@@ -107,16 +103,12 @@ def do(UTF8_String):
             # negated, i.e. ^0-5 means: 'anything but 0-5'
             tracker.negate()
             tracker.consider_letter(-1)  # '-1' => there is no preceeding character
-            # ATE: one character
-            i += 1
 
         else:
             #_________________________________________________________________________
             # Normal character
             #
-            tracker.consider_letter(x[i])
-            # ATE: one character
-            i += 1
+            tracker.consider_letter(char_code)
     
     # flush last letter if it exists
     tracker.consider_letter(-1)

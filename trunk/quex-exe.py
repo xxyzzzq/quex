@@ -27,17 +27,21 @@ import quex.input.query as query_parser
 import quex.core        as core
 
 if __name__ == "__main__":
-    # (*) Check if everything is correctly installed
-    quex.DEFINITIONS.check()
+    try:
+        # (*) Check if everything is correctly installed
+        quex.DEFINITIONS.check()
 
-    # (*) Call only for query? ___________________________________________________________
-    if query_parser.do(sys.argv):   # if quex has been called for UCS property
-        sys.exit(0)                 # query, then no further processing is performed
+        # (*) Call only for query? ___________________________________________________________
+        if query_parser.do(sys.argv):   # if quex has been called for UCS property
+            sys.exit(0)                 # query, then no further processing is performed
 
-    # (*) Get Setup from Command Line and Config File ____________________________________
-    setup = setup_parser.do(sys.argv)
+        # (*) Get Setup from Command Line and Config File ____________________________________
+        setup = setup_parser.do(sys.argv)
 
-    # (*) Run the Quex ___________________________________________________________________
-    core.do(setup)
+        # (*) Run the Quex ___________________________________________________________________
+        core.do(setup)
+
+    except AssertionError:
+        error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")
 
 
