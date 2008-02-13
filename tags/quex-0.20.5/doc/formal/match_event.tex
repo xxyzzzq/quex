@@ -1,0 +1,31 @@
+{\Quex} provides a special event is executed at the moment any
+match is executed. This allows the user to do some things---for 
+example for debugging  purposes--- at any pattern match. The
+event handler name to do this is {\tt on\_match}. The code
+fragment that follows this name is considered to be the action
+which is executed before any match action is executed. Every
+mode has its own {\tt on\_match} event handler. However,
+     these event handlers can be inherited in the same way
+     as {\tt on\_exit} and {\tt on\_entry} are inherited.
+
+
+The event handler receives the two arguments '{\tt Lexeme}', the pointer 
+to the first character of the lexeme and
+'{\tt LexemeL}', i.e. the length of the lexeme that was matched. The following shows
+an example, where the user wants to do some statistics 
+on the number of matches, the number of backslashes and the 
+total length that was matched in the mode '{\tt CORE}'.
+
+\begin{lstlisting}
+mode CORE :
+...
+{
+   ...
+   on_match {
+       match_count        += 1;
+       backslashe_n       += __count_backslashes_in_string(Lexeme);
+       total_match_length += LexemeL;
+   }
+   ...
+} 
+\end{lstlisting}

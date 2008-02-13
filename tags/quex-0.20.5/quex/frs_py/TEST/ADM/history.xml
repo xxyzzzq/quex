@@ -1,0 +1,12 @@
+<history date="Wed Feb 13 17:23:27 2008" element-n="4">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:58:16"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:17:55"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:02:25"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:23:27"/>
+    </day>
+</history>
