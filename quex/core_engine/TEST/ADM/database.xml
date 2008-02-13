@@ -1,22 +1,22 @@
-<test-database execution-time-sec="0.22" date="Tue Feb 12 18:01:08 2008">
+<test-database execution-time-sec="0.20" date="Wed Feb 13 17:22:10 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
-        <test title="Inverse" time-sum-sec="0.03"> 
+        <test title="Inverse" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="1433382430"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1433382430"/>
             </choice-list>
         </test>
-        <test title="Difference" time-sum-sec="0.04"> 
+        <test title="Difference" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="1602787713"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1602787713"/>
             </choice-list>
         </test>
-        <test title="Intersection" time-sum-sec="0.05"> 
+        <test title="Intersection" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="1516231659"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1516231659"/>
             </choice-list>
         </test>
         <test title="Union" time-sum-sec="0.03"> 
@@ -25,10 +25,10 @@
                <choice name="" result="OK" time-sec="0.03" crc="-1815333788"/>
             </choice-list>
         </test>
-        <test title="Condition Code Generation" time-sum-sec="0.05"> 
+        <test title="Condition Code Generation" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-condition-code.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="-1284156277"/>
+               <choice name="" result="OK" time-sec="0.03" crc="-1284156277"/>
             </choice-list>
         </test>
     </group>

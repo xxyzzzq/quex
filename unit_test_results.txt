@@ -1,9 +1,11 @@
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 17:56:44 2008
+DATE:  Wed Feb 13 17:17:49 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
+ -- 1892809
+        bug-1892809.sh ..................................................[OK]
 
  -- sphericalcow:
 
@@ -13,8 +15,12 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1885304.sh ..................................................[OK]
     1889089 Single state mode causes quex to crash
         bug-1889089.sh ..................................................[OK]
-    1885846 Empty RE in define section
-        bug-1885846.sh ..................................................[OK]
+    1887163 Single state mode causes quex to crash
+        bug-1887163.sh ..................................................[OK]
+    1890876 {} handled oddly in define blocks in 0.19.9
+        bug-1890876.sh ..................................................[OK]
+    1892227 accepted as identifiers in def
+        bug-1892227.sh ..................................................[OK]
     1889877 '*' or '+' without prececing expression crashes 0.19.4
         bug-1889877.sh ..................................................[OK]
     1889086 Single state mode causes quex to crash
@@ -23,18 +29,16 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889892.sh ..................................................[OK]
     1891254 Lone ? as regex does not give an error in 0.19.9
         bug-1891254.sh ..................................................[OK]
-    1889321 Quex does not handle actions including quote literal
-        bug-1889321.sh ..................................................[OK]
     1890828 0.19.9 crashes trying to call error handler in several cases
         bug-1890828.sh ..................................................[OK]
     1889692 0.19.4 does not gracefully handle unbalanced quotations
         bug-1889692.sh ..................................................[OK]
-    1887163 Single state mode causes quex to crash
-        bug-1887163.sh ..................................................[OK]
-    1890876 {} handled oddly in define blocks in 0.19.9
-        bug-1890876.sh ..................................................[OK]
-    1892227 accepted as identifiers in def
-        bug-1892227.sh ..................................................[OK]
+    1885855 P{ ...} syntax does not work outside of [
+        bug-1885855.sh ..................................................[OK]
+    1889321 Quex does not handle actions including quote literal
+        bug-1889321.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -44,7 +48,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:07 2008
+DATE:  Wed Feb 13 17:22:09 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -98,7 +102,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:07 2008
+DATE:  Wed Feb 13 17:22:10 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -113,7 +117,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:08 2008
+DATE:  Wed Feb 13 17:22:10 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -138,12 +142,12 @@ TITLE: Input Buffers
     Content Size = 11, Fallback Size = 10
         test-misc-I istream .............................................[OK]
                     stdio ...............................................[OK]
-    Content Size = 11, Fallback Size = 1
-        test-misc-II istream ............................................[OK]
-                     stdio ..............................................[OK]
     Content Size = 11, Fallback Size = 0
         test-misc-III istream ...........................................[OK]
                       stdio .............................................[OK]
+    Content Size = 11, Fallback Size = 1
+        test-misc-II istream ............................................[OK]
+                     stdio ..............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -153,7 +157,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:08 2008
+DATE:  Wed Feb 13 17:22:10 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -170,7 +174,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:08 2008
+DATE:  Wed Feb 13 17:22:10 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -190,7 +194,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:08 2008
+DATE:  Wed Feb 13 17:22:10 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -221,7 +225,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:01:58 2008
+DATE:  Wed Feb 13 17:23:00 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -317,7 +321,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:02:04 2008
+DATE:  Wed Feb 13 17:23:06 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -355,21 +359,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Set Operations
-        test-properties-2.py ............................................[OK]
     Simple
         test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -379,7 +383,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:02:25 2008
+DATE:  Wed Feb 13 17:23:27 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -393,23 +397,23 @@ TITLE: State Machine Operations
 
  -- NFA:
 
-    Conversion to DFA (subset construction)
-        test-StateMachine-create-DFA.py .................................[OK]
     Get elementary trigger sets (target index --> trigger sets)
         test-StateMachine-elementary_trigger_sets.py ....................[OK]
     Epsilon closure (single state)
         test-StateMachine-epsilon-closure.py ............................[OK]
     Get elementary trigger sets II
         test-StateMachine-elementary_trigger_sets-2.py ..................[OK]
+    Conversion to DFA (subset construction)
+        test-StateMachine-create-DFA.py .................................[OK]
 
  -- Predetermined Character Count:
 
-    Newlines
-        test-count_newline_n.py .........................................[OK]
     Characters
         test-count_character_n.py .......................................[OK]
     Contains only Spaces
         test-count_contains_only_spaces.py ..............................[OK]
+    Newlines
+        test-count_newline_n.py .........................................[OK]
 
  -- Pseudo Ambigous Post Condition:
 
@@ -444,16 +448,16 @@ TITLE: State Machine Operations
 
  -- Tracing origin:
 
-    NFA to DFA (subset construction)
-        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
-    Cloning
-        test-StateMachine-trace-origin-clone.py .........................[OK]
-    Inverse
-        test-StateMachine-trace-origin-inverse.py .......................[OK]
     Paralellization
         test-parallelize-trace-origin.py ................................[OK]
     Hopcroft optimization (minimize state set)
         test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    Cloning
+        test-StateMachine-trace-origin-clone.py .........................[OK]
+    Inverse
+        test-StateMachine-trace-origin-inverse.py .......................[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
 
  -- Trigger Set Check:
 
@@ -468,7 +472,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:02:25 2008
+DATE:  Wed Feb 13 17:23:27 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -491,7 +495,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Tue Feb 12 18:02:40 2008
+DATE:  Wed Feb 13 17:23:42 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
