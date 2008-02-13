@@ -10,6 +10,18 @@ Hex Numbers III:
 Hex Numbers IV:
     characters      = "\x0\X0\U0"
     character codes = ['0000', '0000', '0000']
+Hex Numbers V a:
+    characters      = "\x041"
+[end of sequence]
+    character codes = ['0004']
+Hex Numbers V b:
+    characters      = "\X00041"
+[end of sequence]
+    character codes = ['0004']
+Hex Numbers V c:
+    characters      = "\U0000041"
+[end of sequence]
+    character codes = ['0004']
 Octal Numbers:
     characters      = "\1\01\20\100"
     character codes = ['0001', '0001', '0010', '0040']
