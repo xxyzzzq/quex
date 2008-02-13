@@ -74,6 +74,9 @@ def snap_set_expression(stream):
 
     __debug_entry("set_expression", stream)
 
+    result = snap_property_set(stream)
+    if result != None: return result
+
     x = stream.read(2)
     if   x == "[:":
         result = snap_set_term(stream)
@@ -98,6 +101,22 @@ def snap_set_expression(stream):
         result = None
 
     return __debug_exit(result, stream)
+
+def snap_property_set(stream):
+    position = stream.tell()
+    x = stream.read(2)
+    if x == "\\P": 
+        stream.seek(position)
+        return property.do(stream)
+    elif x == "\\N": 
+        stream.seek(position)
+        return property.do_shortcut(stream, "N", "na") # UCS Property: Name
+    elif x == "\\G": 
+        stream.seek(position)
+        return property.do_shortcut(stream, "G", "gc") # UCS Property: General_Category
+    else:
+        stream.seek(position)
+        return None
 
 def snap_set_term(stream):
     __debug_entry("set_term", stream)    

@@ -49,9 +49,9 @@ def do(sh, ReducedSetOfBackslashedCharactersF=False):
 
     if   tmp in backslashed_character_list: return backslashed_character_db[tmp]
     elif tmp.isdigit():                     sh.seek(-1,1); return __parse_octal_number(sh, 5)
-    elif tmp == 'x':                        return __parse_hex_number(sh, 4)
-    elif tmp == 'X':                        return __parse_hex_number(sh, 6)
-    elif tmp == 'U':                        return __parse_hex_number(sh, 8)
+    elif tmp == 'x':                        return __parse_hex_number(sh, 2)
+    elif tmp == 'X':                        return __parse_hex_number(sh, 4)
+    elif tmp == 'U':                        return __parse_hex_number(sh, 6)
     else:                                   return None
 
 def __parse_octal_number(sh, MaxL):
@@ -73,7 +73,7 @@ def __parse_base_number(sh, MaxL, DigitSet, Base, NumberName):
     tmp        = sh.read(1)
     while tmp != "" and tmp in DigitSet:
         number_str += tmp
-        if len(number_str) == MaxL - 1: break
+        if len(number_str) == MaxL: break
         tmp = sh.read(1)
     else:
         if tmp != "": sh.seek(-1,1)

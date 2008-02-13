@@ -59,12 +59,14 @@ def __parse_property_expression(stream, PropertyLetter, EqualConditionPossibleF=
 
     # verify '\?'
     x = stream.read(2)
-    if x != "\\" + PropertyLetter: return None
+    if x != "\\" + PropertyLetter: 
+        raise RegularExpressionException("Unicode property letter '\\%s' expected, received '%s'." % x)
     
     skip_whitespace(stream)
 
     x = stream.read(1)
-    if x != "{": return None
+    if x != "{": 
+        raise RegularExpressionException("Unicode property '\\%s' not followed by '{'." % PropertyLetter)
 
     content = __snap_until(stream, "}")
     
