@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.05" date="Tue Feb 12 18:02:25 2008">
+<test-database execution-time-sec="0.05" date="Wed Feb 13 17:23:27 2008">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.04"> 
+        <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.03"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1195336072L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="1489533151"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
     </group>

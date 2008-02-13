@@ -310,9 +310,16 @@ def snap_non_control_characters(stream):
 
         # (2) treat backslashed characters
         if char_code == ord('\\'):
-            char_code = snap_backslashed_character.do(stream)
-            if char_code == None:
-                raise RegularExpressionException("Backslash followed by unrecognized character code.")
+            stream.seek(-1, 1)
+            trigger_set = character_set_expression.snap_property_set(stream)
+            if trigger_set == None:
+                stream.seek(1, 1)  # snap_property_set() leaves tream right before '\\'
+                char_code = snap_backslashed_character.do(stream)
+                if char_code == None:
+                    raise RegularExpressionException("Backslash followed by unrecognized character code.")
+                trigger_set = char_code
+        else:
+            trigger_set = char_code
 
         # (3) read next character
         position       = stream.tell()
@@ -321,7 +328,7 @@ def snap_non_control_characters(stream):
         if next_char_code in [ord("+"), ord("*"), ord("?"), ord("{")]:
             # (*) create state machine that consist of a single transition 
             tmp = StateMachine()
-            tmp.add_transition(tmp.init_state_index, char_code, AcceptanceF=True)
+            tmp.add_transition(tmp.init_state_index, trigger_set, AcceptanceF=True)
             # -- repeat the single character state machine
             stream.seek(position)
             tmp_repeated = __snap_repetition_range(tmp, stream) 
@@ -337,7 +344,7 @@ def snap_non_control_characters(stream):
         else:
             # (*) add new transition from current state to a new state triggering
             #     on the given character.
-            state_index = result.add_transition(state_index, char_code)
+            state_index = result.add_transition(state_index, trigger_set)
 
         char_code = next_char_code
 
