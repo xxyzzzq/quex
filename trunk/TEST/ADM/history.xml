@@ -1,4 +1,4 @@
-<history date="Wed Feb 13 17:17:49 2008" element-n="21">
+<history date="Thu Feb 14 17:29:41 2008" element-n="22">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -25,5 +25,8 @@
         <accept    time="16:05:45" application="bug-1892809.sh" choice="" crc="-1083928424" />
         <accept    time="16:16:46" application="bug-1885855.sh" choice="" crc="237801586" />
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:17:49"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <accept    time="16:29:41" application="bug-1893874.sh" choice="" crc="744506208" />
     </day>
 </history>
