@@ -1,0 +1,16 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=  
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+INCLUDE	
+IDENTIFIER	aux/hallo.txt
+>> including: aux/hallo.txt
+IDENTIFIER	Hallo
+<TERMINATION>	
+<< return from include
+<TERMINATION>	
+| [END] number of token = 4
+`------------------------------------------------------------------------------------
+cleaning ...
