@@ -19,8 +19,9 @@
 ################################################################################
 import sys
 import os
-from string   import upper, lower, split
-from copy     import copy
+from string              import upper, lower, split
+from copy                import copy
+from quex.frs_py.file_in import error_msg
 
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
