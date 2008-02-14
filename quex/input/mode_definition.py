@@ -20,12 +20,11 @@ def parse(fh, Setup):
 
     # (*) inherited modes / options
     skip_whitespace(fh)
-    dummy, k = read_until_letter(fh, [":", "{"], Verbose=1)
-
-    if k != 1 and k != 0:
+    dummy = fh.read(1)
+    if dummy not in [":", "{"]:
         error_msg("missing ':' or '{' after mode '%s'" % mode_name, fh)
 
-    if k == 0:
+    if dummy == ":":
         parse_mode_option_list(new_mode, fh)
 
     # (*) read in pattern-action pairs and events
