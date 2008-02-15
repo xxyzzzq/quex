@@ -2035,9 +2035,10 @@ class StateMachine:
             real_state_i    = inverse_index_map[printed_state_i]
             state           = self.states[real_state_i]
             if state.is_acceptance(): 
-                acceptance_state_str += "%i, " % int(printed_state_i)
+                acceptance_state_str += "%i; " % int(printed_state_i)
             transition_str += state.get_graphviz_string(printed_state_i, index_map)
 
+        if acceptance_state_str != "": acceptance_state_str = acceptance_state_str[:-2]
         return blue_print(frame_txt, [["$$ACCEPTANCE_STATES$$", acceptance_state_str],
                                       ["$$TRANSITIONS$$",       transition_str]])
         

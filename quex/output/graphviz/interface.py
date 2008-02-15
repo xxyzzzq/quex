@@ -1,28 +1,44 @@
 import os
 import subprocess
-
-sm_template = """
-digraph $$NAME$$ {
-	rankdir=LR;
-	size="10,5"
-	node [shape = doublecircle]; $$ACCEPTANCE_STATES$$;
-	node [shape = circle];
-    $$TRANSITIONS$$
-}
-"""
+from frs_py.file_in import error_msg
 
 transition_template = '$1$ -> $2$ [ label = "$3$"]'
 
-def __get_dot_code(StateMachine):
+def do(StateMachine, OutputFormat):
     """Prepare output in the 'dot' language, that graphviz uses."""
+    supported_format_list = __get_supported_graphic_formats()
+    if OutputFormat not in supported_format_list:
+        error_msg("Graphic format '%s' not supported. Please, use one of: " + \
+                  repr(supported_formats)[1:-1])
 
-    for state in StateMachine.states.items():
-        pass
+    dot_code
     
 
+def __get_supported_graphic_formats():
+    return ["fig"]
 
 
-def is_installed():
+def __call_dot(Code, OutputFormat, OutputFile=""):
+    # (*) initiate call to the graphviz utility ('dot') and use a sample file
+    #     for reference.
+    test_filename = QUEX_PATH + "/output/graphviz/test.dot"
+    fh_out        = open(test_filename + ".fig", "w")
+    fh_err        = open(test_filename + ".err", "w")
+
+    try:    subprocess.call(["dot", test_filename, "-T%s" % OutputFile], 
+                            stdout=fh_out, stderr=fh_err)
+    except: 
+        print "Warning: 'dot' was not callable on this system."
+        return False
+
+    fh_out.close()
+    fh_err.close()
+
+    try:    fh = open(test_filename + ".fig")
+    except: return False
+
+
+def __is_installed():
     """This function checks whether the graphviz utility has been installed."""
 
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
@@ -55,4 +71,4 @@ def is_installed():
 
    
 if __name__ == "__main__":
-    is_installed()
+    __is_installed()
