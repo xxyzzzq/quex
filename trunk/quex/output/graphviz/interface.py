@@ -18,14 +18,23 @@ def __get_supported_graphic_formats():
     return ["fig"]
 
 
-def __call_dot(Code, OutputFormat, OutputFile=""):
+def __call_dot(Code, OutputFormat, OutputFile):
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
     #     for reference.
-    test_filename = QUEX_PATH + "/output/graphviz/test.dot"
-    fh_out        = open(test_filename + ".fig", "w")
-    fh_err        = open(test_filename + ".err", "w")
+    try:
+        fd, input_file_name = tempfile.mkstemp(".quex.dot", "TMP")
+        fh = os.fdopen(fd, "w")
+        fh.write(Code)
+        fh.close()
 
-    try:    subprocess.call(["dot", test_filename, "-T%s" % OutputFile], 
+        fd, error_report = tempfile.mkstemp(".quex.err", "TMP")
+        fh_err = os.fopen(fd, "e")
+        fh_out = open(os.devnull, "w")
+
+    except:
+        error_msg("File access error while preparing graphviz code.")
+
+    try:    subprocess.call(["dot", input_file_name, "-T%s" % OutputFormat, "-o%s" % OutputFile], 
                             stdout=fh_out, stderr=fh_err)
     except: 
         print "Warning: 'dot' was not callable on this system."
@@ -34,8 +43,6 @@ def __call_dot(Code, OutputFormat, OutputFile=""):
     fh_out.close()
     fh_err.close()
 
-    try:    fh = open(test_filename + ".fig")
-    except: return False
 
 
 def __is_installed():
