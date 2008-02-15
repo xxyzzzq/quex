@@ -9,7 +9,11 @@ import quex.core_engine.state_machine.repeat as repeat
 
 if "--hwut-info" in sys.argv:
     print "Plot: Get graphviz string of state machine."
+    print "CHOICES: 1, 2"
     sys.exit(0)
+
+if len(sys.argv) < 2:
+    print "Command line argument required. Try --hwut-info."
     
 # (*) create a simple state machine:  
 #                                            ,--<------------ eps ------------------.
@@ -44,10 +48,12 @@ n9 = sm.add_epsilon_transition(n8, RaiseAcceptanceF=True)
 sm.add_epsilon_transition(n2, n9)
 sm.add_epsilon_transition(n8, n3)
 
-print sm.get_graphviz_string(NormalizeF=True)
+if sys.argv[1] == "1":
+    print sm.get_graphviz_string(NormalizeF=True)
 
-# (*) create the DFA from the specified NFA
-dfa = sm.get_DFA()
+else:
+    # (*) create the DFA from the specified NFA
+    dfa = sm.get_DFA()
 
-print dfa.get_graphviz_string(NormalizeF=True)
+    print dfa.get_graphviz_string(NormalizeF=True)
 
