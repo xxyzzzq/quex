@@ -1,14 +1,33 @@
 import os
 import subprocess
 
-QUEX_PATH=""
+sm_template = """
+digraph $$NAME$$ {
+	rankdir=LR;
+	size="10,5"
+	node [shape = doublecircle]; $$ACCEPTANCE_STATES$$;
+	node [shape = circle];
+    $$TRANSITIONS$$
+}
+"""
+
+transition_template = '$1$ -> $2$ [ label = "$3$"]'
+
+def __get_dot_code(StateMachine):
+    """Prepare output in the 'dot' language, that graphviz uses."""
+
+    for state in StateMachine.states.items():
+        pass
+    
+
+
 
 def is_installed():
     """This function checks whether the graphviz utility has been installed."""
 
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
     #     for reference.
-    test_filename = QUEX_PATH + "output/graphviz/test.dot"
+    test_filename = QUEX_PATH + "/output/graphviz/test.dot"
     fh_out        = open(test_filename + ".fig", "w")
     fh_err        = open(test_filename + ".err", "w")
 
