@@ -50,7 +50,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Feb 13 17:22:09 2008
+DATE:  Fri Feb 15 01:50:21 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -518,6 +518,13 @@ TITLE: Character Set Queries
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+Warning: No database file for hwut-information found for directory: 
+Warning: /home/fschaef/prj/quex/trunk/quex/output/graphviz/TEST 
+Warning: no history file found. 
+===============================================================================
+ENTER: ./
+DATE:  Thu Feb 14 17:34:36 2008
+TITLE: <no file 'ADM/title.txt'>
 ===============================================================================
 SUMMARY:
 .//TEST .................................................................[OK]
