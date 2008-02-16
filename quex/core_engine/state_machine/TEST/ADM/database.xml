@@ -1,59 +1,65 @@
-<test-database execution-time-sec="47.33" date="Sat Feb 16 04:27:37 2008">
+<test-database execution-time-sec="46.62" date="Sat Feb 16 10:20:38 2008">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
-        <test title="Get Trigger Map (intervals --> target states)" time-sum-sec="0.12"> 
+        <test title="Get Trigger Map (intervals --> target states)" time-sum-sec="0.14"> 
             <application file-name="test-StateInfo-trigger-map.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1185210859"/>
+               <choice name="" result="OK" time-sec="0.14" crc="1185210859"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.26"> 
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.22"> 
             <application file-name="test-StateMachine-hopcroft-optimization.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.26" crc="-1831512936"/>
+               <choice name="" result="OK" time-sec="0.22" crc="-1831512936"/>
             </choice-list>
         </test>
     </group>
     <group name="NFA">
-        <test title="Get elementary trigger sets (target index --> trigger sets)" time-sum-sec="0.19"> 
-            <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.19" crc="-2002917491"/>
-            </choice-list>
-        </test>
-        <test title="Epsilon closure (single state)" time-sum-sec="0.20"> 
-            <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.20" crc="-804556959"/>
-            </choice-list>
-        </test>
-        <test title="Get elementary trigger sets II" time-sum-sec="0.08"> 
-            <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.08" crc="-588714883"/>
-            </choice-list>
-        </test>
-        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.16"> 
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.10"> 
             <application file-name="test-StateMachine-create-DFA.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.16" crc="928773920"/>
+               <choice name="" result="OK" time-sec="0.10" crc="928773920"/>
+            </choice-list>
+        </test>
+        <test title="Get elementary trigger sets (target index --> trigger sets)" time-sum-sec="0.12"> 
+            <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.12" crc="-2002917491"/>
+            </choice-list>
+        </test>
+        <test title="Epsilon closure (single state)" time-sum-sec="0.18"> 
+            <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.18" crc="-804556959"/>
+            </choice-list>
+        </test>
+        <test title="Get elementary trigger sets II" time-sum-sec="0.10"> 
+            <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.10" crc="-588714883"/>
             </choice-list>
         </test>
     </group>
     <group name="Plot">
-        <test title="Get graphviz string of state machine." time-sum-sec="0.12"> 
+        <test title="Get graphviz string of state machine." time-sum-sec="0.21"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1203037333L"/>
             <choice-list number="2">
-               <choice name="1" result="OK" time-sec="0.05" crc="1858065922"/>
-               <choice name="2" result="OK" time-sec="0.07" crc="-163746669"/>
+               <choice name="1" result="OK" time-sec="0.11" crc="1858065922"/>
+               <choice name="2" result="OK" time-sec="0.10" crc="-163746669"/>
             </choice-list>
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Characters" time-sum-sec="14.65"> 
+        <test title="Newlines" time-sum-sec="25.65"> 
+            <application file-name="test-count_newline_n.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="25.65" crc="1843080515"/>
+            </choice-list>
+        </test>
+        <test title="Characters" time-sum-sec="14.24"> 
             <application file-name="test-count_character_n.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="14.65" crc="-2087813959"/>
+               <choice name="" result="OK" time-sec="14.24" crc="-2087813959"/>
             </choice-list>
         </test>
         <test title="Contains only Spaces" time-sum-sec="0.63"> 
@@ -62,24 +68,18 @@
                <choice name="" result="OK" time-sec="0.63" crc="-881596759"/>
             </choice-list>
         </test>
-        <test title="Newlines" time-sum-sec="25.23"> 
-            <application file-name="test-count_newline_n.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="25.23" crc="1843080515"/>
-            </choice-list>
-        </test>
     </group>
     <group name="Pseudo Ambigous Post Condition">
-        <test title="Replace Drop-Out with Adjacent Target" time-sum-sec="0.17"> 
+        <test title="Replace Drop-Out with Adjacent Target" time-sum-sec="0.16"> 
             <application file-name="test-StateInfo-replace_drop_out_with_adjacent_target.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.17" crc="-694476263"/>
+               <choice name="" result="OK" time-sec="0.16" crc="-694476263"/>
             </choice-list>
         </test>
-        <test title="The Philosophical Cut" time-sum-sec="2.90"> 
+        <test title="The Philosophical Cut" time-sum-sec="2.59"> 
             <application file-name="test-ambiguous_post_condition-philosophical_cut.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.90" crc="-562448397"/>
+               <choice name="" result="OK" time-sec="2.59" crc="-562448397"/>
             </choice-list>
         </test>
     </group>
@@ -92,10 +92,10 @@
         </test>
     </group>
     <group name="StateMachine Operations">
-        <test title="Setup Pre-Condition" time-sum-sec="0.12"> 
+        <test title="Setup Pre-Condition" time-sum-sec="0.11"> 
             <application file-name="test-setup_pre_condition.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1353762842"/>
+               <choice name="" result="OK" time-sec="0.11" crc="1353762842"/>
             </choice-list>
         </test>
         <test title="Inverse" time-sum-sec="0.11"> 
@@ -122,54 +122,54 @@
                <choice name="" result="OK" time-sec="0.09" crc="445527712"/>
             </choice-list>
         </test>
-        <test title="Append Post Condition" time-sum-sec="0.22"> 
+        <test title="Append Post Condition" time-sum-sec="0.16"> 
             <application file-name="test-setup_post_condition.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.22" crc="637022686"/>
+               <choice name="" result="OK" time-sec="0.16" crc="637022686"/>
             </choice-list>
         </test>
-        <test title="Sequence" time-sum-sec="0.09"> 
+        <test title="Sequence" time-sum-sec="0.10"> 
             <application file-name="test-sequentialize.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.09" crc="-1148685542"/>
+               <choice name="" result="OK" time-sec="0.10" crc="-1148685542"/>
             </choice-list>
         </test>
-        <test title="Append Post Condition" time-sum-sec="0.65"> 
+        <test title="Append Post Condition" time-sum-sec="0.55"> 
             <application file-name="test-setup_border_conditions.py" info-request-time="1202558722L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.65" crc="-1018397271"/>
+               <choice name="" result="OK" time-sec="0.55" crc="-1018397271"/>
             </choice-list>
         </test>
     </group>
     <group name="Tracing origin">
-        <test title="Paralellization" time-sum-sec="0.11"> 
-            <application file-name="test-parallelize-trace-origin.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.11" crc="1793247736"/>
-            </choice-list>
-        </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.09"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.09" crc="1388786628"/>
-            </choice-list>
-        </test>
-        <test title="Cloning" time-sum-sec="0.21"> 
-            <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.21" crc="-908385784"/>
-            </choice-list>
-        </test>
-        <test title="Inverse" time-sum-sec="0.21"> 
-            <application file-name="test-StateMachine-trace-origin-inverse.py" info-request-time="1202558722L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.21" crc="-624163188"/>
-            </choice-list>
-        </test>
         <test title="NFA to DFA (subset construction)" time-sum-sec="0.07"> 
             <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1202558722L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.07" crc="1222815374"/>
+            </choice-list>
+        </test>
+        <test title="Cloning" time-sum-sec="0.09"> 
+            <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.09" crc="-908385784"/>
+            </choice-list>
+        </test>
+        <test title="Inverse" time-sum-sec="0.20"> 
+            <application file-name="test-StateMachine-trace-origin-inverse.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.20" crc="-624163188"/>
+            </choice-list>
+        </test>
+        <test title="Paralellization" time-sum-sec="0.10"> 
+            <application file-name="test-parallelize-trace-origin.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.10" crc="1793247736"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.07"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1202558722L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.07" crc="1388786628"/>
             </choice-list>
         </test>
     </group>

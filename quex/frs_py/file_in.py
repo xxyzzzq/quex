@@ -178,7 +178,16 @@ def read_until_closing_bracket(fh, Opener, Closer,
             # the cache, then read until the end of the region that is to be ignored.
             if match_against_cache(delimiter[0]): 
                 ## print "##cache = ", cache
-                txt += read_until_closing_bracket(fh, "", delimiter[1], IgnoreRegions=[]) 
+                position = fh.tell()
+                try:
+                    txt += read_until_closing_bracket(fh, "", delimiter[1], IgnoreRegions=[]) 
+                except:
+                    fh.seek(position)
+                    error_msg("Unbalanced '%s', reached end of file before closing '%s' was found." % \
+                              (delimiter[0].replace("\n", "\\n"),
+                               delimiter[1].replace("\n", "\\n")),
+                              fh)
+
                 txt += delimiter[1]
                 # the 'ignore region info' may contain information about with what the
                 # closing delimiter is to be replaced
@@ -336,7 +345,7 @@ def verify_next_word(fh, Compare, Quit=True):
         error_msg("missing token '%s'. found '%s'." % (Compare, word), fh)
     return word
         
-def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False):
+def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix=""):
     # fh        = filehandle [1] or filename [2]
     # LineN     = line_number of error
     # DontExitF = True then no exit from program
@@ -347,7 +356,9 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False):
     # is much more direct to be programmed.)
 
     if fh == -1:
-        prefix = "command line"
+        if Prefix == "": prefix = "command line"
+        else:            prefix = Prefix
+
     elif fh == "assert":
         if type(LineN) != str: 
             error_msg("3rd argument needs to be a string,\n" + \
