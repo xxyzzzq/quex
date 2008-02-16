@@ -9,7 +9,7 @@ error-3.qx:3:error: 'A,' is not a valid identifier.
 
 tokens on command line __________________________________
 (1)
-command line: Token prefix must be a valid identifier (--token-prefix).
+command line: Token prefix must be a valid identifier ('--token-prefix').
 command line: Received: 'TKN-'
 (2)
 error: no input files
