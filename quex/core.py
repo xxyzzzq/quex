@@ -107,6 +107,7 @@ def do(Setup):
     if os.linesep == "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()
+
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + "-core-engine.cpp", "C")
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + ".cpp", "C")
 

@@ -1,11 +1,9 @@
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:31:00 2008
+DATE:  Sat Feb 16 04:24:33 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
- -- 1892809
-        bug-1892809.sh ..................................................[OK]
 
  -- sphericalcow:
 
@@ -17,6 +15,10 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889089.sh ..................................................[OK]
     1887163 Single state mode causes quex to crash
         bug-1887163.sh ..................................................[OK]
+    1892809
+        bug-1892809.sh ..................................................[OK]
+    1894578 header block not added to -core-engine.cpp file in 0.20.6
+        bug-1894578.sh ..................................................[OK]
     1893874 Missing colon in mode definition crashes 0.20.5
         bug-1893874.sh ..................................................[OK]
     1892227 accepted as identifiers in def
@@ -29,6 +31,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889892.sh ..................................................[OK]
     1891254 Lone ? as regex does not give an error in 0.19.9
         bug-1891254.sh ..................................................[OK]
+    1893849 0.20.5 allows engine names that are not valid identifiers
+        bug-1893849.sh ................................................[FAIL]
     1889692 0.19.4 does not gracefully handle unbalanced quotations
         bug-1889692.sh ..................................................[OK]
     1890828 0.19.9 crashes trying to call error handler in several cases
@@ -42,15 +46,16 @@ TITLE: Regression Tests on Fixed Bugs
     1885846 Empty RE in define section
         bug-1885846.sh ..................................................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+Error: bug-1893849.sh 
 ===============================================================================
 ENTER: ./
-DATE:  Fri Feb 15 01:50:21 2008
+DATE:  Sat Feb 16 04:42:06 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -104,7 +109,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:31:09 2008
+DATE:  Sat Feb 16 04:24:42 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -119,7 +124,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:31:09 2008
+DATE:  Sat Feb 16 04:24:43 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -144,12 +149,12 @@ TITLE: Input Buffers
     Content Size = 11, Fallback Size = 10
         test-misc-I istream .............................................[OK]
                     stdio ...............................................[OK]
-    Content Size = 11, Fallback Size = 1
-        test-misc-II istream ............................................[OK]
-                     stdio ..............................................[OK]
     Content Size = 11, Fallback Size = 0
         test-misc-III istream ...........................................[OK]
                       stdio .............................................[OK]
+    Content Size = 11, Fallback Size = 1
+        test-misc-II istream ............................................[OK]
+                     stdio ..............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -159,7 +164,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:31:09 2008
+DATE:  Sat Feb 16 04:24:43 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -176,7 +181,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:31:09 2008
+DATE:  Sat Feb 16 04:24:43 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -196,7 +201,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:31:10 2008
+DATE:  Sat Feb 16 04:24:43 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -227,7 +232,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:32:56 2008
+DATE:  Sat Feb 16 04:26:33 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -323,7 +328,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:33:12 2008
+DATE:  Sat Feb 16 04:26:49 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -361,21 +366,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Set Operations
-        test-properties-2.py ............................................[OK]
     Simple
         test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -385,7 +390,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:34:01 2008
+DATE:  Sat Feb 16 04:27:37 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -407,6 +412,12 @@ TITLE: State Machine Operations
         test-StateMachine-epsilon-closure.py ............................[OK]
     Get elementary trigger sets II
         test-StateMachine-elementary_trigger_sets-2.py ..................[OK]
+
+ -- Plot:
+
+    Get graphviz string of state machine.
+        test-StateMachine-get_graphviz_string.py 1 ......................[OK]
+                                                 2 ......................[OK]
 
  -- Predetermined Character Count:
 
@@ -474,7 +485,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:34:01 2008
+DATE:  Sat Feb 16 04:27:38 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -497,7 +508,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:34:36 2008
+DATE:  Sat Feb 16 04:28:11 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -518,16 +529,27 @@ TITLE: Character Set Queries
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-Warning: No database file for hwut-information found for directory: 
-Warning: /home/fschaef/prj/quex/trunk/quex/output/graphviz/TEST 
-Warning: no history file found. 
 ===============================================================================
 ENTER: ./
-DATE:  Thu Feb 14 17:34:36 2008
+DATE:  Sat Feb 16 04:28:38 2008
 TITLE: <no file 'ADM/title.txt'>
+-------------------------------------------------------------------------------
+
+ -- Quex Queries:
+
+    Information about Properties
+        test-is_installed.py PropertyList .....................[NO GOOD FILE]
+                             PropertyInfo .....................[NO GOOD FILE]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 SUMMARY:
-.//TEST .................................................................[OK]
+.//TEST ...............................................................[FAIL]
 ./demo/TEST .............................................................[OK]
 ./quex/TEST .............................................................[OK]
 ./quex/code_base/buffer/TEST ............................................[OK]
@@ -539,4 +561,5 @@ SUMMARY:
 ./quex/core_engine/state_machine/TEST ...................................[OK]
 ./quex/frs_py/TEST ......................................................[OK]
 ./quex/input/TEST .......................................................[OK]
+./quex/output/graphviz/TEST .............................................[OK]
 ===============================================================================

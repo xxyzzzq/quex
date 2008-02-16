@@ -11,34 +11,38 @@ import quex.lexer_mode              as lexer_mode
 import quex.output.cpp.mode_classes as mode_classes
 
 
-def do(Modes, setup):
+def do(Modes, Setup):
 
-    QuexClassHeaderFileTemplate = (setup.QUEX_TEMPLATE_DB_DIR 
+    write_engine_header(Modes, Setup)
+
+    write_mode_class_implementation(Modes, Setup)
+
+def write_engine_header(Modes, Setup):
+
+    QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/template/lexical_analyzer_class").replace("//","/")
-    CoreEngineDefinitionsHeader = (setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
-    if setup.plain_memory_f: CoreEngineDefinitionsHeader += "definitions-quex-buffer.h"
+    CoreEngineDefinitionsHeader = (Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
+    if Setup.plain_memory_f: CoreEngineDefinitionsHeader += "definitions-quex-buffer.h"
     else:                    CoreEngineDefinitionsHeader += "definitions-plain-memory.h"
-    QuexClassHeaderFileOutput   = setup.output_file_stem
-    LexerClassName              = setup.output_engine_name
-    VersionID                   = setup.input_application_version_id
-    QuexVersionID               = setup.QUEX_VERSION
-    DerivedClassHeaderFileName  = setup.input_derived_class_file
-    ModeClassImplementationFile = setup.tmp_mode_class_implementation_file
+    QuexClassHeaderFileOutput   = Setup.output_file_stem
+    LexerClassName              = Setup.output_engine_name
+    VersionID                   = Setup.input_application_version_id
+    QuexVersionID               = Setup.QUEX_VERSION
 
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
-                                "wchar_t": "wchar_t" }[setup.bytes_per_ucs_code_point]
+                                "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
     quex_lexeme_type_str    = { 1: "char    ", 2: "int16_t",  4: "int32_t",  
-                                "wchar_t": "wchar_t" }[setup.bytes_per_ucs_code_point]
+                                "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
 
-    #    are bytes of integers setup 'little endian' or 'big endian' ?
-    if setup.byte_order == "little":
+    #    are bytes of integers Setup 'little endian' or 'big endian' ?
+    if Setup.byte_order == "little":
         quex_coding_name_str = { 1: "ASCII", 2: "UCS-2LE", 4: "UCS-4LE", 
-                                 "wchar_t": "WCHAR_T" }[setup.bytes_per_ucs_code_point]
+                                 "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
     else:
         quex_coding_name_str = { 1: "ASCII", 2: "UCS-2BE", 4: "UCS-4BE", 
-                                 "wchar_t": "WCHAR_T" }[setup.bytes_per_ucs_code_point]
+                                 "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
 
 
     # -- determine whether the lexical analyser needs indentation counting
@@ -50,14 +54,14 @@ def do(Modes, setup):
             indentation_support_f = True
             break
 
-    count_line_column_implementation_file = (setup.QUEX_TEMPLATE_DB_DIR 
+    count_line_column_implementation_file = (Setup.QUEX_TEMPLATE_DB_DIR 
                                              + "/template/count_line_column.i").replace("//","/")
     fh_clc = open_file_or_die(count_line_column_implementation_file, Env="QUEX_PATH")
     count_line_column_implementation_str = fh_clc.read()
     fh_clc.close()
 
     if indentation_support_f:  
-        count_line_column_implementation_file = (setup.QUEX_TEMPLATE_DB_DIR 
+        count_line_column_implementation_file = (Setup.QUEX_TEMPLATE_DB_DIR 
                                                  + "/template/count_line_column-with-indentation.i").replace("//","/")
 
         fh_clc = open_file_or_die(count_line_column_implementation_file, Env="QUEX_PATH")
@@ -71,10 +75,7 @@ def do(Modes, setup):
         i += 1
         lex_id_definitions_str += "const int LEX_ID_%s = %i;\n" % (name, i)
 
-    include_guard_extension = get_include_guard_extension(setup.output_file_stem)
-
-    # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
-    mode_class_member_functions_txt = mode_classes.do(Modes.values())
+    include_guard_extension = get_include_guard_extension(Setup.output_file_stem)
 
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
@@ -85,22 +86,22 @@ def do(Modes, setup):
 
     # -- get the code for the user defined all-match actions
     try:
-        fh_aux = open(setup.output.user_match_action)
+        fh_aux = open(Setup.output.user_match_action)
         user_match_action_str = fh_aux.read()
         fh_aux.close()
     except:
         user_match_action_str = "/* no extra class content */"
 
     # -- define a pointer that directly has the type of the derived class
-    if setup.input_derived_class_name == "":
-        setup.input_derived_class_name = LexerClassName
+    if Setup.input_derived_class_name == "":
+        Setup.input_derived_class_name = LexerClassName
         derived_class_type_declaration = ""
     else:
-        derived_class_type_declaration = "class %s;" % setup.input_derived_class_name
+        derived_class_type_declaration = "class %s;" % Setup.input_derived_class_name
 
     # -- the friends of the class
     friends_str = ""
-    for friend in setup.input_lexer_class_friends:
+    for friend in Setup.input_lexer_class_friends:
         friends_str += "    friend class %s;\n" % friend
 
     # -- the class body extension
@@ -129,24 +130,24 @@ def do(Modes, setup):
     txt = set_switch(txt, entry_handler_active_f,  "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT")
     txt = set_switch(txt, exit_handler_active_f,   "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT")
     txt = set_switch(txt, indentation_support_f,   "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
-    txt = set_switch(txt, setup.plain_memory_f,    "__QUEX_CORE_OPTION_PLAIN_MEMORY_BASED")     
+    txt = set_switch(txt, Setup.plain_memory_f,    "__QUEX_CORE_OPTION_PLAIN_MEMORY_BASED")     
     txt = set_switch(txt, True,                    "__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
-    txt = set_switch(txt, setup.enable_iconv_f,    "__QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED")
+    txt = set_switch(txt, Setup.enable_iconv_f,    "__QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED")
     txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      
     txt = set_switch(txt, True,                    "QUEX_OPTION_LINE_NUMBER_COUNTING")      
     txt = set_switch(txt, True,                    "QUEX_OPTION_COLUMN_NUMBER_COUNTING")        
-    txt = set_switch(txt, setup.output_debug_f,    "QUEX_OPTION_DEBUG_TOKEN_SENDING")
-    txt = set_switch(txt, setup.output_debug_f,    "QUEX_OPTION_DEBUG_MODE_TRANSITIONS")
-    txt = set_switch(txt, setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
+    txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_TOKEN_SENDING")
+    txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_MODE_TRANSITIONS")
+    txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
     txt = set_switch(txt, True,                    "QUEX_OPTION_INCLUDE_STACK_SUPPORT")
-    txt = set_switch(txt, not setup.no_mode_transition_check_f,           
+    txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
-    
+
     txt = blue_print(txt,
             [
-                ["$$BUFFER_LIMIT_CODE$$",            setup.buffer_limit_code],
-                ["$$BEGIN_OF_STREAM_CODE$$",         setup.begin_of_stream_code],
-                ["$$END_OF_STREAM_CODE$$",           setup.end_of_stream_code],
+                ["$$BUFFER_LIMIT_CODE$$",            Setup.buffer_limit_code],
+                ["$$BEGIN_OF_STREAM_CODE$$",         Setup.begin_of_stream_code],
+                ["$$END_OF_STREAM_CODE$$",           Setup.end_of_stream_code],
                 ["%%CONSTRUCTOR_EXTENSTION%%",                  class_constructor_extension_str],
                 ["%%CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE%%", constructor_txt],
                 ["%%CORE_ENGINE_DEFINITIONS_HEADER%%",          CoreEngineDefinitionsHeader],
@@ -158,23 +159,24 @@ def do(Modes, setup):
                 ["%%LEXER_CLASS_FRIENDS%%",          friends_str],
                 ["$$LEXER_CLASS_NAME$$",             LexerClassName],
                 ["%%LEXER_DERIVED_CLASS_DECL%%",     derived_class_type_declaration],
-                ["%%LEXER_DERIVED_CLASS_NAME%%",     setup.input_derived_class_name],
+                ["%%LEXER_DERIVED_CLASS_NAME%%",     Setup.input_derived_class_name],
                 ["%%LEX_ID_DEFINITIONS%%",           lex_id_definitions_str],
                 ["%%MAX_MODE_CLASS_N%%",             repr(len(Modes))],
                 ["%%MODE_CLASS_FRIENDS%%",           friend_txt],
                 ["%%MODE_OBJECT_MEMBERS%%",              mode_object_members_txt],
                 ["%%MODE_SPECIFIC_ANALYSER_FUNCTIONS%%", mode_specific_functions_txt],
                 ["%%PRETTY_INDENTATION%%",               "     " + " " * (len(LexerClassName)*2 + 2)],
-                ["%%QUEX_TEMPLATE_DIR%%",                setup.QUEX_TEMPLATE_DB_DIR],
+                ["%%QUEX_TEMPLATE_DIR%%",                Setup.QUEX_TEMPLATE_DB_DIR],
                 ["%%QUEX_VERSION%%",                     QuexVersionID],
-                ["%%TOKEN_CLASS%%",                      setup.input_token_class_name],
-                ["%%TOKEN_CLASS_DEFINITION_FILE%%",      setup.input_token_class_file.replace("//","/")],
-                ["%%TOKEN_ID_DEFINITION_FILE%%",         setup.output_token_id_file.replace("//","/")],
-                ["%%QUEX_OUTPUT_FILESTEM%%",             setup.output_file_stem],
+                ["%%TOKEN_CLASS%%",                      Setup.input_token_class_name],
+                ["%%TOKEN_CLASS_DEFINITION_FILE%%",      Setup.input_token_class_file.replace("//","/")],
+                ["%%TOKEN_ID_DEFINITION_FILE%%",         Setup.output_token_id_file.replace("//","/")],
+                ["%%QUEX_OUTPUT_FILESTEM%%",             Setup.output_file_stem],
                 ["$$QUEX_CHARACTER_TYPE$$",              quex_character_type_str],
                 ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$COUNT_LINE_COLUMN_IMPLEMENTATION$$", count_line_column_implementation_str],
+                ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get() + "\n"],
              ])
 
     fh_out = open(QuexClassHeaderFileOutput, "w")
@@ -182,20 +184,28 @@ def do(Modes, setup):
     fh_out.write(txt)
     fh_out.close()
 
-    txt = lexer_mode.header.get() + "\n"
-    if DerivedClassHeaderFileName != "":
-        txt += "#include<" + DerivedClassHeaderFileName +">\n"
-    else:
-        txt += "#include<" + setup.output_file_stem +">\n"
+
+def write_mode_class_implementation(Modes, Setup):
+    LexerClassName              = Setup.output_engine_name
+    TokenClassName              = Setup.input_token_class_name
+    OutputFilestem              = Setup.output_file_stem
+    DerivedClassName            = Setup.input_derived_class_name
+    DerivedClassHeaderFileName  = Setup.input_derived_class_file
+    ModeClassImplementationFile = Setup.tmp_mode_class_implementation_file
+
+    if DerivedClassHeaderFileName != "": txt = "#include<" + DerivedClassHeaderFileName +">\n"
+    else:                                txt = "#include<" + OutputFilestem +">\n"
     
-    txt += "namespace quex {\n"
+    # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
+    mode_class_member_functions_txt = mode_classes.do(Modes.values())
 
     mode_class_member_functions_txt = \
          blue_print(mode_class_member_functions_txt,
                 [["$$LEXER_CLASS_NAME$$",         LexerClassName],
-                 ["%%TOKEN_CLASS%%",              setup.input_token_class_name],
-                 ["%%LEXER_DERIVED_CLASS_NAME%%", setup.input_derived_class_name]])
+                 ["%%TOKEN_CLASS%%",              TokenClassName],
+                 ["%%LEXER_DERIVED_CLASS_NAME%%", DerivedClassName]])
     
+    txt += "namespace quex {\n"
     txt += mode_class_member_functions_txt
     txt += "} // END: namespace quex\n"
 
