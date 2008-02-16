@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
-bug=1893880
+bug=1894130
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug 0.20.5 allows inheritable: only start mode"
+    echo "sphericalcow: $bug 0.20.6 can list wrong mode as circuluar inheritance"
     exit
 fi
 
