@@ -1,0 +1,20 @@
+token {
+A
+}
+start = MODE
+mode MODE : ANOTHER_MODE THIRD_MODE
+{
+<<EOF>> => TKN_TERMINATION;
+}
+mode ANOTHER_MODE {
+<<EOF>> => TKN_TERMINATION;
+}
+mode THIRD_MODE : MODE {
+<<EOF>> => TKN_TERMINATION;
+}
+mode FORTH_MODE : THIRO_MODE {
+<<EOF>> => TKN_TERMINATION;
+}
+mode FIFTH_MODE : MODE {
+<<EOF>> => TKN_TERMINATION;
+}

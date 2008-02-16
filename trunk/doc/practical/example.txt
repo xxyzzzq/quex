@@ -1,0 +1,38 @@
+This practical examples guides through the phases of creating a lexical
+analyser using quex. Copy pasting this example may be a good starting point
+for the work with quex. Figure <<fig:process, style=ref>> displays the major actions
+to be taken. There are basically two major steps. The first step is a
+pre-condition for the second step where pattern-action pairs are defined. This
+first step consists of three minor activities:
+
+[[fig:process]]
+.Activities for Lexical Analysis Design.
+image::figures/process[]
+
+
+
+-  {\it Definition of Patterns}. Patterns can be defined directly on the
+  pattern action pair line, but it is much more intuitive to define patterns
+  in terms of regular expressions \cite{} in a separate data file. Those
+  patterns act like constants that allow to understand quickly for what a
+  pattern/action pair stands. Using a name `$$NOT\_NEWLINE+$$` is simply
+  visually more appealing than writing `$$[^\n]+$$`. Those patterns
+  can be defined very easily in terms of regular expressions in a dedicated
+  pattern file.
+  
+-  {\it Definition of Modes}. This is best done with a drawing program or
+  by hand on paper. One should be clear about how lexer modes are named, how
+  they relate to each other and what transitions are possible.
+  
+-  {\it Definition of Token-IDs}. We finally want to send tokens and those
+  tokens must have identifiers. For this reason, the user needs to specify
+  names of tokens in a token-id file, so that quex can create ids for them.
+  
+
+
+Once, these simple steps are accomplished the pattern-action pairs can be
+coded. The example in this section describes a linear process of these
+activities. In practical work, however, this process will most likely be
+iterative.
+
+
