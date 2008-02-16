@@ -208,11 +208,25 @@ def validate(setup, command_line, argv):
         error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
                   "Maybe it works.", DontExitF=True)
     
-    if is_identifier(setup.input_token_id_prefix) == False:
-        error_msg("Token prefix must be a valid identifier (--token-prefix).\n" + \
-                  "Received: '%s'" % setup.input_token_id_prefix)
+    # check that names are valid identifiers
+    __check_identifier(setup, "input_token_id_prefix",    "Token prefix")
+    __check_identifier(setup, "output_engine_name",       "Engine name")
+    if setup.input_derived_class_name != "": 
+        __check_identifier(setup, "input_derived_class_name", "Derived class name")
+    if setup.input_token_class_name != "": 
+        __check_identifier(setup, "input_token_class_name",   "Token class name")
+    # __check_identifier("token_id_termination",     "Token id for termination")
+    # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
 
         
+def __check_identifier(setup, Candidate, Name):
+    value = setup.__dict__[Candidate]
+    if is_identifier(value): return
+
+    CommandLineOption = SETUP_INFO[Candidate][0]
+
+    error_msg("%s must be a valid identifier (%s).\n" % (Name, repr(CommandLineOption)[1:-1]) + \
+              "Received: '%s'" % value)
 
 def __get_integer(code, option_name):
     try:

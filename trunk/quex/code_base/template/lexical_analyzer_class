@@ -10,7 +10,6 @@
 #include<quex/code_base/compatibility/inttypes.h>
 #include<cstdio>    // provides: FILE*
 
-
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -146,6 +145,7 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #include <%%TOKEN_ID_DEFINITION_FILE%%>
 #include <%%TOKEN_CLASS_DEFINITION_FILE%%>
 
+
 // RETURN: _____________________________________________________________________
 //
 //  -- Return from pattern action to the function that called the
@@ -177,6 +177,11 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 
 
 %%LEXER_DERIVED_CLASS_DECL%%
+
+// User defined header content. _________________________________________________
+//
+// This is pasted after the definitions, such that the user can make use of them.
+$$USER_DEFINED_HEADER$$
 
 namespace quex {
 
