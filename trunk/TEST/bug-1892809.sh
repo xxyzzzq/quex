@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=1892809
 if [[ $1 == "--hwut-info" ]]; then
-    echo ": $bug "
+    echo "sphericalcow: $bug "
     exit
 fi
 
