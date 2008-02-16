@@ -362,9 +362,14 @@ class LexMode:
 
             # -- check for base modes that are actually derived modes
             if base_mode in derived_modes:
-                error_msg("circular inheritance: mode '%s'\ninherits mode '%s'." % \
-                          (self.name, base_mode),
-                          self.filename, self.line_n)
+                msg = ""
+                previous = self.name
+                for mode in derived_modes:
+                    msg += "circular inheritance: mode '%s' inherits '%s'.\n" % (previous, mode)
+                    previous = mode
+                    if previous == self.name: break
+
+                error_msg(msg, self.filename, self.line_n)
 
             # -- append base_mode to the base modes of current mode
             base_mode_collection_candidates = mode_db[base_mode].get_base_modes(derived_modes
