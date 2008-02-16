@@ -1,0 +1,54 @@
+-------------------------------------------------------------------
+expression    = ""a"/";""
+state machine
+init-state = 0L
+00000 == 'a' ==> 00002
+      <no epsilon>
+00001* <~ (2, 13, post)
+      <no epsilon>
+00002 <~ (2, 5, S, post)
+      == ';' ==> 00001
+      <no epsilon>
+
+-------------------------------------------------------------------
+expression    = "(a|z)/c"
+state machine
+init-state = 0L
+00000 == 'a', 'z' ==> 00002
+      <no epsilon>
+00001* <~ (21, 55, post)
+      <no epsilon>
+00002 <~ (21, 47, S, post)
+      == 'c' ==> 00001
+      <no epsilon>
+
+-------------------------------------------------------------------
+expression    = ""aac"|"bad"/"z"|congo"
+state machine
+init-state = 0L
+00000 == 'b' ==> 00004
+      == 'a' ==> 00005
+      <no epsilon>
+00001* <~ (38, 158, post)
+      <no epsilon>
+00002 <~ (38, 105, S, post)
+      == 'z' ==> 00001
+      == 'c' ==> 00003
+      <no epsilon>
+00003 == 'o' ==> 00008
+      <no epsilon>
+00004 == 'a' ==> 00007
+      <no epsilon>
+00005 == 'a' ==> 00006
+      <no epsilon>
+00006 == 'c' ==> 00002
+      <no epsilon>
+00007 == 'd' ==> 00002
+      <no epsilon>
+00008 == 'n' ==> 00009
+      <no epsilon>
+00009 == 'g' ==> 00010
+      <no epsilon>
+00010 == 'o' ==> 00001
+      <no epsilon>
+
