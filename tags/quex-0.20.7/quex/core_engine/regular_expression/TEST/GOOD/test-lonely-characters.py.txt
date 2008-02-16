@@ -1,0 +1,179 @@
+expression    = "you(a|b)you"
+state machine
+init-state = 0L
+00000 <~ (26, 84)
+      == 'y' ==> 00006
+      <no epsilon>
+00001* <~ (26, 85, S)
+      <no epsilon>
+00002 <~ (26, 86)
+      == 'u' ==> 00003
+      <no epsilon>
+00003 <~ (26, 87)
+      == ['a', 'b'] ==> 00007
+      <no epsilon>
+00004 <~ (26, 88)
+      == 'o' ==> 00005
+      <no epsilon>
+00005 <~ (26, 89)
+      == 'u' ==> 00001
+      <no epsilon>
+00006 <~ (26, 90)
+      == 'o' ==> 00002
+      <no epsilon>
+00007 <~ (26, 91)
+      == 'y' ==> 00004
+      <no epsilon>
+
+expression    = "[fb]oo-a"
+state machine
+init-state = 4L
+00000 <~ (36, 128)
+      == 'o' ==> 00001
+      <no epsilon>
+00001 <~ (36, 129)
+      == 'o' ==> 00002
+      <no epsilon>
+00002 <~ (36, 130)
+      == \45 ==> 00003
+      <no epsilon>
+00003 <~ (36, 131)
+      == 'a' ==> 00005
+      <no epsilon>
+00004 <~ (36, 126)
+      == 'b', 'f' ==> 00000
+      <no epsilon>
+00005* <~ (36, 127, S)
+      <no epsilon>
+
+expression    = "a*(b|cd+)e+"
+state machine
+init-state = 3L
+00000 <~ (75, 248)
+      == 'e' ==> 00004
+      == 'd' ==> 00000
+      <no epsilon>
+00001 <~ (75, 249)
+      == 'd' ==> 00000
+      <no epsilon>
+00002 <~ (75, 250)
+      == 'e' ==> 00004
+      <no epsilon>
+00003 <~ (75, 246)
+      == 'a' ==> 00003
+      == 'c' ==> 00001
+      == 'b' ==> 00002
+      <no epsilon>
+00004* <~ (75, 247, S)
+      == 'e' ==> 00004
+      <no epsilon>
+
+expression    = "a*.b*"
+state machine
+init-state = 0L
+00000 <~ (81, 261), (96, 297)
+      == 'a' ==> 00001
+      == [-oo, \-1], [\1, '\t'], [\11, '`'], ['b', oo] ==> 00002
+      <no epsilon>
+00001* <~ (81, 261), (81, 262), (96, 298, S)
+      == 'a' ==> 00001
+      == [-oo, \-1], [\1, '\t'], [\11, '`'], ['b', oo] ==> 00002
+      <no epsilon>
+00002* <~ (81, 262), (96, 299, S)
+      == 'b' ==> 00003
+      <no epsilon>
+00003* <~ (96, 300, S)
+      == 'b' ==> 00003
+      <no epsilon>
+
+expression    = "\"\n"
+state machine
+init-state = 0L
+00000 <~ (99, 307)
+      == \34 ==> 00002
+      <no epsilon>
+00001* <~ (99, 308, S)
+      <no epsilon>
+00002 <~ (99, 309)
+      == '\n' ==> 00001
+      <no epsilon>
+
+expression    = "\"\[\]\-\*\+\$\^\)\("
+state machine
+init-state = 0L
+00000 <~ (102, 332)
+      == \34 ==> 00002
+      <no epsilon>
+00001* <~ (102, 333, S)
+      <no epsilon>
+00002 <~ (102, 334)
+      == '[' ==> 00003
+      <no epsilon>
+00003 <~ (102, 335)
+      == ']' ==> 00004
+      <no epsilon>
+00004 <~ (102, 336)
+      == \45 ==> 00005
+      <no epsilon>
+00005 <~ (102, 337)
+      == \42 ==> 00006
+      <no epsilon>
+00006 <~ (102, 338)
+      == \43 ==> 00007
+      <no epsilon>
+00007 <~ (102, 339)
+      == \36 ==> 00008
+      <no epsilon>
+00008 <~ (102, 340)
+      == '^' ==> 00009
+      <no epsilon>
+00009 <~ (102, 341)
+      == \41 ==> 00010
+      <no epsilon>
+00010 <~ (102, 342)
+      == \40 ==> 00001
+      <no epsilon>
+
+## NOTE: The 'c' has to be ignored, because it comes after the lonestanding space
+expression    = "(a|b) c"
+state machine
+init-state = 0L
+00000 <~ (115, 368)
+      == ['a', 'b'] ==> 00001
+      <no epsilon>
+00001* <~ (115, 369, S)
+      <no epsilon>
+
+## NOTE: The 'c' has to be ignored, because it comes after the lonestanding space
+expression    = "(a|b)
+c"
+state machine
+init-state = 0L
+00000 <~ (128, 395)
+      == ['a', 'b'] ==> 00001
+      <no epsilon>
+00001* <~ (128, 396, S)
+      <no epsilon>
+
+## NOTE: The '=> TKN_IF' has to be ignored, because it comes after the lonestanding space
+expression    = "if         => TKN_IF"
+state machine
+init-state = 0L
+00000 <~ (131, 403)
+      == 'i' ==> 00002
+      <no epsilon>
+00001* <~ (131, 404, S)
+      <no epsilon>
+00002 <~ (131, 405)
+      == 'f' ==> 00001
+      <no epsilon>
+
+expression    = "\n"
+state machine
+init-state = 0L
+00000 <~ (134, 410)
+      == '\n' ==> 00001
+      <no epsilon>
+00001* <~ (134, 411, S)
+      <no epsilon>
+

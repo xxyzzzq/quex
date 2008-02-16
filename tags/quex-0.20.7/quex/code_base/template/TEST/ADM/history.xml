@@ -1,0 +1,18 @@
+<history date="Sat Feb 16 04:24:43 2008" element-n="6">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:55:25"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:01:08"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:22:10"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:31:09"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="03:24:43"/>
+    </day>
+</history>
