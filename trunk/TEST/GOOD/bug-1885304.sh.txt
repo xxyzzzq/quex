@@ -15,7 +15,6 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<quex/code_base/compatibility/inttypes.h>
 #include<cstdio>    // provides: FILE*
 
-
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -152,6 +151,7 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
 #include <Simple-token_ids>
 #include <quex/code_base/token>
 
+
 // RETURN: _____________________________________________________________________
 //
 //  -- Return from pattern action to the function that called the
@@ -181,6 +181,12 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
         return self._token_queue->top()->type_id();                              \
    }
 
+
+
+
+// User defined header content. _________________________________________________
+//
+// This is pasted after the definitions, such that the user can make use of them.
 
 
 
@@ -3432,7 +3438,6 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_254;
         }
     }
-
 #include<Simple>
 namespace quex {
 #define self  (*me)
