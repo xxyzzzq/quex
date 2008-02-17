@@ -46,6 +46,43 @@ def do(Modes):
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
                 
+    # -- check for circular inheritance
+    check_circular_inheritance(Modes)
+
     # -- mode specific checks
     for mode in Modes.values():
         mode.consistency_check()
+
+
+def check_circular_inheritance(ModeDB):
+    for mode in ModeDB.values():
+        __search_circular_inheritance(ModeDB, mode, [])
+        mode.inheritance_circularity_check_done_f = True
+
+
+def __search_circular_inheritance(ModeDB, mode, inheritance_path):
+    
+    def __report_error(mode, inheritance_path):
+        assert inheritance_path != []
+        msg = ""
+        previous = mode.name
+        inheritance_path.reverse()
+        for mode_name in inheritance_path:
+            msg += "mode '%s' is a base of mode '%s'.\n" % (previous, mode_name)
+            previous = mode_name
+
+        error_msg("circular inheritance detected:\n" + msg, mode.filename, mode.line_n)
+
+    for base_mode_name in mode.base_modes:
+        # -- does base mode exist?
+        if ModeDB.has_key(base_mode_name) == False:
+            error_msg("mode '%s' is derived from mode a '%s'\n" % (mode.name, base_mode_name) + \
+                      "but no such mode '%s' actually exists!" % base_mode_name,
+                      mode.filename, mode.line_n)
+
+        # -- did mode appear in the path of deriving modes
+        base_mode = ModeDB[base_mode_name]
+        if base_mode.name in inheritance_path: __report_error(base_mode, inheritance_path)
+
+        __search_circular_inheritance(ModeDB, base_mode, inheritance_path + [mode.name])
+
