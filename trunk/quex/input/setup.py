@@ -41,6 +41,8 @@ SETUP_INFO = {
     "output_debug_f":                 [["--debug"],                          FLAG],
     "output_engine_name":             [["-o", "--engine"],                   "lexer"],    
     "plain_memory_f":                 [["--plain-memory"],                   FLAG],
+    "plot_graphic_format":            [["--plot"],                           ""],
+    "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
     #______________________________________________________________________________________________________
     "flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECIATED
     "input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECIATED 

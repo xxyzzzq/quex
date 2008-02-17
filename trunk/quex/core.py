@@ -38,20 +38,7 @@ def do(Setup):
     lexer_mode.token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
     lexer_mode.token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
 
-    # (0) check basic assumptions
-    if Setup.input_mode_files == []:
-        print "error: no input files"
-        sys.exit(-1)
-    else:
-        pass # print "input:", repr(Setup.input_mode_files)
-    
-    # (1) input: do the pattern analysis, in case exact counting of newlines is required
-    #            (this might speed up the lexer, but nobody might care ...)
-    #            pattern_db = analyse_patterns.do(pattern_file)    
-    mode_db = quex_file_parser.do(Setup.input_mode_files, Setup)
-
-    # (*) perform consistency check 
-    consistency_check.do(mode_db)
+    mode_db = __get_mode_db(Setup)
 
     # (*) get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
@@ -180,4 +167,24 @@ def get_generator_input(Mode, match_info_list, Setup):
 
     
     return inheritance_info_str, pattern_action_pair_list
+
+
+def do_plot(Setup):
+
+    mode_db = __get_mode_db(Setup)
+
+
+def __get_mode_db(Setup):
+    # (0) check basic assumptions
+    if Setup.input_mode_files == []: error_msg("No input files.")
+    
+    # (1) input: do the pattern analysis, in case exact counting of newlines is required
+    #            (this might speed up the lexer, but nobody might care ...)
+    #            pattern_db = analyse_patterns.do(pattern_file)    
+    mode_db = quex_file_parser.do(Setup.input_mode_files, Setup)
+
+    # (*) perform consistency check 
+    consistency_check.do(mode_db)
+
+    return mode_db
 

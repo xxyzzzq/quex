@@ -216,3 +216,21 @@ by the user. Those options are the following.
    This option disables the display of single character or single character codes.
    In this case sets of adjacent characters are displayed as intervals. This provides
    a some more brief display.
+
+Additionally, quex provides the ability to display transition diagrams of
+produces state machines graphically. The following command line options support
+this feature:
+
+`--plot` _graphic format_::
+
+        Runs quex in the plotting mode. Rather than producing source code, quex
+        produces transition diagrams of the defined modes. For quering possible graphic
+        formats, run quex with the `--plot-format-list` command line option.
+        Note, for this option to work, the graphviz package needs to be installed 
+        (see www.graphviz.org).
+
+`--plot-format-list`::
+
+        Lists all possible graphic formats for which quex can produce transition
+        graphs.
+
