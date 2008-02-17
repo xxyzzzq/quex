@@ -2,10 +2,11 @@ import os
 import subprocess
 from frs_py.file_in import error_msg
 
-transition_template = '$1$ -> $2$ [ label = "$3$"]'
 
 def do(StateMachine, OutputFormat):
     """Prepare output in the 'dot' language, that graphviz uses."""
+    __assert_graphviz_installed()
+
     supported_format_list = __get_supported_graphic_formats()
     if OutputFormat not in supported_format_list:
         error_msg("Graphic format '%s' not supported. Please, use one of: " + \
@@ -13,11 +14,15 @@ def do(StateMachine, OutputFormat):
 
     dot_code
     
+def report_supported_graphic_formats():
+    __assert_graphviz_installed()
+
 
 def __get_supported_graphic_formats():
     return ["fig"]
 
 
+transition_template = '$1$ -> $2$ [ label = "$3$"]'
 def __call_dot(Code, OutputFormat, OutputFile):
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
     #     for reference.
@@ -45,7 +50,7 @@ def __call_dot(Code, OutputFormat, OutputFile):
 
 
 
-def __is_installed():
+def __assert_graphviz_installed():
     """This function checks whether the graphviz utility has been installed."""
 
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
@@ -56,7 +61,7 @@ def __is_installed():
 
     try:    subprocess.call(["dot", test_filename, "-Tfig"], stdout=fh_out, stderr=fh_err)
     except: 
-        print "Warning: 'dot' was not callable on this system."
+        error_msg("Graphviz is not installed on this system."
         return False
 
     fh_out.close()
@@ -78,4 +83,4 @@ def __is_installed():
 
    
 if __name__ == "__main__":
-    __is_installed()
+    __assert_graphviz_installed()
