@@ -53,9 +53,8 @@ def do(Setup):
     # (*) perform consistency check 
     consistency_check.do(mode_db)
 
-    #
-    # only inheritable == abstract => no real implemented mode exist of this
-    # (such modes only serve as base modes for other modes)
+    # (*) get list of modes that are actually implemented
+    #     (abstract modes only serve as common base)
     mode_list = filter(lambda mode: mode.options["inheritable:"] != "only", 
                        mode_db.values())
 
@@ -108,6 +107,7 @@ def do(Setup):
     fh.write(analyzer_code)
     fh.close()
 
+    ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName, "C")
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + "-core-engine.cpp", "C")
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + ".cpp", "C")
 

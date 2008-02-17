@@ -219,6 +219,7 @@ class LexMode:
         # A flag indicating wether the mode has gone trough
         # consistency check.
         self.consistency_check_done_f = False
+        self.inheritance_circularity_check_done_f = False
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.
@@ -343,7 +344,7 @@ class LexMode:
                  Therefore there is no need to check if the base mode
                  has an entry in the mode database."""
         assert self.consistency_check_done_f == True, \
-               "LexMode::inheritance_structure_string(): called before consistency check!"
+               "called before consistency check!"
 
         if Depth != 0: str = "** " + ("   " * Depth) + self.name + "\n"
         else:          str = "** <" + self.name + ">\n"
@@ -352,28 +353,18 @@ class LexMode:
             str += mode.inheritance_structure_string(Depth + 1)
         return str
 
-    def get_base_modes(self, derived_modes=[]):
+    def get_base_modes(self):
         """Get all base classes recursively.
-           Checks for: -- circularity
+           NOTE: Circularity check needs to happen somewhere else
            This function is part of the consistency check!
         """
+        assert self.inheritance_circularity_check_done_f == True, \
+               "called before consistency check!"
+
         base_mode_collection = copy(self.base_modes)
         for base_mode in self.base_modes:
-
-            # -- check for base modes that are actually derived modes
-            if base_mode in derived_modes:
-                msg = ""
-                previous = self.name
-                for mode in derived_modes:
-                    msg += "circular inheritance: mode '%s' inherits '%s'.\n" % (previous, mode)
-                    previous = mode
-                    if previous == self.name: break
-
-                error_msg(msg, self.filename, self.line_n)
-
             # -- append base_mode to the base modes of current mode
-            base_mode_collection_candidates = mode_db[base_mode].get_base_modes(derived_modes
-                                                                                + self.base_modes)
+            base_mode_collection_candidates = mode_db[base_mode].get_base_modes()
             for candidate in base_mode_collection_candidates:
                 if candidate not in base_mode_collection:
                     base_mode_collection.append(candidate)
@@ -417,22 +408,18 @@ class LexMode:
 
         # (*) Base Modes
         #
+        #   -- ability to inherit
+        #
+        #   NOTE: existence of modes is checked in ciruclarity test.
+        #
         for base_mode_name in self.base_modes:
-            # -- does base mode exist?
-            if mode_db.has_key(base_mode_name) == False:
-                error_msg("mode '%s' is derived from mode a '%s'\n" % (self.name, base_mode_name) + \
-                          "but no such mode '%s' actually exists!" % base_mode_name,
-                          self.filename, self.line_n)
-
             # -- is base mode inheritable?
             if mode_db[base_mode_name].options["inheritable:"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is **not inheritable**." % \
                           (self.name, base_mode_name),
                           self.filename, self.line_n)
 
-
         # -- require all bases modes
-        #    (checks also for circularity of inheritance)
         all_base_modes = self.get_base_modes()
 
         # (*) Enter/Exit Transitions
