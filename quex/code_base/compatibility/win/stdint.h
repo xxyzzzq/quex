@@ -56,7 +56,7 @@
 // 7.18.1 Integer types
 
 // 7.18.1.1 Exact-width integer types
-typedef __int8            int8_t;
+typedef signed __int8     int8_t;
 typedef __int16           int16_t;
 typedef __int32           int32_t;
 typedef __int64           int64_t;
