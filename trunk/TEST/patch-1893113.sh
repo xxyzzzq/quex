@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
-bug=1893113
+patch=1893113
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug PATCH Performance modifications of 0.20.4"
+    echo "sphericalcow: $patch PATCH Performance modifications of 0.20.4"
     exit
 fi
 
 tmp=`pwd`
-cd $bug/ 
+cd $patch/ 
 quex -i error.qx -o Simple
 
 # cleansening
