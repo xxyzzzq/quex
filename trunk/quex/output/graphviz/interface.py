@@ -59,10 +59,12 @@ def __assert_graphviz_installed():
     fh_out        = open(test_filename + ".fig", "w")
     fh_err        = open(test_filename + ".err", "w")
 
-    try:    subprocess.call(["dot", test_filename, "-Tfig"], stdout=fh_out, stderr=fh_err)
+    try:    
+        subprocess.call(["dot", test_filename, "-Tfig"], stdout=fh_out, stderr=fh_err)
     except: 
-        error_msg("Graphviz is not installed on this system."
-        return False
+        error_msg("Graphviz is not installed on this system. Please, visit www.graphviz.org\n",
+                  "and download the package. This package is necessary for for plotting\n"
+                  "transition graphs.")
 
     fh_out.close()
     fh_err.close()
