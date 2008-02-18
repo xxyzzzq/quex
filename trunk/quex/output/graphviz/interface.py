@@ -1,6 +1,8 @@
 import os
 import subprocess
-from frs_py.file_in import error_msg
+
+from frs_py.file_in   import error_msg
+from quex.DEFINITIONS import QUEX_INSTALLATION_DIR
 
 
 def do(StateMachine, OutputFormat):
@@ -42,12 +44,12 @@ def __call_dot(Code, OutputFormat, OutputFile):
     try:    subprocess.call(["dot", input_file_name, "-T%s" % OutputFormat, "-o%s" % OutputFile], 
                             stdout=fh_out, stderr=fh_err)
     except: 
-        print "Warning: 'dot' was not callable on this system."
-        return False
+        error_msg("Graphviz seems not to be installed on this system. Please, visit www.graphviz.org\n",
+                  "and download the package. This package is necessary for for plotting\n"
+                  "transition graphs.")
 
     fh_out.close()
     fh_err.close()
-
 
 
 def __assert_graphviz_installed():
@@ -55,7 +57,7 @@ def __assert_graphviz_installed():
 
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
     #     for reference.
-    test_filename = QUEX_PATH + "/output/graphviz/test.dot"
+    test_filename = QUEX_INSTALLATION_DIR + "/output/graphviz/files/test.dot"
     fh_out        = open(test_filename + ".fig", "w")
     fh_err        = open(test_filename + ".err", "w")
 
