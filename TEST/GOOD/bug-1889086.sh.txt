@@ -12,4 +12,4 @@ tokens on command line __________________________________
 command line: Token prefix must be a valid identifier ('--token-prefix').
 command line: Received: 'TKN-'
 (2)
-error: no input files
+command line: No input files.

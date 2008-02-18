@@ -69,19 +69,16 @@ class Interval:
         
     def check_overlap(self, Other):
         """Does interval overlap the Other?"""
-        def helper(A, B):
-            """HELPER: Tests for overlap (half way through). In order to measure
-            overlap this function must be called twice:
-                     __overlap(X, Y) and __overlap(Y, X)"""        
-            if A.begin < B.end and A.end > B.begin: return True
-            else:                                   return False
-            
-        return helper(self, Other) or helper(Other, self)
+        if self.begin  < Other.end and self.end > Other.begin: return True
+        if Other.begin < self.end  and Other.end > self.begin: return True
+        else:                                                  return False
 
     def check_touch(self, Other):
         """Does interval touch the Other?"""
-        return self.check_overlap(Other) \
-               or self.begin == Other.begin or self.end == Other.begin
+        if self.begin  < Other.end and self.end > Other.begin:   return True
+        if Other.begin < self.end  and Other.end > self.begin:   return True
+        if self.begin == Other.begin or self.end == Other.begin: return True
+        else:                                                    return False
     
     def union(self, Other):
         if self.check_overlap(Other):
@@ -264,27 +261,37 @@ class NumberSet:
         
         # (1) determine if begin overlaps with the new interval
         toucher_list = [] 
+        i = -1
         for interval in self.__intervals:
+            i += 1
             if interval.check_touch(NewInterval):
-                toucher_list.append(interval)
+                toucher_list.append(i)
 
-        # (2) combine all intervals that intersect with the new one
-        min_begin = NewInterval.begin
-        max_end   = NewInterval.end
-        for toucher in toucher_list:
-            if toucher.begin < min_begin: min_begin = toucher.begin
-            if toucher.end > max_end:     max_end   = toucher.end
-        combination = Interval(min_begin, max_end)
+        if toucher_list != []:
+            # (2) combine all intervals that intersect with the new one
+            min_begin = NewInterval.begin
+            max_end   = NewInterval.end
+            for i in toucher_list:
+                toucher = self.__intervals[i]
+                if toucher.begin < min_begin: min_begin = toucher.begin
+                if toucher.end > max_end:     max_end   = toucher.end
+            combination = Interval(min_begin, max_end)
 
-        # (3) build new list of intervals
-        #     (all overlaps are deleted, i.e. not added because they are
-        #      replaced by the union with the NewInterval)
-        new_interval_list = [ combination ]
-        for interval in self.__intervals:
-            if interval not in toucher_list:
-                new_interval_list.append(interval)
+            # (3) build new list of intervals
+            #     (all overlaps are deleted, i.e. not added because they are
+            #      replaced by the union with the NewInterval)
+            # NOTE: The indices need to be adapted, since if for example
+            #       interval '3' was an overlapper, and so '5' then if
+            #       '3' is deleted, '5' comes at position '5'.
+            offset = -1
+            for i in toucher_list:
+                offset += 1
+                del self.__intervals[i - offset]
 
-        self.__intervals = new_interval_list
+            self.__intervals.append(combination)
+        else:
+            self.__intervals.append(NewInterval)
+
         self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
     def cut_interval(self, CutInterval):
@@ -368,11 +375,16 @@ class NumberSet:
 
         # intersect with each interval
         result = NumberSet()
-        for interval in Other.__intervals:
-            for my_interval in self.__intervals:
-                intersection = my_interval.intersection(interval)
-                if intersection != None:
-                    result.add_interval(intersection)
+
+        # TODO: Intervals are always sorted, thus intervals that are not to be 
+        #       considered can be identified quickly. The fact that they are 
+        #       sorted, though, needs to be verified! Only then touch this issue.
+        for x in Other.__intervals:
+            for y in self.__intervals:
+                # PASTE: Interval::intersection() for performance reasons.
+                if x.check_overlap(y):
+                    result.add_interval(Interval(max(x.begin, y.begin),
+                                                 min(x.end,   y.end)))
 
         return result
 
