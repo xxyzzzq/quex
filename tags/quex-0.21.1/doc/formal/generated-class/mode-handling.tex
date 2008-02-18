@@ -1,0 +1,104 @@
+From the given set of modes, {\quex} creates a set of mode-information objects
+as members of the lexical analyser class. The names of the members are exactly
+the same names as the names of the modes. In the example of the last section,
+the following three objects are members of the class {\tt tiny\_lexer}:
+
+\begin{lstlisting}
+        END_OF_FILE_tag    END_OF_FILE;  
+        STRING_READER_tag  STRING_READER; 
+        PROGRAM_tag        PROGRAM;       
+\end{lstlisting}
+
+The three classes {\tt END\_OF\_FILE\_tag}, {\tt STRING\_READER\_tag}, and
+{\tt PROGRAM\_tag} are all derived from class {\tt quex\_mode}. Thus pointers
+and references to them can do the job, whenever a pointer to a {\tt
+  quex\_mode} can. The lexical analyser class provides the following functions
+to access information about the current mode.
+
+
+\begin{lstlisting}
+ quex_mode&      mode(); 
+ const string&   mode_name() const; 
+ const int       mode_id() const; 
+\end{lstlisting}
+
+The first function returns a reference to the mode-information object that
+represents the current mode. The second returns a
+string with the name of the current mode. Those member functions shall be
+accessed using the {\tt self} member, i.e. for example
+
+\begin{lstlisting}
+     if( self.mode() != PROGRAM )
+         cerr << self.mode_name() << endl;      
+\end{lstlisting}
+
+The third function {\tt mode\_id()} returns a mode-identifier, i.e. an integer
+value that is unique for the current mode. This identifier is mainly used by
+the flex generated engine under the hood. For the end-user it is practically
+not relevant, but the mode-ids can be mapped to mode objects using the 
+member functions:
+
+\begin{lstlisting}
+    quex_mode&   map_mode_id_to_mode(const int          ModeID);  
+    const int    map_mode_to_mode_id(const quex_mode\& Mode) const;
+\end{lstlisting}
+
+A direct transition to another mode is initiated through the $<$$<$-operator or
+the function {\tt enter\_mode()}, i.e.
+
+\begin{lstlisting}
+  void & operator$<<$(const int MODE_ID);     
+  void & operator$<<$(quex_mode& Mode);      
+  void & enter_mode(quex_mode& TargetMode);
+\end{lstlisting}
+
+The operators return {\tt void} deliberately because mode transitions are not
+thought to be done in concatination without pattern matching. If so, one can
+still write multiple mode transitions in a row. In any case of the three above
+the following three steps are guaranteed:
+
+\begin{enumerate}
+  \item Call {\tt on\_exit} handler of current mode.
+  \item Set the target mode.
+  \item Call {\tt on\_entry} handler of target mode.
+\end{enumerate}
+
+Additionally to direct mode transitions modes can be pushed and popped similar
+to subroutine calls (without arguments). This is provided by the functions:
+
+\begin{lstlisting}
+   void        push_mode(quex_mode& new_mode); 
+   void        pop_mode(); 
+   void        pop_drop_mode(); 
+\end{lstlisting}
+
+The member function {\tt push\_mode(new\_mode)} pushed the current mode on a
+last-in-first-out stack and set the {\tt new\_mode} as the current mode.  A
+call to {\tt pop\_mode()} pops the last mode from the stack and sets it as the
+current mode. Note, that the mode transitions with push and pop follow the
+same mode transition procedure as for entering a mode directly. This means,
+that the {\tt on\_exit} and {\tt on\_entry} handler of the source and 
+target mode are called. The function {\tt pop\_drop\_mode()} pops
+a mode from the mode-stack, but does not set it as current mode. It is
+rather dropped and forgotten.
+
+If one wants to avoid the call of exit and enter event handlers, then
+modes can also set brutally using the member functions:
+
+{\tt
+\begin{tabular}{ll}
+  void & set\_mode\_brutally(const int        LexerMode); \\
+  void & set\_mode\_brutally(const quex\_mode\& Mode);    \\
+\end{tabular}
+}
+
+Using these functions only the current mode is adapted, but no event handlers
+are called. This also means that {\it mode transition control is turned off}.
+Inadmissible transitions triggered with these functions cannot be detected
+during run-time.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
