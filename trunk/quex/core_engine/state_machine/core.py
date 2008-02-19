@@ -386,9 +386,9 @@ class StateInfo:
         """
         result = NumberSet()
         for t in self.__transition_list:
-            result = result.union(t.trigger_set)
+            result.unite_with(t.trigger_set)
         if self.__epsilon.target_state_indices != []:
-            result = result.union(self.__epsilon.trigger_set)
+            result.unite_with(self.__epsilon.trigger_set)
         return result
 
     def get_trigger_set(self, TargetIdx=None):
@@ -413,7 +413,7 @@ class StateInfo:
             if not result.has_key(target_state_index):
                 result[target_state_index] = NumberSet(trigger_set)
             else:
-                result[target_state_index] = result[target_state_index].union(trigger_set)        
+                result[target_state_index].unite_with(trigger_set)        
 
         result = {}
         for t in self.__transition_list: 
@@ -767,7 +767,7 @@ class StateInfo:
         RETURNS: The target state index (may be created newly).
         """
         assert type(TargetStateIdx) == long or TargetStateIdx == None
-        assert Trigger.__class__.__name__ in ["int", "long", "list", "Interval", "NumberSet", "NoneType"] 
+        assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger == None
 
         if Trigger == None:
             # Trigger = None means that the remaining set of triggers is to be
@@ -795,7 +795,7 @@ class StateInfo:
         # (*) re-compute the epsilon trigger set
         all_triggers = NumberSet()
         for t in self.__transition_list:
-            all_triggers = all_triggers.union(t.trigger_set)
+            all_triggers.unite_with(t.trigger_set)
         self.__epsilon.trigger_set = all_triggers.inverse()
 
         return TargetStateIdx
@@ -1242,7 +1242,7 @@ class StateMachine:
                     map_key_str_to_target_index_combination[key_str] = \
                                      current_involved_targets_epsilon_closure
                 else:
-                    combinations[key_str] = combinations[key_str].union(interval)
+                    combinations[key_str].unite_with(interval)
            
             # -- BEGIN / END of interval:
             #    add or delete a target state to the set of currently considered target states

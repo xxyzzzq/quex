@@ -144,8 +144,8 @@ def snap_set_term(stream):
             # The inverse of multiple sets, is to be the inverse of the union of these sets.
             if L > 1:
                 for set in set_list[1:]:
-                    result = result.union(set)
-            result = result.inverse()
+                    result.unite_with(set)
+            result.invert()
             return __debug_exit(result, stream)
 
         if L < 2:
@@ -154,7 +154,7 @@ def snap_set_term(stream):
             
         if   word == "union":
             for set in set_list[1:]:
-                result = result.union(set)
+                result.unite_with(set)
         elif word == "intersection":
             for set in set_list[1:]:
                 result = result.intersection(set)
