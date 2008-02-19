@@ -1,0 +1,37 @@
+<history date="Tue Feb 19 16:17:07 2008" element-n="17">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:57:16"/>
+        <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
+        <crc-error time="09:57:18" application="test-replacement.py" choice="" database-crc="17669733" real-crc="-1076731964"/>
+        <crc-error time="09:57:19" application="test-lonely-characters.py" choice="" database-crc="-1792668372" real-crc="-1358865703"/>
+        <crc-error time="09:57:21" application="test-repeated-expressions.py" choice="" database-crc="-1541836935" real-crc="-2103281626"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:17:10"/>
+    </day>
+    <day year="2008" month="02" day="11">
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="16:46:20"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <accept    time="00:10:26" application="test-snap_backslashed_character.py" choice="" crc="-323047032" />
+        <accept    time="01:23:13" application="test-set-expressions.py" choice="" crc="103520014" />
+        <test-runs-today n="14" ok-n="7" fail-n="7" else-n="0" last-run="oll korrekt" last-time="17:02:04"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <accept    time="01:47:46" application="test-snap_backslashed_character.py" choice="" crc="-2137551833" />
+        <test-runs-today n="8" ok-n="5" fail-n="3" else-n="0" last-run="oll korrekt" last-time="16:23:06"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:33:12"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:44:47"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:14:25"/>
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:10:17"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="6" ok-n="5" fail-n="1" else-n="0" last-run="oll korrekt" last-time="15:17:07"/>
+    </day>
+</history>

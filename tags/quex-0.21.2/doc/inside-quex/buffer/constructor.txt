@@ -1,0 +1,33 @@
+Quexs buffer is implemented as a template. By this means a maximum of
+flexibility is achieved. The following parameters can be passed to the 
+template:
+
+
+- `int BOFC`: The character code to designate 'begin of file'.
+- `int EOFC`: The character code to designate 'end of file'.
+- `int BLC`: The character code to designate 'buffer limit'.
+- `class OverflowPolicy`: A class implementing two functions:` 
+    forward`' and `backward`' to deal with the unlike event of buffer
+    overflow (see section \ref{sec:buffer/overflow}).
+
+
+Those are the parameters to the class`basic\_buffer`. The header, though,
+defines a default setting for the class`buffer`. If these default do
+not interfere with some abnormal goals (such as using EOF inside, not at the border, of a regular
+	expression), then these values can be adapted. The easiest way to to so
+is to adapt the `typedef`' statement in the header file:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    typedef basic_buffer<0x1, 0x2, 0x0, MyOverflowPolicy> buffer;
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Then, again`quex::buffer` can be used to name the buffer class at any given
+place. Constructing a buffer is possible with two basic approaches. The first approach
+is suitable for systems where dynamic memory allocation is not an issue. It leaves
+the buffer allocation to the constructor of`buffer`. The second approach 
+can be used for systems where dynamic memory allocation is an issue, such as
+for embedded systems. In these systems memory is a costy resource and there is
+no room for slow memory management routines. In this case a pointer to a location
+in memory can be passed together with the number of bytes that can be taken
+from it.
