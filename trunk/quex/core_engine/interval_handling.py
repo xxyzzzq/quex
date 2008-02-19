@@ -255,8 +255,6 @@ class NumberSet:
         """Adds an interval and ensures that no overlap with existing
         intervals occurs. Note: the 'touch' test is faster here, because
         only one interval is checked against. Do not use __touchers()!"""
-        print "## content = ", self.__intervals
-        print "## new     = ", NewInterval
         if NewInterval.is_empty(): return
         
         # (1) determine if begin overlaps with the new interval
@@ -264,47 +262,49 @@ class NumberSet:
             self.__intervals.append(NewInterval)
             return
 
-        touch_end = -1
+        X = NewInterval
         i = -1
-        for x in self.__intervals:
+        for y in self.__intervals:
             i += 1
             # possible cases:
-            #    (1)    [---- new -----]
-            #                             [------ x -----]
-            #
-            #    (2)    [---- new --------]
-            #                          [---- x ----------]
-            #
-            #    (3)    [------ new ---------------------]
-            #                          [---- x ----------]
-            #
-            #    (4)                   [---- new --------]
-            #           [--------- x -----]
-            #
-            #    (5)                      [---- new -----]
-            #           [---- x -----]
-            if NewInterval.begin > x.end:                                  # filter (5)
-                continue 
-            # remainder: (1), (2), (3), (4)
-            elif NewInterval.end < x.begin and NewInterval.end != x.begin: # filter (1)
-                self.__intervals.insert(i, NewInterval)
-                return
-            # remainder: (2), (3), (4) --> touch detection mode
-            if NewInterval.end <= x.end: touch_end = NewInterval.end
-            touch_begin = min(NewInterval.begin, x.begin)
-            break
-        else:
-            assert False
+            #  (1) [=== X ===]         [=== y ===]             
+            #  
+            #  (2) [=== X ============][=== y ===]
+            #  
+            #  (3) [=== X ==================]
+            #                          [=== y ===]
+            #  
+            #  (4) [=== X =======================]
+            #                          [=== y ===]
+            #  
+            #  (5) [=== X =============================================]
+            #                          [=== y ===]
+            #  
+            #  (6)                     [=== X =========================]
+            #                          [=== y ===]
+            #  
+            #  (7)                     [=== y ===][=== X ==============]
+            #  
+            #  (8)                     [=== y ===]           [=== X ===]
+            #  
+            if X.begin > y.end: 
+                continue                              # filter (8)
+            elif X.end < y.begin: 
+                self.__intervals.insert(i, X) 
+                return                                # filter (1)
+            else:
+                touch_begin = min(X.begin, y.begin) 
+                break
 
-        insertion_point = i
-        toucher_list    = [i] 
-        if touch_end == -1:
-            for x in self.__intervals[i+1:]:
-                toucher_list.append(i)
-                i += 1
-                if NewInterval.end <= x.end: 
-                    touch_end = x.end
-                    break
+        toucher_list    = [ ]
+        insertion_index = i
+        for y in self.__intervals[i:]:
+            if X.end < y.begin: touch_end = X.end; break
+            toucher_list.append(i)
+            if X.end <= y.end: touch_end = y.end; break
+            i += 1
+        else:
+            touch_end = X.end
 
         # (2) combine all intervals that intersect with the new one
         combination = Interval(touch_begin, touch_end)
@@ -320,7 +320,7 @@ class NumberSet:
             offset += 1
             del self.__intervals[i - offset]
 
-        self.__intervals.insert(insertion_point, combination)
+        self.__intervals.insert(insertion_index, combination)
 
 
     def cut_interval(self, CutInterval):
@@ -381,14 +381,25 @@ class NumberSet:
     def get_intervals(self):
         return deepcopy(self.__intervals)
 
+    def unite_with(self, Other):
+        Other_type = Other.__class__
+        assert Other_type == Interval or Other_type == NumberSet, \
+               "Error, argument of type %s" % Other.__class__.__name__
+
+        if Other_type == Interval: Other = NumberSet(Other)
+
+        # simply add all intervals to one single set
+        for interval in Other.__intervals:
+            self.add_interval(interval)
+
     def union(self, Other):
-        Other_type = Other.__class__.__name__
-        assert Other_type == "Interval" or Other_type == "NumberSet", \
+        Other_type = Other.__class__
+        assert Other_type == Interval or Other_type == NumberSet, \
                "Error, argument of type %s" % Other.__class__.__name__
 
         shadow_of_self = deepcopy(self)
 
-        if Other_type == "Interval": Other = NumberSet(Other)
+        if Other_type == Interval: Other = NumberSet(Other)
 
         # simply add all intervals to one single set
         for interval in Other.__intervals + shadow_of_self.__intervals:
@@ -421,7 +432,6 @@ class NumberSet:
 
         if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
 
-        print "## overlappers: ", self.__overlappers()
         assert self.__overlappers() == []
         
         # note: there should be no overlaps according to 'add_interval'
