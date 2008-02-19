@@ -217,7 +217,7 @@ class NumberSet:
        and difference.
     """
     
-    def __init__(self, Arg = None, ArgumentIsYoursF=True):
+    def __init__(self, Arg = None, ArgumentIsYoursF=False):
         """Arg = list     ==> list of initial intervals
            Arg = Interval ==> initial interval
            Arg = integer  ==> interval consisting of one number
@@ -231,10 +231,9 @@ class NumberSet:
                 self.__intervals = Arg
             else:
                 self.__intervals = []
-                # use 'add_interval' to ensure consistency
+                # use 'add_interval' to ensure consistency, i.e. touches, overlaps, etc.
                 for interval in Arg:
-                    assert interval.__class__.__name__ == "Interval"
-                    self.add_interval(deepcopy(interval))
+                    self.add_interval(copy(interval))
             return
 
         if   arg_type == Interval:
@@ -335,10 +334,7 @@ class NumberSet:
     def cut_interval(self, CutInterval):
         """Cuts an interval from the intervals of the set.
         Note: the 'overlap' test is faster here, because
-        only one interval is checked against. Do not use __overlapers()!
-        
-        This function may be optimized! 
-        """
+        only one interval is checked against. Do not use __overlapers()!"""
         
         # (1) deterbegine overlaps with the cutting interval
         overlapper_list = [] 
@@ -477,13 +473,8 @@ class NumberSet:
         return NumberSet(interval_list, ArgumentIsYoursF=True)
         
     def clean(self, SortF=True):
-        """Sorts all intervals, so according to their begin. Lowest comes first.
-           Combines adjacent and intersecting intervals to one.
+        """Combines adjacent and intersecting intervals to one.
         """
-
-        # (1) Sort intervals
-        if SortF:
-            self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
         # (2) Combine adjacent intervals
         L = len(self.__intervals)

@@ -20,6 +20,7 @@ def test(NSet):
     print NSet.inverse().gnuplot_string(0)
 
 
+
 test(NumberSet([Interval(10,20),   Interval(21,30),
                 Interval(50,70),   Interval(71,80),
                 Interval(80,81),   Interval(82,90),
