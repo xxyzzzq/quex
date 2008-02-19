@@ -20,6 +20,7 @@ def do(Title, func):
          A1,B1)
 
     A2 = NumberSet([Interval(90,100), Interval(11,130)])
+    print "## A2 = ", A2
     B2 = NumberSet([Interval(120,140)])
     func("(c) one interval overlaps the upper of the others",
          A2,B2)
