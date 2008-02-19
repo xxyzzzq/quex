@@ -1,0 +1,62 @@
+<test-database execution-time-sec="138.75" date="Tue Feb 19 17:01:47 2008">
+    <last-used-diff-display-program name=""/>
+    <group name="demo/000">
+        <test title="Single Mode Example" time-sum-sec="10.64"> 
+            <application file-name="000.sh" info-request-time="1197195144L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="5.22" crc="-669900539"/>
+               <choice name="DEBUG" result="OK" time-sec="5.42" crc="-253783980"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/001">
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="10.11"> 
+            <application file-name="001.sh" info-request-time="1197195144L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="5.07" crc="1854620741"/>
+               <choice name="DEBUG" result="OK" time-sec="5.04" crc="200015176"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/002">
+        <test title="Indentation Based Scopes" time-sum-sec="15.32"> 
+            <application file-name="002.sh" info-request-time="1197195144L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="7.57" crc="-1830736552"/>
+               <choice name="DEBUG" result="OK" time-sec="7.75" crc="-1234760276"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/003">
+        <test title="Unicode Based Lexical Analyzis" time-sum-sec="63.74"> 
+            <application file-name="003.sh" info-request-time="1197195144L"/>
+            <choice-list number="5">
+               <choice name="BPC=2" result="OK" time-sec="13.00" crc="-1038451616"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time-sec="12.65" crc="507224024"/>
+               <choice name="BPC=4" result="OK" time-sec="12.80" crc="-1038451616"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time-sec="12.45" crc="-560165539"/>
+               <choice name="BPC=wchar_t" result="OK" time-sec="12.84" crc="-1038451616"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/005">
+        <test title="Including Files" time-sum-sec="23.05"> 
+            <application file-name="005.sh" info-request-time="1197195144L"/>
+            <choice-list number="4">
+               <choice name="1" result="OK" time-sec="5.67" crc="255489670"/>
+               <choice name="1_NDEBUG" result="OK" time-sec="5.84" crc="822176949"/>
+               <choice name="2" result="OK" time-sec="5.76" crc="501878589"/>
+               <choice name="2_NDEBUG" result="OK" time-sec="5.77" crc="1983032887"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/006">
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="15.90"> 
+            <application file-name="006.sh" info-request-time="1198966571L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="8.28" crc="-1081463868"/>
+               <choice name="DEBUG" result="OK" time-sec="7.62" crc="1201667388"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

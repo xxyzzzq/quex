@@ -1,0 +1,34 @@
+The lexical analyser that quex creates is based on regular expressions.  In
+order to create state machines that represents regular expressions, it is
+necessary to provide operations that combine elementary regular expressions
+through _concatenation_, _parallelization_, _optionality_ and_ 
+    repetition_. This section discusses how this is accomplished by means
+    of the so called _Thomson Construction_ \cite{}.
+
+
+
+An essential concept is the so called $\epsilon$-transition. By means of this
+special transitions state machines can be glued in sequence and in parallel. It
+builds a very basic concept in the Thomson construction for developing a state
+machine that represents a regular expression.
+
+\definition{{\bf An $\epsilon$-transition} is a transition that does not
+    require any input. If a state A is connect with a state B via an
+	$\epsilon$-transition, then entering state A implies that the state
+	machine enters state B.}
+
+In a sense, an $\epsilon$-transition behaves like a 'free-ride' where no input character
+is necessary to trigger a subsequent state. However, those transitions imply that the 
+state machine become non-deterministic, since it can now be in multiple states at the same time.
+
+A very important principle which facilitated writing algorithms on state machines
+was that every state-id in every state machine is _unique\/_. That is, 
+a state machine A cannot have a state-id that also appears in B. Further,
+state machines are mere _collections_ of states. States are mere _mappings_
+that describe what subsequent state is reached by what trigger. Operations
+on state machines can then be applied by setting transitions, i.e. changing
+the mappings of states, and finally collecting all mappings (i.e. states) in
+a single state machine. The uniqueness of state-ids ensures consistency.
+
+The following sections discuss the elementary operations on state machines
+that are necessary to describe regular expressions. 
