@@ -250,49 +250,78 @@ class NumberSet:
         assert Other.__class__.__name__ == "Interval"
 
         self.__intervals.append(Other)
-        if SortF: 
-            self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
     def add_interval(self, NewInterval):
         """Adds an interval and ensures that no overlap with existing
         intervals occurs. Note: the 'touch' test is faster here, because
         only one interval is checked against. Do not use __touchers()!"""
+        print "## content = ", self.__intervals
+        print "## new     = ", NewInterval
         if NewInterval.is_empty(): return
         
         # (1) determine if begin overlaps with the new interval
-        toucher_list = [] 
-        i = -1
-        for interval in self.__intervals:
-            i += 1
-            if interval.check_touch(NewInterval):
-                toucher_list.append(i)
-
-        if toucher_list != []:
-            # (2) combine all intervals that intersect with the new one
-            min_begin = NewInterval.begin
-            max_end   = NewInterval.end
-            for i in toucher_list:
-                toucher = self.__intervals[i]
-                if toucher.begin < min_begin: min_begin = toucher.begin
-                if toucher.end > max_end:     max_end   = toucher.end
-            combination = Interval(min_begin, max_end)
-
-            # (3) build new list of intervals
-            #     (all overlaps are deleted, i.e. not added because they are
-            #      replaced by the union with the NewInterval)
-            # NOTE: The indices need to be adapted, since if for example
-            #       interval '3' was an overlapper, and so '5' then if
-            #       '3' is deleted, '5' comes at position '5'.
-            offset = -1
-            for i in toucher_list:
-                offset += 1
-                del self.__intervals[i - offset]
-
-            self.__intervals.append(combination)
-        else:
+        if self.__intervals == [] or NewInterval.begin > self.__intervals[-1].end:
             self.__intervals.append(NewInterval)
+            return
 
-        self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
+        touch_end = -1
+        i = -1
+        for x in self.__intervals:
+            i += 1
+            # possible cases:
+            #    (1)    [---- new -----]
+            #                             [------ x -----]
+            #
+            #    (2)    [---- new --------]
+            #                          [---- x ----------]
+            #
+            #    (3)    [------ new ---------------------]
+            #                          [---- x ----------]
+            #
+            #    (4)                   [---- new --------]
+            #           [--------- x -----]
+            #
+            #    (5)                      [---- new -----]
+            #           [---- x -----]
+            if NewInterval.begin > x.end:                                  # filter (5)
+                continue 
+            # remainder: (1), (2), (3), (4)
+            elif NewInterval.end < x.begin and NewInterval.end != x.begin: # filter (1)
+                self.__intervals.insert(i, NewInterval)
+                return
+            # remainder: (2), (3), (4) --> touch detection mode
+            if NewInterval.end <= x.end: touch_end = NewInterval.end
+            touch_begin = min(NewInterval.begin, x.begin)
+            break
+        else:
+            assert False
+
+        insertion_point = i
+        toucher_list    = [i] 
+        if touch_end == -1:
+            for x in self.__intervals[i+1:]:
+                toucher_list.append(i)
+                i += 1
+                if NewInterval.end <= x.end: 
+                    touch_end = x.end
+                    break
+
+        # (2) combine all intervals that intersect with the new one
+        combination = Interval(touch_begin, touch_end)
+
+        # (3) build new list of intervals
+        #     (all overlaps are deleted, i.e. not added because they are
+        #      replaced by the union with the NewInterval)
+        # NOTE: The indices need to be adapted, since if for example
+        #       interval '3' was an overlapper, and so '5' then if
+        #       '3' is deleted, '5' comes at position '5'.
+        offset = -1
+        for i in toucher_list:
+            offset += 1
+            del self.__intervals[i - offset]
+
+        self.__intervals.insert(insertion_point, combination)
+
 
     def cut_interval(self, CutInterval):
         """Cuts an interval from the intervals of the set.
@@ -320,7 +349,6 @@ class NumberSet:
                 new_interval_list.append(interval)
 
         self.__intervals = new_interval_list
-        self.__intervals.sort(lambda a, b: -cmp(b.begin, a.begin))        
 
     def contains(self, Number):
         """True  => if Number in NumberSet
@@ -393,6 +421,7 @@ class NumberSet:
 
         if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
 
+        print "## overlappers: ", self.__overlappers()
         assert self.__overlappers() == []
         
         # note: there should be no overlaps according to 'add_interval'
