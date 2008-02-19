@@ -145,7 +145,7 @@ def snap_set_term(stream):
             if L > 1:
                 for set in set_list[1:]:
                     result.unite_with(set)
-            result.invert()
+            result = result.inverse()
             return __debug_exit(result, stream)
 
         if L < 2:

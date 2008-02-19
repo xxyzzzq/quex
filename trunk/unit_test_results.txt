@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:46:52 2008
+DATE:  Tue Feb 19 16:33:08 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -23,6 +23,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1895066.sh ..................................................[OK]
     1894130 0.20.6 can list wrong mode as circuluar inheritance
         bug-1894130.sh ..................................................[OK]
+    1893113 PATCH Performance modifications of 0.20.4
+        patch-1893113.sh ......................................[NO GOOD FILE]
     1889086 Single state mode causes quex to crash
         bug-1889086.sh ..................................................[OK]
     1889892 x, X or followed by a non-hex digit crashes 0.19.4
@@ -64,7 +66,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:14 2008
+DATE:  Tue Feb 19 16:35:08 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -84,8 +86,8 @@ TITLE: Demo-Applications
  -- demo/002:
 
     Indentation Based Scopes
-        002.sh NDEBUG ...................................................[OK]
-               DEBUG ....................................................[OK]
+        002.sh NDEBUG .................................................[FAIL]
+               DEBUG ..................................................[FAIL]
 
  -- demo/003:
 
@@ -110,15 +112,17 @@ TITLE: Demo-Applications
         006.sh NDEBUG ...................................................[OK]
                DEBUG ....................................................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+Error: 002.sh NDEBUG
+Error: 002.sh DEBUG
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:14 2008
+DATE:  Tue Feb 19 16:55:48 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -133,7 +137,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:15 2008
+DATE:  Tue Feb 19 16:55:49 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -173,7 +177,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:15 2008
+DATE:  Tue Feb 19 16:55:49 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -190,7 +194,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:15 2008
+DATE:  Tue Feb 19 16:55:49 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -210,7 +214,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:15 2008
+DATE:  Tue Feb 19 16:55:49 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -241,7 +245,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:53 2008
+DATE:  Tue Feb 19 16:56:54 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -337,7 +341,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:49:59 2008
+DATE:  Tue Feb 19 16:58:49 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -375,21 +379,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Set Operations
-        test-properties-2.py ............................................[OK]
     Simple
         test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -399,7 +403,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:50:17 2008
+DATE:  Tue Feb 19 16:57:29 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -413,14 +417,14 @@ TITLE: State Machine Operations
 
  -- NFA:
 
+    Conversion to DFA (subset construction)
+        test-StateMachine-create-DFA.py .................................[OK]
     Get elementary trigger sets (target index --> trigger sets)
         test-StateMachine-elementary_trigger_sets.py ....................[OK]
     Epsilon closure (single state)
         test-StateMachine-epsilon-closure.py ............................[OK]
     Get elementary trigger sets II
         test-StateMachine-elementary_trigger_sets-2.py ..................[OK]
-    Conversion to DFA (subset construction)
-        test-StateMachine-create-DFA.py .................................[OK]
 
  -- Plot:
 
@@ -430,12 +434,12 @@ TITLE: State Machine Operations
 
  -- Predetermined Character Count:
 
+    Newlines
+        test-count_newline_n.py .........................................[OK]
     Characters
         test-count_character_n.py .......................................[OK]
     Contains only Spaces
         test-count_contains_only_spaces.py ..............................[OK]
-    Newlines
-        test-count_newline_n.py .........................................[OK]
 
  -- Pseudo Ambigous Post Condition:
 
@@ -470,16 +474,16 @@ TITLE: State Machine Operations
 
  -- Tracing origin:
 
-    Paralellization
-        test-parallelize-trace-origin.py ................................[OK]
-    Hopcroft optimization (minimize state set)
-        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     Cloning
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Inverse
         test-StateMachine-trace-origin-inverse.py .......................[OK]
-    NFA to DFA (subset construction)
-        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+    Paralellization
+        test-parallelize-trace-origin.py ................................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
 
  -- Trigger Set Check:
 
@@ -494,7 +498,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:50:17 2008
+DATE:  Tue Feb 19 16:57:30 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -517,7 +521,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:50:32 2008
+DATE:  Tue Feb 19 16:58:00 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -540,13 +544,10 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: ./
-DATE:  Mon Feb 18 01:50:43 2008
+DATE:  Tue Feb 19 16:58:00 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
-
- -- Quex Queries:
-
-    Information about Properties
+ -- 
         test-is_installed.py PropertyList .....................[NO GOOD FILE]
                              PropertyInfo .....................[NO GOOD FILE]
 -------------------------------------------------------------------------------
@@ -559,7 +560,7 @@ TITLE: <no file 'ADM/title.txt'>
 ===============================================================================
 SUMMARY:
 .//TEST .................................................................[OK]
-./demo/TEST .............................................................[OK]
+./demo/TEST ...........................................................[FAIL]
 ./quex/TEST .............................................................[OK]
 ./quex/code_base/buffer/TEST ............................................[OK]
 ./quex/code_base/buffer/iconv/TEST ......................................[OK]
