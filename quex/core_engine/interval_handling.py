@@ -217,30 +217,39 @@ class NumberSet:
        and difference.
     """
     
-    def __init__(self, Arg = None):
+    def __init__(self, Arg = None, ArgumentIsYoursF=True):
         """Arg = list     ==> list of initial intervals
            Arg = Interval ==> initial interval
            Arg = integer  ==> interval consisting of one number
            """
-        arg_type = Arg.__class__.__name__
-        assert arg_type in  ["Interval", "NumberSet", "int", "list"] or Arg == None
+        arg_type = Arg.__class__
+        assert arg_type in  [Interval, NumberSet, int, list] or Arg == None
 
-        self.__intervals = []
         
-        if  arg_type == "list":
-            # use 'add_interval' to ensure consistency
-            for interval in Arg:
-                assert interval.__class__.__name__ == "Interval"
-                self.add_interval(deepcopy(interval))
+        if  arg_type == list:
+            if ArgumentIsYoursF:
+                self.__intervals = Arg
+            else:
+                self.__intervals = []
+                # use 'add_interval' to ensure consistency
+                for interval in Arg:
+                    assert interval.__class__.__name__ == "Interval"
+                    self.add_interval(deepcopy(interval))
+            return
 
-        elif arg_type == "Interval":
-            self.add_interval(deepcopy(Arg))
+        if   arg_type == Interval:
+            if ArgumentIsYoursF: self.__intervals = [ copy(Arg) ]
+            else:                self.__intervals = [ Arg ] 
 
-        elif arg_type == "NumberSet":
-            self.__intervals = deepcopy(Arg.__intervals)
+        elif arg_type == NumberSet:
+            if ArgumentIsYoursF:  self.__intervals = Arg.__intervals
+            else:                 self.__intervals = deepcopy(Arg.__intervals)
 
-        elif arg_type == "int":
-            self.add_interval(Interval(Arg))
+        elif arg_type == int:
+            self.__intervals = [ Interval(Arg) ]
+
+        else:
+            self.__intervals = []
 
     def quick_append_interval(self, Other, SortF=True):
         """This function assumes that there are no intersections with other intervals.
@@ -254,7 +263,7 @@ class NumberSet:
     def add_interval(self, NewInterval):
         """Adds an interval and ensures that no overlap with existing
         intervals occurs. Note: the 'touch' test is faster here, because
-        only one interval is checked against. Do not use __touchers()!"""
+        only one interval is checked against.!"""
         if NewInterval.is_empty(): return
         
         # (1) determine if begin overlaps with the new interval
@@ -326,7 +335,10 @@ class NumberSet:
     def cut_interval(self, CutInterval):
         """Cuts an interval from the intervals of the set.
         Note: the 'overlap' test is faster here, because
-        only one interval is checked against. Do not use __overlapers()!"""
+        only one interval is checked against. Do not use __overlapers()!
+        
+        This function may be optimized! 
+        """
         
         # (1) deterbegine overlaps with the cutting interval
         overlapper_list = [] 
@@ -408,17 +420,26 @@ class NumberSet:
         return shadow_of_self            
 
     def intersection(self, Other):
-        assert Other.__class__.__name__ == "Interval" or Other.__class__.__name__ == "NumberSet"
+        assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
-        if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
+        if Other.__class__ == Interval: Other = NumberSet(Other)
 
         # intersect with each interval
         result = NumberSet()
+
+        if   Other.__intervals == [] or self.__intervals == []:      return result
+
+        self_begin = self.__intervals[0].begin
+        self_end   = self.__intervals[-1].end
+        if   Other.__intervals[-1].end  < self_begin: return result
+        elif Other.__intervals[0].begin > self_end:   return result
 
         # TODO: Intervals are always sorted, thus intervals that are not to be 
         #       considered can be identified quickly. The fact that they are 
         #       sorted, though, needs to be verified! Only then touch this issue.
         for x in Other.__intervals:
+            if x.end < self_begin:   continue
+            elif x.begin > self_end: break
             for y in self.__intervals:
                 # PASTE: Interval::intersection() for performance reasons.
                 if x.check_overlap(y):
@@ -428,12 +449,10 @@ class NumberSet:
         return result
 
     def difference(self, Other):
-        assert Other.__class__.__name__ == "Interval" or Other.__class__.__name__ == "NumberSet"
+        assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
-        if Other.__class__.__name__ == "Interval": Other = NumberSet(Other)
+        if Other.__class__ == Interval: Other = NumberSet(Other)
 
-        assert self.__overlappers() == []
-        
         # note: there should be no overlaps according to 'add_interval'
         remainder = deepcopy(self)
         for interval in Other.__intervals:
@@ -443,19 +462,19 @@ class NumberSet:
                 for sub_interval in subtraction:
                     new_remainder.add_interval(sub_interval)
             remainder = new_remainder
+
         return remainder
 
     def inverse(self):
         """Intersection of inverses of all intervals."""
-        inverse_intervals = []
-
-        result = NumberSet(Interval(-sys.maxint, sys.maxint))
-        i = -1        
+        interval_list = []
+        begin = - sys.maxint
         for interval in self.__intervals:
-            inv_interval = interval.inverse()
-            result = result.intersection(NumberSet(inv_interval))
+            interval_list.append(Interval(begin, interval.begin))
+            begin = interval.end
+        interval_list.append(Interval(begin, sys.maxint))
 
-        return result
+        return NumberSet(interval_list, ArgumentIsYoursF=True)
         
     def clean(self, SortF=True):
         """Sorts all intervals, so according to their begin. Lowest comes first.
@@ -498,26 +517,6 @@ class NumberSet:
 
 
         self.__intervals = new_intervals
-
-    def __overlappers(self):
-        tmp = {} # use this to get unique values of indices
-        #        # tmp.values() == indices of intervals that overlap
-        for i in range(len(self.__intervals)):
-            for k in range(i):
-                if self.__intervals[i].check_overlap(self.__intervals[k]):
-                    tmp[i] = 1
-                    tmp[k] = 1
-        return map(lambda idx: self.__intervals[idx], tmp.values())
-
-    def __touchers(self):
-        tmp = {} # use this to get unique values of indices
-        #        # tmp.values() == indices of intervals that touch
-        for i in range(len(self.__intervals)):
-            for k in range(i):
-                if self.__intervals[i].check_touch(self.__intervals[k]):
-                    tmp[i] = 1
-                    tmp[k] = 1
-        return map(lambda idx: self.__intervals[idx], tmp.values())
 
     def __repr__(self):
         return repr(self.__intervals)
