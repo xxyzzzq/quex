@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.39" date="Tue Feb 19 17:01:49 2008">
+<test-database execution-time-sec="0.38" date="Wed Feb 20 01:56:33 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Inverse" time-sum-sec="0.06"> 
@@ -13,30 +13,30 @@
                <choice name="" result="OK" time-sec="0.07" crc="1602787713"/>
             </choice-list>
         </test>
-        <test title="Intersection" time-sum-sec="0.06"> 
+        <test title="Intersection" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="1516231659"/>
+               <choice name="" result="OK" time-sec="0.05" crc="1516231659"/>
             </choice-list>
         </test>
-        <test title="Union" time-sum-sec="0.06"> 
+        <test title="Union" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-union.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="-1815333788"/>
+               <choice name="" result="OK" time-sec="0.07" crc="-1815333788"/>
             </choice-list>
         </test>
-        <test title="Condition Code Generation" time-sum-sec="0.06"> 
+        <test title="Condition Code Generation" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-condition-code.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="-1284156277"/>
+               <choice name="" result="OK" time-sec="0.07" crc="-1284156277"/>
             </choice-list>
         </test>
     </group>
     <group name="Utf8-Module">
-        <test title="Map UTF8 String To Unicode Values" time-sum-sec="0.07"> 
+        <test title="Map UTF8 String To Unicode Values" time-sum-sec="0.06"> 
             <application file-name="test-utf8-UCS-to-UTF8.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07" crc="-99051650"/>
+               <choice name="" result="OK" time-sec="0.06" crc="-99051650"/>
             </choice-list>
         </test>
     </group>

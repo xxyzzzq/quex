@@ -609,11 +609,11 @@ class StateInfo:
             # -- check against normal transitions:
             for tB in self.__transition_list[i+1:]:
                 # -- does trigger_list_A and trigger_list_B intersect?
-                if tA.trigger_set.intersection(tB.trigger_set).is_empty():
+                if not tA.trigger_set.has_intersection(tB.trigger_set):
                     return False
             # -- check against else transition - should not be necessary if transitions
             #    are set up propperly
-            if tA.trigger_set.intersection(self.__epsilon.trigger_set).is_empty():
+            if not tA.trigger_set.has_intersection(self.__epsilon.trigger_set):
                 return False
                 
         return True
@@ -629,11 +629,11 @@ class StateInfo:
         """
         # 'normal transitions'
         for t in self.__transition_list:
-            if t.trigger_set.intersection(TriggerSet).is_empty(): continue
+            if not t.trigger_set.has_intersection(TriggerSet): continue
             elif t.target_state_index != TargetIdx: return False
 
         # epsilon transition
-        if self.__epsilon.trigger_set.intersection(TriggerSet).is_empty(): return True
+        if   not self.__epsilon.trigger_set.has_intersection(TriggerSet): return True
         elif len(self.__epsilon.target_state_indices) != 1:                return False
         elif self.__epsilon.target_state_indices[0] != TargetIdx:          return False
         

@@ -118,8 +118,7 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
             # If there is no common character in the transition pair, it does not
             # have to be considered.
             sm1_trigger_set = sm1_transition.trigger_set
-            intersection    = sm0_trigger_set.intersection(sm1_trigger_set)
-            if intersection.is_empty():
+            if not sm0_trigger_set.has_intersection(sm1_trigger_set):
                 continue
             
             # Both trigger on the some same characters.
@@ -300,13 +299,12 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
         sm0_trigger_set = sm0_transition.trigger_set
         for sm1_transition in sm1_transition_list:
             sm1_trigger_set = sm1_transition.trigger_set
-            intersection    = sm0_trigger_set.intersection(sm1_trigger_set)
 
             ## print "##", intersection.get_utf8_string(), sm1_transition.target_state_index, SM1_Path
             # Both trigger on the some same characters?
             #     -----------------------[xxxxxxxxxxxxxxxx]-------------
             #     -------------[yyyyyyyyyyyyyyyyyyyy]-------------------
-            if intersection.is_empty():
+            if not sm0_trigger_set.has_intersection(sm1_trigger_set):
                 # If there is no common character in the transition pair, it does not
                 # have to be considered.
                 continue
@@ -315,6 +313,7 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
                 # If the trigger set allows the current state to trigger to a state
                 # that has already been reached in the path of states, then this
                 # is the door to iteration. This 'door' backwards needs to be locked!
+                intersection = sm0_trigger_set.intersection(sm1_trigger_set)
                 sm1_transition.trigger_set = sm1_trigger_set.difference(intersection)
                 sm1_state.delete_transitions_on_empty_trigger_sets()
                 # (Where there is no door, there is no way to dive deeper ...)

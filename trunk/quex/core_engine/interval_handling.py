@@ -394,7 +394,9 @@ class NumberSet:
         assert Other_type == Interval or Other_type == NumberSet, \
                "Error, argument of type %s" % Other.__class__.__name__
 
-        if Other_type == Interval: Other = NumberSet(Other)
+        if Other_type == Interval:  
+            self.add_interval(Other)
+            return
 
         # simply add all intervals to one single set
         for interval in Other.__intervals:
@@ -407,13 +409,45 @@ class NumberSet:
 
         shadow_of_self = deepcopy(self)
 
-        if Other_type == Interval: Other = NumberSet(Other)
+        if Other_type == Interval: 
+            shadow_of_self.add_interval(Other)
+            return shadow_of_self
 
         # simply add all intervals to one single set
         for interval in Other.__intervals + shadow_of_self.__intervals:
             shadow_of_self.add_interval(interval)
 
         return shadow_of_self            
+
+    def has_intersection(self, Other):
+        assert Other.__class__ == Interval or Other.__class__ == NumberSet
+        self_begin = self.__intervals[0].begin
+        self_end   = self.__intervals[-1].end
+        if Other.__class__ == Interval: 
+            if Other.end   < self_begin: return False
+            if Other.begin > self_end:   return False
+
+            for y in self.__intervals:
+                # PASTE: Implement Interval::overlap() for performance reasons.
+                if   x.begin >= y.end:   continue
+                elif x.end   <= y.begin: break
+                # x.end > y.begin  (lacks condition: x.begin < y.end)
+                # y.end > x.begin  (lacks condition: y.begin < x.end)
+                if x.begin < y.end or y.begin < x.end: return True
+
+            return False
+
+        for x in Other.__intervals:
+            if x.end < self_begin:   continue
+            elif x.begin > self_end: break
+            for y in self.__intervals:
+                # PASTE: Implement Interval::overlap() for performance reasons.
+                if   x.begin >= y.end:   continue
+                elif x.end   <= y.begin: break
+                # x.end > y.begin  (lacks condition: x.begin < y.end)
+                # y.end > x.begin  (lacks condition: y.begin < x.end)
+                if x.begin < y.end or y.begin < x.end: return True
+        return False
 
     def intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
@@ -434,11 +468,15 @@ class NumberSet:
         #       considered can be identified quickly. The fact that they are 
         #       sorted, though, needs to be verified! Only then touch this issue.
         for x in Other.__intervals:
-            if x.end < self_begin:   continue
-            elif x.begin > self_end: break
+            if   x.end   <= self_begin: continue
+            elif x.begin >= self_end:   break
             for y in self.__intervals:
-                # PASTE: Interval::intersection() for performance reasons.
-                if x.check_overlap(y):
+                # PASTE: implement Interval::overlap() for performance reasons.
+                if   x.begin >= y.end:   continue
+                elif x.end   <= y.begin: break
+                # x.end > y.begin  (lacks condition: x.begin < y.end)
+                # y.end > x.begin  (lacks condition: y.begin < x.end)
+                if x.begin < y.end or y.begin < x.end:
                     result.add_interval(Interval(max(x.begin, y.begin),
                                                  min(x.end,   y.end)))
 
