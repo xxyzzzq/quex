@@ -328,7 +328,7 @@ class StateInfo:
         self.__origin_list = []
 
     def get_origin_list(self):
-        return deepcopy(self.__origin_list)
+        return self.__origin_list
 
     def get_transitions(self):
         return self.__transition_list  

@@ -1,16 +1,17 @@
 import quex.core_engine.generator.languages.core  as languages
 import quex.core_engine.generator.languages.label as languages_label
 from copy import deepcopy
-
+__DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, BackwardInputPositionDetectionF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
     # (*) check that no epsilon transition triggers to a real state                   
-    assert state.get_epsilon_target_state_indices() == [], \
-           "epsilon transition contained target states: state machine was not made a DFA!\n" + \
-           "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
+    if __DEBUG_CHECK_ACTIVE_F:
+        assert state.get_epsilon_target_state_indices() == [], \
+               "epsilon transition contained target states: state machine was not made a DFA!\n" + \
+               "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
        
     #_________________________________________________________________________________________    
     TriggerMap = state.get_trigger_map()
@@ -101,7 +102,7 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
     #     This assumption is critical because it is assumed that for any
     #     isolated interval the bordering intervals have bracketed the remaining
     #     cases!
-    if TriggerSetN > 1:
+    if TriggerSetN > 1 and __DEBUG_CHECK_ACTIVE_F:
         previous_interval = TriggerMap[0][0] 
         for trigger_interval, target_state_index in TriggerMap[1:]:
             assert trigger_interval.begin == previous_interval.end, \
