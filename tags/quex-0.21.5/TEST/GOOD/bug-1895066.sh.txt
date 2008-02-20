@@ -1,0 +1,10 @@
+warning: no initial mode defined via 'start'
+warning: using mode 'MODE' as initial mode
+(0) create token id file
+   token class file = 'quex/code_base/token'
+   => 'Simple-token_ids'
+
+Output from constructed header:_______________________________________
+
+(standard input):186:#line 5 "error.qx"
+(standard input):189:#line 189 "Simple"

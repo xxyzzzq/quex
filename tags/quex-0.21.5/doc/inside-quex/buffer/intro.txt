@@ -1,0 +1,41 @@
+\framebox{\vbox{NOTE: The information here is not complete, since the buffer 
+    handling was re-designed. Add to this chapter inconv support and input
+        strategies.}}
+\vskip 0.2cm
+
+Instead of relying on direct read and write operations from storage devices and
+transmission lines, it is generally advantegous to profit from the fact that
+data is usually transported faster when it is transported in some larger
+blocks.  When doing lexical analysis one treats the data stream character by
+character. To send a 'request' for each character and wait for the reply each
+time a new character is read is obviously not a very promissing approach.
+Independent on what device or line there is in the background the solution that
+comes handy is: _a buffer in the system memory_. A buffer loads a larger
+blocks of data and keeps them ready-to-read until its content is read completely. Then
+it loads the next larger block of data.
+
+[[fig:basic-buffer]]
+.Structure of quex's buffer.
+image::figures/basic-buffer.pdf[]
+
+The structure of quexs buffer is shown in figure <<fig:basic-buffer, style=ref>>. The buffer itself
+is not more than a continous chunk of memory. It has two places to store
+border characters. One is located at the front to store 'begin of buffer' or 'begin of
+file'. The other is located at the end to store 'end of buffer' or 'end of file'.
+However, the 'end of file' character may come anywhere from the start of the
+buffer to the end. Details about these limit characters are explained below.
+Thus the actual buffer size is two elements greater than the actual number
+of content elements. A 'current' pointer iterates from left to right\footnote{In this figure
+it is 'left-to-right'. This basically means from low memory addresses to 
+higher memory addresses. It had absolutely nothing to to with the directionality
+of the character encoding.} to go forward. The element to which it points designates
+the current input to the lexical analyser state machine. If it reaches a border
+new content has to be loaded. The fallback area allows to prevent immediate
+loads in the opposite directions if one requests to go back immediately
+after loading.
+
+The following sections explain the mechanisms of quexs buffer, some
+basic API functions for lexical analysis, the loading procedures, and the
+buffer creation procedure.
+
+
