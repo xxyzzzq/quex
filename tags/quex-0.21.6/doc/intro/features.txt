@@ -1,0 +1,11 @@
+As mentioned in the section \ref{sec:philosophie}, the quex program was
+earlier part of a project for creating a programming language with optimized
+source code appearance {\SaferTeX}\cite{}. The key idea was to allow
+redundancy free instruction specifications. The interpreter had to be able to
+understand certain things from context. This led to the concept of {\it
+  implicit tokens}. Also dedicated mini-sub-languages, such as for the parsing
+of table content imposed the support of sophisticated {\it lexical analysis
+  modes}. Finally, concepts such a line and column numbering are provided.
+The following list gives an overview about the features of quex:
+
+
