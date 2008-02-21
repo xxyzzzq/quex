@@ -17,8 +17,8 @@ FLAG = -2
 
 SETUP_INFO = {         
     # [Name in Setup]                 [ Flags ]                              [Default / Type]
-    "begin_of_stream_code":           [["--begin-of-stream"],                0x19],
-    "buffer_limit_code":              [["--buffer-limit"],                   0x0],
+    "begin_of_stream_code":           [["--begin-of-stream"],                "0x19"],
+    "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "dos_carriage_return_newline_f":  [["--DOS"],                            FLAG],
     "end_of_stream_code":             [["--end-of-stream"],                  0x1A],
@@ -32,9 +32,9 @@ SETUP_INFO = {
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
     "input_token_class_file":         [["--token-class-file"],               "quex/code_base/token"],
     "input_token_class_name":         [["--token-class"],                    "token"],
-    "input_token_counter_offset":     [["--token-offset"],                   10000],
-    "token_id_termination":           [["--token-id-termination"],           0],
-    "token_id_uninitialized":         [["--token-id-uninitialized"],         1],
+    "input_token_counter_offset":     [["--token-offset"],                   "10000"],
+    "token_id_termination":           [["--token-id-termination"],           "0"],
+    "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
     "input_token_id_prefix":          [["--token-prefix"],                   "TKN_"],
     "input_user_token_id_file":       [["--user-token-id-file"],             ""],
     "no_mode_transition_check_f":     [["--no-mode-transition-check"],       FLAG],
@@ -211,8 +211,8 @@ def validate(setup, command_line, argv):
                   "Maybe it works.", DontExitF=True)
     
     # check that names are valid identifiers
-    __check_identifier(setup, "input_token_id_prefix",    "Token prefix")
-    __check_identifier(setup, "output_engine_name",       "Engine name")
+    __check_identifier(setup, "input_token_id_prefix", "Token prefix")
+    __check_identifier(setup, "output_engine_name",    "Engine name")
     if setup.input_derived_class_name != "": 
         __check_identifier(setup, "input_derived_class_name", "Derived class name")
     if setup.input_token_class_name != "": 
@@ -236,9 +236,7 @@ def __get_integer(code, option_name):
         elif len(code) > 2:
             if   code[:2] == "0x": return int(code, 16)
             elif code[:2] == "0o": return int(code, 8)
-            else:                  return int(code)
+        return int(code)
     except:
-        pass
-
-    error_msg("Cannot convert %s into an integer for '%s'" % (code, option_name))
+        error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
 

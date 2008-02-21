@@ -1,4 +1,5 @@
 // : -*- C++ -*-  vim: set syntax=cpp:
+// (C) 2007 Frank-Rene Schaefer
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__
 #define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__
 //
@@ -134,7 +135,7 @@ namespace quex {
 
 #       ifdef __QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
 	void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* From, const char* To,
-								   iconv_t IconvResult);
+								                               iconv_t IconvResult);
 	void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(size_t LoadedByteN);
 	void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(size_t Report);
 	void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(buffer_info* user_buffer);

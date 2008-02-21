@@ -7,8 +7,9 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx -o Simple
-
+make
+./a.out
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token-ids Simplism
+make clean
+
 cd $tmp
