@@ -75,7 +75,9 @@
 extern "C" { 
 #include <iconv.h>
 #include <quex/code_base/compatibility/inttypes.h>
+#include <quex/code_base/compatibility/iconv-argument-types.h>
 }
+
 
 
 namespace quex {
@@ -225,9 +227,20 @@ namespace quex {
 	    raw_buffer.bytes_left_n = LoadedByteN + (raw_buffer.position - raw_buffer.start);
 	    raw_buffer.position     = raw_buffer.start;
 
+        /*  IF YOU GET AN ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
+         *
+         *      quex/code_base/compatibility/iconv-argument-types.h
+         * 
+         *  The issue is, that 'iconv' is defined on different systems with different
+         *  types of the second argument. There are two variants 'const char**'
+         *  and 'char **'. The file above tries to adapt via a 'typedef' according
+         *  to your system. Obviously, your system is not treated correctly, so
+         *  please, contact the author <fschaef@users.sourceforge.net> and notify
+         *  him about the macro that identifies your system.
+         */
 	    size_t report = iconv(iconv_handle, 
-				  (char**)&raw_buffer.position,     &raw_buffer.bytes_left_n,
-				  (char**)&(user_buffer->position), &(user_buffer->bytes_left_n));
+				  (__quex_adaption_iconv_second_argument_type)&raw_buffer.position, &raw_buffer.bytes_left_n,
+				  (char**)&(user_buffer->position),   &(user_buffer->bytes_left_n));
 
 	    QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(report);
 
