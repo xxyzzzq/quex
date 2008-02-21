@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Thu Feb 21 01:04:29 2008">
+<test-database execution-time-sec="18.72" date="Thu Feb 21 16:55:34 2008">
     <last-used-diff-display-program name=""/>
     <group name="sphericalcow">
         <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.00"> 
@@ -8,9 +8,9 @@
             </choice-list>
         </test>
         <test title="1898125 invalid argument for --token-offset can crash 0.21.4" time-sum-sec="0.00"> 
-            <application file-name="bug-1898125.sh" info-request-time="1203552004L"/>
+            <application file-name="bug-1898125.sh" info-request-time="1203553677L"/>
             <choice-list number="1">
-               <choice name="" result="" time-sec="0.00" crc="1051315050"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1051315050"/>
             </choice-list>
         </test>
         <test title="1893874 Missing colon in mode definition crashes 0.20.5" time-sum-sec="0.00"> 
@@ -55,10 +55,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="-895622030"/>
             </choice-list>
         </test>
-        <test title="1893113 PATCH Performance modifications of 0.20.4" time-sum-sec="0.00"> 
+        <test title="1893113 PATCH Performance modifications of 0.20.4" time-sum-sec="0.05"> 
             <application file-name="patch-1893113.sh" info-request-time="1203351058L"/>
             <choice-list number="1">
-               <choice name="" result="NO GOOD FILE" time-sec="0.00" crc="None"/>
+               <choice name="" result="NO GOOD FILE" time-sec="0.05" crc="None"/>
             </choice-list>
         </test>
         <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.00"> 
@@ -73,10 +73,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="-1867080036"/>
             </choice-list>
         </test>
-        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="0.00"> 
-            <application file-name="bug-1895500.sh" info-request-time="1203265363L"/>
+        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="18.21"> 
+            <application file-name="bug-1895500.sh" info-request-time="1203554984L"/>
             <choice-list number="1">
-               <choice name="" result="NO GOOD FILE" time-sec="0.00" crc="None"/>
+               <choice name="" result="NO GOOD FILE" time-sec="18.21" crc="None"/>
             </choice-list>
         </test>
         <test title="1889321 Quex does not handle actions including quote literal" time-sum-sec="0.00"> 
@@ -115,10 +115,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.46"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-133052857"/>
+               <choice name="" result="OK" time-sec="0.46" crc="-1909435169"/>
             </choice-list>
         </test>
         <test title="1893880 0.20.5 allows inheritable" time-sum-sec="0.00"> 

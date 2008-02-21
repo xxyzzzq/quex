@@ -581,7 +581,7 @@ namespace quex {
                 (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
                 /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
                 /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
-                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
+                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
 #           endif
             return 0x0;
         }
@@ -590,7 +590,7 @@ namespace quex {
                    (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
                    /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
                    /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
-                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
+                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
         }
     }
 
