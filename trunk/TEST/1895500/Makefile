@@ -2,12 +2,11 @@ X = IndigoLexer
 
 all: $(X).cpp 
 	g++ -I./ -I$(QUEX_PATH) \
-		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV \
-		-DQUEX_SETTING_BUFFER_SIZE=32 \
 		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		lexer.cpp                     \
 		-ggdb
+		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV \
 
 
 $(X).cpp: indigo.quex
@@ -19,3 +18,4 @@ clean:
 	rm -rf $(X)-token_ids
 	rm -rf $(X).cpp
 	rm -rf $(X)
+	rm -rf a.out
