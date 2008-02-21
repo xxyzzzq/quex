@@ -1,0 +1,15 @@
+This section has shown how to built a lexical analyser with quex and
+provided a ready-to-run sample application. It was discussed how to specify
+patterns in a pattern file, how to announce names for token-identifiers and how
+to code mode-files that contain information about modes and pattern-action
+pairs. After an explanation of how to invoque quex, a sample application was
+discussed that uses the created lexical analyser engine. The Makefile that
+comes with the example can be easily adapted to particular applications and
+reduces the required effort to the typing of `make` on the command line.
+In general, the example files `simple.qx` and `lexer.cpp` build a good
+basis for a new project. In the following chapters various features and options
+of quex are discussed. Additionally some discussion will be made about the
+    generated lexical analyser.  The current chapter provided enough
+	information to start coding a lexical analyzer. Following chapters
+	become interesting once you tasted the ease of quex.
+
