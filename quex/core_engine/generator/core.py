@@ -8,39 +8,18 @@ import quex.core_engine.generator.combined_pre_condition_state_machine as combin
 from quex.core_engine.generator.action_info import ActionInfo
 from quex.core_engine.state_machine.index   import get_state_machine_by_id
 
-class Generator:
-
-    def __init__(self, PatternActionPair_List, EndOfFile_Code,
-                 StateMachineName, AnalyserStateClassName, Language, 
-                 DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
-                 PrintStateMachineF, StandAloneAnalyserF):
-
+class GeneratorBase:
+    def __init__(self, PatternActionPair_List, StateMachineName):
         assert type(PatternActionPair_List) == list
         assert map(lambda elm: elm.__class__.__name__ == "ActionInfo", PatternActionPair_List) \
                == [ True ] * len(PatternActionPair_List)
-        if not StandAloneAnalyserF: 
-            assert QuexEngineHeaderDefinitionFile != "", \
-               "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
-               "a header file for the core engine define statements. See file\n" + \
-               "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
 
-        if QuexEngineHeaderDefinitionFile == "":
-            QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
-    
-        self.state_machine_name                  = StateMachineName
-        self.analyzer_state_class_name           = AnalyserStateClassName
-        self.programming_language                = Language
-        self.language_db                         = languages.db[self.programming_language]
-        self.default_action                      = DefaultAction
-        self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
-        self.mode_name_list                      = ModeNameList
-        self.print_state_machine_f               = PrintStateMachineF
-        self.stand_alone_analyzer_f              = StandAloneAnalyserF
+        self.state_machine_name = StateMachineName
 
         # -- setup of state machine lists and id lists
         self.__extract_special_lists(PatternActionPair_List)
         # -- create combined state machines for main and pre-conditions
-        self.__create_state_machines(EndOfFile_Code)
+        self.__create_state_machines()
         # -- collect the state machines that help out with pseudo-ambiguous
         #    post-conditions.
         self.__collect_pseudo_ambiguous_post_condition_state_machines()
@@ -96,12 +75,12 @@ class Generator:
             if sm.is_post_conditioned():
                 self.post_conditioned_sm_id_list.append(origin_state_machine_id)
 
-    def __create_state_machines(self, EndOfFile_Code):
+    def __create_state_machines(self):
         # (1) transform all given patterns into a single state machine
         #     (the index of the patterns remain as 'origins' inside the states)
         self.sm = get_state_machine(self.state_machine_list)
         #     -- check for the 'nothing is fine' problem
-        _check_for_nothing_is_fine(self.sm, EndOfFile_Code)
+        _check_for_nothing_is_fine(self.sm)
 
         # (2) create the combined pre-condition state machine (if necessary)
         self.pre_condition_sm = None
@@ -122,6 +101,36 @@ class Generator:
         # -- collect all mentioned state machines in a list
         self.papc_backward_detector_state_machine_list = \
                 map(get_state_machine_by_id, papc_sm_id_list)
+
+
+class Generator(GeneratorBase):
+
+    def __init__(self, PatternActionPair_List, EndOfFile_Code,
+                 StateMachineName, AnalyserStateClassName, Language, 
+                 DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
+                 PrintStateMachineF, StandAloneAnalyserF):
+
+        if not StandAloneAnalyserF: 
+            assert QuexEngineHeaderDefinitionFile != "", \
+               "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
+               "a header file for the core engine define statements. See file\n" + \
+               "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
+
+        if QuexEngineHeaderDefinitionFile == "":
+            QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
+    
+        self.state_machine_name                  = StateMachineName
+        self.analyzer_state_class_name           = AnalyserStateClassName
+        self.programming_language                = Language
+        self.language_db                         = languages.db[self.programming_language]
+        self.default_action                      = DefaultAction
+        self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
+        self.mode_name_list                      = ModeNameList
+        self.print_state_machine_f               = PrintStateMachineF
+        self.stand_alone_analyzer_f              = StandAloneAnalyserF
+
+        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
+
 
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
@@ -283,7 +292,7 @@ def get_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
 
 
 
-def _check_for_nothing_is_fine(sm, EndOfFile_Code):
+def _check_for_nothing_is_fine(sm):
     """NOTE: This discussion is lengthy and the result is short. Please, 
              go to the end of this comment to get to the point quickly.
     
