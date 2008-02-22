@@ -1,6 +1,6 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DNDEBUG 
+make NDEBUG_F=-DNDEBUG  
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]

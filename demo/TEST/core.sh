@@ -11,9 +11,9 @@
 #______________________________________________________________________
 cd $QUEX_PATH/demo/$1 
 if [[ $2 == "NDEBUG" ]]; then
-    arg1="NDEBUG_F=-DNDEBUG"
+    arg1="NDEBUG_F=-DNDEBUG "
 else
-    arg1="NDEBUG_F= "
+    arg1="NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS "
 fi
 echo "makefile =" Makefile
 echo "cleaning ..."

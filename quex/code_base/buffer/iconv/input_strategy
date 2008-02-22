@@ -239,8 +239,8 @@ namespace quex {
          *  him about the macro that identifies your system.
          */
 	    size_t report = iconv(iconv_handle, 
-				  (__quex_adaption_iconv_second_argument_type)&raw_buffer.position, &raw_buffer.bytes_left_n,
-				  (char**)&(user_buffer->position),   &(user_buffer->bytes_left_n));
+				  (__Adapter_FuncIconv_SecondArgument)(&raw_buffer.position), &raw_buffer.bytes_left_n,
+				  (char**)&(user_buffer->position),                           &(user_buffer->bytes_left_n));
 
 	    QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(report);
 
