@@ -173,6 +173,9 @@ def do_plot(Setup):
 
     mode_db = __get_mode_db(Setup)
 
+    for mode in mode_db.values():        
+        # -- some modes only define event handlers that are inherited
+        if mode.matches == {}: continue
 
 def __get_mode_db(Setup):
     # (0) check basic assumptions
