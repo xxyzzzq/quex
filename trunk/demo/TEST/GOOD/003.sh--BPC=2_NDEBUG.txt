@@ -1,6 +1,6 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DNDEBUG BYTES_PER_CHARACTER=2
+make NDEBUG_F=-DNDEBUG  BYTES_PER_CHARACTER=2
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]

@@ -49,6 +49,19 @@
 %%SWITCH%% QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #endif
 
+// -- Asserts
+//    Standard asserts are active as long as 'NDEBUG' is not defined.
+//
+//    The asserts in quex are so many to make it safe. However, when they
+//    are active, they make the system run very slowly. For the default
+//    user, these things are turned off. Use the following macro to re-activate.
+//
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+//    Nothing to be done, asserts are active, since NDEBUG is not defined.
+#else
+#   define NDEBUG
+#endif
+
 // -- Include Stack Support:
 //    Easy handling of include files/streams via 'push' and 'pop'
 //    Turn this off, if you do not use 'inclusion' in your files and

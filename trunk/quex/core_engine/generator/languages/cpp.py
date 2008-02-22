@@ -340,7 +340,7 @@ def __label_definition(LabelName):
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
-#   include <$$INCLUDE$$>
+#   include "$$INCLUDE$$"
 #   define __QUEX_ENGINE_HEADER_DEFINITIONS
 
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS

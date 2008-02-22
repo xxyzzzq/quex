@@ -47,7 +47,7 @@ file_str = \
 
 #include<cstdio> // for: 'sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
-#include<%%TOKEN_CLASS_DEFINITION_FILE%%>
+#include "%%TOKEN_CLASS_DEFINITION_FILE%%"
 
 
 %%TOKEN_ID_DEFINITIONS%%
