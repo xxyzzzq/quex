@@ -10,13 +10,26 @@ from quex.GetPot import GetPot
 
 import quex.core_engine.regular_expression.character_set_expression as charset_expression
 
+OPTION_DB = {
+        "--property":          ["Querying properties"],
+        "--set-by-property":   ["Determining character set by property"],
+        "--set-by-expression": ["Determining character set by property"],
+        "--property-match":    ["Find property values that match wildcards"],
+        "--numeric":           ["Display sets numerically",  ["--set-by-property", "--set-by-expression"]],
+        "--intervals":         ["Display sets by intervals", ["--set-by-property", "--set-by-expression"]],
+}
 
-def get_supported_command_line_options():
-    return ["--property", \
-           "--set-by-property", \
-           "--set-by-expression", \
-           "--numeric", \
-           "--intervals"]
+def get_supported_command_line_option_description():
+    txt = ""
+    for key, description in OPTION_DB.items():
+        txt += "    " + key
+        if len(description) >= 2: 
+            txt += " (only with "
+            txt += repr(description[1])[1:-1]
+            txt += ")"
+        txt += "\n"
+    return txt
+
 
 def do(ARGV):
     """Performs a query based on the given command line arguments.
@@ -54,6 +67,33 @@ def __handle_property(cl):
         if property == None: return True
         print property
 
+def __handle_property_match(cl):
+    property_follower = cl.follow("", "--property-match")
+    sys.stderr.write("(please, wait for database parsing to complete)\n")
+
+    if property_follower == "":
+        return
+
+    fields = map(lambda x: x.strip(), property_follower.split("="))
+    if len(fields) != 2:
+        error_msg("Wrong property setting '%s'." % result)
+
+    # -- determine name and value
+    name                 = fields[0]
+    wild_card_expression = fields[1]
+
+    # -- get the property from the database
+    property = __get_property(name)
+    if property == None: 
+        return True
+
+    # -- find the character set for the given expression
+    if property.type == "Binary":
+        error_msg("Binary property '%s' is not subject to value wild card matching.\n" % property.name)
+
+    for value in property.get_wildcard_value_matches(wild_card_expression):
+        print value
+
 def __handle_set_by_property(cl):
     result = cl.follow("", "--set-by-property") 
 
@@ -84,33 +124,6 @@ def __handle_set_by_property(cl):
             error_msg(character_set)
 
         __display_set(character_set, cl)
-
-def __handle_property_match(cl):
-    property_follower = cl.follow("", "--property-match")
-    sys.stderr.write("(please, wait for database parsing to complete)\n")
-
-    if property_follower == "":
-        return
-
-    fields = map(lambda x: x.strip(), property_follower.split("="))
-    if len(fields) != 2:
-        error_msg("Wrong property setting '%s'." % result)
-
-    # -- determine name and value
-    name                 = fields[0]
-    wild_card_expression = fields[1]
-
-    # -- get the property from the database
-    property = __get_property(name)
-    if property == None: 
-        return True
-
-    # -- find the character set for the given expression
-    if property.type == "Binary":
-        error_msg("Binary property '%s' is not subject to value wild card matching.\n" % property.name)
-
-    for value in property.get_wildcard_value_matches(wild_card_expression):
-        print value
 
 def __handle_set_by_expression(cl):
     result = cl.follow("", "--set-by-expression")
