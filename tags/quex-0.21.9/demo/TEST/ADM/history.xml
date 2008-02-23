@@ -1,0 +1,58 @@
+<history date="Sat Feb 23 02:26:00 2008" element-n="30">
+    <day year="2008" month="02" day="09">
+        <history-init time="17:40:17"/>
+    </day>
+    <day year="2008" month="02" day="10">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:01:07"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:22:09"/>
+    </day>
+    <day year="2008" month="02" day="15">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="00:50:21"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:47:30"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:24:22"/>
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:08:34"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="16:01:47"/>
+    </day>
+    <day year="2008" month="02" day="20">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:32:55"/>
+    </day>
+    <day year="2008" month="02" day="21">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="15:52:38"/>
+    </day>
+    <day year="2008" month="02" day="22">
+        <accept    time="00:38:02" application="000.sh" choice="NDEBUG" crc="-1259723357" />
+        <accept    time="00:38:09" application="000.sh" choice="DEBUG" crc="-636114347" />
+        <crc-error time="00:39:19" application="001.sh" choice="NDEBUG" database-crc="1854620741" real-crc="-2147354422"/>
+        <crc-error time="00:39:25" application="001.sh" choice="DEBUG" database-crc="200015176" real-crc="-690545511"/>
+        <crc-error time="00:39:32" application="002.sh" choice="NDEBUG" database-crc="-1830736552" real-crc="-406869980"/>
+        <crc-error time="00:39:40" application="002.sh" choice="DEBUG" database-crc="-1234760276" real-crc="-693714553"/>
+        <crc-error time="00:39:52" application="003.sh" choice="BPC=2" database-crc="-1038451616" real-crc="1893007653"/>
+        <crc-error time="00:40:04" application="003.sh" choice="BPC=2_NDEBUG" database-crc="507224024" real-crc="292230617"/>
+        <crc-error time="00:40:16" application="003.sh" choice="BPC=4" database-crc="-1038451616" real-crc="1893007653"/>
+        <crc-error time="00:40:28" application="003.sh" choice="BPC=4_NDEBUG" database-crc="-560165539" real-crc="-775157924"/>
+        <crc-error time="00:40:40" application="003.sh" choice="BPC=wchar_t" database-crc="-1038451616" real-crc="1893007653"/>
+        <accept    time="00:41:28" application="005.sh" choice="1" crc="-783947445" />
+        <accept    time="00:41:30" application="005.sh" choice="1_NDEBUG" crc="-1467728902" />
+        <accept    time="00:41:35" application="005.sh" choice="2" crc="-1390822783" />
+        <accept    time="00:41:38" application="005.sh" choice="2_NDEBUG" crc="-1062673555" />
+        <accept    time="00:41:40" application="006.sh" choice="NDEBUG" crc="-1872922593" />
+        <accept    time="00:41:43" application="006.sh" choice="DEBUG" crc="1699317644" />
+        <test-runs-today n="6" ok-n="4" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:57:00"/>
+    </day>
+    <day year="2008" month="02" day="23">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="01:26:00"/>
+    </day>
+</history>
