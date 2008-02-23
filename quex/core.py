@@ -19,6 +19,7 @@ import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check
 import quex.output.cpp.core                     as quex_class_out
 import quex.output.cpp.action_code_formatter    as action_code_formatter
+import quex.output.graphviz.interface           as plot_generator
 
 
 
@@ -176,6 +177,17 @@ def do_plot(Setup):
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
         if mode.matches == {}: continue
+
+        # -- adapt pattern-action pair information so that it can be treated
+        #    by the code generator.
+        pattern_action_pair_info_list = mode.pattern_action_pairs().values()
+
+        # -- pattern-action pairs
+        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
+                                                              Setup)
+        plot_generator.do(pattern_action_pair_list, 
+                          StateMachineName = mode.name,
+                          GraphicFormat    = plot.plot_graphic_format)
 
 def __get_mode_db(Setup):
     # (0) check basic assumptions

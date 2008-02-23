@@ -43,6 +43,9 @@ SETUP_INFO = {
     "plain_memory_f":                 [["--plain-memory"],                   FLAG],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
+    #
+    "version_information":            [["--version", "-v"],                  FLAG],
+    "help":                           [["--help", "-h"],                     FLAG],
     #______________________________________________________________________________________________________
     "flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECIATED
     "input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECIATED 
