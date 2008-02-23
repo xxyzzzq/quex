@@ -158,14 +158,15 @@ def validate(setup, command_line, argv):
 
     # (*) Check for 'Straying' Options ___________________________________________________
     options = []
-    for info in SETUP_INFO.values():
+    for key, info in SETUP_INFO.items():
+        if key in DEPRECATED: continue
         if info[1] != None: options.extend(info[0])
+    options.sort(lambda a,b: cmp(a.replace("-",""), b.replace("-","")))
 
     ufos = command_line.unidentified_options(options)
     if ufos != []:
-        options.sort(lambda a,b: cmp(a.replace("-",""),b.replace("-","")))
         error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
-                  "Accepted options = " +  repr(options + query.get_supported_command_line_options())[1:-1])
+                  __get_supported_command_line_option_description(options))
 
     if setup.input_derived_class_name != "" and \
        setup.input_derived_class_file == "":
@@ -240,3 +241,11 @@ def __get_integer(code, option_name):
     except:
         error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
 
+def __get_supported_command_line_option_description(NormalModeOptions):
+    txt = "OPTIONS:\n"
+    for option in NormalModeOptions:
+        txt += "    " + option + "\n"
+
+    txt += "\nOPTIONS FOR QUERY MODE:\n"
+    txt += query.get_supported_command_line_option_description()
+    return txt
