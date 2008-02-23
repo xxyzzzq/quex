@@ -10,7 +10,7 @@ all: $(X).cpp
 
 
 $(X).cpp: indigo.quex
-	quex -i error.qx -o $(X) -b 4 --iconv
+	quex -i indigo.qx -o $(X) -b 4 --iconv
 
 
 clean:
