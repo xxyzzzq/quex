@@ -9,7 +9,7 @@ all: $(X).cpp
 		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV \
 
 
-$(X).cpp: indigo.quex
+$(X).cpp: indigo.qx
 	quex -i indigo.qx -o $(X) -b 4 --iconv
 
 
