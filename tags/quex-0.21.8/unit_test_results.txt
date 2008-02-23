@@ -1,0 +1,575 @@
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:33:08 2008
+TITLE: Regression Tests on Fixed Bugs
+
+-------------------------------------------------------------------------------
+
+ -- sphericalcow:
+
+    1889871 0.19.4 crashes if [] expression contains unescaped -
+        bug-1889871.sh ..................................................[OK]
+    1893874 Missing colon in mode definition crashes 0.20.5
+        bug-1893874.sh ..................................................[OK]
+    1894578 header block not added to -core-engine.cpp file in 0.20.6
+        bug-1894578.sh ..................................................[OK]
+    1891254 Lone ? as regex does not give an error in 0.19.9
+        bug-1891254.sh ..................................................[OK]
+    1889877 '*' or '+' without prececing expression crashes 0.19.4
+        bug-1889877.sh ..................................................[OK]
+    1890876 {} handled oddly in define blocks in 0.19.9
+        bug-1890876.sh ..................................................[OK]
+    1895066
+        bug-1895066.sh ..................................................[OK]
+    1894130 0.20.6 can list wrong mode as circuluar inheritance
+        bug-1894130.sh ..................................................[OK]
+    1893113 PATCH Performance modifications of 0.20.4
+        patch-1893113.sh ......................................[NO GOOD FILE]
+    1889086 Single state mode causes quex to crash
+        bug-1889086.sh ..................................................[OK]
+    1889892 x, X or followed by a non-hex digit crashes 0.19.4
+        bug-1889892.sh ..................................................[OK]
+    1895500 assertion error running generated 0.20.8 lexer with Unicode
+        bug-1895500.sh ........................................[NO GOOD FILE]
+    1889321 Quex does not handle actions including quote literal
+        bug-1889321.sh ..................................................[OK]
+    1885855 P{ ...} syntax does not work outside of [
+        bug-1885855.sh ..................................................[OK]
+    1892227 accepted as identifiers in def
+        bug-1892227.sh ..................................................[OK]
+    1889089 Single state mode causes quex to crash
+        bug-1889089.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
+    1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6
+        bug-1894185.sh ..................................................[OK]
+    1885304 Problems with files with DOS CR/LF line endings
+        bug-1885304.sh ..................................................[OK]
+    1893880 0.20.5 allows inheritable
+        bug-1893880.sh ..................................................[OK]
+    1892809
+        bug-1892809.sh ..................................................[OK]
+    1893849 0.20.5 allows engine names that are not valid identifiers
+        bug-1893849.sh ..................................................[OK]
+    1890828 0.19.9 crashes trying to call error handler in several cases
+        bug-1890828.sh ..................................................[OK]
+    1889692 0.19.4 does not gracefully handle unbalanced quotations
+        bug-1889692.sh ..................................................[OK]
+    1887163 Single state mode causes quex to crash
+        bug-1887163.sh ..................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:35:08 2008
+TITLE: Demo-Applications
+
+-------------------------------------------------------------------------------
+
+ -- demo/000:
+
+    Single Mode Example
+        000.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+
+ -- demo/001:
+
+    Multiple Modes, Mode Transitions
+        001.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+
+ -- demo/002:
+
+    Indentation Based Scopes
+        002.sh NDEBUG .................................................[FAIL]
+               DEBUG ..................................................[FAIL]
+
+ -- demo/003:
+
+    Unicode Based Lexical Analyzis
+        003.sh BPC=2 ....................................................[OK]
+               BPC=2_NDEBUG .............................................[OK]
+               BPC=4 ....................................................[OK]
+               BPC=4_NDEBUG .............................................[OK]
+               BPC=wchar_t ..............................................[OK]
+
+ -- demo/005:
+
+    Including Files
+        005.sh 1 ........................................................[OK]
+               1_NDEBUG .................................................[OK]
+               2 ........................................................[OK]
+               2_NDEBUG .................................................[OK]
+
+ -- demo/006:
+
+    Pseudo Ambiguous Post Conditions
+        006.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
+-------------------------------------------------------------------------------
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+
+Error: 002.sh NDEBUG
+Error: 002.sh DEBUG
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:55:48 2008
+TITLE: Miscellaneous Basic Tests
+
+-------------------------------------------------------------------------------
+ -- Prepare Pattern Information for Code Generation
+        test-coder-get_generator_input.py ...............................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:55:49 2008
+TITLE: Input Buffers
+
+-------------------------------------------------------------------------------
+ -- Backwards Iteration
+        test-backward-get Normal ........................................[OK]
+                          EOFC=1_BOFC=2_BLC=0 ...........................[OK]
+                          EOFC=1_BOFC=0_BLC=2 ...........................[OK]
+                          EOFC=0_BOFC=1_BLC=2 ...........................[OK]
+
+ -- Forward Iteration:
+
+    EOF at first load.
+        test-forward-get-2 ..............................................[OK]
+    Multiple Loads.
+        test-forward-get Normal .........................................[OK]
+                         EOFC=1_BOFC=2_BLC=0 ............................[OK]
+                         EOFC=1_BOFC=0_BLC=2 ............................[OK]
+                         EOFC=0_BOFC=1_BLC=2 ............................[OK]
+
+ -- Miscenllaneous Scenarios:
+
+    Content Size = 11, Fallback Size = 10
+        test-misc-I istream .............................................[OK]
+                    stdio ...............................................[OK]
+    Content Size = 11, Fallback Size = 0
+        test-misc-III istream ...........................................[OK]
+                      stdio .............................................[OK]
+    Content Size = 11, Fallback Size = 1
+        test-misc-II istream ............................................[OK]
+                     stdio ..............................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:55:49 2008
+TITLE: Input Buffers Based on the IConv - Library
+
+-------------------------------------------------------------------------------
+ -- Converting Stream in N Tiny Beats
+        n-beat ..........................................................[OK]
+ -- Converting Stream in One Beat
+        one-beat ........................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:55:49 2008
+TITLE: Lexical Analyzer Class Template
+
+-------------------------------------------------------------------------------
+
+ -- Count Line and Column:
+
+    Without Indentation Count
+        test-simple .....................................................[OK]
+    With Indentation
+        test-simple-2 ...................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:55:49 2008
+TITLE: Core Functionalities
+
+-------------------------------------------------------------------------------
+
+ -- NumberSet:
+
+    Inverse
+        test-NumberSet-inverse.py .......................................[OK]
+    Difference
+        test-NumberSet-difference.py ....................................[OK]
+    Intersection
+        test-NumberSet-intersection.py ..................................[OK]
+    Union
+        test-NumberSet-union.py .........................................[OK]
+    Condition Code Generation
+        test-NumberSet-condition-code.py ................................[OK]
+
+ -- Utf8-Module:
+
+    Map UTF8 String To Unicode Values
+        test-utf8-UCS-to-UTF8.py ........................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:56:54 2008
+TITLE: Code Generation for Lexical Analyzer
+
+
+-------------------------------------------------------------------------------
+
+ -- Buffer Reload:
+
+    Backwards
+        test-backward_loading.py No_NDEBUG ..............................[OK]
+                                 NDEBUG .................................[OK]
+    Forward Position Adaption
+        test-position_adaption.py No_NDEBUG .............................[OK]
+                                  NDEBUG ................................[OK]
+    No Backward Reload -- Precondition at Border
+        test-no-backward-reloading.py No_NDEBUG .........................[OK]
+                                      NDEBUG ............................[OK]
+
+ -- CONTINUE:
+
+    Reentry analysis without return from function
+        test-continue-without-return.py PlainMemory .....................[OK]
+                                        QuexBuffer ......................[OK]
+    Mode Changes
+        test-mode-changes.py PlainMemory ................................[OK]
+                             QuexBuffer .................................[OK]
+    (special use case)
+        test-continue-without-return-2.py PlainMemory ...................[OK]
+                                          QuexBuffer ....................[OK]
+
+ -- Post Conditions:
+
+    Part 1
+        test-post-conditions.py PlainMemory .............................[OK]
+                                QuexBuffer ..............................[OK]
+    Part 2
+        test-post-conditions-2.py PlainMemory ...........................[OK]
+                                  QuexBuffer ............................[OK]
+
+ -- Pre Conditions:
+
+    Multiple Identical Pre-Conditions
+        test-pre-conditions-3.py PlainMemory ............................[OK]
+                                 QuexBuffer .............................[OK]
+    Part 1
+        test-pre-conditions.py PlainMemory ..............................[OK]
+                               QuexBuffer ...............................[OK]
+    Part 2
+        test-pre-conditions-2.py PlainMemory ............................[OK]
+                                 QuexBuffer .............................[OK]
+
+ -- Pre- and Post- Conditions:
+
+    Simple
+        test-pre-post-condition.py PlainMemory ..........................[OK]
+                                   QuexBuffer ...........................[OK]
+
+ -- Pseudo Ambgiguous Post Condition:
+
+    Part II
+        test-pseudo_ambiguous_post_conditions-2.py PlainMemory ..........[OK]
+                                                   QuexBuffer ...........[OK]
+    Part I
+        test-pseudo_ambiguous_post_conditions.py PlainMemory ............[OK]
+                                                 QuexBuffer .............[OK]
+
+ -- Simple:
+
+    Special Case '.' (drop out on valid target state)
+        test-simple-3.py PlainMemory ....................................[OK]
+                         QuexBuffer .....................................[OK]
+    Begin of Line (BOL), End of Line (EOL)
+        test-bol-eol.py PlainMemory .....................................[OK]
+                        QuexBuffer ......................................[OK]
+    Tiny Expressions
+        test-simple.py PlainMemory ......................................[OK]
+                       QuexBuffer .......................................[OK]
+    Maximum Length Match
+        test-simple-2.py PlainMemory ....................................[OK]
+                         QuexBuffer .....................................[OK]
+
+ -- Single State:
+
+    Transition Code Generation
+        test-single-state-transitions.py ................................[OK]
+    Extensive Transition Code Generation
+        test-single-state-transitions-x.py ..............................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:58:49 2008
+TITLE: Regular Expression Parsing
+
+-------------------------------------------------------------------------------
+ -- State Machine Pattern Matching
+        test-pattern-matching.py ........................................[OK]
+
+ -- Backslashed Characters:
+
+    General
+        test-snap_backslashed_character.py ..............................[OK]
+
+ -- Basics:
+
+    Pattern identifier replacement
+        test-replacement.py .............................................[OK]
+    Map character *string* to state machine
+        test-string.py ..................................................[OK]
+    Snap string until (low level function)
+        test-snap_until.py ..............................................[OK]
+    Map character *range* to state machine
+        test-set.py .....................................................[OK]
+    Lonestanding characters
+        test-lonely-characters.py .......................................[OK]
+
+ -- Combination:
+
+    Alternative Expressions
+        test-alternatives.py ............................................[OK]
+    Simple repeated expressions
+        test-repeated-expressions.py ....................................[OK]
+    Alternative Expressions
+        test-set-expressions.py .........................................[OK]
+
+ -- Conditional Analysis:
+
+    Begin of Line '^', End of Line '$'
+        test-bol-eol.py .................................................[OK]
+    pre conditions
+        test-pre-condition.py ...........................................[OK]
+    post conditions
+        test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
+    End of Line '$' (with DOS/Windows '\r\n')
+        test-eol-carriage-return-newline.py .............................[OK]
+
+ -- Unicode properties:
+
+    Simple
+        test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:57:29 2008
+TITLE: State Machine Operations
+
+-------------------------------------------------------------------------------
+
+ -- DFA:
+
+    Get Trigger Map (intervals --> target states)
+        test-StateInfo-trigger-map.py ...................................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-hopcroft-optimization.py ......................[OK]
+
+ -- NFA:
+
+    Conversion to DFA (subset construction)
+        test-StateMachine-create-DFA.py .................................[OK]
+    Get elementary trigger sets (target index --> trigger sets)
+        test-StateMachine-elementary_trigger_sets.py ....................[OK]
+    Epsilon closure (single state)
+        test-StateMachine-epsilon-closure.py ............................[OK]
+    Get elementary trigger sets II
+        test-StateMachine-elementary_trigger_sets-2.py ..................[OK]
+
+ -- Plot:
+
+    Get graphviz string of state machine.
+        test-StateMachine-get_graphviz_string.py 1 ......................[OK]
+                                                 2 ......................[OK]
+
+ -- Predetermined Character Count:
+
+    Newlines
+        test-count_newline_n.py .........................................[OK]
+    Characters
+        test-count_character_n.py .......................................[OK]
+    Contains only Spaces
+        test-count_contains_only_spaces.py ..............................[OK]
+
+ -- Pseudo Ambigous Post Condition:
+
+    Replace Drop-Out with Adjacent Target
+        test-StateInfo-replace_drop_out_with_adjacent_target.py .........[OK]
+    The Philosophical Cut
+        test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
+
+ -- StateMachine:
+
+    Cloning
+        test-StateMachine-clone.py ......................................[OK]
+
+ -- StateMachine Operations:
+
+    Setup Pre-Condition
+        test-setup_pre_condition.py .....................................[OK]
+    Inverse
+        test-StateMachine-inverse.py ....................................[OK]
+    Repetition with min and max repetition numbers
+        test-repeat.py ..................................................[OK]
+    Paralell
+        test-parallelize.py .............................................[OK]
+    Repetitions Kleene closure 0 or arbitrary repetitions
+        test-repeat-pure.py .............................................[OK]
+    Append Post Condition
+        test-setup_post_condition.py ....................................[OK]
+    Sequence
+        test-sequentialize.py ...........................................[OK]
+    Append Post Condition
+        test-setup_border_conditions.py .................................[OK]
+
+ -- Tracing origin:
+
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+    Cloning
+        test-StateMachine-trace-origin-clone.py .........................[OK]
+    Inverse
+        test-StateMachine-trace-origin-inverse.py .......................[OK]
+    Paralellization
+        test-parallelize-trace-origin.py ................................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+
+ -- Trigger Set Check:
+
+    Has Trigger
+        test-StateInfo-has_trigger.py ...................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:57:30 2008
+TITLE: Frank-Rene Schaefers Little Python Library
+
+-------------------------------------------------------------------------------
+
+ -- File Input:
+
+    Function read_until_closing_bracket(...)
+        test-read_until_closing_bracket.py ..............................[OK]
+
+ -- String Handling:
+
+    Trim (replaced by string.strip(..))
+        test-trim.py ....................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:58:00 2008
+TITLE: Character Set Queries
+
+-------------------------------------------------------------------------------
+
+ -- Quex Queries:
+
+    Wildcard Property Values
+        test-query-property-wildcard-values.py ..........................[OK]
+    Information about Properties
+        test-query.py PropertyList ......................................[OK]
+                      PropertyInfo ......................................[OK]
+    Character Sets for Property Settings
+        test-query-character-set-by-expression.py .......................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+ENTER: ./
+DATE:  Tue Feb 19 16:58:00 2008
+TITLE: <no file 'ADM/title.txt'>
+-------------------------------------------------------------------------------
+ -- 
+        test-is_installed.py PropertyList .....................[NO GOOD FILE]
+                             PropertyInfo .....................[NO GOOD FILE]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+===============================================================================
+SUMMARY:
+.//TEST .................................................................[OK]
+./demo/TEST ...........................................................[FAIL]
+./quex/TEST .............................................................[OK]
+./quex/code_base/buffer/TEST ............................................[OK]
+./quex/code_base/buffer/iconv/TEST ......................................[OK]
+./quex/code_base/template/TEST ..........................................[OK]
+./quex/core_engine/TEST .................................................[OK]
+./quex/core_engine/generator/TEST .......................................[OK]
+./quex/core_engine/regular_expression/TEST ..............................[OK]
+./quex/core_engine/state_machine/TEST ...................................[OK]
+./quex/frs_py/TEST ......................................................[OK]
+./quex/input/TEST .......................................................[OK]
+./quex/output/graphviz/TEST .............................................[OK]
+===============================================================================

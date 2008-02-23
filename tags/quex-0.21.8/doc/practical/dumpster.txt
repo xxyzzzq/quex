@@ -1,0 +1,17 @@
+ 'make' program
+basically works on three concepts: targets, dependencies, and build
+procedures. For example the makefile code:
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+target.o: dependency_0.cpp dependency_1.h
+
+        g++ -c -I./ dependency_0.cpp -o target.o
+
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+says that the target, i.e. the object file '{\tt target.o}', depends on the
+must recent versions of '{\tt dependency_0.cpp}' and '{\tt my_header.h}'.  If
+any of those two changes the target has to be build again. The build procedure
+is then given in the following lines, here the compilation of the source file
+'{\tt dependency_0.cpp}. In the Makefile of the example lexical analyser, the
+following three main dependencies exist:
