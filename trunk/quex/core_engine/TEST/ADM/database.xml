@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.17" date="Sat Feb 23 00:57:01 2008">
+<test-database execution-time-sec="0.17" date="Sat Feb 23 02:26:01 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
-        <test title="Inverse" time-sum-sec="0.02"> 
+        <test title="Inverse" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1203436538L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.02" crc="1433382430"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1433382430"/>
             </choice-list>
         </test>
         <test title="Difference" time-sum-sec="0.04"> 
@@ -13,10 +13,10 @@
                <choice name="" result="OK" time-sec="0.04" crc="1602787713"/>
             </choice-list>
         </test>
-        <test title="Intersection" time-sum-sec="0.02"> 
+        <test title="Intersection" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1195336075L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.02" crc="1516231659"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1516231659"/>
             </choice-list>
         </test>
         <test title="Union" time-sum-sec="0.03"> 

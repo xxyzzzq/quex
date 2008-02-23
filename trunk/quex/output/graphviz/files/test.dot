@@ -1,8 +1,0 @@
-digraph Kraichgau {
-	rankdir=LR;
-	size="10,5"
-	node [shape = doublecircle]; Pforzheim;
-	node [shape = circle];
-	Ispringen -> Pforzheim [ label = "5 km" ];
-	Ispringen -> Ersingen [ label = "1 km" ];
-}
