@@ -1,3 +1,4 @@
+// vim:set syntax=cpp:
 // (C) 2007 Frank-Rene Schaefer
 //
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__

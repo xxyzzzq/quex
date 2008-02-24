@@ -31,16 +31,18 @@ LIBRARY_OBJS     = $(ENGINE_NAME).o
 
 
 # (*) COMPILER SETTINGS ________________________________________________________
-#
+#     (change COMPILER to whatever you use as compiler on the command line,
+#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = g++
 # -- compiler
-CC = g++ -c -fPIC -ggdb -Wno-deprecated -Wall \
+CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)      \
 	 -D___QUEX_UNIT_TESTING___
 
 # -- linker
-LD         = g++ -ggdb 
+LD         = $(COMPILER) -ggdb 
 STATIC_LD  = ar -rv
-DYNAMIC_LD = g++ -shared 
+DYNAMIC_LD = $(COMPILER) -shared 
 
 
 # (*) RULES ____________________________________________________________________

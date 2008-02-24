@@ -15,6 +15,7 @@ from quex.token_id_maker                        import TokenInfo
 
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
+from   quex.core_engine.generator.action_info   import ActionInfo
 import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check
 import quex.output.cpp.core                     as quex_class_out
@@ -153,7 +154,7 @@ def get_generator_input(Mode, match_info_list, Setup):
                                           pattern_state_machine)
 
         
-        action_info = generator.ActionInfo(pattern_state_machine, action)
+        action_info = ActionInfo(pattern_state_machine, action)
 
         pattern_action_pair_list.append(action_info)
 

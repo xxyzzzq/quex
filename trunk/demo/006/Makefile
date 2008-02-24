@@ -20,12 +20,14 @@ ENGINE_SOURCES   = $(ENGINE_NAME)                     \
 APPLICATION      = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
-# (change g++ to whatever you use as compiler)
-CC = g++ -c -fPIC -ggdb -Wno-deprecated -Wall  \
+#     (change COMPILER to whatever you use as compiler on the command line,
+#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+COMPILER = g++
+CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall  \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS	 
 
-LD = g++ -ggdb 
+LD = $(COMPILER) -ggdb 
 
 # (*) RULES ____________________________________________________________________
 # -- application

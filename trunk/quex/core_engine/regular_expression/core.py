@@ -64,6 +64,18 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
     global __SETUP
 
+    def __validate(SM):
+        # -- 'Nothing is fine' is not a pattern that we can accept. See the discussion
+        #    in the module "quex.core_engine.generator.core.py"
+        if SM.get_init_state().is_acceptance() and AllowNothingIsFineF == False: 
+            raise RegularExpressionException(
+                    "Pattern results in a 'nothing is acceptable' state machine.\n" + \
+                    "This means, that no step forward in the input still sets the analyzer\n" + \
+                    "into an acceptance state. Thus, as soon as no other input matches\n" + \
+                    "the analyzer ends up in an infinite loop.")
+        return SM
+
+
     if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)
     else:                                  stream = UTF8_String_or_Stream    
 
@@ -77,7 +89,7 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
 
     # -- special rules EOF, FAIL
     result = __check_for_EOF_or_FAIL_pattern(stream, initial_position, EndOfFile_Code) 
-    if result != None: return result
+    if result != None: return __validate(result)
 
     # -- check for the begin of line condition (BOL)
     if stream.read(1) == '^': begin_of_line_f = True
@@ -105,16 +117,7 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
 
     if begin_of_line_f or end_of_line_f: sm = __beautify(sm)
 
-    # -- 'Nothing is find' is not a pattern that we can accept. See the discussion
-    #    in the module "quex.core_engine.generator.core.py"
-    init_state = sm.states[sm.init_state_index]
-    if init_state.is_acceptance() and AllowNothingIsFineF == False: 
-        raise RegularExpressionException("Pattern results in a 'nothing is acceptable' state machine.\n" + \
-                                         "This means, that no step forward in the input still sets the analyzer\n" + \
-                                         "into an acceptance state. Thus, as soon as no other input matches\n" + \
-                                         "the analyzer ends up in an infinite loop.")
-
-    return sm
+    return __validate(sm)
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression

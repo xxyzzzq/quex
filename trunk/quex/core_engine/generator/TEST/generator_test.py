@@ -9,6 +9,7 @@ from quex.frs_py.string_handling import blue_print
 from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #
+from   quex.core_engine.generator.action_info   import ActionInfo
 import quex.core_engine.generator.core          as generator
 import quex.core_engine.regular_expression.core as regex
 
@@ -104,9 +105,9 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     # -- create default action that prints the name and the content of the token
     try:
         PatternActionPairList = map(lambda x: 
-                                    generator.ActionInfo(regex.do(x[0], PatternDictionary, 
-                                                                  BeginOfFile_Code, EndOfFile_Code), 
-                                                         action(x[1])),
+                                    ActionInfo(regex.do(x[0], PatternDictionary, 
+                                               BeginOfFile_Code, EndOfFile_Code), 
+                                               action(x[1])),
                                     PatternActionPairList)
     except RegularExpressionException, x:
         print "Regular expression parsing:\n" + x.message
