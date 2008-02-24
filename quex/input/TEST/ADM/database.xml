@@ -1,4 +1,4 @@
-<test-database execution-time-sec="13.34" date="Sat Feb 23 02:26:54 2008">
+<test-database execution-time-sec="13.77" date="Sun Feb 24 17:01:22 2008">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
         <test title="Wildcard Property Values" time-sum-sec="1.19"> 
@@ -7,11 +7,11 @@
                <choice name="" result="OK" time-sec="1.19" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="10.84"> 
+        <test title="Information about Properties" time-sum-sec="11.28"> 
             <application file-name="test-query.py" info-request-time="1195336071L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="9.60" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="1.24" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time-sec="10.06" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="1.22" crc="86685460"/>
             </choice-list>
         </test>
         <test title="Character Sets for Property Settings" time-sum-sec="1.31"> 

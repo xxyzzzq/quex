@@ -1,9 +1,9 @@
-<test-database execution-time-sec="4.28" date="Sat Feb 23 02:26:30 2008">
+<test-database execution-time-sec="4.30" date="Sun Feb 24 17:00:57 2008">
     <last-used-diff-display-program name=""/>
-    <test title="State Machine Pattern Matching" time-sum-sec="0.11"> 
+    <test title="State Machine Pattern Matching" time-sum-sec="0.12"> 
         <application file-name="test-pattern-matching.py" info-request-time="1198907491L"/>
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.11" crc="1999050120"/>
+           <choice name="" result="OK" time-sec="0.12" crc="1999050120"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">
@@ -15,22 +15,22 @@
         </test>
     </group>
     <group name="Basics">
-        <test title="Pattern identifier replacement" time-sum-sec="0.25"> 
+        <test title="Pattern identifier replacement" time-sum-sec="0.24"> 
             <application file-name="test-replacement.py" info-request-time="1195336076L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.25" crc="-1076731964"/>
+               <choice name="" result="OK" time-sec="0.24" crc="-1076731964"/>
             </choice-list>
         </test>
-        <test title="Map character *string* to state machine" time-sum-sec="0.03"> 
+        <test title="Map character *string* to state machine" time-sum-sec="0.04"> 
             <application file-name="test-string.py" info-request-time="1202748359L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-2032065212"/>
+               <choice name="" result="OK" time-sec="0.04" crc="-2032065212"/>
             </choice-list>
         </test>
-        <test title="Snap string until (low level function)" time-sum-sec="0.04"> 
+        <test title="Snap string until (low level function)" time-sum-sec="0.05"> 
             <application file-name="test-snap_until.py" info-request-time="1195336076L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="-1055637304"/>
+               <choice name="" result="OK" time-sec="0.05" crc="-1055637304"/>
             </choice-list>
         </test>
         <test title="Map character *range* to state machine" time-sum-sec="0.03"> 
@@ -53,10 +53,10 @@
                <choice name="" result="OK" time-sec="0.25" crc="1562083021"/>
             </choice-list>
         </test>
-        <test title="Simple repeated expressions" time-sum-sec="0.20"> 
+        <test title="Simple repeated expressions" time-sum-sec="0.22"> 
             <application file-name="test-repeated-expressions.py" info-request-time="1195336076L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.20" crc="-2103281626"/>
+               <choice name="" result="OK" time-sec="0.22" crc="-2103281626"/>
             </choice-list>
         </test>
         <test title="Alternative Expressions" time-sum-sec="0.04"> 
@@ -99,16 +99,16 @@
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Simple" time-sum-sec="1.20"> 
+        <test title="Simple" time-sum-sec="1.19"> 
             <application file-name="test-properties.py" info-request-time="1195336076L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.20" crc="1815657902"/>
+               <choice name="" result="OK" time-sec="1.19" crc="1815657902"/>
             </choice-list>
         </test>
-        <test title="Set Operations" time-sum-sec="1.22"> 
+        <test title="Set Operations" time-sum-sec="1.20"> 
             <application file-name="test-properties-2.py" info-request-time="1195336076L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.22" crc="1108933321"/>
+               <choice name="" result="OK" time-sec="1.20" crc="1108933321"/>
             </choice-list>
         </test>
     </group>

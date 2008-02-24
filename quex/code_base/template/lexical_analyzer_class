@@ -155,8 +155,8 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 
 #include <quex/code_base/token_queue>
 // Quex/User
-#include <%%TOKEN_ID_DEFINITION_FILE%%>
-#include <%%TOKEN_CLASS_DEFINITION_FILE%%>
+#include "%%TOKEN_ID_DEFINITION_FILE%%"
+#include "%%TOKEN_CLASS_DEFINITION_FILE%%"
 
 
 // RETURN: _____________________________________________________________________

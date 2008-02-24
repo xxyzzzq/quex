@@ -147,6 +147,7 @@ namespace quex {
 
 #define TEMPLATE   template<class InputHandleType, class ProvidedCharacterType>
 #define CLASS      input_strategy_iconv<InputHandleType*, ProvidedCharacterType>
+#define BASE_CLASS input_strategy_base<InputHandleType*, ProvidedCharacterType> 
 
 #include <quex/code_base/buffer/iconv/unit-test-helper>
 
@@ -195,7 +196,7 @@ namespace quex {
 	size_t bytes_to_read = statistics.estimate_raw_byte_n(N, raw_buffer.size); 
 	//
 	while( 1 + 1 == 2 ) {
-	    const size_t LoadedByteN = __load_bytes(raw_buffer.position, bytes_to_read);
+	    const size_t LoadedByteN = BASE_CLASS::__load_bytes(raw_buffer.position, bytes_to_read);
 
 	    QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
 
@@ -310,6 +311,7 @@ namespace quex {
 	    return (size_t)(bytes_to_read > BufferSize ? BufferSize : bytes_to_read);
 	}
 
+#undef BASE_CLASS
 #undef CLASS
 #undef TEMPLATE
 

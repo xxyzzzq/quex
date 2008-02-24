@@ -174,7 +174,7 @@ def output(global_setup):
     token_id_txt += "#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
     if setup.input_foreign_token_id_file != "":
         token_id_txt += "// If token ids come from somewhere else (e.g. the parser)\n"
-        token_id_txt += "#include<%s>\n" % setup.input_foreign_token_id_file
+        token_id_txt += "#include\"%s\"\n" % setup.input_foreign_token_id_file
 
     else:
         token_id_txt += "// No file provided that contains potentially a foreign token-id\n"

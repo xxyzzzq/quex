@@ -161,8 +161,8 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
 
 #include <quex/code_base/token_queue>
 // Quex/User
-#include <Simple-token_ids>
-#include <quex/code_base/token>
+#include "Simple-token_ids"
+#include "quex/code_base/token"
 
 
 // RETURN: _____________________________________________________________________

@@ -4,8 +4,8 @@ class ActionInfo:
         assert PatternStateMachine != None
         assert type(ActionCodeStr) == str
 
-        self.__action_code_str       = ActionCodeStr
         self.__pattern_state_machine = PatternStateMachine
+        self.__action_code_str       = ActionCodeStr
 
     def pattern_state_machine(self):
         return self.__pattern_state_machine

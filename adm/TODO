@@ -1,3 +1,9 @@
+(*) 08y2m24d:
+
+    ActionInfo objects can be immediately created at parsing time. 
+    Please, do so.
+
+
 (*) 08y2m6d:
 
     In the epsilon transition print the remaining triggers are printed.
