@@ -1,0 +1,76 @@
+<test-database execution-time-sec="64.18" date="Sun Feb 24 17:00:26 2008">
+    <last-used-diff-display-program name=""/>
+    <group name="Other Compilers">
+        <test title="Intel's C++" time-sum-sec="7.21"> 
+            <application file-name="other-compilers-intel.sh" info-request-time="1203760832L"/>
+            <choice-list number="7">
+               <choice name="000" result="NO GOOD FILE" time-sec="0.45" crc="None"/>
+               <choice name="001" result="NO GOOD FILE" time-sec="0.37" crc="None"/>
+               <choice name="002" result="NO GOOD FILE" time-sec="0.82" crc="None"/>
+               <choice name="003" result="NO GOOD FILE" time-sec="2.75" crc="None"/>
+               <choice name="004" result="NO GOOD FILE" time-sec="1.68" crc="None"/>
+               <choice name="005" result="NO GOOD FILE" time-sec="0.39" crc="None"/>
+               <choice name="006" result="NO GOOD FILE" time-sec="0.74" crc="None"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/000">
+        <test title="Single Mode Example" time-sum-sec="4.62"> 
+            <application file-name="000.sh" info-request-time="1203760463L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.33" crc="-1259723357"/>
+               <choice name="DEBUG" result="OK" time-sec="2.29" crc="-636114347"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/001">
+        <test title="Multiple Modes, Mode Transitions" time-sum-sec="4.41"> 
+            <application file-name="001.sh" info-request-time="1197195144L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.21" crc="-2147354422"/>
+               <choice name="DEBUG" result="OK" time-sec="2.19" crc="-690545511"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/002">
+        <test title="Indentation Based Scopes" time-sum-sec="6.44"> 
+            <application file-name="002.sh" info-request-time="1197195144L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="3.18" crc="-406869980"/>
+               <choice name="DEBUG" result="OK" time-sec="3.26" crc="-693714553"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/003">
+        <test title="Unicode Based Lexical Analyzis" time-sum-sec="25.72"> 
+            <application file-name="003.sh" info-request-time="1197195144L"/>
+            <choice-list number="5">
+               <choice name="BPC=2" result="OK" time-sec="5.14" crc="1893007653"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time-sec="5.04" crc="292230617"/>
+               <choice name="BPC=4" result="OK" time-sec="5.21" crc="1893007653"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time-sec="5.05" crc="-775157924"/>
+               <choice name="BPC=wchar_t" result="OK" time-sec="5.27" crc="1893007653"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/005">
+        <test title="Including Files" time-sum-sec="9.95"> 
+            <application file-name="005.sh" info-request-time="1197195144L"/>
+            <choice-list number="4">
+               <choice name="1" result="OK" time-sec="2.67" crc="-783947445"/>
+               <choice name="1_NDEBUG" result="OK" time-sec="2.40" crc="-1467728902"/>
+               <choice name="2" result="OK" time-sec="2.48" crc="-1390822783"/>
+               <choice name="2_NDEBUG" result="OK" time-sec="2.41" crc="-1062673555"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/006">
+        <test title="Pseudo Ambiguous Post Conditions" time-sum-sec="5.83"> 
+            <application file-name="006.sh" info-request-time="1198966571L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.93" crc="-1872922593"/>
+               <choice name="DEBUG" result="OK" time-sec="2.90" crc="1699317644"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
