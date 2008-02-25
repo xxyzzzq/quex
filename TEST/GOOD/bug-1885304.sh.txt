@@ -3451,7 +3451,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_254;
         }
     }
-#include<Simple>
+#include"Simple"
 namespace quex {
 #define self  (*me)
 
