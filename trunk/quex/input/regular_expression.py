@@ -1,7 +1,9 @@
+from StringIO import StringIO
 from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 from   quex.exception               import RegularExpressionException
 import quex.lexer_mode              as lexer_mode
 import quex.core_engine.regular_expression.core as regex
+import quex.core_engine.regular_expression.character_set_expression as charset_expression
 
 def parse(fh, Setup):
 
@@ -31,3 +33,20 @@ def parse(fh, Setup):
 
     return regular_expression, pattern_state_machine
 
+
+def parse_character_set(Txt):
+
+    try:
+        # -- parse regular expression, build state machine
+        character_set = charset_expression.snap_set_expression(StringIO("[:" + Txt + ":]"))
+
+        if character_set == None:
+            error_msg("No valid regular character set expression detected.")
+
+    except RegularExpressionException, x:
+        error_msg("Regular expression parsing:\n" + x.message)
+
+    except EndOfStreamException:
+        error_msg("End of character set expression reached while parsing.")
+
+    return character_set

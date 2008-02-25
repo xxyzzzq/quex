@@ -7,8 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx -o Simple
+quex --set-by-expression 'intersection(\P{ID_Start}, [\x00-\x7f)'
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token-ids Simplism
 cd $tmp

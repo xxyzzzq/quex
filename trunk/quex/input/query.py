@@ -8,7 +8,7 @@ from quex.input.ucs_db_parser  import ucs_property_db
 from quex.exception            import RegularExpressionException
 from quex.GetPot import GetPot
 
-import quex.core_engine.regular_expression.character_set_expression as charset_expression
+import quex.input.regular_expression as regular_expression
 
 OPTION_DB = {
         "--property":          ["Querying properties"],
@@ -128,7 +128,7 @@ def __handle_set_by_property(cl):
 def __handle_set_by_expression(cl):
     result = cl.follow("", "--set-by-expression")
     if result != "":
-        character_set = charset_expression.snap_set_expression(StringIO("[:" + result + ":]"))
+        character_set = regular_expression.parse_character_set(result)
         __display_set(character_set, cl)
 
 def __display_set(CharSet, cl):
