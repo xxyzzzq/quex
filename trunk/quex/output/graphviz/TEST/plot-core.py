@@ -17,12 +17,15 @@ if "--hwut-info" in sys.argv:
 
 
 sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))")
-print sm
 pattern_action_pair_list = [ ActionInfo(sm, "Don't worry, be happy!") ]
 
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
 
 my_plotter.do()
+content = open("test-plot.fig").read()
+for line in content.split("\n"):
+    if len(line) >= 1 and line[0] != "#": print line
+os.remove("test-plot.fig")
 
 
 
