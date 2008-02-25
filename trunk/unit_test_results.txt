@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:27:12 2008
+DATE:  Mon Feb 25 15:52:08 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -11,6 +11,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889871.sh ..................................................[OK]
     1898125 invalid argument for --token-offset can crash 0.21.4
         bug-1898125.sh ..................................................[OK]
+    1900391 malformed --set-by-expression can crash 0.21.8
+        bug-1900391.sh ..................................................[OK]
     1893874 Missing colon in mode definition crashes 0.20.5
         bug-1893874.sh ..................................................[OK]
     1894578 header block not added to -core-engine.cpp file in 0.20.6
@@ -29,18 +31,18 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889086.sh ..................................................[OK]
     1889892 x, X or followed by a non-hex digit crashes 0.19.4
         bug-1889892.sh ..................................................[OK]
-    1889321 Quex does not handle actions including quote literal
-        bug-1889321.sh ..................................................[OK]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
         bug-1895500.sh ..................................................[OK]
+    1889321 Quex does not handle actions including quote literal
+        bug-1889321.sh ..................................................[OK]
     1885855 P{ ...} syntax does not work outside of [
         bug-1885855.sh ..................................................[OK]
     1892227 accepted as identifiers in def
         bug-1892227.sh ..................................................[OK]
     1889089 Single state mode causes quex to crash
         bug-1889089.sh ..................................................[OK]
-    1887163 Single state mode causes quex to crash
-        bug-1887163.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
     1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6
         bug-1894185.sh ..................................................[OK]
     1885304 Problems with files with DOS CR/LF line endings
@@ -55,8 +57,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1890828.sh ..................................................[OK]
     1889692 0.19.4 does not gracefully handle unbalanced quotations
         bug-1889692.sh ..................................................[OK]
-    1885846 Empty RE in define section
-        bug-1885846.sh ..................................................[OK]
+    1887163 Single state mode causes quex to crash
+        bug-1887163.sh ..................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -66,10 +68,20 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:00 2008
+DATE:  Mon Feb 25 16:09:36 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
+
+ -- Other Compilers:
+
+    Intel's C++
+        other-compilers-intel.sh 000 ....................................[OK]
+                                 001 ....................................[OK]
+                                 002 ....................................[OK]
+                                 003 ....................................[OK]
+                                 005 ....................................[OK]
+                                 006 ....................................[OK]
 
  -- demo/000:
 
@@ -120,7 +132,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:00 2008
+DATE:  Mon Feb 25 15:53:42 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -135,7 +147,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:00 2008
+DATE:  Mon Feb 25 15:53:43 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -160,12 +172,12 @@ TITLE: Input Buffers
     Content Size = 11, Fallback Size = 10
         test-misc-I istream .............................................[OK]
                     stdio ...............................................[OK]
-    Content Size = 11, Fallback Size = 0
-        test-misc-III istream ...........................................[OK]
-                      stdio .............................................[OK]
     Content Size = 11, Fallback Size = 1
         test-misc-II istream ............................................[OK]
                      stdio ..............................................[OK]
+    Content Size = 11, Fallback Size = 0
+        test-misc-III istream ...........................................[OK]
+                      stdio .............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -175,7 +187,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:00 2008
+DATE:  Mon Feb 25 15:53:43 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -192,7 +204,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:00 2008
+DATE:  Mon Feb 25 15:53:43 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -212,7 +224,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:01 2008
+DATE:  Mon Feb 25 15:53:43 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -243,7 +255,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:26 2008
+DATE:  Mon Feb 25 15:54:12 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -339,7 +351,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:30 2008
+DATE:  Mon Feb 25 15:54:17 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -377,21 +389,21 @@ TITLE: Regular Expression Parsing
 
     Begin of Line '^', End of Line '$'
         test-bol-eol.py .................................................[OK]
-    pre- and post-conditions
-        test-pre-and-post-condition.py ..................................[OK]
     pre conditions
         test-pre-condition.py ...........................................[OK]
     post conditions
         test-post-condition.py ..........................................[OK]
+    pre- and post-conditions
+        test-pre-and-post-condition.py ..................................[OK]
     End of Line '$' (with DOS/Windows '\r\n')
         test-eol-carriage-return-newline.py .............................[OK]
 
  -- Unicode properties:
 
-    Set Operations
-        test-properties-2.py ............................................[OK]
     Simple
         test-properties.py ..............................................[OK]
+    Set Operations
+        test-properties-2.py ............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -401,7 +413,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:41 2008
+DATE:  Mon Feb 25 15:54:28 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -415,14 +427,14 @@ TITLE: State Machine Operations
 
  -- NFA:
 
+    Conversion to DFA (subset construction)
+        test-StateMachine-create-DFA.py .................................[OK]
     Get elementary trigger sets (target index --> trigger sets)
         test-StateMachine-elementary_trigger_sets.py ....................[OK]
     Epsilon closure (single state)
         test-StateMachine-epsilon-closure.py ............................[OK]
     Get elementary trigger sets II
         test-StateMachine-elementary_trigger_sets-2.py ..................[OK]
-    Conversion to DFA (subset construction)
-        test-StateMachine-create-DFA.py .................................[OK]
 
  -- Plot:
 
@@ -432,12 +444,12 @@ TITLE: State Machine Operations
 
  -- Predetermined Character Count:
 
+    Newlines
+        test-count_newline_n.py .........................................[OK]
     Characters
         test-count_character_n.py .......................................[OK]
     Contains only Spaces
         test-count_contains_only_spaces.py ..............................[OK]
-    Newlines
-        test-count_newline_n.py .........................................[OK]
 
  -- Pseudo Ambigous Post Condition:
 
@@ -472,16 +484,16 @@ TITLE: State Machine Operations
 
  -- Tracing origin:
 
-    Paralellization
-        test-parallelize-trace-origin.py ................................[OK]
-    Hopcroft optimization (minimize state set)
-        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     Cloning
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Inverse
         test-StateMachine-trace-origin-inverse.py .......................[OK]
-    NFA to DFA (subset construction)
-        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+    Paralellization
+        test-parallelize-trace-origin.py ................................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
 
  -- Trigger Set Check:
 
@@ -496,7 +508,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:41 2008
+DATE:  Mon Feb 25 15:54:28 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -519,7 +531,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:54 2008
+DATE:  Mon Feb 25 15:54:42 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -542,11 +554,20 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: ./
-DATE:  Sat Feb 23 02:26:54 2008
+DATE:  Mon Feb 25 15:54:45 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
         get_supported_formats.py ........................................[OK]
+
+ -- Plot:
+
+    Core state machine.
+        plot-core.py ....................................................[OK]
+    Backward Detector (for pseudo-ambiguous post context).
+        plot-papc.py ....................................................[OK]
+    Pre-Context.
+        plot-pre-context.py .............................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
