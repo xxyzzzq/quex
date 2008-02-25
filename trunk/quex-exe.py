@@ -45,7 +45,8 @@ if __name__ == "__main__":
             sys.exit(0)
 
         # (*) Run the Quex ___________________________________________________________________
-        core.do(setup)
+        if setup.plot_graphic_format == "": core.do(setup)       # 'normal' code generation
+        else:                               core.do_plot(setup)  # plot transition graphs
 
     except "": # AssertionError:
         error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")

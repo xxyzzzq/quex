@@ -186,9 +186,10 @@ def do_plot(Setup):
         # -- pattern-action pairs
         dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
                                                               Setup)
-        plot_generator.do(pattern_action_pair_list, 
-                          StateMachineName = mode.name,
-                          GraphicFormat    = plot.plot_graphic_format)
+        plotter = plot_generator.Generator(pattern_action_pair_list, 
+                                           StateMachineName = mode.name,
+                                           GraphicFormat    = Setup.plot_graphic_format)
+        plotter.do()
 
 def __get_mode_db(Setup):
     # (0) check basic assumptions
