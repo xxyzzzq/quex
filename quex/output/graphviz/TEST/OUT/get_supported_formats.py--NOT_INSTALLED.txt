@@ -1,9 +1,0 @@
-Plain Reply:
-['canon', 'cmap', 'cmapx', 'dia', 'dot', 'fig', 'gd', 'gd2', 'gif', 'hpgl', 'imap', 'ismap', 'jpeg', 'jpg', 'mif', 'mp', 'pcl', 'pic', 'plain', 'plain-ext', 'png', 'ps', 'ps2', 'svg', 'svgz', 'vrml', 'vtx', 'wbmp', 'xdot']
-
-Pretty Reply:
-SUPPORTED GRAPHIC FORMATS:
-canon, cmap, cmapx, dia, dot, fig, gd, gd2, gif, hpgl, imap, ismap, 
-jpeg, jpg, mif, mp, pcl, pic, plain, plain-ext, png, ps, ps2, svg, 
-svgz, vrml, vtx, wbmp, xdot.
-
