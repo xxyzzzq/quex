@@ -1,0 +1,9 @@
+DEBUG_QUEX_MODE_TRANSITIONS:   display mode transitions
+
+QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES: shows every pattern match an mode
+
+DEBUG_QUEX_TOKEN_SEND:      show each token being send using 'self.send()'
+
+QUEX_NO_SUPPORT_FOR_COLUMN_NUMBER_COUNTING:
+
+QUEX_NO_SUPPORT_FOR_LINE_NUMBER_COUNTING:
