@@ -29,7 +29,7 @@ class Generator(GeneratorBase):
 
         if self.papc_backward_detector_state_machine_list != []:
             for sm in self.papc_backward_detector_state_machine_list:
-                self.__do(sm, self.state_machine_name + sm.get_id())
+                self.__do(sm, "%s_%i" % (self.state_machine_name, sm.get_id()))
 
     def __do(self, state_machine, name):
         dot_code = state_machine.get_graphviz_string(NormalizeF=True)
