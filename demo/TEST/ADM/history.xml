@@ -1,4 +1,4 @@
-<history date="Sun Feb 24 17:33:02 2008" element-n="38">
+<history date="Mon Feb 25 16:09:36 2008" element-n="39">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -64,5 +64,8 @@
         <accept    time="16:33:02" application="other-compilers-intel.sh" choice="004" crc="830762248" />
         <accept    time="16:33:02" application="other-compilers-intel.sh" choice="005" crc="878264825" />
         <accept    time="16:33:02" application="other-compilers-intel.sh" choice="006" crc="1937404497" />
+    </day>
+    <day year="2008" month="02" day="25">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="15:09:36"/>
     </day>
 </history>

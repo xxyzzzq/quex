@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.10" date="Sun Feb 24 17:00:27 2008">
+<test-database execution-time-sec="0.13" date="Mon Feb 25 15:53:43 2008">
     <last-used-diff-display-program name=""/>
     <test title="Backwards Iteration" make-required="True" time-sum-sec="0.04"> 
         <application file-name="test-backward-get" info-request-time="1195339148L"/>
@@ -38,20 +38,20 @@
                <choice name="stdio" result="OK" time-sec="0.00" crc="-122584819"/>
             </choice-list>
         </test>
+        <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.03"> 
+            <application file-name="test-misc-III" info-request-time="1195339150L"/>
+            <make-procedure success="True" />
+            <choice-list number="2">
+               <choice name="istream" result="OK" time-sec="0.03" crc="52723627"/>
+               <choice name="stdio" result="OK" time-sec="0.00" crc="1008654767"/>
+            </choice-list>
+        </test>
         <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.02"> 
             <application file-name="test-misc-II" info-request-time="1195339149L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="OK" time-sec="0.01" crc="1918046248"/>
                <choice name="stdio" result="OK" time-sec="0.01" crc="1298773548"/>
-            </choice-list>
-        </test>
-        <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-misc-III" info-request-time="1195339150L"/>
-            <make-procedure success="True" />
-            <choice-list number="2">
-               <choice name="istream" result="OK" time-sec="0.00" crc="52723627"/>
-               <choice name="stdio" result="OK" time-sec="0.00" crc="1008654767"/>
             </choice-list>
         </test>
     </group>
