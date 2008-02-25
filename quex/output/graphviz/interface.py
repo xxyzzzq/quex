@@ -22,19 +22,23 @@ class Generator(GeneratorBase):
         """Prepare output in the 'dot' language, that graphviz uses."""
         assert_graphviz_installed()
 
-        self.__do(self.sm, self.state_machine_name)
+        self.__do(self.sm, self.state_machine_name + "." + self.graphic_format)
 
         if self.pre_condition_sm != None:
-            self.__do(self.pre_condition_sm, self.state_machine_name + "-pre-condition")
+            file_name = "%s-pre-condition.%s" % (self.state_machine_name, self.graphic_format)
+            self.pre_context_file_name = file_name
+            self.__do(self.pre_condition_sm, file_name)
 
         if self.papc_backward_detector_state_machine_list != []:
+            self.backward_detector_file_name = []
             for sm in self.papc_backward_detector_state_machine_list:
-                self.__do(sm, "%s_%i" % (self.state_machine_name, sm.get_id()))
+                file_name = "%s_%i.%s" % (self.state_machine_name, sm.get_id(), self.graphic_format)
+                self.backward_detector_file_name.append(file_name)
+                self.__do(sm, file_name)
 
     def __do(self, state_machine, name):
         dot_code = state_machine.get_graphviz_string(NormalizeF=True)
-
-        _call_dot(dot_code, self.graphic_format, name + "." + self.graphic_format)
+        _call_dot(dot_code, self.graphic_format, name)
     
 def get_supported_graphic_formats():
     reply_str = _call_dot(TestCode, "?", "", GetStdErrF=True)

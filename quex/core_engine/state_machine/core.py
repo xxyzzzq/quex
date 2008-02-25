@@ -56,7 +56,7 @@ class Transition:
         else:
             target_str  = "%i" % StateIndexMap[self.target_state_index]
             
-        return "-> %s [label =\"%s\"];\n" % (target_str, trigger_str.replace("\"", "\\\""))
+        return "-> %s [label =\"%s\"];\n" % (target_str, trigger_str.replace("\"", ""))
 
  
     def set(self, TriggerSet=None, TargetIdx=None):
