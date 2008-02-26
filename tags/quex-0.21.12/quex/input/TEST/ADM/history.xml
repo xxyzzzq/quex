@@ -1,0 +1,45 @@
+<history date="Mon Feb 25 15:54:42 2008" element-n="15">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:58:16"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:18:27"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:02:40"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:23:42"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:34:36"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:46:07"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:15:48"/>
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:11:31"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:03:54"/>
+    </day>
+    <day year="2008" month="02" day="20">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:34:58"/>
+    </day>
+    <day year="2008" month="02" day="21">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="15:53:37"/>
+    </day>
+    <day year="2008" month="02" day="22">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:57:55"/>
+    </day>
+    <day year="2008" month="02" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:45:56"/>
+    </day>
+    <day year="2008" month="02" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:01:22"/>
+    </day>
+    <day year="2008" month="02" day="25">
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="14:54:42"/>
+    </day>
+</history>
