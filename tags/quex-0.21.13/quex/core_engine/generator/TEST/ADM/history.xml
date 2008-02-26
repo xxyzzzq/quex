@@ -1,0 +1,47 @@
+<history date="Tue Feb 26 00:48:39 2008" element-n="17">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:55:25"/>
+        <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
+        <crc-error time="09:56:19" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="-1275287335" real-crc="885683181"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:16:55"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="17:01:58"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:23:00"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:32:56"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:44:32"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:14:09"/>
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:10:03"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="8" ok-n="7" fail-n="1" else-n="0" last-run="oll korrekt" last-time="16:02:48"/>
+    </day>
+    <day year="2008" month="02" day="20">
+        <test-runs-today n="7" ok-n="7" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:33:53"/>
+    </day>
+    <day year="2008" month="02" day="21">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="15:53:05"/>
+    </day>
+    <day year="2008" month="02" day="22">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:57:26"/>
+    </day>
+    <day year="2008" month="02" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:45:27"/>
+    </day>
+    <day year="2008" month="02" day="24">
+        <test-runs-today n="8" ok-n="8" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:00:53"/>
+    </day>
+    <day year="2008" month="02" day="25">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:48:39"/>
+    </day>
+</history>

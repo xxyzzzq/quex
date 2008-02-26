@@ -1,0 +1,150 @@
+The previous sections explained the definitions of patterns, token-ids, and
+mode characteristics. In this section the core of the lexical analysis is
+discussed: pattern-action pairs. It is a basic concept in lexical analysis
+that a pattern triggers and action. This action has the following goals:
+
+- Preparing and sending of a token.
+
+- Modifying the internal state of the lexical analyzer. In this
+  category falls also mode transition handling, indentation handling, etc.
+
+The most simple pattern-action pair consists of sending a specific token
+whenever a particular pattern occurs.  Consider for example figure
+<<fig:eof-pattern-action-pairs, style=ref>>. It shows the definition of a mode
+that can handle the end of a file. The only pattern of this mode is
+$$<<`EOF`>>$$.  The action to be executed if this pattern occurs is embraced by
+curly brackets.  Inside the brackets a special token is sent, a token with the
+id:
+
+-------------------------------------------
+          quex::TKN_TERMINATION
+-------------------------------------------
+
+telling that lexical analysis is over. Note, that in quex one uses the
+keyword `self` and not a `this`-pointer to refer to the lexical
+analyser. Recall that quex is a code generator, not a compiler.
+Internally, the code fragments that are specified as pattern-action pairs or
+event handlers may be pasted by quex into objects other than the lexical
+analyser (e.g. the lexical-analyser-mode-information structures). Also the
+user might derive his own class from the lexical analyser class, so there
+would be a type-issue. To unify the access to the lexical analyser, all places
+were code is pasted allow to use `self` as a variable that represents the
+lexical analyser.  Use '`self.`' not '`this->`'!
+
+[[fig:eof-pattern-action-pairs]]
+.The `END\_OF\_FILE` mode handling the end-of-file pattern.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode END_OF_FILE :
+<inheritable: only>  
+{
+    <<EOF>> {
+        self.send(quex::TKN_TERMINATION);
+        RETURN;
+    }
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+A final `RETURN` statement in the pattern-action pair says that the
+flow of control can be turned back to the caller of function` 
+  get_token()`. Note again, that `return` is not used. The `RETURN`
+macro ensures that the token queue is in a sound state before returning from
+the lexical analysis. The rule here is: say '`RETURN`' not '`return`'.
+
+The pattern-action pairs of the `PROGRAM` mode displayed in figure
+<<fig:program-mode, style=ref>> are a little more diverse. Note also, that for simple
+patterns the operator '`=`$>$' is used to express the sending of a token
+of a specific id. The whitespace pattern does not cause any token to be sent
+and one does not return to the user, thus it is followed by an empty pair of
+curly brackets. The pattern `P\_IDENTIFIER` creates a token that contains
+the string that was matched.  `P\_NUMBER` also stores a number that
+corresponds the lexeme that was matched.  The pattern` 
+  P\_STRING\_DELIMITER` does not send a token, but initiates a mode transition
+to the mode `STRING\_READER`.
+
+
+.The `PROGRAM` mode.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode PROGRAM :
+     END_OF_FILE
+<exit:  STRING_READER>
+<entry: STRING_READER>
+{
+    "{"         => TKN_CURLY_BRACKET_O;
+    "}"         => TKN_CURLY_BRACKET_C;
+    "="         => TKN_OP_ASSIGNMENT;
+    "struct"    => TKN_STRUCT;
+    "if"        => TKN_IF;
+    ";"         => TKN_SEMICOLON;
+    {P_NUMBER}  => TKN_NUMBER(atoi(yytext));
+    {P_IDENTIFIER} { self.send(TKN_IDENTIFIER, yytext); RETURN; }
+
+    {P_WHITESPACE} {
+    }
+    {P_STRING_DELIMITER} {
+        self << STRING_READER;
+    }
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+The `STRING\_READER` mode's pattern-action pairs are shown in figure
+<<fig:string-reader-mode, style=ref>>. This mode makes use of a special member of the
+lexical analyser object: _the accumulator_. This object allows to
+accumulate text from incoming patterns and flush them when desired. When this
+mode is entered, the accumulator is emptied (see `on\_entry`). When this
+mode is left, then the accumulator is flushed (see `on\_exit`). This
+means, that if the accumulated text is not empty, it is send as a token with a
+user defined token-id. The `STRING\_READER` mode sends the accumulated
+text with a token-id `TKN\_STRING`.
+
+The arrival of a string delimiter causes a mode transition back to mode
+`PROGRAM`. A backslashed string delimiter allows to have a string delimter
+inside the the string, so it does not cause a return to `PROGRAM` mode.
+instead, it adds a quote to the accumulator. The default action '.' specifies
+that any other incoming text is simply accumulated. Even in this simple
+example it becomes clear that the specification of entry and exit event
+handlers facilitates the specification of mode transitions. It can be said
+for sure, that wherever in the code a command triggers an exit to another
+mode, the accumulator is flushed.
+
+[[fig:string-reader-mode]]
+.The `STRING\_READER` mode.
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode STRING_READER :
+     END_OF_FILE
+<exit:  PROGRAM>
+<entry: PROGRAM>
+{
+    on_entry {
+        self.accumulator.clear();
+    }
+
+    on_exit {
+        self.accumulator.flush(TKN_STRING);
+    }
+
+    {P_BACKSLASHED_STRING_DELIMITER} {
+        self.accumulator.add('\"');
+    }
+
+    {P_STRING_DELIMITER} {
+        /*.........................................*/ self << PROGRAM;
+        RETURN;
+    }
+
+    . {
+        self.accumulator.add(Lexeme);
+    }
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section now finished the specification of file `simple.qx` as 
+an input file for the quex lexical analyser generator. The next section
+tells how to call quex to generate a full fledged engine that does the
+lexical analysis as required.
+
+

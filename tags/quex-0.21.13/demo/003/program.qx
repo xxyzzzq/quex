@@ -1,0 +1,27 @@
+mode PROGRAM :
+     END_OF_FILE
+{
+    "✓"                 => TKN_OK(Lexeme);
+    "©"                 => TKN_COPYRIGHT(Lexeme);
+    "ليمج"              => TKN_DJAMEEL(Lexeme);
+    "α"                 => TKN_ALPHA(Lexeme);
+    "π"                 => TKN_PI(Lexeme);
+    "∞"                 => TKN_INFINITY(Lexeme);
+    "»"                 => TKN_CLOSE_FRENCH_QUOTE(Lexeme);
+    "«"                 => TKN_OPEN_FRENCH_QUOTE(Lexeme);
+    "→"                 => TKN_ARROW(Lexeme);
+    "("                 => TKN_L_BRACKET(Lexeme);
+    ")"                 => TKN_R_BRACKET(Lexeme);
+    "≈"                 => TKN_ALLMOST_EQUAL(Lexeme);
+    "°"[ \t]*"C"        => TKN_DEGREE_CELSIUS(Lexeme);
+
+    {LATIN_NUMBER}      => TKN_LATIN_NUMBER(Lexeme); 
+    {ARABIC_NUMBER}     => TKN_ARABIC_NUMBER(Lexeme);
+    {DEVANGARI_NUMBER}  => TKN_DEVANGARI_NUMBER(Lexeme);
+    {THAI_NUMBER}       => TKN_THAI_NUMBER(Lexeme);
+
+    {LATIN_IDENTIFIER}  => TKN_LATIN_IDENTIFIER(Lexeme);
+    {GREEK_IDENTIFIER}  => TKN_GREEK_IDENTIFIER(Lexeme);
+
+    [ \t\n]+            { }
+}
