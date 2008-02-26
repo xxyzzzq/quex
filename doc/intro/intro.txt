@@ -72,6 +72,10 @@ analysers such as lex or flex:
   excactly from which line and which column a recognized pattern started and
   where it ended.
 
+- Automatic generation of transition graphs. Using the `--plot` command line
+  option initiates quex to produce a graphical representation of the underlying
+  state machines.
+
 The present text first explains briefly the basic concepts of lexical analysis
 in quex. Here, a short review is given on lexical analysis, but then it
 concentrates on the introduction of the features mentioned above. The
