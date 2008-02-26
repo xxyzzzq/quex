@@ -27,14 +27,15 @@ COMPILER = g++
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) 
 
-LD = $(COMPILER) -ggdb 
+LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
 $(APPLICATION): $(APPLICATION).o \
 	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
-	$(LD) ./$(APPLICATION).o $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o \
-          -o $(APPLICATION) 
+	$(LD) -o $(APPLICATION) \
+		  ./$(APPLICATION).o $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o 
+          
 
 # -- engine and object files
 %.o: %.cpp $(ENGINE_SOURCES)

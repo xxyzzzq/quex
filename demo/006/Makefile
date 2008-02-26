@@ -27,7 +27,7 @@ CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall  \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS	 
 
-LD = $(COMPILER) -ggdb 
+LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application

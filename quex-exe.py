@@ -41,7 +41,7 @@ if __name__ == "__main__":
         setup = setup_parser.do(sys.argv)
 
         if setup.plot_graphic_format_list_f:
-            quex.output.graphviz.interface.report_supported_graphic_formats()
+            print quex.output.graphviz.interface.get_supported_graphic_format_description()
             sys.exit(0)
 
         # (*) Run the Quex ___________________________________________________________________

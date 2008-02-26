@@ -3,7 +3,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 (0) create token id file
    token class file = 'quex/code_base/token'
    => 'Simple-token_ids'
-// -*- C++ -*-   :vim set syntax=cpp:
+// -*- C++ -*-   vim: set syntax=cpp:
 #ifndef __INCLUDE_GUARD__QUEX__SIMPLE
 #define __INCLUDE_GUARD__QUEX__SIMPLE
 
@@ -377,7 +377,7 @@ namespace quex {
 	    void     enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
 	    int      get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
 	private:
-	    std::map<const std::string, int>  lexeme_to_token_id_map;
+	    std::map<std::string, int>  lexeme_to_token_id_map;
 	} post_categorizer;
 
 	// (*) pure text accumulation and flushing
@@ -478,12 +478,12 @@ namespace quex {
 	//
 	// Any time a token is created, it is pushed on the token queue. Lexical analysis
 	// only happens if stack is empty, so that it is filled up again.
-        //
-        // NOTE: A token stack is necessary whenever tokens are created that do not
-        //       relate directly to patterns. A token stack gives the great possibility
-        //       to 'send' tokens from anywhere inside an action or a state transition.
-        // 
-        //       Otherwise, one would be restricted to sending one token by pattern.        
+    //
+    // NOTE: A token stack is necessary whenever tokens are created that do not
+    //       relate directly to patterns. A token stack gives the great possibility
+    //       to 'send' tokens from anywhere inside an action or a state transition.
+    // 
+    //       Otherwise, one would be restricted to sending one token by pattern.        
 	//
         token_queue<token>*   _token_queue;
 	// (*) All Modes are Friends _____________________________________________________
@@ -495,13 +495,13 @@ namespace quex {
 #endif
 
 	
-        // (*) User defined Friends ______________________________________________________
+    // (*) User defined Friends ______________________________________________________
 
-        // (*) User's Lexer Class Body Extenstion ________________________________________
+    // (*) User's Lexer Class Body Extenstion ________________________________________
 
 
     public:
-        // (*) Who and what am I ? _______________________________________________________
+    // (*) Who and what am I ? _______________________________________________________
 	Simple&  self;
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
@@ -527,12 +527,12 @@ namespace quex {
 	void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
 
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-        // (*) Translation buffer ________________________________________________________
+    // (*) Translation buffer ________________________________________________________
 	// Iconv requires an intermediate buffer to read data into, before it can trans-
 	// late it into a target character coding format. However, if there are more than
-        // one input buffer, they could all use the same iconv translation buffer, since
-        // they do not translate at the same time.
-        uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
+    // one input buffer, they could all use the same iconv translation buffer, since
+    // they do not translate at the same time.
+    uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
 #endif
     };
 
@@ -547,9 +547,9 @@ namespace quex {
 	accumulator(this)
     {
 	// Buffer: Size = (see macro def.), Fallback = 10 Characters
-        // prefer FILE* based buffers, because we can turn low-level buffering off.
-        // ownership of FILE* id passed to the input strategy of the buffer
-        FILE* fh = fopen(Filename.c_str(), "r");
+    // prefer FILE* based buffers, because we can turn low-level buffering off.
+    // ownership of FILE* id passed to the input strategy of the buffer
+    FILE* fh = fopen(Filename.c_str(), "r");
 	setbuf(fh, 0);   // turn off system based buffering!
 	//               // this is essential to profit from the quex buffer!
 	__constructor_core(fh, IConvInputCodingName);
@@ -558,10 +558,10 @@ namespace quex {
     inline
     CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* = 0x0 */)
     :
-	// NOTE: dynamic_cast<>() would request derived class to be **defined**! 
-	// Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-	self(*((Simple*)this)),
-	accumulator(this)
+        // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+        // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+        self(*((Simple*)this)),
+        accumulator(this)
     {
         __constructor_core(p_input_stream, IConvInputCodingName);
     }
@@ -569,8 +569,8 @@ namespace quex {
     inline
     CLASS::CLASS(FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
     : 
-	self(*((Simple*)this)),
-	accumulator(this)
+        self(*((Simple*)this)),
+        accumulator(this)
     {
 	setbuf(fh, 0);   // turn off system based buffering!
 	//               // this is essential to profit from the quex buffer!
@@ -3412,7 +3412,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             self.__count_shift_end_values_to_start_values();
             self.count(Lexeme, LexemeL);
             self.send(TKN_TERMINATION);
-            return quex::TKN_TERMINATION;
+            return TKN_TERMINATION;
             
             }
                     }
@@ -3522,10 +3522,6 @@ assert(Indentation >= 0);
 
 
 namespace quex {
-#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION
-// No file provided that contains potentially a foreign token-id
-// definition. Use quex command line option '--foreign-token-id-file'
-#else // QUEX_FOREIGN_TOKEN_ID_DEFINITION
 const quex::token::id_type TKN_BRACKET_CLOSE = 10000;
 const quex::token::id_type TKN_BRACKET_OPEN  = 10001;
 const quex::token::id_type TKN_EXPECT        = 10002;
@@ -3538,7 +3534,6 @@ const quex::token::id_type TKN_TERMINATION   = 0;
 const quex::token::id_type TKN_TYPE_DOUBLE   = 10008;
 const quex::token::id_type TKN_TYPE_INT      = 10009;
 const quex::token::id_type TKN_UNINITIALIZED = 1;
-#endif // QUEX_FOREIGN_TOKEN_ID_DEFINITION
 } // namespace quex
 
 
