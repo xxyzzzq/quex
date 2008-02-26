@@ -3,6 +3,7 @@
     <fullName>Quex</fullName>
     <version>0.17.1</version>
     <installerFilename></installerFilename>
+    <enableRollback>1</enableRollback>
     <componentList>
         <component>
             <name>default</name>
@@ -16,6 +17,11 @@
                     <destination>${installdir}</destination>
                     <name>programfiles</name>
                     <platforms>all</platforms>
+                    <distributionFileList>
+                        <distributionFile>
+                            <origin>../quex/consistency_check.py</origin>
+                        </distributionFile>
+                    </distributionFileList>
                     <shortcutList>
                         <shortcut>
                             <comment>Uninstall</comment>
@@ -43,6 +49,14 @@
                     <destination>${installdir}</destination>
                     <name>programfileswindows</name>
                     <platforms>windows</platforms>
+                    <distributionFileList>
+                        <distributionFile>
+                            <origin>../quex-exe.py</origin>
+                        </distributionFile>
+                        <distributionFile>
+                            <origin>../unit_test_results.txt</origin>
+                        </distributionFile>
+                    </distributionFileList>
                 </folder>
             </folderList>
             <startMenuShortcutList>
