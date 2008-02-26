@@ -1,4 +1,4 @@
-<history date="Tue Feb 26 00:49:52 2008" element-n="15">
+<history date="Tue Feb 26 15:36:07 2008" element-n="16">
     <day year="2008" month="02" day="16">
         <history-init time="03:28:11"/>
         <test-runs-today n="3" ok-n="0" fail-n="0" else-n="3" last-run="no verdict" last-time="09:46:34"/>
@@ -33,5 +33,8 @@
         <accept    time="00:08:41" application="plot-papc.py" choice="" crc="-60819449" />
         <accept    time="00:08:41" application="plot-pre-context.py" choice="" crc="2024337280" />
         <test-runs-today n="4" ok-n="3" fail-n="0" else-n="1" last-run="oll korrekt" last-time="23:49:52"/>
+    </day>
+    <day year="2008" month="02" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:36:07"/>
     </day>
 </history>

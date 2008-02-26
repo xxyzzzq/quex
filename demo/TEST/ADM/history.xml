@@ -1,4 +1,4 @@
-<history date="Tue Feb 26 11:06:58 2008" element-n="45">
+<history date="Tue Feb 26 15:38:57 2008" element-n="46">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -70,10 +70,11 @@
     </day>
     <day year="2008" month="02" day="26">
         <accept    time="09:33:42" application="other-compilers-sun.sh" choice="000" crc="2025286043" />
-        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="09:36:30"/>
         <accept    time="10:06:45" application="other-compilers-sun.sh" choice="002" crc="-1357231001" />
         <accept    time="10:06:51" application="other-compilers-sun.sh" choice="003" crc="154999424" />
         <accept    time="10:06:55" application="other-compilers-sun.sh" choice="005" crc="-1061882893" />
         <accept    time="10:06:58" application="other-compilers-sun.sh" choice="006" crc="-630116803" />
+        <accept    time="14:37:14" application="other-compilers-sun.sh" choice="001" crc="864987294" />
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="oll korrekt" last-time="14:38:57"/>
     </day>
 </history>
