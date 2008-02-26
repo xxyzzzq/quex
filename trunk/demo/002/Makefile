@@ -40,7 +40,7 @@ CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
 	 -D___QUEX_UNIT_TESTING___
 
 # -- linker
-LD         = $(COMPILER) -ggdb 
+LD         = $(COMPILER) 
 STATIC_LD  = ar -rv
 DYNAMIC_LD = $(COMPILER) -shared 
 

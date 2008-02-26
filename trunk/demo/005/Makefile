@@ -26,7 +26,7 @@ COMPILER = g++
 CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall  \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)   
 
-LD = $(COMPILER) -ggdb 
+LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 # -- application

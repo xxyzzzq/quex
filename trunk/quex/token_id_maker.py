@@ -171,29 +171,22 @@ def output(global_setup):
 
     # -- define values for the token ids
     token_id_txt  = "namespace quex {\n"  
-    token_id_txt += "#ifdef QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
     if setup.input_foreign_token_id_file != "":
-        token_id_txt += "// If token ids come from somewhere else (e.g. the parser)\n"
         token_id_txt += "#include\"%s\"\n" % setup.input_foreign_token_id_file
 
     else:
-        token_id_txt += "// No file provided that contains potentially a foreign token-id\n"
-        token_id_txt += "// definition. Use quex command line option '--foreign-token-id-file'\n"
-    token_id_txt += "#else // QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
-    
-    token_names = lexer_mode.token_id_db.keys()
-    token_names.sort()
+        token_names = lexer_mode.token_id_db.keys()
+        token_names.sort()
 
-    i = setup.id_count_offset
-    for token_name in token_names:
-        token_info = lexer_mode.token_id_db[token_name] 
-        if token_info.number == None: 
-            token_info.number = i; i+= 1
-        token_id_txt += "const quex::%s::id_type %s%s %s= %i;\n" % (setup.token_class,
-                                                                    setup.token_prefix,
-                                                                    token_name, space(token_name), 
-                                                                    token_info.number)
-    token_id_txt += "#endif // QUEX_FOREIGN_TOKEN_ID_DEFINITION\n"
+        i = setup.id_count_offset
+        for token_name in token_names:
+            token_info = lexer_mode.token_id_db[token_name] 
+            if token_info.number == None: 
+                token_info.number = i; i+= 1
+            token_id_txt += "const quex::%s::id_type %s%s %s= %i;\n" % (setup.token_class,
+                                                                        setup.token_prefix,
+                                                                        token_name, space(token_name), 
+                                                                        token_info.number)
     token_id_txt += "} // namespace quex\n" 
 
     # -- define the function for token names
