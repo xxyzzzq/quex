@@ -1,0 +1,67 @@
+-------------------------------------------------------------------
+expression    = ""a"/";"/"
+state machine
+init-state = 1L
+00000* <~ (5, 11, S, pre=9)
+      <no epsilon>
+00001 == ';' ==> 00000
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (5, 18)
+      == 'a' ==> 00001
+      <no epsilon>
+00001* <~ (5, 19, S)
+      <no epsilon>
+
+-------------------------------------------------------------------
+expression    = "(a|z)/c/"
+state machine
+init-state = 0L
+00000 == 'c' ==> 00001
+      <no epsilon>
+00001* <~ (27, 57, S, pre=31)
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (27, 64)
+      == 'a', 'z' ==> 00001
+      <no epsilon>
+00001* <~ (27, 65, S)
+      <no epsilon>
+
+-------------------------------------------------------------------
+expression    = ""aac"|"bad"/"z"|congo/"
+state machine
+init-state = 0L
+00000 == 'z' ==> 00001
+      == 'c' ==> 00002
+      <no epsilon>
+00001* <~ (55, 160, S, pre=59)
+      <no epsilon>
+00002 == 'o' ==> 00003
+      <no epsilon>
+00003 == 'n' ==> 00004
+      <no epsilon>
+00004 == 'g' ==> 00005
+      <no epsilon>
+00005 == 'o' ==> 00001
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (55, 179)
+      == 'c' ==> 00002
+      == 'd' ==> 00003
+      <no epsilon>
+00001* <~ (55, 180, S)
+      <no epsilon>
+00002 <~ (55, 181)
+      == 'a' ==> 00005
+      <no epsilon>
+00003 <~ (55, 182)
+      == 'a' ==> 00004
+      <no epsilon>
+00004 <~ (55, 183)
+      == 'b' ==> 00001
+      <no epsilon>
+00005 <~ (55, 184)
+      == 'a' ==> 00001
+      <no epsilon>
+
