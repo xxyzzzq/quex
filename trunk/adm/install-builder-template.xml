@@ -2,8 +2,12 @@
     <shortName>quex</shortName>
     <fullName>Quex</fullName>
     <version>$$VERSION$$</version>
+    <readmeFile>trunk/README</readmeFile>
+    <licenseFile>trunk/LPGL.txt</licenseFile>
+    <splashImage>trunk/adm/logo/quex-logo.png</splashImage>
     <installerFilename></installerFilename>
     <enableRollback>1</enableRollback>
+    <saveRelativePaths>1</saveRelativePaths>
     <componentList>
         <component>
             <name>default</name>
@@ -41,12 +45,24 @@
                     <destination>${installdir}</destination>
                     <name>programfileslinux</name>
                     <platforms>linux</platforms>
+                    <actionList>
+                        <addEnvironmentVariable>
+                            <name>QUEX_PATH</name>
+                            <value>${installdir}</value>
+                        </addEnvironmentVariable>
+                    </actionList>
                 </folder>
                 <folder>
                     <description>Program Files</description>
                     <destination>${installdir}</destination>
                     <name>programfileswindows</name>
                     <platforms>windows</platforms>
+                    <actionList>
+                        <addEnvironmentVariable>
+                            <name>QUEX_PATH</name>
+                            <value>${installdir}</value>
+                        </addEnvironmentVariable>
+                    </actionList>
                 </folder>
             </folderList>
             <startMenuShortcutList>
@@ -67,7 +83,7 @@
             <name>installdir</name>
             <description>Installer.Parameter.installdir.description</description>
             <explanation>Installer.Parameter.installdir.explanation</explanation>
-            <value></value>
+            <value>${platform_install_prefix}/${product_shortname}-${product_version}</value>
             <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
             <allowEmptyValue>0</allowEmptyValue>
             <ask>yes</ask>
