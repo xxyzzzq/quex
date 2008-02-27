@@ -1,0 +1,5 @@
+mode MODE
+<inheritable: only>
+{
+<<EOF>> => TKN_TERMINATION;
+}

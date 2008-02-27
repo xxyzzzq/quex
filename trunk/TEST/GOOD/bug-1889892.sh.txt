@@ -1,0 +1,14 @@
+(1)
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: Missing hexadecimal number.
+(2)
+error-1.qx:2:error: Regular expression parsing:
+error-1.qx:2:error: Missing hexadecimal number.
+(3)
+error-2.qx:2:error: Regular expression parsing:
+error-2.qx:2:error: Missing hexadecimal number.
+(4)
+error-3.qx:8:warning: Mode without pattern needs to be 'inheritable only'.
+error-3.qx:8:warning: <inheritable: only> has been added automatically.
+consistency check: There is no mode that can be applied---all existing modes are 'inheritable only'.
+consistency check: modes are = 'Hallo'
