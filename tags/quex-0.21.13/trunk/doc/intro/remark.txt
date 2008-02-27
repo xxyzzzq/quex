@@ -1,0 +1,23 @@
+The versioning of quex follows a scheme that is widespread in the
+GNU/Linux-Community. The key idea is that version 1.0.0 marks a major step in
+the design and development of the software. A quex release with version
+greater or equal 1.0 will not be backward compatible (at least to a very high
+degree). It says that the groundwork design is frozen, new features can be
+added but previous work can be continued with any later version. That,
+however, does not mean that versions less than 1.0.0 are not stable or
+untested. In fact, at least the author uses quex heavily in another
+project. So, the author of this software himself has a vivid interest to
+delete any possible bug. 
+
+Also, the second number in the version identifier, i.e. the 'x' in "version
+0.x.23" stands for at least one new concept or new design that was
+implemented. The last number simply counts releases. From the above
+considerations, though, one can conclude that lower last numbers are closer to
+design changes and mark 'break-through' versions. 
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
