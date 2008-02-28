@@ -1,0 +1,5 @@
+mode START {
+a" => TKN_A;
+"a => TKN_A;
+"a" => TKN_A("a);
+}
