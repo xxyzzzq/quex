@@ -1,0 +1,6 @@
+error.qx:6:warning: Token id 'TKN_WS' defined implicitly.
+warning: no initial mode defined via 'start'
+warning: using mode 'X' as initial mode
+(0) create token id file
+   token class file = 'quex/code_base/token'
+   => 'lexer-token_ids'
