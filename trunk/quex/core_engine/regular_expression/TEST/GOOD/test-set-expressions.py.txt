@@ -3,7 +3,8 @@ expression = "[: alnum :]"
 result     = [[48, 57], [65, 91], [97, 122]]
 
 expression = "[: [\100-\0] :]"
-result     = [[0L, 64L]]
+Character range: '-' requires character with 'lower code' to preceed
+found range '@-' which corresponds to 64-1 as unicode code points.
 
 expression = "[: [\x10-\x40] :]"
 result     = [[16L, 64L]]

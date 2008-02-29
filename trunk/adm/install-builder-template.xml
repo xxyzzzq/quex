@@ -5,7 +5,7 @@
     <readmeFile>trunk/README</readmeFile>
     <licenseFile>trunk/LPGL.txt</licenseFile>
     <splashImage>trunk/adm/logo/quex-logo.png</splashImage>
-    <installerFilename></installerFilename>
+    <compressionAlgorithm>lzma</compressionAlgorithm>
     <enableRollback>1</enableRollback>
     <saveRelativePaths>1</saveRelativePaths>
     <componentList>
@@ -48,6 +48,7 @@
                     <actionList>
                         <addEnvironmentVariable>
                             <name>QUEX_PATH</name>
+                            <scope>system</scope>
                             <value>${installdir}</value>
                         </addEnvironmentVariable>
                     </actionList>
@@ -60,6 +61,7 @@
                     <actionList>
                         <addEnvironmentVariable>
                             <name>QUEX_PATH</name>
+                            <scope>system</scope>
                             <value>${installdir}</value>
                         </addEnvironmentVariable>
                     </actionList>
