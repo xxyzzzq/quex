@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.03" date="Tue Feb 26 15:34:54 2008">
+<test-database execution-time-sec="0.03" date="Fri Feb 29 00:07:26 2008">
     <last-used-diff-display-program name=""/>
     <group name="Count Line and Column">
         <test title="Without Indentation Count" make-required="True" time-sum-sec="0.02"> 
