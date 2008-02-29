@@ -330,7 +330,6 @@ class NumberSet:
 
         self.__intervals.insert(insertion_index, combination)
 
-
     def cut_interval(self, CutInterval):
         """Cuts an interval from the intervals of the set.
         Note: the 'overlap' test is faster here, because

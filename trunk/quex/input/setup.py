@@ -21,7 +21,7 @@ SETUP_INFO = {
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "dos_carriage_return_newline_f":  [["--DOS"],                            FLAG],
-    "end_of_stream_code":             [["--end-of-stream"],                  0x1A],
+    "end_of_stream_code":             [["--end-of-stream"],                  "0x1A"],
     "enable_iconv_f":                 [["--iconv"],                          FLAG],
     "byte_order":                     [["--endian"],                         "<system>"],
     "input_application_version_id":   [["--version-id"],                     "0.0.0-pre-release"],

@@ -11,7 +11,7 @@ class Generator(GeneratorBase):
     def __init__(self, PatternActionPair_List, EndOfFile_Code,
                  StateMachineName, AnalyserStateClassName, Language, 
                  DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
-                 PrintStateMachineF, StandAloneAnalyserF):
+                 PrintStateMachineF, StandAloneAnalyserF, BufferBegin_Code, BufferEnd_Code):
 
         if not StandAloneAnalyserF: 
             assert QuexEngineHeaderDefinitionFile != "", \
@@ -31,6 +31,7 @@ class Generator(GeneratorBase):
         self.mode_name_list                      = ModeNameList
         self.print_state_machine_f               = PrintStateMachineF
         self.stand_alone_analyzer_f              = StandAloneAnalyserF
+        self.__buffer_control_character_list     = [EndOfFile_Code, BufferBegin_Code, BufferEnd_Code]
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
@@ -44,7 +45,8 @@ class Generator(GeneratorBase):
         txt += state_machine_coder.do(self.sm, 
                                       LanguageDB                  = LanguageDB, 
                                       UserDefinedStateMachineName = self.state_machine_name, 
-                                      BackwardLexingF             = False)
+                                      BackwardLexingF             = False,
+                                      ForbiddenCharacterCodeList  = self.__buffer_control_character_list)
 
         
         #  -- terminal states: execution of pattern actions  
@@ -67,7 +69,8 @@ class Generator(GeneratorBase):
         txt += state_machine_coder.do(self.pre_condition_sm, 
                                       LanguageDB                  = LanguageDB, 
                                       UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONDITION_",
-                                      BackwardLexingF             = True)
+                                      BackwardLexingF             = True,
+                                      ForbiddenCharacterCodeList  = self.__buffer_control_character_list)
 
         LabelName = languages_label.get_terminal(self.state_machine_name + "_PRE_CONDITION_")      
         txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
@@ -84,8 +87,10 @@ class Generator(GeneratorBase):
         #  -- state machines for backward input position detection (pseudo ambiguous post conditions)
         papc_input_postion_backward_detector_functions = ""
         for sm in self.papc_backward_detector_state_machine_list:
-             papc_input_postion_backward_detector_functions += backward_detector.do(sm, LanguageDB, 
-                                                                                    self.print_state_machine_f) 
+             papc_input_postion_backward_detector_functions +=  \
+                  backward_detector.do(sm, LanguageDB, 
+                                       self.print_state_machine_f, 
+                                       self.__buffer_control_character_list) 
         function_body = ""
         # -- write the combined pre-condition state machine
         if self.pre_condition_sm_list != []:
@@ -122,7 +127,9 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
        ModeNameList=[],
-       EndOfFile_Code=None):    
+       EndOfFile_Code=None,
+       BufferBegin_Code=None,
+       BufferEnd_Code=None):    
     """Contains a list of pattern-action pairs, i.e. its elements contain
        pairs of state machines and associated actions to be take,
        when a pattern matches. 
@@ -145,5 +152,5 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
     return Generator(PatternActionPair_List, EndOfFile_Code,
                      StateMachineName, AnalyserStateClassName, Language, 
                      DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
-                     PrintStateMachineF, StandAloneAnalyserF).do()
+                     PrintStateMachineF, StandAloneAnalyserF, BufferBegin_Code, BufferEnd_Code).do()
     

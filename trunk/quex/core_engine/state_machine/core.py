@@ -31,7 +31,7 @@ class Transition:
     # transitions to trigger). Finally, the target state is entered.
     #
     def __init__(self, TriggerSet, TargetStateIdx):
-        assert TriggerSet.__class__.__name__ == "NumberSet"
+        assert TriggerSet.__class__ == NumberSet
         assert type(TargetStateIdx) == long
        
         # set of characters that trigger the transition 
@@ -844,6 +844,13 @@ class StateInfo:
             else:              non_drop_out_target = target
 
             self.add_transition(trigger_set, target)
+
+    def delete_transitions_on_character_list(self, ForbiddenCharacterList):
+        for letter in ForbiddenCharacterList:
+            for t in self.__transition_list:
+                if t.trigger_set.contains(char_code):
+                    t.trigger_set.cut_interval(Interval(char_code, char_code+1))
+        self.delete_transitions_on_empty_trigger_sets()
 
     def delete_transitions_on_empty_trigger_sets(self):
         new_transition_list = []
