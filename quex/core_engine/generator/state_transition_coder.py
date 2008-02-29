@@ -1,9 +1,11 @@
 import quex.core_engine.generator.languages.core  as languages
 import quex.core_engine.generator.languages.label as languages_label
 from copy import deepcopy
-__DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
+__DEBUG_CHECK_ACTIVE_F = True # Use this flag to double check that intervals are adjacent
 
-def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, BackwardInputPositionDetectionF=False):
+def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
+       BackwardInputPositionDetectionF=False,
+       ForbiddenCharacterCodeList=[]):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -14,6 +16,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, BackwardI
                "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
        
     #_________________________________________________________________________________________    
+    state.delete_transitions_on_character_list(ForbiddenCharacterCodeList)
     TriggerMap = state.get_trigger_map()
     
     # note down information about success, if state is an acceptance state
@@ -98,11 +101,10 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
     """
     TriggerSetN = len(TriggerMap)
 
-    # (*) check that the trigger map consist of sorted adjacent intervals 
-    #     This assumption is critical because it is assumed that for any
-    #     isolated interval the bordering intervals have bracketed the remaining
-    #     cases!
     if TriggerSetN > 1 and __DEBUG_CHECK_ACTIVE_F:
+        # -- check that the trigger map consist of sorted adjacent intervals 
+        #    This assumption is critical because it is assumed that for any isolated
+        #    interval the bordering intervals have bracketed the remaining cases!
         previous_interval = TriggerMap[0][0] 
         for trigger_interval, target_state_index in TriggerMap[1:]:
             assert trigger_interval.begin == previous_interval.end, \
@@ -113,7 +115,6 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
                    "TriggerMap = " + repr(TriggerMap)
             previous_interval = deepcopy(trigger_interval)
 
-        
     #________________________________________________________________________________
     txt = "    "
 

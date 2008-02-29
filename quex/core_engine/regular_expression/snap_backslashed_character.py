@@ -1,5 +1,6 @@
 from copy           import deepcopy
 from quex.exception import  RegularExpressionException
+from StringIO       import StringIO
 
 
 backslashed_character_db = { 
@@ -33,9 +34,7 @@ def do(sh, ReducedSetOfBackslashedCharactersF=False):
        RETURNS: UCS code of the interpreted character,
                 index of first element after the treated characters in the string
     """
-    assert     sh.__class__.__name__ == "StringIO" \
-            or sh.__class__.__name__ == "file"
-
+    assert sh.__class__ == StringIO or sh.__class__ == file
     assert type(ReducedSetOfBackslashedCharactersF) == bool 
 
     if ReducedSetOfBackslashedCharactersF:
@@ -52,7 +51,8 @@ def do(sh, ReducedSetOfBackslashedCharactersF=False):
     elif tmp == 'x':                        return __parse_hex_number(sh, 2)
     elif tmp == 'X':                        return __parse_hex_number(sh, 4)
     elif tmp == 'U':                        return __parse_hex_number(sh, 6)
-    else:                                   return None
+    else:
+        raise RegularExpressionException("Backslashed '%s' is unknown to quex." % tmp)
 
 def __parse_octal_number(sh, MaxL):
     return __parse_base_number(sh, MaxL, 
