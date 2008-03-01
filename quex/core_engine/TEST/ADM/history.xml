@@ -1,4 +1,4 @@
-<history date="Sat Mar  1 00:35:22 2008" element-n="25">
+<history date="Sat Mar  1 01:08:56 2008" element-n="26">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -56,6 +56,9 @@
         <accept    time="22:35:15" application="test-NumberSet-union.py" choice="" crc="973910203" />
         <accept    time="23:12:02" application="test-NumberSet-cut_interval.py" choice="" crc="-453246584" />
         <accept    time="23:30:51" application="test-NumberSet-cut_interval.py" choice="" crc="1051370365" />
-        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:35:22"/>
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:57:30"/>
+    </day>
+    <day year="2008" month="03" day="01">
+        <test-runs-today n="5" ok-n="2" fail-n="3" else-n="0" last-run="oll korrekt" last-time="00:08:56"/>
     </day>
 </history>
