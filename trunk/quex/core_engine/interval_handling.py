@@ -531,11 +531,17 @@ class NumberSet:
     def difference(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
-        if Other.__class__ == Interval: Other = NumberSet(Other)
-
-        # note: there should be no internal overlaps according to 'add_interval'
         clone = deepcopy(self)
+        if Other.__class__ == Interval: 
+            clone.cut_interval(Other)
+            return clone
+
+        Begin = self.__intervals[0].begin
+        End   = self.__intervals[-1].end
+        # note: there should be no internal overlaps according to 'add_interval'
         for interval in Other.__intervals:
+            if interval.end   <= Begin: continue
+            if interval.begin >= End:   break
             clone.cut_interval(interval)
 
         return clone
