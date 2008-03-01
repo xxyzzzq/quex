@@ -846,7 +846,7 @@ class StateInfo:
             self.add_transition(trigger_set, target)
 
     def delete_transitions_on_character_list(self, ForbiddenCharacterList):
-        for letter in ForbiddenCharacterList:
+        for char_code in ForbiddenCharacterList:
             for t in self.__transition_list:
                 if t.trigger_set.contains(char_code):
                     t.trigger_set.cut_interval(Interval(char_code, char_code+1))

@@ -7,7 +7,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.interval_handling import Interval, NumberSet
 
+A6 = None
 def do(Title, func):
+    global A6
 
     A0 = NumberSet([Interval(10,20), Interval(21,30)])
     B0 = NumberSet([Interval(0,40)])
@@ -35,11 +37,10 @@ def do(Title, func):
          A4,B4)
 
     A5 = NumberSet([Interval(250,260), Interval(261,280)])
-    B5 = NumberSet([Interval(240,290)])
-    func("(d) one interval overlaps the 1st a little, the second totally",
+    B5 = NumberSet([Interval(240,270)])
+    func("(d) one interval overlaps the 2nd a little, the first totally",
          A5,B5)
 
-    
     A6 = NumberSet()
     A6 = A6.union(A0).union(A1).union(A2).union(A3).union(A4).union(A5)
     B6 = NumberSet()
@@ -62,6 +63,15 @@ def do(Title, func):
     elif Title == "DIFFERENCE":
         print A6.difference(B6).gnuplot_string(1)
         print B6.difference(A6).gnuplot_string(0)
+    elif Title == "CUT_INTERVAL":
+        X = deepcopy(A6)
+        for interval in B6.get_intervals():
+            X.cut_interval(interval)
+        print X.gnuplot_string(1)
+        Y = deepcopy(B6)
+        for interval in A6.get_intervals():
+            Y.cut_interval(interval)
+        print Y.gnuplot_string(0)
     elif Title == "CLEAN":
         X = deepcopy(A6)
         for interval in B6.get_intervals():

@@ -4,8 +4,7 @@ from copy import deepcopy
 __DEBUG_CHECK_ACTIVE_F = True # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
-       BackwardInputPositionDetectionF=False,
-       ForbiddenCharacterCodeList=[]):
+        BackwardInputPositionDetectionF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -16,7 +15,6 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
        
     #_________________________________________________________________________________________    
-    state.delete_transitions_on_character_list(ForbiddenCharacterCodeList)
     TriggerMap = state.get_trigger_map()
     
     # note down information about success, if state is an acceptance state

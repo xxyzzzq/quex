@@ -594,7 +594,7 @@ namespace quex {
                 (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
                 /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
                 /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
-                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
+                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
 #           endif
             return 0x0;
         }
@@ -603,7 +603,7 @@ namespace quex {
                    (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
                    /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
                    /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
-                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
+                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
         }
     }
 
@@ -1516,7 +1516,6 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         //       == ['\t', '\n'], '\r', ' ' ==> 00004
         //       == ['0', '9'] ==> 00005
         //       == '}' ==> 00006
-        //       == \26 ==> 00007
         //       == '{' ==> 00008
         //       == ';' ==> 00013
         //       == 'i' ==> 00014
@@ -1532,8 +1531,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_254_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 91 ) {
-            if( input < 32 ) {
+        if( input < 95 ) {
+            if( input < 33 ) {
                 if( input < 13 ) {
                     if( input < 9 ) {
                         goto STATE_254_DROP_OUT;    // [-oo, \8] 
@@ -1545,88 +1544,76 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                         }
                     }
                 }else {
-                    if( input < 26 ) {
-                        if( input == 13 ) {
-                            goto STATE_260;    // '\r' 
-                        }else {
-                            goto STATE_254_DROP_OUT;    // [\14, \25] 
-                        }
+                    if( input < 14 ) {
+                        goto STATE_260;    // '\r' 
                     }else {
-                        if( input == 26 ) {
-                            goto STATE_263;    // \26 
+                        if( input != 32 ) {
+                            goto STATE_254_DROP_OUT;    // [\14, \31] 
                         }else {
-                            goto STATE_254_DROP_OUT;    // [\27, \31] 
+                            goto STATE_260;    // ' ' 
                         }
                     }
                 }
             }else {
-                if( input < 58 ) {
-                    if( input < 33 ) {
-                        goto STATE_260;    // ' ' 
+                if( input < 59 ) {
+                    if( input < 48 ) {
+                        goto STATE_254_DROP_OUT;    // [\33, \47] 
                     }else {
-                        if( input < 48 ) {
-                            goto STATE_254_DROP_OUT;    // [\33, \47] 
-                        }else {
+                        if( input != 58 ) {
                             goto STATE_261;    // ['0', '9'] 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // ':' 
                         }
                     }
                 }else {
-                    if( input < 60 ) {
-                        if( input == 58 ) {
-                            goto STATE_254_DROP_OUT;    // ':' 
-                        }else {
+                    if( input < 65 ) {
+                        if( input == 59 ) {
                             goto STATE_269;    // ';' 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // ['<', '@'] 
                         }
                     }else {
-                        if( input < 65 ) {
-                            goto STATE_254_DROP_OUT;    // ['<', '@'] 
-                        }else {
+                        if( input < 91 ) {
                             goto STATE_256;    // ['A', 'Z'] 
+                        }else {
+                            goto STATE_254_DROP_OUT;    // ['[', '^'] 
                         }
                     }
                 }
             }
         }else {
-            if( input < 105 ) {
-                if( input < 97 ) {
-                    if( input < 95 ) {
-                        goto STATE_254_DROP_OUT;    // ['[', '^'] 
+            if( input < 106 ) {
+                if( input < 100 ) {
+                    if( input < 96 ) {
+                        goto STATE_256;    // '_' 
                     }else {
-                        if( input == 95 ) {
-                            goto STATE_256;    // '_' 
-                        }else {
+                        if( input == 96 ) {
                             goto STATE_254_DROP_OUT;    // '`' 
+                        }else {
+                            goto STATE_256;    // ['a', 'c'] 
                         }
                     }
                 }else {
-                    if( input < 101 ) {
-                        if( input != 100 ) {
-                            goto STATE_256;    // ['a', 'c'] 
-                        }else {
+                    if( input < 102 ) {
+                        if( input == 100 ) {
                             goto STATE_271;    // 'd' 
+                        }else {
+                            goto STATE_272;    // 'e' 
                         }
                     }else {
-                        if( input == 101 ) {
-                            goto STATE_272;    // 'e' 
-                        }else {
+                        if( input != 105 ) {
                             goto STATE_256;    // ['f', 'h'] 
+                        }else {
+                            goto STATE_270;    // 'i' 
                         }
                     }
                 }
             }else {
                 if( input < 123 ) {
-                    if( input < 115 ) {
-                        if( input == 105 ) {
-                            goto STATE_270;    // 'i' 
-                        }else {
-                            goto STATE_256;    // ['j', 'r'] 
-                        }
+                    if( input == 115 ) {
+                        goto STATE_257;    // 's' 
                     }else {
-                        if( input == 115 ) {
-                            goto STATE_257;    // 's' 
-                        }else {
-                            goto STATE_256;    // ['t', 'z'] 
-                        }
+                        goto STATE_256;    // ['j', 'r'] 
                     }
                 }else {
                     if( input < 125 ) {
@@ -3172,7 +3159,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 16 "dos_lf_2.qx"
             self.send(TKN_TERMINATION); RETURN;
-#line 1863 "Simple-core-engine.cpp"
+#line 1850 "Simple-core-engine.cpp"
             
             }
         }
@@ -3191,7 +3178,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1882 "Simple-core-engine.cpp"
+#line 1869 "Simple-core-engine.cpp"
             
             }
         }
@@ -3210,7 +3197,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 18 "dos_lf_2.qx"
              
-#line 1901 "Simple-core-engine.cpp"
+#line 1888 "Simple-core-engine.cpp"
             
             }
         }
@@ -3228,7 +3215,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1919 "Simple-core-engine.cpp"
+#line 1906 "Simple-core-engine.cpp"
             
             }
         }
@@ -3247,7 +3234,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 28 "dos_lf_2.qx"
              self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1938 "Simple-core-engine.cpp"
+#line 1925 "Simple-core-engine.cpp"
             
             }
         }
@@ -3265,7 +3252,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 1956 "Simple-core-engine.cpp"
+#line 1943 "Simple-core-engine.cpp"
             
             }
         }
@@ -3283,7 +3270,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 1974 "Simple-core-engine.cpp"
+#line 1961 "Simple-core-engine.cpp"
             
             }
         }
@@ -3301,7 +3288,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 1992 "Simple-core-engine.cpp"
+#line 1979 "Simple-core-engine.cpp"
             
             }
         }
@@ -3319,7 +3306,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 2010 "Simple-core-engine.cpp"
+#line 1997 "Simple-core-engine.cpp"
             
             }
         }
@@ -3337,7 +3324,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 2028 "Simple-core-engine.cpp"
+#line 2015 "Simple-core-engine.cpp"
             
             }
         }
@@ -3355,7 +3342,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 2046 "Simple-core-engine.cpp"
+#line 2033 "Simple-core-engine.cpp"
             
             }
         }
@@ -3373,7 +3360,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2064 "Simple-core-engine.cpp"
+#line 2051 "Simple-core-engine.cpp"
             
             }
         }

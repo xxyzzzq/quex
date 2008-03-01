@@ -97,19 +97,6 @@ def do(argv):
         print "(C) 2006, 2007 Frank-Rene Schaefer"
         sys.exit(0)
 
-
-    for name, info in DEPRECATED.items():
-        command_line_options = SETUP_INFO[name][0]
-        comment                   = info[0]
-        depreciated_since_version = info[1]
-        for option in command_line_options:
-            if command_line.search(option):
-                error_msg("Command line option '%s' is ignored.\n" % option + \
-                          "Last version of Quex supporting this option is version %s. Please, visit\n" % version + \
-                          "http://quex.sourceforge.net for download---Or use a more advanced approach.\n" + \
-                          comment)
-                          
-
     for variable_name, info in SETUP_INFO.items():
         if info[1]   == LIST:
             the_list = command_line.nominus_followers(info[0])
@@ -131,8 +118,12 @@ def do(argv):
     setup.output_header_file   = setup.output_engine_name + "-internal.h"
     setup.output_code_file     = setup.output_engine_name + ".cpp"
 
+    setup.buffer_limit_code    = __get_integer(setup.buffer_limit_code,    "--buffer-limit")
     setup.begin_of_stream_code = __get_integer(setup.begin_of_stream_code, "--begin-of-stream")
-    setup.end_of_stream_code   = __get_integer(setup.end_of_stream_code, "--end-of-stream")
+    setup.end_of_stream_code   = __get_integer(setup.end_of_stream_code,   "--end-of-stream")
+    setup.control_character_code_list = [setup.buffer_limit_code,
+                                         setup.begin_of_stream_code,
+                                         setup.end_of_stream_code]
 
     setup.input_token_counter_offset = __get_integer(setup.input_token_counter_offset,
                                                      "--token-offset")
@@ -158,6 +149,19 @@ def validate(setup, command_line, argv):
         if occurence_n > 1:
             error_msg("Received more than one of the following options:\n" + \
                       "%s" % repr(info[0])[1:-1])
+
+    # (*) Check for 'Depraceted' Options ___________________________________________________
+    for name, info in DEPRECATED.items():
+        command_line_options = SETUP_INFO[name][0]
+        comment                   = info[0]
+        depreciated_since_version = info[1]
+        for option in command_line_options:
+            if command_line.search(option):
+                error_msg("Command line option '%s' is ignored.\n" % option + \
+                          "Last version of Quex supporting this option is version %s. Please, visit\n" % version + \
+                          "http://quex.sourceforge.net for download---Or use a more advanced approach.\n" + \
+                          comment)
+                          
 
     # (*) Check for 'Straying' Options ___________________________________________________
     options = []

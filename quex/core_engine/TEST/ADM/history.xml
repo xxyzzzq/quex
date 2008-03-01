@@ -1,4 +1,4 @@
-<history date="Fri Feb 29 00:07:26 2008" element-n="17">
+<history date="Sat Mar  1 00:35:22 2008" element-n="25">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -47,5 +47,15 @@
     </day>
     <day year="2008" month="02" day="28">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:07:26"/>
+    </day>
+    <day year="2008" month="02" day="29">
+        <accept    time="22:35:03" application="test-NumberSet-difference.py" choice="" crc="-1295214521" />
+        <crc-error time="22:35:03" application="test-NumberSet-intersection.py" choice="" database-crc="1516231659" real-crc="-1060451842"/>
+        <accept    time="22:35:10" application="test-NumberSet-intersection.py" choice="" crc="-1196200326" />
+        <crc-error time="22:35:10" application="test-NumberSet-union.py" choice="" database-crc="-1815333788" real-crc="-1714146932"/>
+        <accept    time="22:35:15" application="test-NumberSet-union.py" choice="" crc="973910203" />
+        <accept    time="23:12:02" application="test-NumberSet-cut_interval.py" choice="" crc="-453246584" />
+        <accept    time="23:30:51" application="test-NumberSet-cut_interval.py" choice="" crc="1051370365" />
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:35:22"/>
     </day>
 </history>

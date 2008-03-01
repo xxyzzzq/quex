@@ -7,8 +7,11 @@ from quex.DEFINITIONS                import QUEX_INSTALLATION_DIR
 from quex.core_engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):
-    def __init__(self, PatternActionPairList, StateMachineName, GraphicFormat):
-        GeneratorBase.__init__(self, PatternActionPairList, StateMachineName)
+    def __init__(self, PatternActionPairList, StateMachineName, 
+                 GraphicFormat, ControlCharacterCodeList):
+
+        GeneratorBase.__init__(self, PatternActionPairList, StateMachineName, 
+                               ControlCharacterCodeList)
 
         # -- check if graphics format is supported
         supported_format_list = get_supported_graphic_formats()

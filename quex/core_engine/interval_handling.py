@@ -237,8 +237,8 @@ class NumberSet:
             return
 
         if   arg_type == Interval:
-            if ArgumentIsYoursF: self.__intervals = [ copy(Arg) ]
-            else:                self.__intervals = [ Arg ] 
+            if ArgumentIsYoursF: self.__intervals = [ Arg ] 
+            else:                self.__intervals = [ copy(Arg) ]
 
         elif arg_type == NumberSet:
             if ArgumentIsYoursF:  self.__intervals = Arg.__intervals
@@ -331,31 +331,78 @@ class NumberSet:
         self.__intervals.insert(insertion_index, combination)
 
     def cut_interval(self, CutInterval):
-        """Cuts an interval from the intervals of the set.
-        Note: the 'overlap' test is faster here, because
-        only one interval is checked against. Do not use __overlapers()!"""
+        """Adds an interval and ensures that no overlap with existing
+        intervals occurs. Note: the 'touch' test is faster here, because
+        only one interval is checked against.!"""
+        assert CutInterval.__class__ == Interval
+        if CutInterval.is_empty(): return
         
-        # (1) deterbegine overlaps with the cutting interval
-        overlapper_list = [] 
-        for interval in self.__intervals:
-            if interval.check_overlap(CutInterval):
-                overlapper_list.append(interval)
+        # (*) determine if the interval has any intersection at all
+        if    self.__intervals == []                              \
+           or CutInterval.begin >  self.__intervals[-1].end       \
+           or CutInterval.end   <= self.__intervals[0].begin:
+            # (the cutting interval cannot cut out anything)
+            return
 
-        # (2) substract NewInterval from all intervals that overlap
-        combination = CutInterval
-        for overlapper in overlapper_list:
-            difference_interval = overlapper.substract(CutInterval)
-            combination.append(difference_interval)
+        Y = CutInterval
+        remainder_low = None
+        remainder_up  = None
+        # (*) find the first interval with which the cutting interval intersects.
+        i = -1
+        for x in self.__intervals:
+            i += 1
+            # (1) an intersecting interval is not yet reached
+            if Y.begin >= x.end:    continue                        
+            # (2) an intersecting interval was never reached
+            #     (the cutting interval cannot cut out anything)
+            elif Y.end < x.begin:   return
+            # (3) INTERSECTION (implicit from above conditions)
+            #     the following conditions are not mutually exclusive.
+            #     from now on it is clear that the loop will be left.
+            # (3a) the cut leaves a 'lower interval'
+            if x.begin < Y.begin:   remainder_low = Interval(x.begin, Y.begin)
+            # (3b) the cut leaves an 'upper interval'
+            if x.end > Y.end:       remainder_up  = Interval(Y.end, x.end)
+            # (3c) the interval has been swallowed completely 
+            #      (both remainders stay empty)
+            insertion_index = i
+            break
 
-        # (3) build new list of intervals
+        # (*) find the last interval that is concerned with the cut
+        toucher_list = [ i ]
+
+        if remainder_up == None and i != len(self.__intervals) - 1:
+            for x in self.__intervals[i+1:]:
+                i += 1
+                # (1) last interval was swallowed complety, current interval has no intersection
+                if Y.end <= x.begin: break
+                # (2) INTERSECTION (implicit)
+                toucher_list.append(i)
+                # (2a) last intersecting interval (probably) not yet reached
+                if Y.end > x.end:   continue
+                # (2b) last cutting leaves an upper interval
+                if Y.end < x.end:    
+                    remainder_up  = Interval(Y.end, x.end)
+                    break
+
+        ## print "##", remainder_low
+        ## print "##", remainder_up
+        ## print "##", toucher_list
+
+        # (*) build new list of intervals
         #     (all overlaps are deleted, i.e. not added because they are
-        #      replaced by the union with the CutInterval)
-        new_interval_list = combination
-        for interval in self.__intervals:
-            if interval not in overlapper_list:
-                new_interval_list.append(interval)
+        #      replaced by the union with the NewInterval)
+        # NOTE: The indices need to be adapted, since if for example
+        #       interval '3' was an overlapper, and so '5' then if
+        #       '3' is deleted, '5' comes at position '5'.
+        offset = -1
+        for i in toucher_list:
+            offset += 1
+            del self.__intervals[i - offset]
 
-        self.__intervals = new_interval_list
+        # insert the upper remainder first, so that it comes after the lower remainder
+        if remainder_up  != None: self.__intervals.insert(insertion_index, remainder_up)
+        if remainder_low != None: self.__intervals.insert(insertion_index, remainder_low)
 
     def contains(self, Number):
         """True  => if Number in NumberSet
@@ -486,7 +533,7 @@ class NumberSet:
 
         if Other.__class__ == Interval: Other = NumberSet(Other)
 
-        # note: there should be no overlaps according to 'add_interval'
+        # note: there should be no internal overlaps according to 'add_interval'
         remainder = deepcopy(self)
         for interval in Other.__intervals:
             new_remainder = NumberSet()
