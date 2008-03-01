@@ -23,12 +23,11 @@ $$FUNCTION_BODY$$
 }
 """
 
-def do(sm, LanguageDB, PrintStateMachineF, ForbiddenCharacterCodeList):
+def do(sm, LanguageDB, PrintStateMachineF):
 
     function_body = state_machine_coder.do(sm, LanguageDB, 
                                            BackwardLexingF                 = True,
-                                           BackwardInputPositionDetectionF = True,
-                                           ForbiddenCharacterCodeList      = ForbiddenCharacterCodeList)
+                                           BackwardInputPositionDetectionF = True)
 
     sm_str = "    $/* state machine $*/\n"
     if PrintStateMachineF: 

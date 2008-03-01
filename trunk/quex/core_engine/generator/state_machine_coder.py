@@ -7,8 +7,7 @@ import quex.core_engine.generator.state_transition_coder as state_transition_cod
 def do(state_machine, LanguageDB, 
        UserDefinedStateMachineName="", 
        BackwardLexingF=False, 
-       BackwardInputPositionDetectionF=False,
-       ForbiddenCharacterCodeList=[]): 
+       BackwardInputPositionDetectionF=False):
     """Returns the program code implementing the StateMachine's behavior.
        NOTE: This function should only be called on a DFA after the call
              to 'filter_dominated_origins'. The latter is important
@@ -32,8 +31,7 @@ def do(state_machine, LanguageDB,
     txt += state_transition_coder.do(LanguageDB, 
                                      UserDefinedStateMachineName, init_state, state_machine.init_state_index,
                                      BackwardLexingF                 = BackwardLexingF,
-                                     BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                     ForbiddenCharacterCodeList      = ForbiddenCharacterCodeList)
+                                     BackwardInputPositionDetectionF = BackwardInputPositionDetectionF)
 
     # -- all other states
     for state_index, state in state_machine.states.items():
@@ -43,8 +41,7 @@ def do(state_machine, LanguageDB,
         txt += "    __QUEX_DEBUG_INFO_ENTER(%s);\n" % __nice(state_index)
         txt += state_transition_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
                                          BackwardLexingF                 = BackwardLexingF,
-                                         BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                         ForbiddenCharacterCodeList      = ForbiddenCharacterCodeList)
+                                         BackwardInputPositionDetectionF = BackwardInputPositionDetectionF)
         txt += "\n"
     
     return txt

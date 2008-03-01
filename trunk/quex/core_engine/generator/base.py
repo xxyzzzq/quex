@@ -3,7 +3,7 @@ from   quex.core_engine.generator.action_info     import ActionInfo
 from   quex.core_engine.state_machine.index       import get_state_machine_by_id
 
 class GeneratorBase:
-    def __init__(self, PatternActionPair_List, StateMachineName):
+    def __init__(self, PatternActionPair_List, StateMachineName, ControlCharacterCodeList):
         assert type(PatternActionPair_List) == list
         assert map(lambda elm: elm.__class__ == ActionInfo, PatternActionPair_List) \
                == [ True ] * len(PatternActionPair_List)
@@ -22,6 +22,19 @@ class GeneratorBase:
         #        post-conditions.
         self.papc_backward_detector_state_machine_list = \
                 self.__create_backward_input_position_detectors()
+
+        # (*) extract any control character in the transitions that could
+        #     block the buffer handling (end of buffer/end of file)
+        self.__extract_control_characters_from_transitions(self.sm, ControlCharacterCodeList)
+        if self.pre_condition_sm != None:
+            self.__extract_control_characters_from_transitions(self.pre_condition_sm, ControlCharacterCodeList)
+        if self.papc_backward_detector_state_machine_list != []:
+            for sm in self.papc_backward_detector_state_machine_list:
+                self.__extract_control_characters_from_transitions(sm, ControlCharacterCodeList)
+
+    def __extract_control_characters_from_transitions(self, sm, ControlCharacterCodeList):
+        for state in sm.states.values():
+            state.delete_transitions_on_character_list(ControlCharacterCodeList)
 
     def __extract_special_lists(self, PatternActionPair_List):
         # (0) extract data structures:

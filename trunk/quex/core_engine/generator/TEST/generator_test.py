@@ -120,8 +120,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     txt += generator.do(PatternActionPairList, default_action, PrintStateMachineF=True,
                         AnalyserStateClassName         = "analyser",
                         StandAloneAnalyserF            = True, 
-                        QuexEngineHeaderDefinitionFile = core_engine_definition_file,
-                        EndOfFile_Code                 = EndOfFile_Code)   
+                        QuexEngineHeaderDefinitionFile = core_engine_definition_file)
 
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 

@@ -89,9 +89,7 @@ def do(Setup):
                                       StandAloneAnalyserF            = False, 
                                       QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
                                       ModeNameList                   = mode_name_list,   
-                                      EndOfFile_Code     = Setup.buffer_limit_code,
-                                      BeginOfBuffer_Code = Setup.begin_of_stream_code,
-                                      EndOfBuffer_Code   = Setup.end_of_stream_code)
+                                      ControlCharacterCodeList       = Setup.control_character_code_list)
         
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "w")
@@ -190,11 +188,9 @@ def do_plot(Setup):
         dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
                                                               Setup)
         plotter = plot_generator.Generator(pattern_action_pair_list, 
-                                           StateMachineName   = mode.name,
-                                           GraphicFormat      = Setup.plot_graphic_format,
-                                           EndOfFile_Code     = Setup.buffer_limit_code,
-                                           BeginOfBuffer_Code = Setup.begin_of_stream_code,
-                                           EndOfBuffer_Code   = Setup.end_of_stream_code)
+                                           StateMachineName         = mode.name,
+                                           GraphicFormat            = Setup.plot_graphic_format,
+                                           ControlCharacterCodeList = Setup.control_character_code_list)
         plotter.do()
 
 def __get_mode_db(Setup):
