@@ -1,0 +1,53 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=-DNDEBUG  
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+IDENTIFIER	Avant
+IDENTIFIER	la
+IDENTIFIER	premiere
+IDENTIFIER	'include'
+INCLUDE	
+IDENTIFIER	aux/hello.txt
+>> including: aux/hello.txt
+INCLUDE	
+IDENTIFIER	aux/bonjour.txt
+>> including: aux/bonjour.txt
+IDENTIFIER	Bonjour
+IDENTIFIER	le
+IDENTIFIER	monde
+INCLUDE	
+IDENTIFIER	aux/moin.txt
+>> including: aux/moin.txt
+IDENTIFIER	Moin
+IDENTIFIER	Moin
+INCLUDE	
+IDENTIFIER	aux/hallo.txt
+>> including: aux/hallo.txt
+IDENTIFIER	Hallo
+<TERMINATION>	
+<< return from include
+IDENTIFIER	Tschuess
+<TERMINATION>	
+<< return from include
+INCLUDE	
+IDENTIFIER	aux/hallo.txt
+>> including: aux/hallo.txt
+IDENTIFIER	Hallo
+<TERMINATION>	
+<< return from include
+<TERMINATION>	
+<< return from include
+IDENTIFIER	Hello
+IDENTIFIER	World
+<TERMINATION>	
+<< return from include
+IDENTIFIER	Apres
+IDENTIFIER	la
+IDENTIFIER	premiere
+IDENTIFIER	'include'
+<TERMINATION>	
+| [END] number of token = 29
+`------------------------------------------------------------------------------------
+cleaning ...
