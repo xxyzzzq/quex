@@ -85,10 +85,16 @@ namespace quex {
 
             // This function assumes that the _current_p has reached either
             // the buffer's border, or the _end_of_file_p.
-#ifndef NDEBUG
-            if( this->_end_of_file_p ) assert(this->_current_p  == this->_end_of_file_p);
-            else                       assert(this->_current_p  == this->_buffer + this->BUFFER_SIZE - 1);
-#endif
+            if( this->_end_of_file_p ) {
+                if( this->_current_p != this->_end_of_file_p ) {
+                    throw std::range_error("Inaddmissible 'EndOfFile' character code appeared in input stream.\n" 
+                                           "(Check character encoding)");  
+                }
+            }
+            else if( this->_current_p != this->_buffer + this->BUFFER_SIZE - 1) {
+                throw std::range_error("Inaddmissible 'BufferLimit' character code appeared in input stream.\n" 
+                                       "(Check character encoding)");  
+            }
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
             //
             // If the lexeme start pointer is at the beginning of the buffer,
@@ -187,7 +193,10 @@ namespace quex {
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
             // This function should only be called when the iterator has reached 
             // the lower border of the buffer. 
-            assert(this->_current_p == this->content_begin() - 2);  
+            if( this->_current_p != this->content_begin() - 2 ) 
+                throw std::range_error("Inaddmissible character code appeared in input stream.\n" 
+                                       "(Check character encoding)");  
+
             const int LexemeStartOffSet = this->_lexeme_start_p - this->content_begin();
             //_______________________________________________________________________________
             if( *(this->buffer_begin()) == basic_buffer::BOFC ) return -1; // we cannot go further back

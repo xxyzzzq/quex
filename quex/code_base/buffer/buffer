@@ -8,6 +8,7 @@
 #include <quex/code_base/buffer/input_strategy>
 
 #include <iostream>
+#include <stdexcept>
 
 #include <cassert>
 extern "C" {
