@@ -1,0 +1,24 @@
+<test-database execution-time-sec="14.25" date="Sat Mar  1 01:13:29 2008">
+    <last-used-diff-display-program name=""/>
+    <group name="Quex Queries">
+        <test title="Wildcard Property Values" time-sum-sec="1.45"> 
+            <application file-name="test-query-property-wildcard-values.py" info-request-time="1195336071L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.45" crc="-989951512"/>
+            </choice-list>
+        </test>
+        <test title="Information about Properties" time-sum-sec="11.44"> 
+            <application file-name="test-query.py" info-request-time="1195336071L"/>
+            <choice-list number="2">
+               <choice name="PropertyList" result="OK" time-sec="10.08" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="1.37" crc="86685460"/>
+            </choice-list>
+        </test>
+        <test title="Character Sets for Property Settings" time-sum-sec="1.35"> 
+            <application file-name="test-query-character-set-by-expression.py" info-request-time="1195336071L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.35" crc="-1719645304"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
