@@ -43,10 +43,10 @@ awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $outp
 # (*) create packages: .tar.7z, .tar.gz
 
 # -- create xml file for the install builder
-$directory/make_install_builder_script.py $output $1
+## $directory/make_install_builder_script.py $output $1
+## echo "Exit, since we only want to create the xml file."
+## exit
 
-echo "Exit, since we only want to create the xml file."
-exit
 # -- create tar file for ./trunk
 tar cf /tmp/quex-$1.tar `cat $output`
 
