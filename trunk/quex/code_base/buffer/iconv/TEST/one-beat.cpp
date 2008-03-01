@@ -15,7 +15,7 @@ main(int argc, char** argv)
 
     FILE*   fh = fopen("test.txt", "r");
     uint8_t raw_buffer[128];
-    char*   target_charset = "UCS-4BE";
+    char*   target_charset = (char*)"UCS-4BE";
     uint8_t buffer[512];
     quex::input_strategy_iconv<FILE*>   is(fh, raw_buffer, 128, "UTF8", target_charset);
 
