@@ -534,16 +534,11 @@ class NumberSet:
         if Other.__class__ == Interval: Other = NumberSet(Other)
 
         # note: there should be no internal overlaps according to 'add_interval'
-        remainder = deepcopy(self)
+        clone = deepcopy(self)
         for interval in Other.__intervals:
-            new_remainder = NumberSet()
-            for my_interval in remainder.__intervals:
-                subtraction = my_interval.difference(interval)
-                for sub_interval in subtraction:
-                    new_remainder.add_interval(sub_interval)
-            remainder = new_remainder
+            clone.cut_interval(interval)
 
-        return remainder
+        return clone
 
     def inverse(self):
         """Intersection of inverses of all intervals."""
