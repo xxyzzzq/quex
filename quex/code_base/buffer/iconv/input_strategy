@@ -22,11 +22,9 @@
 //  -- The input character format is arbitrary. It can be anything that is
 //     supported by 'iconv'. Flexible character length codings are supported.
 //  
-//  
 //  -- The user's characters format has a fixed character size for each
 //     character. Any coding that involves different byte numbers for different
 //     characters or 'history' cannot be provided as user format.
-//  
 //  
 //  PRINCIPLE: 
 //  
@@ -51,7 +49,6 @@
 //  (3a) Copy unconverted bytes to the beginning of the raw buffer
 //  
 //        Raw Buffer:    ||ee.ee.ee______________________________||
-//  
 //  
 //  (3b) Load remaining bytes from the stream into raw buffer
 //  
@@ -229,17 +226,17 @@ namespace quex {
             raw_buffer.bytes_left_n = LoadedByteN + (raw_buffer.position - raw_buffer.start);
             raw_buffer.position     = raw_buffer.start;
 
-        /*  IF YOU GET AN ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
-         *
-         *      quex/code_base/compatibility/iconv-argument-types.h
-         * 
-         *  The issue is, that 'iconv' is defined on different systems with different
-         *  types of the second argument. There are two variants 'const char**'
-         *  and 'char **'. The file above tries to adapt via a 'typedef' according
-         *  to your system. Obviously, your system is not treated correctly, so
-         *  please, contact the author <fschaef@users.sourceforge.net> and notify
-         *  him about the macro that identifies your system.
-         */
+            /*  IF YOU GET AN ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
+             *
+             *      quex/code_base/compatibility/iconv-argument-types.h
+             * 
+             *  The issue is, that 'iconv' is defined on different systems with different
+             *  types of the second argument. There are two variants 'const char**'
+             *  and 'char **'. The file above tries to adapt via a 'typedef' according
+             *  to your system. Obviously, your system is not treated correctly, so
+             *  please, contact the author <fschaef@users.sourceforge.net> and notify
+             *  him about the macro that identifies your system.
+             */
             size_t report = iconv(iconv_handle, 
                                   (__Adapter_FuncIconv_SecondArgument)(&raw_buffer.position), &raw_buffer.bytes_left_n,
                                   (char**)&(user_buffer->position),                           &(user_buffer->bytes_left_n));
@@ -251,14 +248,13 @@ namespace quex {
                 case EILSEQ:
                     throw std::range_error("Invalid byte sequence encountered for given character coding.");
                 case EINVAL:
-                    throw std::range_error("Incomplete byte sequence encountered for given character coding.");
+                    // There is no problem, if the raw buffer ends in the middle of a character, since
+                    // the caller will copy the remaining part and restart with more bytes from the stream.
+                    return report;
                 case E2BIG:
                     throw std::range_error("Output buffer cannot hold number of coded characters.");
                 }
             }
-
-
-
             return report;
         }
 

@@ -9,8 +9,8 @@ int
 main(int argc, char** argv) 
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-	cout << "Converting Stream in N Tiny Beats\n";
-	return 0;
+        cout << "Converting Stream in N Tiny Beats\n";
+        return 0;
     }
 
     FILE*   fh = fopen("test.txt", "r");
@@ -26,10 +26,10 @@ main(int argc, char** argv)
     cout << "character n = " << LoadedN << endl;
  
     for(int i=0; i < LoadedN*4 ; i+=4) {
-	unsigned char b0 = buffer[i+0];
-	unsigned char b1 = buffer[i+1];
-	unsigned char b2 = buffer[i+2];
-	unsigned char b3 = buffer[i+3];
-	printf("%02X.%02X.%02X.%02X\n", (unsigned)b0, (unsigned)b1, (unsigned)b2, (unsigned)b3);
+        unsigned char b0 = buffer[i+0];
+        unsigned char b1 = buffer[i+1];
+        unsigned char b2 = buffer[i+2];
+        unsigned char b3 = buffer[i+3];
+        printf("%02X.%02X.%02X.%02X\n", (unsigned)b0, (unsigned)b1, (unsigned)b2, (unsigned)b3);
     }
 }
