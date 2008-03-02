@@ -1,3 +1,7 @@
+(*) 08y3m2d:
+
+    Check buffer code for exception safety.
+
 (*) 08y2m24d:
 
     ActionInfo objects can be immediately created at parsing time. 
