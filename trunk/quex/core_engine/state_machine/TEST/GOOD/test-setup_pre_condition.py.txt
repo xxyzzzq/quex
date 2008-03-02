@@ -1,0 +1,66 @@
+-------------------------------------------------------------------------------
+EXPRESSION =  init-state = 0L
+00000 == 'a' ==> 00001
+      <no epsilon>
+00001* <no epsilon>
+
+PRE-CONDITION =  init-state = 0L
+00000 == ';' ==> 00001
+      <no epsilon>
+00001* <no epsilon>
+
+with pre-condition =  init-state = 0L
+00000 == 'a' ==> 00001
+      <no epsilon>
+00001* <~ (4, 19, S, pre=9)
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (4, 28)
+      == ';' ==> 00001
+      <no epsilon>
+00001* <~ (4, 29, S)
+      <no epsilon>
+
+-------------------------------------------------------------------------------
+EXPRESSION =  init-state = 1L
+00000* <no epsilon>
+00001 == ['a', 'g'] ==> 00002
+      <no epsilon>
+00002 == [-oo, 'd'], ['f', oo] ==> 00002
+      == 'e' ==> 00003
+      <no epsilon>
+00003 == 'f' ==> 00000
+      <no epsilon>
+
+PRE-CONDITION =  init-state = 2L
+00000 == 'c' ==> 00001
+      <no epsilon>
+00001* <no epsilon>
+00002 == 'a' ==> 00003
+      <no epsilon>
+00003 == 'b' ==> 00000
+      <no epsilon>
+
+with pre-condition =  init-state = 1L
+00000* <~ (1, 8, S, pre=13)
+      <no epsilon>
+00001 == ['a', 'g'] ==> 00002
+      <no epsilon>
+00002 == [-oo, 'd'], ['f', oo] ==> 00002
+      == 'e' ==> 00003
+      <no epsilon>
+00003 == 'f' ==> 00000
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (1, 40)
+      == 'c' ==> 00002
+      <no epsilon>
+00001* <~ (1, 41, S)
+      <no epsilon>
+00002 <~ (1, 42)
+      == 'b' ==> 00003
+      <no epsilon>
+00003 <~ (1, 43)
+      == 'a' ==> 00001
+      <no epsilon>
+
