@@ -310,7 +310,7 @@ class PropertyInfo:
             return None
 
         for value in value_list:
-            result = result.union(NumberSet(self.code_point_db[value]))
+            result.unite_with(NumberSet(self.code_point_db[value]))
 
         return result
 

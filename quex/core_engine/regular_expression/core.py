@@ -487,7 +487,6 @@ def __construct(core_sm, pre_condition=None, post_condition=None):
         result = setup_pre_condition.do(result, pre_condition)
         result = __beautify(result)
 
-
     return result
   
 def create_ALL_BUT_NEWLINE_state_machine():

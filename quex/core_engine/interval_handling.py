@@ -216,7 +216,6 @@ class NumberSet:
        class also provides basic operations such as union, intersection,
        and difference.
     """
-    
     def __init__(self, Arg = None, ArgumentIsYoursF=False):
         """Arg = list     ==> list of initial intervals
            Arg = Interval ==> initial interval
@@ -432,8 +431,9 @@ class NumberSet:
         """This value gives some information about the 'complexity' of the number set."""
         return len(self.__intervals)
 
-    def get_intervals(self):
-        return deepcopy(self.__intervals)
+    def get_intervals(self, PromiseNotToChangeAnythingF=False):
+        if PromiseNotToChangeAnythingF: return self.__intervals
+        else:                           return deepcopy(self.__intervals)
 
     def unite_with(self, Other):
         Other_type = Other.__class__
@@ -453,17 +453,17 @@ class NumberSet:
         assert Other_type == Interval or Other_type == NumberSet, \
                "Error, argument of type %s" % Other.__class__.__name__
 
-        shadow_of_self = deepcopy(self)
+        clone = deepcopy(self)
 
         if Other_type == Interval: 
-            shadow_of_self.add_interval(Other)
-            return shadow_of_self
+            clone.add_interval(Other)
+            return clone
 
         # simply add all intervals to one single set
-        for interval in Other.__intervals + shadow_of_self.__intervals:
-            shadow_of_self.add_interval(interval)
+        for interval in Other.__intervals:
+            clone.add_interval(interval)
 
-        return shadow_of_self            
+        return clone            
 
     def has_intersection(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
@@ -527,6 +527,22 @@ class NumberSet:
                                                  min(x.end,   y.end)))
 
         return result
+
+    def subtract(self, Other):
+        Other_type = Other.__class__
+        assert Other_type == Interval or Other_type == NumberSet, \
+               "Error, argument of type %s" % Other.__class__.__name__
+
+        if Other_type == Interval:  
+            self.cut_interval(Other)
+            return
+
+        Begin = self.__intervals[0].begin
+        End   = self.__intervals[-1].end
+        for interval in Other.__intervals:
+            if interval.end   <= Begin: continue
+            if interval.begin >= End:   break
+            self.cut_interval(interval)
 
     def difference(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet

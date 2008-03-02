@@ -313,8 +313,8 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
                 # If the trigger set allows the current state to trigger to a state
                 # that has already been reached in the path of states, then this
                 # is the door to iteration. This 'door' backwards needs to be locked!
-                intersection = sm0_trigger_set.intersection(sm1_trigger_set)
-                sm1_transition.trigger_set = sm1_trigger_set.difference(intersection)
+                # PREVIOUSLY: intersection = sm0_trigger_set.intersection(sm1_trigger_set)
+                sm1_transition.trigger_set.subtract(sm0_trigger_set)  # PREVIOUSLY: subtract(intersection)
                 sm1_state.delete_transitions_on_empty_trigger_sets()
                 # (Where there is no door, there is no way to dive deeper ...)
 

@@ -160,7 +160,7 @@ def snap_set_term(stream):
                 result = result.intersection(set)
         elif word == "difference":
             for set in set_list[1:]:
-                result = result.difference(set)
+                result.subtract(set)
 
     elif word in special_character_set_db.keys():
         result = special_character_set_db[word]

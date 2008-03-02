@@ -1,7 +1,7 @@
 import quex.core_engine.generator.languages.core  as languages
 import quex.core_engine.generator.languages.label as languages_label
 from copy import deepcopy
-__DEBUG_CHECK_ACTIVE_F = True # Use this flag to double check that intervals are adjacent
+__DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
         BackwardInputPositionDetectionF=False):

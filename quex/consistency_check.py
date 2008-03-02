@@ -45,7 +45,6 @@ def do(Modes):
         error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.code,
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
-                
     # -- check for circular inheritance
     check_circular_inheritance(Modes)
 
