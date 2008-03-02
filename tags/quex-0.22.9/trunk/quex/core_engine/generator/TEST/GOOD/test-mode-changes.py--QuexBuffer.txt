@@ -1,0 +1,18 @@
+(*) test string: 
+'" "'
+(*) result:
+           1: X ->2  '"'
+2: WHITESPACE CONTINUE  ' '
+           2: X ->1  '"'
+  ''
+(*) Lexical Analyser Patterns:
+                  \" --> 1: X ->2
+                 " " --> 1: WHITESPACE CONTINUE
+## (1) code generation
+(*) Lexical Analyser Patterns:
+                  \" --> 2: X ->1
+                 " " --> 2: WHITESPACE CONTINUE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up
