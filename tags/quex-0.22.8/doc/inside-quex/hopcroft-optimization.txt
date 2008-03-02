@@ -1,0 +1,115 @@
+In some cases, such as in the example shown in figure <<fig:hopcroft-1, style=ref>>a,
+the structure of a state machine can obviously be optimized.
+Note, that the sole task of the state machine is to determine
+if the sequence of characters appeared that matches a pattern.
+In this sense, there is no difference between all acceptance
+states. As a direct consequence, if there is a set of acceptance
+states, such as state 1, 2, and 3 in figure <<fig:hopcroft-1, style=ref>>a, where all characters 
+trigger to another acceptance state, then those acceptance states
+can obviously be combined into a single one. This section
+concretizes this idea and develops the process known as 
+the Hopcroft optimization.
+
+[[fig:hopcroft-1]]
+{Combining equivalent states of a state machine.}
+image:figures/hopcroft-before.pdf]
+image:figures/hopcroft-after.pdf[]
+
+An essential concept of the Hopcroft Optimization is the concept of_ 
+    equivalent states_. State machines are equivalent if all possible following
+    sequences of triggers lead to the same result.  Broken down to states, one
+    requires for any two states A and B to be equivalent that all character
+    streams that cause failure starting A will cause failure starting from B.
+    Further, all character streams that cause acceptance starting from A cause
+{\it equivalent acceptance} starting from B. Concretely, this means
+that for all possible triggers $t$, one requires that the follow-up state
+from A on $t$ is in the same state set than from B on $t$.
+
+In the case of a single pattern, the set of states can be split up into 
+two state sets that build the original worklist: the set of states that are 
+acceptance states and those that are not. These two state sets are the initial
+worklist. For each state set X in the worklist one has to check wether it
+behaves 'abnormal', wether it triggers on a character $\alpha$ to a different
+set of states then the rest. Now, this state set is split into 'normal' states $X_0$
+and 'abornal' states $X_1$. The state set X from the worklist is then
+replaced by the two state sets $X_0$ and $X_1$. This process can then be 
+repeated until the worklist does not change anymore, i.e. no state sets 
+have to be split up, because the represent equivalent states.
+
+[[fig:hopcroft-2]]
+.Combining equivalent states of a state machine with states of different origin.
+image:figures/hopcroft-2-before.pdf[]
+image:figures/hopcroft-2-after.pdf[]
+
+As long as one deals with a single isolated pattern things end up here.  For
+isolated patterns, it only matters if a match occured or not. For the combined
+state machine, that represents the whole bank of patterns more information is
+to be considered. Such a case is depicted in figure <<fig:hopcroft-2, style=ref>>. Two
+acceptance state that report different patterns as 'winner' are not equivalent.
+Thus, the state set of initial equivalent acceptance states needs to be redefined.
+Note, that the remaining procedure remains the same -- one only has to discuss
+the change of the initial set of equivalent acceptance states for the case that
+multiple origins are involved.  Here, the term {\it equivalent acceptance} has
+to be revisited. 
+
+\definition{As long as there are no origins involved, then two acceptance states are
+    equivalent, if and only if -- well -- they are acceptance states.}
+
+For the combined state machine, though, it is important to know what pattern,
+    i.e. original state machine, actually reached acceptance, i.e. matched.  It
+    is possible that multiple patterns match at the same time. Thus, one has to
+    concentrate on the dominating original pattern (see section
+	    \ref{dominating-pattern}, page \pageref{dominating-pattern}).
+
+\definition{If a state machine contains origins, then two acceptance states are equivalent,
+       if and only if their dominating original patterns are the same.}
+
+Post conditions do not change anything at this setup, because the acceptance 
+state of the post-condition is only reached through the state that represents
+acceptance of the core pattern. Pre-conditions, though, add some restrictions.
+At this point, it makes sense to imagine the code produced to deal with pre-
+conditions:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     // entry of a state with some pre-conditions:
+     if      PreCondition_Pattern5 == True: acceptance = Pattern5
+     else if PreCondition_Pattern2 == True: acceptance = Pattern2
+     else if PreCondition_Pattern6 == True: acceptance = Pattern6
+     else:                                  acceptance = 7
+     // lesser priveledged patterns cannot be dealt with:
+     //     if PreCondition_Pattern36 == True: acceptance = Pattern36   // does this 
+     //     if PreCondition_Pattern0 == True:  acceptance = Pattern0    // make sense ?
+     ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let us assume that the pattern priviledges are ordered the same way as they
+appear in the code fragment, i.e. 5 has the highest priority, if not than comes
+2, if not then comes 6, and if the precondition of 6 does not hold then comes
+the unconditional acceptance of pattern 7. Lesser priviledged patterns
+(conditioned or unconditioned) do not matter, since the pattern 7 takes it all.
+Lets call the set of origins from the most priviledged one to the first
+unconditional state (if it exists) the {\it list of possible
+    acceptance origins}. Now, the following can be set about equivalent
+    acceptance states:
+
+
+\definition{If a state machine contains preconditioned origins, then two acceptance states are equivalent,
+       if and only if their list of possible origins are the same.}
+
+The only modification one has to do to the Hopcroft algorithm is to adapt
+the construction of the initial set of acceptance states. It has to be
+split according to the above criterion. The splitting procedure considering the
+triggering to equivalent states remains the same. Here is the algorithm 
+in pseudo-code:
+
+[TODO]
+
+Traditionally, the decision wether a set is to be split is made traditionally \cite{}
+based on single characters. This method works fine for ASCII character streams
+but becomes uneffective with Unicode (see also page \pageref{}). Again, the author
+developed a method that determines equivalence based on character ranges that cuts
+down the computation time to a tiny fraction.
+
+
+       
