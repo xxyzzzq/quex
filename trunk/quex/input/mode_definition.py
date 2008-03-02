@@ -35,11 +35,10 @@ def parse(fh, Setup):
 
 
     # (*) check for modes w/o pattern definitions
-    # print "## matches = " , repr(new_mode.matches)
-    if new_mode.matches == {}:
+    if not new_mode.has_event_handler() and new_mode.matches == {}:
         if new_mode.options["inheritable:"] != "only":
             new_mode.options["inheritable:"] = "only"
-            error_msg("Mode without pattern needs to be 'inheritable only'.\n" + \
+            error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
                       "<inheritable: only> has been added automatically.", fh,  DontExitF=True)
 
 def parse_mode_option_list(new_mode, fh):

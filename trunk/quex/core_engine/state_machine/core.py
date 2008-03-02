@@ -60,7 +60,7 @@ class Transition:
 
  
     def set(self, TriggerSet=None, TargetIdx=None):
-        if TriggerSet != None:  self.trigger_set = TriggerSet
+        if TriggerSet != None:  self.trigger_set  = TriggerSet
         elif TargetIdx != None: self.target_index = TargetIdx
 
 class EpsilonTransition:
@@ -473,7 +473,7 @@ class StateInfo:
         # NOTE: This function only deals with non-epsilon triggers. Empty
         #       ranges in 'history' are dealt with in '.get_trigger_map()'. 
         for target_idx, trigger_set in self.get_trigger_dictionary().items():
-            interval_list = trigger_set.get_intervals()
+            interval_list = trigger_set.get_intervals(PromiseNotToChangeAnythingF=True)
             for interval in interval_list: 
                 # add information about start and end of current interval
                 history.append(history_item(interval.begin, INTERVAL_BEGIN, target_idx))
@@ -727,7 +727,7 @@ class StateInfo:
                 self.__origin_list.append(origin)
             
         # -- entry checks 
-        if StateMachineID_or_StateOriginInfo.__class__.__name__ == "StateOriginInfo":
+        if StateMachineID_or_StateOriginInfo.__class__ == StateOriginInfo:
             new_origin = deepcopy(StateMachineID_or_StateOriginInfo)
             __set_origin(self, new_origin)
             return
@@ -787,7 +787,7 @@ class StateInfo:
         #        do not create a new transition.
         for t in self.__transition_list:
             if t.target_state_index == TargetStateIdx:
-                t.set(TriggerSet=t.trigger_set.union(NumberSet(Trigger)))
+                t.trigger_set.unite_with(NumberSet(Trigger))
                 break
         else:
             self.__transition_list.append(Transition(NumberSet(Trigger), TargetStateIdx))

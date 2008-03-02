@@ -196,15 +196,15 @@ class LexMode:
         #    is only inheritable it is not printed on its on, only as a base
         #    mode for another mode. default is 'yes'
         self.options_info["inheritable:"] = OptionInfo("single", ["no", "yes", "only"])
-        self.options["inheritable:"] = "yes"
-        self.options["exit:"]        = []
-        self.options["entry:"]    = []
+        self.options["inheritable:"]      = "yes"
+        self.options["exit:"]             = []
+        self.options["entry:"]            = []
         # -- a mode can restrict the possible modes to exit to. this for the
         #    sake of clarity. if no exit is explicitly mentioned all modes are
         #    possible. if it is tried to transit to a mode which is not in
         #    the list of explicitly stated exits, an error occurs.
         #    entrys work respectively.
-        self.options_info["exit:"]     = OptionInfo("list")
+        self.options_info["exit:"]  = OptionInfo("list")
         self.options_info["entry:"] = OptionInfo("list")
         # -- a mode can restrict the exits and entrys explicitly mentioned
         #    then, a derived mode cannot add now exits or entrys
@@ -218,8 +218,31 @@ class LexMode:
 
         # A flag indicating wether the mode has gone trough
         # consistency check.
-        self.consistency_check_done_f = False
+        self.consistency_check_done_f             = False
         self.inheritance_circularity_check_done_f = False
+
+    def has_event_handler(self):
+        def __check(CodeFragment):
+            if     CodeFragment.line_n    == -1 and CodeFragment.code == "" \
+               and CodeFragment.filename == "": return False
+            else:                               return True
+
+        if   __check(self.on_entry):       return True
+        elif __check(self.on_exit):        return True
+        elif __check(self.on_match):       return True
+        elif __check(self.on_failure):     return True
+        elif __check(self.on_indentation): return True
+
+    def has_matches(self):
+        assert self.inheritance_circularity_check_done_f == True, \
+               "called before consistency check!"
+
+        if self.matches != {}: return True
+
+        for name in self.base_modes:
+           if mode_db[name].has_matches(): return True
+
+        return False
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.
@@ -371,6 +394,7 @@ class LexMode:
 
         return base_mode_collection
 
+
     def add_option(self, Option, Value):
         """ SANITY CHECK:
                 -- which options are concatinated to a list
@@ -416,20 +440,29 @@ class LexMode:
             # -- is base mode inheritable?
             if mode_db[base_mode_name].options["inheritable:"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is **not inheritable**." % \
-                          (self.name, base_mode_name),
-                          self.filename, self.line_n)
+                          (self.name, base_mode_name), self.filename, self.line_n)
 
         # -- require all bases modes
         all_base_modes = self.get_base_modes()
 
+        # (*) A mode that does not force to be inherited needs finally contain matches.
+        #     A mode that contains only event handlers is not <inheritable: only>, but
+        #     somehow, it needs some matches in the base classes, otherwise it cannot
+        #     act as a pattern state machine.
+        if self.options["inheritable:"] != "only" and self.has_matches() == False:
+            error_msg("mode '%s' was allowed without <inheritable: only> despite it contains no matches\n" % \
+                      (self.name) + \
+                      "because it contains event handlers. Finally, though, it seems not want to inherit\n" + \
+                      "any mode that contains matches. Therefore, it cannot act as a pattern detecting\n" + \
+                      "state machine and cannot be a lexical analyzer mode.",
+                      self.filename, self.line_n)
+
         # (*) Enter/Exit Transitions
-        #
         for mode_name in self.options["exit:"]:
             # -- does other mode exist?
             if mode_db.has_key(mode_name) == False:
                 error_msg("mode '%s'\nhas  an exit to mode '%s'\nbut no such mode exists." % \
-                          (self.name, mode_name),
-                          self.filename, self.line_n)
+                          (self.name, mode_name), self.filename, self.line_n)
 
             # -- does other mode have an entry for this mode?
             #    (does this or any of the base modes have an entry to the other mode?)
