@@ -1,0 +1,287 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+//
+// (C) 2007 Frank-Rene Schaefer
+//
+#ifndef __INCLUDE_GUARD_QUEX_BUFFER__
+#define __INCLUDE_GUARD_QUEX_BUFFER__
+
+#include <quex/code_base/buffer/input_strategy>
+
+#include <iostream>
+#include <stdexcept>
+
+#include <cassert>
+extern "C" {
+#include <quex/code_base/compatibility/inttypes.h>
+}
+
+namespace quex {
+
+    const uint8_t  DEFAULT_BUFFER_BEGIN_OF_FILE_CODE = 0x19;
+    const uint8_t  DEFAULT_BUFFER_END_OF_FILE_CODE   = 0x1A;
+    const uint8_t  DEFAULT_BUFFER_LIMIT_CODE         = 0x00;
+
+    template <class InputStrategy, class OverflowPolicy> class basic_buffer;
+    
+#ifndef NDEBUG
+    /* DEBUG: 
+    **
+    ** The 'memory_position' type is a pointer mimiking class that stores also the
+    ** **base position** of the buffer to which it referes. Locations are
+    ** memory addresses. When a buffer-reload happens, those addresses have
+    ** to be adapted. Imagine:
+    **
+    ** before:  
+    **          Start                PosX                   Start = 0    
+    **          |                    |                      PosX  = 21 
+    **          [1234567890abcdfeghijklmnopqrstuvwxyzABC] 
+    **
+    **  after:
+    **          Start    PosX                               Start = 13
+    **          |        |                                  PosX  = 11 
+    **          [cdfeghijklmnopqrstuvwxyzABCDEFGHIJKLMNO] 
+    **
+    ** -- If NDEBUG is not defined, this type is used, so that asserts in seek
+    **    functions can check wether the start position refers to the current start
+    **    position of the buffer (i.e. the memory_position has been updated).
+    **
+    ** -- If NDEBUG is defined, than this type is defined as a normal pointer to 
+    **    the buffers character_type.
+    **
+    ** NOTE: This is only applied to the tell_adr() and seek_adr() functions.
+    **       The lexeme start pointer is not effected, since it is entirely handled
+    **       **inside** the buffer. Internal addresses **cannot** be considered
+    **       as memory positions of this type, since they have to be adapted
+    **       independently of the start position.
+    **____________________________________________________________________________
+    ** IMPORTANT: The one and only purpose of this class is to ensure that      **
+    **            '+=' is called in the right manner, whenever a buffer         **
+    **            reload has occured. IT CANNOT BE LINKED LOGICALLY TO THE      **
+    **            OPERATORS +,-,++,--! DO NOT USE THIS TYPE EXCEPT FOR SIMPLE   **
+    **            'TELL' AND 'SEEK'.                                            **
+    */
+    template <class character_type> 
+    struct memory_position_mimiker {
+
+        typedef long stream_position; // Assume: Any stream position type can be 
+        //                            // casted to 'long'. Templating with stream 
+        //                            // position would screw the whole buffer design, 
+        //                            // where we want to have a base class that is 
+        //                            // independent of the input handle type.                     
+
+        // for compatibility with 'character_type*'
+        memory_position_mimiker(character_type* Adr = 0x0, stream_position Pos = 0x0) 
+            : address(Adr), buffer_start_position(Pos) {}
+
+        character_type*  address;
+        stream_position  buffer_start_position;
+
+        bool operator==(const memory_position_mimiker& That)
+        { 
+          assert(this->buffer_start_position == That.buffer_start_position); 
+          return this->address == That.address; 
+        }
+        bool operator!=(const memory_position_mimiker& That)
+        { return ! (this->operator==(That)); }
+
+        // When loading forward from the stream, the pointers to memory_positions move backwards.
+        // Thus, the signs in the operators are mirrored.
+        // (operators not to be used in concatination -> void)
+        void operator+=(const int Value) { address += Value; buffer_start_position -= Value; }
+        void operator-=(const int Value) { address -= Value; buffer_start_position += Value; }
+
+        // conversion operator, so that the object can be used at any place
+        // where a normal provided_character_type pointer is required (integrates seemingless)
+        operator character_type*() { return address; }
+    };
+#endif          
+
+    struct DefaultOverflowPolicy {
+    template<class X, class Y> bool static forward(basic_buffer<X,Y>* that);
+    template<class X, class Y> bool static backward(basic_buffer<X,Y>* that);
+    };
+
+    template<class CharacterType=uint8_t>
+        class buffer_core {
+            // IDEA: The iteration over the character has to happen as fast as possible,
+            //       since this operation is performed very often. The loading of the
+            //       buffer happens seldom, and one can be more tolerant. For iterating
+            //       we do not want virtual functions since those are slower and cannot
+            //       be inlined. For loading, virtual functions are OK, it is just one
+            //       word more to copy (probably neglectable when e.g. 65536 bytes are loaded).
+            //
+            // If the buffer definition is split into base and derived class, the lexical 
+            // analyser can contain 'buffer_core<character_type>*' which can hold any buffer
+            // that runs on the same character type. It is independent on the input strategy,
+            // as long as it also runs on the same character type (e.g. uin8_t, uint16_t ...).
+            //
+            // IMPORTANT: The function calls to get_forward() and get_backward() can be perfectly
+            //            inlined, since the size of increment/decrement is known at compile time.
+        public:
+            typedef CharacterType  character_type;
+#ifndef NDEBUG
+            typedef memory_position_mimiker<character_type>  memory_position;
+#else
+            typedef character_type*                          memory_position;
+#endif
+            const character_type BOFC;
+            const character_type EOFC;
+            const character_type BLC;
+
+            // (*) Constructor/Destructor __________________________________________________________________
+        protected:
+            buffer_core(size_t BufferSz=65536, size_t BackupSectionSz=64,
+                        character_type   Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
+                        character_type   Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
+                        character_type   Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+        public:
+            virtual ~buffer_core();
+
+            // (*) Analyzer Main functions _________________________________________________________________
+            int  get_forward();
+            int  get_backward();
+            virtual int  load_forward() = 0;
+            virtual int  load_backward() = 0;
+
+            void              set_subsequent_character(const int Value);
+            character_type    get_subsequent_character();
+            character_type    get_current_character();
+            character_type*   get_lexeme_start_p();
+            void              mark_lexeme_start();
+            void              move_forward(const size_t);   // load buffer if nec. /influences lexeme start
+            void              move_backward(const size_t);  // 
+            void              set_current_p(character_type* Adr);       
+            character_type*   current_p() { return _current_p; }
+
+            memory_position   tell_adr();
+            void              seek_adr(memory_position Adr);
+            void              seek_offset(const int Offset);
+
+            size_t            content_size()  { return BUFFER_SIZE - 2; }
+            character_type*   content_begin() { return _buffer + 1; }               // 1st in content
+            character_type*   content_end()   { return _buffer + BUFFER_SIZE - 1; } // 1st after content
+            character_type*   buffer_begin()  { return _buffer; }                   // 1st in buffer
+            character_type*   buffer_end()    { return _buffer + BUFFER_SIZE; }     // 1st after buffer
+
+            virtual void      close_input() = 0;
+
+        public:
+            // NOT private: for usage in the template type OverflowPolicy
+            //              (template friends are not solved propperly on all compilers)
+            void   __set_end_of_file(character_type* EOF_p);
+            void   __set_begin_of_file();
+            void   __unset_end_of_file();
+            void   __unset_begin_of_file();
+
+#ifdef __QUEX_OPTION_UNIT_TEST
+            // NOTE: Include <iostream> for unit tests before this header!
+            character_type   get_border_char(const character_type);
+            void             show_content();
+#endif
+        protected:
+            // (*) Member Variables ___________________________________________________________________________
+            character_type*  _buffer;              
+            character_type*  _current_p;
+            size_t           _current_fallback_n;  // is required for 'show' functions
+            character_type*  _lexeme_start_p;
+            character_type*  _end_of_file_p;       // pointer to position in buffer that corresponds EOF, 
+            //                                     // == 0x0 if EOF not in buffer.
+
+            const size_t  BUFFER_SIZE;
+            const size_t  FALLBACK_N;
+            //
+            void          EMPTY_or_assert_consistency(bool AllowTerminatingZeroF = true);
+#ifndef NDEBUG
+            // When NDEBUG is not defined the memory_position stores the _start_pos_of_buffer
+            // with every address. This way, one can compare if memory addresses are consistent.
+            virtual long  DEBUG_get_start_position_of_buffer() = 0;
+#endif
+        };
+
+    template<class InputStrategy  = input_strategy<std::istream*, uint8_t>,
+             class OverflowPolicy = DefaultOverflowPolicy> 
+        class basic_buffer  
+                : public buffer_core<typename InputStrategy::provided_character_type> {
+        public:
+            typedef InputStrategy my;
+            typedef typename InputStrategy::stream_position           stream_position;
+            typedef typename InputStrategy::stream_offset             stream_offset;
+            typedef typename InputStrategy::input_handle_type         input_handle_type;
+            typedef typename InputStrategy::provided_character_type   character_type;
+#ifndef NDEBUG
+            typedef memory_position_mimiker<character_type>  memory_position;
+#else
+            typedef character_type*                          memory_position;
+#endif
+        private:
+            // buffers cannot be copied!
+            /* DISABLED */ basic_buffer(const basic_buffer&);
+            /* DISABLED */ basic_buffer operator=(const basic_buffer&);
+
+        public:
+            // (*) Constructor/Destructor __________________________________________________________________
+            basic_buffer(InputStrategy& input_strategy, 
+                         size_t BufferSz=65536, size_t BackupSectionSz=64,
+                         character_type Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
+                         character_type Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
+                         character_type Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            basic_buffer(input_handle_type* input_handle, 
+                         size_t BufferSz=65536, size_t BackupSectionSz=64,
+                         character_type Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
+                         character_type Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
+                         character_type Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            virtual ~basic_buffer() {}
+
+            // (*) loading according input strategy
+
+            virtual int  load_forward();
+            virtual int  load_backward();
+            virtual void close_input()  { _input.close(); }
+
+#ifdef __QUEX_OPTION_UNIT_TEST
+            // NOTE: Include <iostream> for unit tests before this header!
+            void             show_brief_content(); 
+            void             x_show_content(); 
+#endif
+
+        protected:
+            void  __constructor_core();
+            int   __load_core(character_type* fill_start_adr, const int N);
+            //
+            void  EMPTY_or_show_buffer_load(const char*);
+            //
+            InputStrategy    _input;               // DESIGN PATTERN: 'Strategy'
+            stream_position  _start_pos_of_buffer; // position in stream that corresponds to _content[0]
+#ifndef NDEBUG
+            virtual long     DEBUG_get_start_position_of_buffer() { return _start_pos_of_buffer; }
+#endif
+        };    
+
+    typedef basic_buffer<> buffer;
+
+
+    template<class X, class Y> inline bool   
+        DefaultOverflowPolicy::forward(basic_buffer<X,Y>* that) { 
+#ifdef __QUEX_OPTION_UNIT_TEST
+            std::cerr << "ALERT: Lexeme start drops beyond end of buffer (buffer overflow)." << std::endl;
+#endif
+            that->__set_end_of_file(that->content_begin());
+            return false; /* => END OF FILE */ 
+        }
+
+
+    template<class X, class Y> inline bool   
+        DefaultOverflowPolicy::backward(basic_buffer<X,Y>* that) { 
+#ifdef __QUEX_OPTION_UNIT_TEST
+            std::cerr << "ALERT: Lexeme start drops beyond begin of buffer (buffer underflow)." << std::endl;
+#endif
+            that->__set_begin_of_file();
+            return false; /* => BEGIN OF FILE */ 
+        }
+}
+
+#include <quex/code_base/buffer/buffer_core.i>
+#include <quex/code_base/buffer/buffer.i>
+
+
+#endif // __INCLUDE_GUARD_QUEX_BUFFER__
