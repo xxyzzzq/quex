@@ -1,28 +1,28 @@
-<test-database execution-time-sec="3.19" date="Sun Mar  2 02:27:09 2008">
+<test-database execution-time-sec="1.65" date="Sun Mar  2 23:57:31 2008">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." time-sum-sec="0.22"> 
+    <test title="Check supported formats." time-sum-sec="0.32"> 
         <application file-name="get_supported_formats.py" info-request-time="1203729706L"/>
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.22" crc="-1342312020"/>
+           <choice name="" result="OK" time-sec="0.32" crc="-1342312020"/>
         </choice-list>
     </test>
     <group name="Plot">
-        <test title="Core state machine." time-sum-sec="0.63"> 
+        <test title="Core state machine." time-sum-sec="0.31"> 
             <application file-name="plot-core.py" info-request-time="1204328698L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.63" crc="-913485699"/>
+               <choice name="" result="OK" time-sec="0.31" crc="-913485699"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="1.47"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.63"> 
             <application file-name="plot-papc.py" info-request-time="1204328703L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.47" crc="-60819449"/>
+               <choice name="" result="OK" time-sec="0.63" crc="-60819449"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." time-sum-sec="0.87"> 
+        <test title="Pre-Context." time-sum-sec="0.38"> 
             <application file-name="plot-pre-context.py" info-request-time="1204328709L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.87" crc="2024337280"/>
+               <choice name="" result="OK" time-sec="0.38" crc="2024337280"/>
             </choice-list>
         </test>
     </group>

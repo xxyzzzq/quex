@@ -1,1 +1,1 @@
-include aux/hallo.txt
+include auxiliary/hallo.txt
