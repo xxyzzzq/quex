@@ -9,22 +9,22 @@ IDENTIFIER	la
 IDENTIFIER	premiere
 IDENTIFIER	'include'
 INCLUDE	
-IDENTIFIER	aux/hello.txt
->> including: aux/hello.txt
+IDENTIFIER	auxiliary/hello.txt
+>> including: auxiliary/hello.txt
 INCLUDE	
-IDENTIFIER	aux/bonjour.txt
->> including: aux/bonjour.txt
+IDENTIFIER	auxiliary/bonjour.txt
+>> including: auxiliary/bonjour.txt
 IDENTIFIER	Bonjour
 IDENTIFIER	le
 IDENTIFIER	monde
 INCLUDE	
-IDENTIFIER	aux/moin.txt
->> including: aux/moin.txt
+IDENTIFIER	auxiliary/moin.txt
+>> including: auxiliary/moin.txt
 IDENTIFIER	Moin
 IDENTIFIER	Moin
 INCLUDE	
-IDENTIFIER	aux/hallo.txt
->> including: aux/hallo.txt
+IDENTIFIER	auxiliary/hallo.txt
+>> including: auxiliary/hallo.txt
 IDENTIFIER	Hallo
 <TERMINATION>	
 << return from include
@@ -32,8 +32,8 @@ IDENTIFIER	Tschuess
 <TERMINATION>	
 << return from include
 INCLUDE	
-IDENTIFIER	aux/hallo.txt
->> including: aux/hallo.txt
+IDENTIFIER	auxiliary/hallo.txt
+>> including: auxiliary/hallo.txt
 IDENTIFIER	Hallo
 <TERMINATION>	
 << return from include
