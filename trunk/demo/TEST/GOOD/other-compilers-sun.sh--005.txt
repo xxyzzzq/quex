@@ -5,8 +5,8 @@ executing ...
 ,------------------------------------------------------------------------------------
 | [START]
 INCLUDE	
-IDENTIFIER	aux/hallo.txt
->> including: aux/hallo.txt
+IDENTIFIER	auxiliary/hallo.txt
+>> including: auxiliary/hallo.txt
 IDENTIFIER	Hallo
 <TERMINATION>	
 << return from include
