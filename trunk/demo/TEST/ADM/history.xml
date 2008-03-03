@@ -1,4 +1,4 @@
-<history date="Mon Mar  3 00:04:39 2008" element-n="54">
+<history date="Mon Mar  3 00:26:53 2008" element-n="54">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -91,6 +91,6 @@
         <accept    time="22:04:00" application="005.sh" choice="1_NDEBUG" crc="-336593529" />
         <accept    time="22:05:10" application="005.sh" choice="2" crc="681535226" />
         <accept    time="22:05:18" application="005.sh" choice="2_NDEBUG" crc="-1222270935" />
-        <test-runs-today n="7" ok-n="3" fail-n="4" else-n="0" last-run="failure" last-time="23:04:39"/>
+        <test-runs-today n="8" ok-n="3" fail-n="5" else-n="0" last-run="failure" last-time="23:26:53"/>
     </day>
 </history>
