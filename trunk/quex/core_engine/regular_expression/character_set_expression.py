@@ -157,7 +157,7 @@ def snap_set_term(stream):
                 result.unite_with(set)
         elif word == "intersection":
             for set in set_list[1:]:
-                result = result.intersection(set)
+                result.intersect_with(set)
         elif word == "difference":
             for set in set_list[1:]:
                 result.subtract(set)

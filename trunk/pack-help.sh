@@ -20,10 +20,17 @@ mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py
 input=/tmp/file-list-in.txt
 output=/tmp/file-list-out.txt
 
+cd $QUEX_PATH
 cd ..
 
-find $directory/quex $directory/demo  -type f  > $input
-find $directory/ -maxdepth 1 -type f >> $input
+find trunk/quex $directory/demo  -type f  > $input
+echo "trunk/LPGL.txt" >> $input
+echo "trunk/COPYRIGHT.txt" >> $input
+echo "trunk/README" >> $input
+echo "trunk/unit_test_results.txt" >> $input
+echo "trunk/quex-exe.py" >> $input
+echo "trunk/__init__.py" >> $input
+
 
 # -- filter out all files that are not directly required for 
 #    a working application.
@@ -41,11 +48,7 @@ awk ' ! /\.swp$/ { print; }'  $input > $output; cp $output $input
 awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
 
 # (*) create packages: .tar.7z, .tar.gz
-
-# -- create xml file for the install builder
-## $directory/make_install_builder_script.py $output $1
-## echo "Exit, since we only want to create the xml file."
-## exit
+exit
 
 # -- create tar file for ./trunk
 tar cf /tmp/quex-$1.tar `cat $output`
@@ -56,6 +59,10 @@ tar xf quex-$1.tar
 rm quex-$1.tar 
 mv trunk quex-$1
 tar cf quex-$1.tar ./quex-$1
+
+# -- create xml file for the install builder
+$QUEX_PATH/make_install_builder_script.py `pwd`/quex-$1 $1
+
 
 # -- compress the tar file
 7z a quex-$1.tar.7z quex-$1.tar

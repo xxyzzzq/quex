@@ -495,37 +495,82 @@ class NumberSet:
                 if x.begin < y.end or y.begin < x.end: return True
         return False
 
-    def intersection(self, Other):
+    def intersect_with(self, Other):
         assert Other.__class__ == Interval or Other.__class__ == NumberSet
 
-        if Other.__class__ == Interval: Other = NumberSet(Other)
-
-        # intersect with each interval
-        result = NumberSet()
-
-        if   Other.__intervals == [] or self.__intervals == []:      return result
+        if Other.__class__ == Interval: Other_intervals = [ Other ]
+        else:                           Other_intervals = Other.__intervals
+        
+        if Other_intervals == [] or self.__intervals == []:     
+            self.__intervals = []
+            return 
 
         self_begin = self.__intervals[0].begin
         self_end   = self.__intervals[-1].end
-        if   Other.__intervals[-1].end  < self_begin: return result
-        elif Other.__intervals[0].begin > self_end:   return result
+        Other_begin = Other_intervals[0].begin
+        Other_end   = Other_intervals[-1].end
+        if Other_end  < self_begin or Other_begin > self_end:   
+            self.__intervals = []
+            return
 
-        # TODO: Intervals are always sorted, thus intervals that are not to be 
-        #       considered can be identified quickly. The fact that they are 
-        #       sorted, though, needs to be verified! Only then touch this issue.
-        for x in Other.__intervals:
-            if   x.end   <= self_begin: continue
-            elif x.begin >= self_end:   break
-            for y in self.__intervals:
-                # PASTE: implement Interval::overlap() for performance reasons.
+        # For each interval to leave remain, it needs at least have an intersection
+        # with one of the other intervals. If such an intersection is found the
+        # interval of concern can be pruned appropriately.
+        # print "##si0", self.__intervals
+        L              = len(self.__intervals)
+        insertion_list = []
+        deletion_list  = []
+        i              = -1
+        begin_i        = -1
+        end_i          = L
+        for x in self.__intervals:
+            i += 1
+            if x.end   <= Other_begin: continue
+            elif begin_i == -1:        begin_i = i; i -= begin_i; 
+            if x.begin >= Other_end:   end_i   = i; break
+
+            replacement_list = []
+            for y in Other_intervals:
                 if   x.begin >= y.end:   continue
                 elif x.end   <= y.begin: break
                 # x.end > y.begin  (lacks condition: x.begin < y.end)
                 # y.end > x.begin  (lacks condition: y.begin < x.end)
                 if x.begin < y.end or y.begin < x.end:
-                    result.add_interval(Interval(max(x.begin, y.begin),
-                                                 min(x.end,   y.end)))
+                    replacement_list.append([max(x.begin, y.begin), min(x.end, y.end)])
 
+            if replacement_list != []:
+                x.begin, x.end = replacement_list.pop(0)
+                insertion_list.append([i, replacement_list])
+            else:
+                deletion_list.append(i)
+
+        # -- delete the intervals that have no intersection
+        if begin_i != -1: del self.__intervals[:begin_i]
+        if end_i != L:    del self.__intervals[end_i:]
+        offset = 0
+        for i in deletion_list:
+            del self.__intervals[i - offset]
+            offset += 1
+
+        # -- insert new intervals
+        offset = 0
+        for i, replacement_list in insertion_list:
+            for begin, end in replacement_list:
+                i += 1
+                if i >= L: self.__intervals.append(Interval(begin, end))
+                else:      self.__intervals.insert(i, Interval(begin, end))
+            offset += i
+
+    def intersection(self, Other):
+        assert Other.__class__ == Interval or Other.__class__ == NumberSet
+
+        if Other.__class__ == Interval: Other_intervals = [ Other ]
+        else:                           Other_intervals = Other.__intervals
+
+        # NOTE: If, for any reason this function does not rely on intersect_with(), then
+        #       the function intersect_with() is no longer under unit test!
+        result = deepcopy(self)
+        result.intersect_with(Other)
         return result
 
     def subtract(self, Other):

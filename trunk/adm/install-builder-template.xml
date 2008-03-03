@@ -2,9 +2,9 @@
     <shortName>quex</shortName>
     <fullName>Quex</fullName>
     <version>$$VERSION$$</version>
-    <readmeFile>trunk/README</readmeFile>
-    <licenseFile>trunk/LPGL.txt</licenseFile>
-    <splashImage>trunk/adm/logo/quex-logo.png</splashImage>
+    <readmeFile>$$QUEX_PATH$$/README</readmeFile>
+    <licenseFile>$$QUEX_PATH$$/LPGL.txt</licenseFile>
+    <splashImage>$$QUEX_PATH$$/adm/logo/quex-logo.png</splashImage>
     <compressionAlgorithm>lzma</compressionAlgorithm>
     <enableRollback>1</enableRollback>
     <saveRelativePaths>1</saveRelativePaths>
@@ -21,9 +21,6 @@
                     <destination>${installdir}</destination>
                     <name>programfiles</name>
                     <platforms>all</platforms>
-                    <distributionFileList>
-                        $$FILE_LIST$$
-                    </distributionFileList>
                     <shortcutList>
                         <shortcut>
                             <comment>Uninstall</comment>
@@ -52,6 +49,11 @@
                             <value>${installdir}</value>
                         </addEnvironmentVariable>
                     </actionList>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>$$DISTRIBUTION_ROOT_DIR$$</origin>
+                        </distributionDirectory>
+                    </distributionFileList>
                 </folder>
                 <folder>
                     <description>Program Files</description>
@@ -65,6 +67,11 @@
                             <value>${installdir}</value>
                         </addEnvironmentVariable>
                     </actionList>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>$$DISTRIBUTION_ROOT_DIR$$</origin>
+                        </distributionDirectory>
+                    </distributionFileList>
                 </folder>
             </folderList>
             <startMenuShortcutList>

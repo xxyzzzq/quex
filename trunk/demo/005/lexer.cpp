@@ -48,6 +48,10 @@ main(int argc, char** argv)
                
                 cout << ">> including: " << Token.text() << endl;
                 FILE* fh = fopen(Token.text().c_str(), "r");
+                if( fh == 0x0 ) {
+                    cout << "file not found\n";
+                    return 0;
+                }
                 qlex->include_stack_push(fh);
                 break;
                 
