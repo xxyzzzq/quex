@@ -59,7 +59,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
     whitespace_set  = NumberSet(ord(' '))
     initial_triggers = PatternStateMachine.get_init_state().get_trigger_set_union()
 
-    starts_never_on_whitespace_f = initial_triggers.intersection(whitespace_set).is_empty()
+    starts_never_on_whitespace_f = not initial_triggers.has_intersection(whitespace_set)
     contains_only_spaces_f       = counter.contains_only_spaces(PatternStateMachine)
 
     if newline_n != 0:
