@@ -1,0 +1,75 @@
+Character set expression are a tool to combine, filter and or select character
+ranges conviniently. The result of a character set expression is a set of
+characters. Such a set of characters can then be used to express that any of
+them can occur at a given position of the input stream. The character set
+expression $$[:alpha:]$$, for example matches all characters that are 
+letters, i.e. anything from `a` to `z` and `A` to `Z`. It belongs to the
+POSIX bracket expressions which are explained below. Further, this section
+explains how sets can be generated from other sets via the operations _union_,
+_intersection_, _difference_, and _inverse_.
+
+POSIX bracket expressions are basically shortcuts for some more 
+regular expressions that would formally look a bit more clumpsy. Quex
+provides those expressions bracketed in $$[:$$ and $$:]$$ brackets.
+They are specified in the table below.
+
+[grid=all]
+`----------`---------------------------------`----------------------------------
+Expression   Meaning                           Related Regular Expression
+--------------------------------------------------------------------------------
+[:alnum:]    Alphanumeric characters           $$[A-Za-z0-9]$$                          
+[:alpha:]    Alphabetic characters             $$[A-Za-z]$$                             
+[:blank:]    Space and tab                     $$[ \t]$$                                
+[:cntrl:]    Control characters                $$[\x00-\x1F\x7F]$$                      
+[:digit:]    Digits                            $$[0-9]$$                                
+[:graph:]    Visible characters                $$[\x21-\x7E]$$                          
+[:lower:]    Lowercase letters                 $$[a-z]$$                                
+[:print:]    Visible characters and spaces     $$[\x20-\x7E]$$                          
+[:punct:]    Punctuation characters            $$[!"#$%&'()*+,-./:;?@[\\\]_`{|}~]$$ 
+[:space:]    Whitespace characters             $$[ \t\r\n\v\f]$$                        
+[:upper:]    Uppercase letters                 $$[A-Z]$$                                
+[:xdigit:]   Hexadecimal digits                $$[A-Fa-f0-9]$$                          
+--------------------------------------------------------------------------------
+
+Caution has to be taken if these expressions are used for non-english
+languages. They are _solely_ concerned with the ASCII character set. For more
+sophisticated property processing it is advisable to use Unicode property
+expressions as explained in section <<formal/ucs-properties>>. In particular,
+            it is advisable to use `\P{ID_Start}`, `\P{ID_Continue}`,
+            `\P{Hex_Digit}`, `\P{White_Space}`, and `\G{Nd}`.
+
+The use of Unicode character set potentially implies the handling of many
+different properties and character sets. For convinience, quex provides
+_operations on character sets_ to combine and filter different character sets
+and create new adapted ones. The basic operations that quex allows are
+displayed in the following table:
+
+[grid=all]
+`----------------------------`-------------------------------------------`----------------------------------
+Syntax                        Meaning                                     Example
+--------------------------------------------------------------------------------------------------------
+`union(A0, A1, ...)`          Union of the list of sets.                  `union([a-z], [A-Z]) = [a-zA-Z]`
+`intersection(A0, A1, ...)`   Intersection the list of sets.              `intersection([0-9], [4-5]) = [4-5]` 
+`difference(A, B0, B1, ...)`  Subtracts B0, B1, from set A.               `difference([0-9], [4-5]) [0-36-9]`
+`inverse(A0, A1, ...)`        Inverse of the union of the list of sets.   `inverse([\x40-\5A]) = [\x00-\x40\x5B-\U12FFFF]` 
+----------------------------------------------------------------------------------------------------------
+
+Note, that the `difference` and `intersection` operation can be 
+used convienently to filter different sets. For example
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  [: difference(\P{Script=Greek}, \P{Digit}) :]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+results in the set of greek characters except the digits. To allow
+only the numbers from the arabic code block `intersection` can 
+be used as follows:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  [: intersection(\P{Block=Arabic}, \P{Numeric}) :]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The subsequent section elaborates on the concept of Unicode properties.
+
