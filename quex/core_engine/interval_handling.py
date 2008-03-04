@@ -223,7 +223,6 @@ class NumberSet:
            """
         arg_type = Arg.__class__
         assert arg_type in  [Interval, NumberSet, int, list] or Arg == None
-
         
         if  arg_type == list:
             if ArgumentIsYoursF:

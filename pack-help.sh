@@ -48,7 +48,6 @@ awk ' ! /\.swp$/ { print; }'  $input > $output; cp $output $input
 awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
 
 # (*) create packages: .tar.7z, .tar.gz
-exit
 
 # -- create tar file for ./trunk
 tar cf /tmp/quex-$1.tar `cat $output`

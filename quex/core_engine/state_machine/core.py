@@ -334,7 +334,13 @@ class StateInfo:
         return self.__transition_list  
 
     def get_epsilon_trigger_set(self):
-        return deepcopy(self.__epsilon.trigger_set)
+        # (*) re-compute the epsilon trigger set
+        all_triggers = NumberSet()
+        for t in self.__transition_list:
+            all_triggers.unite_with(t.trigger_set)
+        self.__epsilon.trigger_set = all_triggers.inverse()
+
+        return self.__epsilon.trigger_set
 
     def get_epsilon_target_state_indices(self):
         return deepcopy(self.__epsilon.target_state_indices)
@@ -347,7 +353,7 @@ class StateInfo:
 
     def get_target_state_indices(self):
         ti_list = self.get_normal_target_states()
-        if not self.__epsilon.trigger_set.is_empty():
+        if not self.get_epsilon_trigger_set().is_empty():
             for ti in self.__epsilon.target_state_indices:
                 if ti not in ti_list:
                     ti_list.append(ti)
@@ -363,7 +369,7 @@ class StateInfo:
                 if t.target_state_index not in result_list:
                     result_list.append(t.target_state_index) 
 
-        if self.__epsilon.trigger_set.contains(Trigger):
+        if self.get_epsilon_trigger_set().contains(Trigger):
             for ti in self.__epsilon.target_state_indices:
                 if ti not in result_list:
                     result_list.append(ti)
@@ -388,7 +394,7 @@ class StateInfo:
         for t in self.__transition_list:
             result.unite_with(t.trigger_set)
         if self.__epsilon.target_state_indices != []:
-            result.unite_with(self.__epsilon.trigger_set)
+            result.unite_with(self.get_epsilon_trigger_set())
         return result
 
     def get_trigger_set(self, TargetIdx=None):
@@ -396,13 +402,13 @@ class StateInfo:
            it means that the epsilon transition triggers to target state. If the TargetIndex is 
            omitted the set of all triggers, except the epsilon triggers, are returned."""
         if TargetIdx == None:
-            return self.__epsilon.trigger_set.inverse() 
+            return self.get_epsilon_trigger_set().inverse() 
 
         for t in self.__transition_list:
             if t.target_state_index == TargetIdx:
                 return t.trigger_set
 
-        if self.__epsilon.trigger_set.contains(TargetIdx):
+        if self.get_epsilon_trigger_set().contains(TargetIdx):
             return None 
         return NumberSet() 
 
@@ -419,9 +425,9 @@ class StateInfo:
         for t in self.__transition_list: 
             consider(t.target_state_index, t.trigger_set)
 
-        # if not self.__epsilon.trigger_set.is_empty():
+        # if not self.get_epsilon_trigger_set().is_empty():
         #    for ti in self.__epsilon.target_state_indices: 
-        #       consider(ti, self.__epsilon.trigger_set) 
+        #       consider(ti, self.get_epsilon_trigger_set()) 
 
         return result
         
@@ -613,7 +619,7 @@ class StateInfo:
                     return False
             # -- check against else transition - should not be necessary if transitions
             #    are set up propperly
-            if not tA.trigger_set.has_intersection(self.__epsilon.trigger_set):
+            if not tA.trigger_set.has_intersection(self.get_epsilon_trigger_set()):
                 return False
                 
         return True
@@ -633,14 +639,14 @@ class StateInfo:
             elif t.target_state_index != TargetIdx: return False
 
         # epsilon transition
-        if   not self.__epsilon.trigger_set.has_intersection(TriggerSet): return True
+        if   not self.get_epsilon_trigger_set().has_intersection(TriggerSet): return True
         elif len(self.__epsilon.target_state_indices) != 1:                return False
         elif self.__epsilon.target_state_indices[0] != TargetIdx:          return False
         
         # if no normal transition trigger set triggered, the epsilon trigger set needs to trigger
         # otherwise there is something seriously wrong (probably in 'add_transition'    
         raise "epsilon trigger set did not catch a trigger set that did not match normal transitions.\n" + \
-              "epsilon trigger set = " + repr(self.__epsilon.trigger_set) + "\n" \
+              "epsilon trigger set = " + repr(self.get_epsilon_trigger_set()) + "\n" \
               "normal trigger sets = " + repr(map(lambda ts: ts.get_utf8_string(), 
                                                   map(lambda t: t.trigger_set, self.__transition_list)))
               
@@ -773,12 +779,13 @@ class StateInfo:
             # Trigger = None means that the remaining set of triggers is to be
             # used (if the epsilon set is already empt, then one cannot assign
             # to it anything)
-            if self.__epsilon.trigger_set.is_empty():
+            if self.get_epsilon_trigger_set().is_empty():
                 return None
-            Trigger = copy(self.__epsilon.trigger_set)
+            Trigger = copy(self.get_epsilon_trigger_set())
             self.__epsilon.trigger_set = NumberSet()
 
-        if type(Trigger) == long: Trigger = int(Trigger)
+        elif type(Trigger) == long: Trigger = int(Trigger)
+        elif type(Trigger) == list: Trigger = NumberSet(Trigger)
             
         # (*) Append Transition: StartState --- Trigger ---> TargetState
         #
@@ -787,16 +794,12 @@ class StateInfo:
         #        do not create a new transition.
         for t in self.__transition_list:
             if t.target_state_index == TargetStateIdx:
-                t.trigger_set.unite_with(NumberSet(Trigger))
+                if Trigger.__class__ == Interval:  t.trigger_set.add_interval(Trigger)
+                if Trigger.__class__ == NumberSet: t.trigger_set.unite_with(Trigger)
+                else:                              t.trigger_set.add_interval(Interval(Trigger))
                 break
         else:
             self.__transition_list.append(Transition(NumberSet(Trigger), TargetStateIdx))
-
-        # (*) re-compute the epsilon trigger set
-        all_triggers = NumberSet()
-        for t in self.__transition_list:
-            all_triggers.unite_with(t.trigger_set)
-        self.__epsilon.trigger_set = all_triggers.inverse()
 
         return TargetStateIdx
     
