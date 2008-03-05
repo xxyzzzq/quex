@@ -1,0 +1,70 @@
+Pattern matching can be described by a finite state automaton where
+incoming characters play the role of triggers. Each incoming character, i.e.
+trigger, determines wether the state machine transits into a new state or it
+remains in the same state. Consider figure <<fig:pattern-state-machines, , style=ref>>
+that depicts a state machine to match a floating point number. In its initial
+state it waits for a digit (the `START` state). If no digit arrives, the
+state machine goes into the `FAILED` state. It can be said for sure, that
+this was no number.  If a digit arrives, though, in transits into `DIGITS-A`.  
+As long as digits arrive, it remains in this state. If a
+non-digit comes in it transits into the `ACCEPTANCE` state, since already
+enough digits have arrived as to judge that it is a number. However, if a dot
+arrived, then the state machine enters into the `DOT` state. If after the
+dot a new digit arrives, it enters into the state `DIGITS-B`.  
+Note, that in the states `DIGITS-A`, `DOT`, or `DIGITS-B` a
+character from the 'else' set (non-expected characters) lets the machine
+still transit into an `ACCEPTANCE` state, since enough characters have
+arrived to judge that it is a number. 
+
+[[fig:pattern-state-machine]]
+.A state machine to detect a floating point number pattern.
+image::figures/pattern-state-machine.png[]
+
+In real world lexical analysis a whole bank of state machines are active at
+the same time. Starting from a position $$$x_0$$$ in the character stream, a_ 
+  step in lexical analysis_ consists of the following procedures:
+
+. All state machines (one for each pattern) are set into their `START`
+ state.
+. Starting at position $$$x_0$$$, characters are eaten and the state machines
+  transit their internal states. Some of them enter the `FAIL` state and
+  drop out, others enter the `ACCEPTANCE` state and drop out.
+. At some point in time $$$x_1$$$, each of state machines either enters the
+  `FAIL` state or the `ACCEPTANCE` state footnote:[Let's assume that the
+    end-of-stream character be included into the pattern definitions, so that
+    this statement holds.]. At this point in time a decision is to be made
+  about 'who is the winner.'
+
+  .. If all state machines reach the `FAIL` state, then it can be set
+    that from position $$$x_0$$$ the character stream is not sound. The lexical
+    analyser could only send an 'error-token'. One looks at the next character
+    after $$$x_0$$$, i.e. $$$x_0 = x_0 \,+\,1$$$ and goes back to step 1.
+  .. If one or more state machines reache the `ACCEPTANCE` state, then the
+    pattern that has eaten the most characters, i.e. lived the longest is
+    considered the winner (the matcher). The show continues.
+
+. The matcher pattern has an associated _pattern match action_ to be
+  executed when the pattern matches. Usually, this interprets the
+  character stream from position $$$x_0$$$ to position $$$x_1$$$ and puts the
+  information into  a token, i.e. some signal as output of the lexical analyser.
+
+In brief, a step in lexical analysis starts at a position $$$x_0$$$ in the
+character stream. After eating some characters, at some position $$$x_1$$$, it can
+be decided what pattern matches the best, and eventually the action related to
+the winning pattern is executed. Then lexical analysis starts at position $$$x_1$$$
+all over again until the end of the character stream.
+
+In principle, the functioning of a lexical analyser is determined by a 1) a
+set of patterns and 2) by their related actions. For most practical
+applications though one requires additionally a definition of token
+identifiers because the 'signals' need to be understood by another unit (e.g.
+the parser).
+
+Traditionally, lexical analysers send a single token for an identified pattern
+in the character stream. Practically, this means that, after a pattern match
+has happened the 'token-getter-function' returns the token that was identified.
+Quex, though, implements a more flexible approach which is better suited
+for implicit tokens and mode transitions. The following section shows how
+tokens are communicated by a lexical analyser created with the quex
+program.
+
