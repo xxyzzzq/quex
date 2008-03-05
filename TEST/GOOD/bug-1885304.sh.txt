@@ -62,9 +62,10 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //    user, these things are turned off. Use the following macro to re-activate.
 //
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-//    Nothing to be done, asserts are active, since NDEBUG is not defined.
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
 #else
-#   define NDEBUG
+#   define  __quex_assert(X)   /*no assert*/
 #endif
 
 // -- Include Stack Support:
@@ -631,7 +632,7 @@ namespace quex {
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
-        assert(LEX_ID_ONE_AND_ONLY <= 1);
+        __quex_assert(LEX_ID_ONE_AND_ONLY <= 1);
 
         ONE_AND_ONLY.id   = LEX_ID_ONE_AND_ONLY;
         ONE_AND_ONLY.name = "ONE_AND_ONLY";
@@ -690,7 +691,7 @@ namespace quex {
 	// assignment of safety (prev=current) is not done. Instead, we only check
 	// (as long as NDEBUG is not defined) that the framework assigns the variables
 	// propperly.
-	assert( self.__previous_mode_p == self.__current_mode_p );
+	__quex_assert( self.__previous_mode_p == self.__current_mode_p );
 	
 	// (i) tokens are in queue --> take next token from stack
 	if( _token_queue->is_empty() == false ) {
@@ -793,7 +794,7 @@ namespace quex {
     inline void 
     CLASS::pop_mode() 
     { 
-	assert(_mode_stack.size() != 0);
+	__quex_assert(_mode_stack.size() != 0);
 	quex_mode* tmp; 
 	tmp = _mode_stack.back(); 
 	_mode_stack.pop_back(); 
@@ -803,7 +804,7 @@ namespace quex {
     inline void
     CLASS::pop_drop_mode() 
     { 
-	assert(_mode_stack.size() != 0);
+	__quex_assert(_mode_stack.size() != 0);
 	_mode_stack.pop_back(); // do not care about what was popped
     }
 	
@@ -818,8 +819,8 @@ namespace quex {
     inline quex_mode&
     CLASS::map_mode_id_to_mode(const int ModeID)
     { 
-	assert(ModeID >= 0);
-	assert(ModeID < 1 + 1); // first mode is unused by quex
+	__quex_assert(ModeID >= 0);
+	__quex_assert(ModeID < 1 + 1); // first mode is unused by quex
 	return *(mode_db[ModeID]); 
     }
 
@@ -867,10 +868,10 @@ namespace quex {
 inline void 
 Simple::__count_assert_consistency()
 {
-    assert(_line_number_at_begin   <= _line_number_at_end);
+    __quex_assert(_line_number_at_begin   <= _line_number_at_end);
     // if line number remained the same, then the column number **must** have increased.
     // there is not pattern of a length less than 1
-    assert(_line_number_at_begin != _line_number_at_end || 
+    __quex_assert(_line_number_at_begin != _line_number_at_end || 
            _column_number_at_begin <  _column_number_at_end);
 }
 
@@ -898,7 +899,7 @@ Simple::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 //
 ////////////////////////////////////////////////////////////////////////////////
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 #if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
@@ -920,7 +921,7 @@ Simple::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 inline void  
 Simple::count_NoNewline(const int LexemeLength) 
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += LexemeLength;
@@ -934,7 +935,7 @@ Simple::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
                                         const int           LexemeLength, 
                                         const int           LineNIncrement) 
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     _line_number_at_end += LineNIncrement;
 #   endif
@@ -990,10 +991,10 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // loop from [End] to [Begin]:
     //
@@ -1042,7 +1043,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     }
     inline void   
     CLASS::send_n(const int N, token::id_type ID) {
-	assert(N > 0);
+	__quex_assert(N > 0);
 	for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
     }
 
@@ -1212,7 +1213,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 			      const char*    IConvInputCodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-	assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < 1 + 1));
+	__quex_assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < 1 + 1));
 	if( MODE_ID == -1 ) 
 	    __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName);	
         else
@@ -1223,8 +1224,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
 			      const char*          IConvInputCodingName)
     {
-        assert(StartModeAnalyzerFunction != 0x0);
-        assert(new_input_handle_p != 0x0);
+        __quex_assert(StartModeAnalyzerFunction != 0x0);
+        __quex_assert(new_input_handle_p != 0x0);
         // IConvInputCodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
 
 	_include_stack.push_back(CLASS::memento());
@@ -3444,7 +3445,7 @@ namespace quex {
 
     QUEX_ANALYSER_RETURN_TYPE 
     Simple_uncallable_analyser_function(Simple* me)
-    { assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
+    { __quex_assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
 
     void 
     Simple_on_indentation_null_function(Simple*, const int)
@@ -3457,14 +3458,14 @@ namespace quex {
     void
     Simple__ONE_AND_ONLY_on_entry(Simple* me, const quex_mode* FromMode) {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
+__quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
 #endif
 
     }
     void
     Simple__ONE_AND_ONLY_on_exit(Simple* me, const quex_mode* ToMode)  {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
+__quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #endif
 
     }
@@ -3472,7 +3473,7 @@ assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
     Simple__ONE_AND_ONLY_on_indentation(Simple* me, const int Indentation) {
-assert(Indentation >= 0);
+__quex_assert(Indentation >= 0);
     }
 #endif
 
