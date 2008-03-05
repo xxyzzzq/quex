@@ -57,9 +57,10 @@
 //    user, these things are turned off. Use the following macro to re-activate.
 //
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-//    Nothing to be done, asserts are active, since NDEBUG is not defined.
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
 #else
-#   define NDEBUG
+#   define  __quex_assert(X)   /*no assert*/
 #endif
 
 // -- Include Stack Support:
@@ -653,7 +654,7 @@ namespace quex {
 	// assignment of safety (prev=current) is not done. Instead, we only check
 	// (as long as NDEBUG is not defined) that the framework assigns the variables
 	// propperly.
-	assert( self.__previous_mode_p == self.__current_mode_p );
+	__quex_assert( self.__previous_mode_p == self.__current_mode_p );
 	
 	// (i) tokens are in queue --> take next token from stack
 	if( _token_queue->is_empty() == false ) {
@@ -756,7 +757,7 @@ namespace quex {
     inline void 
     CLASS::pop_mode() 
     { 
-	assert(_mode_stack.size() != 0);
+	__quex_assert(_mode_stack.size() != 0);
 	quex_mode* tmp; 
 	tmp = _mode_stack.back(); 
 	_mode_stack.pop_back(); 
@@ -766,7 +767,7 @@ namespace quex {
     inline void
     CLASS::pop_drop_mode() 
     { 
-	assert(_mode_stack.size() != 0);
+	__quex_assert(_mode_stack.size() != 0);
 	_mode_stack.pop_back(); // do not care about what was popped
     }
 	
@@ -781,8 +782,8 @@ namespace quex {
     inline quex_mode&
     CLASS::map_mode_id_to_mode(const int ModeID)
     { 
-	assert(ModeID >= 0);
-	assert(ModeID < %%MAX_MODE_CLASS_N%% + 1); // first mode is unused by quex
+	__quex_assert(ModeID >= 0);
+	__quex_assert(ModeID < %%MAX_MODE_CLASS_N%% + 1); // first mode is unused by quex
 	return *(mode_db[ModeID]); 
     }
 
@@ -835,7 +836,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
     }
     inline void   
     CLASS::send_n(const int N, %%TOKEN_CLASS%%::id_type ID) {
-	assert(N > 0);
+	__quex_assert(N > 0);
 	for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
     }
 
@@ -1005,7 +1006,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 			      const char*    IConvInputCodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-	assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < %%MAX_MODE_CLASS_N%% + 1));
+	__quex_assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < %%MAX_MODE_CLASS_N%% + 1));
 	if( MODE_ID == -1 ) 
 	    __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName);	
         else
@@ -1016,8 +1017,8 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 			      QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
 			      const char*          IConvInputCodingName)
     {
-        assert(StartModeAnalyzerFunction != 0x0);
-        assert(new_input_handle_p != 0x0);
+        __quex_assert(StartModeAnalyzerFunction != 0x0);
+        __quex_assert(new_input_handle_p != 0x0);
         // IConvInputCodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
 
 	_include_stack.push_back(CLASS::memento());
