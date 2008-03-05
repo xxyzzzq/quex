@@ -1,0 +1,335 @@
+##-- 0 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = False
+ -- begin of file  =  False
+ -- end of file    =  False
+
+result sm.id     =  10
+result =  init-state = 0L
+00000 == '1' ==> 00001
+      <no epsilon>
+00001* <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 1 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = False
+ -- begin of file  =  False
+ -- end of file    =  True
+
+result sm.id     =  16
+result =  init-state = 0L
+00000 == '1' ==> 00001
+      <no epsilon>
+00001 <~ (16, 43, S, post)
+      == \0, '\n' ==> 00002
+      <no epsilon>
+00002* <~ (16, 44, post)
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 2 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = False
+ -- begin of file  =  True
+ -- end of file    =  False
+
+result sm.id     =  19
+result =  init-state = 0L
+00000 == '1' ==> 00001
+      <no epsilon>
+00001* <~ (19, 50, S, bol)
+      <no epsilon>
+
+trivially pre-conditioned =  True
+##-- 3 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = False
+ -- begin of file  =  True
+ -- end of file    =  True
+
+result sm.id     =  25
+result =  init-state = 0L
+00000 == '1' ==> 00001
+      <no epsilon>
+00001 <~ (25, 62, S, post, bol)
+      == \0, '\n' ==> 00002
+      <no epsilon>
+00002* <~ (25, 63, post, bol)
+      <no epsilon>
+
+trivially pre-conditioned =  True
+##-- 4 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = True
+ -- begin of file  =  False
+ -- end of file    =  False
+
+result sm.id     =  31
+result =  init-state = 0L
+00000 == '1' ==> 00002
+      <no epsilon>
+00001* <~ (31, 77, post)
+      <no epsilon>
+00002 <~ (31, 78, S, post)
+      == '2' ==> 00001
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 5 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = True
+ -- begin of file  =  False
+ -- end of file    =  True
+
+result sm.id     =  35
+result =  init-state = 3L
+00000 <~ (35, 88)
+      == \0, '\n' ==> 00002
+      <no epsilon>
+00001 <~ (35, 89, S, post)
+      == '2' ==> 00000
+      <no epsilon>
+00002* <~ (35, 90, post)
+      <no epsilon>
+00003 == '1' ==> 00001
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 6 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = True
+ -- begin of file  =  True
+ -- end of file    =  False
+
+result sm.id     =  39
+result =  init-state = 0L
+00000 == '1' ==> 00002
+      <no epsilon>
+00001* <~ (39, 100, post, bol)
+      <no epsilon>
+00002 <~ (39, 101, S, post)
+      == '2' ==> 00001
+      <no epsilon>
+
+trivially pre-conditioned =  True
+##-- 7 -----------------------------------------------------------------------
+ -- pre-condition  = False
+ -- post-condition = True
+ -- begin of file  =  True
+ -- end of file    =  True
+
+result sm.id     =  43
+result =  init-state = 2L
+00000 <~ (43, 112, S, post)
+      == '2' ==> 00003
+      <no epsilon>
+00001* <~ (43, 113, post, bol)
+      <no epsilon>
+00002 == '1' ==> 00000
+      <no epsilon>
+00003 <~ (43, 111)
+      == \0, '\n' ==> 00001
+      <no epsilon>
+
+trivially pre-conditioned =  True
+##-- 8 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = False
+ -- begin of file  =  False
+ -- end of file    =  False
+
+result sm.id     =  52
+result pre sm.id =  50
+result =  init-state = 0L
+00000 == '1' ==> 00001
+      <no epsilon>
+00001* <~ (52, 131, S, pre=50)
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (52, 126)
+      == '0' ==> 00001
+      <no epsilon>
+00001* <~ (52, 127, S)
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 9 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = False
+ -- begin of file  =  False
+ -- end of file    =  True
+
+result sm.id     =  62
+result pre sm.id =  57
+result =  init-state = 2L
+00000 <~ (62, 152, S, post)
+      == \0, '\n' ==> 00001
+      <no epsilon>
+00001* <~ (62, 153, post, pre=57)
+      <no epsilon>
+00002 == '1' ==> 00000
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (62, 140)
+      == '0' ==> 00001
+      <no epsilon>
+00001* <~ (62, 141, S)
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 10 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = False
+ -- begin of file  =  True
+ -- end of file    =  False
+
+result sm.id     =  69
+result pre sm.id =  67
+result =  init-state = 1L
+00000* <~ (69, 168, S, pre=67)
+      <no epsilon>
+00001 == '1' ==> 00000
+      <no epsilon>
+pre-condition inverted = init-state = 1L
+00000* <no epsilon>
+00001 <~ (69, 162)
+      == '0' ==> 00002
+      <no epsilon>
+00002 <~ (69, 163)
+      == \0, '\n' ==> 00000
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 11 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = False
+ -- begin of file  =  True
+ -- end of file    =  True
+
+result sm.id     =  79
+result pre sm.id =  74
+result =  init-state = 1L
+00000* <~ (79, 192, post, pre=74)
+      <no epsilon>
+00001 == '1' ==> 00002
+      <no epsilon>
+00002 <~ (79, 191, S, post)
+      == \0, '\n' ==> 00000
+      <no epsilon>
+pre-condition inverted = init-state = 1L
+00000* <no epsilon>
+00001 <~ (79, 178)
+      == '0' ==> 00002
+      <no epsilon>
+00002 <~ (79, 179)
+      == \0, '\n' ==> 00000
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 12 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = True
+ -- begin of file  =  False
+ -- end of file    =  False
+
+result sm.id     =  90
+result pre sm.id =  87
+result =  init-state = 2L
+00000* <~ (90, 216, post, pre=87)
+      <no epsilon>
+00001 <~ (90, 217, S, post)
+      == '2' ==> 00000
+      <no epsilon>
+00002 == '1' ==> 00001
+      <no epsilon>
+pre-condition inverted = init-state = 1L
+00000* <~ (90, 208, S)
+      <no epsilon>
+00001 <~ (90, 207)
+      == '0' ==> 00000
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 13 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = True
+ -- begin of file  =  False
+ -- end of file    =  True
+
+result sm.id     =  98
+result pre sm.id =  95
+result =  init-state = 0L
+00000 == '1' ==> 00002
+      <no epsilon>
+00001 <~ (98, 235, pre=95)
+      == \0, '\n' ==> 00003
+      <no epsilon>
+00002 <~ (98, 236, S, post)
+      == '2' ==> 00001
+      <no epsilon>
+00003* <~ (98, 237, post)
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (98, 226)
+      == '0' ==> 00001
+      <no epsilon>
+00001* <~ (98, 227, S)
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 14 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = True
+ -- begin of file  =  True
+ -- end of file    =  False
+
+result sm.id     =  106
+result pre sm.id =  103
+result =  init-state = 1L
+00000 <~ (106, 256, S, post)
+      == '2' ==> 00002
+      <no epsilon>
+00001 == '1' ==> 00000
+      <no epsilon>
+00002* <~ (106, 255, post, pre=103)
+      <no epsilon>
+pre-condition inverted = init-state = 1L
+00000* <no epsilon>
+00001 <~ (106, 246)
+      == '0' ==> 00002
+      <no epsilon>
+00002 <~ (106, 247)
+      == \0, '\n' ==> 00000
+      <no epsilon>
+
+trivially pre-conditioned =  False
+##-- 15 -----------------------------------------------------------------------
+ -- pre-condition  = True
+ -- post-condition = True
+ -- begin of file  =  True
+ -- end of file    =  True
+
+result sm.id     =  114
+result pre sm.id =  111
+result =  init-state = 0L
+00000 == '1' ==> 00002
+      <no epsilon>
+00001 <~ (114, 275, pre=111)
+      == \0, '\n' ==> 00003
+      <no epsilon>
+00002 <~ (114, 276, S, post)
+      == '2' ==> 00001
+      <no epsilon>
+00003* <~ (114, 278, post)
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000 <~ (114, 266)
+      == '0' ==> 00001
+      <no epsilon>
+00001 <~ (114, 267)
+      == \0, '\n' ==> 00002
+      <no epsilon>
+00002* <no epsilon>
+
+trivially pre-conditioned =  False
