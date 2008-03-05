@@ -346,33 +346,33 @@ __header_definitions_txt = """
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-              fprintf(stderr, "%s:%i: \\t", __FILE__, __LINE__);            
+        std::fprintf(stderr, "%s:%i: \\t", __FILE__, __LINE__);            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              fprintf(stderr, "START:    %s\\n", #Name)
+              std::fprintf(stderr, "START:    %s\\n", #Name)
 
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              fprintf(stderr, "enter:    %i\\n", (int)StateIdx)
+              std::fprintf(stderr, "enter:    %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              fprintf(stderr, "drop:     %i\\n", (int)StateIdx)
+              std::fprintf(stderr, "drop:     %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              fprintf(stderr, "accept:   %i\\n", (int)StateIdx)
+              std::fprintf(stderr, "accept:   %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \\
               __QUEX_PRINT_SOURCE_POSITION()                   \\
-              fprintf(stderr, "terminal: %s\\n", #Terminal)
+              std::fprintf(stderr, "terminal: %s\\n", #Terminal)
 
 #      define __QUEX_DEBUG_INFO_INPUT(Character)                             \\
               __QUEX_PRINT_SOURCE_POSITION()                                 \\
-                Character == '\\n' ? fprintf(stderr, "input:    '\\\\n'\\n") \\
-              : Character == '\\t' ? fprintf(stderr, "input:    '\\\\t'\\n") \\
-              :                      fprintf(stderr, "input:    '%c'\\n", (char)Character) 
+                Character == '\\n' ? std::fprintf(stderr, "input:    '\\\\n'\\n") \\
+              : Character == '\\t' ? std::fprintf(stderr, "input:    '\\\\t'\\n") \\
+              :                      std::fprintf(stderr, "input:    '%c'\\n", (char)Character) 
 #   else
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
