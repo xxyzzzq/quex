@@ -8,6 +8,7 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i error.qx -o Simple
+cat Simple-core-engine.cpp | awk ' /analyser_function/ { print; } '
 
 # cleansening
 rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token-ids Simplism
