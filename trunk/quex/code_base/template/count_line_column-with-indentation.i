@@ -57,16 +57,16 @@ $$LEXER_CLASS_NAME$$::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
-    assert( LexemeLength != 0 );
+    __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = Begin + LexemeLength;  
     QUEX_CHARACTER_TYPE* Last  = End - 1;                
     QUEX_CHARACTER_TYPE* it    = Last;
 
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
 
     // (1) Last character == newline ? _______________________________________________
@@ -130,7 +130,7 @@ $$LEXER_CLASS_NAME$$::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     //      count was active (see case above).
     //   -- or there was a newline in the pattern, so above it is set
     //      '_indentation_count_enabled_f = true'.
-    assert( _indentation_count_enabled_f == true );
+    __quex_assert( _indentation_count_enabled_f == true );
 
     // (3) Count _____________________________________________________________________
     //
@@ -151,14 +151,14 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Le
     // NOTE: For an explanation of the algorithm, see the function:
     //       count_line_column_n_increment_w_indent(...)
     //
-    assert( LexemeLength != 0 );
+    __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength);  
 
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // (1) Last character == newline ? _______________________________________________
     //     [impossible, lexeme does never contain a newline]
@@ -187,7 +187,7 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Le
 inline void  
 $$LEXER_CLASS_NAME$$::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
 {
-    assert(ColumnNIncrement > 0);  // lexeme length >= 1
+    __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += ColumnNIncrement;
 #   endif
@@ -201,7 +201,7 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline_NeverStartOnWhitespace(const i
 inline void  
 $$LEXER_CLASS_NAME$$::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
 {
-    assert(ColumnNIncrement > 0);  // lexeme length >= 1
+    __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += ColumnNIncrement;
 #   endif

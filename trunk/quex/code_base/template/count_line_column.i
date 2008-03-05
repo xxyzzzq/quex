@@ -16,10 +16,10 @@
 inline void 
 $$LEXER_CLASS_NAME$$::__count_assert_consistency()
 {
-    assert(_line_number_at_begin   <= _line_number_at_end);
+    __quex_assert(_line_number_at_begin   <= _line_number_at_end);
     // if line number remained the same, then the column number **must** have increased.
     // there is not pattern of a length less than 1
-    assert(_line_number_at_begin != _line_number_at_end || 
+    __quex_assert(_line_number_at_begin != _line_number_at_end || 
            _column_number_at_begin <  _column_number_at_end);
 }
 
@@ -47,7 +47,7 @@ $$LEXER_CLASS_NAME$$::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 //
 ////////////////////////////////////////////////////////////////////////////////
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 #if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
@@ -69,7 +69,7 @@ $$LEXER_CLASS_NAME$$::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 inline void  
 $$LEXER_CLASS_NAME$$::count_NoNewline(const int LexemeLength) 
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += LexemeLength;
@@ -83,7 +83,7 @@ $$LEXER_CLASS_NAME$$::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
                                         const int           LexemeLength, 
                                         const int           LineNIncrement) 
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     _line_number_at_end += LineNIncrement;
 #   endif
@@ -139,10 +139,10 @@ $$LEXER_CLASS_NAME$$::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Be
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // loop from [End] to [Begin]:
     //

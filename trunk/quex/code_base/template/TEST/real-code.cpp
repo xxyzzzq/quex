@@ -60,16 +60,16 @@ my_tester::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
-    assert( LexemeLength != 0 );
+    __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = Begin + LexemeLength;  
     QUEX_CHARACTER_TYPE* Last  = End - 1;                
     QUEX_CHARACTER_TYPE* it    = Last;
 
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
 
     // (1) Last character == newline ? _______________________________________________
@@ -133,7 +133,7 @@ my_tester::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     //      count was active (see case above).
     //   -- or there was a newline in the pattern, so above it is set
     //      '_indentation_count_enabled_f = true'.
-    assert( _indentation_count_enabled_f == true );
+    __quex_assert( _indentation_count_enabled_f == true );
 
     // (3) Count _____________________________________________________________________
     //
@@ -154,14 +154,14 @@ my_tester::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     // NOTE: For an explanation of the algorithm, see the function:
     //       count_line_column_n_increment_w_indent(...)
     //
-    assert( LexemeLength != 0 );
+    __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength);  
 
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // (1) Last character == newline ? _______________________________________________
     //     [impossible, lexeme does never contain a newline]
@@ -190,7 +190,7 @@ my_tester::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 void  
 my_tester::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
 {
-    assert(ColumnNIncrement > 0);  // lexeme length >= 1
+    __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += ColumnNIncrement;
 #   endif
@@ -204,7 +204,7 @@ my_tester::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNI
 void  
 my_tester::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
 {
-    assert(ColumnNIncrement > 0);  // lexeme length >= 1
+    __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += ColumnNIncrement;
 #   endif
@@ -294,10 +294,10 @@ my_tester::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
 void 
 my_tester::__count_assert_consistency()
 {
-    assert(_line_number_at_begin   <= _line_number_at_end);
+    __quex_assert(_line_number_at_begin   <= _line_number_at_end);
     // if line number remained the same, then the column number **must** have increased.
     // there is not pattern of a length less than 1
-    assert(_line_number_at_begin != _line_number_at_end || 
+    __quex_assert(_line_number_at_begin != _line_number_at_end || 
            _column_number_at_begin <  _column_number_at_end);
 }
 
@@ -325,7 +325,7 @@ my_tester::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 //
 ////////////////////////////////////////////////////////////////////////////////
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 #if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
@@ -347,7 +347,7 @@ my_tester::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 void  
 my_tester::count_NoNewline(const int LexemeLength) 
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     _column_number_at_end += LexemeLength;
@@ -361,7 +361,7 @@ my_tester::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
                                         const int           LexemeLength, 
                                         const int           LineNIncrement) 
 {
-    assert( LexemeLength > 0 );
+    __quex_assert( LexemeLength > 0 );
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     _line_number_at_end += LineNIncrement;
 #   endif
@@ -417,10 +417,10 @@ my_tester::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
-    assert(Begin >= __buffer->content_begin());
-    assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_begin());
+    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // loop from [End] to [Begin]:
     //
