@@ -67,7 +67,12 @@
 
 #include <iostream>       // for: input_strategy_base<istream*>
 #include <cstdio>         // for: input_strategy_base<FILE*>
-#include <cassert>
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
+#else
+#   define  __quex_assert(X)   /*no assert*/
+#endif
 #include <cerrno>
 #include <stdexcept>
 extern "C" { 
@@ -214,7 +219,7 @@ namespace quex {
             //    principally no, otherwise they should have been converted.
             //    however, it is possible that one cut in between a character 
             //    code (return value == -1).
-            assert( report == (size_t)(-1) || raw_buffer.bytes_left_n == 0 );
+            __quex_assert( report == (size_t)(-1) || raw_buffer.bytes_left_n == 0 );
 
             __prepare_next_run(report, &user_buffer);
         };

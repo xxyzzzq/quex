@@ -324,7 +324,7 @@ def get_mode_class_related_code_fragments(Modes):
     # constructor code
     txt = ""
     for mode in Modes:
-        txt += "        assert(LEX_ID_%s %s<= %i);\n" % (mode.name, " " * (L-len(mode.name)), len(Modes))
+        txt += "        __quex_assert(LEX_ID_%s %s<= %i);\n" % (mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:
         txt += __get_mode_init_call(mode)

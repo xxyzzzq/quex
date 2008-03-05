@@ -74,7 +74,7 @@ test_stdio(int ContentSz, int BackupSz)
     fclose(fh);
     fh = fopen("test.txt", "r");
     setvbuf(fh, 0x0, _IONBF, 0);   // disable buffering
-    assert(fh != 0x0);
+    __quex_assert(fh != 0x0);
     //
     // '+2' because of two positions for begin and end of buffer
     quex::basic_buffer<input_strategy<FILE*, char> >  x(fh, ContentSz + 2, BackupSz); 

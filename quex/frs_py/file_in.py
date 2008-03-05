@@ -16,6 +16,7 @@
 ################################################################################
 import os
 import sys
+import codecs
 from copy    import copy
 from string  import split
 
@@ -23,7 +24,6 @@ class EndOfStreamException(Exception):
     pass
 
 temporary_files  = []
-
 
 def skip_whitespace(fh):
     def __skip_until_newline(fh):
@@ -276,15 +276,20 @@ def clean_up():
     for file in temporary_files:
         os.system("rm %s" % file)
 
-def open_file_or_die(FileName, Mode="r", Env=None):
+def open_file_or_die(FileName, Mode="r", Env=None, Codec=""):
     try:
         fh = open(FileName, Mode)
+        # if Codec != "": 
+        #    enc, dec, reader, writer = codecs.lookup('utf-8')
+        #    fh = reader(fh)
         return fh
+
     except:
-        print "error: opening file '%s' failed" % (FileName)
         if Env != None:
-            print "error: is environment variable '%s' set propperly?" % Env
+            error_msg("is environment variable '%s' set propperly?" % Env, DontExitF=True)
+        error_msg("cannot open file '%s'" % FileName)
         sys.exit(-1)
+
 
 def indented_open(Filename, Indentation = 3):
     """Opens a file but indents all the lines in it. In fact, a temporary

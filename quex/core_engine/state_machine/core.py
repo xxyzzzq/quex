@@ -784,7 +784,8 @@ class StateInfo:
             Trigger = copy(self.get_epsilon_trigger_set())
             self.__epsilon.trigger_set = NumberSet()
 
-        elif type(Trigger) == long: Trigger = int(Trigger)
+        elif type(Trigger) == long: Trigger = Interval(int(Trigger), int(Trigger+1))
+        elif type(Trigger) == int:  Trigger = Interval(Trigger, Trigger+1)
         elif type(Trigger) == list: Trigger = NumberSet(Trigger)
             
         # (*) Append Transition: StartState --- Trigger ---> TargetState
@@ -795,8 +796,7 @@ class StateInfo:
         for t in self.__transition_list:
             if t.target_state_index == TargetStateIdx:
                 if Trigger.__class__ == Interval:  t.trigger_set.add_interval(Trigger)
-                if Trigger.__class__ == NumberSet: t.trigger_set.unite_with(Trigger)
-                else:                              t.trigger_set.add_interval(Interval(Trigger))
+                else:                              t.trigger_set.unite_with(Trigger)
                 break
         else:
             self.__transition_list.append(Transition(NumberSet(Trigger), TargetStateIdx))

@@ -56,7 +56,7 @@ namespace quex {
         uint8_t*  p = utf8_result;
         size_t    n = 0;
 
-        assert(UCS_CharacterCode >= 0);
+        __quex_assert(UCS_CharacterCode >= 0);
 
         // cannot convert surrogate pairs
         if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return -1;

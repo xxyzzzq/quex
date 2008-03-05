@@ -3,7 +3,7 @@ from   quex.frs_py.string_handling import blue_print
 dummy_functions = """
     QUEX_ANALYSER_RETURN_TYPE 
     $$LEXER_CLASS_NAME$$_uncallable_analyser_function($$LEXER_CLASS_NAME$$* me)
-    { assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
+    { __quex_assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
 
     void 
     $$LEXER_CLASS_NAME$$_on_indentation_null_function($$LEXER_CLASS_NAME$$*, const int)
@@ -72,7 +72,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
     # (*) on enter 
     code_fragments = mode.on_entry_code_fragments()    
     on_entry_str  = "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    on_entry_str += "assert(me->%s.has_entry_from(FromMode));\n" % mode.name
+    on_entry_str += "__quex_assert(me->%s.has_entry_from(FromMode));\n" % mode.name
     on_entry_str += "#endif\n"
     for code_info in code_fragments:
         on_entry_str += code_info.get()
@@ -81,14 +81,14 @@ def  get_implementation_of_mode_functions(mode, Modes):
     # (*) on exit
     code_fragments = mode.on_exit_code_fragments()    
     on_exit_str  = "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
-    on_exit_str += "assert(me->%s.has_exit_to(ToMode));\n" % mode.name
+    on_exit_str += "__quex_assert(me->%s.has_exit_to(ToMode));\n" % mode.name
     on_exit_str += "#endif\n"
     for code_info in code_fragments:
         on_exit_str += code_info.get()
 
     # (*) on indentation
     code_fragments = mode.on_indentation_code_fragments()    
-    on_indentation_str = "assert(Indentation >= 0);" 
+    on_indentation_str = "__quex_assert(Indentation >= 0);" 
     for code_info in code_fragments:
         on_indentation_str += code_info.get()
         

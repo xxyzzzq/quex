@@ -27,8 +27,8 @@ namespace quex {
         : BOFC(Value_BOFC), EOFC(Value_EOFC), BLC(Value_BLC), 
           BUFFER_SIZE(BufferSz), FALLBACK_N(BackupSectionSz)
     {
-        assert(BUFFER_SIZE > 2); 
-        assert(FALLBACK_N < BUFFER_SIZE - 2);  // '-2' because of the border chars.
+        __quex_assert(BUFFER_SIZE > 2); 
+        __quex_assert(FALLBACK_N < BUFFER_SIZE - 2);  // '-2' because of the border chars.
         //___________________________________________________________________________
         //
         // NOTE: The borders are filled with buffer limit codes, end of file or
@@ -56,8 +56,8 @@ namespace quex {
 
     TEMPLATE inline int  
         CLASS::get_forward() {
-            assert(_current_p >= buffer_begin() - 1);
-            assert(_current_p <  buffer_end()   - 1);
+            __quex_assert(_current_p >= buffer_begin() - 1);
+            __quex_assert(_current_p <  buffer_end()   - 1);
             //________________________________________________________________________________
             // NOTE: Limit codes are stored at the end of the buffer. This causes
             //       all transitions to fail in the state machine. The 'fail'
@@ -73,8 +73,8 @@ namespace quex {
             // NOTE: When a BLC/BOF is returned due to reaching the begin of the buffer,
             //       the current_p == content_begin() - 2. The following asserts ensure that the
             //       'get_backward()' is not called in such cases, except after 'load_backwards()'
-            assert(_current_p >= buffer_begin());
-            assert(_current_p <  buffer_end());
+            __quex_assert(_current_p >= buffer_begin());
+            __quex_assert(_current_p <  buffer_end());
             //________________________________________________________________________________
             int tmp = *_current_p;
             --_current_p;
@@ -83,31 +83,31 @@ namespace quex {
 
     TEMPLATE void              
         CLASS::set_subsequent_character(const int Value) {
-            assert(_current_p > _buffer );
-            assert(_current_p < _buffer + 1 + content_size());
+            __quex_assert(_current_p > _buffer );
+            __quex_assert(_current_p < _buffer + 1 + content_size());
             *(_current_p + 1) = Value;
         }
 
     TEMPLATE typename CLASS::character_type    
         CLASS::get_subsequent_character() { 
-            assert(_current_p >= content_begin());
-            assert(_current_p < content_end());
+            __quex_assert(_current_p >= content_begin());
+            __quex_assert(_current_p < content_end());
             return *(_current_p + 1); 
         }
 
     TEMPLATE typename CLASS::character_type    
         CLASS::get_current_character() { 
-            assert(_current_p >= content_begin());
-            assert(_current_p < content_end());
+            __quex_assert(_current_p >= content_begin());
+            __quex_assert(_current_p < content_end());
             return *_current_p; 
         }
 
     TEMPLATE void       
         CLASS::mark_lexeme_start() { 
             // allow: *_current_p = BLC, BOF, or EOF
-            assert(_current_p >= content_begin() - 2);                
-            assert(_end_of_file_p != 0x0 || _current_p < content_end());  
-            assert(_end_of_file_p == 0x0 || _current_p <= _end_of_file_p);  
+            __quex_assert(_current_p >= content_begin() - 2);                
+            __quex_assert(_end_of_file_p != 0x0 || _current_p < content_end());  
+            __quex_assert(_end_of_file_p == 0x0 || _current_p <= _end_of_file_p);  
 
             // pointing to the next character to be read
             _lexeme_start_p = _current_p + 1;     
@@ -171,7 +171,7 @@ namespace quex {
             // Check wether the memory_position is relative to the current start position 
             // of the stream. That means, that the tell_adr() command was called on the
             // same buffer setting or the positions have been adapted using the += operator.
-            assert(Adr.buffer_start_position == DEBUG_get_start_position_of_buffer());
+            __quex_assert(Adr.buffer_start_position == DEBUG_get_start_position_of_buffer());
             _current_p = Adr.address;
 #else
             _current_p = Adr;
@@ -197,8 +197,8 @@ namespace quex {
             // does not hold it loads the buffer contents stepwise. A direct jump to more
             // then one load ahead would require a different load function. Please, consider
             // that different input strategies might rely on dynamic character length codings
-            assert(_current_p >= buffer_begin() - 1);
-            assert(_current_p <  buffer_end()   - 1);
+            __quex_assert(_current_p >= buffer_begin() - 1);
+            __quex_assert(_current_p <  buffer_end()   - 1);
             // 
             size_t remaining_distance_to_target = Distance;
             while( 1 + 1 == 2 ) {
@@ -236,8 +236,8 @@ namespace quex {
             // does not hold it loads the buffer contents stepwise. A direct jump to more
             // then one load ahead would require a different load function. Please, consider
             // that different input strategies might rely on dynamic character length codings
-            assert(_current_p >= buffer_begin());
-            assert(_current_p <  buffer_end());
+            __quex_assert(_current_p >= buffer_begin());
+            __quex_assert(_current_p <  buffer_end());
             // 
             size_t remaining_distance_to_target = Distance;
             while( 1 + 1 == 2 ) {
@@ -263,7 +263,9 @@ namespace quex {
 #else
     TEMPLATE void 
         CLASS::EMPTY_or_assert_consistency(bool AllowTerminatingZeroF /* = true */) {
+#           ifdef QUEX_OPTION_ACTIVATE_ASSERTS
             const int LexemeStartOffSet = _lexeme_start_p - content_begin();
+#           endif
             // NOTE: If NDEBUG is defined, the following asserts are taken out
             //       and this function is a null function that is deleted by the compiler.
             // NOTE: No assumptions can be made in general on the relation between
@@ -272,38 +274,38 @@ namespace quex {
             //       ward lexing this is vice versa. 
             //       See "code_base/core_engine/definitions-quex-buffer.h"
             if( _lexeme_start_p < buffer_begin() )    abort();                
-            assert(LexemeStartOffSet >= -1);
+            __quex_assert(LexemeStartOffSet >= -1);
             //
             if( _current_p < buffer_begin() - 1) abort(); 
-            assert(*(buffer_begin()) == buffer_core::BOFC || *(buffer_begin()) == buffer_core::BLC);   
+            __quex_assert(*(buffer_begin()) == buffer_core::BOFC || *(buffer_begin()) == buffer_core::BLC);   
             //
             if( _end_of_file_p == 0x0 ) {
-                assert(_current_p  <=  buffer_end()); 
-                assert(_lexeme_start_p < buffer_end());
+                __quex_assert(_current_p  <=  buffer_end()); 
+                __quex_assert(_lexeme_start_p < buffer_end());
                 if( AllowTerminatingZeroF ) {
-                    assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
+                    __quex_assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
                             || *(content_end()) == buffer_core::BLC    // the last character of content.
                             || *(content_end()) == character_type(0));  
                 } else {
-                    assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
+                    __quex_assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
                             || *(content_end()) == buffer_core::BLC);  // the last character of content.
                 }
                 // NOTE: strange '+1' because: 
                 //         -- LexemeStartOffSet == -1 is ok and 
                 //         -- size_t might be and unsigned type.
-                assert((size_t)(LexemeStartOffSet + 1) <= content_size() + 1); 
+                __quex_assert((size_t)(LexemeStartOffSet + 1) <= content_size() + 1); 
             } else {
-                assert(_end_of_file_p  >= content_begin());
-                assert(_end_of_file_p  < content_end());
-                assert(_lexeme_start_p <= _end_of_file_p);  
-                assert(_current_p      <= _end_of_file_p); 
+                __quex_assert(_end_of_file_p  >= content_begin());
+                __quex_assert(_end_of_file_p  < content_end());
+                __quex_assert(_lexeme_start_p <= _end_of_file_p);  
+                __quex_assert(_current_p      <= _end_of_file_p); 
                 if( AllowTerminatingZeroF ) 
-                    assert(*_end_of_file_p == buffer_core::EOFC
+                    __quex_assert(*_end_of_file_p == buffer_core::EOFC
                            || *_end_of_file_p == character_type(0));  
                 else                        
-                    assert(*_end_of_file_p == buffer_core::EOFC);
+                    __quex_assert(*_end_of_file_p == buffer_core::EOFC);
                 
-                assert(LexemeStartOffSet <= _end_of_file_p - content_begin());
+                __quex_assert(LexemeStartOffSet <= _end_of_file_p - content_begin());
             }
         }
 #endif
@@ -337,7 +339,7 @@ namespace quex {
                 }
             }
             // check for missing limit character
-            assert(covered_char != 0xFFFF);
+            __quex_assert(covered_char != 0xFFFF);
             //_________________________________________________________________________________
             char tmp[content_size()+4];
             // tmp[0]                  = outer border

@@ -68,8 +68,8 @@ namespace quex {
             // -- Reads N bytes into buffer starting at 'fill_start_adr'. If less then
             //    N bytes could be read, the end of file flag is raised.
             //  
-            assert(fill_start_adr     >= this->content_begin());
-            assert(fill_start_adr + N <= this->content_end());
+            __quex_assert(fill_start_adr     >= this->content_begin());
+            __quex_assert(fill_start_adr + N <= this->content_end());
             //______________________________________________________________________________
             const int ReadN = _input.read(fill_start_adr, N); 
 
@@ -228,13 +228,13 @@ namespace quex {
 
             // (*) load content
             _input.seek(this->_start_pos_of_buffer - (stream_offset)(backward_distance));
-#ifndef NDEBUG
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
             const size_t LoadedN = __load_core(this->content_begin(), backward_distance);
             // -- If file content < buffer size, then the start position of the stream to which
             //    the buffer refers is always 0 and no backward loading will ever happen.
             // -- If the file content >= buffer size, then backward loading must always fill
             //    the buffer. 
-            assert(LoadedN == (size_t)backward_distance);
+            __quex_assert(LoadedN == (size_t)backward_distance);
 #else
             __load_core(this->content_begin(), backward_distance);  // avoid unused LoadedN
 #endif
