@@ -10,10 +10,17 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <cassert>
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
+#else
+#   define  __quex_assert(X)   /*no assert*/
+#endif
+
 extern "C" {
 #include <quex/code_base/compatibility/inttypes.h>
 }
+
 
 namespace quex {
 
@@ -78,7 +85,7 @@ namespace quex {
 
         bool operator==(const memory_position_mimiker& That)
         { 
-          assert(this->buffer_start_position == That.buffer_start_position); 
+          __quex_assert(this->buffer_start_position == That.buffer_start_position); 
           return this->address == That.address; 
         }
         bool operator!=(const memory_position_mimiker& That)

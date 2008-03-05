@@ -64,7 +64,7 @@ def do(Setup):
     analyzer_code = ""
     for mode in mode_list:        
         # -- some modes only define event handlers that are inherited
-        if mode.matches == {}: continue
+        if not mode.has_matches(): continue
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
@@ -171,14 +171,13 @@ def get_generator_input(Mode, match_info_list, Setup):
     
     return inheritance_info_str, pattern_action_pair_list
 
-
 def do_plot(Setup):
 
     mode_db = __get_mode_db(Setup)
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
-        if mode.matches == {}: continue
+        if not mode.has_matches(): continue
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.

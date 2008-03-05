@@ -28,7 +28,8 @@ def do(file_list, Setup):
     global mode_db
 
     for file in file_list:
-        fh = open_file_or_die(file)
+        fh = open_file_or_die(file, Codec="utf-8")
+
         # read all modes until end of file
         try:
             while 1 + 1 == 2:
@@ -73,7 +74,6 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
         if fields != [] and is_identifier(fields[0]) == False:
             error_msg("'%s' is not a valid identifier." % fields[0], fh)
 
-
         if len(fields) < MinElementN: 
             format_str = ""
             for element in ElementNames:
@@ -81,7 +81,6 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
             error_msg("syntax error in definition list\n" + \
                       "format: %s  NEWLINE" % format_str , fh, line_n)
         record_list.append(fields + [line_n, line])    
-
 
     assert True == False, "this code section should have never been reached!"
 
@@ -135,7 +134,7 @@ def parse_section(fh, Setup):
             mode_definition.parse(fh, Setup)
             return
         else:
-            error_msg("sequence '%s' not recognized as valid keyword in this context" % word + \
+            error_msg("sequence '%s' not recognized as valid keyword in this context\n" % word + \
                       "use: 'mode', 'header', 'body', 'init', 'define', 'token' or 'start'", fh)
     except EndOfStreamException:
         fh.seek(position)
@@ -224,7 +223,6 @@ def parse_token_id_definitions(fh, Setup):
     record_list = __parse_domain_of_whitespace_separated_elements(fh, "define", 
                                                                   ["TOKEN-ID-NAME", 
                                                                    "[Number]", "[TypeName]"], 1)
-    
     db = lexer_mode.token_id_db
     for record in record_list:
         # NOTE: record[-1] -> line text, record[-2] -> line number

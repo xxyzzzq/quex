@@ -121,7 +121,7 @@ QUEX_INLINE_KEYWORD int
 forward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
 {
     // not BOFC: See ./quex/buffer/README.txt
-    assert( input != me->__buffer->BOFC );
+    __quex_assert( input != me->__buffer->BOFC );
     if( input == me->__buffer->BLC ) {                                        
 	// request: go back to 'get next input': REQUEST UPDATE ADDRESSES!   
 	const int DeletedByteN = me->__buffer->load_forward(); 
@@ -135,7 +135,7 @@ QUEX_INLINE_KEYWORD int
 backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
 {
     // not EOFC: See ./quex/buffer/README.txt
-    assert( input != me->__buffer->EOFC );
+    __quex_assert( input != me->__buffer->EOFC );
     if( input == me->__buffer->BLC ) {                                        
 	me->__buffer->load_backward();                                           
 	return 1;  /* request: go back to 'get next input': UPDATE ADDRESSES! */   
@@ -146,11 +146,11 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
 
 #define QUEX_STREAM_GET(character)                 \
         (character) = me->__buffer->get_forward(); \
-        assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());
+        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());
 
 #define QUEX_STREAM_GET_BACKWARDS(character)        \
         (character) = me->__buffer->get_backward(); 
-// NOTE: assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
+// NOTE: __quex_assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
 //       Does not make sense here, since the macro may be used for backward input
 //       position detection after a post condition has triggered (pseudo ambiguous
 //       post conditions).
@@ -203,7 +203,7 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
 **    CAN BE ANYTHING.
 */
 #define QUEX_PREPARE_LEXEME_LENGTH                                                       \
-        assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());     \
+        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());     \
 	LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p() + 1);       
 
 #ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
