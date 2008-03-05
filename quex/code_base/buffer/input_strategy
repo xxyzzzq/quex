@@ -39,10 +39,10 @@ namespace quex {
     };
 
     template <class ProvidedCharacterType>
-    struct input_strategy_base<FILE*, ProvidedCharacterType> {
-        typedef long   stream_position;
-        typedef long   stream_offset;
-        typedef FILE   input_handle_type;
+    struct input_strategy_base<std::FILE*, ProvidedCharacterType> {
+        typedef long        stream_position;
+        typedef long        stream_offset;
+        typedef std::FILE   input_handle_type;
 
         stream_position    tell()                           { return ftell(ih); }
         void               seek(const stream_position& Pos) { fseek(ih, Pos, SEEK_SET); }
@@ -50,7 +50,7 @@ namespace quex {
         void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
 
     protected:
-        FILE*   ih;
+        std::FILE*   ih;
         size_t  __load_bytes(void* buffer_position, const size_t ByteNToRead)
         { return fread(buffer_position, 1, ByteNToRead, ih); }
     };
