@@ -69,7 +69,7 @@ test_istream(int ContentSz, int BackupSz)
 void
 test_stdio(int ContentSz, int BackupSz)
 {
-    FILE*       fh = fopen("test.txt", "w");
+    std::FILE*       fh = fopen("test.txt", "w");
     fprintf(fh, "Im Wald steht ein Baum.");
     fclose(fh);
     fh = fopen("test.txt", "r");
@@ -77,7 +77,7 @@ test_stdio(int ContentSz, int BackupSz)
     __quex_assert(fh != 0x0);
     //
     // '+2' because of two positions for begin and end of buffer
-    quex::basic_buffer<input_strategy<FILE*, char> >  x(fh, ContentSz + 2, BackupSz); 
+    quex::basic_buffer<input_strategy<std::FILE*, char> >  x(fh, ContentSz + 2, BackupSz); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz << ")-stdio-------------------------------------\n";
 

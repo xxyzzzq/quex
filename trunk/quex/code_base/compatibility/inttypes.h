@@ -7,8 +7,10 @@
 //       reason this header creates som adaptions.
 
 extern "C" {
-#ifdef _MSC_VER
-#   include <quex/code_base/compatibility/win/inttypes.h>
+#if defined (_MSC_VER)
+#   include <quex/code_base/compatibility/win/msc_inttypes.h>
+#elif defined(__BORLANDC__)
+#   include <quex/code_base/compatibility/win/borland_inttypes.h>
 #else
 #   include <inttypes.h>
 #endif

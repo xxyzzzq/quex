@@ -6,6 +6,13 @@ typedef uint8_t  QUEX_CHARACTER_TYPE;
 typedef uint8_t* QUEX_CHARACTER_POSITION; 
 typedef char     QUEX_LEXEME_CHARACTER_TYPE;
 
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
+#else
+#   define  __quex_assert(X)   /*no assert*/
+#endif
+
 #include <iostream>
 
 struct my_tester;

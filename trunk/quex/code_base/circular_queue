@@ -91,12 +91,12 @@ public:
 #if (! defined(NDEBUG)) || defined(___UNIT_TEST__FRANK_RENE_SCHAEFER__CIRCULAR_QUEUE___)
 	// NOTE: If NDEBUG is define, the following asserts are taken out
 	//       and this function is a null function that is deleted by the compiler.
-	if( ! (_end_buffer > _begin_buffer) )            abort(); 
-	if( ! (_top        >= _begin_buffer) )           abort(); 
-	if( ! (_bottom     >= _begin_buffer) )           abort(); 
-	if( ! (_top        < _end_buffer) )              abort();
-	if( ! (_bottom     < _end_buffer) )              abort();
-	if( ! (_end_buffer - _begin_buffer) == _size )   abort();
+	if( ! (_end_buffer > _begin_buffer) )            std::abort(); 
+	if( ! (_top        >= _begin_buffer) )           std::abort(); 
+	if( ! (_bottom     >= _begin_buffer) )           std::abort(); 
+	if( ! (_top        < _end_buffer) )              std::abort();
+	if( ! (_bottom     < _end_buffer) )              std::abort();
+	if( ! (_end_buffer - _begin_buffer) == _size )   std::abort();
 #endif
     }
 };

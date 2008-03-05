@@ -13,11 +13,11 @@ main(int argc, char** argv)
         return 0;
     }
 
-    FILE*   fh = fopen("test.txt", "r");
-    uint8_t raw_buffer[5];
-    char*   target_charset = (char*)"UCS-4BE";
-    uint8_t buffer[512];
-    quex::input_strategy_iconv<FILE*, uint32_t>   is(fh, raw_buffer, 5, "UTF8", target_charset);
+    std::FILE*   fh = fopen("test.txt", "r");
+    uint8_t      raw_buffer[5];
+    char*        target_charset = (char*)"UCS-4BE";
+    uint8_t      buffer[512];
+    quex::input_strategy_iconv<std::FILE*, uint32_t>   is(fh, raw_buffer, 5, "UTF8", target_charset);
 
     if( argc > 1 ) target_charset = argv[1];
 

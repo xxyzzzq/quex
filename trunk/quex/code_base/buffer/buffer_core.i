@@ -273,10 +273,10 @@ namespace quex {
             //       _current_p comes before _lexeme_start_p, wherelse for back-
             //       ward lexing this is vice versa. 
             //       See "code_base/core_engine/definitions-quex-buffer.h"
-            if( _lexeme_start_p < buffer_begin() )    abort();                
+            if( _lexeme_start_p < buffer_begin() )    std::abort();                
             __quex_assert(LexemeStartOffSet >= -1);
             //
-            if( _current_p < buffer_begin() - 1) abort(); 
+            if( _current_p < buffer_begin() - 1) std::abort(); 
             __quex_assert(*(buffer_begin()) == buffer_core::BOFC || *(buffer_begin()) == buffer_core::BLC);   
             //
             if( _end_of_file_p == 0x0 ) {
