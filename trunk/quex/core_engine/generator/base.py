@@ -130,6 +130,13 @@ class GeneratorBase:
                   all successful patterns need to be reported!            
                           
         """   
+        def __on_orphan_state_occurence(Place, orphan_state_list):
+            error_msg("After '%s'" % Place + "\n" + \
+                      "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
+                      "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
+                      "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
+                      fh, DontExitF=True)
+
         # (1) mark at each state machine the machine and states as 'original'.
         #      
         #     This is necessary to trace in the combined state machine the
@@ -141,16 +148,26 @@ class GeneratorBase:
         
         # (2) setup all patterns in paralell 
         sm = parallelize.do(StateMachine_List)
+        ## orphan_state_list = sm.get_orphaned_state_index_list()
+        ## if orphan_state_list != []: __on_orphan_states("Parallelizing", orphan_state_list)
 
         # (3) convert the state machine to an DFA (paralellization created an NFA)
         sm = sm.get_DFA()
+        ## orphan_state_list = sm.get_orphaned_state_index_list()
+        ## if orphan_state_list != []: __on_orphan_states("NFA->DFA", orphan_state_list)
 
         # (4) determine for each state in the DFA what is the dominating original state
         if FilterDominatedOriginsF: sm.filter_dominated_origins()
+
+        ## orphan_state_list = sm.get_orphaned_state_index_list()
+        ## if orphan_state_list != []: __on_orphan_states("Filter Dominated Origins", orphan_state_list)
 
         # (5) perform hopcroft optimization
         #     Note, that hopcroft optimization does consider the original acceptance 
         #     states when deciding if two state sets are equivalent.   
         sm = sm.get_hopcroft_optimization()    
+
+        orphan_state_list = sm.get_orphaned_state_index_list()
+        if orphan_state_list != []: __on_orphan_states("Hopcroft Minimization", orphan_state_list)
 
         return sm

@@ -17,6 +17,13 @@ def parse(fh, Setup):
         if pattern_state_machine == None:
             error_msg("No valid regular expression detected.", fh)
 
+        orphan_state_list = pattern_state_machine.get_orphaned_state_index_list()
+        if orphan_state_list != []:
+            error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
+                      "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
+                      "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
+                      fh, DontExitF=True)
+
     except RegularExpressionException, x:
         fh.seek(start_position)
         error_msg("Regular expression parsing:\n" + x.message, fh)
@@ -24,7 +31,6 @@ def parse(fh, Setup):
     except EndOfStreamException:
         fh.seek(start_position)
         error_msg("End of file reached while parsing regular expression.", fh)
-
 
     end_position = fh.tell()
 

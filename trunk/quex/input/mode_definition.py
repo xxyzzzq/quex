@@ -35,7 +35,7 @@ def parse(fh, Setup):
 
 
     # (*) check for modes w/o pattern definitions
-    if not new_mode.has_event_handler() and new_mode.matches == {}:
+    if not new_mode.has_event_handler() and new_mode.own_matches() == {}:
         if new_mode.options["inheritable:"] != "only":
             new_mode.options["inheritable:"] = "only"
             error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
@@ -127,8 +127,7 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
             line_n = get_current_line_info_number(fh) + 1
             code   = read_until_closing_bracket(fh, "{", "}")
 
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, code, pattern_state_machine, 
-                                                         PatternIdx, fh.name, line_n)
+            new_mode.add_match(pattern, code, pattern_state_machine, PatternIdx, fh.name, line_n)
             return
 
         fh.seek(position)
@@ -137,13 +136,11 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
         if word == "PRIORITY-MARK":
             # This mark 'lowers' the priority of a pattern to the priority of the current
             # pattern index (important for inherited patterns, that have higher precedence).
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, 
-                                                         PatternIdx, PriorityMarkF = True)
+            new_mode.add_match_priority(pattern, "", pattern_state_machine, PatternIdx, fh)
 
         elif word == "DELETION":
             # This mark deletes any pattern that was inherited with the same 'name'
-            new_mode.matches[pattern] = lexer_mode.Match(pattern, "", pattern_state_machine, 
-                                                         PatternIdx, DeletionF = True)
+            new_mode.add_match_deletion(pattern, "", pattern_state_machine, PatternIdx, fh)
             
         elif word == "=>":
             parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx, Setup)
@@ -205,8 +202,8 @@ def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, Patte
         code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
 
         line_n = get_current_line_info_number(fh) + 1
-        new_mode.matches[pattern] = lexer_mode.Match(pattern, code,  pattern_state_machine, PatternIdx,
-                                                     fh.name, line_n)
+        new_mode.add_match(pattern, code, pattern_state_machine, PatternIdx, fh.name, line_n)
+
     except EndOfStreamException:
         fh.seek(position)
         error_msg("End of file reached while parsing token shortcut.", fh)
