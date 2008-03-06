@@ -299,7 +299,13 @@ class StateOriginInfo:
         #       where the pattern was specified. Low ID == early specification.
         return cmp(self.state_machine_id, Other.state_machine_id)
             
-                    
+class OriginList:
+    # TODO: Use this inside 'StateInfo'
+    def __init__(self):
+        self.__list = []
+
+    def get():
+        return self.__list
         
 class StateInfo:
     # Information about all transitions starting from a particular state. Transitions are
@@ -786,7 +792,7 @@ class StateInfo:
 
         elif type(Trigger) == long: Trigger = Interval(int(Trigger), int(Trigger+1))
         elif type(Trigger) == int:  Trigger = Interval(Trigger, Trigger+1)
-        elif type(Trigger) == list: Trigger = NumberSet(Trigger)
+        elif type(Trigger) == list: Trigger = NumberSet(Trigger, ArgumentIsYoursF=True)
             
         # (*) Append Transition: StartState --- Trigger ---> TargetState
         #
@@ -848,8 +854,8 @@ class StateInfo:
 
             self.add_transition(trigger_set, target)
 
-    def delete_transitions_on_character_list(self, ForbiddenCharacterList):
-        for char_code in ForbiddenCharacterList:
+    def delete_transitions_on_character_list(self, CharacterCodeList):
+        for char_code in CharacterCodeList:
             for t in self.__transition_list:
                 if t.trigger_set.contains(char_code):
                     t.trigger_set.cut_interval(Interval(char_code, char_code+1))
@@ -857,9 +863,12 @@ class StateInfo:
 
     def delete_transitions_on_empty_trigger_sets(self):
         new_transition_list = []
-        for t in self.__transition_list:
-            if not t.trigger_set.is_empty(): new_transition_list.append(t)
-        self.__transition_list = new_transition_list
+        i    = 0
+        size = len(self.__transition_list)
+        while i < size:
+            t = self.__transition_list[i]
+            if not t.trigger_set.is_empty(): del self.__transition_list[i]; size -= 1
+            else:                            i += 1
 
     def delete_epsilon_target_state(self, TargetStateIdx):
         if TargetStateIdx in self.__epsilon.target_state_indices:
@@ -928,6 +937,8 @@ class StateInfo:
                 # to be in there. See the comment at the entry of this function.
                 new_origin_list.append(origin)
 
+        print "## old: ", self.__origin_list
+        print "## new: ", new_origin_list
         self.__origin_list = new_origin_list 
 
     def clone(self, ReplacementDictionary=None):
@@ -1085,6 +1096,20 @@ class StateMachine:
         assert self.has_start_state_index(StateIdx)  
 
         return self.states[StateIdx].get_result_state_index(Trigger)
+
+    def get_orphaned_state_index_list(self):
+        """This function checks for states that are not targeted via any trigger
+           by any other state. This indicates most likely a lack off efficiency 
+           or an error in the algorithms.
+        """
+        work_list = self.states.keys()
+        try:    del work_list[work_list.index(self.init_state_index)]
+        except: assert False, "Init state index is not contained in list of state indices."
+
+        for state in self.states.values():
+            target_state_index_list = state.get_target_state_indices()
+            work_list = filter(lambda i: i not in target_state_index_list, work_list)
+        return work_list
 
     def get_trigger_set(self, StartIdx, TargetIdx):
         """Returns a set of triggers that lead from state 'StateIdx' to 'TargetIdx'.
@@ -1992,25 +2017,29 @@ class StateMachine:
         index_map         = {}
         inverse_index_map = {}
         counter           = -1L
-        for state_i in self.states.keys():
-            if NormalizeF:
+        if NormalizeF:
+            for state_i in self.states.keys():
                 counter += 1L
                 index_map[state_i]         = counter
                 inverse_index_map[counter] = state_i
-            else:
+            index_sequence = range(0, counter+1)
+        else:
+            index_sequence = []
+            for state_i in self.states.keys():
                 index_map[state_i]         = state_i
                 inverse_index_map[state_i] = state_i
+                index_sequence.append(state_i)
 
-        return index_map, inverse_index_map, counter
+        return index_map, inverse_index_map, index_sequence
 
     def get_string(self, NormalizeF=False):
 
         # (*) normalize the state indices
-        index_map, inverse_index_map, counter = self.__get_state_index_normalization(NormalizeF)
+        index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
     
         # (*) construct text 
         msg = "init-state = " + repr(index_map[self.init_state_index]) + "\n"
-        for printed_state_i in range(0, counter+1):
+        for printed_state_i in index_sequence:
             printed_state_i = long(printed_state_i)
             real_state_i    = inverse_index_map[printed_state_i]
             state           = self.states[real_state_i]
@@ -2025,7 +2054,7 @@ class StateMachine:
 
     def get_graphviz_string(self, NormalizeF=False):
         # (*) normalize the state indices
-        index_map, inverse_index_map, counter = self.__get_state_index_normalization(NormalizeF)
+        index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
 
         # (*) Border of plot block
         frame_txt = """
@@ -2040,7 +2069,7 @@ class StateMachine:
 
         transition_str       = ""
         acceptance_state_str = ""
-        for printed_state_i in range(0, counter+1):
+        for printed_state_i in index_sequence:
             printed_state_i = long(printed_state_i)
             real_state_i    = inverse_index_map[printed_state_i]
             state           = self.states[real_state_i]

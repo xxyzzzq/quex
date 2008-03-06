@@ -176,7 +176,7 @@ class LexMode:
         # (i)   inheritance of pattern behavior in different modes.
         # (ii)  'virtual' patterns in the sense that their behavior can be
         #       overwritten.
-        self.matches = {}  # genuine patterns as specified in the mode declaration
+        self.__matches = {}  # genuine patterns as specified in the mode declaration
 
         self.__inheritance_resolved_f = False # inherited patterns are only valid, after the
         #                                     # function 'pattern_action_pairs()' has been
@@ -233,11 +233,39 @@ class LexMode:
         elif __check(self.on_failure):     return True
         elif __check(self.on_indentation): return True
 
+
+    def own_matches(self):
+        return self.__matches
+
+    def add_match(self, Pattern, Code, PatternStateMachine, PatternIdx, Filename, LineN):
+        if self.__matches.has_key(Pattern):
+            error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
+                      "Consider only the last definition.", Filename, LineN, DontExitF=True)
+
+        self.__matches[Pattern] = Match(Pattern, Code, PatternStateMachine, PatternIdx, 
+                                        Filename, LineN)
+
+    def add_match_priority(self, Pattern, Code, PatternStateMachine, PatternIdx, fh):
+        if self.__matches.has_key(Pattern):
+            error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
+                      "Consider only the last definition.", fh)
+
+        self.__matches[Pattern] = Match(Pattern, Code, PatternStateMachine, PatternIdx, 
+                                        PriorityMarkF=True)
+
+    def add_match_deletion(self, Pattern, Code, PatternStateMachine, PatternIdx, fh):
+        if self.__matches.has_key(Pattern):
+            error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
+                      "Consider only 'deletion'.", fh)
+
+        self.__matches[pattern] = Match(pattern, "", pattern_state_machine, PatternIdx, 
+                                        DeletionF = True)
+
     def has_matches(self):
         assert self.inheritance_circularity_check_done_f == True, \
                "called before consistency check!"
 
-        if self.matches != {}: return True
+        if self.__matches != {}: return True
 
         for name in self.base_modes:
            if mode_db[name].has_matches(): return True
@@ -321,9 +349,9 @@ class LexMode:
 
         # -- loop over inherited patterns and add them to the list
         for inherited_pattern, inherited_match in inherited_matches.items():
-            if inherited_pattern in self.matches.keys():
+            if inherited_pattern in self.__matches.keys():
                 # -- own match with the same pattern as 'inherited_pattern'
-                own_match = self.matches[inherited_pattern]
+                own_match = self.__matches[inherited_pattern]
 
                 if own_match.priority_mark_f == True:
                     # (1) pattern with 'PRIORITY-MARK':
@@ -347,7 +375,7 @@ class LexMode:
         #    (the priority marked patterns should now all be added. if
         #     a priority marked pattern in not present yet, it means that
         #     it was not mentioned in a base mode)
-        for pattern, match in self.matches.items():
+        for pattern, match in self.__matches.items():
             if pattern not in resolved_matches.keys():
                 if match.priority_mark_f == True:
                     error_msg("<%s>%s has a 'PRIORITY-MARK'\n" % (self.name, pattern) + \
@@ -393,7 +421,6 @@ class LexMode:
                     base_mode_collection.append(candidate)
 
         return base_mode_collection
-
 
     def add_option(self, Option, Value):
         """ SANITY CHECK:

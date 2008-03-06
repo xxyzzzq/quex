@@ -38,10 +38,13 @@ class Generator(GeneratorBase):
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
 
+        assert self.sm.get_orphaned_state_index_list() == []
+
         #  -- comment all state machine transitions 
         txt = "    $/* state machine $*/\n"
         if self.print_state_machine_f: 
-            txt += "    $/* " + repr(self.sm).replace("\n", "$*/\n    $/* ") + "\n"
+            txt += "    $/* " + self.sm.get_string().replace("\n", "$*/\n    $/* ") + "\n"
+
         txt += state_machine_coder.do(self.sm, 
                                       LanguageDB                  = LanguageDB, 
                                       UserDefinedStateMachineName = self.state_machine_name, 
@@ -61,6 +64,8 @@ class Generator(GeneratorBase):
     def __get_combined_pre_condition_state_machine(self):
         LanguageDB = self.language_db
 
+        assert self.pre_condition_sm.get_orphaned_state_index_list() == []
+
         txt = "    $/* state machine for pre-condition test: $*/\n"
         if self.print_state_machine_f: 
             txt += "    $/* " + repr(self.pre_condition_sm).replace("\n", "$*/\n    $/* ") + "$*/\n"
@@ -79,13 +84,13 @@ class Generator(GeneratorBase):
         return txt
 
     def do(self):
-
         LanguageDB = self.language_db
 
         #  -- state machines for backward input position detection (pseudo ambiguous post conditions)
         papc_input_postion_backward_detector_functions = ""
         for sm in self.papc_backward_detector_state_machine_list:
-             papc_input_postion_backward_detector_functions +=  \
+            assert sm.get_orphaned_state_index_list() == []
+            papc_input_postion_backward_detector_functions +=  \
                   backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
         function_body = ""
         # -- write the combined pre-condition state machine

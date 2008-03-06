@@ -516,7 +516,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                % __nice(pre_sm_origin_id)
 
     # -- entry to the actual function body
-    # -- entry to the actual function body
     txt += "    QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);\n"
     txt += "    QUEX_UNDO_PREPARE_LEXEME_OBJECT;\n";
     

@@ -38,7 +38,7 @@
 
 (*) 07y12m1d:
 
-    When a trigger triggers to a non-acceptance state, it can be taken out.
+    When a trigger triggers to an empty non-acceptance state, it can be taken out.
     This is so, since the 'remaining triggers' of a state trigger to non-acceptance
     anyway---IF THE STATE ITSELF IS NOT ACCEPTANCE.
 
@@ -55,29 +55,14 @@
     to an empty acceptance state.
 
 
-(*) 07y9m23d:
-
-    In the 'history' computation the 'union' member function is used. 
-    See if it cannot be replaced by 'quick_add_interval'. This results
-    in a tremendous speedup. Also: I adapted NumberSet.clean() to be propper
-    and fast, quick_add_interval + clean() could probably provide 
-    tremendous speed-up.
-
 (*) 07y7m2d:
 
-    NOTE: If some day the 'state counting' feature is implemented for states to solve
-          the 'x*/x+' problem. then the functions 
+    NOTE: Once, the solution for pseudo ambiguous post conditions is completed,
+          the following functions need to be revised:
 
            get_fixed_number_of_newlines_to_acceptance 
 	       get_fixed_number_of_characters_to_acceptance
 
-	   need to return None, in case that there are such states involved.
-	   if counting states appear only in post or pre-conditions this does
-	   not matter.
-
-    NOTE: There was also the idea to implement the solution of X*/X with 
-          an inverse state machine after acception. Then, again these functions may
-          probably not be adapted.
 
 (*) 07y7m2d:
 

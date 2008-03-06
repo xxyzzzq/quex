@@ -39,9 +39,9 @@ Context free regular expressions match against an input independent on what
      letter from `j' through `o', or a `Z'. The minus '-' determines the
      range specification. Its left hand side is the start of the range.
      Its right hand sinde the end of the range (here 'j-o' means from 'j' to 'o').
-     Note, that '-' standards for 'range from to' even if the left hand side
-     is lesser than the right hand side. For example `a-z` and `z-a` are 
-     equivalent expressions.
+     Note, that '-' standards for 'range from to' where the character code
+     of the right hand side needs to be greater than the character code of the
+     left hand side.
 
 `[^A-Z\n]`::
      a "negated character class", i.e., any character but those in the

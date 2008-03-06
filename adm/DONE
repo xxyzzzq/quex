@@ -1,3 +1,11 @@
+(*) 07y9m23d:
+
+    In the 'history' computation the 'union' member function is used. 
+    See if it cannot be replaced by 'quick_add_interval'. This results
+    in a tremendous speedup. Also: I adapted NumberSet.clean() to be propper
+    and fast, quick_add_interval + clean() could probably provide 
+    tremendous speed-up.
+
 (*) 07y9m9d:
 
     line up the quex::token::ID_TERMINATION

@@ -460,8 +460,15 @@ def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
     return result
 
 def __beautify(the_state_machine):
+    ## assert the_state_machine.get_orphaned_state_index_list() == [], \
+    ##       "before conversion to DFA: orphaned states " + repr(the_state_machine)
     result = the_state_machine.get_DFA()
+    ## assert the_state_machine.get_orphaned_state_index_list() == [], \
+    ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
     result = result.get_hopcroft_optimization()    
+    ## assert the_state_machine.get_orphaned_state_index_list() == [], \
+    ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
+
     return result
 
 def __construct(core_sm, pre_condition=None, post_condition=None):
