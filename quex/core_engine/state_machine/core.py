@@ -867,8 +867,8 @@ class StateInfo:
         size = len(self.__transition_list)
         while i < size:
             t = self.__transition_list[i]
-            if not t.trigger_set.is_empty(): del self.__transition_list[i]; size -= 1
-            else:                            i += 1
+            if t.trigger_set.is_empty(): del self.__transition_list[i]; size -= 1
+            else:                        i += 1
 
     def delete_epsilon_target_state(self, TargetStateIdx):
         if TargetStateIdx in self.__epsilon.target_state_indices:
@@ -937,8 +937,6 @@ class StateInfo:
                 # to be in there. See the comment at the entry of this function.
                 new_origin_list.append(origin)
 
-        print "## old: ", self.__origin_list
-        print "## new: ", new_origin_list
         self.__origin_list = new_origin_list 
 
     def clone(self, ReplacementDictionary=None):

@@ -36,6 +36,9 @@ class GeneratorBase:
         for state in sm.states.values():
             state.delete_transitions_on_character_list(ControlCharacterCodeList)
 
+        assert sm.get_orphaned_state_index_list() == [], \
+               "orphaned state(s) = " + repr(sm.get_orphaned_state_index_list())
+
     def __extract_special_lists(self, PatternActionPair_List):
         # (0) extract data structures:
         #      -- state machine list: simply a list of all state machines
