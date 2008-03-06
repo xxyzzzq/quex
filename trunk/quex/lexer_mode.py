@@ -240,7 +240,7 @@ class LexMode:
     def add_match(self, Pattern, Code, PatternStateMachine, PatternIdx, Filename, LineN):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
-                      "Consider only the last definition.", Filename, LineN, DontExitF=True)
+                      "Only the last definition is considered.", Filename, LineN, DontExitF=True)
 
         self.__matches[Pattern] = Match(Pattern, Code, PatternStateMachine, PatternIdx, 
                                         Filename, LineN)
@@ -248,7 +248,7 @@ class LexMode:
     def add_match_priority(self, Pattern, Code, PatternStateMachine, PatternIdx, fh):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
-                      "Consider only the last definition.", fh)
+                      "Only this priority mark is considered.", fh)
 
         self.__matches[Pattern] = Match(Pattern, Code, PatternStateMachine, PatternIdx, 
                                         PriorityMarkF=True)
@@ -256,7 +256,7 @@ class LexMode:
     def add_match_deletion(self, Pattern, Code, PatternStateMachine, PatternIdx, fh):
         if self.__matches.has_key(Pattern):
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
-                      "Consider only 'deletion'.", fh)
+                      "Deletion of pattern.", fh)
 
         self.__matches[pattern] = Match(pattern, "", pattern_state_machine, PatternIdx, 
                                         DeletionF = True)
