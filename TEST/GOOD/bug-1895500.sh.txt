@@ -2,6 +2,8 @@ quex -i indigo.qx -o IndigoLexer -b 4 --iconv
 (0) create token id file
    token class file = 'quex/code_base/token'
    => 'IndigoLexer-token_ids'
+WARNING: There were transitions solely on buffer control characters. 
+WARNING: This issue should be resolved in the near future. 
 g++ -I./ -I/home/fschaef/prj/quex/trunk \
 		IndigoLexer-core-engine.cpp          \
 		IndigoLexer.cpp                      \

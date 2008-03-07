@@ -33,11 +33,16 @@ class GeneratorBase:
                 self.__extract_control_characters_from_transitions(sm, ControlCharacterCodeList)
 
     def __extract_control_characters_from_transitions(self, sm, ControlCharacterCodeList):
+
         for state in sm.states.values():
             state.delete_transitions_on_character_list(ControlCharacterCodeList)
 
-        assert sm.get_orphaned_state_index_list() == [], \
-               "orphaned state(s) = " + repr(sm.get_orphaned_state_index_list())
+        osl = sm.get_orphaned_state_index_list()
+        if osl != []:
+            print "WARNING: There were transitions solely on buffer control characters. "
+            print "WARNING: This issue should be resolved in the near future. "
+            for state_index in osl:
+                del sm.states[state_index]
 
     def __extract_special_lists(self, PatternActionPair_List):
         # (0) extract data structures:

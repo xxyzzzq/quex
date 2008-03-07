@@ -1,156 +1,156 @@
-<test-database execution-time-sec="58.98" date="Wed Mar  5 23:30:05 2008">
+<test-database execution-time-sec="64.40" date="Thu Mar  6 15:59:22 2008">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
-        <test title="Backwards" time-sum-sec="3.35"> 
+        <test title="Backwards" time-sum-sec="3.59"> 
             <application file-name="test-backward_loading.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="No_NDEBUG" result="OK" time-sec="1.76" crc="962615018"/>
-               <choice name="NDEBUG" result="OK" time-sec="1.59" crc="962615018"/>
+               <choice name="No_NDEBUG" result="OK" time-sec="1.72" crc="962615018"/>
+               <choice name="NDEBUG" result="OK" time-sec="1.86" crc="962615018"/>
             </choice-list>
         </test>
-        <test title="Forward Position Adaption" time-sum-sec="4.41"> 
+        <test title="Forward Position Adaption" time-sum-sec="4.79"> 
             <application file-name="test-position_adaption.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="No_NDEBUG" result="OK" time-sec="2.23" crc="1194462991"/>
-               <choice name="NDEBUG" result="OK" time-sec="2.18" crc="1194462991"/>
+               <choice name="No_NDEBUG" result="OK" time-sec="2.38" crc="1194462991"/>
+               <choice name="NDEBUG" result="OK" time-sec="2.41" crc="1194462991"/>
             </choice-list>
         </test>
-        <test title="No Backward Reload -- Precondition at Border" time-sum-sec="3.02"> 
+        <test title="No Backward Reload -- Precondition at Border" time-sum-sec="4.14"> 
             <application file-name="test-no-backward-reloading.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="No_NDEBUG" result="OK" time-sec="1.52" crc="-1673932659"/>
-               <choice name="NDEBUG" result="OK" time-sec="1.50" crc="-1673932659"/>
+               <choice name="No_NDEBUG" result="OK" time-sec="1.90" crc="-1673932659"/>
+               <choice name="NDEBUG" result="OK" time-sec="2.24" crc="-1673932659"/>
             </choice-list>
         </test>
     </group>
     <group name="CONTINUE">
-        <test title="Reentry analysis without return from function" time-sum-sec="2.15"> 
+        <test title="Reentry analysis without return from function" time-sum-sec="2.41"> 
             <application file-name="test-continue-without-return.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.59" crc="1124200934"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.55" crc="1124200934"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.70" crc="1124200934"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.71" crc="1124200934"/>
             </choice-list>
         </test>
-        <test title="Mode Changes" time-sum-sec="1.92"> 
+        <test title="Mode Changes" time-sum-sec="2.00"> 
             <application file-name="test-mode-changes.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.52" crc="1005719447"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.41" crc="1005719447"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.50" crc="1005719447"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.50" crc="1005719447"/>
             </choice-list>
         </test>
-        <test title="(special use case)" time-sum-sec="1.70"> 
+        <test title="(special use case)" time-sum-sec="1.78"> 
             <application file-name="test-continue-without-return-2.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.39" crc="-360880531"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.30" crc="-360880531"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.44" crc="-360880531"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.34" crc="-360880531"/>
             </choice-list>
         </test>
     </group>
     <group name="Post Conditions">
-        <test title="Part 1" time-sum-sec="1.95"> 
+        <test title="Part 1" time-sum-sec="2.09"> 
             <application file-name="test-post-conditions.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.48" crc="778667223"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.62" crc="778667223"/>
                <choice name="QuexBuffer" result="OK" time-sec="1.47" crc="778667223"/>
             </choice-list>
         </test>
-        <test title="Part 2" time-sum-sec="2.33"> 
+        <test title="Part 2" time-sum-sec="2.92"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.68" crc="1110981718"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.64" crc="1110981718"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.80" crc="1110981718"/>
+               <choice name="QuexBuffer" result="OK" time-sec="2.12" crc="1110981718"/>
             </choice-list>
         </test>
     </group>
     <group name="Pre Conditions">
-        <test title="Multiple Identical Pre-Conditions" time-sum-sec="5.77"> 
+        <test title="Multiple Identical Pre-Conditions" time-sum-sec="6.87"> 
             <application file-name="test-pre-conditions-3.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="2.34" crc="1245844997"/>
-               <choice name="QuexBuffer" result="OK" time-sec="3.43" crc="1245844997"/>
+               <choice name="PlainMemory" result="OK" time-sec="2.55" crc="1245844997"/>
+               <choice name="QuexBuffer" result="OK" time-sec="4.31" crc="1245844997"/>
             </choice-list>
         </test>
-        <test title="Part 1" time-sum-sec="2.21"> 
+        <test title="Part 1" time-sum-sec="2.49"> 
             <application file-name="test-pre-conditions.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.58" crc="-1785236051"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.63" crc="-1785236051"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.90" crc="-1785236051"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.59" crc="-1785236051"/>
             </choice-list>
         </test>
-        <test title="Part 2" time-sum-sec="2.26"> 
+        <test title="Part 2" time-sum-sec="2.42"> 
             <application file-name="test-pre-conditions-2.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.62" crc="-1192757738"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.65" crc="-1192757738"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.64" crc="-1192757738"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.77" crc="-1192757738"/>
             </choice-list>
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" time-sum-sec="3.24"> 
+        <test title="Simple" time-sum-sec="3.23"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="1.18" crc="365920718"/>
-               <choice name="QuexBuffer" result="OK" time-sec="2.05" crc="365920718"/>
+               <choice name="PlainMemory" result="OK" time-sec="1.13" crc="365920718"/>
+               <choice name="QuexBuffer" result="OK" time-sec="2.09" crc="365920718"/>
             </choice-list>
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" time-sum-sec="2.45"> 
+        <test title="Part II" time-sum-sec="2.52"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1198963946L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.74" crc="885683181"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.72" crc="885683181"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.83" crc="885683181"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.70" crc="885683181"/>
             </choice-list>
         </test>
-        <test title="Part I" time-sum-sec="2.07"> 
+        <test title="Part I" time-sum-sec="1.99"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1197105011L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.55" crc="46622910"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.53" crc="46622910"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.52" crc="46622910"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.47" crc="46622910"/>
             </choice-list>
         </test>
     </group>
     <group name="Simple">
-        <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="1.64"> 
+        <test title="Special Case '.' (drop out on valid target state)" time-sum-sec="1.67"> 
             <application file-name="test-simple-3.py" info-request-time="1195336077L"/>
             <choice-list number="2">
                <choice name="PlainMemory" result="OK" time-sec="0.36" crc="-1698498520"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.29" crc="-1698498520"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.31" crc="-1698498520"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="2.45"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" time-sum-sec="2.77"> 
             <application file-name="test-bol-eol.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.75" crc="445214074"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.70" crc="445214074"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.87" crc="445214074"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.90" crc="445214074"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" time-sum-sec="2.09"> 
+        <test title="Tiny Expressions" time-sum-sec="2.17"> 
             <application file-name="test-simple.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="0.58" crc="1610974138"/>
-               <choice name="QuexBuffer" result="OK" time-sec="1.51" crc="1610974138"/>
+               <choice name="PlainMemory" result="OK" time-sec="0.60" crc="1610974138"/>
+               <choice name="QuexBuffer" result="OK" time-sec="1.57" crc="1610974138"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" time-sum-sec="4.97"> 
+        <test title="Maximum Length Match" time-sum-sec="5.49"> 
             <application file-name="test-simple-2.py" info-request-time="1195336077L"/>
             <choice-list number="2">
-               <choice name="PlainMemory" result="OK" time-sec="1.97" crc="1033906266"/>
-               <choice name="QuexBuffer" result="OK" time-sec="3.00" crc="1033906266"/>
+               <choice name="PlainMemory" result="OK" time-sec="2.22" crc="1033906266"/>
+               <choice name="QuexBuffer" result="OK" time-sec="3.27" crc="1033906266"/>
             </choice-list>
         </test>
     </group>
     <group name="Single State">
-        <test title="Transition Code Generation" time-sum-sec="0.23"> 
+        <test title="Transition Code Generation" time-sum-sec="0.22"> 
             <application file-name="test-single-state-transitions.py" info-request-time="1197350300L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.23" crc="276539331"/>
+               <choice name="" result="OK" time-sec="0.22" crc="276539331"/>
             </choice-list>
         </test>
-        <test title="Extensive Transition Code Generation" time-sum-sec="8.76"> 
+        <test title="Extensive Transition Code Generation" time-sum-sec="8.84"> 
             <application file-name="test-single-state-transitions-x.py" info-request-time="1195973453L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="8.76" crc="-583841676"/>
+               <choice name="" result="OK" time-sec="8.84" crc="-583841676"/>
             </choice-list>
         </test>
     </group>
