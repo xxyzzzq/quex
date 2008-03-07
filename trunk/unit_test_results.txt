@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:26:45 2008
+DATE:  Thu Mar  6 16:01:44 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -59,6 +59,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1892809.sh ..................................................[OK]
     1893849 0.20.5 allows engine names that are not valid identifiers
         bug-1893849.sh ..................................................[OK]
+    1908436 0.23.6 rule precedence reversed for identical patterns
+        bug-1908436.sh ..................................................[OK]
     1890828 0.19.9 crashes trying to call error handler in several cases
         bug-1890828.sh ..................................................[OK]
     1889692 0.19.4 does not gracefully handle unbalanced quotations
@@ -74,7 +76,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:22:10 2008
+DATE:  Thu Mar  6 15:58:17 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -145,7 +147,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:22:10 2008
+DATE:  Thu Mar  6 15:58:17 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -160,7 +162,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:22:10 2008
+DATE:  Thu Mar  6 15:58:17 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -200,7 +202,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:22:11 2008
+DATE:  Thu Mar  6 15:58:17 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -217,7 +219,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:22:11 2008
+DATE:  Thu Mar  6 15:58:18 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -237,7 +239,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:22:11 2008
+DATE:  Thu Mar  6 15:58:18 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -270,7 +272,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:23:12 2008
+DATE:  Thu Mar  6 15:59:22 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -366,7 +368,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:23:22 2008
+DATE:  Thu Mar  6 15:59:33 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -428,7 +430,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:23:47 2008
+DATE:  Thu Mar  6 15:59:58 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -523,7 +525,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:23:47 2008
+DATE:  Thu Mar  6 15:59:59 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -546,7 +548,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:24:17 2008
+DATE:  Thu Mar  6 16:00:29 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -569,7 +571,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: ./
-DATE:  Wed Mar  5 14:24:20 2008
+DATE:  Thu Mar  6 16:00:32 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

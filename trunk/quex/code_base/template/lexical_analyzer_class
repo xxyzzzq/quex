@@ -507,12 +507,12 @@ namespace quex {
         void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
 
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-    // (*) Translation buffer ________________________________________________________
+        // (*) Translation buffer ________________________________________________________
         // Iconv requires an intermediate buffer to read data into, before it can trans-
         // late it into a target character coding format. However, if there are more than
-    // one input buffer, they could all use the same iconv translation buffer, since
-    // they do not translate at the same time.
-    uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
+        // one input buffer, they could all use the same iconv translation buffer, since
+        // they do not translate at the same time.
+        uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
 #endif
     };
 
@@ -529,7 +529,7 @@ namespace quex {
         // Buffer: Size = (see macro def.), Fallback = 10 Characters
         // prefer FILE* based buffers, because we can turn low-level buffering off.
         // ownership of FILE* id passed to the input strategy of the buffer
-        std::FILE* fh = fopen(Filename.c_str(), "r");
+        std::FILE* fh = std::fopen(Filename.c_str(), "r");
         setbuf(fh, 0);   // turn off system based buffering!
         //               // this is essential to profit from the quex buffer!
         __constructor_core(fh, IConvInputCodingName);

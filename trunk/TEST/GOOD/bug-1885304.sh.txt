@@ -3,6 +3,8 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 (0) create token id file
    token class file = 'quex/code_base/token'
    => 'Simple-token_ids'
+WARNING: There were transitions solely on buffer control characters. 
+WARNING: This issue should be resolved in the near future. 
 // -*- C++ -*-   vim: set syntax=cpp:
 #ifndef __INCLUDE_GUARD__QUEX__SIMPLE
 #define __INCLUDE_GUARD__QUEX__SIMPLE
@@ -528,12 +530,12 @@ namespace quex {
         void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
 
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-    // (*) Translation buffer ________________________________________________________
+        // (*) Translation buffer ________________________________________________________
         // Iconv requires an intermediate buffer to read data into, before it can trans-
         // late it into a target character coding format. However, if there are more than
-    // one input buffer, they could all use the same iconv translation buffer, since
-    // they do not translate at the same time.
-    uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
+        // one input buffer, they could all use the same iconv translation buffer, since
+        // they do not translate at the same time.
+        uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
 #endif
     };
 
@@ -550,7 +552,7 @@ namespace quex {
         // Buffer: Size = (see macro def.), Fallback = 10 Characters
         // prefer FILE* based buffers, because we can turn low-level buffering off.
         // ownership of FILE* id passed to the input strategy of the buffer
-        std::FILE* fh = fopen(Filename.c_str(), "r");
+        std::FILE* fh = std::fopen(Filename.c_str(), "r");
         setbuf(fh, 0);   // turn off system based buffering!
         //               // this is essential to profit from the quex buffer!
         __constructor_core(fh, IConvInputCodingName);
@@ -1404,127 +1406,125 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);
         QUEX_UNDO_PREPARE_LEXEME_OBJECT;
         // state machine 
-        // init-state = 30L
-        // 00000* <~ (42, 160, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        // init-state = 254L
+        // 00256* <~ (42, 160, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
         //       <no epsilon>
-        // 00001* <~ (42, 160, S), (9, 35), (18, 87)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00000
-        //       == 't' ==> 00002
-        //       == 'e' ==> 00003
+        // 00257* <~ (42, 160, S), (9, 35), (18, 87)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00256
+        //       == 't' ==> 00258
+        //       == 'e' ==> 00259
         //       <no epsilon>
-        // 00002* <~ (42, 160, S), (9, 36)
-        //       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00000
-        //       == 'r' ==> 00020
+        // 00258* <~ (42, 160, S), (9, 36)
+        //       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00256
+        //       == 'r' ==> 00276
         //       <no epsilon>
-        // 00003* <~ (42, 160, S), (18, 85)
-        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00000
-        //       == 'n' ==> 00021
+        // 00259* <~ (42, 160, S), (18, 85)
+        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00256
+        //       == 'n' ==> 00277
         //       <no epsilon>
-        // 00004* <~ (6, 18, S)
-        //       == ['\t', '\n'], '\r', ' ' ==> 00004
+        // 00260* <~ (6, 18, S)
+        //       == ['\t', '\n'], '\r', ' ' ==> 00260
         //       <no epsilon>
-        // 00005* <~ (36, 143, S)
-        //       == ['0', '9'] ==> 00005
+        // 00261* <~ (36, 143, S)
+        //       == ['0', '9'] ==> 00261
         //       <no epsilon>
-        // 00006* <~ (30, 126, S)
+        // 00262* <~ (30, 126, S)
         //       <no epsilon>
-        // 00007* <~ (0, 1, S)
+        // 00264* <~ (27, 120, S)
         //       <no epsilon>
-        // 00008* <~ (27, 120, S)
+        // 00265* <~ (18, 84, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
         //       <no epsilon>
-        // 00009* <~ (18, 84, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        // 00266* <~ (9, 34, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
         //       <no epsilon>
-        // 00010* <~ (9, 34, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        // 00267* <~ (21, 103, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
         //       <no epsilon>
-        // 00011* <~ (21, 103, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        // 00268* <~ (12, 49, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
         //       <no epsilon>
-        // 00012* <~ (12, 49, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        // 00269* <~ (24, 114, S)
         //       <no epsilon>
-        // 00013* <~ (24, 114, S)
+        // 00270* <~ (42, 160, S), (12, 50)
+        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00256
+        //       == 'n' ==> 00273
         //       <no epsilon>
-        // 00014* <~ (42, 160, S), (12, 50)
-        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00000
-        //       == 'n' ==> 00017
+        // 00271* <~ (42, 160, S), (15, 69)
+        //       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00256
+        //       == 'o' ==> 00274
         //       <no epsilon>
-        // 00015* <~ (42, 160, S), (15, 69)
-        //       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00000
-        //       == 'o' ==> 00018
+        // 00272* <~ (42, 160, S), (21, 104)
+        //       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00256
+        //       == 'x' ==> 00275
         //       <no epsilon>
-        // 00016* <~ (42, 160, S), (21, 104)
-        //       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00000
-        //       == 'x' ==> 00019
+        // 00273* <~ (42, 160, S), (12, 51)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00256
+        //       == 't' ==> 00268
         //       <no epsilon>
-        // 00017* <~ (42, 160, S), (12, 51)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00000
-        //       == 't' ==> 00012
+        // 00274* <~ (42, 160, S), (15, 70)
+        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00256
+        //       == 'u' ==> 00278
         //       <no epsilon>
-        // 00018* <~ (42, 160, S), (15, 70)
-        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00000
-        //       == 'u' ==> 00022
+        // 00275* <~ (42, 160, S), (21, 105)
+        //       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00256
+        //       == 'p' ==> 00279
         //       <no epsilon>
-        // 00019* <~ (42, 160, S), (21, 105)
-        //       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00000
-        //       == 'p' ==> 00023
+        // 00276* <~ (42, 160, S), (9, 37)
+        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00256
+        //       == 'u' ==> 00280
         //       <no epsilon>
-        // 00020* <~ (42, 160, S), (9, 37)
-        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00000
-        //       == 'u' ==> 00024
+        // 00277* <~ (42, 160, S), (18, 86)
+        //       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00256
+        //       == 'd' ==> 00265
         //       <no epsilon>
-        // 00021* <~ (42, 160, S), (18, 86)
-        //       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00000
-        //       == 'd' ==> 00009
+        // 00278* <~ (42, 160, S), (15, 71)
+        //       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00256
+        //       == 'b' ==> 00281
         //       <no epsilon>
-        // 00022* <~ (42, 160, S), (15, 71)
-        //       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00000
-        //       == 'b' ==> 00025
+        // 00279* <~ (42, 160, S), (21, 106)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00256
+        //       == 'e' ==> 00282
         //       <no epsilon>
-        // 00023* <~ (42, 160, S), (21, 106)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00000
-        //       == 'e' ==> 00026
+        // 00280* <~ (42, 160, S), (9, 38)
+        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00256
+        //       == 'c' ==> 00283
         //       <no epsilon>
-        // 00024* <~ (42, 160, S), (9, 38)
-        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00000
-        //       == 'c' ==> 00027
+        // 00281* <~ (42, 160, S), (15, 72)
+        //       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00256
+        //       == 'l' ==> 00284
         //       <no epsilon>
-        // 00025* <~ (42, 160, S), (15, 72)
-        //       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00000
-        //       == 'l' ==> 00028
+        // 00282* <~ (42, 160, S), (21, 107)
+        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00256
+        //       == 'c' ==> 00285
         //       <no epsilon>
-        // 00026* <~ (42, 160, S), (21, 107)
-        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00000
-        //       == 'c' ==> 00029
+        // 00283* <~ (42, 160, S), (9, 39)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00256
+        //       == 't' ==> 00266
         //       <no epsilon>
-        // 00027* <~ (42, 160, S), (9, 39)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00000
-        //       == 't' ==> 00010
+        // 00284* <~ (42, 160, S), (15, 68)
+        //       == 'e' ==> 00255
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00256
         //       <no epsilon>
-        // 00028* <~ (42, 160, S), (15, 68)
-        //       == 'e' ==> 00031
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00000
+        // 00285* <~ (42, 160, S), (21, 108)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00256
+        //       == 't' ==> 00267
         //       <no epsilon>
-        // 00029* <~ (42, 160, S), (21, 108)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00000
-        //       == 't' ==> 00011
+        // 00254 <~ (0, 0), (6, 17), (9, 33), (12, 48), (15, 66), (18, 83), (21, 102), (24, 113), (27, 119), (30, 125), (36, 142), (42, 159)
+        //       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00256
+        //       == 's' ==> 00257
+        //       == ['\t', '\n'], '\r', ' ' ==> 00260
+        //       == ['0', '9'] ==> 00261
+        //       == '}' ==> 00262
+        //       == '{' ==> 00264
+        //       == ';' ==> 00269
+        //       == 'i' ==> 00270
+        //       == 'd' ==> 00271
+        //       == 'e' ==> 00272
         //       <no epsilon>
-        // 00030 <~ (0, 0), (6, 17), (9, 33), (12, 48), (15, 66), (18, 83), (21, 102), (24, 113), (27, 119), (30, 125), (36, 142), (42, 159)
-        //       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00000
-        //       == 's' ==> 00001
-        //       == ['\t', '\n'], '\r', ' ' ==> 00004
-        //       == ['0', '9'] ==> 00005
-        //       == '}' ==> 00006
-        //       == '{' ==> 00008
-        //       == ';' ==> 00013
-        //       == 'i' ==> 00014
-        //       == 'd' ==> 00015
-        //       == 'e' ==> 00016
-        //       <no epsilon>
-        // 00031* <~ (15, 67, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00000
+        // 00255* <~ (15, 67, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
         //       <no epsilon>
         // 
       STATE_254:
@@ -1958,21 +1958,6 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_DROP_OUT(262);
         __QUEX_DEBUG_INFO_ACCEPTANCE(30);
         goto TERMINAL_30;
-        
-    
-      STATE_263:
-        __QUEX_DEBUG_INFO_ENTER(263);
-    // origins = [(0L, 1L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(0);
-    last_acceptance = 0;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
-        goto STATE_263_DROP_OUT;
-        
-      STATE_263_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(263);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(0);
-        goto TERMINAL_0;
         
     
       STATE_264:
@@ -3160,7 +3145,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 16 "dos_lf_2.qx"
             self.send(TKN_TERMINATION); RETURN;
-#line 1850 "Simple-core-engine.cpp"
+#line 1833 "Simple-core-engine.cpp"
             
             }
         }
@@ -3179,7 +3164,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1869 "Simple-core-engine.cpp"
+#line 1852 "Simple-core-engine.cpp"
             
             }
         }
@@ -3198,7 +3183,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 18 "dos_lf_2.qx"
              
-#line 1888 "Simple-core-engine.cpp"
+#line 1871 "Simple-core-engine.cpp"
             
             }
         }
@@ -3216,7 +3201,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1906 "Simple-core-engine.cpp"
+#line 1889 "Simple-core-engine.cpp"
             
             }
         }
@@ -3235,7 +3220,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 28 "dos_lf_2.qx"
              self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1925 "Simple-core-engine.cpp"
+#line 1908 "Simple-core-engine.cpp"
             
             }
         }
@@ -3253,7 +3238,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 1943 "Simple-core-engine.cpp"
+#line 1926 "Simple-core-engine.cpp"
             
             }
         }
@@ -3271,7 +3256,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 1961 "Simple-core-engine.cpp"
+#line 1944 "Simple-core-engine.cpp"
             
             }
         }
@@ -3289,7 +3274,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 1979 "Simple-core-engine.cpp"
+#line 1962 "Simple-core-engine.cpp"
             
             }
         }
@@ -3307,7 +3292,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 1997 "Simple-core-engine.cpp"
+#line 1980 "Simple-core-engine.cpp"
             
             }
         }
@@ -3325,7 +3310,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 2015 "Simple-core-engine.cpp"
+#line 1998 "Simple-core-engine.cpp"
             
             }
         }
@@ -3343,7 +3328,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 2033 "Simple-core-engine.cpp"
+#line 2016 "Simple-core-engine.cpp"
             
             }
         }
@@ -3361,7 +3346,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2051 "Simple-core-engine.cpp"
+#line 2034 "Simple-core-engine.cpp"
             
             }
         }
@@ -3504,7 +3489,7 @@ __quex_assert(Indentation >= 0);
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#include<cstdio> // for: 'sprintf'
+#include<cstdio> // for: 'std::sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
 #include "quex/code_base/token"
 
@@ -3563,7 +3548,7 @@ namespace quex {
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];
-          sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+          std::sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
           error_string = std::string(tmp);
           return error_string;
        }

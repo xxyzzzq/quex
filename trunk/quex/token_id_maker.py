@@ -45,7 +45,7 @@ file_str = \
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_%%DATE_IG%%__
 #define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_%%DATE_IG%%__
 
-#include<cstdio> // for: 'sprintf'
+#include<cstdio> // for: 'std::sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
 #include "%%TOKEN_CLASS_DEFINITION_FILE%%"
 
@@ -90,7 +90,7 @@ func_str = \
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];
-          sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+          std::sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
           error_string = std::string(tmp);
           return error_string;
        }
