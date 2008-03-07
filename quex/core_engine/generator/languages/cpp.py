@@ -36,8 +36,7 @@ def __transition(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, T
         return __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, 
                                             BufferReloadRequiredOnDropOutF)
     else:
-        return __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, 
-                                           TargetStateIdx, OriginList, BufferReloadRequiredOnDropOutF)
+        return __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx)
     
 def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, BufferReloadRequiredOnDropOutF):
     """Backward lexiging state transitions are simple, there are only two cases:
@@ -66,8 +65,7 @@ def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateI
     else:
         return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
 
-def __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, 
-                                TargetStateIdx, OriginList, BufferReloadRequiredOnDropOutF):
+def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx):
     """
        (1) If event triggers to subsequent state, one has to go there independent wether 
            the current state is an acceptance state or not.
@@ -80,6 +78,7 @@ def __transition_forward_lexing(StateMachineName, CurrentStateIdx, CurrentStateI
 
        (3) If a 'drop out' in an acceptance state occured, the pre-conditions (if there are some
            determine which pattern has won, i.e. to what specific terminal state is to be gone.
+           This will happen inside the drop out region.
            
     """
     
