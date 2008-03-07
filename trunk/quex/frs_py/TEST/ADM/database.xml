@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.10" date="Thu Mar  6 15:59:59 2008">
+<test-database execution-time-sec="0.09" date="Thu Mar  6 23:29:54 2008">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.06"> 
@@ -9,10 +9,10 @@
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.04"> 
+        <test title="Trim (replaced by string.strip(..))" time-sum-sec="0.03"> 
             <application file-name="test-trim.py" info-request-time="1195336072L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="-964243626"/>
+               <choice name="" result="OK" time-sec="0.03" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

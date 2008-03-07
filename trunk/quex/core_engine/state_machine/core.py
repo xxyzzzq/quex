@@ -111,7 +111,7 @@ StateOriginInfo_POST_CONDITIONED_ACCEPTANCE = 4
 StateOriginInfo_PRE_CONDITIONEND_ACCEPTANCE = 5
 StateOriginInfo_ERROR                       = -1
 
-class StateOriginInfo:
+class StateCoreInfo:
     """-- store input position: if an origin is flagged that way it 
           imposes that the input position is to be stored.
 
@@ -148,6 +148,9 @@ class StateOriginInfo:
                  PseudoAmbiguousPostConditionID=-1L):
         self.state_machine_id = StateMachineIdx
         self.state_index      = StateIdx
+        # is a acceptance state?
+        self.__acceptance_f = AcceptanceF 
+
         # Input position of the current input stream is to be stored in 
         # the following cases: 
         #
@@ -299,15 +302,32 @@ class StateOriginInfo:
         #       where the pattern was specified. Low ID == early specification.
         return cmp(self.state_machine_id, Other.state_machine_id)
             
-class OriginList:
-    # TODO: Use this inside 'StateInfo'
-    def __init__(self):
-        self.__list = []
 
-    def get():
-        return self.__list
+class StateOrigin(StateCoreInfo):
+    def __init__(self, StateMachineIdx, StateIdx, StoreInputPositionF=False, 
+                 PostConditionedAcceptanceF=False, PreConditionedStateMachineID=-1L,
+                 PreConditionBeginOfLineF=False,
+                 PseudoAmbiguousPostConditionID=-1L):
+        self.state_machine_id = StateMachineIdx
+        self.state_index      = StateIdx
+        StateCoreInfo.__init__(self, StoreInputPositionF, PostConditionedAcceptanceF, 
+                               PreConditionedStateMachineID, PreConditionBeginOfLineF,
+                               PseudoAmbiguousPostConditionID)
+
+class OriginList:
+    def __init__(self):
+        self.__foreign = []
+
+    def get(self):
+        return self.__foreign
+
+    def add(self, Origin):
+        pass
+
+    def is_empty(self):
+        return self.__foreign == []
         
-class StateInfo:
+class StateInfo(StateCoreInfo):
     # Information about all transitions starting from a particular state. Transitions are
     # of two types:
     #   
@@ -328,8 +348,6 @@ class StateInfo:
         self.__transition_list = []
         # epsilon transition: if no other trigger triggers
         self.__epsilon = EpsilonTransition()
-        # is a acceptance state?
-        self.__acceptance_f = AcceptanceF 
         # relation (origin of this state in terms of state machine (pattern) and state)
         self.__origin_list = []
 

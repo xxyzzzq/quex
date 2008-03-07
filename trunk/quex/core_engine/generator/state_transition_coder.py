@@ -131,7 +131,7 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
         if middle[0].begin == 0:
              # input < 0 is impossible, since unicode codepoints start at 0!
              txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
-                                      StateMachineName, StateIdx, BackwardLexingF=BackwardLexingF)
+                               StateMachineName, StateIdx, BackwardLexingF=BackwardLexingF)
 
         elif TriggerSetN == 2:
              txt += __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
