@@ -133,7 +133,17 @@ class StateCoreInfo:
         return self.post_conditioned_acceptance_f() and self.store_input_position_f()
                             
     def __repr__(self):
+        return self.get_string()
+
+    def get_string(self, StateMachineAndStateInfoF=True):
         appendix = ""
+        if StateMachineAndStateInfoF:
+            if self.state_machine_id != -1L:
+                appendix += ", " + repr(self.state_machine_id).replace("L", "")
+            if self.state_index != -1L:
+                appendix += ", " + repr(self.state_index).replace("L", "")
+        if self.__acceptance_f:        
+            appendix += ", A"
         if self.__store_input_position_f:        
             appendix += ", S"
         if self.__post_conditioned_acceptance_f: 
@@ -144,7 +154,9 @@ class StateCoreInfo:
             appendix += ", papc=" + repr(self.__pseudo_ambiguous_post_condition_id).replace("L", "")
         if self.__pre_condition_begin_of_line_f:
             appendix += ", bol"
-        return "(%s, %s%s)" % (repr(self.state_machine_id), repr(self.state_index), appendix)
+        if len(appendix) > 2: 
+            appendix = appendix[2:]
+        return "(%s)" % appendix
 
     def type(self):
         Acc   = self.is_acceptance()

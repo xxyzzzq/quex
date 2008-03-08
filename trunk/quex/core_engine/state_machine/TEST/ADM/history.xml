@@ -1,4 +1,4 @@
-<history date="Sat Mar  8 09:15:49 2008" element-n="42">
+<history date="Sat Mar  8 13:43:23 2008" element-n="42">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -91,6 +91,6 @@
         <accept    time="08:15:35" application="test-StateMachine-inverse.py" choice="" crc="1601260758" />
         <accept    time="08:15:36" application="test-StateMachine-trace-origin-clone.py" choice="" crc="2039675782" />
         <accept    time="08:15:36" application="test-StateMachine-trace-origin-hopcroft-optimization.py" choice="" crc="1324749635" />
-        <test-runs-today n="7" ok-n="0" fail-n="7" else-n="0" last-run="failure" last-time="08:15:49"/>
+        <test-runs-today n="9" ok-n="0" fail-n="9" else-n="0" last-run="failure" last-time="12:43:23"/>
     </day>
 </history>

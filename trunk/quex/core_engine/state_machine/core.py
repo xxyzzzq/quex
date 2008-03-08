@@ -753,6 +753,8 @@ class StateInfo:
         fill_str = ""
         if msg != "": fill_str = "     "
 
+        msg = self.core().get_string(StateMachineAndStateInfoF=False) + msg
+
         # print out transitionts
         sorted_transitions = self.__transition_list
         sorted_transitions.sort(lambda a, b: cmp(a.target_state_index, b.target_state_index))
@@ -1818,15 +1820,14 @@ class StateMachine:
 
         # (*) normalize the state indices
         index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
-    
+
         # (*) construct text 
         msg = "init-state = " + repr(index_map[self.init_state_index]) + "\n"
         for printed_state_i in index_sequence:
             printed_state_i = long(printed_state_i)
             real_state_i    = inverse_index_map[printed_state_i]
             state           = self.states[real_state_i]
-            if state.is_acceptance(): msg += "%05i*" % printed_state_i + state.get_string(index_map)
-            else:                     msg += "%05i"  % printed_state_i + state.get_string(index_map)
+            msg += "%05i" % printed_state_i + state.get_string(index_map)
             
         if self.pre_condition_state_machine != None:
             msg += "pre-condition inverted = "
