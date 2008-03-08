@@ -170,8 +170,8 @@ class StateOriginList:
         self.__list = new_origin_list 
 
     def get_string(self):
-        if self.__list == []: return ""
         txt = " <~ "
+        if self.__list == []: return txt + "\n"
         for origin in self.__list:
             txt += repr(origin) + ", "
         txt = (txt[:-2] + "\n").replace("L","")     
@@ -744,7 +744,6 @@ class StateInfo:
         if self.core().state_index      != StateIndex:     return False
         return self.origins().is_from_single_state(StateMachineID, StateIdx)
 
-        
     def __repr__(self):
         return self.get_string()
 
@@ -780,6 +779,12 @@ class StateInfo:
         if self.__epsilon.target_state_indices != []:
             msg += "%s" % self.__epsilon.get_graphviz_string(OwnStateIdx, StateIndexMap)
         return msg
+
+    def mark_self_as_origin(self, StateMachineID, StateIndex):
+        self.core().state_machine_id = StateMachineID
+        self.core().state_index      = StateIndex
+        # use the own 'core' as only origin
+        self.origins().set([self.core()])
 
 class StateMachine:
 
@@ -1529,6 +1534,11 @@ class StateMachine:
 
         return pseudo_ambiguous_post_condition_id
 
+    def get_pre_condition_sm_id(self):
+        if self.pre_condition_state_machine !=  None:
+            return the_state_machine.pre_condition_state_machine.get_id()
+        return -1L
+
     def is_empty(self):
         """If state machine only contains the initial state that points nowhere,
            then it is empty.
@@ -1621,7 +1631,7 @@ class StateMachine:
 
         self.states[StartStateIdx].delete_epsilon_target_state(TargetStateIdx)  
 
-    def mark_state_origins(self, OtherStateMachineID=-1L, DontMarkIfOriginsPresentF=False):
+    def mark_state_origins(self, OtherStateMachineID=-1L):
         """Marks at each state that it originates from this state machine. This is
            important, when multiple patterns are combined into a single DFA and
            origins need to be traced down. In this case, each pattern (which is
@@ -1643,9 +1653,7 @@ class StateMachine:
         else:                          state_machine_id = OtherStateMachineID
 
         for state_idx, state in self.states.items():
-            if DontMarkIfOriginsPresentF and state.has_origin(): continue
-            state.add_origin(state_machine_id, state_idx, 
-                             StoreInputPositionF=state.is_acceptance())
+            state.mark_self_as_origin(state_machine_id, state_idx)
 
     def create_new_init_state(self, AcceptanceF=False):
 

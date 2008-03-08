@@ -41,20 +41,16 @@ def do(the_state_machine, pre_condition_state_machine):
     inverse_pre_condition = pre_condition_state_machine.get_inverse()
     inverse_pre_condition = inverse_pre_condition.get_DFA()
     inverse_pre_condition = inverse_pre_condition.get_hopcroft_optimization()
-    # -- mark other state machine with original state machine id
-    #    so that code generation knows what flag to raise when the pre-condition succeeds.
-    inverse_pre_condition.mark_state_origins(OtherStateMachineID=the_state_machine.get_id())
         
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]
     the_state_machine.pre_condition_state_machine = inverse_pre_condition
+    pre_condition_sm_id = inverse_pre_condition.get_id()
 
     # (*) create origin data, in case where there is none yet create new one.
     #     (do not delete, otherwise existing information gets lost)
-    for state_idx in the_state_machine.get_acceptance_state_list()[0]:
-        state = the_state_machine.states[state_idx]
-        if not state.has_origin(): 
-            state.add_origin(the_state_machine.get_id(), state_idx)
-        state.set_pre_condition_id(inverse_pre_condition.get_id())
+    for state in the_state_machine.states.values():
+        if not state.is_acceptance(): continue
+        state.core().set_pre_condition_id(pre_condition_sm_id)
     
     return the_state_machine
