@@ -58,11 +58,9 @@ CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "
 class something:
     pass
 
-__SETUP = something()
 
-def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0, 
+def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=-1, EndOfFile_Code=-1,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
-    global __SETUP
 
     def __validate(SM):
         # -- 'Nothing is fine' is not a pattern that we can accept. See the discussion
@@ -78,10 +76,6 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
 
     if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)
     else:                                  stream = UTF8_String_or_Stream    
-
-    __SETUP.EndOfFile_Code   = EndOfFile_Code
-    __SETUP.BeginOfFile_Code = BeginOfFile_Code
-    __SETUP.BufferLimit_Code = 0x0
 
     if PatternDict == None: PatternDict = {}
 
@@ -279,10 +273,9 @@ def snap_primary(stream, PatternDict):
 
     # -- optional repetition command? 
     result_repeated = __snap_repetition_range(result, stream) 
-    if result_repeated != None: 
-        return __debug_exit(__beautify(result_repeated), stream)
-    else:                       
-        return __debug_exit(__beautify(result), stream)
+    ## print "##imr:", result.get_string(NormalizeF=False)
+    if result_repeated != None: result = result_repeated
+    return __debug_exit(__beautify(result), stream)
     
 def snap_non_control_characters(stream):
     """Snaps any 'non_control_character' using UTF8 encoding from the given string. Note, that 
@@ -474,7 +467,6 @@ def __beautify(the_state_machine):
 def __construct(core_sm, pre_condition=None, post_condition=None):
 
     if   pre_condition == None and post_condition == None:
-        core_sm.mark_state_origins()
         result = core_sm
         # -- can't get more beautiful ...
     
@@ -497,14 +489,12 @@ def __construct(core_sm, pre_condition=None, post_condition=None):
     return result
   
 def create_ALL_BUT_NEWLINE_state_machine():
-    global __SETUP
     result = StateMachine()
-    trigger_set = NumberSet([Interval(ord("\n")), 
-                             Interval(__SETUP.BufferLimit_Code),
-                             Interval(__SETUP.EndOfFile_Code),
-                             Interval(__SETUP.BeginOfFile_Code)])
+    # NOTE: Buffer control characters are supposed to be filtered out by the code
+    #       generator.
+    trigger_set = NumberSet(Interval(ord("\n")).inverse()) 
 
-    result.add_transition(result.init_state_index, trigger_set.inverse(), AcceptanceF=True) 
+    result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
     result.mark_state_origins()
     return result
     

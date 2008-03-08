@@ -65,21 +65,16 @@ class GeneratorBase:
         # [NOT IMPLEMENTED YET]    
         # # trivial_pre_condition_dict = {}             # map: state machine id --> character code(s)
         for action_info in PatternActionPair_List:
-            sm = action_info.pattern_state_machine()
+            sm    = action_info.pattern_state_machine()
+            sm_id = sm.get_id()
             self.state_machine_list.append(sm)
-            # -- register action information under the state machine id, where it 
-            #    belongs.
-            origins_of_acceptance_states = sm.get_origin_ids_of_acceptance_states()
-            assert len(origins_of_acceptance_states) != 0, \
-                   "error: code generation for pattern:\n" + \
-                   "error: no acceptance state contains origin information.\n" + \
-                   repr(sm)
-            origin_state_machine_id = origins_of_acceptance_states[0]
-            self.action_db[origin_state_machine_id] = action_info
+
+            # -- register action information under the state machine id, where it belongs.
+            self.action_db[sm_id] = action_info
 
             # -- collect all pre-conditions and make one single state machine out of it
-            if sm.has_non_trivial_pre_condition():
-                pre_sm = sm.pre_condition_state_machine
+            pre_sm = sm.pre_condition_state_machine
+            if pre_sm != None:
                 self.pre_condition_sm_list.append(pre_sm)
                 self.pre_condition_sm_id_list.append(pre_sm.get_id())
                 
@@ -93,7 +88,7 @@ class GeneratorBase:
 
             # -- collect all ids of post conditioned state machines
             if sm.is_post_conditioned():
-                self.post_conditioned_sm_id_list.append(origin_state_machine_id)
+                self.post_conditioned_sm_id_list.append(sm_id)
 
     def __create_core_state_machine(self):
         # (1) transform all given patterns into a single state machine
@@ -138,7 +133,7 @@ class GeneratorBase:
                   all successful patterns need to be reported!            
                           
         """   
-        def __on_orphan_state_occurence(Place, orphan_state_list):
+        def __on_orphan_states(Place, orphan_state_list):
             error_msg("After '%s'" % Place + "\n" + \
                       "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
@@ -152,7 +147,7 @@ class GeneratorBase:
         #     the StateMachine_List represents one possible pattern that can
         #     match the current input.   
         #
-        map(lambda x: x.mark_state_origins(DontMarkIfOriginsPresentF=True), StateMachine_List)
+        map(lambda x: x.mark_state_origins(), StateMachine_List)
         
         # (2) setup all patterns in paralell 
         sm = parallelize.do(StateMachine_List)

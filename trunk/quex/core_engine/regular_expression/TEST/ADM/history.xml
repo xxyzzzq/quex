@@ -1,4 +1,4 @@
-<history date="Sat Mar  8 02:11:16 2008" element-n="35">
+<history date="Sat Mar  8 08:14:29 2008" element-n="47">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -82,6 +82,18 @@
         <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="failure" last-time="22:29:53"/>
     </day>
     <day year="2008" month="03" day="08">
-        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="01:10:15"/>
+        <accept    time="01:44:33" application="test-pattern-matching.py" choice="" crc="-1140783849" />
+        <accept    time="02:01:25" application="test-replacement.py" choice="" crc="1742280173" />
+        <accept    time="02:02:34" application="test-alternatives.py" choice="" crc="68239250" />
+        <accept    time="02:02:51" application="test-repeated-expressions.py" choice="" crc="-1135513032" />
+        <accept    time="02:04:24" application="test-pre-condition.py" choice="" crc="-1996480827" />
+        <accept    time="02:04:57" application="test-post-condition.py" choice="" crc="-2023004214" />
+        <accept    time="02:05:53" application="test-eol-carriage-return-newline.py" choice="" crc="1302627260" />
+        <accept    time="02:06:56" application="test-string.py" choice="" crc="2133251263" />
+        <accept    time="02:07:44" application="test-set.py" choice="" crc="-809745305" />
+        <accept    time="02:09:57" application="test-bol-eol.py" choice="" crc="1925491900" />
+        <accept    time="02:11:05" application="test-pre-and-post-condition.py" choice="" crc="2058758765" />
+        <accept    time="02:14:04" application="test-lonely-characters.py" choice="" crc="657125264" />
+        <test-runs-today n="17" ok-n="4" fail-n="13" else-n="0" last-run="failure" last-time="07:14:29"/>
     </day>
 </history>
