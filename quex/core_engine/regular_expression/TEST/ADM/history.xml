@@ -1,4 +1,4 @@
-<history date="Sat Mar  8 08:14:29 2008" element-n="47">
+<history date="Sat Mar  8 13:43:14 2008" element-n="47">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -94,6 +94,6 @@
         <accept    time="02:09:57" application="test-bol-eol.py" choice="" crc="1925491900" />
         <accept    time="02:11:05" application="test-pre-and-post-condition.py" choice="" crc="2058758765" />
         <accept    time="02:14:04" application="test-lonely-characters.py" choice="" crc="657125264" />
-        <test-runs-today n="17" ok-n="4" fail-n="13" else-n="0" last-run="failure" last-time="07:14:29"/>
+        <test-runs-today n="18" ok-n="4" fail-n="14" else-n="0" last-run="failure" last-time="12:43:14"/>
     </day>
 </history>
