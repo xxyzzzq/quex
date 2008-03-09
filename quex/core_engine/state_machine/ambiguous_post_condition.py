@@ -43,8 +43,7 @@ def detect_forward(CoreStateMachine, PostConditionStateMachine):
     assert len(core_acceptance_state_list) == 1 
 
     pcsm_init_state = PostConditionStateMachine.get_init_state()
-    for csm_state_idx in core_acceptance_state_list[0]:
-        csm_state = CoreStateMachine.states[csm_state_idx]
+    for csm_state in core_acceptance_state_list:
         if  __dive_to_detect_iteration(CoreStateMachine,          csm_state, 
                                        PostConditionStateMachine, pcsm_init_state):
             return True
@@ -239,10 +238,7 @@ def mount(the_state_machine, PostConditionSM):
 
     # (*) create origin data, in case where there is none yet create new one.
     #     (do not delete, otherwise existing information gets lost)
-    for state_idx in acceptance_state_list[0]: 
-        state = the_state_machine.states[state_idx]
-        if not state.has_origin(): 
-            state.add_origin(the_state_machine.get_id(), state_idx)
+    for state in acceptance_state_list: 
         state.set_pseudo_ambiguous_post_condition_id(backward_detector_sm.get_id())
         # At the end of the post condition, the input positions needs to be stored.
         # Before we can go backwards, we need to know where the post condition actually 
@@ -272,8 +268,7 @@ def philosophical_cut(core_sm, post_condition_sm):
     assert len(core_acceptance_state_list) == 1 
 
     pcsm_init_state = post_condition_sm.get_init_state()
-    for csm_state_idx in core_acceptance_state_list[0]:
-        csm_state = core_sm.states[csm_state_idx]
+    for csm_state in core_acceptance_state_list[0]:
         __dive_to_cut_iteration(core_sm, csm_state, post_condition_sm, pcsm_init_state,
                                 SM1_Path=[post_condition_sm.init_state_index])
 

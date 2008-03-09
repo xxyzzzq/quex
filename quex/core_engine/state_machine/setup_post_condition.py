@@ -87,7 +87,7 @@ def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutio
     #           take over all transitions of a start index into the result without
     #           considering interferences (see below)
     #
-    orig_acceptance_state_id_list = result.get_acceptance_state_list()[0]
+    orig_acceptance_state_id_list = result.get_acceptance_state_id_list()
 
     # -- mount on every acceptance state the initial state of the following state
     #    machine via epsilon transition
@@ -110,8 +110,7 @@ def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutio
     
     # -- no acceptance state shall store the input position
     # -- set the post conditioned flag for all acceptance states
-    for state_idx in result.get_acceptance_state_list()[0]:
-        state = result.states[state_idx]
+    for state in result.get_acceptance_state_list():
         state.core().set_store_input_position_f(False)
         state.core().set_post_conditioned_acceptance_f(True)
         state.core().set_pre_condition_id(pre_condition_sm_id)   

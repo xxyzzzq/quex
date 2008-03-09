@@ -23,11 +23,10 @@ def do(the_state_machines):
         # in case there was an empty state one has to add a 'free pass' from begin to 
         # the final acceptance state.   
         if TerminationStateIdx == -1:
-            acceptance_state_list_set = result_state_machine.get_acceptance_state_list()
+            acceptance_state_index_list = result_state_machine.get_acceptance_state_index_list()
             assert acceptance_state_list_set != [], \
                    "resulting state machine has no acceptance state!"
-            acceptance_state_list = acceptance_state_list_set[0]
-            TerminationStateIdx   = acceptance_state_list[0]
+            TerminationStateIdx = acceptance_state_index_list[0]
 
         if len(state_machines) != len(the_state_machines):
             result_state_machine.add_epsilon_transition(result_state_machine.init_state_index, 
