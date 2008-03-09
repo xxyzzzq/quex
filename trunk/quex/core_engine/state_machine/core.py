@@ -200,13 +200,19 @@ class StateInfo:
         self.__transition_list = []
         # epsilon transition: if no other trigger triggers
         self.__epsilon = EpsilonTransition()
-        # relation (origin of this state in terms of state machine (pattern) and state)
 
     def core(self):
         return self.__core
 
     def origins(self):
         return self.__origin_list
+
+    def merge(self, Other):
+        # merge core information of self with other state
+        self.core().merge(Other.core())
+        if   Other.origins().is_empty(): return 
+        elif self.origins().is_empty():  self.origins().set(Other.origins().get_list())
+        else:                            self.origins().append(Other.origins().get_lis())
 
     def get_origin_list(self):
         return self.origins().get_list()
@@ -224,7 +230,7 @@ class StateInfo:
         return self.__epsilon.trigger_set
 
     def get_epsilon_target_state_indices(self):
-        return deepcopy(self.__epsilon.target_state_indices)
+        return self.__epsilon.target_state_indices
 
     def get_normal_target_states(self):
         target_index_unique = {}
@@ -810,9 +816,6 @@ class StateMachine:
         self.pre_condition_state_machine = PreConditionStateMachine 
 
         self.__trivial_pre_condition_begin_of_line_f = TrivialPreConditionBeginOfLineF
-        self.__trivial_pre_condition_character_codes = []
-        if TrivialPreConditionCharacterCodes != -1:
-            self.__trivial_pre_condition_character_codes = TrivialPreConditionCharacterCodes
             
     def clone(self):
         """Clone state machine, i.e. create a new one with the same behavior,
@@ -922,52 +925,24 @@ class StateMachine:
 
         return result
 
-    def get_epsilon_closure(self, StateIdx, _considered_state_indices=None):
+    def get_epsilon_closure(self, StateIdx, done_state_index_list=None):
         """Return all states that can be reached from 'StateIdx' via epsilon
-        transition."""
+           transition."""
         assert self.has_state_index(StateIdx)
 
-        if _considered_state_indices == None: 
-            _considered_state_indices = []
+        if done_state_index_list == None: 
+           done_state_index_list = []
 
         aggregated_epsilon_closure = [ StateIdx ] 
         for ti in self.states[StateIdx].get_epsilon_target_state_indices():
-            if ti not in _considered_state_indices:
-                aggregated_epsilon_closure.extend(self.get_epsilon_closure(ti, _considered_state_indices))
-                _considered_state_indices.append(ti)
+            if ti not in done_state_index_list:
+                # Do not copy() the done state index list, since anything that has been
+                # terminated is fine.
+                follow_up_epsilon_closure = self.get_epsilon_closure(ti, done_state_index_list)
+                aggregated_epsilon_closure.extend(follow_up_epsilon_closure)
+                done_state_index_list.append(ti)
 
         return aggregated_epsilon_closure
-                
-    def get_transitions_of_state_set(StateIndices):
-        """IS THIS FUNCTION STILL USED? 
-           Returns all transitions that are possible from the give set of states. A transition
-           consists of a trigger_set and a target_state_index. This function is useful for the
-           subset construction on the epsilon closures (see: from NFA to DFA).
-           NOTE: This functions traces down the epsilon transitions and adds all states of the
-                 epsilon transition to the collected transitions.
-        """
-        assert type(state_machines) == list
-        assert len(state_machines) != 0
-
-        assert map(lambda x: x.__class__.__name__, state_machines) == ["StateMachine"] * len(state_machines)
-
-        # epsilon closure of state = union of epsilon closure of each state
-        # (use a dictionary to ensure uniqueness of states)
-        # epsilon_closure_dict = {}
-        #for state_index in StateIndices:  
-        #    for si in self.get_epsilon_closure(state_index): 
-        #        epsilon_closure_dict[si] = True   
-        #epsilon_closure = epsilon_closure_dict.keys()
- 
-        # collect all transitions from the states in the state list
-        # (use dictionary to combine transitions for each target state)
-        transition_list_dict = {}
-        for state_index in state_list:         
-            for t in self.states[state_index].get_transitions():
-                if transition_list_dict.has_key(t.target_state_index):  
-                    transition_list_dict[t.target_state_index].append(deepcopy(t))
-                else:
-                    transition_list_dict[t.target_state_index] = [ deepcopy(t) ]
  
     def get_elementary_trigger_sets(self, StateIdxList):
         """Considers the trigger dictionary that contains a mapping from target state index 
@@ -1142,86 +1117,6 @@ class StateMachine:
                 
         return result
 
-    def get_DFA(self):
-        """Creates a deterministic finite automaton (DFA) from the current state 
-           machine - which may be a NFA (non-deterministic finite automaton). This is
-           a generlized version of the 'subset construction' algorithm. Where 
-           subsection construction focusses on letters of an alphabet for the
-           investigation of transitions, this algorithm focusses on elementary
-           trigger sets. A very good description of the subset construction 
-           algorithm can be found in 'Engineering a Compiler' by Keith Cooper.
-        """
-        def DEBUG_print(elementary_trigger_list):
-            for ti, trigger_set in elementary_trigger_list:
-                print "##elmtl: target=", ti, "trigger set=", trigger_set.get_utf8_string()
-            print "----"
-
-        # (*) create the result state machine
-        initial_state_epsilon_closure = self.get_epsilon_closure(self.init_state_index) 
-        #     -- one state in the initial state set = acceptance --> acceptance
-        acceptance_f = False
-        for state_index in initial_state_epsilon_closure:
-            if self.is_acceptance(state_index): acceptance_f = True; break      
-
-        result = StateMachine(AcceptanceF=acceptance_f, 
-                              PreConditionStateMachine          = self.pre_condition_state_machine,
-                              TrivialPreConditionBeginOfLineF   = self.__trivial_pre_condition_begin_of_line_f,
-                              TrivialPreConditionCharacterCodes = self.__trivial_pre_condition_character_codes)
-
-        # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
-        #     -- add the origin list of all states in the epsilon closure
-        for state in map(lambda idx: self.states[idx], initial_state_epsilon_closure):
-            result.states[result.init_state_index].add_origin_list(state.get_origin_list(), 
-                                                                   StoreInputPositionFollowsAcceptanceF=False)
-    
-        # (*) prepare the initial worklist
-        worklist = [ ( result.init_state_index, initial_state_epsilon_closure) ]
-
-        while worklist != []:
-            start_state_index, initial_state_combination = worklist.pop()
-     
-            # (*) compute the elementary trigger sets together with the 
-            #     epsilon closure of target state combinations that they trigger to.
-            #     In other words: find the ranges of characters where the state triggers to
-            #     the given state combination.
-            elementary_trigger_set_infos = self.get_elementary_trigger_sets(initial_state_combination)
-     
-            # DEBUG_print(elementary_trigger_set_infos)
-
-            # (*) loop over all elementary trigger sets
-            for epsilon_closure_of_target_state_combination, trigger_set in elementary_trigger_set_infos:
-                #  -- if there is no trigger to the given target state combination, then drop it
-                if trigger_set.is_empty(): continue
-
-                # -- add a new target state representing the state combination
-                #    (if this did not happen yet)
-                target_state_index = \
-                     map_state_combination_to_index(epsilon_closure_of_target_state_combination)
-
-                # -- if target state combination was not considered yet, then also create 
-                #    a new state in the state machine
-                if result.has_state_index(target_state_index):
-                    # -- add the transition 'start-state' to the 'target state'
-                    result.add_transition(start_state_index, trigger_set, target_state_index)
-                else:
-                    # -- if one target in target combination == acceptance state
-                    #    => combined target states == acceptance
-                    acceptance_f = False
-                    for state_index in epsilon_closure_of_target_state_combination:
-                        if self.is_acceptance(state_index): acceptance_f = True
-                    # -- add the transition 'start-state' to the 'target state'
-                    #    (create implicitly the new target state in the state machine)
-                    result.add_transition(start_state_index, trigger_set, target_state_index, acceptance_f)
-                    # -- add the origin list of all states in the epsilon closure to the
-                    #    the newly created target state.
-                    for state in map(lambda idx: self.states[idx], epsilon_closure_of_target_state_combination):
-                        result.states[target_state_index].add_origin_list(state.get_origin_list(),
-                                                                          StoreInputPositionFollowsAcceptanceF=False)
-
-                    worklist.append((target_state_index, epsilon_closure_of_target_state_combination))  
- 
-        return result 
-
     def get_hopcroft_optimization(self):
         """Reduces the number of states according to equivalence classes of states. It starts
            with two sets: 
@@ -1368,8 +1263,8 @@ class StateMachine:
                     
         result = StateMachine(get_new_state_index(state_set_containing_initial_state_i),
                               PreConditionStateMachine          = self.pre_condition_state_machine, 
-                              TrivialPreConditionBeginOfLineF   = self.__trivial_pre_condition_begin_of_line_f,
-                              TrivialPreConditionCharacterCodes = self.__trivial_pre_condition_character_codes)
+                              TrivialPreConditionBeginOfLineF   = self.__trivial_pre_condition_begin_of_line_f)
+
         # build up the state machine out of the auxiliary states
         state_set_idx = -1L
         for state_set in state_set_list:
@@ -1573,8 +1468,11 @@ class StateMachine:
         return self.pre_condition_state_machine != None
 
     def has_trivial_pre_condition(self):
-        return (self.__trivial_pre_condition_character_codes != []) or \
-                self.has_trivial_pre_condition_begin_of_line()
+        """NOTE: This function was initialy implemented to generalize the 
+                 begin of line precondition with the 
+                 'one special character preceeding pre-condition'.
+        """
+        return self.has_trivial_pre_condition_begin_of_line()
 
     def has_trivial_pre_condition_begin_of_line(self):
         """If one state is conditioned to have the 'begin of line' 

@@ -1,3 +1,11 @@
+(*) 08y3m10d:
+
+    The constructor of the state machine allows for an initial acceptance state.
+    This does not make sense, since we would allow nothing to be fine and
+    the resulting lexical analyzer generator would be caught up in an 
+    endless loop. Later on in the process these state machines are 
+    forbidden anyway.
+
 (*) 08y3m2d:
 
     Check buffer code for exception safety.
