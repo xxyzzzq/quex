@@ -1080,6 +1080,15 @@ class StateMachine:
            are not returned (acceptance + post condition flag). Instead the core
            patterns acceptance states are returned (post condition flag only).
         """   
+        return filter(lambda s: s.is_acceptance(), self.states.values())
+
+
+    def get_acceptance_state_index_list(self):
+        result = []
+        for index, state in self.states.items():
+            if state.is_acceptance(): result.append(index)
+        return result
+
         def __criteria(state):
             if not CorePatternF: 
                 return state.is_acceptance()
@@ -1175,7 +1184,7 @@ class StateMachine:
         # -- setup an epsilon transition from an new init state to all previous 
         #    acceptance states.
         new_init_state_index = result.create_new_init_state() 
-        for state_index in self.get_acceptance_state_list()[0]:
+        for state_index in self.get_acceptance_state_index_list():
             result.add_epsilon_transition(new_init_state_index, state_index)        
 
         # -- for uniqueness of state ids, clone the result
@@ -1186,13 +1195,12 @@ class StateMachine:
            (2) extract their origins (provided they store the input position or are post conditioned).
         """
         # -- get list of states that are 'acceptance states'
-        acceptance_state_id_list = self.get_acceptance_state_list()
-        if acceptance_state_id_list == []: return []
+        acceptance_state_list = self.get_acceptance_state_list()
+        if acceptance_state_list == []: return []
 
         # -- collect origins of the acceptance states
         result = []
-        for state_index in acceptance_state_id_list[0]:
-            acceptance_state = self.states[state_index]
+        for acceptance_state in acceptance_state_list:
             origin_list = acceptance_state.get_origin_list() 
 
             # -- do not care about 'traces of loosers' (i.e. non-acceptance states)

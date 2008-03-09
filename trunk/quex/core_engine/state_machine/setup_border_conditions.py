@@ -26,9 +26,10 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
            '\n' or BorderCharacter that leads to the new acceptance.
            The old acceptance state is annulated.
         """    
-        state_idx_list = the_sm.get_acceptance_state_list()[0] 
+        state_idx_list = the_sm.get_acceptance_state_index_list() 
         new_state_idx = the_sm.create_new_state(AcceptanceF=True)
         for state_idx in state_idx_list:
+            state = the_sm.states[state_idx]
             if not DOS_CarriageReturnNewlineF:
                 the_sm.add_transition(state_idx, ord('\n'), new_state_idx)
             else:
@@ -37,10 +38,10 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
 
             the_sm.add_transition(state_idx, BeginOfFile_Code, new_state_idx)
             #
-            the_sm.states[state_idx].set_acceptance(False)
-            the_sm.states[state_idx].set_store_input_position_f(False)
-            the_sm.states[state_idx].set_post_conditioned_acceptance_f(False)
-            the_sm.states[state_idx].set_trivial_pre_condition_begin_of_line(False)
+            state.set_acceptance(False)
+            state.set_store_input_position_f(False)
+            state.set_post_conditioned_acceptance_f(False)
+            state.set_trivial_pre_condition_begin_of_line(False)
             #
         return new_state_idx    
 

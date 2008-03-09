@@ -202,17 +202,17 @@ def split_states(SM):
         else:                     non_acceptance_state_list.append(state_idx)
 
     # map: set of original states ---> state indices that are of this origin
-    sorter_dict = {}   
-    def sorter_dict_add(key, list_element):
-        if sorter_dict.has_key(key): sorter_dict[key].append(list_element)
-        else:                        sorter_dict[key] = [ list_element ]                             
+    db = {}   
+    def db_add(key, list_element):
+        if db.has_key(key): db[key].append(list_element)
+        else:               db[key] = [ list_element ]                             
 
     for state_index in acceptance_state_list:
         origin_state_machine_ids = map(lambda origin: 
-                                    origin.state_machine_id, 
-                                    self.states[state_index].get_origin_list())
+                                       origin.state_machine_id, 
+                                       self.states[state_index].get_origin_list())
         state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
-        sorter_dict_add(state_combination_id, state_index)
+        db_add(state_combination_id, state_index)
 
     # each 'value' (belonging to a key) represents the set of states that have the
     # same combination of original states
