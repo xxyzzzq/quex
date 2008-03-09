@@ -7,6 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.state_machine.setup_post_condition as setup_post_condition
 import quex.core_engine.state_machine.setup_pre_condition as setup_pre_condition 
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions 
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 from quex.core_engine.state_machine.TEST.test_state_machines import *
 
@@ -37,7 +38,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     # print "EXPRESSION = ", result
     # print "POST CONDITION = ", post_sm
     # print "APPENDED = ", result
-    result = result.get_DFA()
+    result = nfa_to_dfa.do(result)
     # print "DFA = ", result
     result = result.get_hopcroft_optimization()    
     #

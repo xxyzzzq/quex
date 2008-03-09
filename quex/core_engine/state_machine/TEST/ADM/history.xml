@@ -1,4 +1,4 @@
-<history date="Sat Mar  8 13:43:23 2008" element-n="42">
+<history date="Sun Mar  9 00:54:44 2008" element-n="59">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -91,6 +91,23 @@
         <accept    time="08:15:35" application="test-StateMachine-inverse.py" choice="" crc="1601260758" />
         <accept    time="08:15:36" application="test-StateMachine-trace-origin-clone.py" choice="" crc="2039675782" />
         <accept    time="08:15:36" application="test-StateMachine-trace-origin-hopcroft-optimization.py" choice="" crc="1324749635" />
-        <test-runs-today n="9" ok-n="0" fail-n="9" else-n="0" last-run="failure" last-time="12:43:23"/>
+        <accept    time="21:39:39" application="test-parallelize.py" choice="" crc="-1089999070" />
+        <accept    time="21:39:39" application="test-repeat-pure.py" choice="" crc="-49555220" />
+        <accept    time="21:39:39" application="test-repeat.py" choice="" crc="539956163" />
+        <accept    time="21:39:40" application="test-sequentialize.py" choice="" crc="376599284" />
+        <accept    time="21:39:40" application="test-StateMachine-create-DFA.py" choice="" crc="-997026231" />
+        <accept    time="21:39:40" application="test-StateMachine-elementary_trigger_sets-2.py" choice="" crc="1448813074" />
+        <accept    time="21:39:40" application="test-StateMachine-epsilon-closure.py" choice="" crc="243632033" />
+        <accept    time="21:39:40" application="test-StateMachine-hopcroft-optimization.py" choice="" crc="1510867814" />
+        <accept    time="21:39:40" application="test-StateMachine-inverse.py" choice="" crc="-675243786" />
+        <accept    time="21:39:40" application="test-StateMachine-trace-origin-create-DFA.py" choice="" crc="-1604145748" />
+        <accept    time="21:41:22" application="test-StateMachine-clone.py" choice="" crc="-945537673" />
+        <accept    time="21:44:40" application="test-setup_pre_condition.py" choice="" crc="-1264242259" />
+        <accept    time="21:46:35" application="test-StateMachine-trace-origin-clone.py" choice="" crc="-778292174" />
+        <accept    time="21:49:07" application="test-parallelize-trace-origin.py" choice="" crc="2143010940" />
+        <accept    time="21:52:18" application="test-StateMachine-trace-origin-hopcroft-optimization.py" choice="" crc="658399412" />
+        <accept    time="23:52:50" application="test-StateMachine-create-DFA.py" choice="" crc="-351323745" />
+        <test-runs-today n="23" ok-n="0" fail-n="23" else-n="0" last-run="failure" last-time="23:54:44"/>
+        <crc-error time="23:54:44" application="test-setup_post_condition.py" choice="" database-crc="637022686" real-crc="1587562725"/>
     </day>
 </history>

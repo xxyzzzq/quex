@@ -6,6 +6,8 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.repeat as repeat
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+
 
 if "--hwut-info" in sys.argv:
     print "Plot: Get graphviz string of state machine."
@@ -53,7 +55,7 @@ if sys.argv[1] == "1":
 
 else:
     # (*) create the DFA from the specified NFA
-    dfa = sm.get_DFA()
+    dfa = nfa_to_dfa.do(sm)
 
     print dfa.get_graphviz_string(NormalizeF=True)
 

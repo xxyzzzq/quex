@@ -7,6 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 import quex.core_engine.state_machine.repeat as repeat
 from quex.core_engine.state_machine.core import *
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 if "--hwut-info" in sys.argv:
     print "DFA: Hopcroft optimization (minimize state set)"
@@ -18,7 +19,7 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 1)
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa.get_hopcroft_optimization()    
 
 print "_______________________________________________________________________________"
@@ -27,7 +28,7 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm)
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa.get_hopcroft_optimization() 
 
 print "_______________________________________________________________________________"
@@ -36,7 +37,7 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 0, 1)
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa.get_hopcroft_optimization() 
 
 print "_______________________________________________________________________________"
@@ -45,7 +46,7 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 3, 5)
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa.get_hopcroft_optimization() 
 
 print "_______________________________________________________________________________"

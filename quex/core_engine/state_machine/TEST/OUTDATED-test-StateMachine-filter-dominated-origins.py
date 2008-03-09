@@ -9,6 +9,7 @@ from quex.core_engine.state_machine.TEST.test_state_machines import *
 from quex.core_engine.state_machine.index import *
 import quex.core_engine.state_machine.parallelize as parallelize
 import quex.core_engine.state_machine.repeat as repeat
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 if "--hwut-info" in sys.argv:
     print "Ranking of state machines: Filter dominated origins"
@@ -28,7 +29,7 @@ sm3.mark_state_origins()
 # -- paralellize the patterns    
 sm = parallelize.do([sm0, sm1, sm2, sm3])
 # -- create the optimized DFA for the patterns running in paralell
-sm = sm.get_DFA()    
+sm = nfa_to_dfa.do(sm)    
 sm = sm.get_hopcroft_optimization() 
     
 #----------------------------------------------------------------------------------------    
