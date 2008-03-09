@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.repeat as repeat
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 if "--hwut-info" in sys.argv:
     print "NFA: Conversion to DFA (subset construction)"
@@ -17,7 +18,7 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 1)
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa
 
 print "_______________________________________________________________________________"
@@ -26,7 +27,7 @@ sm = StateMachine()
 n0 = sm.init_state_index     
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm)
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa
 
 print "_______________________________________________________________________________"
@@ -66,6 +67,6 @@ sm.add_epsilon_transition(n8, n3)
 
 
 # (*) create the DFA from the specified NFA
-dfa = sm.get_DFA()
+dfa = nfa_to_dfa.do(sm)
 print dfa
 
