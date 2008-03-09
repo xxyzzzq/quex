@@ -79,6 +79,24 @@ class StateCoreInfo:
         #    of a post condition that is pseudo-ambiguous. 
         self.__pseudo_ambiguous_post_condition_id = PseudoAmbiguousPostConditionID
 
+    def merge(self, Other):
+        # It does not make any sense to merge to state cores from different
+        # state machines. This should actually be an 'assert'
+        if self.state_machine_id != Other.state_machine_id: return
+
+        if Other.__acceptance_f:                  self.__acceptance_f                  = True
+        if Other.__store_input_position_f:        self.__store_input_position_f        = True 
+        if Other.__post_conditioned_acceptance_f: self.__post_conditioned_acceptance_f = True
+        if Other.__pre_condition_begin_of_line_f: self.__pre_condition_begin_of_line_f = True 
+
+        if Other.__pre_condition_id != -1L:   
+            self.__pre_condition_id = Other.__pre_condition_id 
+        if Other.__pseudo_ambiguous_post_condition_id != -1L: 
+            self.__pseudo_ambiguous_post_condition_id = Other.__pseudo_ambiguous_post_condition_id
+
+    def is_acceptance(self):
+        return self.__acceptance_f
+
     def set_acceptance_f(self, Value, LeaveStoreInputPositionF):
         """NOTE: By default, when a state is set to acceptance the input
                  position is to be stored for all related origins, if this is 
@@ -92,9 +110,6 @@ class StateCoreInfo:
         # default: store_input_position_f follows acceptance_f
         if not LeaveStoreInputPositionF: self.set_store_input_position_f(Value)
         
-    def is_acceptance(self):
-        return self.__acceptance_f
-
     def set_store_input_position_f(self, Value=True):
         assert type(Value) == bool
         self.__store_input_position_f = Value
@@ -137,6 +152,13 @@ class StateCoreInfo:
 
     def get_string(self, StateMachineAndStateInfoF=True):
         appendix = ""
+
+        # ONLY FOR TEST: state.core
+        if False and not StateMachineAndStateInfoF:
+            if self.__acceptance_f: return "*"
+            else:                   return ""
+
+
         if StateMachineAndStateInfoF:
             if self.state_machine_id != -1L:
                 appendix += ", " + repr(self.state_machine_id).replace("L", "")
@@ -156,6 +178,7 @@ class StateCoreInfo:
             appendix += ", bol"
         if len(appendix) > 2: 
             appendix = appendix[2:]
+
         return "(%s)" % appendix
 
     def type(self):

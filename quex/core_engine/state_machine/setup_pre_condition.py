@@ -1,9 +1,11 @@
 #! /usr/bin/env python
 import sys
+import os
+sys.path.insert(0, os.environ["QUEX_PATH"])
 from copy import deepcopy
-sys.path.append("../")
 
-from core import *
+from   quex.core_engine.state_machine.core import *
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 
 def do(the_state_machine, pre_condition_state_machine):
@@ -39,7 +41,7 @@ def do(the_state_machine, pre_condition_state_machine):
         
     # (*) invert the state machine of the pre-condition 
     inverse_pre_condition = pre_condition_state_machine.get_inverse()
-    inverse_pre_condition = inverse_pre_condition.get_DFA()
+    inverse_pre_condition = nfa_to_dfa.do(inverse_pre_condition)
     inverse_pre_condition = inverse_pre_condition.get_hopcroft_optimization()
         
     # (*) let the state machine refer to it 

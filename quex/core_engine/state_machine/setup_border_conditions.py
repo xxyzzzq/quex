@@ -1,5 +1,6 @@
 from quex.core_engine.state_machine.core import StateMachine
 import quex.core_engine.state_machine.setup_post_condition as setup_post_condition
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code, 
        DOS_CarriageReturnNewlineF=False):
@@ -83,7 +84,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             # post conditions add an epsilon transition that has to be solved 
             # by translating state machine into a DFA
             sm = setup_post_condition.do(sm, post_sm) 
-            sm = sm.get_DFA()
+            sm = nfa_to_dfa.do(sm)
             sm.delete_meaningless_origins()
         
         else:

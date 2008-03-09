@@ -115,6 +115,6 @@ def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutio
         state.core().set_store_input_position_f(False)
         state.core().set_post_conditioned_acceptance_f(True)
         state.core().set_pre_condition_id(pre_condition_sm_id)   
-        state.core().set_trivial_pre_condition_begin_of_line(trivial_pre_condition_begin_of_line_f)
+        state.core().set_pre_condition_begin_of_line_f(trivial_pre_condition_begin_of_line_f)
 
     return result

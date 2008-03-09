@@ -14,6 +14,7 @@
 
 from   quex.core_engine.interval_handling import NumberSet, Interval
 import quex.core_engine.state_machine.sequentialize as sequentialize
+import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import sys
 from   copy import deepcopy
 
@@ -87,12 +88,12 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
     # my_post_condition_sm.get_init_state().set_acceptance(True)
 
     my_core_sm = CoreStateMachine.get_inverse()
-    my_core_sm = my_core_sm.get_DFA()
+    my_core_sm = nfa_to_dfa.do(my_core_sm)
     my_core_sm = my_core_sm.get_hopcroft_optimization()
 
     tmp = deepcopy(PostConditionStateMachine)
     my_post_condition_sm = tmp.get_inverse()
-    my_post_condition_sm = my_post_condition_sm.get_DFA()
+    my_post_condition_sm = nfa_to_dfa.do(my_post_condition_sm)
     my_post_condition_sm = my_post_condition_sm.get_hopcroft_optimization()
 
     return detect_forward(my_post_condition_sm, my_core_sm)
@@ -198,7 +199,7 @@ def mount(the_state_machine, PostConditionSM):
        machine of the post-condition.
 
        NOTE: This function does **not** return a state machine that is
-             necessarily deterministic. Run .get_DFA() on the result
+             necessarily deterministic. Run nfa_to_dfa on the result
              of this function.
 
        NOTE: This function is very similar to the function that mounts
@@ -279,7 +280,7 @@ def philosophical_cut(core_sm, post_condition_sm):
     # By means of cutting, some states might have become bold. That is, they have
     # only an epsilon transition. Thus, it is required to do a transformation NFA->DFA
     # and add a hopcroft optimization.
-    new_post_sm = post_condition_sm.get_DFA()
+    new_post_sm = nfa_to_dfa.do(post_condition_sm)
     new_post_sm = new_post_sm.get_hopcroft_optimization()
     return new_post_sm
 

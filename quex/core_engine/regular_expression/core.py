@@ -51,6 +51,7 @@ import quex.core_engine.state_machine.repeat                  as repeat
 import quex.core_engine.state_machine.setup_post_condition    as setup_post_condition
 import quex.core_engine.state_machine.setup_pre_condition     as setup_pre_condition
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
+import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
@@ -455,7 +456,7 @@ def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
 def __beautify(the_state_machine):
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "before conversion to DFA: orphaned states " + repr(the_state_machine)
-    result = the_state_machine.get_DFA()
+    result = nfa_to_dfa.do(the_state_machine)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
     result = result.get_hopcroft_optimization()    
