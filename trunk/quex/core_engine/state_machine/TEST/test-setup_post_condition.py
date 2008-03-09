@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.state_machine.setup_post_condition as setup_post_condition
 from quex.core_engine.state_machine.TEST.test_state_machines import *
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "StateMachine Operations: Append Post Condition"
@@ -18,7 +19,7 @@ def test(sm, post_sm):
     print "APPENDED = ", result
     result = nfa_to_dfa.do(result)
     print "DFA = ", result
-    result = result.get_hopcroft_optimization()    
+    result = hopcroft.do(result)
     print "HOPKINS = ", result
 
 print "-------------------------------------------------------------------------------"

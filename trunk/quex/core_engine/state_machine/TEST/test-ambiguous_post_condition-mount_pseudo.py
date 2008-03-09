@@ -10,6 +10,7 @@ import quex.core_engine.state_machine.index as sm_index
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.state_machine.ambiguous_post_condition as ambiguous_post_condition 
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: Mounting"
@@ -39,7 +40,7 @@ def test(RE_Core, RE_PostCondition):
     ambiguous_post_condition.mount(core_sm, post_condition_sm)
     # .mount() does not transformation from NFA to DFA
     core_sm = nfa_to_dfa.do(core_sm)
-    core_sm = core_sm.get_hopcroft_optimization()
+    core_sm = hopcroft.do(core_sm)
 
     print "ambigous post condition =", core_sm
 

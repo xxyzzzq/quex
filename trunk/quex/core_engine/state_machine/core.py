@@ -1082,13 +1082,13 @@ class StateMachine:
         """   
         return filter(lambda s: s.is_acceptance(), self.states.values())
 
-
     def get_acceptance_state_index_list(self):
         result = []
         for index, state in self.states.items():
             if state.is_acceptance(): result.append(index)
         return result
 
+        """
         def __criteria(state):
             if not CorePatternF: 
                 return state.is_acceptance()
@@ -1125,8 +1125,8 @@ class StateMachine:
             return result + [ non_acceptance_state_list ]
                 
         return result
+        """
 
-        
     def get_inverse(self, CutAtShortestAcceptanceF=False):
         """Creates an inverse representation of the state machine. Optionally,
            the longer acceptance paths can be cut, in case that there are shorter

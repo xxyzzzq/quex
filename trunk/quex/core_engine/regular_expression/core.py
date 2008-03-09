@@ -52,6 +52,7 @@ import quex.core_engine.state_machine.setup_post_condition    as setup_post_cond
 import quex.core_engine.state_machine.setup_pre_condition     as setup_pre_condition
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
@@ -459,7 +460,7 @@ def __beautify(the_state_machine):
     result = nfa_to_dfa.do(the_state_machine)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
-    result = result.get_hopcroft_optimization()    
+    result = hopcroft.do(result)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
 

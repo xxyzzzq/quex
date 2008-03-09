@@ -8,6 +8,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core_engine.state_machine.repeat as repeat
 from quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "DFA: Hopcroft optimization (minimize state set)"
@@ -20,7 +21,7 @@ n0 = sm.init_state_index
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 1)
 dfa = nfa_to_dfa.do(sm)
-print dfa.get_hopcroft_optimization()    
+print hopcroft.do(dfa)
 
 print "_______________________________________________________________________________"
 print "Example B:"
@@ -29,7 +30,7 @@ n0 = sm.init_state_index
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm)
 dfa = nfa_to_dfa.do(sm)
-print dfa.get_hopcroft_optimization() 
+print hopcroft.do(dfa)
 
 print "_______________________________________________________________________________"
 print "Example C:"
@@ -38,7 +39,7 @@ n0 = sm.init_state_index
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 0, 1)
 dfa = nfa_to_dfa.do(sm)
-print dfa.get_hopcroft_optimization() 
+print hopcroft.do(dfa)
 
 print "_______________________________________________________________________________"
 print "Example D:"
@@ -47,7 +48,7 @@ n0 = sm.init_state_index
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 3, 5)
 dfa = nfa_to_dfa.do(sm)
-print dfa.get_hopcroft_optimization() 
+print hopcroft.do(dfa)
 
 print "_______________________________________________________________________________"
 print "Example E:"
@@ -75,6 +76,6 @@ sm.add_transition(n2, ord('c'), n3)
 sm.add_transition(n3, ord('b'), n2)
 
 # (*) minimize the number of states using hopcroft optimization
-optimal_sm = sm.get_hopcroft_optimization()
+optimal_sm = hopcroft.do(sm)
 print optimal_sm
 

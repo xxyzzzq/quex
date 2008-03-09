@@ -6,6 +6,7 @@ from copy import deepcopy
 
 from   quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 
 def do(the_state_machine, pre_condition_state_machine):
@@ -42,7 +43,7 @@ def do(the_state_machine, pre_condition_state_machine):
     # (*) invert the state machine of the pre-condition 
     inverse_pre_condition = pre_condition_state_machine.get_inverse()
     inverse_pre_condition = nfa_to_dfa.do(inverse_pre_condition)
-    inverse_pre_condition = inverse_pre_condition.get_hopcroft_optimization()
+    inverse_pre_condition = hopcroft.do(inverse_pre_condition)
         
     # (*) let the state machine refer to it 
     #     [Is this necessary? Is it not enough that the acceptance origins point to it? <fschaef>]
