@@ -6,6 +6,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
 from quex.core_engine.state_machine.core import *
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "Tracing origin: Hopcroft optimization (minimize state set)"
@@ -51,6 +52,6 @@ sm.states[n3].add_origin(2L, 88L)
 
 print sm
 # (*) minimize the number of states using hopcroft optimization
-optimal_sm = sm.get_hopcroft_optimization()
+optimal_sm = hopcroft.do(sm)
 print optimal_sm
 

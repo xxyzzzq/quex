@@ -1,4 +1,6 @@
-from   quex.core_engine.state_machine.core  import StateMachine
+import quex.core_engine.state_machine.index as     state_machine_index
+from   quex.core_engine.state_machine.core  import StateMachine, StateInfo
+from   quex.core_engine.state_machine.index import map_state_combination_to_index
 
 def do(SM):
     """Reduces the number of states according to equivalence classes of states. It starts
@@ -56,24 +58,9 @@ def do(SM):
         aux_state.related_state_idx = StateIdx
         return aux_state
 
-    def split_state_set(AuxliaryStateSet, TriggerSet, TargetIdx):
-        """Splits the given StateSet into two sets:
-           -- one that contains states that trigger via TriggerSet **only** to TargetIdx, and
-           -- one that contains states that trigger via TriggerSet to a different target.
-        """ 
-        states_that_fit = []
-        states_that_do_not_fit = []
-        for state in AuxliaryStateSet:
-            if state.has_only_one_target_for_trigger_set(TriggerSet, TargetIdx):
-                states_that_fit.append(state.related_state_idx)
-            else:
-                states_that_do_not_fit.append(state.related_state_idx)
-
-        return states_that_fit, states_that_do_not_fit
-       
     # (*) main algorithm    
-    state_set_list = SM.get_acceptance_state_list(ReturnNonAcceptanceTooF=True,
-                                                  SplitAcceptanceStatesByOriginF=True)     
+    state_set_list = initial_split(SM)
+
     state_set_list_changed_f = True   
     while state_set_list_changed_f:
         # loop over all sets in state set
@@ -115,8 +102,8 @@ def do(SM):
                     # split the auxiliary states in those that trigger on t.trigger_set to t.target_state_index
                     # and those that do not. If the second set, i.e. the set of stats that do not is non-empty
                     # then there are states that behave unequivalent, and we need to split the state set.
-                    set_of_fit_states, set_of_others = split_state_set(other_aux_states, 
-                                                                       t.trigger_set, t.target_state_index)     
+                    set_of_fit_states, set_of_others = split(other_aux_states, 
+                                                             t.trigger_set, t.target_state_index)     
                     if set_of_others != []: 
                         set_of_fit_states += [ aux_states[i].related_state_idx ]   # add the currently considered state, of course
                         # replace the currently considered state set by the 'split-up' 
@@ -186,18 +173,15 @@ def do(SM):
     return result    
 
 
-def split_states(SM):
+def initial_split(SM):
     """Returns the set of states that are 'acceptance'. If the optional     
        argument 'ReturnNonAcceptanceTooF' is specified, then the non-
        acceptance states are also returned.
 
     """   
-    def __criteria(state):
-        return state.is_acceptance()
-
     acceptance_state_list     = []
     non_acceptance_state_list = []
-    for state_idx, state in self.states.items():
+    for state_idx, state in SM.states.items():
         if state.is_acceptance(): acceptance_state_list.append(state_idx)
         else:                     non_acceptance_state_list.append(state_idx)
 
@@ -210,16 +194,31 @@ def split_states(SM):
     for state_index in acceptance_state_list:
         origin_state_machine_ids = map(lambda origin: 
                                        origin.state_machine_id, 
-                                       self.states[state_index].get_origin_list())
+                                       SM.states[state_index].get_origin_list())
         state_combination_id = map_state_combination_to_index(origin_state_machine_ids) 
         db_add(state_combination_id, state_index)
 
     # each 'value' (belonging to a key) represents the set of states that have the
     # same combination of original states
-    result = sorter_dict.values()
+    result = db.values()
         
     if non_acceptance_state_list != []: 
         return result + [ non_acceptance_state_list ]
             
     return result
 
+def split(AuxliaryStateSet, TriggerSet, TargetIdx):
+    """Splits the given StateSet into two sets:
+       -- one that contains states that trigger via TriggerSet **only** to TargetIdx, and
+       -- one that contains states that trigger via TriggerSet to a different target.
+    """ 
+    states_that_fit = []
+    states_that_do_not_fit = []
+    for state in AuxliaryStateSet:
+        if state.has_only_one_target_for_trigger_set(TriggerSet, TargetIdx):
+            states_that_fit.append(state.related_state_idx)
+        else:
+            states_that_do_not_fit.append(state.related_state_idx)
+
+    return states_that_fit, states_that_do_not_fit
+   

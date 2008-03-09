@@ -2,6 +2,7 @@ import quex.core_engine.state_machine.parallelize as     parallelize
 from   quex.core_engine.generator.action_info     import ActionInfo
 from   quex.core_engine.state_machine.index       import get_state_machine_by_id
 import quex.core_engine.state_machine.nfa_to_dfa  as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName, ControlCharacterCodeList):
@@ -169,7 +170,7 @@ class GeneratorBase:
         # (5) perform hopcroft optimization
         #     Note, that hopcroft optimization does consider the original acceptance 
         #     states when deciding if two state sets are equivalent.   
-        sm = sm.get_hopcroft_optimization()    
+        sm = hopcroft.do(sm)
 
         orphan_state_list = sm.get_orphaned_state_index_list()
         if orphan_state_list != []: __on_orphan_states("Hopcroft Minimization", orphan_state_list)

@@ -15,6 +15,7 @@
 from   quex.core_engine.interval_handling import NumberSet, Interval
 import quex.core_engine.state_machine.sequentialize as sequentialize
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 import sys
 from   copy import deepcopy
 
@@ -88,12 +89,12 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
 
     my_core_sm = CoreStateMachine.get_inverse()
     my_core_sm = nfa_to_dfa.do(my_core_sm)
-    my_core_sm = my_core_sm.get_hopcroft_optimization()
+    my_core_sm = hopcroft.do(my_core_sm)
 
     tmp = deepcopy(PostConditionStateMachine)
     my_post_condition_sm = tmp.get_inverse()
     my_post_condition_sm = nfa_to_dfa.do(my_post_condition_sm)
-    my_post_condition_sm = my_post_condition_sm.get_hopcroft_optimization()
+    my_post_condition_sm = hopcroft.do(my_post_condition_sm)
 
     return detect_forward(my_post_condition_sm, my_core_sm)
 
@@ -155,7 +156,7 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
     """
     result = PostConditionSM.get_inverse()
     result = result.get_DFA()
-    result = result.get_hopcroft_optimization()
+    result = hopcroft.do(result)
 
     # -- delete 'drop-out' transitions in non-acceptance states
     #    NOTE: When going backwards one already knows that the acceptance
@@ -167,7 +168,7 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
         state.replace_drop_out_target_states_with_adjacent_targets()
 
     result = result.get_DFA()
-    result = result.get_hopcroft_optimization()
+    result = hopcroft.do(result)
 
     # Acceptance States need to be marked: Store input position.
     # NOTE: When tracing backwards the match is guaranteed, but there might
@@ -276,7 +277,7 @@ def philosophical_cut(core_sm, post_condition_sm):
     # only an epsilon transition. Thus, it is required to do a transformation NFA->DFA
     # and add a hopcroft optimization.
     new_post_sm = nfa_to_dfa.do(post_condition_sm)
-    new_post_sm = new_post_sm.get_hopcroft_optimization()
+    new_post_sm = hopcroft.do(new_post_sm)
     return new_post_sm
 
 def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):

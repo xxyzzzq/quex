@@ -10,6 +10,7 @@ from quex.core_engine.state_machine.index import *
 import quex.core_engine.state_machine.parallelize as parallelize
 import quex.core_engine.state_machine.repeat as repeat
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 if "--hwut-info" in sys.argv:
     print "Ranking of state machines: Filter dominated origins"
@@ -30,7 +31,7 @@ sm3.mark_state_origins()
 sm = parallelize.do([sm0, sm1, sm2, sm3])
 # -- create the optimized DFA for the patterns running in paralell
 sm = nfa_to_dfa.do(sm)    
-sm = sm.get_hopcroft_optimization() 
+sm = hopcroft.do(sm)
     
 #----------------------------------------------------------------------------------------    
 # (*) create some priorities in between the patterns    
