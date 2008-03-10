@@ -217,7 +217,7 @@ class StateInfo:
     def get_origin_list(self):
         return self.origins().get_list()
 
-    def get_transitions(self):
+    def get_transition_list(self):
         return self.__transition_list  
 
     def get_epsilon_trigger_set(self):
@@ -513,27 +513,6 @@ class StateInfo:
         if self.core().pre_condition_begin_of_line_f(): return True
         return self.origins().contains_pre_condition_begin_of_line()
 
-    def has_only_one_target_for_trigger_set(self, TriggerSet, TargetIdx):
-        """Returns True if all triggers in TriggerSet trigger to the state TargetIdx.
-           If not it returns False.
-        """
-        # 'normal transitions'
-        for t in self.__transition_list:
-            if not t.trigger_set.has_intersection(TriggerSet): continue
-            elif t.target_state_index != TargetIdx: return False
-
-        # epsilon transition
-        if   not self.get_epsilon_trigger_set().has_intersection(TriggerSet): return True
-        elif len(self.__epsilon.target_state_indices) != 1:                return False
-        elif self.__epsilon.target_state_indices[0] != TargetIdx:          return False
-        
-        # if no normal transition trigger set triggered, the epsilon trigger set needs to trigger
-        # otherwise there is something seriously wrong (probably in 'add_transition'    
-        raise "epsilon trigger set did not catch a trigger set that did not match normal transitions.\n" + \
-              "epsilon trigger set = " + repr(self.get_epsilon_trigger_set()) + "\n" \
-              "normal trigger sets = " + repr(map(lambda ts: ts.get_utf8_string(), 
-                                                  map(lambda t: t.trigger_set, self.__transition_list)))
-              
     def has_none_of_triggers(self, CharacterCodeList):
         assert type(CharacterCodeList) == type([])
 
@@ -1155,7 +1134,7 @@ class StateMachine:
             state_idx = worklist.pop()  
             done_list.append(state_idx)
             # -- enter inverse transitions into 'result': target ---(trigger set)---> source
-            for t in self.states[state_idx].get_transitions():
+            for t in self.states[state_idx].get_transition_list():
                 # -- add the inverse transition
                 result.add_transition(t.target_state_index, t.trigger_set, state_idx)
 

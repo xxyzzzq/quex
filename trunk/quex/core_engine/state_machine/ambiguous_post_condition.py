@@ -104,8 +104,8 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
        The search starts at the states sm0_state and sm1_state.
     """
 
-    sm0_transition_list = sm0_state.get_transitions()
-    sm1_transition_list = sm1_state.get_transitions()
+    sm0_transition_list = sm0_state.get_transition_list()
+    sm1_transition_list = sm1_state.get_transition_list()
 
     # If there is no subsequent path in SM0 or SM1, 
     # then we are at a leaf of the tree search. No
@@ -285,8 +285,8 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
        back to its initial state while the path is valid in SM0. This
        function serves the 'philosophical cut'.
     """
-    sm0_transition_list = sm0_state.get_transitions()
-    sm1_transition_list = sm1_state.get_transitions()
+    sm0_transition_list = sm0_state.get_transition_list()
+    sm1_transition_list = sm1_state.get_transition_list()
 
     # If there is no subsequent path in SM0 or SM1, then we are at a leaf of
     # the tree search. No path to acceptance in SM0 lies in SM1.
