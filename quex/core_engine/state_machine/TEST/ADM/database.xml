@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Tue Mar 11 20:10:58 2008">
+<test-database execution-time-sec="0.00" date="Tue Mar 11 23:11:01 2008">
     <last-used-diff-display-program name="vimdiff"/>
     <group name="DFA">
         <test title="Get Trigger Map (intervals --> target states)" time-sum-sec="0.00"> 
@@ -8,19 +8,13 @@
             </choice-list>
         </test>
         <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-hopcroft-optimization.py" info-request-time="1205071523L"/>
+            <application file-name="test-StateMachine-hopcroft-optimization.py" info-request-time="1205267208L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="1510867814"/>
+               <choice name="" result="FAIL" time-sec="0.00" crc="-378883236"/>
             </choice-list>
         </test>
     </group>
     <group name="NFA">
-        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-create-DFA.py" info-request-time="1205020611L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-351323745"/>
-            </choice-list>
-        </test>
         <test title="Get elementary trigger sets (target index --> trigger sets)" time-sum-sec="0.00"> 
             <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1202558722L"/>
             <choice-list number="1">
@@ -37,6 +31,12 @@
             <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1202558722L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="1448813074"/>
+            </choice-list>
+        </test>
+        <test title="Conversion to DFA (subset construction)" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-create-DFA.py" info-request-time="1205020611L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="-351323745"/>
             </choice-list>
         </test>
     </group>
@@ -156,10 +156,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="2143010940"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1205019214L"/>
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1205071490L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="-1604145748"/>
+               <choice name="" result="OK" time-sec="0.00" crc="658399412"/>
             </choice-list>
         </test>
         <test title="Cloning" time-sum-sec="0.00"> 
@@ -174,10 +174,10 @@
                <choice name="" result="FAIL" time-sec="0.00" crc="-624163188"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1205071490L"/>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1205019214L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="658399412"/>
+               <choice name="" result="FAIL" time-sec="0.00" crc="-1604145748"/>
             </choice-list>
         </test>
     </group>
