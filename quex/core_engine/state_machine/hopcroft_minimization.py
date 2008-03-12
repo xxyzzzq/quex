@@ -39,6 +39,8 @@ class StateSet_List:
         #       But, for unit tests etc. we need to live with the possibility that the there 
         #       might be no non-acceptance states.
         if len(self.state_set_list[0]) == 0: del self.state_set_list[0]
+        # ... size matters from now on!
+        self.size = len(self.state_set_list)
 
         # (2) Split the acceptance states according to their origin. An acceptance
         #     state maching the, for example, an identifier is not equivalent an 
@@ -56,14 +58,8 @@ class StateSet_List:
             db_add(state_combination_id, state_index)
 
         # (2b) Enter the splitted acceptance state sets.
-        i = len(self.state_set_list) - 1           # See 'NOTE' above.
         for state_set in db.values():
-            i += 1
-            self.state_set_list.append(state_set)  # -- enter the state set.
-            for state_index in state_set:          # -- mark for each state in which state
-                self.map[state_index] = i          #    set it is stored.
-
-
+            self.__add_state_set(state_set)
 
     def split(self, StateSetIndex):
         """RETURNS:  False   if StateSet does not need to be split up any further.
@@ -87,7 +83,7 @@ class StateSet_List:
         element_n = N   # remaining number of elements in state set
         for state_index in state_set[1:]:
             state = self.sm.states[state_index]
-            if self.check_equivalence(prototype, state): 
+            if self.__equivalence(prototype, state): 
                 equivalent_state_set.append(state_index)
 
         # -- Are all states equivalent?
@@ -102,29 +98,35 @@ class StateSet_List:
             i = state_set.index(state_index)
             del state_set[i]
 
+        self.__add_state_set(equivalent_state_set)
+
+    def __add_state_set(self, NewStateSet):
         #    Create the new state set at the end of the list
-        self.state_set_list.append(equivalent_state_set)
+        self.state_set_list.append(NewStateSet)
         # -- Mark in the map the states that have moved to the new state set at the end.
-        for state_index in equivalent_state_set:
+        for state_index in NewStateSet:
             self.map[state_index] = self.size
         # -- increase the size counter
         self.size += 1 
 
         return True
 
-    def check_equivalence(self, This, That):
+    def __equivalence(self, This, That):
         """Do state 'This' and state 'That' trigger on the same triggers to the
            same target state?
         """
         transition_list_0 = This.get_transition_list()
-        transition_list_1 = This.get_transition_list()
+        transition_list_1 = That.get_transition_list()
 
         if len(transition_list_0) != len(transition_list_1): return False
 
+        # Assumption: Transitions do not appear twice. Thus, both lists have the same
+        #             length and any element of A appears in B, the two must be equal.
         for t0 in transition_list_0:
             # find transition in 'That' state that contains the same trigger set
+            t0_trigger_set = t0.trigger_set
             for t1 in transition_list_1:
-                if t1.trigger_set == t0.trigger_set: break
+                if t0_trigger_set.is_equal(t1.trigger_set): break
             else:
                 # no trigger set found in 'That' that corresponds to 'This' => not equivalent
                 return False
@@ -167,10 +169,10 @@ def do(SM):
         # by default the next state set list is the same
         i                        = 0              # -- loop index of the state set
         state_set_list_changed_f = False
-        while i < state_set_list.size - 1:
-            i += 1
+        while i < state_set_list.size:
             if state_set_list.split(i):           
                 state_set_list_changed_f = True   # -- a split happend, the state sets changed ...  
+            i += 1
 
     # If all states in the state sets trigger equivalently, then the state set remains
     # nothing has to be done to the new state_set list, because its by default setup that way 
