@@ -426,6 +426,19 @@ class NumberSet:
         if len(self.__intervals) != 1: return False
         return self.__intervals[0].is_all()
             
+    def is_equal(self, Other):
+        """Assume: All intervals are sorted and adjacent intervals are combined.
+        """
+        N = len(self.__intervals)
+        if N != len(Other.__intervals): return False
+        i = -1
+        for interval in self.__intervals:
+            i += 1
+            other = Other.__intervals[i]
+            if   interval.begin != other.begin: return False
+            elif interval.end   != other.end:   return False
+        return True
+
     def interval_number(self):
         """This value gives some information about the 'complexity' of the number set."""
         return len(self.__intervals)
