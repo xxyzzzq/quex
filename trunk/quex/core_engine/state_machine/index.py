@@ -1,8 +1,6 @@
 # special states:
 from copy import deepcopy, copy
 
-STATE_TERMINATION = long(-1)     # ID for 'success state'
-
 def clear():
     global __internal_state_index_counter
     global __map_combination_to_index
@@ -28,15 +26,10 @@ def get():
     return __internal_state_index_counter
 
 __map_combination_to_index = {}
-def map_state_combination_to_index(combination):
+def map_state_combination_to_index(cc_combination):
     """Returns index for the given combination. If the given combination
     does **not** have an index, it gets a new one. Else the existing one is
     returned."""
-    # if all state machines are in state TERMINATION, then the state needs to be TERMINATION.
-    if combination == [ STATE_TERMINATION ] * len(combination): 
-        return STATE_TERMINATION
-
-    cc_combination = deepcopy(combination)
     cc_combination.sort()
     key_str = repr(cc_combination)
 
