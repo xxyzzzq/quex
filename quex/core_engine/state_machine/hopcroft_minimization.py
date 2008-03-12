@@ -140,7 +140,7 @@ class StateSet_List:
         return True
             
 
-def do(SM):
+def do(SM, CreateNewStateMachineF=True):
     """Reduces the number of states according to equivalence classes of states. It starts
        with two sets: 
        
@@ -176,13 +176,18 @@ def do(SM):
 
     # If all states in the state sets trigger equivalently, then the state set remains
     # nothing has to be done to the new state_set list, because its by default setup that way 
-    return create_state_machine(SM, state_set_list)
+    if CreateNewStateMachineF: return create_state_machine(SM, state_set_list)
+    else:                      return adapt_state_machine(SM, state_set_list)
 
 def create_state_machine(SM, StateSetList):
-    # When the list of state sets did not change, it means that no states inside any
-    # state set triggers to a different state set on the same trigger. the state sets can
-    # become a new state machine. the state set that contains the initial state becomes 
-    # the initial state of the new state machine.   
+    # If all states are of size one, this means, that there were no states that
+    # could have been combined. In this case a simple copy of the original
+    # state machine will do.
+    if filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list) == []:
+        return deepcopy(SM)
+    
+    # The state set that contains the initial state becomes the initial state of 
+    # the new state machine.   
     state_set_containing_initial_state_i = StateSetList.map[SM.init_state_index]
     map_new_state_index = {}
     def create_state_index(StateSetIndex):
@@ -200,8 +205,6 @@ def create_state_machine(SM, StateSetList):
     # Build up the state machine out of the remaining state sets
     state_set_idx = -1L
     for state_set in StateSetList.state_set_list:
-        ## print "##rss:", state_set
-        ## print "##map:", map_new_state_index 
         state_set_idx += 1L
         assert len(state_set) != 0, "State set of size '0'. List = " + repr(StateSetList)
 
@@ -227,10 +230,42 @@ def create_state_machine(SM, StateSetList):
 
 
         # Merge all core information of the states inside the state set.
-        for state_idx in state_set:
-            prototype.merge(SM.states[state_idx])
+        if len(state_set) > 1:
+            for state_idx in state_set[1:]:
+                prototype.merge(SM.states[state_idx])
 
     return result    
 
+
+def adapt_state_machine(sm, StateSetList):
+    # If all states are of size one, this means, that there were no states that
+    # could have been combined. In this case nothing is to be done.
+    if filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list) == []:
+        return sm
+    
+    # We know, that all states in a state set are equivalent. Thus, all but one
+    # of each set can be thrown away.
+    replacement_list = []
+    for state_set in StateSetList.state_set_list:
+        if len(state_set) == 1: continue
+
+        # Merge all core information of the states inside the state set.
+        prototype_index = state_set[0]
+        prototype       = sm.states[state_set[0]]
+        for state_idx in state_set[1:]:
+            prototype.merge(SM.states[state_idx])
+
+        # Throw the meaningless states away. Transitions to them need to point to the
+        # prototype
+        for state_index in state_set[1:]:
+            replacement_list.append([state_index, prototype_index])
+            del sm.states[state_index]
+
+    # Replace the indices of the thrown out states
+    for x, y in replacement_list:
+        for state in sm.states.values():
+            state.replace_target_index(x, y)
+
+    return sm    
 
 

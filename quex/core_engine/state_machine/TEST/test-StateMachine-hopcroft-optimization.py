@@ -39,7 +39,6 @@ n0 = sm.init_state_index
 n1 = sm.add_transition(n0, ord('a'), AcceptanceF=True)
 sm = repeat.do(sm, 0, 1)
 dfa = nfa_to_dfa.do(sm)
-# print dfa.get_string(NormalizeF=False)
 print hopcroft.do(dfa)
 
 print "_______________________________________________________________________________"

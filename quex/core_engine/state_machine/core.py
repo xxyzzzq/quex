@@ -1067,7 +1067,7 @@ class StateMachine:
             if state.is_acceptance(): result.append(index)
         return result
 
-        """
+        """ TODO Throw this out.
         def __criteria(state):
             if not CorePatternF: 
                 return state.is_acceptance()
