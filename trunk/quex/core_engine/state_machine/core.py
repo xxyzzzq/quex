@@ -5,10 +5,10 @@ from   quex.frs_py.string_handling import blue_print
 #
 from   quex.core_engine.interval_handling        import NumberSet, Interval
 import quex.core_engine.state_machine.index      as     state_machine_index
-from   quex.core_engine.state_machine.transition import Transition, EpsilonTransition
+from   quex.core_engine.state_machine.transition      import Transition, EpsilonTransition
+from   quex.core_engine.state_machine.transition_map  import TransitionMap
 from   quex.core_engine.state_machine.state_core_info import StateCoreInfo
 from   quex.core_engine.state_machine.origin_list     import StateOriginList
-from   quex.core_engine.state_machine.transition_map  import TransitionMap
 #
 import quex.core_engine.generator.languages.core  as languages
 import quex.core_engine.generator.languages.label as languages_label
@@ -73,22 +73,13 @@ class StateInfo:
         return self.__transition_map.get_list()  
 
     def get_epsilon_trigger_set(self):
-        # (*) re-compute the epsilon trigger set
-        all_triggers = NumberSet()
-        for t in self.__transition_list:
-            all_triggers.unite_with(t.trigger_set)
-        self.__epsilon.trigger_set = all_triggers.inverse()
-
-        return self.__epsilon.trigger_set
+        return self.__transition_map.get_combined_trigger_set().inverse()
 
     def get_epsilon_target_state_indices(self):
         return self.__epsilon.target_state_indices
 
     def get_normal_target_states(self):
-        target_index_unique = {}
-        for t in self.__transition_list:
-            target_index_unique[t.target_state_index] = 1
-        return target_index_unique.keys()
+        self.transition_map().get_target_state_index_list()
 
     def get_target_state_indices(self):
         ti_list = self.get_normal_target_states()
@@ -154,21 +145,7 @@ class StateInfo:
     def get_trigger_dictionary(self, ConsiderEpsilonTransition=False):
         """Returns a map from target state index to trigger that triggers it. This
            includes the trigger set of the epsilon transition and its target states."""
-        def consider(target_state_index, trigger_set):
-            if not result.has_key(target_state_index):
-                result[target_state_index] = NumberSet(trigger_set)
-            else:
-                result[target_state_index].unite_with(trigger_set)        
-
-        result = {}
-        for t in self.__transition_list: 
-            consider(t.target_state_index, t.trigger_set)
-
-        # if not self.get_epsilon_trigger_set().is_empty():
-        #    for ti in self.__epsilon.target_state_indices: 
-        #       consider(ti, self.get_epsilon_trigger_set()) 
-
-        return result
+        return self.__transition_map.get_map()
         
     def get_trigger_set_line_up(self):
         """Lines the triggers up on a 'time line'. A target is triggered by
@@ -316,7 +293,7 @@ class StateInfo:
         return trigger_map
 
     def is_empty(self):
-        return self.__transition_list == [] and self.__epsilon.is_empty()
+        return self.__transition_map.is_empty() and self.__epsilon.is_empty()
 
     def is_acceptance(self):
         return self.core().is_acceptance()
