@@ -1,4 +1,4 @@
-<history date="Tue Mar 11 23:12:19 2008" element-n="64">
+<history date="Wed Mar 12 22:50:33 2008" element-n="66">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -120,5 +120,9 @@
         <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="21:31:57"/>
         <accept    time="22:11:01" application="test-StateMachine-hopcroft-optimization.py" choice="" crc="-378883236" />
         <accept    time="22:12:19" application="test-hopcroft-minimization.py" choice="" crc="-378883236" />
+    </day>
+    <day year="2008" month="03" day="12">
+        <accept    time="21:07:23" application="test-hopcroft-minimization.py" choice="" crc="1990056061" />
+        <test-runs-today n="14" ok-n="3" fail-n="10" else-n="1" last-run="failure" last-time="21:47:04"/>
     </day>
 </history>
