@@ -184,7 +184,7 @@ def create_state_machine(SM, StateSetList):
     # could have been combined. In this case a simple copy of the original
     # state machine will do.
     if filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list) == []:
-        return deepcopy(SM)
+        return SM.clone()
     
     # The state set that contains the initial state becomes the initial state of 
     # the new state machine.   
@@ -228,7 +228,6 @@ def create_state_machine(SM, StateSetList):
                                   t.trigger_set, 
                                   create_state_index(target_index))
 
-
         # Merge all core information of the states inside the state set.
         if len(state_set) > 1:
             for state_idx in state_set[1:]:
@@ -253,7 +252,7 @@ def adapt_state_machine(sm, StateSetList):
         prototype_index = state_set[0]
         prototype       = sm.states[state_set[0]]
         for state_idx in state_set[1:]:
-            prototype.merge(SM.states[state_idx])
+            prototype.merge(sm.states[state_idx])
 
         # Throw the meaningless states away. Transitions to them need to point to the
         # prototype
