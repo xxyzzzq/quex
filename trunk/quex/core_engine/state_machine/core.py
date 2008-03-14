@@ -46,8 +46,6 @@ class StateInfo:
 
         # normal transitions: trigger, action, target-state-index
         self.__transition_map = TransitionMap()
-        # epsilon transition: if no other trigger triggers
-        self.__epsilon = EpsilonTransition()
 
     def core(self):
         return self.__core
@@ -66,6 +64,9 @@ class StateInfo:
                                   StoreInputPositionFollowsAcceptanceF=False,
                                   SelfAcceptanceF=self.is_acceptance())
 
+    def transitions(self):
+        return self.__transition_map()
+
     def get_origin_list(self):
         return self.origins().get_list()
 
@@ -73,227 +74,49 @@ class StateInfo:
         return self.__transition_map.get_list()  
 
     def get_epsilon_trigger_set(self):
-        return self.__transition_map.get_combined_trigger_set().inverse()
+        return self.__transition_map.get_trigger_set_union().inverse()
 
     def get_epsilon_target_state_indices(self):
-        return self.__epsilon.target_state_indices
+        return self.__transition_map.get_epsilon_target_state_index_list()
 
     def get_normal_target_states(self):
-        self.transition_map().get_target_state_index_list()
+        self.transition_map().get_non_epsilon_target_state_index_list()
 
     def get_target_state_indices(self):
-        ti_list = self.get_normal_target_states()
-        if not self.get_epsilon_trigger_set().is_empty():
-            for ti in self.__epsilon.target_state_indices:
-                if ti not in ti_list:
-                    ti_list.append(ti)
-        return ti_list 
+        return self.transition_map().get_target_state_index_list()
         
     def get_result_list(self, Trigger):
         """Returns the set of resulting target states."""
         assert type(Trigger) == int
+        return self.__transition_map.get_resulting_target_state_index_list(Trigger)
 
-        result_list = []
-        for t in self.__transition_list:
-            if t.trigger_set.contains(Trigger):
-                if t.target_state_index not in result_list:
-                    result_list.append(t.target_state_index) 
-
-        if self.get_epsilon_trigger_set().contains(Trigger):
-            for ti in self.__epsilon.target_state_indices:
-                if ti not in result_list:
-                    result_list.append(ti)
-
-        return result_list
 
     def get_result_state_index(self, Trigger):
         """Return one target state that is triggered by the given trigger.
            (there should not be more in a DFA, but in an NFA ...).
         """
-        target_state_list = self.get_result_list(Trigger)
-        if target_state_list != []: 
-            return target_state_list[0]
-        else:
-            return None
+        return self.__transition_map.get_resulting_target_state_index(Trigger)
     
     def get_trigger_set_union(self):
         """Returns union of all trigger sets that lead to a target state. Useful
            in order to determine wether a state triggers on some trigger or not.
         """
-        result = NumberSet()
-        for t in self.__transition_list:
-            result.unite_with(t.trigger_set)
-        if self.__epsilon.target_state_indices != []:
-            result.unite_with(self.get_epsilon_trigger_set())
-        return result
+        return self.__transition_map.get_trigger_set_union().inverse()
 
-    def get_trigger_set(self, TargetIdx=None):
-        """Returns all triggers that lead to target 'TargetIdx'. If a trigger 'None' is returned
-           it means that the epsilon transition triggers to target state. If the TargetIndex is 
-           omitted the set of all triggers, except the epsilon triggers, are returned."""
-        if TargetIdx == None:
-            return self.get_epsilon_trigger_set().inverse() 
-
-        for t in self.__transition_list:
-            if t.target_state_index == TargetIdx:
-                return t.trigger_set
-
-        if self.get_epsilon_trigger_set().contains(TargetIdx):
-            return None 
-        return NumberSet() 
+    def get_trigger_set_to_target(self, TargetIdx=None):
+        return self.__transition_map.get_trigger_set_to_target(TargetIdx)
 
     def get_trigger_dictionary(self, ConsiderEpsilonTransition=False):
-        """Returns a map from target state index to trigger that triggers it. This
-           includes the trigger set of the epsilon transition and its target states."""
         return self.__transition_map.get_map()
         
     def get_trigger_set_line_up(self):
-        """Lines the triggers up on a 'time line'. A target is triggered by
-           certain characters that belong to 'set' (trigger sets). Those sets
-           are imagined as ranges on a time line. The 'history' is described
-           by means of history items. Each item tells wether a range begins
-           or ends, and what target state is reached in that range.
-
-           [0, 10] [90, 95] [100, 200] ---> TargetState0
-           [20, 89]                    ---> TargetState1
-           [96, 99] [201, 205]         ---> TargetState2
-
-           results in a 'history':
-
-           0:  begin of TargetState0
-           10: end of   TargetState0
-           11: begin of DropOut
-           20: begin of TargetState1
-           89: end of   TargetState1
-           90: begin of TargetState0
-           95: end of   TargetState0
-           96: begin of TargetState2
-           99: end of   TargetState2
-           100 ...
-           
-        """
-        # (*) create a 'history', i.e. note down any change on the trigger set combination
-        #     (here the alphabet plays the role of a time scale)
-        class history_item:
-            def __init__(self, Position, ChangeF, TargetIdx):
-                self.position   = Position
-                self.change     = ChangeF
-                self.target_idx = TargetIdx 
-                
-            def __repr__(self):         
-                if self.change == INTERVAL_BEGIN: ChangeStr = "begin"
-                else:                             ChangeStr = "end"
-                return "%i: %s %s" % (self.position, ChangeStr, self.target_idx)
-
-            def __eq__(self, Other):
-                return     self.position   == Other.position \
-                       and self.change     == Other.change   \
-                       and self.target_idx == Other.target_idx 
-                
-
-        history = []
-        # NOTE: This function only deals with non-epsilon triggers. Empty
-        #       ranges in 'history' are dealt with in '.get_trigger_map()'. 
-        for target_idx, trigger_set in self.get_trigger_dictionary().items():
-            interval_list = trigger_set.get_intervals(PromiseNotToChangeAnythingF=True)
-            for interval in interval_list: 
-                # add information about start and end of current interval
-                history.append(history_item(interval.begin, INTERVAL_BEGIN, target_idx))
-                history.append(history_item(interval.end, INTERVAL_END, target_idx))
-
-        # (*) sort history according to position
-        history.sort(lambda a, b: cmp(a.position, b.position))
-
-        return history      
+        return self.__transition_map.get_trigger_set_line_up()
 
     def get_trigger_map(self):
-        """Consider the set of possible characters as aligned on a 1 dimensional line.
-           This one-dimensional line is remiscent of a 'time line' so we call the change
-           of interval coverage 'history'.         
-
-           Returns a trigger map consisting of a list of pairs: (Interval, TargetIdx)
-
-                    [ [ interval_0, target_0],
-                      [ interval_1, target_1],
-                      ...
-                      [ interval_N, target_N] ]
-
-           The intervals are sorted and non-overlapping (use this function only for DFA).
-        """
-        # NOTE: The response '[]' is a **signal** that there is only an epsilon
-        #       transition. The response as such would be incorrect. But the signal
-        #       'empty reply' needs to be treated by the caller.
-        if self.__transition_list == []: return []
-            
-        history = self.get_trigger_set_line_up()
-        
-        def query_trigger_map(EndPosition, TargetIdx):
-            """Find all map entries that have or have not an open interval and
-               point to the given TargetIdx. If TargetIdx = None it is not checked.
-            """
-            entry_list = []
-            for entry in trigger_map:
-                if entry[0].end == EndPosition and entry[1] == TargetIdx: 
-                    entry_list.append(entry)
-            return entry_list 
-
-        # (*) build the trigger map
-        trigger_map = []    
-        for item in history:
-            if item.change == INTERVAL_BEGIN: 
-                # if an interval has same target index and ended at the current
-                # intervals begin, then extend the last interval, do not create a new one.
-                adjacent_trigger_list = query_trigger_map(item.position, item.target_idx)
-                if adjacent_trigger_list == []:
-                    # open a new interval (set .end = None to indicate 'open')
-                    trigger_map.append([Interval(item.position, INTERVAL_UNDEFINED_BORDER), 
-                                       item.target_idx])
-                else:
-                    for entry in adjacent_trigger_list: 
-                        # re-open the adjacent interval (set .end = None to indicate 'open')
-                        entry[0].end = INTERVAL_UNDEFINED_BORDER
-                
-            else:
-                # item.change == INTERVAL_END   
-                # close the correspondent intervals
-                # (search for .end = None indicating 'open interval')           
-                for entry in query_trigger_map(INTERVAL_UNDEFINED_BORDER, item.target_idx):
-                    entry[0].end = item.position
-            
-        # (*) fill all gaps in the trigger map with target = epsilon_target
-        epsilon_target = None
-        if self.__epsilon.target_state_indices != []: 
-            epsilon_target = self.__epsilon_target_indices[0]   
-
-        gap_filler = [] 
-        if len(trigger_map) >= 2:    
-            prev_entry = trigger_map[0]    
-            for entry in trigger_map[1:]:    
-                if prev_entry[0].end != entry[0].begin: 
-                    gap_filler.append([Interval(prev_entry[0].end, entry[0].begin), epsilon_target])
-                prev_entry = entry
-    
-        # -- append the last interval until 'infinity' (if it is not yet specified   
-        #    (do not switch this with the following step, .. or you screw it)           
-        if trigger_map[-1][0].end != sys.maxint:    
-            trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), epsilon_target])
-        # -- insert a first interval from -'infinity' to the start of the first interval
-        if trigger_map[0][0].begin != -sys.maxint:
-            trigger_map.append([Interval(-sys.maxint, trigger_map[0][0].begin), epsilon_target])
-           
-        # -- insert the gap fillers and get the trigger map straigtened up again
-        trigger_map.extend(gap_filler) 
-        trigger_map.sort(lambda a, b: cmp(a[0].begin, b[0].begin))
-
-        # (*) post check assert
-        for entry in trigger_map:
-            assert entry[0].end != None, \
-                   "remaining open intervals in trigger map construction"
-
-        return trigger_map
+        return self.__transition_map.get_trigger_map()
 
     def is_empty(self):
-        return self.__transition_map.is_empty() and self.__epsilon.is_empty()
+        return self.__transition_map.is_empty()
 
     def is_acceptance(self):
         return self.core().is_acceptance()
@@ -312,55 +135,18 @@ class StateInfo:
         return self.origins().contains_store_input_position()
 
     def is_DFA_compliant(self):
-        """Checks if the current state transitions are DFA compliant, i.e. it
-           investigates if trigger sets pointing to different targets intersect.
-           RETURN:  True  => OK
-                    False => Same triggers point to different target. This cannot
-                             be part of a deterministic finite automaton (DFA).
-        """
-        # NOTE: 'add_transition' ensures that the path '(target_state, action)' is
-        #       **unique** in the transition list.
-        #
-        # (*) the comparison could be displayed in a matrix. a comparison
-        #     only has to happen in one diagonal half of the matrix.        
-        i = -1
-        for tA in self.__transition_list:
-            i += 1
-            # -- check against normal transitions:
-            for tB in self.__transition_list[i+1:]:
-                # -- does trigger_list_A and trigger_list_B intersect?
-                if not tA.trigger_set.has_intersection(tB.trigger_set):
-                    return False
-            # -- check against else transition - should not be necessary if transitions
-            #    are set up propperly
-            if not tA.trigger_set.has_intersection(self.get_epsilon_trigger_set()):
-                return False
-                
-        return True
+        return self.__transition_map.is_DFA_compliant()
 
     def has_trivial_pre_condition_begin_of_line_f(self):
         if self.core().pre_condition_begin_of_line_f(): return True
         return self.origins().contains_pre_condition_begin_of_line()
 
-    def has_none_of_triggers(self, CharacterCodeList):
-        assert type(CharacterCodeList) == type([])
-
-        for code in CharacterCodeList:
-            if self.has_trigger(code): return False
-        return True
-
     def has_one_of_triggers(self, CharacterCodeList):
-        assert type(CharacterCodeList) == type([])
-
-        for code in CharacterCodeList:
-            if self.has_trigger(code): return True
-        return False
+        assert type(CharacterCodeList) == list
+        return self.__transition_map.has_one_of_triggers(CharacterCodeList)
 
     def has_trigger(self, CharacterCode):
-        assert type(CharacterCode) == int
-
-        if self.get_result_state_index(CharacterCode) == None: return False
-        else:                                                  return True
+        return self.__transition_map.has_trigger(CharacterCode)
 
     def has_origin(self):
         return not self.origins().is_empty()
@@ -401,134 +187,25 @@ class StateInfo:
                               SelfAcceptanceF=self.is_acceptance())
                 
     def add_epsilon_target_state(self, TargetStateIdx):
-        if TargetStateIdx not in self.__epsilon.target_state_indices:
-            self.__epsilon.target_state_indices.append(TargetStateIdx)
+        self.__transition_map.add_epsilon_target_state(TargetStateIdx)
 
     def add_transition(self, Trigger, TargetStateIdx): 
-        """Adds a transition according to trigger and target index.
-
-           Trigger == one of {integer, Interval, Interval Array} possible
-
-           TargetStateIdx == None (default) => create new target state index 
-        
-        RETURNS: The target state index (may be created newly).
-        """
-        assert type(TargetStateIdx) == long or TargetStateIdx == None
-        assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger == None
-
-        if Trigger == None:
-            # Trigger = None means that the remaining set of triggers is to be
-            # used (if the epsilon set is already empt, then one cannot assign
-            # to it anything)
-            if self.get_epsilon_trigger_set().is_empty():
-                return None
-            Trigger = copy(self.get_epsilon_trigger_set())
-            self.__epsilon.trigger_set = NumberSet()
-
-        elif type(Trigger) == long: Trigger = Interval(int(Trigger), int(Trigger+1))
-        elif type(Trigger) == int:  Trigger = Interval(Trigger, Trigger+1)
-        elif type(Trigger) == list: Trigger = NumberSet(Trigger, ArgumentIsYoursF=True)
-            
-        # (*) Append Transition: StartState --- Trigger ---> TargetState
-        #
-        #     -- ensure that for a given target state and 'raise-succes-action', there is only
-        #        one trigger set. That means, that if a transition with the same 'path' exists
-        #        do not create a new transition.
-        for t in self.__transition_list:
-            if t.target_state_index == TargetStateIdx:
-                if Trigger.__class__ == Interval:  t.trigger_set.add_interval(Trigger)
-                else:                              t.trigger_set.unite_with(Trigger)
-                break
-        else:
-            self.__transition_list.append(Transition(NumberSet(Trigger), TargetStateIdx))
-
-        return TargetStateIdx
+        self.__transition_map.add_transition(Trigger, TargetStateIdx)
     
     def replace_target_index(self, OriginalIdx, NewTargetIdx):
-        """Replaces given OriginalIdx of a target state with the index of the
-           new target state 'NewTargetIdx.
-        """   
-        # investigate normal transitions
-        transition_containing_target_index = -1
-        i = -1
-        for t in self.__transition_list:
-            i += 1
-            if t.target_state_index == OriginalIdx:
-                t.target_state_index = NewTargetIdx
-                transition_containing_target_index = i
-
-        # make sure, that all transitions to one this target state are combined
-        if transition_containing_target_index != -1:
-            my_transition = self.__transition_list[transition_containing_target_index]
-            i = 0
-            while i < len(self.__transition_list):
-                t = self.__transition_list[i]
-                if i == transition_containing_target_index: 
-                    i += 1; continue
-                elif t.target_state_index == NewTargetIdx: 
-                    # merge trigger sets
-                    my_transition.trigger_set.unite_with(t.trigger_set)
-                    # no 'i += 1' because next comes to position 'i' by shifting
-                    del self.__transition_list[i]
-                    transition_containing_target_index -= 1 # adapt since values shift
-                else:
-                    i += 1
-
-        # investiage 'ELSE' transition
-        if OriginalIdx in self.__epsilon.target_state_indices:
-            # delete the original index from the list
-            del self.__epsilon.target_state_indices[self.__epsilon.target_state_indices.index(OriginalIdx)]
-            # add the replaced index to it
-            self.__epsilon.target_state_indices.append(NewTargetIdx)
+        self.__transition_map.replace_target_index(OriginalIdx, NewTargetIdx)
 
     def replace_drop_out_target_states_with_adjacent_targets(self):
-        trigger_map = self.get_trigger_map() 
-
-        if trigger_map == []:  # Nothing to be done, since there is nothing adjacent 
-            return             # to the 'drop out' trigger. There is only an epsilon transition.
-
-        assert len(trigger_map) >= 2
-
-        # Target of internval (-oo, X) must be 'drop out' since there are no unicode 
-        # code points below 0.
-        assert trigger_map[0][1] == None
-        assert trigger_map[0][0].begin == - sys.maxint
-
-
-        # The first interval mentioned after that must not point to 'drop out' since
-        # the trigger map must collect the same targets into one single interval.
-        assert trigger_map[1][1] != None
-
-        non_drop_out_target = trigger_map[1][1]
-        self.add_transition(trigger_map[0][0], non_drop_out_target)
-        
-        # NOTE: Here we know that len(trigger_map) >= 2
-        for trigger_set, target in trigger_map[2:]:
-
-            if target == None: target = non_drop_out_target
-            else:              non_drop_out_target = target
-
-            self.add_transition(trigger_set, target)
+        return self.__transition_map.replace_drop_out_target_states_with_adjacent_targets()
 
     def delete_transitions_on_character_list(self, CharacterCodeList):
-        for char_code in CharacterCodeList:
-            for t in self.__transition_list:
-                if t.trigger_set.contains(char_code):
-                    t.trigger_set.cut_interval(Interval(char_code, char_code+1))
-        self.delete_transitions_on_empty_trigger_sets()
+        self.__transition_map.delete_transitions_on_character_list(CharacterCodeList)
 
     def delete_transitions_on_empty_trigger_sets(self):
-        new_transition_list = []
-        i    = 0
-        size = len(self.__transition_list)
-        while i < size:
-            t = self.__transition_list[i]
-            if t.trigger_set.is_empty(): del self.__transition_list[i]; size -= 1
-            else:                        i += 1
+        self.__transition_map.delete_transitions_on_empty_trigger_sets(CharacterCodeList)
 
     def delete_epsilon_target_state(self, TargetStateIdx):
-        if TargetStateIdx in self.__epsilon.target_state_indices:
-            del self.__epsilon.target_state_indices[self.__epsilon.target_state_indices.index(TargetStateIdx)]
+        self.__transition_map.delete_epsilon_target_state(TargetStateIdx)
 
     def delete_meaningless_origins(self):
         self.origins().delete_meaningless()
@@ -561,7 +238,6 @@ class StateInfo:
         result = StateInfo()
         result.__core            = deepcopy(self.__core)
         result.__transition_list = deepcopy(self.__transition_list)
-        result.__epsilon         = deepcopy(self.__epsilon)
         result.__origin_list     = deepcopy(self.__origin_list)
         # if replacement of indices is desired, than do it
         if ReplacementDictionary != None:
@@ -722,23 +398,6 @@ class StateMachine:
             target_state_index_list = state.get_target_state_indices()
             work_list = filter(lambda i: i not in target_state_index_list, work_list)
         return work_list
-
-    def get_trigger_set(self, StartIdx, TargetIdx):
-        """Returns a set of triggers that lead from state 'StateIdx' to 'TargetIdx'.
-        """
-        if self.has_start_state_index(StartIdx) == False: 
-            return None
-        return self.states[StartIdx].get_trigger_set(TargetIdx)
-
-    def get_invese_trigger_dictionary(self, StateIdx):
-        """Returns a map, associating origin states to the triggers that 
-           trigger from the origin states to the state index 'StateIndex'
-        """
-        dict = {}
-        for state_index, state in self.states.items():
-            if state.has_target_state(StateIdx):
-                dict[state_index] = state.get_trigger_set(StateIdx)
-        return dict
 
     def get_epsilon_closure_of_state_set(self, StateIdxList):
         """Returns the epsilon closure of a set of set states, i.e. the union
