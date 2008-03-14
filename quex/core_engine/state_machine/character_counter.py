@@ -91,7 +91,7 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
     prev_idx      = TargetStateIdx
     for idx in Path[occurence_idx+1:] + [TargetStateIdx]:
         # does transition from prev_state to state contain newline?
-        trigger_set = state_machine.states[prev_idx].get_trigger_set(idx)
+        trigger_set = state_machine.states[prev_idx].get_trigger_set_to_target(idx)
         if trigger_set.contains(Character):
             return True                       # YES! recursion with critical character
         prev_idx = idx
