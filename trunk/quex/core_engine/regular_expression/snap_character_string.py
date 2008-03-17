@@ -45,5 +45,5 @@ def do(sh):
         state_idx = result.add_transition(state_idx, char_code)
 
     # when the last state has trigger it is supposed to end up in 'acceptance'
-    result.set_acceptance(state_idx)
+    result.states[state_idx].set_acceptance()
     return result

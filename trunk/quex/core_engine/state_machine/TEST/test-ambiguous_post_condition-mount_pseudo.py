@@ -8,7 +8,7 @@ from quex.exception import *
 
 import quex.core_engine.state_machine.index as sm_index
 import quex.core_engine.regular_expression.core as regex
-import quex.core_engine.state_machine.ambiguous_post_condition as ambiguous_post_condition 
+import quex.core_engine.state_machine.ambiguous_post_context as ambiguous_post_context 
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
@@ -28,7 +28,7 @@ def test(RE_Core, RE_PostCondition):
         return
 
     try:
-        post_condition_sm = regex.do(string_stream_PostCondition)
+        post_context_sm = regex.do(string_stream_PostCondition)
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)
         return
@@ -37,14 +37,14 @@ def test(RE_Core, RE_PostCondition):
     print "core pattern            =", RE_Core
     print "post condition pattern  =", RE_PostCondition
 
-    ambiguous_post_condition.mount(core_sm, post_condition_sm)
+    ambiguous_post_context.mount(core_sm, post_context_sm)
     # .mount() does not transformation from NFA to DFA
     core_sm = nfa_to_dfa.do(core_sm)
     core_sm = hopcroft.do(core_sm)
 
     print "ambigous post condition =", core_sm
 
-    backward_detector_id = core_sm.get_pseudo_ambiguous_post_condition_id()
+    backward_detector_id = core_sm.get_pseudo_ambiguous_post_context_id()
 
     print "backward detector =", sm_index.get_state_machine_by_id(backward_detector_id)
 

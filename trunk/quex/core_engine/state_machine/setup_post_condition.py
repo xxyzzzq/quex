@@ -4,11 +4,11 @@ from   quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.ambiguous_post_condition as apc
 
 
-def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False):
-    """ Appends a post condition to the given state machine. This process is very
+def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False):
+    """ Appends a post context to the given state machine. This process is very
         similar to sequentialization. There is a major difference, though:
        
-        Given a state machine (e.g. a pattern) X with a post condition Y, 
+        Given a state machine (e.g. a pattern) X with a post context Y, 
         a match is only valid if X is followed by Y. Let Xn be an acceptance
         state of X and Ym an acceptance state of Y: 
 
@@ -33,39 +33,39 @@ def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutio
     assert the_state_machine.__class__.__name__ == "StateMachine", \
             "expected 1st argument as objects of class StateMachine\n" + \
             "received: " + the_state_machine.__class__.__name__
-    assert post_condition_sm.__class__.__name__ == "StateMachine", \
+    assert post_context_sm.__class__.__name__ == "StateMachine", \
             "expected 2nd argument as objects of class StateMachine\n" + \
-            "received: " + post_condition_sm.__class__.__name__
-    assert not the_state_machine.is_post_conditioned(), \
-            "post conditioned state machine cannot be post-conditioned again."
+            "received: " + post_context_sm.__class__.__name__
+    assert not the_state_machine.is_post_contexted(), \
+            "post context state machine cannot be post-context again."
 
     # -- state machines with no states are senseless here. 
     assert not the_state_machine.is_empty(), \
-            "empty state machine can have no post condition."
-    assert not post_condition_sm.is_empty(), \
-            "empty state machine cannot be a post-condition."
+            "empty state machine can have no post context."
+    assert not post_context_sm.is_empty(), \
+            "empty state machine cannot be a post-context."
 
-    # -- a post condition with an initial state that is acceptance is not
-    #    really a 'condition' since it accepts anything. The state machine remains
-    #    un-post conditioned.
-    if post_condition_sm.get_init_state().is_acceptance():
-        print "warning: post condition accepts anything---replaced by no post condition."
+    # -- a post context with an initial state that is acceptance is not
+    #    really a 'context' since it accepts anything. The state machine remains
+    #    un-post context.
+    if post_context_sm.get_init_state().is_acceptance():
+        print "warning: post context accepts anything---replaced by no post context."
         return the_state_machine
     
-    # (*) Two ways of handling post-conditions:
+    # (*) Two ways of handling post-contexts:
     #
     #     -- Seldom Exception: 
     #        Pseudo-Ambiguous Post Conditions (x+/x) -- detecting the end of the 
-    #        core pattern after the end of the post condition
+    #        core pattern after the end of the post context
     #        has been reached.
     #
     if not DEMONSTRATION_TurnOffSpecialSolutionF:
-        if apc.detect_forward(the_state_machine, post_condition_sm):
-            if apc.detect_backward(the_state_machine, post_condition_sm):
-                # -- for post conditions that are forward and backward ambiguous
+        if apc.detect_forward(the_state_machine, post_context_sm):
+            if apc.detect_backward(the_state_machine, post_context_sm):
+                # -- for post contexts that are forward and backward ambiguous
                 #    a philosophical cut is necessary.
-                post_condition_sm = apc.philosophical_cut(the_state_machine, post_condition_sm)
-            apc.mount(the_state_machine, post_condition_sm)
+                post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
+            apc.mount(the_state_machine, post_context_sm)
             return the_state_machine
 
     #     -- The 'normal' way: storing the input position at the end of the core
@@ -76,8 +76,8 @@ def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutio
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
     result     = the_state_machine
-    post_clone = post_condition_sm.clone() 
-    #     origins of the post condition are **irrelevant**
+    post_clone = post_context_sm.clone() 
+    #     origins of the post context are **irrelevant**
     post_clone.delete_state_origins()
 
     # (*) collect all transitions from both state machines into a single one
@@ -95,25 +95,30 @@ def do(the_state_machine, post_condition_sm, DEMONSTRATION_TurnOffSpecialSolutio
     for start_state_index, state in post_clone.states.items():        
         result.states[start_state_index] = state # states are already cloned
 
-    # -- consider the pre-condition, it has to be moved to the acceptance state
-    # -- same for trivial pre-conditions        
-    pre_condition_sm_id                   = the_state_machine.get_pre_condition_sm_id()
-    trivial_pre_condition_begin_of_line_f = the_state_machine.has_trivial_pre_condition_begin_of_line() 
+    # -- consider the pre-context, it has to be moved to the acceptance state
+    # -- same for trivial pre-contexts        
+    post_context_id             = the_state_machine.core().id()
+    pre_context_sm              = the_state_machine.core().pre_context_sm()
+    pre_context_sm_id           = the_state_machine.core().pre_context_sm_id()
+    pre_context_begin_of_line_f = the_state_machine.core().pre_context_begin_of_line_f() 
 
     # -- raise at each old acceptance state the 'store input position flag'
-    # -- set the post conditioned flag for all acceptance states
+    # -- set the post context flag for all acceptance states
     for state_idx in orig_acceptance_state_id_list:
         state = result.states[state_idx]
         state.core().set_store_input_position_f(True)
-        state.core().set_post_conditioned_acceptance_f(True)
-        state.core().set_pre_condition_id(-1L)   
+        state.core().set_post_context_id(post_context_id)
+        state.core().set_pre_context_id(-1L)   
     
     # -- no acceptance state shall store the input position
-    # -- set the post conditioned flag for all acceptance states
+    # -- set the post context flag for all acceptance states
     for state in result.get_acceptance_state_list():
         state.core().set_store_input_position_f(False)
-        state.core().set_post_conditioned_acceptance_f(True)
-        state.core().set_pre_condition_id(pre_condition_sm_id)   
-        state.core().set_pre_condition_begin_of_line_f(trivial_pre_condition_begin_of_line_f)
+        state.core().set_post_context_id(post_context_id)
+        state.core().set_pre_context_id(pre_context_sm_id)   
+
+    # -- information about the pre-context remains
+    result.core().set_pre_context_begin_of_line_f(pre_context_begin_of_line_f)
+    result.core().set_pre_context_sm(pre_context_sm)
 
     return result

@@ -27,10 +27,10 @@ class Generator(GeneratorBase):
 
         self.__do(self.sm, self.state_machine_name + "." + self.graphic_format)
 
-        if self.pre_condition_sm != None:
+        if self.pre_context_sm != None:
             file_name = "%s-pre-condition.%s" % (self.state_machine_name, self.graphic_format)
             self.pre_context_file_name = file_name
-            self.__do(self.pre_condition_sm, file_name)
+            self.__do(self.pre_context_sm, file_name)
 
         if self.papc_backward_detector_state_machine_list != []:
             self.backward_detector_file_name = []

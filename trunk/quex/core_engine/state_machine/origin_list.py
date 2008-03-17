@@ -67,9 +67,9 @@ class StateOriginList:
         if self.__list[0].state_index != StateIdx:            return False
         return True
 
-    def contains_post_condition_flag(self):
+    def contains_post_context_flag(self):
         for origin in self.__list:
-            if origin.post_conditioned_acceptance_f(): return True
+            if origin.post_contexted_acceptance_f(): return True
         return False                                
 
     def contains_store_input_position(self):
@@ -77,9 +77,9 @@ class StateOriginList:
             if origin.store_input_position_f() == True: return True
         return False
 
-    def contains_pre_condition_begin_of_line(self):
+    def contains_pre_context_begin_of_line(self):
         for origin in self.__list:
-            if origin.pre_condition_begin_of_line_f(): return True
+            if origin.pre_context_begin_of_line_f(): return True
         return False    
 
     def adapt(self, StateMachineID, StateIndex):
@@ -108,10 +108,10 @@ class StateOriginList:
                  be one origin for each state.
         """
         self.__list = filter(lambda origin:
-                                    origin.post_conditioned_acceptance_f() or
-                                    origin.pre_condition_id() != -1L       or
+                                    origin.post_contexted_acceptance_f() or
+                                    origin.pre_context_id() != -1L       or
                                     origin.store_input_position_f()        or
-                                    origin.pre_condition_begin_of_line_f(),
+                                    origin.pre_context_begin_of_line_f(),
                                     self.__list)
 
     def delete_dominated(self):
@@ -135,13 +135,13 @@ class StateOriginList:
                 # Only append acceptance origins until the first unconditional acceptance state 
                 # is found. 
                 if not unconditional_acceptance_found_f:
-                    if origin.pre_condition_id() == -1L and not origin.pre_condition_begin_of_line_f():
+                    if origin.pre_context_id() == -1L and not origin.pre_context_begin_of_line_f():
                         unconditional_acceptance_found_f = True # prevent entering this part again
                     new_origin_list.append(origin)
 
             else:
                 # Non-Acceptance origins do not harm in any way. Actually, the origins
-                # with 'origin.is_end_of_post_conditioned_core_pattern() == True' **need**
+                # with 'origin.is_end_of_post_contexted_core_pattern() == True' **need**
                 # to be in there. See the comment at the entry of this function.
                 new_origin_list.append(origin)
 

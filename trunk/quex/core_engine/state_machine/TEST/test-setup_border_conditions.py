@@ -4,8 +4,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-import quex.core_engine.state_machine.setup_post_condition as setup_post_condition
-import quex.core_engine.state_machine.setup_pre_condition as setup_pre_condition 
+import quex.core_engine.state_machine.setup_post_context as setup_post_context
+import quex.core_engine.state_machine.setup_pre_context as setup_pre_context 
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions 
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
@@ -22,13 +22,13 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     result = sm.clone()
     print "##-- %i -----------------------------------------------------------------------" % Idx
     if sm_pre != None: 
-        setup_pre_condition.do(result, sm_pre)
+        setup_pre_context.do(result, sm_pre)
         print " -- pre-condition  = True"
     else:
         print " -- pre-condition  = False"
         
     if sm_post != None:
-        setup_post_condition.do(result, sm_post)
+        setup_post_context.do(result, sm_post)
         print " -- post-condition = True"
     else:
         print " -- post-condition = False"
@@ -52,10 +52,10 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     #
     print
     print "result sm.id     = ", result.get_id()
-    if result.pre_condition_state_machine != None:
-        print "result pre sm.id = ", result.pre_condition_state_machine.get_id()
+    if result.pre_context_state_machine != None:
+        print "result pre sm.id = ", result.pre_context_state_machine.get_id()
     print "result = ", result
-    print "trivially pre-conditioned = ", result.has_trivial_pre_condition()
+    print "trivially pre-conditioned = ", result.has_trivial_pre_context()
 
 tiny0 = StateMachine()
 tiny0.add_transition(tiny0.init_state_index, ord('0'), AcceptanceF=True)

@@ -75,28 +75,28 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
 
     __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
 
-    my_post_condition_sm = PostConditionStateMachine.clone()
+    my_post_context_sm = PostConditionStateMachine.clone()
 
     # (*) Create a modified version of the post condition, where the
     #     initial state is an acceptance state, and no other. This 
     #     allows the detector to trigger on 'iteration'.
     #
     # -- delete all acceptance states in the post condition
-    # for state in my_post_condition_sm.states.values():
+    # for state in my_post_context_sm.states.values():
     #   state.set_acceptance(False)
     # -- set the initial state as acceptance state
-    # my_post_condition_sm.get_init_state().set_acceptance(True)
+    # my_post_context_sm.get_init_state().set_acceptance(True)
 
     my_core_sm = CoreStateMachine.get_inverse()
     my_core_sm = nfa_to_dfa.do(my_core_sm)
     my_core_sm = hopcroft.do(my_core_sm)
 
     tmp = deepcopy(PostConditionStateMachine)
-    my_post_condition_sm = tmp.get_inverse()
-    my_post_condition_sm = nfa_to_dfa.do(my_post_condition_sm)
-    my_post_condition_sm = hopcroft.do(my_post_condition_sm)
+    my_post_context_sm = tmp.get_inverse()
+    my_post_context_sm = nfa_to_dfa.do(my_post_context_sm)
+    my_post_context_sm = hopcroft.do(my_post_context_sm)
 
-    return detect_forward(my_post_condition_sm, my_core_sm)
+    return detect_forward(my_post_context_sm, my_core_sm)
 
 def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
     """This function goes along all path of SM0 that lead to an 
@@ -240,7 +240,7 @@ def mount(the_state_machine, PostConditionSM):
     # (*) create origin data, in case where there is none yet create new one.
     #     (do not delete, otherwise existing information gets lost)
     for state in acceptance_state_list: 
-        state.set_pseudo_ambiguous_post_condition_id(backward_detector_sm.get_id())
+        state.set_pseudo_ambiguous_post_context_id(backward_detector_sm.get_id())
         # At the end of the post condition, the input positions needs to be stored.
         # Before we can go backwards, we need to know where the post condition actually 
         # ended.
@@ -252,7 +252,7 @@ def mount(the_state_machine, PostConditionSM):
     # that is referenced by the first argument.
     return the_state_machine
 
-def philosophical_cut(core_sm, post_condition_sm):
+def philosophical_cut(core_sm, post_context_sm):
     """The 'philosophical cut' is a technique introduced by Frank-Rene Schaefer
        to produce a pair of a core- and a post-condition that otherwise would 
        be forward and backward ambiguous. The philosophical ground for this
@@ -268,15 +268,15 @@ def philosophical_cut(core_sm, post_condition_sm):
     core_acceptance_state_list = core_sm.get_acceptance_state_list()
     assert len(core_acceptance_state_list) == 1 
 
-    pcsm_init_state = post_condition_sm.get_init_state()
+    pcsm_init_state = post_context_sm.get_init_state()
     for csm_state in core_acceptance_state_list[0]:
-        __dive_to_cut_iteration(core_sm, csm_state, post_condition_sm, pcsm_init_state,
-                                SM1_Path=[post_condition_sm.init_state_index])
+        __dive_to_cut_iteration(core_sm, csm_state, post_context_sm, pcsm_init_state,
+                                SM1_Path=[post_context_sm.init_state_index])
 
     # By means of cutting, some states might have become bold. That is, they have
     # only an epsilon transition. Thus, it is required to do a transformation NFA->DFA
     # and add a hopcroft optimization.
-    new_post_sm = nfa_to_dfa.do(post_condition_sm)
+    new_post_sm = nfa_to_dfa.do(post_context_sm)
     new_post_sm = hopcroft.do(new_post_sm)
     return new_post_sm
 

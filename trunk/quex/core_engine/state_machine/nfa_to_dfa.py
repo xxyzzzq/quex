@@ -15,13 +15,13 @@ def do(SM):
     #     -- one state in the initial state set = acceptance --> acceptance
     acceptance_f = False
     for state_index in initial_state_epsilon_closure:
-        if SM.is_acceptance(state_index): acceptance_f = True; break      
+        if SM.states[state_index].is_acceptance(): acceptance_f = True; break      
 
     # NOTE: Later on, state machines with an initial acceptance state are forbidden.
     #       So, acceptance is not a question here. Think about setting it to false anyway.
-    result = StateMachine(AcceptanceF                       = acceptance_f, 
-                          PreConditionStateMachine          = SM.pre_condition_state_machine,
-                          TrivialPreConditionBeginOfLineF   = SM.has_trivial_pre_condition_begin_of_line())
+    result = StateMachine(AcceptanceF             = acceptance_f, 
+                          PreContext_SM           = SM.core().pre_context_sm(),
+                          PreContext_BeginOfLineF = SM.core().pre_context_begin_of_line_f())
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
     #     -- add the origin list of all states in the epsilon closure

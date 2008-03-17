@@ -233,6 +233,16 @@ class LexMode:
         elif __check(self.on_failure):     return True
         elif __check(self.on_indentation): return True
 
+    def has_matches(self):
+        assert self.inheritance_circularity_check_done_f == True, \
+               "called before consistency check!"
+
+        if self.__matches != {}: return True
+
+        for name in self.base_modes:
+           if mode_db[name].has_matches(): return True
+
+        return False
 
     def own_matches(self):
         return self.__matches
@@ -260,17 +270,6 @@ class LexMode:
 
         self.__matches[pattern] = Match(pattern, "", pattern_state_machine, PatternIdx, 
                                         DeletionF = True)
-
-    def has_matches(self):
-        assert self.inheritance_circularity_check_done_f == True, \
-               "called before consistency check!"
-
-        if self.__matches != {}: return True
-
-        for name in self.base_modes:
-           if mode_db[name].has_matches(): return True
-
-        return False
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.

@@ -18,8 +18,8 @@ sm       =  init-state = 0L
 
 inverse  =  init-state = 0L
 00000() <~ 
-      epsilon == [-oo, oo] ==> 00005
-00001(A) <~ 
+      ==<epsilon>==> 00005
+00001(A, S) <~ 
       <no epsilon>
 00002() <~ 
       == 'a' ==> 00001
@@ -52,8 +52,8 @@ sm       =  init-state = 1L
 
 inverse  =  init-state = 0L
 00000() <~ 
-      epsilon == [-oo, oo] ==> 00004
-00001(A) <~ 
+      ==<epsilon>==> 00004
+00001(A, S) <~ 
       <no epsilon>
 00002() <~ 
       == ['a', 'g'] ==> 00001
@@ -86,8 +86,8 @@ sm       =  init-state = 0L
 
 inverse  =  init-state = 0L
 00000() <~ 
-      epsilon == [-oo, oo] ==> 00005
-00001(A) <~ 
+      ==<epsilon>==> 00005
+00001(A, S) <~ 
       <no epsilon>
 00002() <~ 
       == 'g' ==> 00001
@@ -118,7 +118,7 @@ sm       =  init-state = 2L
       <no epsilon>
 
 inverse  =  init-state = 4L
-00000(A) <~ 
+00000(A, S) <~ 
       <no epsilon>
 00001() <~ 
       == 'a' ==> 00000
@@ -130,5 +130,5 @@ inverse  =  init-state = 4L
       == 'c' ==> 00002
       <no epsilon>
 00004() <~ 
-      epsilon == [-oo, oo] ==> 00003
+      ==<epsilon>==> 00003
 

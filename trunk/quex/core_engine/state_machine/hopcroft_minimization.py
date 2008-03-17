@@ -16,6 +16,46 @@ class StateSet_List:
     def get(self, Index):
         return self.state_set_list[Index]
 
+    def split(self, StateSetIndex):
+        """RETURNS:  False   if StateSet does not need to be split up any further.
+                     True    if the state set requires a split.
+        """
+        state_set = self.state_set_list[StateSetIndex]
+        #
+        N         = len(state_set)
+        assert N != 0, "State set of size '0'. List = " + repr(state_set_list)
+        # only one state in state set => no change possible
+        if N == 1: return False    
+
+        # -- choose one arbitrary state (for example state 0) as a prototype
+        #    which is compared against the remaining states in the state set.
+        prototype_index      = state_set[0]
+        prototype            = self.sm.states[prototype_index]
+        equivalent_state_set = [ prototype_index ] 
+
+        # -- loop over all remaining states from state set
+        i         = 1   # state_set[i] = state index
+        element_n = N   # remaining number of elements in state set
+        for state_index in state_set[1:]:
+            state = self.sm.states[state_index]
+            if self.__equivalence(prototype, state): 
+                equivalent_state_set.append(state_index)
+
+        # -- Are all states equivalent?
+        if len(equivalent_state_set) == N: return False  # no split! 
+
+        # -- States that are not equivalent (probably most likely) remain in the 
+        #    original state set and the ones that are equivalent are put into a new
+        #    set at the end of the state set list.
+        #    
+        #    Delete equivalent states from the original state set
+        for state_index in equivalent_state_set:
+            i = state_set.index(state_index)
+            del state_set[i]
+
+        self.__add_state_set(equivalent_state_set)
+        return True
+
     def __initial_split(self):
         """Returns the set of states that are 'acceptance'. If the optional     
            argument 'ReturnNonAcceptanceTooF' is specified, then the non-
@@ -60,45 +100,6 @@ class StateSet_List:
         # (2b) Enter the splitted acceptance state sets.
         for state_set in db.values():
             self.__add_state_set(state_set)
-
-    def split(self, StateSetIndex):
-        """RETURNS:  False   if StateSet does not need to be split up any further.
-                     True    if the state set requires a split.
-        """
-        state_set = self.state_set_list[StateSetIndex]
-        #
-        N         = len(state_set)
-        assert N != 0, "State set of size '0'. List = " + repr(state_set_list)
-        # only one state in state set => no change possible
-        if N == 1: return False    
-
-        # -- choose one arbitrary state (for example state 0) as a prototype
-        #    which is compared against the remaining states in the state set.
-        prototype_index      = state_set[0]
-        prototype            = self.sm.states[prototype_index]
-        equivalent_state_set = [ prototype_index ] 
-
-        # -- loop over all remaining states from state set
-        i         = 1   # state_set[i] = state index
-        element_n = N   # remaining number of elements in state set
-        for state_index in state_set[1:]:
-            state = self.sm.states[state_index]
-            if self.__equivalence(prototype, state): 
-                equivalent_state_set.append(state_index)
-
-        # -- Are all states equivalent?
-        if len(equivalent_state_set) == N: return False  # no split! 
-
-        # -- States that are not equivalent (probably most likely) remain in the 
-        #    original state set and the ones that are equivalent are put into a new
-        #    set at the end of the state set list.
-        #    
-        #    Delete equivalent states from the original state set
-        for state_index in equivalent_state_set:
-            i = state_set.index(state_index)
-            del state_set[i]
-
-        self.__add_state_set(equivalent_state_set)
 
     def __add_state_set(self, NewStateSet):
         #    Create the new state set at the end of the list
@@ -159,7 +160,6 @@ def do(SM, CreateNewStateMachineF=True):
        The original state set is replaced by the two new ones. This algorithm is 
        repeated until the state sets do not change anymore.
     """        
-
     # (*) main algorithm    
     state_set_list = StateSet_List(SM)
 
@@ -186,21 +186,21 @@ def create_state_machine(SM, StateSetList):
     if filter(lambda state_set: len(state_set) != 1, StateSetList.state_set_list) == []:
         return SM.clone()
     
+    # Define a mapping from the state set to a new target state index
+    map_new_state_index = {}
+    for state_set_index in range(len(StateSetList.state_set_list)):
+        map_new_state_index[state_set_index] = state_machine_index.get()
+                
     # The state set that contains the initial state becomes the initial state of 
     # the new state machine.   
     state_set_containing_initial_state_i = StateSetList.map[SM.init_state_index]
-    map_new_state_index = {}
-    def create_state_index(StateSetIndex):
-        if not map_new_state_index.has_key(StateSetIndex):
-            new_index = state_machine_index.get()
-            map_new_state_index[StateSetIndex] = new_index
-            return new_index
-        else:
-            return map_new_state_index[StateSetIndex]
-                
-    result = StateMachine(create_state_index(state_set_containing_initial_state_i),
-                          PreConditionStateMachine        = SM.pre_condition_state_machine, 
-                          TrivialPreConditionBeginOfLineF = SM.has_trivial_pre_condition_begin_of_line())
+    result = StateMachine(map_new_state_index[state_set_containing_initial_state_i],
+                          PreContext_SM           = SM.core().pre_context_sm(),
+                          PreContext_BeginOfLineF = SM.core().pre_context_begin_of_line_f())
+
+    # Ensure that each target state index has a state inside the state machine
+    for new_state_index in map_new_state_index.values():
+        result.create_new_state(StateIdx=new_state_index)
 
     # Build up the state machine out of the remaining state sets
     state_set_idx = -1L
@@ -208,30 +208,26 @@ def create_state_machine(SM, StateSetList):
         state_set_idx += 1L
         assert len(state_set) != 0, "State set of size '0'. List = " + repr(StateSetList)
 
-        # States in one set behave all equivalent with respect to target state sets
+        # The prototype: States in one set behave all equivalent with respect to target state sets
         # thus only one state from the start set has to be considered.      
-        prototype = SM.states[state_set[0]]
+        prototype    = SM.states[state_set[0]]
+        # The representive: shall represent the state set in the new state machine.
+        representive = result.states[map_new_state_index[state_set_idx]]
 
-        start_index = create_state_index(state_set_idx)
-        if not result.states.has_key(start_index):
-            result.create_new_state(StateIdx=start_index)
-
-        # If state set contains an acceptance state, then the result is 'acceptance'.
-        # (NOTE: The initial split separates acceptance states from those that are not
-        #        acceptance states. There can be no state set containing acceptance and 
-        #        non-acceptance states) 
-        result.set_acceptance(start_index, prototype.is_acceptance())
-
-        for t in prototype.get_transition_list():
-            target_index = StateSetList.map[t.target_state_index]
-            result.add_transition(start_index, 
-                                  t.trigger_set, 
-                                  create_state_index(target_index))
+        # The representive must have all transitions that the prototype has
+        for target_state_index, trigger_set in prototype.transitions().get_map().items():
+            target_state_set_index = StateSetList.map[target_state_index]
+            representive.add_transition(trigger_set, 
+                                        map_new_state_index[target_state_set_index])
 
         # Merge all core information of the states inside the state set.
-        if len(state_set) > 1:
-            for state_idx in state_set[1:]:
-                prototype.merge(SM.states[state_idx])
+        # If one state set contains an acceptance state, then the result is 'acceptance'.
+        # (Note: The initial split separates acceptance states from those that are not
+        #  acceptance states. There can be no state set containing acceptance and 
+        #  non-acceptance states) 
+        # (Note, that the prototype's info has not been included yet, consider whole set)
+        for state_idx in state_set:
+            representive.merge(SM.states[state_idx])
 
     return result    
 

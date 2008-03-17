@@ -51,7 +51,7 @@ db["C++"] = {
     "$acceptance-info":     cpp.__acceptance_info,      
     "$analyser-func":       cpp.__analyser_function,
     "$terminal-code":       cpp.__terminal_states,      
-    "$pre-condition-ok":    cpp.__pre_condition_ok,                                                  
+    "$pre-condition-ok":    cpp.__pre_context_ok,                                                  
     "$drop-out":            cpp.__state_drop_out_code,
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value: "%s = %s;\n" % (variable, value),

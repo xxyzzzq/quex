@@ -145,7 +145,7 @@ def get_generator_input(Mode, match_info_list, Setup):
 
         if len(pattern_state_machine.get_origin_ids_of_acceptance_states()) == 0:
             error_msg("pattern '%s' is not a valid regular expression. " % pattern, 
-                      pattern_info.filename, pattern_info.line_n)
+                      pattern_info.action.filename, pattern_info.action.line_n)
         
         # counting the columns,
         # counting the newlines: here one might have analysis about the pattern

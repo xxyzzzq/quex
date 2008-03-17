@@ -23,6 +23,9 @@ def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False,
     assert len(the_state_machine_list) != 0
     assert map(lambda x: x.__class__.__name__, the_state_machine_list) == ["StateMachine"] * len(the_state_machine_list)
 
+    for sm in the_state_machine_list:   # DEBUG
+        sm.assert_consistency()         # DEBUG
+
     # state machines with no states can be deleted from the list. they do not do anything
     # and do not introduce triggers.          
     state_machine_list = filter(lambda sm: not sm.is_empty(), the_state_machine_list)         
@@ -48,13 +51,14 @@ def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False,
     #           take over all transitions of a start index into the result without
     #           considering interferences (see below)
     for next_clone in clone_list[1:]:
-        # mount on every success state the initial state of the following state
-        # machine via epsilon transition
+        next_clone.assert_consistency() # DEBUG
+        # Mount on every success state the initial state of the following state
+        # machine via epsilon transition.
         result.mount_to_acceptance_states(next_clone.init_state_index, 
                                           CancelStartAcceptanceStateF = not LeaveIntermediateAcceptanceStatesF)
         for state_index, state in next_clone.states.items():        
-            result.states[state_index] = deepcopy(state)
+            result.states[state_index] = state # state is already cloned, so no deepcopy here
 
     # (*) double check for consistency (each target state is contained in state machine)
-    result.assert_consistency()
+    result.assert_consistency() # DEBUG
     return result

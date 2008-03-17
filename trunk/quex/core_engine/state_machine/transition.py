@@ -39,7 +39,6 @@ class Transition:
             
         return "-> %s [label =\"%s\"];\n" % (target_str, trigger_str.replace("\"", ""))
 
- 
     def set(self, TriggerSet=None, TargetIdx=None):
         if TriggerSet != None:  self.trigger_set  = TriggerSet
         elif TargetIdx != None: self.target_index = TargetIdx
@@ -53,7 +52,6 @@ class EpsilonTransition:
                                      set contains still the remaining triggers 
                                      of a state transition.
     """
-
     def __init__(self):
         self.trigger_set          = NumberSet(Interval(-sys.maxint, sys.maxint))
         # epsilon trigger to empty set of target states --> missmatch
