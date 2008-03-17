@@ -37,12 +37,12 @@ def do(the_state_machine, min_repetition_n = 0, max_repetition_n = -1):
                                     + [the_state_machine] * (max_repetition_n - min_repetition_n),
                                     LeaveIntermediateAcceptanceStatesF = True)
         else:
-            concatination = sequentialize.do([the_state_machine] * max_repetition_n,
+            concatenation = sequentialize.do([the_state_machine] * max_repetition_n,
                                              LeaveIntermediateAcceptanceStatesF = True)
             # Here, zero initial repetitions are required, thus the initial state must be
             # an acceptance state.
-            concatination.set_acceptance(concatination.init_state_index)                                      
-            return concatination
+            concatenation.states[concatenation.init_state_index].set_acceptance(True)                                      
+            return concatenation
 
     # (*) clone the state machine
     #     NOTE: kleene_closure() clones the state machine.
@@ -52,7 +52,6 @@ def do(the_state_machine, min_repetition_n = 0, max_repetition_n = -1):
                                 LeaveIntermediateAcceptanceStatesF = True)
     else:
         return pure_repetition
-
 
 def kleene_closure(the_state_machine):
     """Creates a state machine that is repeated any number of times 

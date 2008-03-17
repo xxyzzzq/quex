@@ -48,8 +48,8 @@ import quex.core_engine.regular_expression.snap_character_string      as snap_ch
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat
-import quex.core_engine.state_machine.setup_post_condition    as setup_post_condition
-import quex.core_engine.state_machine.setup_pre_condition     as setup_pre_condition
+import quex.core_engine.state_machine.setup_post_condition    as setup_post_context
+import quex.core_engine.state_machine.setup_pre_condition     as setup_pre_context
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
@@ -146,20 +146,20 @@ def snap_conditional_expression(stream, PatternDict):
     if stream.read(1) != '/': 
         # (2) expression with only a post condition
         stream.seek(-1, 1)
-        #     NOTE: setup_post_condition() marks state origins!
-        result = __construct(pattern_0, post_condition=pattern_1)
+        #     NOTE: setup_post_context() marks state origins!
+        result = __construct(pattern_0, post_context=pattern_1)
         return __debug_exit(result, stream)
 
     # -- expression
     pattern_2 = snap_expression(stream, PatternDict) 
     if pattern_2 == None: 
         # (3) expression with only a pre condition
-        #     NOTE: setup_pre_condition() marks the state origins!
-        result = __construct(pattern_1, pre_condition=pattern_0)
+        #     NOTE: setup_pre_context() marks the state origins!
+        result = __construct(pattern_1, pre_context=pattern_0)
         return __debug_exit(result, stream)
 
     # (4) expression with post and pre-condition
-    result = __construct(pattern_1, pre_condition=pattern_0, post_condition=pattern_2)
+    result = __construct(pattern_1, pre_context=pattern_0, post_context=pattern_2)
     return __debug_exit(result, stream)
 
 def snap_expression(stream, PatternDict):
@@ -432,7 +432,7 @@ def __snap_repetition_range(the_state_machine, stream):
     
     return result
 
-def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
+def __set_end_of_line_post_context(sm, EndOfFileCode=0):
     """Appends a post condition to the state machine to handle the end of line
        statement. This consists in translating 'EndOfLine' into a state machine
        with 'Newline' or 'EndOfFile'. Thus, when one of both follows the current
@@ -446,11 +446,11 @@ def __set_end_of_line_post_condition(sm, EndOfFileCode=0):
              flag. End of line post conditions rely on external algorithms for
              mounting a post-condition.
     """
-    post_condition_sm = StateMachine()
-    post_condition_sm.add_transition(post_condition_sm.init_state_index, ord('\n'), AcceptanceF=True)
-    post_condition_sm.add_transition(post_condition_sm.init_state_index, EndOfFileCode, AcceptanceF=True)
+    post_context_sm = StateMachine()
+    post_context_sm.add_transition(post_context_sm.init_state_index, ord('\n'), AcceptanceF=True)
+    post_context_sm.add_transition(post_context_sm.init_state_index, EndOfFileCode, AcceptanceF=True)
 
-    result = setup_post_condition.do(sm, post_condition_sm)
+    result = setup_post_context.do(sm, post_context_sm)
 
     return result
 
@@ -466,26 +466,26 @@ def __beautify(the_state_machine):
 
     return result
 
-def __construct(core_sm, pre_condition=None, post_condition=None):
+def __construct(core_sm, pre_context=None, post_context=None):
 
-    if   pre_condition == None and post_condition == None:
+    if   pre_context == None and post_context == None:
         result = core_sm
         # -- can't get more beautiful ...
     
-    elif pre_condition == None and post_condition != None:
-        result = setup_post_condition.do(core_sm, post_condition)
+    elif pre_context == None and post_context != None:
+        result = setup_post_context.do(core_sm, post_context)
         result = __beautify(result)
 
-    elif pre_condition != None and post_condition == None:
-        result = setup_pre_condition.do(core_sm, pre_condition)
+    elif pre_context != None and post_context == None:
+        result = setup_pre_context.do(core_sm, pre_context)
         result = __beautify(result)
 
-    elif pre_condition != None and post_condition != None:
+    elif pre_context != None and post_context != None:
         # NOTE: pre-condition needs to be setup **after** post condition, because
         #       post condition deletes all origins!
         #       (is this still so? 07y7m6d fschaef)
-        result = setup_post_condition.do(core_sm, post_condition)
-        result = setup_pre_condition.do(result, pre_condition)
+        result = setup_post_context.do(core_sm, post_context)
+        result = setup_pre_context.do(result, pre_context)
         result = __beautify(result)
 
     return result

@@ -1,13 +1,19 @@
+import sys
+
+from   quex.core_engine.interval_handling        import NumberSet, Interval
 from   quex.core_engine.state_machine.transition import Transition, EpsilonTransition
+
+# definitions for 'history items':
+INTERVAL_BEGIN            = True
+INTERVAL_END              = False
+# real (uni-code) character codes start at zero, thus, it is safe to use 
+# -7777 as a marker for undefined borders.
+INTERVAL_UNDEFINED_BORDER = -7777
 
 class TransitionMap:
     def __init__(self):
         self.__db = {}               # [target index] --> [trigger set that triggers to target]
-        self.__db_change_f = False
-        self.__epsilon_target_index_list []
-        #
-        self.__cache_transition_list      = []
-        self.__cache_combined_trigger_set = NumberSet()
+        self.__epsilon_target_index_list = []
 
     def is_empty(self):
         return len(self.__db) == 0 and len(self.__epsilon_target_index_list) == 0
@@ -38,19 +44,13 @@ class TransitionMap:
 
     def add_transition(self, Trigger, TargetStateIdx): 
         """Adds a transition according to trigger and target index.
-
-           Trigger == one of {integer, Interval, Interval Array} possible
-
-           TargetStateIdx == None (default) => create new target state index 
-        
-        RETURNS: The target state index (may be created newly).
+           RETURNS: The target state index (may be created newly).
         """
         assert type(TargetStateIdx) == long or TargetStateIdx == None
         assert Trigger.__class__ in [int, long, list, Interval, NumberSet] or Trigger == None
 
-        if Trigger == None: 
-            self.add_epsilon_target_state(TargetStateIdx)
-            return
+        if Trigger == None: # This is a shorthand to trigger via the remaining triggers
+            Trigger = self.get_trigger_set_union().inverse()
         elif type(Trigger) == long: Trigger = Interval(int(Trigger), int(Trigger+1))
         elif type(Trigger) == int:  Trigger = Interval(Trigger, Trigger+1)
         elif type(Trigger) == list: Trigger = NumberSet(Trigger, ArgumentIsYoursF=True)
@@ -66,11 +66,15 @@ class TransitionMap:
             else:
                 self.__db[TargetStateIdx] = Trigger
 
+        return TargetStateIdx
+
     def delete_epsilon_target_state(self, TargetStateIdx):
+
         if TargetStateIdx in self.__epsilon_target_index_list:
             del self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(TargetStateIdx)]
 
     def delete_transitions_on_character_list(self, CharacterCodeList):
+
         for trigger_set in self.__db.values():
             for char_code in CharacterCodeList:
                 if trigger_set.contains(char_code):
@@ -79,29 +83,22 @@ class TransitionMap:
         self.delete_transitions_on_empty_trigger_sets()
 
     def delete_transitions_on_empty_trigger_sets(self):
+
         for target_index, trigger_set in self.__db.items():
             if trigger_set.is_empty(): del self.__db[target_index]
 
     def get_list(self):
-        if self.__db_change_f == False:
-            return self.__cache_transition_list
-
         result = []
         for target_index, trigger_set in self.__db.items():
             result.append(Transition(trigger_set, target_index))
 
-        self.__cache_transition_list = result
         return result
 
     def get_trigger_set_union(self):
-        if self.__db_change_f == False:
-            return self.__cache_combined_trigger_set
-
         result = NumberSet()
         for trigger_set in self.__db.values():
             result.unite_with(trigger_set)
 
-        self.__cache_combined_trigger_set = result
         return result
 
     def get_epsilon_target_state_index_list(self):
@@ -111,7 +108,7 @@ class TransitionMap:
         return self.__db.keys()
 
     def get_target_state_index_list(self):
-        result = self.keys()
+        result = self.__db.keys()
         for index in self.__epsilon_target_index_list:
             result.append(index)
         return result
@@ -182,7 +179,6 @@ class TransitionMap:
                        and self.change     == Other.change   \
                        and self.target_idx == Other.target_idx 
                 
-
         history = []
         # NOTE: This function only deals with non-epsilon triggers. Empty
         #       ranges in 'history' are dealt with in '.get_trigger_map()'. 
@@ -212,6 +208,7 @@ class TransitionMap:
 
            The intervals are sorted and non-overlapping (use this function only for DFA).
         """
+
         # NOTE: The response '[]' is a **signal** that there is only an epsilon
         #       transition. The response as such would be incorrect. But the signal
         #       'empty reply' needs to be treated by the caller.
@@ -254,8 +251,8 @@ class TransitionMap:
             
         # (*) fill all gaps in the trigger map with target = epsilon_target
         epsilon_target = None
-        if self.__epsilon.target_state_indices != []: 
-            epsilon_target = self.__epsilon_target_indices[0]   
+        if self.__epsilon_target_index_list != []: 
+            epsilon_target = self.__epsilon_target_index_list[0]   
 
         gap_filler = [] 
         if len(trigger_map) >= 2:    
@@ -297,8 +294,9 @@ class TransitionMap:
            This means, that a transition targetting to 'Before' will then transit
            to 'After'.
         """   
+        # replace target index in the 'normal map'
         if not self.__db.has_key(Before): 
-            return
+            pass
         elif self.__db.has_key(After):    
             self.__db[After].unite_with(self.__db[Before])
             del self.__db[Before]
@@ -306,8 +304,14 @@ class TransitionMap:
             self.__db[After] = self.__db[Before]
             del self.__db[Before]
 
+        # replace target index in the list of epsilon transition targets.
+        if Before in self.__epsilon_target_index_list:
+            self.__epsilon_target_index_list[self.__epsilon_target_index_list.index(Before)] = After
+
     def replace_drop_out_target_states_with_adjacent_targets(self):
+        # NOTE: The request does not invalidate anything, invalidate cache after that.
         trigger_map = self.get_trigger_map() 
+
 
         if trigger_map == []:  # Nothing to be done, since there is nothing adjacent 
             return             # to the 'drop out' trigger. There is only an epsilon transition.
@@ -336,16 +340,52 @@ class TransitionMap:
             self.add_transition(trigger_set, target)
 
     def has_one_of_triggers(self, CharacterCodeList):
-        assert type(CharacterCodeList) == type([])
-        return self.__transiton_map.has_one_of_triggers(CharacterCodeList)
-
+        assert type(CharacterCodeList) == list
         for code in CharacterCodeList:
             if self.has_trigger(code): return True
         return False
 
     def has_trigger(self, CharCode):
-        assert type(CharacterCode) == int
-        if self.get_resulting_target_state_index(CharacterCode) == None: 
-            return False
+        assert type(CharCode) == int
+        if self.get_resulting_target_state_index(CharCode) == None: return False
+        else:                                                       return True
+
+    def get_string(self, FillStr, StateIndexMap):
+        # print out transitionts
+        sorted_transitions = self.get_list()
+        sorted_transitions.sort(lambda a, b: cmp(a.target_state_index, b.target_state_index))
+
+        msg = ""
+        # normal state transitions
+        for t in sorted_transitions:
+            # note: the fill string for the first line printed is empty, because
+            #       the start stae is printed before  this.
+            msg += "%s %s\n" % (FillStr, t.get_string(StateIndexMap=StateIndexMap))
+
+        # the epsilon transition
+        if self.__epsilon_target_index_list != []:
+            txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
+            msg += "%s ==<epsilon>==> " % FillStr 
+            for txt in txt_list:
+                msg += txt + ", "
+            if len(txt_list) != 0: msg = msg[:-2]
         else:
-            return True
+            msg += "%s <no epsilon>" % FillStr
+
+        msg += "\n"
+
+        return msg
+
+    def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
+        msg = ""
+        for t in self.get_list():
+            # note: the fill string for the first line printed is empty, because
+            #       the start stae is printed before  this.
+            msg += "%i %s" % (OwnStateIdx, t.get_graphviz_string(StateIndexMap))
+
+        for ti in self.__epsilon_target_index_list:
+            if StateIndexMap == None: target_str = "%i" % int(ti) 
+            else:                     target_str = "%i" % int(StateIndexMap[ti]) 
+            msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
+
+        return msg

@@ -121,9 +121,9 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
-                                      origin.pre_condition_begin_of_line_f() or
-                                      origin.pre_condition_id() != -1L or
-                                      origin.post_conditioned_acceptance_f(),
+                                      origin.pre_context_begin_of_line_f() or
+                                      origin.pre_context_id() != -1L or
+                                      origin.post_contexted_acceptance_f(),
                                       OriginList)
     assert inadmissible_origin_list == [], \
            "Inadmissible origins for inverse state machine."
@@ -133,7 +133,7 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     #
     for origin in OriginList:
         if origin.store_input_position_f():
-            txt += "pre_condition_%s_fulfilled_f = 1;\n" % __nice(origin.state_machine_id)
+            txt += "pre_context_%s_fulfilled_f = 1;\n" % __nice(origin.state_machine_id)
     txt += "\n"    
 
     return txt
@@ -149,9 +149,9 @@ def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
-                                      origin.pre_condition_begin_of_line_f() or
-                                      origin.pre_condition_id() != -1L or
-                                      origin.post_conditioned_acceptance_f(),
+                                      origin.pre_context_begin_of_line_f() or
+                                      origin.pre_context_id() != -1L or
+                                      origin.post_contexted_acceptance_f(),
                                       OriginList)
     assert inadmissible_origin_list == [], \
            "Inadmissible origins for inverse state machine."
@@ -267,7 +267,7 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
     # -- collect patterns that reach acceptance at this state.
     final_acceptance_origin_list     = []
     for origin in OriginList: 
-        if origin.is_end_of_post_conditioned_core_pattern():
+        if origin.is_end_of_post_contexted_core_pattern():
             # store current input position, to be restored when post condition really matches
             txt += LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
         elif origin.is_acceptance():
@@ -302,12 +302,12 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
 
         info = get_on_detection_code_fragment(StateMachineName, origin)
 
-        if origin.pre_condition_id() != -1L:
-            txt += if_statement + " pre_condition_%s_fulfilled_f $then\n" % origin.state_machine_id 
+        if origin.pre_context_id() != -1L:
+            txt += if_statement + " pre_context_%s_fulfilled_f $then\n" % origin.state_machine_id 
             txt += indent_this(info)
             txt += "$end\n"
         
-        elif origin.pre_condition_begin_of_line_f():
+        elif origin.pre_context_begin_of_line_f():
             txt += if_statement + " $begin-of-line-flag-true $then\n" 
             txt += indent_this(info)
             txt += "$end\n"
@@ -511,7 +511,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         pre_sm = index.get_state_machine_by_id(state_machine_id)
         # -- extract the original state machine that the pre-condition referes to.    
         pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
-        txt += "    int                        pre_condition_%s_fulfilled_f = 0;\n" \
+        txt += "    int                        pre_context_%s_fulfilled_f = 0;\n" \
                % __nice(pre_sm_origin_id)
 
     # -- entry to the actual function body
@@ -634,16 +634,16 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
             
         # -- if the pattern is terminated after the post-condition, then the input
         #    has to be put back to the end of the 'core expression'.    
-        post_condition_number_str = ""  
-        if state_machine.is_post_conditioned(): 
-            post_condition_number_str = state_machine_id_str + "_"
+        post_context_number_str = ""  
+        if state_machine.is_post_contexted(): 
+            post_context_number_str = state_machine_id_str + "_"
         #
         txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
-        if state_machine.get_pseudo_ambiguous_post_condition_id() == -1L:
+        if state_machine.get_pseudo_ambiguous_post_context_id() == -1L:
             txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % \
-                   post_condition_number_str
+                   post_context_number_str
         else:
             # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
             #       pattern. However, after a match a backward detection of the end
@@ -651,7 +651,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
             #       where the 'normal' pattern ended, then we can do a backward detection.
             txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);\n"
             txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
-                   __nice(state_machine.get_pseudo_ambiguous_post_condition_id())
+                   __nice(state_machine.get_pseudo_ambiguous_post_context_id())
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
         txt += "    goto __REENTRY_PREPARATION;\n" # % StateMachineName
@@ -670,14 +670,14 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
 
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
-    delete_pre_condition_flags_str = ""
+    delete_pre_context_flags_str = ""
     for state_machine_id in PreConditionIDList:
         # get the state machine that the pre-condition serves:
         # -- get the state machine that represents the pre-condition
         pre_sm = index.get_state_machine_by_id(state_machine_id)
         # -- extract the original state machine that the pre-condition referes to.    
         pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
-        delete_pre_condition_flags_str += "    pre_condition_%s_fulfilled_f = 0;\n" \
+        delete_pre_context_flags_str += "    pre_context_%s_fulfilled_f = 0;\n" \
                                           % __nice(pre_sm_origin_id)
 
     #  -- execute default pattern action 
@@ -692,9 +692,9 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
                       ["%%GENERAL_TERMINAL_STATE_LABEL%%", label.get_terminal(StateMachineName, None)],
                       ["%%STATE_MACHINE_NAME%%",           StateMachineName],
                       ["%%INITIAL_STATE_INDEX_LABEL%%",    label.get(StateMachineName, sm.init_state_index)],
-                      ["%%DELETE_PRE_CONDITION_FULLFILLED_FLAGS%%", delete_pre_condition_flags_str]])
+                      ["%%DELETE_PRE_CONDITION_FULLFILLED_FLAGS%%", delete_pre_context_flags_str]])
 
     return txt
     
-def __pre_condition_ok(PreConditionStateMachineID):
-    return "pre_condition_%s_fulfilled_f = 1;" % __nice(PreConditionStateMachineID)
+def __pre_context_ok(PreConditionStateMachineID):
+    return "pre_context_%s_fulfilled_f = 1;" % __nice(PreConditionStateMachineID)

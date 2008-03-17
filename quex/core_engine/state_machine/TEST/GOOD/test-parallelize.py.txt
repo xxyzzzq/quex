@@ -49,7 +49,7 @@
 -------------------------------------------------------------------------------
 EXAMPLE A: init-state = 0L
 00000() <~ 
-      epsilon == [-oo, oo] ==> 00002, 00007, 00011
+      ==<epsilon>==> 00002, 00007, 00011
 00001(A) <~ 
       <no epsilon>
 00002() <~ 
@@ -66,7 +66,7 @@ EXAMPLE A: init-state = 0L
       == 'e' ==> 00006
       <no epsilon>
 00006(S) <~ 
-      epsilon == [-oo, oo] ==> 00001
+      ==<epsilon>==> 00001
 00007() <~ 
       == ['a', 'g'] ==> 00008
       <no epsilon>
@@ -78,7 +78,7 @@ EXAMPLE A: init-state = 0L
       == 'f' ==> 00010
       <no epsilon>
 00010(S) <~ 
-      epsilon == [-oo, oo] ==> 00001
+      ==<epsilon>==> 00001
 00011() <~ 
       == 'g' ==> 00012
       <no epsilon>
@@ -93,7 +93,7 @@ EXAMPLE A: init-state = 0L
       == 'e' ==> 00015
       <no epsilon>
 00015(S) <~ 
-      epsilon == [-oo, oo] ==> 00001
+      ==<epsilon>==> 00001
 
 -------------------------------------------------------------------------------
 EXAMPLE B: init-state = 14L
@@ -111,7 +111,7 @@ EXAMPLE B: init-state = 14L
       == 'e' ==> 00004
       <no epsilon>
 00004(S) <~ 
-      epsilon == [-oo, oo] ==> 00015
+      ==<epsilon>==> 00015
 00005() <~ 
       == ['a', 'g'] ==> 00006
       <no epsilon>
@@ -123,7 +123,7 @@ EXAMPLE B: init-state = 14L
       == 'f' ==> 00008
       <no epsilon>
 00008(S) <~ 
-      epsilon == [-oo, oo] ==> 00015
+      ==<epsilon>==> 00015
 00009() <~ 
       == 'g' ==> 00010
       <no epsilon>
@@ -138,9 +138,9 @@ EXAMPLE B: init-state = 14L
       == 'e' ==> 00013
       <no epsilon>
 00013(S) <~ 
-      epsilon == [-oo, oo] ==> 00015
+      ==<epsilon>==> 00015
 00014() <~ 
-      epsilon == [-oo, oo] ==> 00000, 00005, 00009, 00015
+      ==<epsilon>==> 00000, 00005, 00009, 00015
 00015(A) <~ 
       <no epsilon>
 

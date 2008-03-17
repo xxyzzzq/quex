@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-import quex.core_engine.state_machine.setup_pre_condition as setup_pre_condition 
+import quex.core_engine.state_machine.setup_pre_condition as setup_pre_context 
 from quex.core_engine.state_machine.TEST.test_state_machines import *
 
 if "--hwut-info" in sys.argv:
@@ -14,7 +14,8 @@ if "--hwut-info" in sys.argv:
 def test(sm, pre_sm):    
     print "EXPRESSION = ", sm
     print "PRE-CONDITION = ", pre_sm
-    result = setup_pre_condition.do(sm, pre_sm)
+    result = setup_pre_context.do(sm, pre_sm)
+    #
     print "with pre-condition = ", result
 
 print "-------------------------------------------------------------------------------"

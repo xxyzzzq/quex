@@ -2,7 +2,7 @@ import quex.core_engine.generator.languages.core      as languages
 import quex.core_engine.generator.languages.label     as languages_label
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
 import quex.core_engine.generator.input_position_backward_detector     as backward_detector
-import quex.core_engine.generator.combined_pre_condition_state_machine as combined_pre_condition_state_machine
+import quex.core_engine.generator.combined_pre_context_state_machine as combined_pre_context_state_machine
 #
 from quex.core_engine.generator.base import GeneratorBase
 
@@ -57,20 +57,20 @@ class Generator(GeneratorBase):
                                             self.action_db, 
                                             self.default_action, 
                                             self.begin_of_line_condition_f, 
-                                            self.pre_condition_sm_id_list) 
+                                            self.pre_context_sm_id_list) 
 
         return txt
 
-    def __get_combined_pre_condition_state_machine(self):
+    def __get_combined_pre_context_state_machine(self):
         LanguageDB = self.language_db
 
-        assert self.pre_condition_sm.get_orphaned_state_index_list() == []
+        assert self.pre_context_sm.get_orphaned_state_index_list() == []
 
         txt = "    $/* state machine for pre-condition test: $*/\n"
         if self.print_state_machine_f: 
-            txt += "    $/* " + repr(self.pre_condition_sm).replace("\n", "$*/\n    $/* ") + "$*/\n"
+            txt += "    $/* " + repr(self.pre_context_sm).replace("\n", "$*/\n    $/* ") + "$*/\n"
 
-        txt += state_machine_coder.do(self.pre_condition_sm, 
+        txt += state_machine_coder.do(self.pre_context_sm, 
                                       LanguageDB                  = LanguageDB, 
                                       UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONDITION_",
                                       BackwardLexingF             = True)
@@ -94,8 +94,8 @@ class Generator(GeneratorBase):
                   backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
         function_body = ""
         # -- write the combined pre-condition state machine
-        if self.pre_condition_sm_list != []:
-            function_body += self.__get_combined_pre_condition_state_machine()
+        if self.pre_context_sm_list != []:
+            function_body += self.__get_combined_pre_context_state_machine()
             
         # -- write the state machine of the 'core' patterns (i.e. no pre-conditions)
         function_body += self.__get_core_state_machine()
@@ -105,7 +105,7 @@ class Generator(GeneratorBase):
                                            self.analyzer_state_class_name, 
                                            self.stand_alone_analyzer_f,
                                            function_body, 
-                                           self.post_conditioned_sm_id_list, self.pre_condition_sm_id_list,
+                                           self.post_contexted_sm_id_list, self.pre_context_sm_id_list,
                                            self.mode_name_list, 
                                            InitialStateIndex=self.sm.init_state_index) 
 

@@ -125,7 +125,7 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     #    of a post conditioned pattern, then this is it. No further investigation
     #    from this point on. The post condition state machine is not considered 
     #    for line number counting.
-    if state.is_post_conditioned(): return character_n
+    if state.is_post_contexted(): return character_n
     
     # trigger_map[target_state_index] = set that triggers to target state index
     trigger_dict = state.get_trigger_dictionary()

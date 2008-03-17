@@ -8,7 +8,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.exception import RegularExpressionException
 from quex.core_engine.state_machine.core import *
 import quex.core_engine.regular_expression.core                      as regex
-import quex.core_engine.state_machine.ambiguous_post_condition as apc
+import quex.core_engine.state_machine.ambiguous_post_context as apc
 
 if "--hwut-info" in sys.argv:
     print "Pseudo Ambigous Post Condition: The Philosophical Cut"
@@ -28,13 +28,13 @@ def __test(RE_Core, RE_PostCondition):
         return
 
     try:
-        post_condition_sm = regex.do(string_stream_PostCondition)
-        print "post condition sm = ", post_condition_sm
+        post_context_sm = regex.do(string_stream_PostCondition)
+        print "post condition sm = ", post_context_sm
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)
         return
 
-    result_post_sm = apc.philosophical_cut(core_sm, post_condition_sm)
+    result_post_sm = apc.philosophical_cut(core_sm, post_context_sm)
     print "philosophical cut (in post condition) = "
     print result_post_sm
 

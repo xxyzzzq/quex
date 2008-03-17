@@ -40,8 +40,8 @@ class StateCoreInfo:
           ambiguous post condition (e.g. x*/x), it is set it is -1L. 
     """    
     def __init__(self, StateMachineID, StateIndex, AcceptanceF, StoreInputPositionF=False, 
-                 PostConditionedAcceptanceF=False, PreConditionedStateMachineID=-1L,
-                 PreConditionBeginOfLineF=False,
+                 PostContextID=-1L, PreContext_StateMachineID=-1L,
+                 PreContext_BeginOfLineF=False,
                  PseudoAmbiguousPostConditionID=-1L):
         assert type(StateIndex) == long
         assert type(StateMachineID) == long
@@ -62,22 +62,24 @@ class StateCoreInfo:
         #       of class StateInfo sets the 'store_input_position_f' to True, respectively
         #       false, because this is the normal case. When a post condition is to be appended
         #       the 'store_input_position_f' is to be stored manually - see the function
-        #       'state_machine.post_condition_append.do(...).
+        #       'state_machine.post_context_append.do(...).
         self.__store_input_position_f = StoreInputPositionF
+
         # -- was the origin a post-conditioned acceptance?
         #    (then we have to store the input position, store the original state machine
         #     as winner, but continue)
-        self.__post_conditioned_acceptance_f = PostConditionedAcceptanceF
+        self.__post_context_id = PostContextID
+
         # -- was the origin a pre-conditioned acceptance?
         #    (then one has to check at the end if the pre-condition holds)
-        self.__pre_condition_id = PreConditionedStateMachineID  
+        self.__pre_context_id = PreContext_StateMachineID  
         #
         # -- trivial pre-condition: begin of line
-        self.__pre_condition_begin_of_line_f = PreConditionBeginOfLineF
+        self.__pre_context_begin_of_line_f = PreContext_BeginOfLineF
 
         # -- id of state machine that is used to go backwards from the end
         #    of a post condition that is pseudo-ambiguous. 
-        self.__pseudo_ambiguous_post_condition_id = PseudoAmbiguousPostConditionID
+        self.__pseudo_ambiguous_post_context_id = PseudoAmbiguousPostConditionID
 
     def merge(self, Other):
         # It does not make any sense to merge to state cores from different
@@ -86,13 +88,13 @@ class StateCoreInfo:
 
         if Other.__acceptance_f:                  self.__acceptance_f                  = True
         if Other.__store_input_position_f:        self.__store_input_position_f        = True 
-        if Other.__post_conditioned_acceptance_f: self.__post_conditioned_acceptance_f = True
-        if Other.__pre_condition_begin_of_line_f: self.__pre_condition_begin_of_line_f = True 
+        if Other.__post_context_id: self.__post_context_id = True
+        if Other.__pre_context_begin_of_line_f: self.__pre_context_begin_of_line_f = True 
 
-        if Other.__pre_condition_id != -1L:   
-            self.__pre_condition_id = Other.__pre_condition_id 
-        if Other.__pseudo_ambiguous_post_condition_id != -1L: 
-            self.__pseudo_ambiguous_post_condition_id = Other.__pseudo_ambiguous_post_condition_id
+        if Other.__pre_context_id != -1L:   
+            self.__pre_context_id = Other.__pre_context_id 
+        if Other.__pseudo_ambiguous_post_context_id != -1L: 
+            self.__pseudo_ambiguous_post_context_id = Other.__pseudo_ambiguous_post_context_id
 
     def is_acceptance(self):
         return self.__acceptance_f
@@ -100,7 +102,7 @@ class StateCoreInfo:
     def set_acceptance_f(self, Value, LeaveStoreInputPositionF):
         """NOTE: By default, when a state is set to acceptance the input
                  position is to be stored for all related origins, if this is 
-                 not desired (as by 'post_condition_append.do(..)' the flag
+                 not desired (as by 'post_context_append.do(..)' the flag
                  'store_input_position_f' is to be adpated manually using the
                  function 'set_store_input_position_f'
         """      
@@ -114,78 +116,44 @@ class StateCoreInfo:
         assert type(Value) == bool
         self.__store_input_position_f = Value
 
-    def set_pre_condition_id(self, Value=True):
+    def set_pre_context_id(self, Value=True):
         assert type(Value) == long
-        self.__pre_condition_id = Value
+        self.__pre_context_id = Value
 
-    def set_pre_condition_begin_of_line_f(self, Value=True):
-        self.__pre_condition_begin_of_line_f = Value
+    def set_pre_context_begin_of_line_f(self, Value=True):
+        self.__pre_context_begin_of_line_f = Value
 
-    def set_post_conditioned_acceptance_f(self, Value=True):
-        assert type(Value) == bool
-        self.__post_conditioned_acceptance_f = Value
+    def set_post_context_id(self, Value):
+        """Globally unique identifier of the post condition."""
+        self.__post_context_id = Value
 
-    def set_pseudo_ambiguous_post_condition_id(self, Value):
+    def set_pseudo_ambiguous_post_context_id(self, Value):
         assert type(Value) == long
-        self.__pseudo_ambiguous_post_condition_id = Value
+        self.__pseudo_ambiguous_post_context_id = Value
 
-    def pre_condition_id(self):
-        return self.__pre_condition_id  
+    def pre_context_id(self):
+        return self.__pre_context_id  
 
-    def post_conditioned_acceptance_f(self):
-        return self.__post_conditioned_acceptance_f     
+    def post_context_id(self):
+        return self.__post_context_id     
 
-    def pre_condition_begin_of_line_f(self):
-        return self.__pre_condition_begin_of_line_f
+    def pre_context_begin_of_line_f(self):
+        return self.__pre_context_begin_of_line_f
 
     def store_input_position_f(self):
         return self.__store_input_position_f    
 
-    def pseudo_ambiguous_post_condition_id(self):
-        return self.__pseudo_ambiguous_post_condition_id
+    def pseudo_ambiguous_post_context_id(self):
+        return self.__pseudo_ambiguous_post_context_id
 
-    def is_end_of_post_conditioned_core_pattern(self):
-        return self.post_conditioned_acceptance_f() and self.store_input_position_f()
+    def is_end_of_post_contexted_core_pattern(self):
+        return self.post_context_id() != -1L and self.store_input_position_f()
                             
-    def __repr__(self):
-        return self.get_string()
-
-    def get_string(self, StateMachineAndStateInfoF=True):
-        appendix = ""
-
-        # ONLY FOR TEST: state.core
-        if False and not StateMachineAndStateInfoF:
-            if self.__acceptance_f: return "*"
-            else:                   return ""
-
-
-        if StateMachineAndStateInfoF:
-            if self.state_machine_id != -1L:
-                appendix += ", " + repr(self.state_machine_id).replace("L", "")
-            if self.state_index != -1L:
-                appendix += ", " + repr(self.state_index).replace("L", "")
-        if self.__acceptance_f:        
-            appendix += ", A"
-        if self.__store_input_position_f:        
-            appendix += ", S"
-        if self.__post_conditioned_acceptance_f: 
-            appendix += ", post"
-        if self.__pre_condition_id != -1L:            
-            appendix += ", pre=" + repr(self.__pre_condition_id).replace("L", "")
-        if self.__pseudo_ambiguous_post_condition_id != -1L:            
-            appendix += ", papc=" + repr(self.__pseudo_ambiguous_post_condition_id).replace("L", "")
-        if self.__pre_condition_begin_of_line_f:
-            appendix += ", bol"
-        if len(appendix) > 2: 
-            appendix = appendix[2:]
-
-        return "(%s)" % appendix
-
     def type(self):
         Acc   = self.is_acceptance()
         Store = self.store_input_position_f()
-        Post  = self.post_conditioned_acceptance_f()
-        Pre   = self.pre_condition_id() 
+        Post  = self.post_context_id()
+        Pre   = self.pre_context_id() 
         if     Acc and     Store and not Post and not Pre: return StateOriginInfo_ACCEPTANCE
         if not Acc and not Store and not Post and not Pre: return StateOriginInfo_NON_ACCEPTANCE
         if     Acc and     Store and     Post and not Pre: return StateOriginInfo_POST_CONDITIONED_ACCEPTANCE
@@ -217,16 +185,50 @@ class StateCoreInfo:
                    "information about the input being stored or not.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
                    "state index      = " + repr(self.state_index)
-            assert self.__pre_condition_id == other.__pre_condition_id, \
+            assert self.__pre_context_id == other.__pre_context_id, \
                    "Two StateOriginInfo objects report about the same state different\n" \
                    "information about the pre-conditioned acceptance.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
                    "state index      = " + repr(self.state_index)
-            assert self.__post_conditioned_acceptance_f == other.__post_conditioned_acceptance_f, \
+            assert self.__post_context_id == other.__post_context_id, \
                    "Two StateOriginInfo objects report about the same state different\n" \
                    "information about the post-conditioned acceptance.\n" \
                    "state machine id = " + repr(self.state_machine_id) + "\n" + \
                    "state index      = " + repr(self.state_index)
 
         return result     
+
+    def __repr__(self):
+        return self.get_string()
+
+    def get_string(self, StateMachineAndStateInfoF=True):
+        appendix = ""
+
+        # ONLY FOR TEST: state.core
+        if False and not StateMachineAndStateInfoF:
+            if self.__acceptance_f: return "*"
+            else:                   return ""
+
+        if StateMachineAndStateInfoF:
+            if self.state_machine_id != -1L:
+                appendix += ", " + repr(self.state_machine_id).replace("L", "")
+            if self.state_index != -1L:
+                appendix += ", " + repr(self.state_index).replace("L", "")
+        if self.__acceptance_f:        
+            appendix += ", A"
+        if self.__store_input_position_f:        
+            appendix += ", S"
+        if self.__post_context_id != -1L:  # post context id determined 'register' where input position
+            #                              # stored
+            appendix += ", P" + repr(self.__post_context_id).replace("L", "")
+        if self.__pre_context_id != -1L:            
+            appendix += ", pre=" + repr(self.__pre_context_id).replace("L", "")
+        if self.__pseudo_ambiguous_post_context_id != -1L:            
+            appendix += ", papc=" + repr(self.__pseudo_ambiguous_post_context_id).replace("L", "")
+        if self.__pre_context_begin_of_line_f:
+            appendix += ", bol"
+        if len(appendix) > 2: 
+            appendix = appendix[2:]
+
+        return "(%s)" % appendix
 

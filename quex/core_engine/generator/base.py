@@ -19,7 +19,7 @@ class GeneratorBase:
         #     -- core state machine
         self.sm = self.__create_core_state_machine()
         #     -- pre conditions
-        self.pre_condition_sm = self.__create_pre_context_state_machine()
+        self.pre_context_sm = self.__create_pre_context_state_machine()
         #     -- backward detectors for state machines with forward ambiguous
         #        post-conditions.
         self.papc_backward_detector_state_machine_list = \
@@ -28,8 +28,8 @@ class GeneratorBase:
         # (*) extract any control character in the transitions that could
         #     block the buffer handling (end of buffer/end of file)
         self.__extract_control_characters_from_transitions(self.sm, ControlCharacterCodeList)
-        if self.pre_condition_sm != None:
-            self.__extract_control_characters_from_transitions(self.pre_condition_sm, ControlCharacterCodeList)
+        if self.pre_context_sm != None:
+            self.__extract_control_characters_from_transitions(self.pre_context_sm, ControlCharacterCodeList)
         if self.papc_backward_detector_state_machine_list != []:
             for sm in self.papc_backward_detector_state_machine_list:
                 self.__extract_control_characters_from_transitions(sm, ControlCharacterCodeList)
@@ -56,16 +56,16 @@ class GeneratorBase:
         self.action_db          = {}
         # -- extract:
         #    -- state machines that are post-conditioned
-        self.post_conditioned_sm_id_list = []
+        self.post_contexted_sm_id_list = []
         #    -- state machines that nore non-trivially pre-conditioned, 
         #       i.e. they need a reverse state machine to be verified.
-        self.pre_condition_sm_id_list  = []
-        self.pre_condition_sm_list     = []
+        self.pre_context_sm_id_list  = []
+        self.pre_context_sm_list     = []
         #    -- pre-conditions that are trivial, i.e. it is only checked for
         #       the last character, if it was a particular one or not.
         self.begin_of_line_condition_f = False
         # [NOT IMPLEMENTED YET]    
-        # # trivial_pre_condition_dict = {}             # map: state machine id --> character code(s)
+        # # trivial_pre_context_dict = {}             # map: state machine id --> character code(s)
         for action_info in PatternActionPair_List:
             sm    = action_info.pattern_state_machine()
             sm_id = sm.get_id()
@@ -75,22 +75,22 @@ class GeneratorBase:
             self.action_db[sm_id] = action_info
 
             # -- collect all pre-conditions and make one single state machine out of it
-            pre_sm = sm.pre_condition_state_machine
+            pre_sm = sm.pre_context_state_machine
             if pre_sm != None:
-                self.pre_condition_sm_list.append(pre_sm)
-                self.pre_condition_sm_id_list.append(pre_sm.get_id())
+                self.pre_context_sm_list.append(pre_sm)
+                self.pre_context_sm_id_list.append(pre_sm.get_id())
                 
-            if sm.has_trivial_pre_condition_begin_of_line():
+            if sm.has_trivial_pre_context_begin_of_line():
                 self.begin_of_line_condition_f = True
 
             # [NOT IMPLEMENTED YET]    
             # # -- collect information about trivial (char code) pre-conditions 
-            # # if sm.get_trivial_pre_condition_character_codes() != []:
-            # #    trivial_pre_condition_dict[sm.get_id()] = sm.get_trivial_pre_condition_character_codes()
+            # # if sm.get_trivial_pre_context_character_codes() != []:
+            # #    trivial_pre_context_dict[sm.get_id()] = sm.get_trivial_pre_context_character_codes()
 
             # -- collect all ids of post conditioned state machines
-            if sm.is_post_conditioned():
-                self.post_conditioned_sm_id_list.append(sm_id)
+            if sm.is_post_contexted():
+                self.post_contexted_sm_id_list.append(sm_id)
 
     def __create_core_state_machine(self):
         # (1) transform all given patterns into a single state machine
@@ -98,20 +98,20 @@ class GeneratorBase:
         return self.__get_combined_state_machine(self.state_machine_list)
 
     def __create_pre_context_state_machine(self):
-        if self.pre_condition_sm_list == []: return None
+        if self.pre_context_sm_list == []: return None
 
         # -- add empty actions for the pre-condition terminal states
-        for pre_sm in self.pre_condition_sm_list:
+        for pre_sm in self.pre_context_sm_list:
             self.action_db[pre_sm.get_id()] = ActionInfo(pre_sm, "")
 
-        return self.__get_combined_state_machine(self.pre_condition_sm_list, 
+        return self.__get_combined_state_machine(self.pre_context_sm_list, 
                                                  FilterDominatedOriginsF=False)
 
     def __create_backward_input_position_detectors(self):
         # -- find state machines that contain a state flagged with 
         #    'pseudo-ambiguous-post-condition'.
         papc_sm_id_list = filter(lambda backward_detector_id: backward_detector_id != -1L,
-                                 map(lambda sm: sm.get_pseudo_ambiguous_post_condition_id(),
+                                 map(lambda sm: sm.get_pseudo_ambiguous_post_context_id(),
                                      self.state_machine_list))
 
         # -- collect all mentioned state machines in a list

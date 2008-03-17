@@ -22,7 +22,7 @@ def test_core(TestString):
         print "pattern syntax error"
     else:
         print "state machine\n", sm 
-        print "begin of line = ", sm.has_trivial_pre_condition_begin_of_line()
+        print "begin of line = ", sm.has_trivial_pre_context_begin_of_line()
 
 test('[a-z]+')
 test('[a-z]*')

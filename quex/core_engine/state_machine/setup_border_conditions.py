@@ -1,5 +1,5 @@
 from quex.core_engine.state_machine.core import StateMachine
-import quex.core_engine.state_machine.setup_post_condition as setup_post_condition
+import quex.core_engine.state_machine.setup_post_condition as setup_post_context
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 
 def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code, 
@@ -40,14 +40,14 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             #
             state.set_acceptance(False)
             state.set_store_input_position_f(False)
-            state.set_post_conditioned_acceptance_f(False)
-            state.set_trivial_pre_condition_begin_of_line(False)
+            state.set_post_contexted_acceptance_f(False)
+            state.set_trivial_pre_context_begin_of_line(False)
             #
         return new_state_idx    
 
     # (*) begin of line
     if BeginOfLineF: 
-        if sm.has_non_trivial_pre_condition():
+        if sm.has_non_trivial_pre_context():
             # begin of line in two cases:
             #  (1) last char was '\n'
             #  (2) at initialization, we supposed anyway that in this case the buffer needs to
@@ -57,21 +57,19 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             #
             #  A line begins always after '\n' so no check for '\r\n' is necessary.
             #  => DOS_CarriageReturnNewlineF = False
-            add_line_border_at_end(sm.pre_condition_state_machine, BeginOfFile_Code, 
+            add_line_border_at_end(sm.pre_context_state_machine, BeginOfFile_Code, 
                                    DOS_CarriageReturnNewlineF=False)
         else:
             # mark all acceptance states with the 'trivial pre-condition BOL' flag
             for state_idx, state in sm.states.items():
                 if not state.is_acceptance(): continue
-                if not state.has_origin():
-                    state.add_origin(sm.get_id(), state_idx, True) 
-                state.set_trivial_pre_condition_begin_of_line()
+                state.set_trivial_pre_context_begin_of_line()
             
              
                 
     # (*) end of line
     if EndOfLineF:
-        if not sm.is_post_conditioned():
+        if not sm.is_post_contexted():
             # -- create a state machine that represents the post-condition
             # -- mount it to the core pattern as a post-condition
             post_sm = StateMachine()
@@ -84,7 +82,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             
             # post conditions add an epsilon transition that has to be solved 
             # by translating state machine into a DFA
-            sm = setup_post_condition.do(sm, post_sm) 
+            sm = setup_post_context.do(sm, post_sm) 
             sm = nfa_to_dfa.do(sm)
             sm.delete_meaningless_origins()
         
@@ -100,9 +98,9 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
                                                    DOS_CarriageReturnNewlineF)
             # -- the post-condition flag needs to be raised
             sm.states[new_state_idx].add_origin(sm.get_id(), new_state_idx, StoreInputPositionF=False)
-            sm.states[new_state_idx].set_post_conditioned_acceptance_f(True)
+            sm.states[new_state_idx].set_post_contexted_acceptance_f(True)
             #
-            if BeginOfLineF and sm.has_non_trivial_pre_condition() == False:
-                sm.states[new_state_idx].set_trivial_pre_condition_begin_of_line()
+            if BeginOfLineF and sm.has_non_trivial_pre_context() == False:
+                sm.states[new_state_idx].set_trivial_pre_context_begin_of_line()
             
     return sm
