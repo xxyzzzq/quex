@@ -111,13 +111,6 @@ class StateInfo:
     def is_acceptance(self):
         return self.core().is_acceptance()
         
-    def is_post_contexted(self):
-        """Goes through the list of all origins, if one origin is post-conditioned,
-           it means that state is post conditioned. 
-        """   
-        if self.core().post_contexted_acceptance_f(): return True
-        return self.origins().contains_post_context_flag()
-
     def is_store_input_position(self):
         """If one of the origins requires to store the input position, the state requires
            to store the input position."""
@@ -292,7 +285,7 @@ class StateMachineCoreInfo:
     def set_pre_context_sm(self, Value):                      
         assert Value.__class__.__name__ == "StateMachine" or Value == None
         self.__pre_context_sm = Value
-    def set_pre_context_begin_of_line_f(self, Value):         
+    def set_pre_context_begin_of_line_f(self, Value=True):         
         assert type(Value) == bool
         self.__pre_context_begin_of_line_f = Value
     def set_pre_context_single_character_list(self, Value):   
@@ -677,9 +670,6 @@ class StateMachine:
         """
         if len(self.states) != 1: return False
         return self.states[self.init_state_index].is_empty()
-
-    def is_post_contexted(self):
-        return self.__core.post_context_id() != -1L
 
     def has_non_trivial_pre_context(self):
         return self.__core.pre_context_sm() != None

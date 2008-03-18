@@ -89,7 +89,7 @@ class GeneratorBase:
             # #    trivial_pre_context_dict[sm.get_id()] = sm.get_trivial_pre_context_character_codes()
 
             # -- collect all ids of post conditioned state machines
-            if sm.is_post_contexted():
+            if sm.core().post_context_id() != -1L:
                 self.post_contexted_sm_id_list.append(sm_id)
 
     def __create_core_state_machine(self):

@@ -36,7 +36,7 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     assert post_context_sm.__class__.__name__ == "StateMachine", \
             "expected 2nd argument as objects of class StateMachine\n" + \
             "received: " + post_context_sm.__class__.__name__
-    assert not the_state_machine.is_post_contexted(), \
+    assert the_state_machine.core().post_context_id() == -1L, \
             "post context state machine cannot be post-context again."
 
     # -- state machines with no states are senseless here. 
@@ -120,5 +120,6 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     # -- information about the pre-context remains
     result.core().set_pre_context_begin_of_line_f(pre_context_begin_of_line_f)
     result.core().set_pre_context_sm(pre_context_sm)
+    result.core().set_post_context_id(post_context_id)
 
     return result
