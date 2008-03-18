@@ -86,13 +86,13 @@ class StateCoreInfo:
         # state machines. This should actually be an 'assert'
         if self.state_machine_id != Other.state_machine_id: return
 
-        if Other.__acceptance_f:                  self.__acceptance_f                  = True
-        if Other.__store_input_position_f:        self.__store_input_position_f        = True 
-        if Other.__post_context_id: self.__post_context_id = True
-        if Other.__pre_context_begin_of_line_f: self.__pre_context_begin_of_line_f = True 
+        if Other.__acceptance_f:                 self.__acceptance_f                = True
+        if Other.__store_input_position_f:       self.__store_input_position_f      = True 
+        if Other.__pre_context_begin_of_line_f:  self.__pre_context_begin_of_line_f = True 
 
-        if Other.__pre_context_id != -1L:   
-            self.__pre_context_id = Other.__pre_context_id 
+        if Other.__pre_context_id != -1L:   self.__pre_context_id  = Other.__pre_context_id 
+        if Other.__post_context_id != -1L:  self.__post_context_id = Other.__post_context_id
+
         if Other.__pseudo_ambiguous_post_context_id != -1L: 
             self.__pseudo_ambiguous_post_context_id = Other.__pseudo_ambiguous_post_context_id
 
@@ -107,7 +107,6 @@ class StateCoreInfo:
                  function 'set_store_input_position_f'
         """      
         assert type(Value) == bool
-
         self.__acceptance_f = Value
         # default: store_input_position_f follows acceptance_f
         if not LeaveStoreInputPositionF: self.set_store_input_position_f(Value)
@@ -121,10 +120,11 @@ class StateCoreInfo:
         self.__pre_context_id = Value
 
     def set_pre_context_begin_of_line_f(self, Value=True):
+        assert type(Value) == bool
         self.__pre_context_begin_of_line_f = Value
 
     def set_post_context_id(self, Value):
-        """Globally unique identifier of the post condition."""
+        assert type(Value) == long
         self.__post_context_id = Value
 
     def set_pseudo_ambiguous_post_context_id(self, Value):
