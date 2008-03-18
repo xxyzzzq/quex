@@ -635,7 +635,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
         # -- if the pattern is terminated after the post-condition, then the input
         #    has to be put back to the end of the 'core expression'.    
         post_context_number_str = ""  
-        if state_machine.is_post_contexted(): 
+        if state_machine.core().post_context_id() != -1L: 
             post_context_number_str = state_machine_id_str + "_"
         #
         txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)

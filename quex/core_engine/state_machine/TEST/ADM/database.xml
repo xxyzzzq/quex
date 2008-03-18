@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Mon Mar 17 21:36:57 2008">
+<test-database execution-time-sec="0.00" date="Mon Mar 17 22:47:06 2008">
     <last-used-diff-display-program name="vimdiff"/>
     <test title="" time-sum-sec="0.00"> 
         <application file-name="test-ambiguous_post_condition-philosophical_cut.py" info-request-time="1205786159L"/>
@@ -9,7 +9,7 @@
     <test title="" time-sum-sec="0.00"> 
         <application file-name="test-setup_border_conditions.py" info-request-time="1205786159L"/>
         <choice-list number="1">
-           <choice name="" result="FAIL" time-sec="0.00" crc="-1018397271"/>
+           <choice name="" result="FAIL" time-sec="0.00" crc="-365572243"/>
         </choice-list>
     </test>
     <group name="DFA">
@@ -63,16 +63,16 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Newlines" time-sum-sec="0.00"> 
-            <application file-name="test-count_newline_n.py" info-request-time="1205786159L"/>
-            <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="1843080515"/>
-            </choice-list>
-        </test>
         <test title="Contains only Spaces" time-sum-sec="0.00"> 
             <application file-name="test-count_contains_only_spaces.py" info-request-time="1205786159L"/>
             <choice-list number="1">
                <choice name="" result="FAIL" time-sec="0.00" crc="-881596759"/>
+            </choice-list>
+        </test>
+        <test title="Newlines" time-sum-sec="0.00"> 
+            <application file-name="test-count_newline_n.py" info-request-time="1205786159L"/>
+            <choice-list number="1">
+               <choice name="" result="FAIL" time-sec="0.00" crc="1843080515"/>
             </choice-list>
         </test>
         <test title="Characters" time-sum-sec="0.00"> 
@@ -143,10 +143,16 @@
         </test>
     </group>
     <group name="Tracing origin">
-        <test title="NFA to DFA (subset construction)" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1205786159L"/>
+        <test title="Paralellization" time-sum-sec="0.00"> 
+            <application file-name="test-parallelize-trace-origin.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-1604145748"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1190298069"/>
+            </choice-list>
+        </test>
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1205786159L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="658399412"/>
             </choice-list>
         </test>
         <test title="Cloning" time-sum-sec="0.00"> 
@@ -161,16 +167,10 @@
                <choice name="" result="FAIL" time-sec="0.00" crc="-624163188"/>
             </choice-list>
         </test>
-        <test title="Paralellization" time-sum-sec="0.00"> 
-            <application file-name="test-parallelize-trace-origin.py" info-request-time="1205786159L"/>
+        <test title="NFA to DFA (subset construction)" time-sum-sec="0.00"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1190298069"/>
-            </choice-list>
-        </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.00"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1205786159L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="658399412"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1604145748"/>
             </choice-list>
         </test>
     </group>
