@@ -39,9 +39,9 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             the_sm.add_transition(state_idx, BeginOfFile_Code, new_state_idx)
             #
             state.set_acceptance(False)
-            state.set_store_input_position_f(False)
-            state.set_post_contexted_acceptance_f(False)
-            state.set_trivial_pre_context_begin_of_line(False)
+            state.core().set_store_input_position_f(False)
+            state.core().set_post_context_id(-1L)
+            state.core().set_pre_context_begin_of_line_f(False)
             #
         return new_state_idx    
 
@@ -57,13 +57,13 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             #
             #  A line begins always after '\n' so no check for '\r\n' is necessary.
             #  => DOS_CarriageReturnNewlineF = False
-            add_line_border_at_end(sm.pre_context_state_machine, BeginOfFile_Code, 
+            add_line_border_at_end(sm.core().pre_context_sm(), BeginOfFile_Code, 
                                    DOS_CarriageReturnNewlineF=False)
         else:
             # mark all acceptance states with the 'trivial pre-condition BOL' flag
             for state_idx, state in sm.states.items():
                 if not state.is_acceptance(): continue
-                state.set_trivial_pre_context_begin_of_line()
+                state.core().set_pre_context_begin_of_line_f()
             
              
                 
@@ -101,6 +101,6 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             sm.states[new_state_idx].set_post_contexted_acceptance_f(True)
             #
             if BeginOfLineF and sm.has_non_trivial_pre_context() == False:
-                sm.states[new_state_idx].set_trivial_pre_context_begin_of_line()
+                sm.states[new_state_idx].core().set_pre_context_begin_of_line_f()
             
     return sm

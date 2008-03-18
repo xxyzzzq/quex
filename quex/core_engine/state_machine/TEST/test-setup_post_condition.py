@@ -20,12 +20,11 @@ def test(sm, post_sm):
     result = nfa_to_dfa.do(result)
     print "DFA = ", result
     result = hopcroft.do(result)
-    print "HOPKINS = ", result
+    print "HOPCROFT = ", result
 
 print "-------------------------------------------------------------------------------"
 tiny0 = StateMachine()
 tiny0.add_transition(tiny0.init_state_index, ord('a'), AcceptanceF=True)
-tiny0.mark_state_origins()   
 
 tiny1 = StateMachine()
 tiny1.add_transition(tiny1.init_state_index, ord(';'), AcceptanceF=True)
@@ -34,7 +33,6 @@ test(tiny0, tiny1)
     
 print "-------------------------------------------------------------------------------"
 sm = sm1 
-sm.mark_state_origins()   
 post_sm = sm3.clone()
 
 test(sm, post_sm)    

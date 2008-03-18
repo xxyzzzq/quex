@@ -147,9 +147,6 @@ class StateInfo:
     def set_pseudo_ambiguous_post_context_id(self, Value):
         self.core().set_post_context_backward_detector_sm_id(Value)
     
-    def set_trivial_pre_context_begin_of_line(self, Value=True):
-        self.core().set_pre_context_begin_of_line(Value)
-    
     def set_pre_context_id(self, PreConditionStateMachineID):
         self.core().set_pre_context_id(PreConditionStateMachineID)
 
@@ -290,16 +287,22 @@ class StateMachineCoreInfo:
             return -1L
 
     def set_id(self, Value):                                  
+        assert type(Value) == long
         self.__id = Value
     def set_pre_context_sm(self, Value):                      
+        assert Value.__class__.__name__ == "StateMachine" or Value == None
         self.__pre_context_sm = Value
     def set_pre_context_begin_of_line_f(self, Value):         
+        assert type(Value) == bool
         self.__pre_context_begin_of_line_f = Value
     def set_pre_context_single_character_list(self, Value):   
+        assert type(Value) == list
         self.__pre_context_single_character_list = Value
     def set_post_context_id(self, Value):                     
+        assert type(Value) == long
         self.__post_context_id = Value
     def set_post_context_backward_input_position_detector_sm(self, Value): 
+        assert Value.__class__.__name__ == "StateMachine" or Value == None
         self.__backward_input_position_detector_sm  = Value
 
 class StateMachine:
@@ -679,7 +682,7 @@ class StateMachine:
         return self.__core.post_context_id() != -1L
 
     def has_non_trivial_pre_context(self):
-        return self.__core.pre_context_state_machine() != None
+        return self.__core.pre_context_sm() != None
 
     def has_trivial_pre_context(self):
         """NOTE: This function was initialy implemented to generalize the 
@@ -840,17 +843,14 @@ class StateMachine:
 
         self.states[self.init_state_index].add_epsilon_target_state(TargetStateIdx)
 
-    def set_trivial_pre_context_begin_of_line(self):
-        self.__core.set_pre_context_begin_of_line_f = True
-    
     def adapt_origins(self, StateMachineID):
         """Adapts origin to origin in a state machine 'StateMachineID'
         """
         for state_idx, state in self.states.items():
             state.adapt_origins(StateMachineID, state_idx)
 
-        if self.pre_context_state_machine != None:
-            self.pre_context_state_machine.adapt_origins(StateMachineID)
+        if self.__core.pre_context_sm() != None:
+            self.__core.pre_context_sm().adapt_origins(StateMachineID)
 
     def adapt_origins_to_self(self):
         """Considers all origins mentioned to be of this state machine, i.e.
@@ -879,8 +879,8 @@ class StateMachine:
             if state.verify_unique_origin(StateMachineID, state_idx) == False:
                 return False
            
-        if self.pre_context_state_machine != None:
-            return self.pre_context_state_machine.verify_unique_origin(StateMachineID)
+        if self.__core().pre_context_sm() != None:
+            return self.__core().pre_context_sm().verify_unique_origin(StateMachineID)
             
         return True    
 
