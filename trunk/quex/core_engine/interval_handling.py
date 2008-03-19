@@ -410,6 +410,14 @@ class NumberSet:
             if interval.contains(Number): return True
         return False
 
+    def minimum(self):
+        if self.__intervals == []: return sys.maxint   # i.e. an absurd value
+        else:                      return self.__intervals[0].begin
+
+    def supremum(self):
+        if self.__intervals == []: return - sys.maxint # i.e. an absurd value
+        else:                      return self.__intervals[0].end
+
     def is_empty(self):
         if self.__intervals == []: return True
         for interval in self.__intervals:

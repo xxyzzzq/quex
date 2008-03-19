@@ -872,6 +872,28 @@ class StateMachine:
     def __repr__(self):
         return self.get_string(NormalizeF=True)
 
+    def __get_state_sequence_for_print_out_follow_path(self, state, state_index_sequence):
+        target_state_index_list = state.transitions().get_target_state_index_list()
+        # sort by 'lowest trigger'
+        def cmp_by_trigger_set(A, B):
+            trigger_set_to_A = self.transitions().get_map()[A]
+            trigger_set_to_B = self.transitions().get_map()[B]
+            return cmp(trigger_set_to_A.minimum(), trigger_set_to_A.minimum())
+        target_state_index_list.sort(cmp_by_trigger_set)
+                                     
+        for state_index in target_state_index_list:
+            if state_index in state_index_sequence: continue
+            state_index_sequence.append(state_index)
+            self.__get_state_sequence_for_print_out_follow_path(self.states[state_index])
+
+
+    def __get_state_sequence_for_print_out(self):
+        state_index_sequence = [ self.init_state_index ]
+        self.__get_state_sequence_for_print_out_follow_path(self.states[self.init_state_index], 
+                                                            state_index_sequence)
+        return state_index_sequence
+
+
     def __get_state_index_normalization(self, NormalizeF):
         index_map         = {}
         inverse_index_map = {}
