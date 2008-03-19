@@ -87,12 +87,6 @@ class StateInfo:
         """
         return self.__transition_map.get_resulting_target_state_index(Trigger)
     
-    def get_trigger_set_union(self):
-        """Returns union of all trigger sets that lead to a target state. Useful
-           in order to determine wether a state triggers on some trigger or not.
-        """
-        return self.__transition_map.get_trigger_set_union().inverse()
-
     def get_trigger_set_to_target(self, TargetIdx=None):
         return self.__transition_map.get_trigger_set_to_target(TargetIdx)
 
@@ -170,7 +164,7 @@ class StateInfo:
         self.__transition_map.delete_transitions_on_character_list(CharacterCodeList)
 
     def delete_transitions_on_empty_trigger_sets(self):
-        self.__transition_map.delete_transitions_on_empty_trigger_sets(CharacterCodeList)
+        self.__transition_map.delete_transitions_on_empty_trigger_sets()
 
     def delete_epsilon_target_state(self, TargetStateIdx):
         self.__transition_map.delete_epsilon_target_state(TargetStateIdx)
@@ -250,7 +244,10 @@ class StateInfo:
 
 class StateMachineCoreInfo:
     def __init__(self, ID, 
-                 PreContextSM, PreContext_BeginOfLineF, PreContext_SingleCharacterList):
+                 PreContextSM=None, 
+                 PreContext_BeginOfLineF=False, 
+                 PreContext_SingleCharacterList=[]):
+
         self.__id                                  = ID 
         self.__pre_context_sm                      = PreContextSM
         self.__pre_context_begin_of_line_f         = PreContext_BeginOfLineF
@@ -300,10 +297,7 @@ class StateMachineCoreInfo:
 
 class StateMachine:
 
-    def __init__(self, InitStateIndex=None, AcceptanceF=False, 
-                 PreContext_SM=None, 
-                 PreContext_BeginOfLineF=False, 
-                 PreContext_SingleCharacterList=-1):
+    def __init__(self, InitStateIndex=None, AcceptanceF=False, Core=None):
 
         # print "##state_machine_init"
         if InitStateIndex == None: self.init_state_index = state_machine_index.get()
@@ -317,10 +311,11 @@ class StateMachine:
         id = state_machine_index.register_state_machine(self)
 
         # Setup core information
-        self.__core = StateMachineCoreInfo(id, 
-                                           PreContext_SM,
-                                           PreContext_BeginOfLineF, 
-                                           PreContext_SingleCharacterList)
+        if Core != None: 
+            self.__core = deepcopy(Core)
+            self.__core.set_id(id)
+        else:            
+            self.__core = StateMachineCoreInfo(id)
 
     def core(self):
         return self.__core

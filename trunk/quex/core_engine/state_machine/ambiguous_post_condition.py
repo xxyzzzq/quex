@@ -41,7 +41,6 @@ def detect_forward(CoreStateMachine, PostConditionStateMachine):
     __assert_state_machines(CoreStateMachine, PostConditionStateMachine)
     
     core_acceptance_state_list = CoreStateMachine.get_acceptance_state_list()
-    assert len(core_acceptance_state_list) == 1 
 
     pcsm_init_state = PostConditionStateMachine.get_init_state()
     for csm_state in core_acceptance_state_list:
@@ -266,10 +265,9 @@ def philosophical_cut(core_sm, post_context_sm):
        the technique for forward ambiguous post conditions.
     """
     core_acceptance_state_list = core_sm.get_acceptance_state_list()
-    assert len(core_acceptance_state_list) == 1 
 
     pcsm_init_state = post_context_sm.get_init_state()
-    for csm_state in core_acceptance_state_list[0]:
+    for csm_state in core_acceptance_state_list:
         __dive_to_cut_iteration(core_sm, csm_state, post_context_sm, pcsm_init_state,
                                 SM1_Path=[post_context_sm.init_state_index])
 

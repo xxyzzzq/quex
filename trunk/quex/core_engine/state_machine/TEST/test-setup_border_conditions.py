@@ -44,7 +44,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     result = hopcroft.do(result)
     #
     result.delete_meaningless_origins()
-    # print "HOPKINS = ", result
+    # print "HOPCROFT = ", result
     result = setup_border_conditions.do(result, BOF_F, EOF_F, BeginOfFile_Code=0x0, EndOfFile_Code=0x0)
     #
     #

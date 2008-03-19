@@ -38,7 +38,7 @@ class pseudo_setup:
         self.output_debug_f                = False
         self.begin_of_stream_code          = 0x19
         self.end_of_stream_code            = 0x1A
-        self.dos_carriage_return_newline_f = False
+        self.no_dos_carriage_return_newline_f = True
 
 Setup = pseudo_setup()
 

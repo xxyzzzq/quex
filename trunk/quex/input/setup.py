@@ -20,7 +20,7 @@ SETUP_INFO = {
     "begin_of_stream_code":           [["--begin-of-stream"],                "0x19"],
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
-    "dos_carriage_return_newline_f":  [["--DOS"],                            FLAG],
+    "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
     "end_of_stream_code":             [["--end-of-stream"],                  "0x1A"],
     "enable_iconv_f":                 [["--iconv"],                          FLAG],
     "byte_order":                     [["--endian"],                         "<system>"],

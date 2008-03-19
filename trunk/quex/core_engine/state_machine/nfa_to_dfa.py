@@ -19,9 +19,7 @@ def do(SM):
 
     # NOTE: Later on, state machines with an initial acceptance state are forbidden.
     #       So, acceptance is not a question here. Think about setting it to false anyway.
-    result = StateMachine(AcceptanceF             = acceptance_f, 
-                          PreContext_SM           = SM.core().pre_context_sm(),
-                          PreContext_BeginOfLineF = SM.core().pre_context_begin_of_line_f())
+    result = StateMachine(AcceptanceF = acceptance_f, Core = SM.core())
 
     # (*) initial state of resulting DFA = epsilon closure of initial state of NFA
     #     -- add the origin list of all states in the epsilon closure

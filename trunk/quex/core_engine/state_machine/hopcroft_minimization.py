@@ -195,8 +195,7 @@ def create_state_machine(SM, StateSetList):
     # the new state machine.   
     state_set_containing_initial_state_i = StateSetList.map[SM.init_state_index]
     result = StateMachine(map_new_state_index[state_set_containing_initial_state_i],
-                          PreContext_SM           = SM.core().pre_context_sm(),
-                          PreContext_BeginOfLineF = SM.core().pre_context_begin_of_line_f())
+                          Core = SM.core())
 
     # Ensure that each target state index has a state inside the state machine
     for new_state_index in map_new_state_index.values():

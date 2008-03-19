@@ -24,7 +24,7 @@ def do(the_state_machines):
         # the final acceptance state.   
         if TerminationStateIdx == -1:
             acceptance_state_index_list = result_state_machine.get_acceptance_state_index_list()
-            assert acceptance_state_list_set != [], \
+            assert acceptance_state_index_list != [], \
                    "resulting state machine has no acceptance state!"
             TerminationStateIdx = acceptance_state_index_list[0]
 
