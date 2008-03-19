@@ -331,7 +331,7 @@ def snap_non_control_characters(stream):
             stream.seek(position)
             tmp_repeated = __snap_repetition_range(tmp, stream) 
             # -- append it to the result (last state must be set to acceptance for concatenation)
-            result.set_acceptance(state_index)
+            result.states[state_index].set_acceptance()
             result = sequentialize.do([result, tmp_repeated], MountToFirstStateMachineF=True)
             # as soon as there is repetition there might be more than one acceptance
             # state and thus simple concatination via 'add_transition' fails.
@@ -347,7 +347,7 @@ def snap_non_control_characters(stream):
         char_code = next_char_code
 
     # last character in the chain triggers an 'acceptance state'
-    result.set_acceptance(state_index)
+    result.states[state_index].set_acceptance()
         
     return __debug_exit(result, stream)
     

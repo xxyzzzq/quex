@@ -33,6 +33,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             sm.delete_meaningless_origins()
         
         else:
+            post_context_id = sm.core().post_context_id()
             # end of line in two cases:
             #  (1) next char is '\n' (or \r\n in case of DOS_CarriageReturnNewlineF==True)
             #  (2) at end of file, we supposed anyway that in this case the buffer needs to
@@ -41,12 +42,9 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             #  => mount 'newline or EndOfFile_Code' to the tail of pattern
             #
             new_state_idx = __add_line_border_at_end(sm, EndOfFile_Code, 
-                                                     DOS_CarriageReturnNewlineF)
+                                                     DOS_CarriageReturnNewlineF, InverseF=False)
             # -- the post-context flag needs to be raised
-            sm.states[new_state_idx].set_post_contexted_acceptance_f(True)
-            #
-            if BeginOfLineF and sm.has_non_trivial_pre_context() == False:
-                sm.states[new_state_idx].core().set_pre_context_begin_of_line_f()
+            sm.states[new_state_idx].set_post_context_id(post_context_id)
             
     # (2) begin of line
     if BeginOfLineF: 
@@ -61,11 +59,10 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
         #  => DOS_CarriageReturnNewlineF = False
         if sm.core().pre_context_sm() != None:
             __add_line_border_at_end(sm.core().pre_context_sm(), BeginOfFile_Code, 
-                                     DOS_CarriageReturnNewlineF=False)
+                                     DOS_CarriageReturnNewlineF=False, InverseF=True)
         else:
             # mark all acceptance states with the 'trivial pre-condition BOL' flag
-            for state_idx, state in sm.states.items():
-                if not state.is_acceptance(): continue
+            for state in sm.get_acceptance_state_list():
                 state.core().set_pre_context_begin_of_line_f()
             sm.core().set_pre_context_begin_of_line_f()
                 
@@ -85,22 +82,26 @@ def __add_line_border_at_end(the_sm, BorderCode, DOS_CarriageReturnNewlineF, Inv
        '\n' or BorderCharacter that leads to the new acceptance.
        The old acceptance state is annulated.
     """    
-    state_idx_list = the_sm.get_acceptance_state_index_list() 
-    new_state_idx  = the_sm.create_new_state(AcceptanceF=True)
-    for state_idx, state in the_sm.items():
+    old_acceptance_state_list = the_sm.get_acceptance_state_list() 
+    new_state_idx             = the_sm.create_new_state(AcceptanceF=True)
+    for state in old_acceptance_state_list:
+        # (1) Transition '\n' --> Acceptance
+        state.add_transition(ord('\n'), new_state_idx)
+        
+        # (2) Transition 'end of file' --> Acceptance
+        state.add_transition(BorderCode, new_state_idx)
 
-        if not DOS_CarriageReturnNewlineF:
-            the_sm.add_transition(state_idx, ord('\n'), new_state_idx)
-        else:
+        if DOS_CarriageReturnNewlineF:
+            # (3) Transition '\r\n' --> Acceptance
+            aux_idx = the_sm.create_new_state(AcceptanceF=False)
             if not InverseF:
-                aux_idx = the_sm.add_transition(state_idx, ord('\r'), AcceptanceF=False)
-                the_sm.add_transition(aux_idx, ord('\n'), new_state_idx)
+                state.add_transition(ord('\r'), aux_idx)
+                the_sm.states[aux_idx].add_transition(ord('\n'), new_state_idx)
             else:
-                aux_idx = the_sm.add_transition(state_idx, ord('\n'), AcceptanceF=False)
-                the_sm.add_transition(aux_idx, ord('\r'), new_state_idx)
+                state.add_transition(ord('\n'), aux_idx)
+                the_sm.states[aux_idx].add_transition(ord('\r'), new_state_idx)
 
-        the_sm.add_transition(state_idx, BorderCode, new_state_idx)
-        #
+        # (-) Cancel acceptance of old state
         state.set_acceptance(False)
         state.core().set_store_input_position_f(False)
         state.core().set_post_context_id(-1L)

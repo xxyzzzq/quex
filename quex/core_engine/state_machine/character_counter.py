@@ -37,30 +37,21 @@ def get_character_n(state_machine):
 def contains_only_spaces(state_machine):
     """Determines wether there are only spaces on the way to the acceptance state.
     """
-    state = state_machine.get_init_state()
-
-    done_state_index_list = [ state_machine.init_state_index ]
-    while 1 + 1 == 2:
+    for state in state_machine.states.values():
         target_state_list = state.get_target_state_indices()
-        # if a pattern contains only ' ', then there is no place for more than
-        # one target state, since every state has only one trigger and one target state
+        # (1) if a pattern contains only ' ', then there is no place for more than
+        #     one target state, since every state has only one trigger and one target state
         if len(target_state_list) > 1: return False
 
-        # does state exclusively trigger on ' '
-        all_trigger_set = state.get_trigger_set_union()
+        # (2) does state exclusively trigger on ' '?
+        #    (2a) does state trigger on ' '?
+        all_trigger_set = state.transitions().get_trigger_set_union()
         if all_trigger_set.contains(ord(' ')) == False: return False
+        #    (2b) does state trigger on nothing else? 
         if all_trigger_set.difference(NumberSet(ord(' '))).is_empty() == False: return False
 
-        next_state = state.get_result_state_index(ord(' ')) 
-        if next_state == None: return False
+    return True
 
-        state = state_machine.states[next_state]
-
-        # -- acceptance state of non-post-conditioned pattern, or
-        # -- end of core pattern of a post-conditioned pattern => done
-        if state.is_store_input_position(): return True
-
-        if next_state in done_state_index_list: return False
 
 
 def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx, Character):

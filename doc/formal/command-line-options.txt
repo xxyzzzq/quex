@@ -137,11 +137,14 @@ There may be cases where the characters used to indicate buffer limit,
 `--end-of-stream` _number_:: DEFAULT = `"0x1A"`
 
 If the trivial end-of-line pre-condition (i.e. the '\$' at the end of a regular
-                                          expression) is used and the lexical
-analyzer has to run on a system that codes newline as hexadecimal '0D.0A' then
-you need to specify the following option:
+expression) is used, the by default quex produces code that runs on both Unix
+and DOS-like Systems. Practically, this means that it matches against 'newline' 0x0A 
+and 'carriage return/newline' 0x0D 0x0A. For the case that the resulting analyzer
+only runs on a Unix machine some tiny performance improvements might be achieved
+by disabling the 0x0D 0x0A sequence and only triggering on 0x0A. In this case,
+the following flag may be specified:
 
-`--DOS`:: DEFAULT=`<disabled>`
+`--no-DOS`:: DEFAULT=`<enabled>`
 
 For unicode support it is essential to allow iconv support \cite{}. For this 
 the iconv library must be installed on your system. On Unix systems this library

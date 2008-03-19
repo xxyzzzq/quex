@@ -96,7 +96,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
             pattern = "<<EOF>>"
             pattern_state_machine = regex.do("<<EOF>>", {}, 
                                              Setup.begin_of_stream_code, Setup.end_of_stream_code,
-                                             DOS_CarriageReturnNewlineF=Setup.dos_carriage_return_newline_f)
+                                             DOS_CarriageReturnNewlineF= not Setup.no_dos_carriage_return_newline_f)
 
         else:
             fh.seek(position)

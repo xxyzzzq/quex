@@ -13,7 +13,7 @@ def parse(fh, Setup):
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          BeginOfFile_Code           = Setup.begin_of_stream_code,
                                          EndOfFile_Code             = Setup.end_of_stream_code,
-                                         DOS_CarriageReturnNewlineF = Setup.dos_carriage_return_newline_f)
+                                         DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f)
 
         if pattern_state_machine == None:
             error_msg("No valid regular expression detected.", fh)

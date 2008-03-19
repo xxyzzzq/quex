@@ -71,11 +71,11 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     #     -- The 'normal' way: storing the input position at the end of the core
     #        pattern.
     #
+    result     = the_state_machine
     # (*) need to clone the state machines, i.e. provide their internal
     #     states with new ids, but the 'behavior' remains. This allows
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
-    result     = the_state_machine
     post_clone = post_context_sm.clone() 
     #     origins of the post context are **irrelevant**
     post_clone.delete_state_origins()
