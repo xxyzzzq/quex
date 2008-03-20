@@ -872,44 +872,55 @@ class StateMachine:
     def __repr__(self):
         return self.get_string(NormalizeF=True)
 
-    def __get_state_sequence_for_print_out_follow_path(self, state, state_index_sequence):
-        target_state_index_list = state.transitions().get_target_state_index_list()
-        # sort by 'lowest trigger'
-        def cmp_by_trigger_set(A, B):
-            trigger_set_to_A = self.transitions().get_map()[A]
-            trigger_set_to_B = self.transitions().get_map()[B]
-            return cmp(trigger_set_to_A.minimum(), trigger_set_to_A.minimum())
-        target_state_index_list.sort(cmp_by_trigger_set)
-                                     
-        for state_index in target_state_index_list:
-            if state_index in state_index_sequence: continue
-            state_index_sequence.append(state_index)
-            self.__get_state_sequence_for_print_out_follow_path(self.states[state_index])
-
-
     def __get_state_sequence_for_print_out(self):
         state_index_sequence = [ self.init_state_index ]
-        self.__get_state_sequence_for_print_out_follow_path(self.states[self.init_state_index], 
-                                                            state_index_sequence)
+
+        def __dive(state):
+            target_state_index_list = state.transitions().get_target_state_index_list()
+            # sort by 'lowest trigger'
+            def cmp_by_trigger_set(A, B):
+                # In case of epsilon transitions, the 'other' dominates.
+                try:    trigger_set_to_A = state.transitions().get_map()[A]
+                except: return -1
+                try:    trigger_set_to_B = state.transitions().get_map()[B]
+                except: return 1
+                return cmp(trigger_set_to_A.minimum(), trigger_set_to_A.minimum())
+            target_state_index_list.sort(cmp_by_trigger_set)
+                                         
+            for state_index in target_state_index_list:
+                if state_index in state_index_sequence: continue
+                state_index_sequence.append(state_index)
+                __dive(self.states[state_index])
+
+        __dive(self.states[self.init_state_index])
+
+        # There might be 'sick' cases where there are not all states connected.
+        if len(self.states.keys()) != len(state_index_sequence):
+            state_index_sequence = self.states.keys()
+
+        # DEBUG: double check that the sequence is complete
+        x = self.states.keys(); x.sort()               # DEBUG
+        y = deepcopy(state_index_sequence); y.sort()   # DEBUG
+        assert x == y                                  # DEBUG
+
         return state_index_sequence
 
 
     def __get_state_index_normalization(self, NormalizeF):
         index_map         = {}
         inverse_index_map = {}
-        counter           = -1L
+
+        index_sequence = self.__get_state_sequence_for_print_out()
         if NormalizeF:
-            for state_i in self.states.keys():
+            counter = -1L
+            for state_i in index_sequence:
                 counter += 1L
                 index_map[state_i]         = counter
                 inverse_index_map[counter] = state_i
-            index_sequence = range(0, counter+1)
         else:
-            index_sequence = []
-            for state_i in self.states.keys():
+            for state_i in index_sequence:
                 index_map[state_i]         = state_i
                 inverse_index_map[state_i] = state_i
-                index_sequence.append(state_i)
 
         return index_map, inverse_index_map, index_sequence
 
@@ -920,10 +931,9 @@ class StateMachine:
 
         # (*) construct text 
         msg = "init-state = " + repr(index_map[self.init_state_index]) + "\n"
-        for printed_state_i in index_sequence:
-            printed_state_i = long(printed_state_i)
-            real_state_i    = inverse_index_map[printed_state_i]
-            state           = self.states[real_state_i]
+        for state_i in index_sequence:
+            printed_state_i = index_map[state_i]
+            state           = self.states[state_i]
             msg += "%05i" % printed_state_i + state.get_string(index_map)
             
         if self.__core.pre_context_sm() != None:
@@ -949,10 +959,9 @@ class StateMachine:
 
         transition_str       = ""
         acceptance_state_str = ""
-        for printed_state_i in index_sequence:
-            printed_state_i = long(printed_state_i)
-            real_state_i    = inverse_index_map[printed_state_i]
-            state           = self.states[real_state_i]
+        for state_i in index_sequence:
+            printed_state_i = index_map[state_i]
+            state           = self.states[state_i]
             if state.is_acceptance(): 
                 acceptance_state_str += "%i; " % int(printed_state_i)
             transition_str += state.get_graphviz_string(printed_state_i, index_map)

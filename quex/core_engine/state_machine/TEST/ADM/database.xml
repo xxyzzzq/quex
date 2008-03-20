@@ -1,4 +1,4 @@
-<test-database execution-time-sec="7.90" date="Tue Mar 18 21:37:15 2008">
+<test-database execution-time-sec="7.82" date="Wed Mar 19 22:40:26 2008">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Get Trigger Map (intervals --> target states)" time-sum-sec="0.03"> 
@@ -7,11 +7,11 @@
                <choice name="" result="OK" time-sec="0.03" crc="1185210859"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.08"> 
+        <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.09"> 
             <application file-name="test-hopcroft-minimization.py" info-request-time="1205786159L"/>
             <choice-list number="2">
-               <choice name="NEW" result="OK" time-sec="0.04" crc="-81024871"/>
-               <choice name="ADAPT" result="OK" time-sec="0.04" crc="1277175198"/>
+               <choice name="NEW" result="OK" time-sec="0.05" crc="-881446979"/>
+               <choice name="ADAPT" result="OK" time-sec="0.04" crc="-1446151015"/>
             </choice-list>
         </test>
     </group>
@@ -31,13 +31,13 @@
         <test title="Epsilon closure (single state)" time-sum-sec="0.03"> 
             <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-1158432109"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1073077658"/>
             </choice-list>
         </test>
-        <test title="Get elementary trigger sets II" time-sum-sec="0.02"> 
+        <test title="Get elementary trigger sets II" time-sum-sec="0.03"> 
             <application file-name="test-StateMachine-elementary_trigger_sets-2.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.02" crc="1448813074"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1448813074"/>
             </choice-list>
         </test>
     </group>
@@ -45,8 +45,8 @@
         <test title="Get graphviz string of state machine." time-sum-sec="0.05"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1205786159L"/>
             <choice-list number="2">
-               <choice name="1" result="OK" time-sec="0.02" crc="1858065922"/>
-               <choice name="2" result="OK" time-sec="0.02" crc="-163746669"/>
+               <choice name="1" result="OK" time-sec="0.03" crc="173145892"/>
+               <choice name="2" result="OK" time-sec="0.03" crc="-163746669"/>
             </choice-list>
         </test>
     </group>
@@ -63,10 +63,10 @@
                <choice name="" result="OK" time-sec="0.12" crc="-881596759"/>
             </choice-list>
         </test>
-        <test title="Characters" time-sum-sec="2.46"> 
+        <test title="Characters" time-sum-sec="2.47"> 
             <application file-name="test-count_character_n.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.46" crc="903882416"/>
+               <choice name="" result="OK" time-sec="2.47" crc="903882416"/>
             </choice-list>
         </test>
     </group>
@@ -82,57 +82,57 @@
         <test title="Cloning" time-sum-sec="0.03"> 
             <application file-name="test-StateMachine-clone.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-945537673"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1956553972"/>
             </choice-list>
         </test>
     </group>
     <group name="StateMachine Operations">
-        <test title="Setup Pre-Condition" time-sum-sec="0.04"> 
+        <test title="Setup Pre-Condition" time-sum-sec="0.03"> 
             <application file-name="test-setup_pre_condition.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="-673176817"/>
+               <choice name="" result="OK" time-sec="0.03" crc="-2028065037"/>
             </choice-list>
         </test>
-        <test title="Inverse" time-sum-sec="0.12"> 
+        <test title="Inverse" time-sum-sec="0.04"> 
             <application file-name="test-StateMachine-inverse.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1477923966"/>
+               <choice name="" result="OK" time-sec="0.04" crc="-983089347"/>
             </choice-list>
         </test>
         <test title="Repetitions Kleene closure 0 or arbitrary repetitions" time-sum-sec="0.03"> 
             <application file-name="test-repeat-pure.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-1338755327"/>
+               <choice name="" result="OK" time-sec="0.03" crc="-1039595577"/>
             </choice-list>
         </test>
         <test title="Repetition with min and max repetition numbers" time-sum-sec="0.04"> 
             <application file-name="test-repeat.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="895922343"/>
+               <choice name="" result="OK" time-sec="0.04" crc="-901142520"/>
             </choice-list>
         </test>
         <test title="Paralell" time-sum-sec="0.05"> 
             <application file-name="test-parallelize.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="211581690"/>
+               <choice name="" result="OK" time-sec="0.05" crc="-1799461204"/>
             </choice-list>
         </test>
         <test title="Append Post Condition" time-sum-sec="0.04"> 
             <application file-name="test-setup_post_condition.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="2126725780"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1486167873"/>
             </choice-list>
         </test>
         <test title="Sequence" time-sum-sec="0.03"> 
             <application file-name="test-sequentialize.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-1203188291"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1317004230"/>
             </choice-list>
         </test>
         <test title="Append Post Condition" time-sum-sec="0.15"> 
             <application file-name="test-setup_border_conditions.py" info-request-time="1205868324L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.15" crc="-749719794"/>
+               <choice name="" result="OK" time-sec="0.15" crc="2005601346"/>
             </choice-list>
         </test>
     </group>
@@ -143,16 +143,16 @@
                <choice name="" result="OK" time-sec="0.03" crc="-1604145748"/>
             </choice-list>
         </test>
-        <test title="Cloning" time-sum-sec="0.03"> 
+        <test title="Cloning" time-sum-sec="0.04"> 
             <application file-name="test-StateMachine-trace-origin-clone.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-778292174"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1563758490"/>
             </choice-list>
         </test>
         <test title="Paralellization" time-sum-sec="0.04"> 
             <application file-name="test-parallelize-trace-origin.py" info-request-time="1205786159L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="1190298069"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1877773565"/>
             </choice-list>
         </test>
         <test title="Hopcroft optimization (minimize state set)" time-sum-sec="0.03"> 
