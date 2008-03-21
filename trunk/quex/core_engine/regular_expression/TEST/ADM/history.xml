@@ -1,4 +1,4 @@
-<history date="Thu Mar 20 21:37:49 2008" element-n="59">
+<history date="Thu Mar 20 21:52:52 2008" element-n="61">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -114,6 +114,8 @@
         <accept    time="12:05:22" application="test-alternatives.py" choice="" crc="59383752" />
         <crc-error time="13:33:47" application="test-repeated-expressions.py" choice="" database-crc="-1135513032" real-crc="-561068519"/>
         <accept    time="20:37:37" application="test-repeated-expressions.py" choice="" crc="-1418184691" />
-        <test-runs-today n="5" ok-n="1" fail-n="4" else-n="0" last-run="failure" last-time="20:37:49"/>
+        <accept    time="20:43:55" application="test-replacement.py" choice="" crc="-1410554243" />
+        <accept    time="20:48:22" application="test-alternatives.py" choice="" crc="1268001139" />
+        <test-runs-today n="7" ok-n="1" fail-n="6" else-n="0" last-run="failure" last-time="20:50:54"/>
     </day>
 </history>
