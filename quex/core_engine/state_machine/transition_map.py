@@ -353,7 +353,7 @@ class TransitionMap:
     def get_string(self, FillStr, StateIndexMap):
         # print out transitionts
         sorted_transitions = self.get_list()
-        sorted_transitions.sort(lambda a, b: cmp(a.target_state_index, b.target_state_index))
+        sorted_transitions.sort(lambda a, b: cmp(a.trigger_set.minimum(), b.trigger_set.minimum()))
 
         msg = ""
         # normal state transitions

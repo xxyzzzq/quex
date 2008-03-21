@@ -4,6 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
+from   quex.core_engine.state_machine.TEST.test_state_machines import sm3
 from   quex.core_engine.state_machine.core       import *
 import quex.core_engine.state_machine.repeat     as repeat
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
@@ -70,3 +71,9 @@ sm.add_epsilon_transition(n8, n3)
 dfa = nfa_to_dfa.do(sm)
 print dfa
 
+print "_______________________________________________________________________________"
+print "Example D:"
+tmp = repeat.do(sm3)
+## print tmp.get_string(NormalizeF=False)
+dfa = nfa_to_dfa.do(tmp)
+print dfa

@@ -1,4 +1,4 @@
-<history date="Wed Mar 19 22:40:26 2008" element-n="132">
+<history date="Thu Mar 20 21:31:56 2008" element-n="141">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -202,5 +202,16 @@
         <accept    time="21:40:16" application="test-StateMachine-trace-origin-clone.py" choice="" crc="1563758490" />
         <accept    time="21:40:16" application="test-StateMachine-trace-origin-create-DFA.py" choice="" crc="-1604145748" />
         <test-runs-today n="6" ok-n="2" fail-n="4" else-n="0" last-run="oll korrekt" last-time="21:40:26"/>
+    </day>
+    <day year="2008" month="03" day="20">
+        <accept    time="20:26:01" application="test-nfa-to-dfa.py" choice="" crc="1185955343" />
+        <accept    time="20:29:26" application="test-StateMachine-clone.py" choice="" crc="1355249343" />
+        <accept    time="20:30:11" application="test-StateMachine-inverse.py" choice="" crc="111483634" />
+        <accept    time="20:30:25" application="test-repeat-pure.py" choice="" crc="1893595141" />
+        <accept    time="20:30:42" application="test-parallelize.py" choice="" crc="-1321345312" />
+        <accept    time="20:31:15" application="test-sequentialize.py" choice="" crc="1980443872" />
+        <accept    time="20:31:30" application="test-StateMachine-trace-origin-clone.py" choice="" crc="-973496326" />
+        <accept    time="20:31:46" application="test-parallelize-trace-origin.py" choice="" crc="372081665" />
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="20:31:56"/>
     </day>
 </history>

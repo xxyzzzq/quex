@@ -23,8 +23,8 @@ inverse  =  init-state = 0L
       == 'e' ==> 00002
       <no epsilon>
 00002() <~ 
-      == 'd' ==> 00003
       == 'c' ==> 00005
+      == 'd' ==> 00003
       <no epsilon>
 00003() <~ 
       == 'a' ==> 00004
@@ -60,8 +60,8 @@ inverse  =  init-state = 0L
       == 'e' ==> 00003
       <no epsilon>
 00003() <~ 
-      == ['a', 'g'] ==> 00004
       == [-oo, 'd'], ['f', oo] ==> 00003
+      == ['a', 'g'] ==> 00004
       <no epsilon>
 00004(A, S) <~ 
       <no epsilon>
@@ -78,8 +78,8 @@ sm       =  init-state = 0L
       == 'h' ==> 00003
       <no epsilon>
 00003() <~ 
-      == 'g' ==> 00001
       == 'e' ==> 00004
+      == 'g' ==> 00001
       <no epsilon>
 00004(A, S) <~ 
       <no epsilon>
@@ -97,8 +97,8 @@ inverse  =  init-state = 0L
       == 'e' ==> 00004
       <no epsilon>
 00004() <~ 
-      == 'g' ==> 00005
       == 'g' ==> 00002
+      == 'g' ==> 00005
       <no epsilon>
 00005(A, S) <~ 
       <no epsilon>
