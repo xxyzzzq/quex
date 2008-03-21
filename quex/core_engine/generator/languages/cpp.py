@@ -123,7 +123,7 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     inadmissible_origin_list = filter(lambda origin:
                                       origin.pre_context_begin_of_line_f() or
                                       origin.pre_context_id() != -1L or
-                                      origin.post_contexted_acceptance_f(),
+                                      origin.post_context_id() != -1L,
                                       OriginList)
     assert inadmissible_origin_list == [], \
            "Inadmissible origins for inverse state machine."
@@ -151,7 +151,7 @@ def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
     inadmissible_origin_list = filter(lambda origin:
                                       origin.pre_context_begin_of_line_f() or
                                       origin.pre_context_id() != -1L or
-                                      origin.post_contexted_acceptance_f(),
+                                      origin.post_context_id() != -1L,
                                       OriginList)
     assert inadmissible_origin_list == [], \
            "Inadmissible origins for inverse state machine."

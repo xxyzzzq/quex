@@ -75,7 +75,7 @@ class GeneratorBase:
             self.action_db[sm_id] = action_info
 
             # -- collect all pre-conditions and make one single state machine out of it
-            pre_sm = sm.pre_context_state_machine
+            pre_sm = sm.core().pre_context_sm()
             if pre_sm != None:
                 self.pre_context_sm_list.append(pre_sm)
                 self.pre_context_sm_id_list.append(pre_sm.get_id())
