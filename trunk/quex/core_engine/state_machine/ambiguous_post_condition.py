@@ -174,7 +174,6 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
     #       still be some 'trail' in case of iterations that are not directly
     #       iterated to the ambiguous post condition. Thus drop out may
     #       happen and it must be clear where to put the input pointer in this case.
-    result.mark_state_origins()
 
     return result
 

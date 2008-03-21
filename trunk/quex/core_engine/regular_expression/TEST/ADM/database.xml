@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Thu Mar 20 21:52:52 2008">
+<test-database execution-time-sec="0.00" date="Fri Mar 21 00:40:06 2008">
     <last-used-diff-display-program name="vimdiff"/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.00"> 
         <application file-name="test-pattern-matching.py" info-request-time="1206012984L"/>
@@ -42,7 +42,7 @@
         <test title="Lonestanding characters" time-sum-sec="0.00"> 
             <application file-name="test-lonely-characters.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="657125264"/>
+               <choice name="" result="OK" time-sec="0.00" crc="972274368"/>
             </choice-list>
         </test>
     </group>
@@ -70,7 +70,7 @@
         <test title="Begin of Line '^', End of Line '$'" time-sum-sec="0.00"> 
             <application file-name="test-bol-eol.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="1925491900"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1803958584"/>
             </choice-list>
         </test>
         <test title="pre- and post-conditions" time-sum-sec="0.00"> 
