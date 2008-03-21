@@ -70,7 +70,6 @@ def __debug_entry(function_name, stream):
 def create_EOF_detecting_state_machine(EndOfFile_Code):
     result = StateMachine()
     result.add_transition(result.init_state_index, EndOfFile_Code, AcceptanceF=True) 
-    result.mark_state_origins()
     return result
 
 def __check_for_EOF_or_FAIL_pattern(stream, InitialPosition, EndOfFile_Code):

@@ -61,7 +61,7 @@ class something:
     pass
 
 
-def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=-1, EndOfFile_Code=-1,
+def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
 
     def __validate(SM):
@@ -103,15 +103,11 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=-1, EndOfFile_C
     ## print "##end_of_line_f = ", end_of_line_f
 
     # -- set begin of line/end of line conditions
-    setup_border_conditions.do(sm, begin_of_line_f, end_of_line_f,
-                               BeginOfFile_Code, EndOfFile_Code, 
-                               DOS_CarriageReturnNewlineF)
-
-    # -- check that pre- and post-conditioning did not mess up the origins
-    #if sm.verify_unique_origin() == False:
-    #   raise "state machine does not have a unique origin:\n" + repr(sm) 
-
-    if begin_of_line_f or end_of_line_f: sm = __beautify(sm)
+    if begin_of_line_f or end_of_line_f: 
+        sm = setup_border_conditions.do(sm, begin_of_line_f, end_of_line_f,
+                                        BeginOfFile_Code, EndOfFile_Code, 
+                                        DOS_CarriageReturnNewlineF)
+        sm = __beautify(sm)
 
     return __validate(sm)
 
@@ -497,6 +493,5 @@ def create_ALL_BUT_NEWLINE_state_machine():
     trigger_set = NumberSet(Interval(ord("\n")).inverse()) 
 
     result.add_transition(result.init_state_index, trigger_set, AcceptanceF=True) 
-    result.mark_state_origins()
     return result
     
