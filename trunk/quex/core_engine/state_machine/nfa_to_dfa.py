@@ -71,8 +71,8 @@ def do(SM):
 
 def DEBUG_print(start_state_combination, elementary_trigger_list):
     print "----"
-    print "##sscmb:", start_state_combination
+    print "StartStateCombination:", start_state_combination
     for ti, trigger_set in elementary_trigger_list:
-        print "##elmtl: target=", ti, "trigger set=", trigger_set.get_utf8_string()
+        print "trigger set =", trigger_set.get_utf8_string(), "target =", ti 
     print "----"
 

@@ -386,11 +386,9 @@ class StateMachine:
         return work_list
 
     def get_epsilon_closure_of_state_set(self, StateIdxList):
-        """Returns the epsilon closure of a set of set states, i.e. the union
+        """Returns the epsilon closure of a set of states, i.e. the union
            of the epsilon closures of the single states."""
         result = []
-        # the terminal state is not supposed to have any transitions ... well simply
-        # that's what 'terminal' means! 
 
         for state_idx in StateIdxList:
             ec = self.get_epsilon_closure(state_idx)
@@ -904,7 +902,6 @@ class StateMachine:
         assert x == y                                  # DEBUG
 
         return state_index_sequence
-
 
     def __get_state_index_normalization(self, NormalizeF):
         index_map         = {}
