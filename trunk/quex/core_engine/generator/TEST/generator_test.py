@@ -114,7 +114,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         sys.exit(0)
 
     print "## (1) code generation"    
-    txt  = "#include<stdio.h>\n"
+    txt  = "#include<cstdio>\n"
     txt += "#define  __QUEX_OPTION_UNIT_TEST\n"
 
     txt += generator.do(PatternActionPairList, default_action, PrintStateMachineF=True,
@@ -184,8 +184,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
-                  "-ggdb"    
-                  # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS" + \
+                  "-ggdb " + \
+                  "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " # + \
                   # "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " + \
 
     # print compile_str # DEBUG
