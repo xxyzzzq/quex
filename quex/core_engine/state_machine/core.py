@@ -397,24 +397,25 @@ class StateMachine:
 
         return result
 
-    def get_epsilon_closure(self, StateIdx, done_state_index_list=None):
+    def get_epsilon_closure(self, StateIdx):
         """Return all states that can be reached from 'StateIdx' via epsilon
            transition."""
         assert self.has_state_index(StateIdx)
 
-        if done_state_index_list == None: 
-           done_state_index_list = []
+        done_state_index_list = []
 
-        aggregated_epsilon_closure = [ StateIdx ] 
-        for ti in self.states[StateIdx].get_epsilon_target_state_indices():
-            if ti not in done_state_index_list:
+        def __dive(StateIdx, done_state_index_list):
+            aggregated_epsilon_closure = [ StateIdx ] 
+            for ti in self.states[StateIdx].get_epsilon_target_state_indices():
+                if ti in done_state_index_list: continue
                 # Do not copy() the done state index list, since anything that has been
                 # terminated is fine.
-                follow_up_epsilon_closure = self.get_epsilon_closure(ti, done_state_index_list)
+                follow_up_epsilon_closure = __dive(ti, done_state_index_list)
                 aggregated_epsilon_closure.extend(follow_up_epsilon_closure)
                 done_state_index_list.append(ti)
+            return aggregated_epsilon_closure
 
-        return aggregated_epsilon_closure
+        return __dive(StateIdx, done_state_index_list)
  
     def get_elementary_trigger_sets(self, StateIdxList):
         """Considers the trigger dictionary that contains a mapping from target state index 

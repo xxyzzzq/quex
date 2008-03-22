@@ -153,6 +153,7 @@ class GeneratorBase:
         
         # (2) setup all patterns in paralell 
         sm = parallelize.do(StateMachine_List)
+        print "##dfa:", sm
         ## orphan_state_list = sm.get_orphaned_state_index_list()
         ## if orphan_state_list != []: __on_orphan_states("Parallelizing", orphan_state_list)
 
