@@ -13,8 +13,8 @@
 ##############################################################################
 
 from   quex.core_engine.interval_handling import NumberSet, Interval
-import quex.core_engine.state_machine.sequentialize as sequentialize
-import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
+import quex.core_engine.state_machine.sequentialize         as sequentialize
+import quex.core_engine.state_machine.nfa_to_dfa            as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 import sys
 from   copy import deepcopy
@@ -154,7 +154,7 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
        enables some speed-up when going backwards.
     """
     result = PostConditionSM.get_inverse()
-    result = result.get_DFA()
+    result = nfa_to_dfa.do(result)
     result = hopcroft.do(result)
 
     # -- delete 'drop-out' transitions in non-acceptance states
@@ -166,7 +166,7 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
 
         state.replace_drop_out_target_states_with_adjacent_targets()
 
-    result = result.get_DFA()
+    result = nfa_to_dfa.do(result)
     result = hopcroft.do(result)
 
     # Acceptance States need to be marked: Store input position.
@@ -238,7 +238,7 @@ def mount(the_state_machine, PostConditionSM):
     # (*) create origin data, in case where there is none yet create new one.
     #     (do not delete, otherwise existing information gets lost)
     for state in acceptance_state_list: 
-        state.set_pseudo_ambiguous_post_context_id(backward_detector_sm.get_id())
+        state.set_post_context_backward_detector_sm_id(backward_detector_sm.get_id())
         # At the end of the post condition, the input positions needs to be stored.
         # Before we can go backwards, we need to know where the post condition actually 
         # ended.

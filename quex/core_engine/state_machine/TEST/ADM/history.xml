@@ -1,4 +1,4 @@
-<history date="Sat Mar 22 21:38:18 2008" element-n="145">
+<history date="Sat Mar 22 21:43:03 2008" element-n="145">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:31"/>
         <crc-error time="09:58:13" application="test-ambiguous_post_condition-philosophical_cut.py" choice="" database-crc="-1565289441" real-crc="-562448397"/>
@@ -219,7 +219,7 @@
     </day>
     <day year="2008" month="03" day="22">
         <accept    time="19:21:13" application="test-StateMachine-epsilon-closure.py" choice="" crc="941657240" />
-        <test-runs-today n="29" ok-n="15" fail-n="14" else-n="0" last-run="oll korrekt" last-time="20:36:47"/>
         <accept    time="20:38:18" application="test-StateMachine-trace-origin-create-DFA-2.py" choice="" crc="-1142913691" />
+        <test-runs-today n="30" ok-n="16" fail-n="14" else-n="0" last-run="oll korrekt" last-time="20:43:03"/>
     </day>
 </history>

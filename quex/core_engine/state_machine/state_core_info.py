@@ -127,7 +127,7 @@ class StateCoreInfo:
         assert type(Value) == long
         self.__post_context_id = Value
 
-    def set_pseudo_ambiguous_post_context_id(self, Value):
+    def set_post_context_backward_detector_sm_id(self, Value):
         assert type(Value) == long
         self.__pseudo_ambiguous_post_context_id = Value
 
