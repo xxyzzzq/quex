@@ -110,8 +110,8 @@ class GeneratorBase:
     def __create_backward_input_position_detectors(self):
         # -- find state machines that contain a state flagged with 
         #    'pseudo-ambiguous-post-condition'.
-        papc_sm_id_list = filter(lambda backward_detector_id: backward_detector_id != -1L,
-                                 map(lambda sm: sm.get_pseudo_ambiguous_post_context_id(),
+        papc_sm_id_list = filter(lambda backward_detector_id: backward_detector_id != None,
+                                 map(lambda sm: sm.core().post_context_backward_input_position_detector_sm(),
                                      self.state_machine_list))
 
         # -- collect all mentioned state machines in a list

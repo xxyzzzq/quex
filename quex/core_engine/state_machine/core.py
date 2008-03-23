@@ -269,10 +269,10 @@ class StateMachineCoreInfo:
     def post_context_id(self):                     
         return self.__post_context_id                     
     def post_context_backward_input_position_detector_sm(self): 
-        return self.__backward_input_position_detector_sm 
+        return self.__post_context_backward_input_position_detector_sm
     def post_context_backward_input_position_detector_sm_id(self): 
         if self.__post_context_backward_input_position_detector_sm != None: 
-            return self.__backward_input_position_detector_sm.core().id()
+            return self.__post_context_backward_input_position_detector_sm.core().id()
         else:
             return -1L
 
@@ -293,7 +293,7 @@ class StateMachineCoreInfo:
         self.__post_context_id = Value
     def set_post_context_backward_input_position_detector_sm(self, Value): 
         assert Value.__class__.__name__ == "StateMachine" or Value == None
-        self.__backward_input_position_detector_sm  = Value
+        self.__post_context_backward_input_position_detector_sm = Value
 
 class StateMachine:
 
@@ -604,33 +604,6 @@ class StateMachine:
         # -- for uniqueness of state ids, clone the result
         return result.clone()    
         
-    def get_origin_ids_of_acceptance_states(self):
-        """(1) get ids of all acceptance states.
-           (2) extract their origins (provided they store the input position or are post conditioned).
-        """
-        # -- get list of states that are 'acceptance states'
-        acceptance_state_list = self.get_acceptance_state_list()
-        if acceptance_state_list == []: return []
-
-        # -- collect origins of the acceptance states
-        result = []
-        for acceptance_state in acceptance_state_list:
-            origin_list = acceptance_state.get_origin_list() 
-
-            # -- do not care about 'traces of loosers' (i.e. non-acceptance states)
-            filtered_list = filter(lambda origin:
-                                   origin.store_input_position_f() 
-                                   or origin.post_contexted_acceptance_f()
-                                   or origin.pseudo_ambiguous_post_context_id(),
-                                   origin_list)
-
-            # extract the state machine ids out of the origin informations
-            result.extend(map(lambda x: x.state_machine_id, filtered_list))
-        return result
-        
-    def get_pseudo_ambiguous_post_context_id(self):
-        return self.core().post_context_backward_input_position_detector_sm_id()
-
     def get_pre_context_sm_id(self):
         return self.core().pre_context_sm_id()
 

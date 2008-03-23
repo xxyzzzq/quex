@@ -635,7 +635,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
         txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
-        if state_machine.get_pseudo_ambiguous_post_context_id() == -1L:
+        if state_machine.core().post_context_backward_input_position_detector_sm() == None:
             txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % \
                    post_context_number_str
         else:
@@ -645,7 +645,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
             #       where the 'normal' pattern ended, then we can do a backward detection.
             txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);\n"
             txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
-                   __nice(state_machine.get_pseudo_ambiguous_post_context_id())
+                   __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
         txt += "    goto __REENTRY_PREPARATION;\n" # % StateMachineName
