@@ -143,10 +143,6 @@ def get_generator_input(Mode, match_info_list, Setup):
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine
 
-        if len(pattern_state_machine.get_origin_ids_of_acceptance_states()) == 0:
-            error_msg("pattern '%s' is not a valid regular expression. " % pattern, 
-                      pattern_info.action.filename, pattern_info.action.line_n)
-        
         # counting the columns,
         # counting the newlines: here one might have analysis about the pattern
         #                        preceeding and only doing the check if the pattern
@@ -154,7 +150,6 @@ def get_generator_input(Mode, match_info_list, Setup):
         action = action_code_formatter.do(Mode, pattern_info.action, Setup, safe_pattern_str,
                                           pattern_state_machine)
 
-        
         action_info = ActionInfo(pattern_state_machine, action)
 
         pattern_action_pair_list.append(action_info)

@@ -137,6 +137,12 @@ class TransitionMap:
         return self.__db
 
     def get_trigger_set_line_up(self):
+        ## WATCH AND SEE THAT WE COULD CACHE HERE AND GAIN A LOT OF SPEED
+        ## if self.__dict__.has_key("NONSENSE"): 
+        ##    self.NONSENSE += 1
+        ##    print "## called", self.NONSENSE
+        ## else:
+        ##    self.NONSENSE = 1
         """Lines the triggers up on a 'time line'. A target is triggered by
            certain characters that belong to 'set' (trigger sets). Those sets
            are imagined as ranges on a time line. The 'history' is described

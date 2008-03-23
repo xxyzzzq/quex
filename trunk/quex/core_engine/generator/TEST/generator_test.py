@@ -121,7 +121,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         AnalyserStateClassName         = "analyser",
                         StandAloneAnalyserF            = True, 
                         QuexEngineHeaderDefinitionFile = core_engine_definition_file,
-                        ControlCharacterCodeList = [BeginOfFile_Code, EndOfFile_Code])
+                        ControlCharacterCodeList = [BeginOfFile_Code, EndOfFile_Code, 0x0])
 
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 
