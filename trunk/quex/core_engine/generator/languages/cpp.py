@@ -303,7 +303,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         info = get_on_detection_code_fragment(StateMachineName, origin)
 
         if origin.pre_context_id() != -1L:
-            txt += if_statement + " pre_context_%s_fulfilled_f $then\n" % origin.state_machine_id 
+            txt += if_statement + " pre_context_%s_fulfilled_f $then\n" % origin.pre_context_id() 
             txt += indent_this(info)
             txt += "$end\n"
         
@@ -505,14 +505,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt = txt.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", load_procedure_txt)                   
 
     # -- pre-condition fulfillment flags                
-    for state_machine_id in PreConditionIDList:
-        # get the state machine that the pre-condition serves:
-        # -- get the state machine that represents the pre-condition
-        pre_sm = index.get_state_machine_by_id(state_machine_id)
-        # -- extract the original state machine that the pre-condition referes to.    
-        pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
-        txt += "    int                        pre_context_%s_fulfilled_f = 0;\n" \
-               % __nice(pre_sm_origin_id)
+    for pre_context_sm_id in PreConditionIDList:
+        txt += "    int                        pre_context_%s_fulfilled_f = 0;\n" % __nice(pre_context_sm_id)
 
     # -- entry to the actual function body
     txt += "    QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);\n"
@@ -671,14 +665,9 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
     delete_pre_context_flags_str = ""
-    for state_machine_id in PreConditionIDList:
-        # get the state machine that the pre-condition serves:
-        # -- get the state machine that represents the pre-condition
-        pre_sm = index.get_state_machine_by_id(state_machine_id)
-        # -- extract the original state machine that the pre-condition referes to.    
-        pre_sm_origin_id = pre_sm.get_the_unique_original_state_machine_id()
+    for pre_context_sm_id in PreConditionIDList:
         delete_pre_context_flags_str += "    pre_context_%s_fulfilled_f = 0;\n" \
-                                          % __nice(pre_sm_origin_id)
+                                          % __nice(pre_context_sm_id)
 
     #  -- execute default pattern action 
     #  -- reset character stream to last success                

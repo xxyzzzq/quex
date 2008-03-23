@@ -131,7 +131,7 @@ class StateInfo:
     def set_store_input_position_f(self, Value):
         self.core().set_store_input_position_f(Value)
 
-    def set_pseudo_ambiguous_post_context_id(self, Value):
+    def set_post_context_backward_detector_sm_id(self, Value):
         self.core().set_post_context_backward_detector_sm_id(Value)
     
     def set_pre_context_id(self, PreConditionStateMachineID):
@@ -628,26 +628,6 @@ class StateMachine:
             result.extend(map(lambda x: x.state_machine_id, filtered_list))
         return result
         
-    def get_the_unique_original_state_machine_id(self):
-        """Checks if there is one single state machine as origin, if not an exception
-           is thrown. Otherwise the state machine id of this original state machine 
-           is returned.
-        """   
-
-        origin_list = []
-        for state in self.states.values():
-            origin_list.extend(state.get_origin_list())
-    
-        original_sm_list = {}
-        for origin in origin_list:
-            original_sm_list[origin.state_machine_id] = True
-
-        assert len(original_sm_list.keys()) <= 1, \
-               "state machine has more than one original state machine.\n" + \
-               "state machine ids: " + repr(original_sm_list)
-
-        return original_sm_list.keys()[0]         
-                
     def get_pseudo_ambiguous_post_context_id(self):
         return self.core().post_context_backward_input_position_detector_sm_id()
 
