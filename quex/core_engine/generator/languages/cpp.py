@@ -614,7 +614,6 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
         txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  
         txt += indentation + "}\n"
 
-
         return txt
 
     # (*) specific terminal states of patterns (entered from acceptance states)

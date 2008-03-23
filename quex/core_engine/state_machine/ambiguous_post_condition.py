@@ -223,7 +223,8 @@ def mount(the_state_machine, PostConditionSM):
     #     state of the post condition to the start of the post-condition.
     #     The start of the post condition is at the same time the end 
     #     of the core pattern.
-    backward_detector_sm = __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionSM)
+    backward_detector_sm    = __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionSM)
+    backward_detector_sm_id = backward_detector_sm.get_id()
 
     # NOTE: We do not need to mark any origins in the backward detector,
     #       since it is not concerned with acceptance states. Its only
@@ -235,14 +236,16 @@ def mount(the_state_machine, PostConditionSM):
             "error: mounting pseudo-ambiguous post condition:\n" + \
             "error: no acceptance state in sequentialized state machine."
 
-    # (*) create origin data, in case where there is none yet create new one.
-    #     (do not delete, otherwise existing information gets lost)
+    # (*) Create origin data, in case where there is none yet create new one.
+    #     (Do not delete, otherwise existing information gets lost.)
     for state in acceptance_state_list: 
-        state.set_post_context_backward_detector_sm_id(backward_detector_sm.get_id())
-        # At the end of the post condition, the input positions needs to be stored.
-        # Before we can go backwards, we need to know where the post condition actually 
-        # ended.
+        state.set_post_context_backward_detector_sm_id(backward_detector_sm_id)
+        # At the end of the post condition, the input positions needs to be stored. Before
+        # we can go backwards, we need to know where the post condition actually ended.
         state.set_store_input_position_f(True)
+
+    the_state_machine.core().set_post_context_backward_input_position_detector_sm(backward_detector_sm)
+
 
     # We cannot do a NFA to DFA and Hopcroft Optimization, because otherwise we
     # would create a new state machine. This function, though, is considered to 
