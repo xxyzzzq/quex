@@ -35,7 +35,7 @@
       ==<epsilon>==> 00007, 00006
 
 ## compute epsilon closures of all states:
-state =  35 epsilon-closure =  [35L, 31L, 36L]
+state =  35 epsilon-closure =  [31L, 35L, 36L]
 state =  29 epsilon-closure =  [29L, 30L, 31L, 36L]
 state =  30 epsilon-closure =  [30L, 31L, 36L]
 ## normal epsilon closures =  [25L, 26L, 27L, 28L, 31L, 32L, 33L, 34L, 36L]

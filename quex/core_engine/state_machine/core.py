@@ -402,20 +402,15 @@ class StateMachine:
            transition."""
         assert self.has_state_index(StateIdx)
 
-        done_state_index_list = []
+        aggregated_epsilon_closure = [ StateIdx ] 
+        def __dive(state_index):
+            for target_index in self.states[state_index].get_epsilon_target_state_indices():
+                if target_index in aggregated_epsilon_closure: continue
+                aggregated_epsilon_closure.append(target_index)
+                __dive(target_index)
 
-        def __dive(StateIdx, done_state_index_list):
-            aggregated_epsilon_closure = [ StateIdx ] 
-            for ti in self.states[StateIdx].get_epsilon_target_state_indices():
-                if ti in done_state_index_list: continue
-                # Do not copy() the done state index list, since anything that has been
-                # terminated is fine.
-                follow_up_epsilon_closure = __dive(ti, done_state_index_list)
-                aggregated_epsilon_closure.extend(follow_up_epsilon_closure)
-                done_state_index_list.append(ti)
-            return aggregated_epsilon_closure
-
-        return __dive(StateIdx, done_state_index_list)
+        __dive(StateIdx)
+        return aggregated_epsilon_closure
  
     def get_elementary_trigger_sets(self, StateIdxList):
         """Considers the trigger dictionary that contains a mapping from target state index 
@@ -466,7 +461,7 @@ class StateMachine:
             txt = ""
             for item in history:
                 txt += repr(item) + "\n"
-            return txt
+            print txt
 
         # (*) accumulate the transitions for all states in the state list.
         #     transitions to the same target state are combined by union.
@@ -482,6 +477,7 @@ class StateMachine:
 
         # (*) sort history according to position
         history.sort(lambda a, b: cmp(a.position, b.position))
+        ##DEBUG_print_history(history)
 
         # (*) build the elementary subset list 
         combinations = {}                             # use dictionary for uniqueness
@@ -501,7 +497,7 @@ class StateMachine:
                 interval = Interval(current_interval_begin, item.position)
                 key_str  = repr(current_involved_targets_epsilon_closure)
                 if not combinations.has_key(key_str):   
-                    combinations[key_str] = NumberSet(interval)
+                    combinations[key_str] = NumberSet(interval, ArgumentIsYoursF=True)
                     map_key_str_to_target_index_combination[key_str] = \
                                      current_involved_targets_epsilon_closure
                 else:

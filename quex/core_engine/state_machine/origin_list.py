@@ -1,4 +1,5 @@
-from   quex.core_engine.state_machine.state_core_info import StateCoreInfo
+from copy import deepcopy
+from quex.core_engine.state_machine.state_core_info import StateCoreInfo
 
 class StateOriginList:
     def __init__(self):
@@ -54,9 +55,10 @@ class StateOriginList:
     def clear(self):
         self.__list = []
 
-    def set(self, OriginList):
+    def set(self, OriginList, ArgumentIsYoursF=False):
         assert type(OriginList) == list
-        self.__list = OriginList
+        if ArgumentIsYoursF: self.__list = OriginList
+        else:                self.__list = deepcopy(OriginList)
 
     def is_empty(self):
         return self.__list == []

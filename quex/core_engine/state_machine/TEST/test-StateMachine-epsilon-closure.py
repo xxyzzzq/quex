@@ -19,6 +19,7 @@ print "## compute epsilon closures of all states:"
 normal_epsilon_closures = []
 for state_idx in test_sm0.get_state_indices():
     ec =  test_sm0.get_epsilon_closure(state_idx)
+    ec.sort()
     if len(ec) != 1: print "state = ", state_idx, "epsilon-closure = ", ec
     else:            
         if ec[0] == state_idx: normal_epsilon_closures.append(state_idx)

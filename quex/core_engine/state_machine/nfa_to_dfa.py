@@ -27,6 +27,9 @@ def do(SM):
     worklist = [ ( result.init_state_index, initial_state_epsilon_closure) ]
 
     while worklist != []:
+        # 'start_state_index' is the index of an **existing** state in the state machine.
+        # It was either created above, in StateMachine's constructor, or as a target
+        # state index.
         start_state_index, start_state_combination = worklist.pop()
  
         # (*) compute the elementary trigger sets together with the 
@@ -53,7 +56,7 @@ def do(SM):
 
             # -- if target state combination was not considered yet, then create 
             #    a new state in the state machine
-            if result.has_state_index(target_state_index):
+            if result.states.has_key(target_state_index):
                 # -- add only a transition 'start state to target state'
                 result.add_transition(start_state_index, trigger_set, target_state_index)
             else:
