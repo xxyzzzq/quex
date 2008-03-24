@@ -53,15 +53,15 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST \
         QUEX_CORE_ANALYSER_STRUCT*,                  \
         QUEX_CHARACTER_TYPE*,                        \
-	quex::buffer_core<QUEX_CHARACTER_TYPE>*,     \
-	QUEX_MODE_FUNCTION_P 
+        quex::buffer_core<QUEX_CHARACTER_TYPE>*,     \
+        QUEX_MODE_FUNCTION_P 
 
 QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me, 
-	                       QUEX_CHARACTER_TYPE*         InputStartPosition,
-			       quex::buffer_core<QUEX_CHARACTER_TYPE>* the_buffer,
-			       QUEX_MODE_FUNCTION_P                    TheInitialAnalyserFunctionP) 
+                               QUEX_CHARACTER_TYPE*         InputStartPosition,
+                               quex::buffer_core<QUEX_CHARACTER_TYPE>* the_buffer,
+                               QUEX_MODE_FUNCTION_P                    TheInitialAnalyserFunctionP) 
 {
     /* Provide a string object 'Lexeme' and an integer 'LexemeL' to support
      ** further treatment inside the action.
@@ -123,10 +123,10 @@ forward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input
     // not BOFC: See ./quex/buffer/README.txt
     __quex_assert( input != me->__buffer->BOFC );
     if( input == me->__buffer->BLC ) {                                        
-	// request: go back to 'get next input': REQUEST UPDATE ADDRESSES!   
-	const int DeletedByteN = me->__buffer->load_forward(); 
-	// no load possible => same as normal drop out
-	return DeletedByteN == -1 ? 0 : DeletedByteN;
+        // request: go back to 'get next input': REQUEST UPDATE ADDRESSES!   
+        const int DeletedByteN = me->__buffer->load_forward(); 
+        // no load possible => same as normal drop out
+        return DeletedByteN == -1 ? 0 : DeletedByteN;
     }                                                                         
     return 0;      /* => normal drop out */       
 }
@@ -137,8 +137,8 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
     // not EOFC: See ./quex/buffer/README.txt
     __quex_assert( input != me->__buffer->EOFC );
     if( input == me->__buffer->BLC ) {                                        
-	me->__buffer->load_backward();                                           
-	return 1;  /* request: go back to 'get next input': UPDATE ADDRESSES! */   
+        me->__buffer->load_backward();                                           
+        return 1;  /* request: go back to 'get next input': UPDATE ADDRESSES! */   
     }                                                                         
     return 0;      /* => normal drop out */       
 }
@@ -177,7 +177,7 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
 #define QUEX_PREPARE_LEXEME_OBJECT                                                       \
         me->char_covered_by_terminating_zero = me->__buffer->get_subsequent_character(); \
         me->__buffer->set_subsequent_character('\0');                                    \
-	Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->__buffer->get_lexeme_start_p());                              
+        Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->__buffer->get_lexeme_start_p());                              
 
 /* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
 ** QUEX_PREPARE_LEXEME_OBJECT in case that no Lexeme object is
@@ -204,7 +204,7 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
 */
 #define QUEX_PREPARE_LEXEME_LENGTH                                                       \
         __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());     \
-	LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p() + 1);       
+        LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p() + 1);       
 
 #ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
 
@@ -213,7 +213,7 @@ backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE inpu
 #   define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE                     \
            if( self.__previous_mode_p != self.__current_mode_p) {                \
                self.__previous_mode_p = self.__current_mode_p;                   \
-	       self.__continue_analysis_after_adapting_mode_function_p_f = true; \
+               self.__continue_analysis_after_adapting_mode_function_p_f = true; \
                return 1;                                                         \
            }
 

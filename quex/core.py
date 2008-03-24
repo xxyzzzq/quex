@@ -70,7 +70,10 @@ def do(Setup):
         #    by the code generator.
         pattern_action_pair_info_list = mode.pattern_action_pairs().values()
 
-        # -- default action
+        # -- end of stream action
+        end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream(), Setup, 
+                                                        "on_end_of_stream", None, DefaultActionF=True)
+        # -- default action (nothing matched)
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
                                                   "on_failure", None, DefaultActionF=True)
 
@@ -83,6 +86,7 @@ def do(Setup):
 
         analyzer_code += generator.do(pattern_action_pair_list, 
                                       default_action, 
+                                      EndOfStreamAction              = end_of_stream_action,
                                       PrintStateMachineF             = True,
                                       StateMachineName               = mode.name,
                                       AnalyserStateClassName         = Setup.output_engine_name,

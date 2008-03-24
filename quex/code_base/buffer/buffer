@@ -104,8 +104,8 @@ namespace quex {
 #endif          
 
     struct DefaultOverflowPolicy {
-    template<class X, class Y> bool static forward(basic_buffer<X,Y>* that);
-    template<class X, class Y> bool static backward(basic_buffer<X,Y>* that);
+        template<class X, class Y> bool static forward(basic_buffer<X,Y>* that);
+        template<class X, class Y> bool static backward(basic_buffer<X,Y>* that);
     };
 
     template<class CharacterType=uint8_t>
@@ -115,7 +115,7 @@ namespace quex {
             //       buffer happens seldom, and one can be more tolerant. For iterating
             //       we do not want virtual functions since those are slower and cannot
             //       be inlined. For loading, virtual functions are OK, it is just one
-            //       word more to copy (probably neglectable when e.g. 65536 bytes are loaded).
+            //       word more to dereference (probably neglectable when e.g. 65536 bytes are loaded).
             //
             // If the buffer definition is split into base and derived class, the lexical 
             // analyser can contain 'buffer_core<character_type>*' which can hold any buffer

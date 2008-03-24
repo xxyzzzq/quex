@@ -1,11 +1,13 @@
 import quex.core_engine.state_machine.character_counter as counter
 from quex.core_engine.interval_handling import NumberSet
 
-def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateMachine, DefaultActionF=False):
+def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateMachine, 
+       DefaultActionF=False):
 
     if type(CodeFragment_or_CodeFragments) == list:
         assert DefaultActionF != False, \
-               "action code formatting: Multipled Code Fragments can only be specified for default action."
+               "Action code formatting: Multipled Code Fragments can only be specified for default or\n"
+               "end of stream action."
         CodeFragementList = CodeFragment_or_CodeFragments
     else:
         CodeFragment = CodeFragment_or_CodeFragments

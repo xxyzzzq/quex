@@ -24,7 +24,7 @@ IDEA: This might be optimized, but the code size to implement this
 	    if( x.load_forward() == -1 ) break;
 	}
 
-(*) getting a character in forward direction
+(*) getting a character in backward direction
 
 	const int tmp = x.get_backward();
 	//
