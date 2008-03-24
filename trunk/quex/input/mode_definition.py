@@ -91,13 +91,6 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
         result = check_for_event_specification(word, fh, new_mode, Setup, pattern_i)
         if result == True: 
             return True # all work has been done in check_for_event_specification()
-
-        elif result == "<<EOF>>":
-            pattern = "<<EOF>>"
-            pattern_state_machine = regex.do("<<EOF>>", {}, 
-                                             Setup.begin_of_stream_code, Setup.end_of_stream_code,
-                                             DOS_CarriageReturnNewlineF= not Setup.no_dos_carriage_return_newline_f)
-
         else:
             fh.seek(position)
             description = "start of mode element: regular expression"
@@ -244,7 +237,9 @@ def check_for_event_specification(word, fh, new_mode, Setup, PatternIdx):
         # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
         #       patterns are entered here, even if later versions of quex might dismiss
         #       those rule deefinitions in favor of consistent event handlers.
-        return "<<EOF>>"
+        code_fragment.parse_unique(fh, "%s::on_end_of_stream event handler" % new_mode.name, 
+                                   new_mode.on_end_of_stream)
+        return True
 
     elif len(word) >= 3 and word[:3] == "on_":    
         error_msg("Unknown event handler '%s'. Known event handlers are:\n\n" % word + \

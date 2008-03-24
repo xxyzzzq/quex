@@ -14,19 +14,19 @@ def parse(fh, code_fragment_name):
 
     return result
 
-def parse_unique(fh, code_fragment_name, possible_code_fragment_carrier):
+def parse_unique(fh, code_fragment_name, code_fragment_carrier):
     """Parse a code fragment that can only be defined once. That includes that
        and error is sent, if it is tried to define it a second time.
     """   
-    if possible_code_fragment_carrier.line_n != -1:
+    if code_fragment_carrier.line_n != -1:
         error_msg("%s defined twice" % code_fragment_name, fh, DontExitF=True)
         error_msg("previously defined here", 
-                  possible_code_fragment_carrier.filename,
-                  possible_code_fragment_carrier.line_n)
+                  code_fragment_carrier.filename,
+                  code_fragment_carrier.line_n)
 
     result = parse(fh, code_fragment_name)
     # assign values to existing object
-    possible_code_fragment_carrier.code     = result.code
-    possible_code_fragment_carrier.filename = result.filename
-    possible_code_fragment_carrier.line_n   = result.line_n
+    code_fragment_carrier.code     = result.code
+    code_fragment_carrier.filename = result.filename
+    code_fragment_carrier.line_n   = result.line_n
     

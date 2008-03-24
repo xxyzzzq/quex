@@ -10,7 +10,8 @@ class Generator(GeneratorBase):
 
     def __init__(self, PatternActionPair_List, 
                  StateMachineName, AnalyserStateClassName, Language, 
-                 DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
+                 DefaultAction, EndOfStreamAction, 
+                 QuexEngineHeaderDefinitionFile, ModeNameList, 
                  PrintStateMachineF, StandAloneAnalyserF,
                  ControlCharacterCodeList=[]):
 
@@ -27,6 +28,7 @@ class Generator(GeneratorBase):
         self.analyzer_state_class_name           = AnalyserStateClassName
         self.programming_language                = Language
         self.language_db                         = languages.db[self.programming_language]
+        self.end_of_stream_action                = DefaultAction
         self.default_action                      = DefaultAction
         self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
         self.mode_name_list                      = ModeNameList
@@ -56,6 +58,7 @@ class Generator(GeneratorBase):
                                             self.sm, 
                                             self.action_db, 
                                             self.default_action, 
+                                            self.end_of_stream_action, 
                                             self.begin_of_line_condition_f, 
                                             self.pre_context_sm_id_list) 
 
@@ -122,7 +125,8 @@ class Generator(GeneratorBase):
 
         return languages.replace_keywords(txt, LanguageDB, NoIndentF=True)
 
-def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="",
+def do(PatternActionPair_List, DefaultAction, 
+       EndOfStreamAction="", Language="C++", StateMachineName="",
        PrintStateMachineF=False,
        AnalyserStateClassName="analyser_state",
        StandAloneAnalyserF=False,
@@ -150,7 +154,7 @@ def do(PatternActionPair_List, DefaultAction, Language="C++", StateMachineName="
     """
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
-                     DefaultAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
+                     DefaultAction, EndOfStreamAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
                      PrintStateMachineF, StandAloneAnalyserF, 
                      ControlCharacterCodeList).do()
     

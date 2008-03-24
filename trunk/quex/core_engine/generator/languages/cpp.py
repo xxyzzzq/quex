@@ -546,6 +546,13 @@ __terminal_state_str  = """
   //
 %%SPECIFIC_TERMINAL_STATES%%
 
+  TERMINAL_END_OF_STREAM:
+%%END_OF_STREAM_ACTION%%
+
+  TERMINAL_DEFAULT:
+%%DEFAULT_ACTION%%
+        goto __REENTRY_PREPARATION;
+
   %%GENERAL_TERMINAL_STATE_LABEL%%: {
         int tmp = last_acceptance;
         //
@@ -555,10 +562,7 @@ __terminal_state_str  = """
         __QUEX_DEBUG_INFO_TERMINAL(General);
         switch( tmp ) {
 %%JUMPS_TO_ACCEPTANCE_STATE%%
-            default:
-               // no acceptance state    
-%%DEFAULT_ACTION%%
-               goto __REENTRY_PREPARATION;
+            default: goto TERMINAL_DEFAULT; /* nothing matched */
         }
     }
 
@@ -585,7 +589,8 @@ __terminal_state_str  = """
     goto __REENTRY_POINT;
 """
 
-def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeginOfLineF, PreConditionIDList):
+def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStreamAction, 
+                      SupportBeginOfLineF, PreConditionIDList):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -666,17 +671,21 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, SupportBeg
     delete_pre_context_flags_str = ""
     for pre_context_sm_id in PreConditionIDList:
         delete_pre_context_flags_str += "    pre_context_%s_fulfilled_f = 0;\n" \
-                                          % __nice(pre_context_sm_id)
+                                        % __nice(pre_context_sm_id)
 
     #  -- execute default pattern action 
     #  -- reset character stream to last success                
     #  -- goto initial state    
     default_action_str = __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
                                              IndentationOffset=16)
+    end_of_stream_code_action_str = __adorn_action_code(ActionInfo(-1, EndOfStreamAction), SupportBeginOfLineF,
+                                                        IndentationOffset=16)
+
     txt = blue_print(__terminal_state_str, 
                      [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
                       ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
                       ["%%DEFAULT_ACTION%%",               default_action_str],
+                      ["%%END_OF_STREAM_ACTION%%",         end_of_stream_code_action_str],
                       ["%%GENERAL_TERMINAL_STATE_LABEL%%", label.get_terminal(StateMachineName, None)],
                       ["%%STATE_MACHINE_NAME%%",           StateMachineName],
                       ["%%INITIAL_STATE_INDEX_LABEL%%",    label.get(StateMachineName, sm.init_state_index)],

@@ -210,11 +210,12 @@ class LexMode:
         #    then, a derived mode cannot add now exits or entrys
         self.options_info["restrict:"] = OptionInfo("list", ["exit", "entry"])
 
-        self.on_entry       = ReferencedCodeFragment()
-        self.on_exit        = ReferencedCodeFragment()
-        self.on_match       = ReferencedCodeFragment()
-        self.on_failure     = ReferencedCodeFragment()
-        self.on_indentation = ReferencedCodeFragment()
+        self.on_entry         = ReferencedCodeFragment()
+        self.on_exit          = ReferencedCodeFragment()
+        self.on_match         = ReferencedCodeFragment()
+        self.on_failure       = ReferencedCodeFragment()
+        self.on_end_of_stream = ReferencedCodeFragment()
+        self.on_indentation   = ReferencedCodeFragment()
 
         # A flag indicating wether the mode has gone trough
         # consistency check.
@@ -227,11 +228,12 @@ class LexMode:
                and CodeFragment.filename == "": return False
             else:                               return True
 
-        if   __check(self.on_entry):       return True
-        elif __check(self.on_exit):        return True
-        elif __check(self.on_match):       return True
-        elif __check(self.on_failure):     return True
-        elif __check(self.on_indentation): return True
+        if   __check(self.on_entry):         return True
+        elif __check(self.on_exit):          return True
+        elif __check(self.on_match):         return True
+        elif __check(self.on_failure):       return True
+        elif __check(self.on_end_of_stream): return True
+        elif __check(self.on_indentation):   return True
 
     def has_matches(self):
         assert self.inheritance_circularity_check_done_f == True, \
@@ -294,6 +296,12 @@ class LexMode:
            Returns list of 'ReferencedCodeFragment'.
         """
         return self.__collect_fragments("on_match")
+
+    def on_end_of_stream_code_fragments(self, Depth=0):
+        """Collect all 'on_end_of_stream' event handlers from all base classes.
+           Returns list of 'ReferencedCodeFragment'.
+        """
+        return self.__collect_fragments("on_end_of_stream")
 
     def on_failure_code_fragments(self, Depth=0):
         """Collect all 'on_failure' event handlers from all base classes.
