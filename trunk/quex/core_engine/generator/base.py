@@ -110,13 +110,16 @@ class GeneratorBase:
     def __create_backward_input_position_detectors(self):
         # -- find state machines that contain a state flagged with 
         #    'pseudo-ambiguous-post-condition'.
-        papc_sm_id_list = filter(lambda backward_detector_sm_id: backward_detector_sm_id != -1L,
-                                 map(lambda sm: 
-                                     sm.core().post_context_backward_input_position_detector_sm_id(),
-                                     self.state_machine_list))
+        # -- collect all backward detector state machines in a list
+        papc_sm_list = [] 
+        for sm in self.state_machine_list:
+            papc_sm = sm.core().post_context_backward_input_position_detector_sm()
+            if sm.core().post_context_backward_input_position_detector_sm() == None: continue
+            papc_sm_list.append(papc_sm)
+            # -- code generation 'looks' for origins, so mark them.
+            papc_sm.mark_state_origins()
 
-        # -- collect all mentioned state machines in a list
-        return map(get_state_machine_by_id, papc_sm_id_list)
+        return papc_sm_list 
 
     def __get_combined_state_machine(self, StateMachine_List, FilterDominatedOriginsF=True):
         """Creates a DFA state machine that incorporates the paralell
