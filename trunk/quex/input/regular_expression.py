@@ -9,21 +9,15 @@ def parse(fh, Setup):
 
     start_position = fh.tell()
     try:
-        # -- parse regular expression, build state machine
+        # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          BeginOfFile_Code           = Setup.begin_of_stream_code,
                                          EndOfFile_Code             = Setup.end_of_stream_code,
                                          DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f)
 
+        # (*) error in regular expression?
         if pattern_state_machine == None:
             error_msg("No valid regular expression detected.", fh)
-
-        orphan_state_list = pattern_state_machine.get_orphaned_state_index_list()
-        if orphan_state_list != []:
-            error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                      "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
-                      fh, DontExitF=True)
 
     except RegularExpressionException, x:
         fh.seek(start_position)

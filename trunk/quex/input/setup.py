@@ -182,8 +182,8 @@ def validate(setup, command_line, argv):
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
-    if setup.begin_of_stream_code == 0 or setup.end_of_stream_code == 0:
-        error_msg("code for begin/end of stream cannot be zero!")
+    # check whether the limit codes make sense (end of file, begin of file, buffer limit)
+    __check_stream_limit_codes(setup)
 
     # check validity
     bpc = setup.bytes_per_ucs_code_point
@@ -256,3 +256,11 @@ def __get_supported_command_line_option_description(NormalModeOptions):
     txt += "\nOPTIONS FOR QUERY MODE:\n"
     txt += query.get_supported_command_line_option_description()
     return txt
+
+def __check_stream_limit_codes(setup):
+    if setup.begin_of_stream_code == setup.end_of_stream_code:
+        error_msg("code for begin/end of stream cannot be equal!")
+    if setup.begin_of_stream_code == setup.buffer_limit_code:
+        error_msg("code for begin of stream and buffer limit cannot be equal!")
+    if setup.buffer_limit_code == setup.end_of_stream_code:
+        error_msg("code for end of stream and buffer limit cannot be equal!")
