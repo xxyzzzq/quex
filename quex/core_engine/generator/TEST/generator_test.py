@@ -106,8 +106,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     try:
         PatternActionPairList = map(lambda x: 
                                     ActionInfo(regex.do(x[0], PatternDictionary, 
-                                               BeginOfFile_Code, EndOfFile_Code), 
-                                               action(x[1])),
+                                                        BeginOfFile_Code, EndOfFile_Code), 
+                                                        action(x[1])),
                                     PatternActionPairList)
     except RegularExpressionException, x:
         print "Regular expression parsing:\n" + x.message
@@ -117,11 +117,13 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     txt  = "#include<cstdio>\n"
     txt += "#define  __QUEX_OPTION_UNIT_TEST\n"
 
-    txt += generator.do(PatternActionPairList, default_action, PrintStateMachineF=True,
+    txt += generator.do(PatternActionPairList, 
+                        DefaultAction                  = default_action, 
+                        PrintStateMachineF             = True,
                         AnalyserStateClassName         = "analyser",
                         StandAloneAnalyserF            = True, 
                         QuexEngineHeaderDefinitionFile = core_engine_definition_file,
-                        ControlCharacterCodeList = [BeginOfFile_Code, EndOfFile_Code, 0x0])
+                        ControlCharacterCodeList       = [BeginOfFile_Code, 0x0]) # EOF shall not be deleted!
 
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 
@@ -132,11 +134,14 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
        NDEBUG_str=""):    
 
+    if BufferType=="QuexBuffer": BeginOfFile_Code = 0x19; EndOfFile_Code = 0x1A
+    else:                        BeginOfFile_Code = 1;    EndOfFile_Code = 2
+
     try:
         adapted_dict = {}
         for key, regular_expression in PatternDictionary.items():
             string_stream = StringIO(regular_expression)
-            state_machine = regex.do(string_stream, adapted_dict)
+            state_machine = regex.do(string_stream, adapted_dict, EndOfFile_Code=EndOfFile_Code)
             # It is ESSENTIAL that the state machines of defined patterns do not 
             # have origins! Actually, there are not more than patterns waiting
             # to be applied in regular expressions. The regular expressions 
@@ -144,14 +149,12 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
             state_machine.delete_state_origins()
 
             adapted_dict[key] = PatternShorthand(key, state_machine)
+
     except RegularExpressionException, x:
         print "Dictionary Creation:\n" + repr(x)
     
     test_program, core_engine_definition_file = create_main_function(BufferType, TestStr,
                                                                      QuexBufferSize, QuexBufferFallbackN)
-
-    if BufferType=="QuexBuffer": BeginOfFile_Code = 0x19; EndOfFile_Code = 0x1A
-    else:                        BeginOfFile_Code = 0;    EndOfFile_Code = 0
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
                                                        adapted_dict, 

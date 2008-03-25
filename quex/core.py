@@ -85,7 +85,7 @@ def do(Setup):
         inheritance_info_str += dummy + "**\n"
 
         analyzer_code += generator.do(pattern_action_pair_list, 
-                                      default_action, 
+                                      DefaultAction                  = default_action, 
                                       EndOfStreamAction              = end_of_stream_action,
                                       PrintStateMachineF             = True,
                                       StateMachineName               = mode.name,

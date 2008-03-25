@@ -31,7 +31,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             sm = setup_post_context.do(sm, post_sm) 
             sm = nfa_to_dfa.do(sm)
             sm.delete_meaningless_origins()
-        
+            
         else:
             post_context_id = sm.core().post_context_id()
             # end of line in two cases:
@@ -45,7 +45,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
                                                      DOS_CarriageReturnNewlineF, InverseF=False)
             # -- the post-context flag needs to be raised
             sm.states[new_state_idx].set_post_context_id(post_context_id)
-            
+
     # (2) begin of line
     if BeginOfLineF: 
         # begin of line in two cases:

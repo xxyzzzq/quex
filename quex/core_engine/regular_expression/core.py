@@ -36,7 +36,6 @@ from quex.exception                      import RegularExpressionException
 from quex.core_engine.interval_handling  import *
 from quex.core_engine.state_machine.core import StateMachine
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
-                                                          __check_for_EOF_or_FAIL_pattern, \
                                                           __debug_entry, \
                                                           __debug_exit, \
                                                           __debug_print
@@ -61,19 +60,72 @@ class something:
     pass
 
 
+def __clean_and_validate(sm, EndOfFileCode, AllowNothingIsFineF):
+    """This function is to be used by the outer shell to the user. It ensures that 
+       the state machine which is returned is conform to some assumptions.
+    """
+
+    # (*) Delete EOF where it has no right to occur
+    __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode)
+
+    # (*) Delete transitions that make practically no sense
+    __delete_transitions_on_code_points_below_zero(sm)
+
+
+    # (*) 'Nothing is fine' is not a pattern that we can accept. See the discussion
+    #     in the module "quex.core_engine.generator.core.py"
+    if sm.get_init_state().core().is_acceptance() and AllowNothingIsFineF == False: 
+        raise RegularExpressionException(
+                "Pattern results in a 'nothing is acceptable' state machine.\n" + \
+                "This means, that no step forward in the input still sets the analyzer\n" + \
+                "into an acceptance state. Thus, as soon as no other input matches\n" + \
+                "the analyzer ends up in an infinite loop.")
+
+    # (*) double check for orphan states
+    orphan_state_list = sm.get_orphaned_state_index_list()
+    if orphan_state_list != []:
+        error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
+                  "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
+                  "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
+                  fh, DontExitF=True)
+
+    return sm
+
+def __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode):
+    """End of File is related to a special action which is treated by the code
+       generator. No state shall 'swallow' and 'End of File' character. It must
+       be sure, that end of file causes a drop out---except for one case: The
+       end of a post condition. In the later case, it is safe to say that after
+       the termination of the analysis step, the input will happen before the 
+       end of file character, since the input pointer will be set before the post
+       condition tail.
+    """
+    for state in sm.states.values():
+        for target_state_index, trigger_set in state.transitions().get_map().items():
+            if not trigger_set.contains(EndOfFileCode): continue
+            # State contains transition on End of File!
+            # Is the target state the end of a post condition?
+            target_core = sm.states[target_state_index].core()
+            if target_core.post_context_id() != -1 and target_core.is_acceptance(): continue
+            # Target state **is not** end of post condition!
+            # => End of file code needs to be deleted from the trigger set!
+            state.transitions().delete_transitions_on_character_list([EndOfFileCode])
+            # This state has been beaten enough. Next one, please!
+            break
+
+def __delete_transitions_on_code_points_below_zero(sm):
+    """Unicode does define all code points >= 0. Thus there can be no code points
+       below zero as it might result from some number set operations.
+    """
+    for state in sm.states.values():
+        for target_state_index, trigger_set in state.transitions().get_map().items():
+            if trigger_set.minimum() < 0:
+                # NOTE: '0' is the end, meaning that it has is not part of the interval to be cut.
+                trigger_set.cut_interval(Interval(-sys.maxint, 0))
+
+
 def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
-
-    def __validate(SM):
-        # -- 'Nothing is fine' is not a pattern that we can accept. See the discussion
-        #    in the module "quex.core_engine.generator.core.py"
-        if SM.get_init_state().is_acceptance() and AllowNothingIsFineF == False: 
-            raise RegularExpressionException(
-                    "Pattern results in a 'nothing is acceptable' state machine.\n" + \
-                    "This means, that no step forward in the input still sets the analyzer\n" + \
-                    "into an acceptance state. Thus, as soon as no other input matches\n" + \
-                    "the analyzer ends up in an infinite loop.")
-        return SM
 
 
     if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)
@@ -82,10 +134,6 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
     if PatternDict == None: PatternDict = {}
 
     initial_position = stream.tell()
-
-    # -- special rules EOF, FAIL
-    result = __check_for_EOF_or_FAIL_pattern(stream, initial_position, EndOfFile_Code) 
-    if result != None: return __validate(result)
 
     # -- check for the begin of line condition (BOL)
     if stream.read(1) == '^': begin_of_line_f = True
@@ -100,7 +148,6 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
     # -- check for end of line condition (EOL)
     if stream.read(1) == '$': end_of_line_f = True
     else:                     stream.seek(-1, 1); end_of_line_f = False
-    ## print "##end_of_line_f = ", end_of_line_f
 
     # -- set begin of line/end of line conditions
     if begin_of_line_f or end_of_line_f: 
@@ -109,7 +156,7 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
 
-    return __validate(sm)
+    return __clean_and_validate(sm, EndOfFile_Code, AllowNothingIsFineF)
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression
