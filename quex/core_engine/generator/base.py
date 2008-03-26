@@ -5,7 +5,7 @@ import quex.core_engine.state_machine.nfa_to_dfa  as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 class GeneratorBase:
-    def __init__(self, PatternActionPair_List, StateMachineName, ControlCharacterCodeList):
+    def __init__(self, PatternActionPair_List, StateMachineName):
         assert type(PatternActionPair_List) == list
         assert map(lambda elm: elm.__class__ == ActionInfo, PatternActionPair_List) \
                == [ True ] * len(PatternActionPair_List)
@@ -24,27 +24,6 @@ class GeneratorBase:
         #        post-conditions.
         self.papc_backward_detector_state_machine_list = \
                 self.__create_backward_input_position_detectors()
-
-        # (*) extract any control character in the transitions that could
-        #     block the buffer handling (end of buffer/end of file)
-        self.__extract_control_characters_from_transitions(self.sm, ControlCharacterCodeList)
-        if self.pre_context_sm != None:
-            self.__extract_control_characters_from_transitions(self.pre_context_sm, ControlCharacterCodeList)
-        if self.papc_backward_detector_state_machine_list != []:
-            for sm in self.papc_backward_detector_state_machine_list:
-                self.__extract_control_characters_from_transitions(sm, ControlCharacterCodeList)
-
-    def __extract_control_characters_from_transitions(self, sm, ControlCharacterCodeList):
-
-        for state in sm.states.values():
-            state.delete_transitions_on_character_list(ControlCharacterCodeList)
-
-        osl = sm.get_orphaned_state_index_list()
-        if osl != []:
-            print "WARNING: There were transitions solely on buffer control characters. "
-            print "WARNING: This issue should be resolved in the near future. "
-            for state_index in osl:
-                del sm.states[state_index]
 
     def __extract_special_lists(self, PatternActionPair_List):
         # (0) extract data structures:

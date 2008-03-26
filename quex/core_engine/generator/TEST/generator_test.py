@@ -94,7 +94,7 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
 
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
-                                  BeginOfFile_Code, EndOfFile_Code, 
+                                  BeginOfFile_Code, EndOfFile_Code, BufferLimitCode,
                                   core_engine_definition_file, SecondModeF=False):
     default_action = "return 0;"
 
@@ -106,7 +106,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     try:
         PatternActionPairList = map(lambda x: 
                                     ActionInfo(regex.do(x[0], PatternDictionary, 
-                                                        BeginOfFile_Code, EndOfFile_Code), 
+                                                        BeginOfFile_Code, EndOfFile_Code, 
+                                                        BufferLimitCode), 
                                                         action(x[1])),
                                     PatternActionPairList)
     except RegularExpressionException, x:
@@ -123,7 +124,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         AnalyserStateClassName         = "analyser",
                         StandAloneAnalyserF            = True, 
                         QuexEngineHeaderDefinitionFile = core_engine_definition_file,
-                        ControlCharacterCodeList       = [BeginOfFile_Code, 0x0]) # EOF shall not be deleted!
+                        EndOfFile_Code                 = EndOfFile_Code)
 
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 
@@ -134,14 +135,16 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
        NDEBUG_str=""):    
 
-    if BufferType=="QuexBuffer": BeginOfFile_Code = 0x19; EndOfFile_Code = 0x1A
-    else:                        BeginOfFile_Code = 1;    EndOfFile_Code = 2
+    if BufferType=="QuexBuffer": BeginOfFile_Code = 0x19; EndOfFile_Code = 0x1A; BufferLimitCode = 0;
+    else:                        BeginOfFile_Code = 0;    EndOfFile_Code = 0; BufferLimitCode = -1;
 
     try:
         adapted_dict = {}
         for key, regular_expression in PatternDictionary.items():
             string_stream = StringIO(regular_expression)
-            state_machine = regex.do(string_stream, adapted_dict, EndOfFile_Code=EndOfFile_Code)
+            state_machine = regex.do(string_stream, adapted_dict, 
+                                     EndOfFile_Code  = EndOfFile_Code, 
+                                     BufferLimitCode = BufferLimitCode)
             # It is ESSENTIAL that the state machines of defined patterns do not 
             # have origins! Actually, there are not more than patterns waiting
             # to be applied in regular expressions. The regular expressions 
@@ -158,13 +161,13 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
                                                        adapted_dict, 
-                                                       BeginOfFile_Code, EndOfFile_Code, 
+                                                       BeginOfFile_Code, EndOfFile_Code, BufferLimitCode,
                                                        core_engine_definition_file)
 
     if SecondPatternActionPairList != []:
         state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
                                                             PatternDictionary, 
-                                                            BeginOfFile_Code, EndOfFile_Code, 
+                                                            BeginOfFile_Code, EndOfFile_Code, BufferLimitCode,
                                                             core_engine_definition_file, 
                                                             SecondModeF=True)
 

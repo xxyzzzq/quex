@@ -7,7 +7,8 @@ import quex.core_engine.generator.state_transition_coder as state_transition_cod
 def do(state_machine, LanguageDB, 
        UserDefinedStateMachineName="", 
        BackwardLexingF=False, 
-       BackwardInputPositionDetectionF=False):
+       BackwardInputPositionDetectionF=False, 
+       EndOfFile_Code=None):
     """Returns the program code implementing the StateMachine's behavior.
        NOTE: This function should only be called on a DFA after the call
              to 'filter_dominated_origins'. The latter is important
@@ -19,6 +20,8 @@ def do(state_machine, LanguageDB,
             ii) state transition code (include marking of last success state
                 and last success stream position).                  
     """
+    assert EndOfFile_Code != None or BackwardLexingF == True
+
     if BackwardInputPositionDetectionF: assert BackwardLexingF
 
     txt = ""
@@ -28,10 +31,17 @@ def do(state_machine, LanguageDB,
     txt += "%s\n"  % LanguageDB["$label-definition"](LabelName)
     init_state = state_machine.states[state_machine.init_state_index]
     #
+    # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other
+    #       case, end of file needs to cause a drop out! After the drop out, lexing
+    #       starts at furthest right before the EndOfFile and the init state transits
+    #       into the TERMINAL_END_OF_FILE.
     txt += state_transition_coder.do(LanguageDB, 
-                                     UserDefinedStateMachineName, init_state, state_machine.init_state_index,
+                                     UserDefinedStateMachineName, 
+                                     init_state, 
+                                     state_machine.init_state_index,
                                      BackwardLexingF                 = BackwardLexingF,
-                                     BackwardInputPositionDetectionF = BackwardInputPositionDetectionF)
+                                     BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
+                                     EndOfFile_Code                  = EndOfFile_Code)
 
     # -- all other states
     for state_index, state in state_machine.states.items():

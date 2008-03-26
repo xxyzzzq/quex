@@ -11,23 +11,19 @@ from quex.core_engine.generator.action_info import ActionInfo
 #________________________________________________________________________________
 # C++
 #
-def __transition(StateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, TargetStateIdx, 
-                 OriginList, BackwardLexingF, BufferReloadRequiredOnDropOutF=True):
+def __transition(StateMachineName, CurrentStateIdx, TargetStateIdx, 
+                 BackwardLexingF, BufferReloadRequiredOnDropOutF=True):
     """
         StateMachineName: Name of the state machine.
 
         TargetStateIdx: != None: Index of the state to which 'goto' has to go.
                         == None: Drop Out. Goto a terminal state.
 
-        OriginList: List of origins. In case that a transition to a terminal state
-                    is requested (TargetStateIdx==None), it may depend on
-                    pre-conditions what terminal state is targeted. 
-
         BackwardLexingF: Flag indicating wether this function is called during 
                          normal forward lexing, or for the implementation of a 
                          backwards state machine (complex pre-conditions).
 
-         BufferReloadRequiredOnDropOutF: If a state has no transitions, no input is taken 
+        BufferReloadRequiredOnDropOutF: If a state has no transitions, no input is taken 
                          from the input stream. Therefore, at this point, the buffer reload
                          is also nonsense. This flag tells, if code for buffer reload is required
                          or not in the case of a drop out.
@@ -83,10 +79,12 @@ def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateId
     """
     
     # (*) Target State Defined (not a 'drop out') --> go there
-    if TargetStateIdx != None:   
-        return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
-    else:
+    if TargetStateIdx == None:   
         return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
+    elif TargetStateIdx == "END_OF_FILE":
+        return "goto TERMINAL_END_OF_STREAM;" 
+    else:
+        return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
 
 def __acceptance_info(OriginList, LanguageDB, BackwardLexingF, 
                       BackwardInputPositionDetectionF=False):
