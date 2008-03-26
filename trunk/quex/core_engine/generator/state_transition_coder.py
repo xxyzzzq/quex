@@ -4,7 +4,7 @@ from copy import deepcopy
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
-        BackwardInputPositionDetectionF=False):
+       BackwardInputPositionDetectionF=False, EndOfFile_Code=None):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -64,9 +64,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
 
         # trigger outside the trigger intervals
         txt += "\n" + LanguageDB["$transition"](StateMachineName, StateIdx,
-                                                state.is_acceptance(),
                                                 None,
-                                                state.get_origin_list(),
                                                 BackwardLexingF                = BackwardLexingF, 
                                                 BufferReloadRequiredOnDropOutF = False)
         txt += "\n"
@@ -77,6 +75,14 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     # -- drop out code (transition to no target state)
     drop_out_label = languages_label.get_drop_out(StateMachineName, StateIdx)
     txt  = LanguageDB["$label-definition"](drop_out_label) + "\n"
+
+    # -- in case of the init state, the end of file character has to be checked.
+    if EndOfFile_Code != None and BackwardLexingF == False:
+        txt += "$if $input $== 0x%X $then\n" % EndOfFile_Code
+        txt += "    %s" % LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
+                                                    BackwardLexingF=False) + "\n"
+        txt += "$end\n" 
+
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = not empty_trigger_map_f,
                                    CurrentStateIsAcceptanceF      = state.is_acceptance(),
@@ -165,9 +171,7 @@ def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry,
     #
     txt = "%s" % LanguageDB["$transition"](StateMachineName, 
                                            StateIdx,
-                                           state.is_acceptance(),
                                            target_state_index,
-                                           state.get_origin_list(),
                                            BackwardLexingF) 
     txt += "    $/* %s $*/" % interval.get_utf8_string()
 

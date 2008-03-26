@@ -258,8 +258,10 @@ def __get_supported_command_line_option_description(NormalModeOptions):
     return txt
 
 def __check_stream_limit_codes(setup):
-    if setup.begin_of_stream_code == setup.end_of_stream_code:
-        error_msg("code for begin/end of stream cannot be equal!")
+    # NOTE: BeginOfStream and EndOfStream might be the same. At least, the 
+    #       author of this software is not aware of a use case that prohibits
+    #       it. However, for the sake of generality it is left as two different
+    #       variables. Maybe, in future one might consider to delete them.
     if setup.begin_of_stream_code == setup.buffer_limit_code:
         error_msg("code for begin of stream and buffer limit cannot be equal!")
     if setup.buffer_limit_code == setup.end_of_stream_code:

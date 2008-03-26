@@ -4,16 +4,13 @@ from quex.frs_py.string_handling import blue_print
 #________________________________________________________________________________
 # Python
 #    
-def __transition(UserDefinedStateMachineName, CurrentStateIdx, CurrentStateIsAcceptanceF, StateIdx, 
-                 OriginList=None, BackwardLexingF=False, BufferReloadRequiredOnDropOutF=True):
+def __transition(UserDefinedStateMachineName, CurrentStateIdx, StateIdx, 
+                 TargetStateIdx, BackwardLexingF=False, BufferReloadRequiredOnDropOutF=True):
     # NOTE: This is a very rudimental implementation of the __goto_state, see the cpp implementation
     #       for a complete implementation.
     if StateIdx == None: 
-        if CurrentStateIsAcceptanceF:
-            return __goto_terminal_state(UserDefinedStateMachineName,  
-                                         OriginList[0].state_machine_id)  # specific terminal state
-        else:    
-            return __goto_terminal_state(UserDefinedStateMachineName)     # general terminal state
+        return __goto_terminal_state(UserDefinedStateMachineName,  
+                                     TargetStateIdx)  # specific terminal state
 
     txt = "# QUEX_LABEL_%s_ENTRY_%s;\n" % (UserDefinedStateMachineName,
                                            repr(StateIdx).replace("L",""))

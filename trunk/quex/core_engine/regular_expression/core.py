@@ -60,13 +60,19 @@ class something:
     pass
 
 
-def __clean_and_validate(sm, EndOfFileCode, AllowNothingIsFineF):
+def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF):
     """This function is to be used by the outer shell to the user. It ensures that 
        the state machine which is returned is conform to some assumptions.
+
+       BLC == -1: means that there is no buffer limit code.
     """
 
     # (*) Delete EOF where it has no right to occur
     __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode)
+
+    # (*) The buffer limit code has to appear absolutely nowhere!
+    if BufferLimitCode != -1:
+        __delete_BLC_except_at_end_of_post_conditions(sm, BufferLimitCode)
 
     # (*) Delete transitions that make practically no sense
     __delete_transitions_on_code_points_below_zero(sm)
@@ -113,6 +119,16 @@ def __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode):
             # This state has been beaten enough. Next one, please!
             break
 
+def __delete_BLC_except_at_end_of_post_conditions(sm, BLC):
+    """The buffer limit code is something that **needs** to cause a drop out.
+       In the drop out handling, the buffer is reloaded.
+    """
+    for state in sm.states.values():
+        for target_state_index, trigger_set in state.transitions().get_map().items():
+            if trigger_set.contains(BLC):
+                trigger_set.cut_interval(Interval(BLC, BLC+1))
+
+
 def __delete_transitions_on_code_points_below_zero(sm):
     """Unicode does define all code points >= 0. Thus there can be no code points
        below zero as it might result from some number set operations.
@@ -124,7 +140,7 @@ def __delete_transitions_on_code_points_below_zero(sm):
                 trigger_set.cut_interval(Interval(-sys.maxint, 0))
 
 
-def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0,
+def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0, BufferLimitCode=-1,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
 
 
@@ -156,7 +172,7 @@ def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Co
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
 
-    return __clean_and_validate(sm, EndOfFile_Code, AllowNothingIsFineF)
+    return __clean_and_validate(sm, EndOfFile_Code, BufferLimitCode, AllowNothingIsFineF)
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression

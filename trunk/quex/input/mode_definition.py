@@ -107,8 +107,6 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
 
     return True
 
-
-
 def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, PatternIdx):
 
     position = fh.tell()
@@ -147,13 +145,13 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
         error_msg("End of file reached while parsing action code for pattern.", fh)
 
 def parse_brief_token_sender(new_mode, fh, pattern, pattern_state_machine, PatternIdx, Setup):
+    # shorthand for { self.send(TKN_SOMETHING); RETURN; }
 
     position = fh.tell()
     try: 
         skip_whitespace(fh)
         position = fh.tell()
 
-        # shorthand for { self.send(TKN_SOMETHING); RETURN; }
         token_name = read_identifier(fh)
         position = fh.tell()
 

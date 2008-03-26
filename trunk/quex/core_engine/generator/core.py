@@ -12,8 +12,7 @@ class Generator(GeneratorBase):
                  StateMachineName, AnalyserStateClassName, Language, 
                  DefaultAction, EndOfStreamAction, 
                  QuexEngineHeaderDefinitionFile, ModeNameList, 
-                 PrintStateMachineF, StandAloneAnalyserF,
-                 ControlCharacterCodeList=[]):
+                 PrintStateMachineF, StandAloneAnalyserF, EndOfFile_Code):
 
         if not StandAloneAnalyserF: 
             assert QuexEngineHeaderDefinitionFile != "", \
@@ -34,8 +33,9 @@ class Generator(GeneratorBase):
         self.mode_name_list                      = ModeNameList
         self.print_state_machine_f               = PrintStateMachineF
         self.stand_alone_analyzer_f              = StandAloneAnalyserF
+        self.end_of_file_code                    = EndOfFile_Code
 
-        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName, ControlCharacterCodeList)
+        GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
     def __get_core_state_machine(self):
         LanguageDB = self.language_db 
@@ -45,12 +45,13 @@ class Generator(GeneratorBase):
         #  -- comment all state machine transitions 
         txt = "    $/* state machine $*/\n"
         if self.print_state_machine_f: 
-            txt += "    $/* " + self.sm.get_string().replace("\n", "$*/\n    $/* ") + "\n"
+            txt += "    $/* " + self.sm.get_string(NormalizeF=False).replace("\n", "$*/\n    $/* ") + "\n"
 
         txt += state_machine_coder.do(self.sm, 
                                       LanguageDB                  = LanguageDB, 
                                       UserDefinedStateMachineName = self.state_machine_name, 
-                                      BackwardLexingF             = False)
+                                      BackwardLexingF             = False,
+                                      EndOfFile_Code              = self.end_of_file_code)
 
         
         #  -- terminal states: execution of pattern actions  
@@ -132,7 +133,7 @@ def do(PatternActionPair_List, DefaultAction,
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
        ModeNameList=[],
-       ControlCharacterCodeList=[]):
+       EndOfFile_Code=0):
     """Contains a list of pattern-action pairs, i.e. its elements contain
        pairs of state machines and associated actions to be take,
        when a pattern matches. 
@@ -155,6 +156,5 @@ def do(PatternActionPair_List, DefaultAction,
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
                      DefaultAction, EndOfStreamAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
-                     PrintStateMachineF, StandAloneAnalyserF, 
-                     ControlCharacterCodeList).do()
+                     PrintStateMachineF, StandAloneAnalyserF, EndOfFile_Code).do()
     

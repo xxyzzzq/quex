@@ -71,11 +71,11 @@ def do(Setup):
         pattern_action_pair_info_list = mode.pattern_action_pairs().values()
 
         # -- end of stream action
-        end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream(), Setup, 
-                                                        "on_end_of_stream", None, DefaultActionF=True)
+        end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream_code_fragments(), Setup, 
+                                                        "on_end_of_stream", None, DefaultOrEOF_ActionF=True)
         # -- default action (nothing matched)
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
-                                                  "on_failure", None, DefaultActionF=True)
+                                                  "on_failure", None, DefaultOrEOF_ActionF=True)
 
         # -- pattern-action pairs
         dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
@@ -93,7 +93,7 @@ def do(Setup):
                                       StandAloneAnalyserF            = False, 
                                       QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
                                       ModeNameList                   = mode_name_list,   
-                                      ControlCharacterCodeList       = Setup.control_character_code_list)
+                                      EndOfFile_Code                 = Setup.end_of_stream_code)
         
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "w")
@@ -186,9 +186,8 @@ def do_plot(Setup):
         dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
                                                               Setup)
         plotter = plot_generator.Generator(pattern_action_pair_list, 
-                                           StateMachineName         = mode.name,
-                                           GraphicFormat            = Setup.plot_graphic_format,
-                                           ControlCharacterCodeList = Setup.control_character_code_list)
+                                           StateMachineName = mode.name,
+                                           GraphicFormat    = Setup.plot_graphic_format)
         plotter.do()
 
 def __get_mode_db(Setup):
