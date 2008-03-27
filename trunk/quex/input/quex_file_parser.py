@@ -111,15 +111,15 @@ def parse_section(fh, Setup):
             return
         
         elif word == "header":
-            code_fragment.parse_unique(fh, "header", lexer_mode.header)        
+            code_fragment.parse(fh, "header", Setup, lexer_mode.header, AllowBriefTokenSenderF=False)        
             return
 
         elif word == "body":
-            code_fragment.parse_unique(fh, "body", lexer_mode.class_body)        
+            code_fragment.parse(fh, "body", Setup, lexer_mode.class_body, AllowBriefTokenSenderF=False)        
             return
 
         elif word == "init":
-            code_fragment.parse_unique(fh, "init", lexer_mode.class_init)
+            code_fragment.parse(fh, "init", Setup, lexer_mode.class_init, AllowBriefTokenSenderF=False)
             return
             
         elif word == "define":

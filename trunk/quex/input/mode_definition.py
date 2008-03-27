@@ -113,9 +113,9 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
         skip_whitespace(fh)
         position = fh.tell()
             
-        code_fragement = code_fragment.parse(fh, "regular expression", Setup, ErrorOnFailureF=False) 
-        if code_fragment != None:
-            new_mode.add_match(pattern, code_fragment, pattern_state_machine, PatternIdx)
+        code_obj = code_fragment.parse(fh, "regular expression", Setup, ErrorOnFailureF=False) 
+        if code_obj != None:
+            new_mode.add_match(pattern, code_obj, pattern_state_machine, PatternIdx)
             return
 
         elif word == "PRIORITY-MARK":
