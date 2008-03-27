@@ -127,14 +127,18 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     
 class Match:
-    def __init__(self, Pattern, Action, PatternStateMachine, PatternIdx,
-                 Filename="", LineN=-1, 
-                 PriorityMarkF=False, DeletionF=False,
-                 IL = None):
+    def __init__(self, Pattern, CodeFragment, PatternStateMachine, PatternIdx,
+                 PriorityMarkF=False, DeletionF=False, IL = None):
+
+        assert CodeFragment.__class__ == ReferencedCodeFragment \
+               or CodeFragment == None, \
+               "code fragment type = " + CodeFragment.__class__.__name__ 
+        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
+               or PatternStateMachine == None
 
         self.pattern               = Pattern
         self.pattern_state_machine = PatternStateMachine
-        self.action                = ReferencedCodeFragment(Action, Filename, LineN)
+        self.action                = CodeFragment
         # depth of inheritance where the pattern occurs
         self.inheritance_level = IL
         # position in the list where the pattern occured in the mode itself
@@ -249,28 +253,27 @@ class LexMode:
     def own_matches(self):
         return self.__matches
 
-    def add_match(self, Pattern, Code, PatternStateMachine, PatternIdx, Filename, LineN):
+    def add_match(self, Pattern, CodeFragment, PatternStateMachine, PatternIdx):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only the last definition is considered.", Filename, LineN, DontExitF=True)
 
-        self.__matches[Pattern] = Match(Pattern, Code, PatternStateMachine, PatternIdx, 
-                                        Filename, LineN)
+        self.__matches[Pattern] = Match(Pattern, CodeFragment, PatternStateMachine, PatternIdx)
 
-    def add_match_priority(self, Pattern, Code, PatternStateMachine, PatternIdx, fh):
+    def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, fh):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only this priority mark is considered.", fh)
 
-        self.__matches[Pattern] = Match(Pattern, Code, PatternStateMachine, PatternIdx, 
+        self.__matches[Pattern] = Match(Pattern, None, PatternStateMachine, PatternIdx, 
                                         PriorityMarkF=True)
 
-    def add_match_deletion(self, Pattern, Code, PatternStateMachine, PatternIdx, fh):
+    def add_match_deletion(self, Pattern, PatternStateMachine, PatternIdx, fh):
         if self.__matches.has_key(Pattern):
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", fh)
 
-        self.__matches[pattern] = Match(pattern, "", pattern_state_machine, PatternIdx, 
+        self.__matches[pattern] = Match(pattern, None, pattern_state_machine, PatternIdx, 
                                         DeletionF = True)
 
     def on_entry_code_fragments(self, Depth=0):

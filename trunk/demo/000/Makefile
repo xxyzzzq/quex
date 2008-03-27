@@ -39,7 +39,7 @@ $(APPLICATION): $(APPLICATION).o \
 
 # -- engine and object files
 %.o: %.cpp $(ENGINE_SOURCES)
-	$(CC) $< -o $@
+	$(CC) $< -o $@ -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) \
