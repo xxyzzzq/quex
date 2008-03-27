@@ -256,7 +256,8 @@ class LexMode:
     def add_match(self, Pattern, CodeFragment, PatternStateMachine, PatternIdx):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
-                      "Only the last definition is considered.", Filename, LineN, DontExitF=True)
+                      "Only the last definition is considered.", 
+                      CodeFragment.filename, CodeFragment.line_n, DontExitF=True)
 
         self.__matches[Pattern] = Match(Pattern, CodeFragment, PatternStateMachine, PatternIdx)
 
