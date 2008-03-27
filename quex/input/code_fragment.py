@@ -1,16 +1,17 @@
 from   quex.frs_py.file_in import *
-from   quex.lexer_mode     import ReferencedCodeFragment
 import quex.lexer_mode     as lexer_mode
+from   quex.token_id_maker import TokenInfo
 
 
-def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None, ErrorOnFailureF=True):
+def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None, 
+          ErrorOnFailureF=True, AllowBriefTokenSenderF=True):
     """RETURNS: An object of class ReferencedCodeFragment containing
                 line number, filename, and the code fragment.
 
                 None in case of failure.
     """
     assert Setup.__class__.__name__ == "something"
-    assert code_fragment_carrier.__class__ == ReferencedCodeFragment \
+    assert code_fragment_carrier.__class__ == lexer_mode.ReferencedCodeFragment \
            or code_fragment_carrier == None
 
     skip_whitespace(fh)
@@ -21,7 +22,7 @@ def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None, ErrorOnFailur
         fh.seek(-2,1)
         return __parse_normal(fh, CodeFragmentName, code_fragment_carrier)
 
-    elif word == "=>":
+    elif AllowBriefTokenSenderF and word == "=>":
         return __parse_brief_token_sender(fh, Setup, code_fragment_carrier)
 
     elif not ErrorOnFailureF:
@@ -34,6 +35,8 @@ def __prepare_code_fragment_carrier(fh, carrier):
     if carrier == None:
         result = lexer_mode.ReferencedCodeFragment()
     else:
+        assert carrier.__class__ == lexer_mode.ReferencedCodeFragment \
+
         if carrier.line_n != -1:
             error_msg("%s defined twice" % code_fragment_name, fh, DontExitF=True)
             error_msg("previously defined here", carrier.filename, carrier.line_n)
