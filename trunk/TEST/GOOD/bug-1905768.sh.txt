@@ -1,9 +1,5 @@
 (0) create token id file
    token class file = 'quex/code_base/token'
    => 'Simple-token_ids'
-WARNING: There were transitions solely on buffer control characters. 
-WARNING: This issue should be resolved in the near future. 
-WARNING: There were transitions solely on buffer control characters. 
-WARNING: This issue should be resolved in the near future. 
     quex::Simple__MODULE_analyser_function(QUEX_LEXER_CLASS* me) {
     quex::Simple__U1_STRING_analyser_function(QUEX_LEXER_CLASS* me) {
