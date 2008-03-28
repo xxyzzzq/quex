@@ -19,7 +19,7 @@ def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None,
 
     word = fh.read(2)
     if len(word) >= 1 and word[0] == "{":
-        fh.seek(-2,1)
+        fh.seek(-1,1) # unput the second character
         return __parse_normal(fh, CodeFragmentName, code_fragment_carrier)
 
     elif AllowBriefTokenSenderF and word == "=>":
@@ -42,6 +42,11 @@ def __prepare_code_fragment_carrier(fh, carrier):
             error_msg("previously defined here", carrier.filename, carrier.line_n)
         result = carrier
 
+    # step over all whitespace, such that the first line of the code fragment
+    # refers to the first non-whitespace line.
+    skip_whitespace(fh)
+
+    # set starting line number and filename
     result.line_n   = get_current_line_info_number(fh) + 1
     result.filename = fh.name
 
@@ -49,10 +54,6 @@ def __prepare_code_fragment_carrier(fh, carrier):
 
 def __parse_normal(fh, code_fragment_name, code_fragment_carrier):
     result = __prepare_code_fragment_carrier(fh, code_fragment_carrier)
-
-    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
-
-    if i == -1: error_msg("missing open bracket after %s definition." % code_fragment_name, fh)
 
     result.code = read_until_closing_bracket(fh, "{", "}")
 

@@ -3,8 +3,6 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 (0) create token id file
    token class file = 'quex/code_base/token'
    => 'Simple-token_ids'
-WARNING: There were transitions solely on buffer control characters. 
-WARNING: This issue should be resolved in the near future. 
 // -*- C++ -*-   vim: set syntax=cpp:
 #ifndef __INCLUDE_GUARD__QUEX__SIMPLE
 #define __INCLUDE_GUARD__QUEX__SIMPLE
@@ -1406,178 +1404,178 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);
         QUEX_UNDO_PREPARE_LEXEME_OBJECT;
         // state machine 
-        // init-state = 254L
-        // 00256* <~ (42, 160, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
+        // init-state = 249L
+        // 00249() <~ (5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)
+        //       == ['\t', '\n'], '\r', ' ' ==> 00251
+        //       == ['0', '9'] ==> 00259
+        //       == ';' ==> 00258
+        //       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00255
+        //       == 'd' ==> 00252
+        //       == 'e' ==> 00250
+        //       == 'i' ==> 00254
+        //       == 's' ==> 00257
+        //       == '{' ==> 00253
+        //       == '}' ==> 00256
         //       <no epsilon>
-        // 00257* <~ (42, 160, S), (9, 35), (18, 87)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00256
-        //       == 't' ==> 00258
-        //       == 'e' ==> 00259
+        // 00256(A, S) <~ (28, 125, A, S)
         //       <no epsilon>
-        // 00258* <~ (42, 160, S), (9, 36)
-        //       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00256
-        //       == 'r' ==> 00276
+        // 00257(A, S) <~ (41, 159, A, S), (7, 33), (16, 83)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00255
+        //       == 'e' ==> 00260
+        //       == 't' ==> 00261
         //       <no epsilon>
-        // 00259* <~ (42, 160, S), (18, 85)
-        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00256
-        //       == 'n' ==> 00277
+        // 00260(A, S) <~ (41, 159, A, S), (16, 84)
+        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
+        //       == 'n' ==> 00266
         //       <no epsilon>
-        // 00260* <~ (6, 18, S)
-        //       == ['\t', '\n'], '\r', ' ' ==> 00260
+        // 00266(A, S) <~ (41, 159, A, S), (16, 85)
+        //       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00255
+        //       == 'd' ==> 00267
         //       <no epsilon>
-        // 00261* <~ (36, 143, S)
-        //       == ['0', '9'] ==> 00261
+        // 00267(A, S) <~ (16, 86, A, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
         //       <no epsilon>
-        // 00262* <~ (30, 126, S)
+        // 00255(A, S) <~ (41, 159, A, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
         //       <no epsilon>
-        // 00264* <~ (27, 120, S)
+        // 00261(A, S) <~ (41, 159, A, S), (7, 34)
+        //       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00255
+        //       == 'r' ==> 00262
         //       <no epsilon>
-        // 00265* <~ (18, 84, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
+        // 00262(A, S) <~ (41, 159, A, S), (7, 35)
+        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
+        //       == 'u' ==> 00263
         //       <no epsilon>
-        // 00266* <~ (9, 34, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
+        // 00263(A, S) <~ (41, 159, A, S), (7, 36)
+        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
+        //       == 'c' ==> 00264
         //       <no epsilon>
-        // 00267* <~ (21, 103, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
+        // 00264(A, S) <~ (41, 159, A, S), (7, 37)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+        //       == 't' ==> 00265
         //       <no epsilon>
-        // 00268* <~ (12, 49, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
+        // 00265(A, S) <~ (7, 38, A, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
         //       <no epsilon>
-        // 00269* <~ (24, 114, S)
+        // 00258(A, S) <~ (22, 113, A, S)
         //       <no epsilon>
-        // 00270* <~ (42, 160, S), (12, 50)
-        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00256
-        //       == 'n' ==> 00273
+        // 00259(A, S) <~ (35, 142, A, S)
+        //       == ['0', '9'] ==> 00259
         //       <no epsilon>
-        // 00271* <~ (42, 160, S), (15, 69)
-        //       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00256
-        //       == 'o' ==> 00274
-        //       <no epsilon>
-        // 00272* <~ (42, 160, S), (21, 104)
-        //       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00256
+        // 00250(A, S) <~ (41, 159, A, S), (19, 102)
+        //       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00255
         //       == 'x' ==> 00275
         //       <no epsilon>
-        // 00273* <~ (42, 160, S), (12, 51)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00256
-        //       == 't' ==> 00268
+        // 00275(A, S) <~ (41, 159, A, S), (19, 103)
+        //       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00255
+        //       == 'p' ==> 00276
         //       <no epsilon>
-        // 00274* <~ (42, 160, S), (15, 70)
-        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00256
-        //       == 'u' ==> 00278
+        // 00276(A, S) <~ (41, 159, A, S), (19, 104)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
+        //       == 'e' ==> 00277
         //       <no epsilon>
-        // 00275* <~ (42, 160, S), (21, 105)
-        //       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00256
-        //       == 'p' ==> 00279
+        // 00277(A, S) <~ (41, 159, A, S), (19, 105)
+        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
+        //       == 'c' ==> 00278
         //       <no epsilon>
-        // 00276* <~ (42, 160, S), (9, 37)
-        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00256
-        //       == 'u' ==> 00280
+        // 00278(A, S) <~ (41, 159, A, S), (19, 106)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+        //       == 't' ==> 00279
         //       <no epsilon>
-        // 00277* <~ (42, 160, S), (18, 86)
-        //       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00256
-        //       == 'd' ==> 00265
+        // 00279(A, S) <~ (19, 107, A, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
         //       <no epsilon>
-        // 00278* <~ (42, 160, S), (15, 71)
-        //       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00256
-        //       == 'b' ==> 00281
+        // 00251(A, S) <~ (5, 17, A, S)
+        //       == ['\t', '\n'], '\r', ' ' ==> 00251
         //       <no epsilon>
-        // 00279* <~ (42, 160, S), (21, 106)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00256
-        //       == 'e' ==> 00282
+        // 00252(A, S) <~ (41, 159, A, S), (13, 66)
+        //       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00255
+        //       == 'o' ==> 00270
         //       <no epsilon>
-        // 00280* <~ (42, 160, S), (9, 38)
-        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00256
-        //       == 'c' ==> 00283
+        // 00270(A, S) <~ (41, 159, A, S), (13, 67)
+        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
+        //       == 'u' ==> 00271
         //       <no epsilon>
-        // 00281* <~ (42, 160, S), (15, 72)
-        //       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00256
-        //       == 'l' ==> 00284
+        // 00271(A, S) <~ (41, 159, A, S), (13, 68)
+        //       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00255
+        //       == 'b' ==> 00272
         //       <no epsilon>
-        // 00282* <~ (42, 160, S), (21, 107)
-        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00256
-        //       == 'c' ==> 00285
+        // 00272(A, S) <~ (41, 159, A, S), (13, 69)
+        //       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00255
+        //       == 'l' ==> 00273
         //       <no epsilon>
-        // 00283* <~ (42, 160, S), (9, 39)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00256
-        //       == 't' ==> 00266
+        // 00273(A, S) <~ (41, 159, A, S), (13, 70)
+        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
+        //       == 'e' ==> 00274
         //       <no epsilon>
-        // 00284* <~ (42, 160, S), (15, 68)
-        //       == 'e' ==> 00255
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00256
+        // 00274(A, S) <~ (13, 71, A, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
         //       <no epsilon>
-        // 00285* <~ (42, 160, S), (21, 108)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00256
-        //       == 't' ==> 00267
+        // 00253(A, S) <~ (25, 119, A, S)
         //       <no epsilon>
-        // 00254 <~ (0, 0), (6, 17), (9, 33), (12, 48), (15, 66), (18, 83), (21, 102), (24, 113), (27, 119), (30, 125), (36, 142), (42, 159)
-        //       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00256
-        //       == 's' ==> 00257
-        //       == ['\t', '\n'], '\r', ' ' ==> 00260
-        //       == ['0', '9'] ==> 00261
-        //       == '}' ==> 00262
-        //       == '{' ==> 00264
-        //       == ';' ==> 00269
-        //       == 'i' ==> 00270
-        //       == 'd' ==> 00271
-        //       == 'e' ==> 00272
+        // 00254(A, S) <~ (41, 159, A, S), (10, 48)
+        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
+        //       == 'n' ==> 00268
         //       <no epsilon>
-        // 00255* <~ (15, 67, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00256
+        // 00268(A, S) <~ (41, 159, A, S), (10, 49)
+        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+        //       == 't' ==> 00269
+        //       <no epsilon>
+        // 00269(A, S) <~ (10, 50, A, S)
+        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
         //       <no epsilon>
         // 
-      STATE_254:
-    // origins = [(0L, 0L), (6L, 17L), (9L, 33L), (12L, 48L), (15L, 66L), (18L, 83L), (21L, 102L), (24L, 113L), (27L, 119L), (30L, 125L), (36L, 142L), (42L, 159L)]
-      STATE_254_INPUT:
+      STATE_249:
+    // origins = [(5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)]
+      STATE_249_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95 ) {
             if( input < 33 ) {
                 if( input < 13 ) {
                     if( input < 9 ) {
-                        goto STATE_254_DROP_OUT;    // [-oo, \8] 
+                        goto STATE_249_DROP_OUT;    // [-oo, \8] 
                     }else {
                         if( input < 11 ) {
-                            goto STATE_260;    // ['\t', '\n'] 
+                            goto STATE_251;    // ['\t', '\n'] 
                         }else {
-                            goto STATE_254_DROP_OUT;    // [\11, \12] 
+                            goto STATE_249_DROP_OUT;    // [\11, \12] 
                         }
                     }
                 }else {
                     if( input < 14 ) {
-                        goto STATE_260;    // '\r' 
+                        goto STATE_251;    // '\r' 
                     }else {
                         if( input != 32 ) {
-                            goto STATE_254_DROP_OUT;    // [\14, \31] 
+                            goto STATE_249_DROP_OUT;    // [\14, \31] 
                         }else {
-                            goto STATE_260;    // ' ' 
+                            goto STATE_251;    // ' ' 
                         }
                     }
                 }
             }else {
                 if( input < 59 ) {
                     if( input < 48 ) {
-                        goto STATE_254_DROP_OUT;    // [\33, \47] 
+                        goto STATE_249_DROP_OUT;    // [\33, \47] 
                     }else {
                         if( input != 58 ) {
-                            goto STATE_261;    // ['0', '9'] 
+                            goto STATE_259;    // ['0', '9'] 
                         }else {
-                            goto STATE_254_DROP_OUT;    // ':' 
+                            goto STATE_249_DROP_OUT;    // ':' 
                         }
                     }
                 }else {
                     if( input < 65 ) {
                         if( input == 59 ) {
-                            goto STATE_269;    // ';' 
+                            goto STATE_258;    // ';' 
                         }else {
-                            goto STATE_254_DROP_OUT;    // ['<', '@'] 
+                            goto STATE_249_DROP_OUT;    // ['<', '@'] 
                         }
                     }else {
                         if( input < 91 ) {
-                            goto STATE_256;    // ['A', 'Z'] 
+                            goto STATE_255;    // ['A', 'Z'] 
                         }else {
-                            goto STATE_254_DROP_OUT;    // ['[', '^'] 
+                            goto STATE_249_DROP_OUT;    // ['[', '^'] 
                         }
                     }
                 }
@@ -1586,26 +1584,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             if( input < 106 ) {
                 if( input < 100 ) {
                     if( input < 96 ) {
-                        goto STATE_256;    // '_' 
+                        goto STATE_255;    // '_' 
                     }else {
                         if( input == 96 ) {
-                            goto STATE_254_DROP_OUT;    // '`' 
+                            goto STATE_249_DROP_OUT;    // '`' 
                         }else {
-                            goto STATE_256;    // ['a', 'c'] 
+                            goto STATE_255;    // ['a', 'c'] 
                         }
                     }
                 }else {
                     if( input < 102 ) {
                         if( input == 100 ) {
-                            goto STATE_271;    // 'd' 
+                            goto STATE_252;    // 'd' 
                         }else {
-                            goto STATE_272;    // 'e' 
+                            goto STATE_250;    // 'e' 
                         }
                     }else {
                         if( input != 105 ) {
-                            goto STATE_256;    // ['f', 'h'] 
+                            goto STATE_255;    // ['f', 'h'] 
                         }else {
-                            goto STATE_270;    // 'i' 
+                            goto STATE_254;    // 'i' 
                         }
                     }
                 }
@@ -1614,90 +1612,61 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                     if( input == 115 ) {
                         goto STATE_257;    // 's' 
                     }else {
-                        goto STATE_256;    // ['j', 'r'] 
+                        goto STATE_255;    // ['j', 'r'] 
                     }
                 }else {
                     if( input < 125 ) {
                         if( input == 123 ) {
-                            goto STATE_264;    // '{' 
+                            goto STATE_253;    // '{' 
                         }else {
-                            goto STATE_254_DROP_OUT;    // '|' 
+                            goto STATE_249_DROP_OUT;    // '|' 
                         }
                     }else {
                         if( input == 125 ) {
-                            goto STATE_262;    // '}' 
+                            goto STATE_256;    // '}' 
                         }else {
-                            goto STATE_254_DROP_OUT;    // ['~', oo] 
+                            goto STATE_249_DROP_OUT;    // ['~', oo] 
                         }
                     }
                 }
             }
         }
     
-      STATE_254_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(254);
+      STATE_249_DROP_OUT:
+        if( input == 0x1A ) {
+            /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state*/
+            goto TERMINAL_END_OF_STREAM;
+        }
+        __QUEX_DEBUG_INFO_DROP_OUT(249);
         #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
         loaded_byte_n = forward_lexing_drop_out(me, input);
         if( loaded_byte_n ) {
             Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_254_INPUT;
+            goto STATE_249_INPUT;
         }
         #endif
         goto GENERAL_ONE_AND_ONLY_TERMINAL;
         
       STATE_256:
         __QUEX_DEBUG_INFO_ENTER(256);
-    // origins = [(42L, 160L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(28, 125, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(28);
+    last_acceptance = 28;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_256_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
-                goto STATE_256_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }else {
-                    goto STATE_256_DROP_OUT;    // ['[', '^'] 
-                }
-            }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
-                    goto STATE_256;    // '_' 
-                }else {
-                    goto STATE_256_DROP_OUT;    // '`' 
-                }
-            }else {
-                if( input < 123 ) {
-                    goto STATE_256;    // ['a', 'z'] 
-                }else {
-                    goto STATE_256_DROP_OUT;    // ['{', oo] 
-                }
-            }
-        }
-    
+        // no trigger set, no 'get character' 
+        goto STATE_256_DROP_OUT;
+        
       STATE_256_DROP_OUT:
         __QUEX_DEBUG_INFO_DROP_OUT(256);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        loaded_byte_n = forward_lexing_drop_out(me, input);
-        if( loaded_byte_n ) {
-            Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_256_INPUT;
-        }
-        #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(28);
+        goto TERMINAL_28;
         
     
       STATE_257:
         __QUEX_DEBUG_INFO_ENTER(257);
-    // origins = [(42L, 160L, S), (9L, 35L), (18L, 87L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (7, 33), (16, 83)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_257_INPUT:
         QUEX_STREAM_GET(input);
@@ -1707,14 +1676,14 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_257_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input < 95 ) {
                     goto STATE_257_DROP_OUT;    // ['[', '^'] 
                 }else {
                     if( input == 95 ) {
-                        goto STATE_256;    // '_' 
+                        goto STATE_255;    // '_' 
                     }else {
                         goto STATE_257_DROP_OUT;    // '`' 
                     }
@@ -1723,16 +1692,16 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         }else {
             if( input < 116 ) {
                 if( input == 101 ) {
-                    goto STATE_259;    // 'e' 
+                    goto STATE_260;    // 'e' 
                 }else {
-                    goto STATE_256;    // ['a', 'd'] 
+                    goto STATE_255;    // ['a', 'd'] 
                 }
             }else {
                 if( input < 117 ) {
-                    goto STATE_258;    // 't' 
+                    goto STATE_261;    // 't' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['u', 'z'] 
+                        goto STATE_255;    // ['u', 'z'] 
                     }else {
                         goto STATE_257_DROP_OUT;    // ['{', oo] 
                     }
@@ -1749,106 +1718,41 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_257_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_258:
         __QUEX_DEBUG_INFO_ENTER(258);
-    // origins = [(42L, 160L, S), (9L, 36L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(22, 113, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(22);
+    last_acceptance = 22;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_258_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_258_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
-            }else {
-                if( input != 95 ) {
-                    goto STATE_258_DROP_OUT;    // ['[', '^'] 
-                }else {
-                    goto STATE_256;    // '_' 
-                }
-            }
-        }else {
-            if( input < 114 ) {
-                if( input == 96 ) {
-                    goto STATE_258_DROP_OUT;    // '`' 
-                }else {
-                    goto STATE_256;    // ['a', 'q'] 
-                }
-            }else {
-                if( input < 115 ) {
-                    goto STATE_276;    // 'r' 
-                }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['s', 'z'] 
-                    }else {
-                        goto STATE_258_DROP_OUT;    // ['{', oo] 
-                    }
-                }
-            }
-        }
-    
+        // no trigger set, no 'get character' 
+        goto STATE_258_DROP_OUT;
+        
       STATE_258_DROP_OUT:
         __QUEX_DEBUG_INFO_DROP_OUT(258);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        loaded_byte_n = forward_lexing_drop_out(me, input);
-        if( loaded_byte_n ) {
-            Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_258_INPUT;
-        }
-        #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(22);
+        goto TERMINAL_22;
         
     
       STATE_259:
         __QUEX_DEBUG_INFO_ENTER(259);
-    // origins = [(42L, 160L, S), (18L, 85L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(35, 142, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(35);
+    last_acceptance = 35;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_259_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_259_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
-            }else {
-                if( input != 95 ) {
-                    goto STATE_259_DROP_OUT;    // ['[', '^'] 
-                }else {
-                    goto STATE_256;    // '_' 
-                }
-            }
+        if( input < 48 ) {
+            goto STATE_259_DROP_OUT;    // [-oo, \47] 
         }else {
-            if( input < 110 ) {
-                if( input == 96 ) {
-                    goto STATE_259_DROP_OUT;    // '`' 
-                }else {
-                    goto STATE_256;    // ['a', 'm'] 
-                }
+            if( input < 58 ) {
+                goto STATE_259;    // ['0', '9'] 
             }else {
-                if( input < 111 ) {
-                    goto STATE_277;    // 'n' 
-                }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['o', 'z'] 
-                    }else {
-                        goto STATE_259_DROP_OUT;    // ['{', oo] 
-                    }
-                }
+                goto STATE_259_DROP_OUT;    // [':', oo] 
             }
         }
     
@@ -1861,41 +1765,49 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_259_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(35);
+        goto TERMINAL_35;
         
     
       STATE_260:
         __QUEX_DEBUG_INFO_ENTER(260);
-    // origins = [(6L, 18L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(6);
-    last_acceptance = 6;
+    // origins = [(41, 159, A, S), (16, 84)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_260_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 13 ) {
-            if( input < 9 ) {
-                goto STATE_260_DROP_OUT;    // [-oo, \8] 
-            }else {
-                if( input < 11 ) {
-                    goto STATE_260;    // ['\t', '\n'] 
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_260_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_260_DROP_OUT;    // [\11, \12] 
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_260_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 32 ) {
-                if( input == 13 ) {
-                    goto STATE_260;    // '\r' 
+            if( input < 110 ) {
+                if( input == 96 ) {
+                    goto STATE_260_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_260_DROP_OUT;    // [\14, \31] 
+                    goto STATE_255;    // ['a', 'm'] 
                 }
             }else {
-                if( input == 32 ) {
-                    goto STATE_260;    // ' ' 
+                if( input < 111 ) {
+                    goto STATE_266;    // 'n' 
                 }else {
-                    goto STATE_260_DROP_OUT;    // [\33, oo] 
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['o', 'z'] 
+                    }else {
+                        goto STATE_260_DROP_OUT;    // ['{', oo] 
+                    }
                 }
             }
         }
@@ -1909,26 +1821,50 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_260_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(6);
-        goto TERMINAL_6;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_261:
         __QUEX_DEBUG_INFO_ENTER(261);
-    // origins = [(36L, 143L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(36);
-    last_acceptance = 36;
+    // origins = [(41, 159, A, S), (7, 34)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_261_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 48 ) {
-            goto STATE_261_DROP_OUT;    // [-oo, \47] 
-        }else {
-            if( input < 58 ) {
-                goto STATE_261;    // ['0', '9'] 
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_261_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
             }else {
-                goto STATE_261_DROP_OUT;    // [':', oo] 
+                if( input != 95 ) {
+                    goto STATE_261_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
+                }
+            }
+        }else {
+            if( input < 114 ) {
+                if( input == 96 ) {
+                    goto STATE_261_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_255;    // ['a', 'q'] 
+                }
+            }else {
+                if( input < 115 ) {
+                    goto STATE_262;    // 'r' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['s', 'z'] 
+                    }else {
+                        goto STATE_261_DROP_OUT;    // ['{', oo] 
+                    }
+                }
             }
         }
     
@@ -1941,45 +1877,183 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_261_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(36);
-        goto TERMINAL_36;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_262:
         __QUEX_DEBUG_INFO_ENTER(262);
-    // origins = [(30L, 126L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(30);
-    last_acceptance = 30;
+    // origins = [(41, 159, A, S), (7, 35)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
-        goto STATE_262_DROP_OUT;
-        
+      STATE_262_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_262_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_262_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
+                }
+            }
+        }else {
+            if( input < 117 ) {
+                if( input == 96 ) {
+                    goto STATE_262_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_255;    // ['a', 't'] 
+                }
+            }else {
+                if( input < 118 ) {
+                    goto STATE_263;    // 'u' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['v', 'z'] 
+                    }else {
+                        goto STATE_262_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
       STATE_262_DROP_OUT:
         __QUEX_DEBUG_INFO_DROP_OUT(262);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(30);
-        goto TERMINAL_30;
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_262_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
+        
+    
+      STATE_263:
+        __QUEX_DEBUG_INFO_ENTER(263);
+    // origins = [(41, 159, A, S), (7, 36)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_263_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_263_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_263_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
+                }
+            }
+        }else {
+            if( input < 99 ) {
+                if( input == 96 ) {
+                    goto STATE_263_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_255;    // ['a', 'b'] 
+                }
+            }else {
+                if( input < 100 ) {
+                    goto STATE_264;    // 'c' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['d', 'z'] 
+                    }else {
+                        goto STATE_263_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
+      STATE_263_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(263);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_263_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_264:
         __QUEX_DEBUG_INFO_ENTER(264);
-    // origins = [(27L, 120L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(27);
-    last_acceptance = 27;
+    // origins = [(41, 159, A, S), (7, 37)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
-        goto STATE_264_DROP_OUT;
-        
+      STATE_264_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_264_DROP_OUT;    // [-oo, '@'] 
+                }else {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
+                    goto STATE_264_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
+                }
+            }
+        }else {
+            if( input < 116 ) {
+                if( input == 96 ) {
+                    goto STATE_264_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_255;    // ['a', 's'] 
+                }
+            }else {
+                if( input < 117 ) {
+                    goto STATE_265;    // 't' 
+                }else {
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['u', 'z'] 
+                    }else {
+                        goto STATE_264_DROP_OUT;    // ['{', oo] 
+                    }
+                }
+            }
+        }
+    
       STATE_264_DROP_OUT:
         __QUEX_DEBUG_INFO_DROP_OUT(264);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(27);
-        goto TERMINAL_27;
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_264_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_265:
         __QUEX_DEBUG_INFO_ENTER(265);
-    // origins = [(18L, 84L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(18);
-    last_acceptance = 18;
+    // origins = [(7, 38, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(7);
+    last_acceptance = 7;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_265_INPUT:
         QUEX_STREAM_GET(input);
@@ -1989,7 +2063,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 goto STATE_265_DROP_OUT;    // [-oo, '@'] 
             }else {
                 if( input < 91 ) {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }else {
                     goto STATE_265_DROP_OUT;    // ['[', '^'] 
                 }
@@ -1997,13 +2071,13 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         }else {
             if( input < 97 ) {
                 if( input == 95 ) {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }else {
                     goto STATE_265_DROP_OUT;    // '`' 
                 }
             }else {
                 if( input < 123 ) {
-                    goto STATE_256;    // ['a', 'z'] 
+                    goto STATE_255;    // ['a', 'z'] 
                 }else {
                     goto STATE_265_DROP_OUT;    // ['{', oo] 
                 }
@@ -2019,41 +2093,49 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_265_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(18);
-        goto TERMINAL_18;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(7);
+        goto TERMINAL_7;
         
     
       STATE_266:
         __QUEX_DEBUG_INFO_ENTER(266);
-    // origins = [(9L, 34L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(9);
-    last_acceptance = 9;
+    // origins = [(41, 159, A, S), (16, 85)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_266_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
-                goto STATE_266_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
-                    goto STATE_256;    // ['A', 'Z'] 
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_266_DROP_OUT;    // [-oo, '@'] 
                 }else {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
                     goto STATE_266_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
-                    goto STATE_256;    // '_' 
-                }else {
+            if( input < 100 ) {
+                if( input == 96 ) {
                     goto STATE_266_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_255;    // ['a', 'c'] 
                 }
             }else {
-                if( input < 123 ) {
-                    goto STATE_256;    // ['a', 'z'] 
+                if( input < 101 ) {
+                    goto STATE_267;    // 'd' 
                 }else {
-                    goto STATE_266_DROP_OUT;    // ['{', oo] 
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['e', 'z'] 
+                    }else {
+                        goto STATE_266_DROP_OUT;    // ['{', oo] 
+                    }
                 }
             }
         }
@@ -2067,15 +2149,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_266_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(9);
-        goto TERMINAL_9;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_267:
         __QUEX_DEBUG_INFO_ENTER(267);
-    // origins = [(21L, 103L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(21);
-    last_acceptance = 21;
+    // origins = [(16, 86, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(16);
+    last_acceptance = 16;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_267_INPUT:
         QUEX_STREAM_GET(input);
@@ -2085,7 +2167,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 goto STATE_267_DROP_OUT;    // [-oo, '@'] 
             }else {
                 if( input < 91 ) {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }else {
                     goto STATE_267_DROP_OUT;    // ['[', '^'] 
                 }
@@ -2093,13 +2175,13 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         }else {
             if( input < 97 ) {
                 if( input == 95 ) {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }else {
                     goto STATE_267_DROP_OUT;    // '`' 
                 }
             }else {
                 if( input < 123 ) {
-                    goto STATE_256;    // ['a', 'z'] 
+                    goto STATE_255;    // ['a', 'z'] 
                 }else {
                     goto STATE_267_DROP_OUT;    // ['{', oo] 
                 }
@@ -2115,41 +2197,49 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_267_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(21);
-        goto TERMINAL_21;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(16);
+        goto TERMINAL_16;
         
     
       STATE_268:
         __QUEX_DEBUG_INFO_ENTER(268);
-    // origins = [(12L, 49L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(12);
-    last_acceptance = 12;
+    // origins = [(41, 159, A, S), (10, 49)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_268_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
-                goto STATE_268_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
-                    goto STATE_256;    // ['A', 'Z'] 
+        if( input < 96 ) {
+            if( input < 91 ) {
+                if( input < 65 ) {
+                    goto STATE_268_DROP_OUT;    // [-oo, '@'] 
                 }else {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }
+            }else {
+                if( input != 95 ) {
                     goto STATE_268_DROP_OUT;    // ['[', '^'] 
+                }else {
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
-                    goto STATE_256;    // '_' 
-                }else {
+            if( input < 116 ) {
+                if( input == 96 ) {
                     goto STATE_268_DROP_OUT;    // '`' 
+                }else {
+                    goto STATE_255;    // ['a', 's'] 
                 }
             }else {
-                if( input < 123 ) {
-                    goto STATE_256;    // ['a', 'z'] 
+                if( input < 117 ) {
+                    goto STATE_269;    // 't' 
                 }else {
-                    goto STATE_268_DROP_OUT;    // ['{', oo] 
+                    if( input < 123 ) {
+                        goto STATE_255;    // ['u', 'z'] 
+                    }else {
+                        goto STATE_268_DROP_OUT;    // ['{', oo] 
+                    }
                 }
             }
         }
@@ -2163,30 +2253,63 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_268_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(12);
-        goto TERMINAL_12;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_269:
         __QUEX_DEBUG_INFO_ENTER(269);
-    // origins = [(24L, 114L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(24);
-    last_acceptance = 24;
+    // origins = [(10, 50, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(10);
+    last_acceptance = 10;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
-        goto STATE_269_DROP_OUT;
-        
+      STATE_269_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_269_DROP_OUT;    // [-oo, '@'] 
+            }else {
+                if( input < 91 ) {
+                    goto STATE_255;    // ['A', 'Z'] 
+                }else {
+                    goto STATE_269_DROP_OUT;    // ['[', '^'] 
+                }
+            }
+        }else {
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_255;    // '_' 
+                }else {
+                    goto STATE_269_DROP_OUT;    // '`' 
+                }
+            }else {
+                if( input < 123 ) {
+                    goto STATE_255;    // ['a', 'z'] 
+                }else {
+                    goto STATE_269_DROP_OUT;    // ['{', oo] 
+                }
+            }
+        }
+    
       STATE_269_DROP_OUT:
         __QUEX_DEBUG_INFO_DROP_OUT(269);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(24);
-        goto TERMINAL_24;
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_269_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(10);
+        goto TERMINAL_10;
         
     
       STATE_270:
         __QUEX_DEBUG_INFO_ENTER(270);
-    // origins = [(42L, 160L, S), (12L, 50L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (13, 67)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_270_INPUT:
         QUEX_STREAM_GET(input);
@@ -2196,28 +2319,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_270_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_270_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 110 ) {
+            if( input < 117 ) {
                 if( input == 96 ) {
                     goto STATE_270_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'm'] 
+                    goto STATE_255;    // ['a', 't'] 
                 }
             }else {
-                if( input < 111 ) {
-                    goto STATE_273;    // 'n' 
+                if( input < 118 ) {
+                    goto STATE_271;    // 'u' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['o', 'z'] 
+                        goto STATE_255;    // ['v', 'z'] 
                     }else {
                         goto STATE_270_DROP_OUT;    // ['{', oo] 
                     }
@@ -2234,15 +2357,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_270_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_271:
         __QUEX_DEBUG_INFO_ENTER(271);
-    // origins = [(42L, 160L, S), (15L, 69L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (13, 68)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_271_INPUT:
         QUEX_STREAM_GET(input);
@@ -2252,28 +2375,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_271_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_271_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 111 ) {
+            if( input < 98 ) {
                 if( input == 96 ) {
                     goto STATE_271_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'n'] 
+                    goto STATE_255;    // 'a' 
                 }
             }else {
-                if( input < 112 ) {
-                    goto STATE_274;    // 'o' 
+                if( input < 99 ) {
+                    goto STATE_272;    // 'b' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['p', 'z'] 
+                        goto STATE_255;    // ['c', 'z'] 
                     }else {
                         goto STATE_271_DROP_OUT;    // ['{', oo] 
                     }
@@ -2290,15 +2413,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_271_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_272:
         __QUEX_DEBUG_INFO_ENTER(272);
-    // origins = [(42L, 160L, S), (21L, 104L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (13, 69)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_272_INPUT:
         QUEX_STREAM_GET(input);
@@ -2308,28 +2431,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_272_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_272_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 120 ) {
+            if( input < 108 ) {
                 if( input == 96 ) {
                     goto STATE_272_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'w'] 
+                    goto STATE_255;    // ['a', 'k'] 
                 }
             }else {
-                if( input < 121 ) {
-                    goto STATE_275;    // 'x' 
+                if( input < 109 ) {
+                    goto STATE_273;    // 'l' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['y', 'z'] 
+                        goto STATE_255;    // ['m', 'z'] 
                     }else {
                         goto STATE_272_DROP_OUT;    // ['{', oo] 
                     }
@@ -2346,15 +2469,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_272_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_273:
         __QUEX_DEBUG_INFO_ENTER(273);
-    // origins = [(42L, 160L, S), (12L, 51L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (13, 70)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_273_INPUT:
         QUEX_STREAM_GET(input);
@@ -2364,28 +2487,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_273_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_273_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 116 ) {
+            if( input < 101 ) {
                 if( input == 96 ) {
                     goto STATE_273_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 's'] 
+                    goto STATE_255;    // ['a', 'd'] 
                 }
             }else {
-                if( input < 117 ) {
-                    goto STATE_268;    // 't' 
+                if( input < 102 ) {
+                    goto STATE_274;    // 'e' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['u', 'z'] 
+                        goto STATE_255;    // ['f', 'z'] 
                     }else {
                         goto STATE_273_DROP_OUT;    // ['{', oo] 
                     }
@@ -2402,49 +2525,41 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_273_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_274:
         __QUEX_DEBUG_INFO_ENTER(274);
-    // origins = [(42L, 160L, S), (15L, 70L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(13, 71, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(13);
+    last_acceptance = 13;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_274_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_274_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_274_DROP_OUT;    // [-oo, '@'] 
             }else {
-                if( input != 95 ) {
-                    goto STATE_274_DROP_OUT;    // ['[', '^'] 
+                if( input < 91 ) {
+                    goto STATE_255;    // ['A', 'Z'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_274_DROP_OUT;    // ['[', '^'] 
                 }
             }
         }else {
-            if( input < 117 ) {
-                if( input == 96 ) {
-                    goto STATE_274_DROP_OUT;    // '`' 
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_255;    // '_' 
                 }else {
-                    goto STATE_256;    // ['a', 't'] 
+                    goto STATE_274_DROP_OUT;    // '`' 
                 }
             }else {
-                if( input < 118 ) {
-                    goto STATE_278;    // 'u' 
+                if( input < 123 ) {
+                    goto STATE_255;    // ['a', 'z'] 
                 }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['v', 'z'] 
-                    }else {
-                        goto STATE_274_DROP_OUT;    // ['{', oo] 
-                    }
+                    goto STATE_274_DROP_OUT;    // ['{', oo] 
                 }
             }
         }
@@ -2458,15 +2573,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_274_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(13);
+        goto TERMINAL_13;
         
     
       STATE_275:
         __QUEX_DEBUG_INFO_ENTER(275);
-    // origins = [(42L, 160L, S), (21L, 105L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (19, 103)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_275_INPUT:
         QUEX_STREAM_GET(input);
@@ -2476,13 +2591,13 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_275_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_275_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
@@ -2490,14 +2605,14 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input == 96 ) {
                     goto STATE_275_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'o'] 
+                    goto STATE_255;    // ['a', 'o'] 
                 }
             }else {
                 if( input < 113 ) {
-                    goto STATE_279;    // 'p' 
+                    goto STATE_276;    // 'p' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['q', 'z'] 
+                        goto STATE_255;    // ['q', 'z'] 
                     }else {
                         goto STATE_275_DROP_OUT;    // ['{', oo] 
                     }
@@ -2514,15 +2629,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_275_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_276:
         __QUEX_DEBUG_INFO_ENTER(276);
-    // origins = [(42L, 160L, S), (9L, 37L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (19, 104)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_276_INPUT:
         QUEX_STREAM_GET(input);
@@ -2532,28 +2647,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_276_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_276_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 117 ) {
+            if( input < 101 ) {
                 if( input == 96 ) {
                     goto STATE_276_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 't'] 
+                    goto STATE_255;    // ['a', 'd'] 
                 }
             }else {
-                if( input < 118 ) {
-                    goto STATE_280;    // 'u' 
+                if( input < 102 ) {
+                    goto STATE_277;    // 'e' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['v', 'z'] 
+                        goto STATE_255;    // ['f', 'z'] 
                     }else {
                         goto STATE_276_DROP_OUT;    // ['{', oo] 
                     }
@@ -2570,15 +2685,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_276_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_277:
         __QUEX_DEBUG_INFO_ENTER(277);
-    // origins = [(42L, 160L, S), (18L, 86L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (19, 105)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_277_INPUT:
         QUEX_STREAM_GET(input);
@@ -2588,28 +2703,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_277_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_277_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 100 ) {
+            if( input < 99 ) {
                 if( input == 96 ) {
                     goto STATE_277_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'c'] 
+                    goto STATE_255;    // ['a', 'b'] 
                 }
             }else {
-                if( input < 101 ) {
-                    goto STATE_265;    // 'd' 
+                if( input < 100 ) {
+                    goto STATE_278;    // 'c' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['e', 'z'] 
+                        goto STATE_255;    // ['d', 'z'] 
                     }else {
                         goto STATE_277_DROP_OUT;    // ['{', oo] 
                     }
@@ -2626,15 +2741,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_277_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_278:
         __QUEX_DEBUG_INFO_ENTER(278);
-    // origins = [(42L, 160L, S), (15L, 71L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(41, 159, A, S), (19, 106)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_278_INPUT:
         QUEX_STREAM_GET(input);
@@ -2644,28 +2759,28 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 if( input < 65 ) {
                     goto STATE_278_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
                     goto STATE_278_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 98 ) {
+            if( input < 116 ) {
                 if( input == 96 ) {
                     goto STATE_278_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // 'a' 
+                    goto STATE_255;    // ['a', 's'] 
                 }
             }else {
-                if( input < 99 ) {
-                    goto STATE_281;    // 'b' 
+                if( input < 117 ) {
+                    goto STATE_279;    // 't' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['c', 'z'] 
+                        goto STATE_255;    // ['u', 'z'] 
                     }else {
                         goto STATE_278_DROP_OUT;    // ['{', oo] 
                     }
@@ -2682,49 +2797,41 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_278_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_279:
         __QUEX_DEBUG_INFO_ENTER(279);
-    // origins = [(42L, 160L, S), (21L, 106L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+    // origins = [(19, 107, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(19);
+    last_acceptance = 19;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_279_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_279_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
+        if( input < 95 ) {
+            if( input < 65 ) {
+                goto STATE_279_DROP_OUT;    // [-oo, '@'] 
             }else {
-                if( input != 95 ) {
-                    goto STATE_279_DROP_OUT;    // ['[', '^'] 
+                if( input < 91 ) {
+                    goto STATE_255;    // ['A', 'Z'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_279_DROP_OUT;    // ['[', '^'] 
                 }
             }
         }else {
-            if( input < 101 ) {
-                if( input == 96 ) {
-                    goto STATE_279_DROP_OUT;    // '`' 
+            if( input < 97 ) {
+                if( input == 95 ) {
+                    goto STATE_255;    // '_' 
                 }else {
-                    goto STATE_256;    // ['a', 'd'] 
+                    goto STATE_279_DROP_OUT;    // '`' 
                 }
             }else {
-                if( input < 102 ) {
-                    goto STATE_282;    // 'e' 
+                if( input < 123 ) {
+                    goto STATE_255;    // ['a', 'z'] 
                 }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['f', 'z'] 
-                    }else {
-                        goto STATE_279_DROP_OUT;    // ['{', oo] 
-                    }
+                    goto STATE_279_DROP_OUT;    // ['{', oo] 
                 }
             }
         }
@@ -2738,351 +2845,246 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_279_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(19);
+        goto TERMINAL_19;
         
     
-      STATE_280:
-        __QUEX_DEBUG_INFO_ENTER(280);
-    // origins = [(42L, 160L, S), (9L, 38L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+      STATE_250:
+        __QUEX_DEBUG_INFO_ENTER(250);
+    // origins = [(41, 159, A, S), (19, 102)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_280_INPUT:
+      STATE_250_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 96 ) {
             if( input < 91 ) {
                 if( input < 65 ) {
-                    goto STATE_280_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_250_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
-                    goto STATE_280_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_250_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 99 ) {
+            if( input < 120 ) {
                 if( input == 96 ) {
-                    goto STATE_280_DROP_OUT;    // '`' 
+                    goto STATE_250_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'b'] 
+                    goto STATE_255;    // ['a', 'w'] 
                 }
             }else {
-                if( input < 100 ) {
-                    goto STATE_283;    // 'c' 
+                if( input < 121 ) {
+                    goto STATE_275;    // 'x' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['d', 'z'] 
+                        goto STATE_255;    // ['y', 'z'] 
                     }else {
-                        goto STATE_280_DROP_OUT;    // ['{', oo] 
+                        goto STATE_250_DROP_OUT;    // ['{', oo] 
                     }
                 }
             }
         }
     
-      STATE_280_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(280);
+      STATE_250_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(250);
         #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
         loaded_byte_n = forward_lexing_drop_out(me, input);
         if( loaded_byte_n ) {
             Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_280_INPUT;
+            goto STATE_250_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
-      STATE_281:
-        __QUEX_DEBUG_INFO_ENTER(281);
-    // origins = [(42L, 160L, S), (15L, 72L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+      STATE_251:
+        __QUEX_DEBUG_INFO_ENTER(251);
+    // origins = [(5, 17, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(5);
+    last_acceptance = 5;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_281_INPUT:
+      STATE_251_INPUT:
+        QUEX_STREAM_GET(input);
+        __QUEX_DEBUG_INFO_INPUT(input);
+        if( input < 13 ) {
+            if( input < 9 ) {
+                goto STATE_251_DROP_OUT;    // [-oo, \8] 
+            }else {
+                if( input < 11 ) {
+                    goto STATE_251;    // ['\t', '\n'] 
+                }else {
+                    goto STATE_251_DROP_OUT;    // [\11, \12] 
+                }
+            }
+        }else {
+            if( input < 32 ) {
+                if( input == 13 ) {
+                    goto STATE_251;    // '\r' 
+                }else {
+                    goto STATE_251_DROP_OUT;    // [\14, \31] 
+                }
+            }else {
+                if( input == 32 ) {
+                    goto STATE_251;    // ' ' 
+                }else {
+                    goto STATE_251_DROP_OUT;    // [\33, oo] 
+                }
+            }
+        }
+    
+      STATE_251_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(251);
+        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+        loaded_byte_n = forward_lexing_drop_out(me, input);
+        if( loaded_byte_n ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_251_INPUT;
+        }
+        #endif
+        __QUEX_DEBUG_INFO_ACCEPTANCE(5);
+        goto TERMINAL_5;
+        
+    
+      STATE_252:
+        __QUEX_DEBUG_INFO_ENTER(252);
+    // origins = [(41, 159, A, S), (13, 66)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_252_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 96 ) {
             if( input < 91 ) {
                 if( input < 65 ) {
-                    goto STATE_281_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_252_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
-                    goto STATE_281_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_252_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 108 ) {
+            if( input < 111 ) {
                 if( input == 96 ) {
-                    goto STATE_281_DROP_OUT;    // '`' 
+                    goto STATE_252_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'k'] 
+                    goto STATE_255;    // ['a', 'n'] 
                 }
             }else {
-                if( input < 109 ) {
-                    goto STATE_284;    // 'l' 
+                if( input < 112 ) {
+                    goto STATE_270;    // 'o' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['m', 'z'] 
+                        goto STATE_255;    // ['p', 'z'] 
                     }else {
-                        goto STATE_281_DROP_OUT;    // ['{', oo] 
+                        goto STATE_252_DROP_OUT;    // ['{', oo] 
                     }
                 }
             }
         }
     
-      STATE_281_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(281);
+      STATE_252_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(252);
         #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
         loaded_byte_n = forward_lexing_drop_out(me, input);
         if( loaded_byte_n ) {
             Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_281_INPUT;
+            goto STATE_252_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
-      STATE_282:
-        __QUEX_DEBUG_INFO_ENTER(282);
-    // origins = [(42L, 160L, S), (21L, 107L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
+      STATE_253:
+        __QUEX_DEBUG_INFO_ENTER(253);
+    // origins = [(25, 119, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(25);
+    last_acceptance = 25;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_282_INPUT:
+        // no trigger set, no 'get character' 
+        goto STATE_253_DROP_OUT;
+        
+      STATE_253_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(253);
+        __QUEX_DEBUG_INFO_ACCEPTANCE(25);
+        goto TERMINAL_25;
+        
+    
+      STATE_254:
+        __QUEX_DEBUG_INFO_ENTER(254);
+    // origins = [(41, 159, A, S), (10, 48)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_STREAM_TELL(last_acceptance_input_position);
+      STATE_254_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 96 ) {
             if( input < 91 ) {
                 if( input < 65 ) {
-                    goto STATE_282_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_254_DROP_OUT;    // [-oo, '@'] 
                 }else {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }
             }else {
                 if( input != 95 ) {
-                    goto STATE_282_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_254_DROP_OUT;    // ['[', '^'] 
                 }else {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }
             }
         }else {
-            if( input < 99 ) {
+            if( input < 110 ) {
                 if( input == 96 ) {
-                    goto STATE_282_DROP_OUT;    // '`' 
+                    goto STATE_254_DROP_OUT;    // '`' 
                 }else {
-                    goto STATE_256;    // ['a', 'b'] 
+                    goto STATE_255;    // ['a', 'm'] 
                 }
             }else {
-                if( input < 100 ) {
-                    goto STATE_285;    // 'c' 
+                if( input < 111 ) {
+                    goto STATE_268;    // 'n' 
                 }else {
                     if( input < 123 ) {
-                        goto STATE_256;    // ['d', 'z'] 
+                        goto STATE_255;    // ['o', 'z'] 
                     }else {
-                        goto STATE_282_DROP_OUT;    // ['{', oo] 
+                        goto STATE_254_DROP_OUT;    // ['{', oo] 
                     }
                 }
             }
         }
     
-      STATE_282_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(282);
+      STATE_254_DROP_OUT:
+        __QUEX_DEBUG_INFO_DROP_OUT(254);
         #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
         loaded_byte_n = forward_lexing_drop_out(me, input);
         if( loaded_byte_n ) {
             Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_282_INPUT;
+            goto STATE_254_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
-        
-    
-      STATE_283:
-        __QUEX_DEBUG_INFO_ENTER(283);
-    // origins = [(42L, 160L, S), (9L, 39L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_283_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_283_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
-            }else {
-                if( input != 95 ) {
-                    goto STATE_283_DROP_OUT;    // ['[', '^'] 
-                }else {
-                    goto STATE_256;    // '_' 
-                }
-            }
-        }else {
-            if( input < 116 ) {
-                if( input == 96 ) {
-                    goto STATE_283_DROP_OUT;    // '`' 
-                }else {
-                    goto STATE_256;    // ['a', 's'] 
-                }
-            }else {
-                if( input < 117 ) {
-                    goto STATE_266;    // 't' 
-                }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['u', 'z'] 
-                    }else {
-                        goto STATE_283_DROP_OUT;    // ['{', oo] 
-                    }
-                }
-            }
-        }
-    
-      STATE_283_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(283);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        loaded_byte_n = forward_lexing_drop_out(me, input);
-        if( loaded_byte_n ) {
-            Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_283_INPUT;
-        }
-        #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
-        
-    
-      STATE_284:
-        __QUEX_DEBUG_INFO_ENTER(284);
-    // origins = [(42L, 160L, S), (15L, 68L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_284_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_284_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
-            }else {
-                if( input != 95 ) {
-                    goto STATE_284_DROP_OUT;    // ['[', '^'] 
-                }else {
-                    goto STATE_256;    // '_' 
-                }
-            }
-        }else {
-            if( input < 101 ) {
-                if( input == 96 ) {
-                    goto STATE_284_DROP_OUT;    // '`' 
-                }else {
-                    goto STATE_256;    // ['a', 'd'] 
-                }
-            }else {
-                if( input < 102 ) {
-                    goto STATE_255;    // 'e' 
-                }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['f', 'z'] 
-                    }else {
-                        goto STATE_284_DROP_OUT;    // ['{', oo] 
-                    }
-                }
-            }
-        }
-    
-      STATE_284_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(284);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        loaded_byte_n = forward_lexing_drop_out(me, input);
-        if( loaded_byte_n ) {
-            Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_284_INPUT;
-        }
-        #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
-        
-    
-      STATE_285:
-        __QUEX_DEBUG_INFO_ENTER(285);
-    // origins = [(42L, 160L, S), (21L, 108L)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-    last_acceptance = 42;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_285_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
-                    goto STATE_285_DROP_OUT;    // [-oo, '@'] 
-                }else {
-                    goto STATE_256;    // ['A', 'Z'] 
-                }
-            }else {
-                if( input != 95 ) {
-                    goto STATE_285_DROP_OUT;    // ['[', '^'] 
-                }else {
-                    goto STATE_256;    // '_' 
-                }
-            }
-        }else {
-            if( input < 116 ) {
-                if( input == 96 ) {
-                    goto STATE_285_DROP_OUT;    // '`' 
-                }else {
-                    goto STATE_256;    // ['a', 's'] 
-                }
-            }else {
-                if( input < 117 ) {
-                    goto STATE_267;    // 't' 
-                }else {
-                    if( input < 123 ) {
-                        goto STATE_256;    // ['u', 'z'] 
-                    }else {
-                        goto STATE_285_DROP_OUT;    // ['{', oo] 
-                    }
-                }
-            }
-        }
-    
-      STATE_285_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(285);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        loaded_byte_n = forward_lexing_drop_out(me, input);
-        if( loaded_byte_n ) {
-            Simple_on_buffer_reload(loaded_byte_n);
-            goto STATE_285_INPUT;
-        }
-        #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(42);
-        goto TERMINAL_42;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
       STATE_255:
         __QUEX_DEBUG_INFO_ENTER(255);
-    // origins = [(15L, 67L, S)]
-    __QUEX_DEBUG_INFO_ACCEPTANCE(15);
-    last_acceptance = 15;
+    // origins = [(41, 159, A, S)]
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
       STATE_255_INPUT:
         QUEX_STREAM_GET(input);
@@ -3092,7 +3094,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 goto STATE_255_DROP_OUT;    // [-oo, '@'] 
             }else {
                 if( input < 91 ) {
-                    goto STATE_256;    // ['A', 'Z'] 
+                    goto STATE_255;    // ['A', 'Z'] 
                 }else {
                     goto STATE_255_DROP_OUT;    // ['[', '^'] 
                 }
@@ -3100,13 +3102,13 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         }else {
             if( input < 97 ) {
                 if( input == 95 ) {
-                    goto STATE_256;    // '_' 
+                    goto STATE_255;    // '_' 
                 }else {
                     goto STATE_255_DROP_OUT;    // '`' 
                 }
             }else {
                 if( input < 123 ) {
-                    goto STATE_256;    // ['a', 'z'] 
+                    goto STATE_255;    // ['a', 'z'] 
                 }else {
                     goto STATE_255_DROP_OUT;    // ['{', oo] 
                 }
@@ -3122,8 +3124,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             goto STATE_255_INPUT;
         }
         #endif
-        __QUEX_DEBUG_INFO_ACCEPTANCE(15);
-        goto TERMINAL_15;
+        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+        goto TERMINAL_41;
         
     
     
@@ -3134,26 +3136,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       // pattern was according to the terminal state. The terminal states are 
       // numbered after the pattern id.
       //
-      TERMINAL_0:
-        __QUEX_DEBUG_INFO_TERMINAL(0);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(1);
-            
-            #line 16 "dos_lf_2.qx"
-            self.send(TKN_TERMINATION); RETURN;
-#line 1833 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_36:
-        __QUEX_DEBUG_INFO_TERMINAL(36);
+      TERMINAL_35:
+        __QUEX_DEBUG_INFO_TERMINAL(35);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_PREPARE_LEXEME_OBJECT
         QUEX_PREPARE_LEXEME_LENGTH
@@ -3164,15 +3148,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1852 "Simple-core-engine.cpp"
+#line 1838 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_6:
-        __QUEX_DEBUG_INFO_TERMINAL(6);
+      TERMINAL_5:
+        __QUEX_DEBUG_INFO_TERMINAL(5);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_PREPARE_LEXEME_OBJECT
         QUEX_PREPARE_LEXEME_LENGTH
@@ -3181,17 +3165,13 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             self.__count_shift_end_values_to_start_values();
             self.count(Lexeme, LexemeL);
             
-            #line 18 "dos_lf_2.qx"
-             
-#line 1871 "Simple-core-engine.cpp"
-            
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_9:
-        __QUEX_DEBUG_INFO_TERMINAL(9);
+      TERMINAL_7:
+        __QUEX_DEBUG_INFO_TERMINAL(7);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3201,15 +3181,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1889 "Simple-core-engine.cpp"
+#line 1871 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_42:
-        __QUEX_DEBUG_INFO_TERMINAL(42);
+      TERMINAL_41:
+        __QUEX_DEBUG_INFO_TERMINAL(41);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_PREPARE_LEXEME_OBJECT
         QUEX_PREPARE_LEXEME_LENGTH
@@ -3219,16 +3199,16 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             self.count_NoNewline(LexemeL);
             
             #line 28 "dos_lf_2.qx"
-             self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1908 "Simple-core-engine.cpp"
+            self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
+#line 1890 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_12:
-        __QUEX_DEBUG_INFO_TERMINAL(12);
+      TERMINAL_10:
+        __QUEX_DEBUG_INFO_TERMINAL(10);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3238,15 +3218,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 1926 "Simple-core-engine.cpp"
+#line 1908 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_15:
-        __QUEX_DEBUG_INFO_TERMINAL(15);
+      TERMINAL_13:
+        __QUEX_DEBUG_INFO_TERMINAL(13);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3256,15 +3236,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 1944 "Simple-core-engine.cpp"
+#line 1926 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_18:
-        __QUEX_DEBUG_INFO_TERMINAL(18);
+      TERMINAL_16:
+        __QUEX_DEBUG_INFO_TERMINAL(16);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3274,15 +3254,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 1962 "Simple-core-engine.cpp"
+#line 1944 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_21:
-        __QUEX_DEBUG_INFO_TERMINAL(21);
+      TERMINAL_19:
+        __QUEX_DEBUG_INFO_TERMINAL(19);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3292,15 +3272,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 1980 "Simple-core-engine.cpp"
+#line 1962 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_24:
-        __QUEX_DEBUG_INFO_TERMINAL(24);
+      TERMINAL_22:
+        __QUEX_DEBUG_INFO_TERMINAL(22);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3310,15 +3290,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 1998 "Simple-core-engine.cpp"
+#line 1980 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_27:
-        __QUEX_DEBUG_INFO_TERMINAL(27);
+      TERMINAL_25:
+        __QUEX_DEBUG_INFO_TERMINAL(25);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3328,15 +3308,15 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 2016 "Simple-core-engine.cpp"
+#line 1998 "Simple-core-engine.cpp"
             
             }
         }
     
         goto __REENTRY_PREPARATION;
     
-      TERMINAL_30:
-        __QUEX_DEBUG_INFO_TERMINAL(30);
+      TERMINAL_28:
+        __QUEX_DEBUG_INFO_TERMINAL(28);
         QUEX_STREAM_SEEK(last_acceptance_input_position);
         QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
         {
@@ -3346,7 +3326,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2034 "Simple-core-engine.cpp"
+#line 2016 "Simple-core-engine.cpp"
             
             }
         }
@@ -3355,29 +3335,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
     
     
-      GENERAL_ONE_AND_ONLY_TERMINAL: {
-            int tmp = last_acceptance;
-            //
-            //  if last_acceptance => goto correspondent acceptance terminal state
-            //  else               => execute defaul action
-            //
-            __QUEX_DEBUG_INFO_TERMINAL(General);
-            switch( tmp ) {
-                case 0L: goto TERMINAL_0;
-                case 36L: goto TERMINAL_36;
-                case 6L: goto TERMINAL_6;
-                case 9L: goto TERMINAL_9;
-                case 42L: goto TERMINAL_42;
-                case 12L: goto TERMINAL_12;
-                case 15L: goto TERMINAL_15;
-                case 18L: goto TERMINAL_18;
-                case 21L: goto TERMINAL_21;
-                case 24L: goto TERMINAL_24;
-                case 27L: goto TERMINAL_27;
-                case 30L: goto TERMINAL_30;
-    
-                default:
-                   // no acceptance state    
+      TERMINAL_END_OF_STREAM:
                     QUEX_PREPARE_LEXEME_OBJECT
                     QUEX_PREPARE_LEXEME_LENGTH
                     {
@@ -3390,7 +3348,43 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             }
                     }
     
-                   goto __REENTRY_PREPARATION;
+    
+      TERMINAL_DEFAULT:
+                    QUEX_PREPARE_LEXEME_OBJECT
+                    QUEX_PREPARE_LEXEME_LENGTH
+                    {
+                        {
+            self.__count_shift_end_values_to_start_values();
+            self.count(Lexeme, LexemeL);
+            self.send(TKN_TERMINATION);
+            return TKN_TERMINATION;
+            
+            }
+                    }
+    
+            goto __REENTRY_PREPARATION;
+    
+      GENERAL_ONE_AND_ONLY_TERMINAL: {
+            int tmp = last_acceptance;
+            //
+            //  if last_acceptance => goto correspondent acceptance terminal state
+            //  else               => execute defaul action
+            //
+            __QUEX_DEBUG_INFO_TERMINAL(General);
+            switch( tmp ) {
+                case 35L: goto TERMINAL_35;
+                case 5L: goto TERMINAL_5;
+                case 7L: goto TERMINAL_7;
+                case 41L: goto TERMINAL_41;
+                case 10L: goto TERMINAL_10;
+                case 13L: goto TERMINAL_13;
+                case 16L: goto TERMINAL_16;
+                case 19L: goto TERMINAL_19;
+                case 22L: goto TERMINAL_22;
+                case 25L: goto TERMINAL_25;
+                case 28L: goto TERMINAL_28;
+    
+                default: goto TERMINAL_DEFAULT; /* nothing matched */
             }
         }
     
@@ -3421,7 +3415,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( 0 == 1 ) {
             int unused = 0;
             unused = unused + ONE_AND_ONLY.id;
-            goto STATE_254;
+            goto STATE_249;
         }
     }
 #include"Simple"

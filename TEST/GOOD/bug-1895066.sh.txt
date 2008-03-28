@@ -7,4 +7,4 @@ warning: using mode 'MODE' as initial mode
 Output from constructed header:_______________________________________
 
 (standard input):200:#line 5 "error.qx"
-(standard input):203:#line 203 "Simple"
+(standard input):202:#line 202 "Simple"

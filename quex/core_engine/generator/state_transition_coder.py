@@ -79,8 +79,10 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     # -- in case of the init state, the end of file character has to be checked.
     if EndOfFile_Code != None and BackwardLexingF == False:
         txt += "$if $input $== 0x%X $then\n" % EndOfFile_Code
+
+        txt += "    /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state*/\n"
         txt += "    %s" % LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
-                                                    BackwardLexingF=False) + "\n"
+                                                        BackwardLexingF=False) + "\n"
         txt += "$end\n" 
 
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
