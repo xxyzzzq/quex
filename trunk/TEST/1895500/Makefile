@@ -5,8 +5,9 @@ all: $(X).cpp
 		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
 		lexer.cpp                     \
-		-ggdb
-		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV \
+		-ggdb \
+	   	# -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
 
 
 $(X).cpp: indigo.qx

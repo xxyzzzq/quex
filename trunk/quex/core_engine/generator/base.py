@@ -1,3 +1,4 @@
+from   quex.frs_py.file_in                        import error_msg
 import quex.core_engine.state_machine.parallelize as     parallelize
 from   quex.core_engine.generator.action_info     import ActionInfo
 from   quex.core_engine.state_machine.index       import get_state_machine_by_id
@@ -118,12 +119,30 @@ class GeneratorBase:
                   all successful patterns need to be reported!            
                           
         """   
-        def __on_orphan_states(Place, orphan_state_list):
+        def __check(Place, sm):
+            __check_on_orphan_states(Place, sm)
+            __check_on_init_state_not_acceptance(Place, sm)
+
+        def __check_on_orphan_states(Place, sm):
+            orphan_state_list = sm.get_orphaned_state_index_list()
+            if orphan_state_list == []: return
             error_msg("After '%s'" % Place + "\n" + \
                       "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                       "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
                       "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
                       fh, DontExitF=True)
+
+        def __check_on_init_state_not_acceptance(Place, sm):
+            init_state = sm.get_init_state()
+            if init_state.core().is_acceptance():
+                error_msg("After '%s'" % Place + "\n" + \
+                          "The initial state is 'acceptance'. This should never appear.\n" + \
+                          "Please, log a defect at the projects website quex.sourceforge.net.\n")
+
+            if filter(lambda origin: origin.is_acceptance(), init_state.origins().get_list()) != []:
+                error_msg("After '%s'" % Place + "\n" + \
+                          "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
+                          "Please, log a defect at the projects website quex.sourceforge.net.\n")
 
         # (1) mark at each state machine the machine and states as 'original'.
         #      
@@ -136,26 +155,20 @@ class GeneratorBase:
         
         # (2) setup all patterns in paralell 
         sm = parallelize.do(StateMachine_List)
-        ## orphan_state_list = sm.get_orphaned_state_index_list()
-        ## if orphan_state_list != []: __on_orphan_states("Parallelizing", orphan_state_list)
+        __check("Parallelization", sm)
 
         # (3) convert the state machine to an DFA (paralellization created an NFA)
         sm = nfa_to_dfa.do(sm)
-        ## orphan_state_list = sm.get_orphaned_state_index_list()
-        ## if orphan_state_list != []: __on_orphan_states("NFA->DFA", orphan_state_list)
+        __check("NFA to DFA", sm)
 
         # (4) determine for each state in the DFA what is the dominating original state
         if FilterDominatedOriginsF: sm.filter_dominated_origins()
-
-        ## orphan_state_list = sm.get_orphaned_state_index_list()
-        ## if orphan_state_list != []: __on_orphan_states("Filter Dominated Origins", orphan_state_list)
+        __check("Filter Dominated Origins", sm)
 
         # (5) perform hopcroft optimization
         #     Note, that hopcroft optimization does consider the original acceptance 
         #     states when deciding if two state sets are equivalent.   
         sm = hopcroft.do(sm)
-
-        orphan_state_list = sm.get_orphaned_state_index_list()
-        if orphan_state_list != []: __on_orphan_states("Hopcroft Minimization", orphan_state_list)
+        __check("Hopcroft Minimization", sm)
 
         return sm
