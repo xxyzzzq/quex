@@ -22,9 +22,7 @@ pattern_action_pair_list = [ ActionInfo(sm, "Don't worry, be happy!") ]
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
 
 my_plotter.do()
-content = open("test-plot.fig").read()
-for line in content.split("\n"):
-    if len(line) >= 1 and line[0] != "#": print line
+print open("test-plot.fig").read()
 os.remove("test-plot.fig")
 
 

@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.13" date="Thu Mar 27 13:35:22 2008">
+<test-database execution-time-sec="0.00" date="Thu Mar 27 21:37:58 2008">
     <last-used-diff-display-program name=""/>
-    <test title="" time-sum-sec="0.13"> 
-        <application file-name="test-coder-get_generator_input.py" info-request-time="1205865582L"/>
+    <test title="Prepare Pattern Information for Code Generation" time-sum-sec="0.00"> 
+        <application file-name="test-coder-get_generator_input.py" info-request-time="1206648915L"/>
         <choice-list number="1">
-           <choice name="" result="FAIL" time-sec="0.13" crc="2138674050"/>
+           <choice name="" result="OK" time-sec="0.00" crc="376665394"/>
         </choice-list>
     </test>
 </test-database>

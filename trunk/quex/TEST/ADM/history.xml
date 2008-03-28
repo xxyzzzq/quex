@@ -1,4 +1,4 @@
-<history date="Thu Mar 27 13:35:22 2008" element-n="27">
+<history date="Thu Mar 27 21:37:58 2008" element-n="28">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="11:15:08"/>
@@ -76,6 +76,7 @@
         <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:12:08"/>
     </day>
     <day year="2008" month="03" day="27">
-        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="12:35:22"/>
+        <accept    time="20:15:50" application="test-coder-get_generator_input.py" choice="" crc="376665394" />
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="20:37:58"/>
     </day>
 </history>
