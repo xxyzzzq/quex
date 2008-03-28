@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import quex.core                                as coder
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
-from   quex.lexer_mode                 import Match, LexMode
+from   quex.lexer_mode                 import Match, LexMode, ReferencedCodeFragment
 
 
 if "--hwut-info" in sys.argv:
@@ -19,7 +19,7 @@ def create_Match_object(match_info):
     inheritance_level = len(match_info[0])
 
     return Match(match_info[0], 
-                 "std::cout << \"%s\" << std::endl;\n" % match_info[1],
+                 ReferencedCodeFragment("std::cout << \"%s\" << std::endl;\n" % match_info[1], "", -1), 
                  regex.do(match_info[0]), 0,
                  IL=inheritance_level) 
 
