@@ -44,6 +44,9 @@ class StateInfo:
     def origins(self):
         return self.__origin_list
 
+    def transitions(self):
+        return self.__transition_map
+
     def merge(self, Other):
         # merge core information of self with other state
         self.core().merge(Other.core())
@@ -54,9 +57,6 @@ class StateInfo:
             self.origins().append(Other.origins().get_list(), 
                                   StoreInputPositionFollowsAcceptanceF=False,
                                   SelfAcceptanceF=self.is_acceptance())
-
-    def transitions(self):
-        return self.__transition_map
 
     def is_acceptance(self):
         return self.core().is_acceptance()
