@@ -10,9 +10,9 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     """    
     # (*) check that no epsilon transition triggers to a real state                   
     if __DEBUG_CHECK_ACTIVE_F:
-        assert state.get_epsilon_target_state_indices() == [], \
+        assert state.transitions().get_epsilon_target_state_index_list() == [], \
                "epsilon transition contained target states: state machine was not made a DFA!\n" + \
-               "epsilon target states = " + repr(state.get_epsilon_target_state_indices())
+               "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
        
     #_________________________________________________________________________________________    
     TriggerMap = state.get_trigger_map()

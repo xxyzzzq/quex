@@ -59,7 +59,6 @@ CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "
 class something:
     pass
 
-
 def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF):
     """This function is to be used by the outer shell to the user. It ensures that 
        the state machine which is returned is conform to some assumptions.
@@ -127,7 +126,6 @@ def __delete_BLC_except_at_end_of_post_conditions(sm, BLC):
         for target_state_index, trigger_set in state.transitions().get_map().items():
             if trigger_set.contains(BLC):
                 trigger_set.cut_interval(Interval(BLC, BLC+1))
-
 
 def __delete_transitions_on_code_points_below_zero(sm):
     """Unicode does define all code points >= 0. Thus there can be no code points
@@ -268,7 +266,10 @@ def snap_term(stream, PatternDict):
         stream.seek(position_1)
         return __debug_exit(result, stream)
     
-    result = sequentialize.do([result, result_2])    
+    result = sequentialize.do([result, result_2], 
+                              MountToFirstStateMachineF=True, 
+                              CloneRemainingStateMachinesF=False)    
+
     return __debug_exit(__beautify(result), stream)
         
 def snap_primary(stream, PatternDict):
@@ -519,7 +520,7 @@ def __beautify(the_state_machine):
     result = nfa_to_dfa.do(the_state_machine)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
-    result = hopcroft.do(result)
+    result = hopcroft.do(result) # , CreateNewStateMachineF=False)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
 

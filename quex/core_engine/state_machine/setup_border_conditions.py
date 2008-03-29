@@ -44,7 +44,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             new_state_idx = __add_line_border_at_end(sm, EndOfFile_Code, 
                                                      DOS_CarriageReturnNewlineF, InverseF=False)
             # -- the post-context flag needs to be raised
-            sm.states[new_state_idx].set_post_context_id(post_context_id)
+            sm.states[new_state_idx].core().set_post_context_id(post_context_id)
 
     # (2) begin of line
     if BeginOfLineF: 

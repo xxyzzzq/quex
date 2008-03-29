@@ -64,18 +64,6 @@ class StateInfo:
     def get_transition_list(self):
         return self.__transition_map.get_list()  
 
-    def get_epsilon_trigger_set(self):
-        return self.__transition_map.get_trigger_set_union().inverse()
-
-    def get_epsilon_target_state_indices(self):
-        return self.__transition_map.get_epsilon_target_state_index_list()
-
-    def get_normal_target_states(self):
-        return self.transitions().get_non_epsilon_target_state_index_list()
-
-    def get_target_state_indices(self):
-        return self.transitions().get_target_state_index_list()
-        
     def get_result_list(self, Trigger):
         """Returns the set of resulting target states."""
         assert type(Trigger) == int
@@ -127,18 +115,6 @@ class StateInfo:
 
     def set_acceptance(self, Value=True, LeaveStoreInputPositionF=False):
         self.core().set_acceptance_f(Value, LeaveStoreInputPositionF)
-
-    def set_store_input_position_f(self, Value):
-        self.core().set_store_input_position_f(Value)
-
-    def set_post_context_backward_detector_sm_id(self, Value):
-        self.core().set_post_context_backward_detector_sm_id(Value)
-    
-    def set_pre_context_id(self, PreConditionStateMachineID):
-        self.core().set_pre_context_id(PreConditionStateMachineID)
-
-    def set_post_context_id(self, Value):
-        self.core().set_post_context_id(Value)
 
     def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=None):
         self.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 
@@ -381,7 +357,7 @@ class StateMachine:
         except: assert False, "Init state index is not contained in list of state indices."
 
         for state in self.states.values():
-            target_state_index_list = state.get_target_state_indices()
+            target_state_index_list = state.transitions().get_target_state_index_list()
             work_list = filter(lambda i: i not in target_state_index_list, work_list)
         return work_list
 
@@ -404,7 +380,8 @@ class StateMachine:
 
         aggregated_epsilon_closure = [ StateIdx ] 
         def __dive(state_index):
-            for target_index in self.states[state_index].get_epsilon_target_state_indices():
+            index_list = self.states[state_index].transitions().get_epsilon_target_state_index_list()
+            for target_index in index_list:
                 if target_index in aggregated_epsilon_closure: continue
                 aggregated_epsilon_closure.append(target_index)
                 __dive(target_index)
@@ -922,7 +899,7 @@ class StateMachine:
         """
         target_state_index_list = self.states.keys()
         for index, state in self.states.items():
-            for target_state_index in state.get_target_state_indices():
+            for target_state_index in state.transitions().get_target_state_index_list():
                 assert target_state_index in target_state_index_list, \
                        "state machine contains target state %s that is not contained in itself." \
                        % repr(target_state_index) + "\n" \

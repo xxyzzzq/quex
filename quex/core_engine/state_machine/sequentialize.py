@@ -7,7 +7,7 @@ from core import *
 
 
 def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False, 
-       MountToFirstStateMachineF=False):
+       MountToFirstStateMachineF=False, CloneRemainingStateMachinesF=True):
     """Creates a state machine connecting all state machines in the array 
        'state_machine_list'. When the flag 'LeaveIntermediateAcceptanceStatesF'
        is given as True, the connection points between the state machines
@@ -34,30 +34,32 @@ def do(the_state_machine_list, LeaveIntermediateAcceptanceStatesF=False,
         if len(state_machine_list) < 1: return StateMachine()
         else:                           return state_machine_list[0]
 
+    # (*) collect all transitions from both state machines into a single one
+    #     (clone to ensure unique identifiers of states)
+    result = state_machine_list[0]
+    if not MountToFirstStateMachineF:  result = result.clone()
+
     # (*) need to clone the state machines, i.e. provide their internal
     #     states with new ids, but the 'behavior' remains. This allows
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
-    clone_list = map(lambda sm: sm.clone(), state_machine_list)
-
-    # (*) collect all transitions from both state machines into a single one
-    #     (clone to ensure unique identifiers of states)
-    if MountToFirstStateMachineF:  result = state_machine_list[0]
-    else:                          result = clone_list[0]
+    appended_sm_list = state_machine_list[1:]
+    if CloneRemainingStateMachinesF: 
+        appended_sm_list = map(lambda sm: sm.clone(), appended_sm_list)
 
     # (*) all but last state machine enter the subsequent one, in case of SUCCESS
     #     NOTE: The start index is unique. Therefore, one can assume that each
-    #           clone_list '.states' dictionary has different keys. One can simply
+    #           appended_sm_list's '.states' dictionary has different keys. One can simply
     #           take over all transitions of a start index into the result without
     #           considering interferences (see below)
-    for next_clone in clone_list[1:]:
-        next_clone.assert_consistency() # DEBUG
-        # Mount on every success state the initial state of the following state
+    for appendix in appended_sm_list:
+        appendix.assert_consistency() # DEBUG
+        # Mount on every acceptance state the initial state of the following state
         # machine via epsilon transition.
-        result.mount_to_acceptance_states(next_clone.init_state_index, 
+        result.mount_to_acceptance_states(appendix.init_state_index, 
                                           CancelStartAcceptanceStateF = not LeaveIntermediateAcceptanceStatesF)
-        for state_index, state in next_clone.states.items():        
-            result.states[state_index] = state # state is already cloned, so no deepcopy here
+        for state_index, state in appendix.states.items():        
+            result.states[state_index] = state # state is already cloned (if desired), so no deepcopy here
 
     # (*) double check for consistency (each target state is contained in state machine)
     result.assert_consistency() # DEBUG
