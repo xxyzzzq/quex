@@ -72,9 +72,12 @@ class StateInfo:
         self.origins().append(OriginList, StoreInputPositionFollowsAcceptanceF, 
                               SelfAcceptanceF=self.is_acceptance())
                 
-    def add_transition(self, Trigger, TargetStateIdx): 
-        self.__transition_map.add_transition(Trigger, TargetStateIdx)
-    
+    def mark_self_as_origin(self, StateMachineID, StateIndex):
+        self.core().state_machine_id = StateMachineID
+        self.core().state_index      = StateIndex
+        # use the own 'core' as only origin
+        self.origins().set([self.core()])
+
     def adapt_origins(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
            'StateMachineID'. Post- and pre-condition flags remain, and so the store input 
@@ -84,6 +87,9 @@ class StateInfo:
         self.core().state_index      = StateIndex
         self.origins().adapt(StateMachineID, StateIndex)
 
+    def add_transition(self, Trigger, TargetStateIdx): 
+        self.__transition_map.add_transition(Trigger, TargetStateIdx)
+    
     def clone(self, ReplacementDictionary=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplacementDictionary."""
@@ -96,16 +102,6 @@ class StateInfo:
             for ti, replacement_ti in ReplacementDictionary.items():
                 result.transitions().replace_target_index(ti, replacement_ti)
         return result
-
-    def verify_unique_origin(self, StateMachineID, StateIdx):
-        """Verify that there is only one origin and that this origin has a state machine id
-           and state id as given by the first and second argument. 
-
-           See also: StateMachine::verify_single_origin()
-        """   
-        if self.core().state_machine_id != StateMachineID: return False
-        if self.core().state_index      != StateIndex:     return False
-        return self.origins().is_from_single_state(StateMachineID, StateIdx)
 
     def __repr__(self):
         return self.get_string()
@@ -124,12 +120,6 @@ class StateInfo:
 
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
         return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap)
-
-    def mark_self_as_origin(self, StateMachineID, StateIndex):
-        self.core().state_machine_id = StateMachineID
-        self.core().state_index      = StateIndex
-        # use the own 'core' as only origin
-        self.origins().set([self.core()])
 
 
 class StateMachineCoreInfo:
@@ -688,27 +678,6 @@ class StateMachine:
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.origins().delete_dominated()
-
-    def verify_unique_origin(self, StateMachineID=-1L):
-        """Verifies that all states only have one single original state machine which is this
-           one and the state indeces correspond their states in this state machine.
-
-           This function is useful to check that single patterns are consistent. They must not
-           have more than one origin! Only the combined state machine can have more than one
-           origin. Also, the origin has to fit the state machine as long as it is a single pattern.
-           
-           See also: adapt_origins()
-        """
-        if StateMachineID == -1L: StateMachineID = self.get_id()
-
-        for state_idx, state in self.states.items():
-            if state.verify_unique_origin(StateMachineID, state_idx) == False:
-                return False
-           
-        if self.__core().pre_context_sm() != None:
-            return self.__core().pre_context_sm().verify_unique_origin(StateMachineID)
-            
-        return True    
 
     def __repr__(self):
         return self.get_string(NormalizeF=True)
