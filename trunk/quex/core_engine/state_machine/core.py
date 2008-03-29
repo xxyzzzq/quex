@@ -58,61 +58,12 @@ class StateInfo:
     def transitions(self):
         return self.__transition_map
 
-    def get_origin_list(self):
-        return self.origins().get_list()
-
-    def get_transition_list(self):
-        return self.__transition_map.get_list()  
-
-    def get_result_list(self, Trigger):
-        """Returns the set of resulting target states."""
-        assert type(Trigger) == int
-        return self.__transition_map.get_resulting_target_state_index_list(Trigger)
-
-    def get_result_state_index(self, Trigger):
-        """Return one target state that is triggered by the given trigger.
-           (there should not be more in a DFA, but in an NFA ...).
-        """
-        return self.__transition_map.get_resulting_target_state_index(Trigger)
-    
-    def get_trigger_set_to_target(self, TargetIdx=None):
-        return self.__transition_map.get_trigger_set_to_target(TargetIdx)
-
-    def get_trigger_dictionary(self, ConsiderEpsilonTransition=False):
-        return self.__transition_map.get_map()
-        
-    def get_trigger_set_line_up(self):
-        return self.__transition_map.get_trigger_set_line_up()
-
-    def get_trigger_map(self):
-        return self.__transition_map.get_trigger_map()
-
     def is_empty(self):
         return self.__transition_map.is_empty()
 
     def is_acceptance(self):
         return self.core().is_acceptance()
         
-    def is_store_input_position(self):
-        """If one of the origins requires to store the input position, the state requires
-           to store the input position."""
-        if self.core().store_input_position_f(): return True
-        return self.origins().contains_store_input_position()
-
-    def is_DFA_compliant(self):
-        return self.__transition_map.is_DFA_compliant()
-
-    def has_trivial_pre_context_begin_of_line_f(self):
-        if self.core().pre_context_begin_of_line_f(): return True
-        return self.origins().contains_pre_context_begin_of_line()
-
-    def has_one_of_triggers(self, CharacterCodeList):
-        assert type(CharacterCodeList) == list
-        return self.__transition_map.has_one_of_triggers(CharacterCodeList)
-
-    def has_trigger(self, CharacterCode):
-        return self.__transition_map.has_trigger(CharacterCode)
-
     def set_acceptance(self, Value=True, LeaveStoreInputPositionF=False):
         self.core().set_acceptance_f(Value, LeaveStoreInputPositionF)
 
@@ -124,9 +75,6 @@ class StateInfo:
         self.origins().append(OriginList, StoreInputPositionFollowsAcceptanceF, 
                               SelfAcceptanceF=self.is_acceptance())
                 
-    def add_epsilon_target_state(self, TargetStateIdx):
-        self.__transition_map.add_epsilon_target_state(TargetStateIdx)
-
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__transition_map.add_transition(Trigger, TargetStateIdx)
     
@@ -136,18 +84,6 @@ class StateInfo:
     def replace_drop_out_target_states_with_adjacent_targets(self):
         return self.__transition_map.replace_drop_out_target_states_with_adjacent_targets()
 
-    def delete_transitions_on_character_list(self, CharacterCodeList):
-        self.__transition_map.delete_transitions_on_character_list(CharacterCodeList)
-
-    def delete_transitions_on_empty_trigger_sets(self):
-        self.__transition_map.delete_transitions_on_empty_trigger_sets()
-
-    def delete_epsilon_target_state(self, TargetStateIdx):
-        self.__transition_map.delete_epsilon_target_state(TargetStateIdx)
-
-    def delete_meaningless_origins(self):
-        self.origins().delete_meaningless()
-
     def adapt_origins(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
            'StateMachineID'. Post- and pre-condition flags remain, and so the store input 
@@ -156,19 +92,6 @@ class StateInfo:
         self.core().state_machine_id = StateMachineID
         self.core().state_index      = StateIndex
         self.origins().adapt(StateMachineID, StateIndex)
-
-    def filter_dominated_origins(self):
-        """This function is a simplification in order to allow the Hopcroft Optimization
-           to be more efficient. It 'simulates' the code generation where the first unconditional
-           pattern matches. The remaining origins of a state are redundant.
-
-           This function is to be seen in analogy with the function 'get_acceptance_detector'. 
-           Except for the fact that it requires the 'end of core pattern' markers of post
-           conditioned patterns. If the markers are not set, the store input position commands
-           are not called properly, and when restoring the input position bad bad things happen 
-           ... i.e. segmentation faults.
-        """
-        self.origins().delete_dominated()
 
     def clone(self, ReplacementDictionary=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
@@ -445,7 +368,7 @@ class StateMachine:
         history = []
         for state_idx in StateIdxList:
             # -- trigger dictionary:  target_idx --> trigger set that triggers to target
-            line_up = self.states[state_idx].get_trigger_set_line_up() 
+            line_up = self.states[state_idx].transitions().get_trigger_set_line_up() 
             # NOTE: Doublicate entries in history are perfectly reasonable at this point,
             #       simply if two states trigger on the same character range to the same 
             #       target state. When ranges are opened/closed via the history items
@@ -563,11 +486,12 @@ class StateMachine:
                 result.states[target_state_index].add_transition(deepcopy(trigger_set), state_index)
 
             for target_state_index in state.transitions().get_epsilon_target_state_index_list():
-                result.states[target_state_index].add_epsilon_target_state(state_index)
+                result.states[target_state_index].transitions().add_epsilon_target_state(state_index)
 
         # -- copy all origins of the original state machine
         for state_index, state in self.states.items():
-            result.states[state_index].origins().set(deepcopy(state.get_origin_list()))
+            original_origin_list = state.origins().get_list()
+            result.states[state_index].origins().set(original_origin_list) # deepcopy implicit
 
         # -- only the initial state becomes an acceptance state
         result.states[self.init_state_index].set_acceptance(True)
@@ -642,7 +566,7 @@ class StateMachine:
                 be one origin for each state.
         """
         for state in self.states.values():
-            state.delete_meaningless_origins()
+            state.origins().delete_meaningless()
 
     def mark_state_origins(self, OtherStateMachineID=-1L):
         """Marks at each state that it originates from this state machine. This is
@@ -719,7 +643,7 @@ class StateMachine:
             self.states[TargetStateIdx] = StateInfo()
 
         # add the epsilon target state
-        self.states[StartStateIdx].add_epsilon_target_state(TargetStateIdx)     
+        self.states[StartStateIdx].transitions().add_epsilon_target_state(TargetStateIdx)     
         # optionally raise the state of the target to 'acceptance'
         if RaiseAcceptanceF: self.states[TargetStateIdx].set_acceptance(True)
 
@@ -738,7 +662,7 @@ class StateMachine:
             if not state_idx != MountedStateIdx: continue
             if not state.is_acceptance(): continue
             # add the MountedStateIdx to the list of epsilon transition targets
-            state.add_epsilon_target_state(MountedStateIdx)
+            state.transitions().add_epsilon_target_state(MountedStateIdx)
             # if required (e.g. for sequentialization) cancel the acceptance status
             if CancelStartAcceptanceStateF: state.set_acceptance(False, LeaveStoreInputPositionsF)
 
@@ -751,7 +675,7 @@ class StateMachine:
 
         assert self.has_state_index(self.init_state_index)
 
-        self.states[self.init_state_index].add_epsilon_target_state(TargetStateIdx)
+        self.states[self.init_state_index].transitions().add_epsilon_target_state(TargetStateIdx)
 
     def adapt_origins(self, StateMachineID):
         """Adapts origin to origin in a state machine 'StateMachineID'
@@ -771,7 +695,8 @@ class StateMachine:
         self.adapt_origins(self.get_id())
 
     def filter_dominated_origins(self):
-        for state in self.states.values(): state.filter_dominated_origins()
+        for state in self.states.values(): 
+            state.origins().delete_dominated()
 
     def verify_unique_origin(self, StateMachineID=-1L):
         """Verifies that all states only have one single original state machine which is this

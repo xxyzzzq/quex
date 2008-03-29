@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.90" date="Fri Mar 28 22:41:58 2008">
+<test-database execution-time-sec="0.89" date="Sat Mar 29 00:42:47 2008">
     <last-used-diff-display-program name=""/>
     <test title="Check supported formats." time-sum-sec="0.06"> 
         <application file-name="get_supported_formats.py" info-request-time="1205646836L"/>
@@ -7,10 +7,10 @@
         </choice-list>
     </test>
     <group name="Plot">
-        <test title="Core state machine." time-sum-sec="0.20"> 
+        <test title="Core state machine." time-sum-sec="0.19"> 
             <application file-name="plot-core.py" info-request-time="1206649280L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.20" crc="-322414128"/>
+               <choice name="" result="OK" time-sec="0.19" crc="-322414128"/>
             </choice-list>
         </test>
         <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.38"> 

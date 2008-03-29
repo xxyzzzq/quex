@@ -283,17 +283,15 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
        back to its initial state while the path is valid in SM0. This
        function serves the 'philosophical cut'.
     """
-    sm0_transition_list = sm0_state.get_transition_list()
-    sm1_transition_list = sm1_state.get_transition_list()
+    sm0_transition_list = sm0_state.transitions().get_map().items()
+    sm1_transition_list = sm1_state.transitions().get_map().items()
 
     # If there is no subsequent path in SM0 or SM1, then we are at a leaf of
     # the tree search. No path to acceptance in SM0 lies in SM1.
     if sm0_transition_list == [] or sm1_transition_list == []: return 
 
-    for sm0_transition in sm0_transition_list:
-        sm0_trigger_set = sm0_transition.trigger_set
-        for sm1_transition in sm1_transition_list:
-            sm1_trigger_set = sm1_transition.trigger_set
+    for sm0_target_state_index, sm0_trigger_set in sm0_transition_list:
+        for sm1_target_state_index, sm1_trigger_set in sm1_transition_list:
 
             ## print "##", intersection.get_utf8_string(), sm1_transition.target_state_index, SM1_Path
             # Both trigger on the some same characters?
@@ -304,22 +302,22 @@ def __dive_to_cut_iteration(SM0, sm0_state, SM1, sm1_state, SM1_Path):
                 # have to be considered.
                 continue
             
-            elif sm1_transition.target_state_index in SM1_Path:
+            elif sm1_target_state_index in SM1_Path:
                 # If the trigger set allows the current state to trigger to a state
                 # that has already been reached in the path of states, then this
                 # is the door to iteration. This 'door' backwards needs to be locked!
                 # PREVIOUSLY: intersection = sm0_trigger_set.intersection(sm1_trigger_set)
-                sm1_transition.trigger_set.subtract(sm0_trigger_set)  # PREVIOUSLY: subtract(intersection)
-                sm1_state.delete_transitions_on_empty_trigger_sets()
+                sm1_trigger_set.subtract(sm0_trigger_set)  # PREVIOUSLY: subtract(intersection)
+                sm1_state.transitions().delete_transitions_on_empty_trigger_sets()
                 # (Where there is no door, there is no way to dive deeper ...)
 
             else:
                 # Lets see to where this path may guide us ...
-                sm0_target_state = SM0.states[sm0_transition.target_state_index]
-                sm1_target_state = SM1.states[sm1_transition.target_state_index]
+                sm0_target_state = SM0.states[sm0_target_state_index]
+                sm1_target_state = SM1.states[sm1_target_state_index]
                 __dive_to_cut_iteration(SM0, sm0_target_state, 
                                         SM1, sm1_target_state,
-                                        SM1_Path + [sm1_transition.target_state_index])
+                                        SM1_Path + [sm1_target_state_index])
 
     # All branches considered, ... dive up
     return 

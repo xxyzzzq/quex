@@ -12,7 +12,7 @@ if "--hwut-info" in sys.argv:
 
 def test(state):
     # (*) compute the trigger map
-    tm = state.get_trigger_map()
+    tm = state.transitions().get_trigger_map()
     # (*) print the trigger map entries
     for trigger_interval, target_index in tm:
         if target_index == None:
