@@ -116,24 +116,23 @@ class StateSet_List:
         """Do state 'This' and state 'That' trigger on the same triggers to the
            same target state?
         """
-        transition_list_0 = This.get_transition_list()
-        transition_list_1 = That.get_transition_list()
+        transition_list_0 = This.transitions().get_map().items()
+        transition_list_1 = That.transitions().get_map().items()
 
         if len(transition_list_0) != len(transition_list_1): return False
 
         # Assumption: Transitions do not appear twice. Thus, both lists have the same
         #             length and any element of A appears in B, the two must be equal.
-        for t0 in transition_list_0:
+        for t0_target_state_index, t0_trigger_set in transition_list_0:
             # find transition in 'That' state that contains the same trigger set
-            t0_trigger_set = t0.trigger_set
-            for t1 in transition_list_1:
-                if t0_trigger_set.is_equal(t1.trigger_set): break
+            for t1_target_state_index, t1_trigger_set in transition_list_1:
+                if t0_trigger_set.is_equal(t1_trigger_set): break
             else:
                 # no trigger set found in 'That' that corresponds to 'This' => not equivalent
                 return False
 
-            target_0 = self.map[t0.target_state_index]
-            target_1 = self.map[t1.target_state_index]
+            target_0 = self.map[t0_target_state_index]
+            target_1 = self.map[t1_target_state_index]
 
             # do both states trigger on the same trigger set to the same target state?
             if target_0 != target_1: return False

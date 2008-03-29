@@ -103,8 +103,8 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
        The search starts at the states sm0_state and sm1_state.
     """
 
-    sm0_transition_list = sm0_state.get_transition_list()
-    sm1_transition_list = sm1_state.get_transition_list()
+    sm0_transition_list = sm0_state.transitions().get_map().items()
+    sm1_transition_list = sm1_state.transitions().get_map().items()
 
     # If there is no subsequent path in SM0 or SM1, 
     # then we are at a leaf of the tree search. No
@@ -112,12 +112,10 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
     if sm0_transition_list == [] or sm1_transition_list == []:
         return False
 
-    for sm0_transition in sm0_transition_list:
-        sm0_trigger_set = sm0_transition.trigger_set
-        for sm1_transition in sm1_transition_list:
+    for sm0_target_state_index, sm0_trigger_set in sm0_transition_list:
+        for sm1_target_state_index, sm1_trigger_set in sm1_transition_list:
             # If there is no common character in the transition pair, it does not
             # have to be considered.
-            sm1_trigger_set = sm1_transition.trigger_set
             if not sm0_trigger_set.has_intersection(sm1_trigger_set):
                 continue
             
@@ -128,13 +126,13 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
             # If the target state in the SM0 is an acceptance state,
             # => A valid path in SM1 leads at the same time to along 
             #    valid path in SM0.
-            sm0_target_state = SM0.states[sm0_transition.target_state_index]
+            sm0_target_state = SM0.states[sm0_target_state_index]
             if sm0_target_state.is_acceptance():
                 return True
             
             # If the state is not immediately an acceptance state, then
             # search in the subsequent pathes of the SM0.
-            sm1_target_state = SM1.states[sm1_transition.target_state_index]
+            sm1_target_state = SM1.states[sm1_target_state_index]
             if __dive_to_detect_iteration(SM0, sm0_target_state, SM1, sm1_target_state):
                 return True
 
@@ -239,10 +237,10 @@ def mount(the_state_machine, PostConditionSM):
     # (*) Create origin data, in case where there is none yet create new one.
     #     (Do not delete, otherwise existing information gets lost.)
     for state in acceptance_state_list: 
-        state.set_post_context_backward_detector_sm_id(backward_detector_sm_id)
+        state.core().set_post_context_backward_detector_sm_id(backward_detector_sm_id)
         # At the end of the post condition, the input positions needs to be stored. Before
         # we can go backwards, we need to know where the post condition actually ended.
-        state.set_store_input_position_f(True)
+        state.core().set_store_input_position_f(True)
 
     the_state_machine.core().set_post_context_backward_input_position_detector_sm(backward_detector_sm)
 
