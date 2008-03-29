@@ -20,7 +20,7 @@ paralellize.state_machine_n = len(paralellize.state_machines)
 def consistency(combination):
     # check combination (does every state machine have the specified index)
     for i in range(len(combination)):
-        assert paralellize.state_machines[i].has_state_index(combination[i]), \
+        assert paralellize.state_machines[i].states.has_key(combination[i]), \
                "state machine %i does not have a state (start or target) of %i" % \
                (i, combination[i])
 

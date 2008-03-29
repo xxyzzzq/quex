@@ -247,10 +247,6 @@ class StateMachine:
     def get_init_state(self):
         return self.states[self.init_state_index]
         
-    def get_state_indices(self):
-        """Returns list of all state indices that appear as start states inside the machine."""
-        return self.states.keys()
-
     def get_orphaned_state_index_list(self):
         """This function checks for states that are not targeted via any trigger
            by any other state. This indicates most likely a lack off efficiency 
@@ -280,7 +276,7 @@ class StateMachine:
     def get_epsilon_closure(self, StateIdx):
         """Return all states that can be reached from 'StateIdx' via epsilon
            transition."""
-        assert self.has_state_index(StateIdx)
+        assert self.states.has_key(StateIdx)
 
         aggregated_epsilon_closure = [ StateIdx ] 
         def __dive(state_index):
@@ -486,9 +482,6 @@ class StateMachine:
         # -- for uniqueness of state ids, clone the result
         return result.clone()    
         
-    def get_pre_context_sm_id(self):
-        return self.core().pre_context_sm_id()
-
     def is_empty(self):
         """If state machine only contains the initial state that points nowhere,
            then it is empty.
@@ -496,30 +489,12 @@ class StateMachine:
         if len(self.states) != 1: return False
         return self.states[self.init_state_index].transitions().is_empty()
 
-    def has_non_trivial_pre_context(self):
-        return self.__core.pre_context_sm() != None
-
     def has_trivial_pre_context(self):
         """NOTE: This function was initialy implemented to generalize the 
                  begin of line precondition with the 
                  'one special character preceeding pre-condition'.
         """
         return self.__core.pre_context_begin_of_line_f()
-
-    def has_trivial_pre_context_begin_of_line(self):
-        return self.__core.pre_context_begin_of_line_f()
-    
-    def has_state_index(self, StateIdx):
-        """RETURNS: True, if state is either a start or a target index.
-                    False, othewise.
-        """
-        if self.states.has_key(StateIdx): return True
-
-        for state in self.states.values():
-            if StateIdx in state.transitions().get_epsilon_target_state_index_list():
-                return True
-
-        return False
 
     def has_origins(self):
         for state in self.states.values():
@@ -654,7 +629,7 @@ class StateMachine:
         """Adds an epsilon transition from initial state to the given 'TargetStateIdx'. 
            The initial states epsilon transition to TERMINATE is deleted."""
 
-        assert self.has_state_index(self.init_state_index)
+        assert self.states.has_key(self.init_state_index)
 
         self.states[self.init_state_index].transitions().add_epsilon_target_state(TargetStateIdx)
 

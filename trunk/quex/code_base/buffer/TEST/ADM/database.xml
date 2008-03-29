@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.16" date="Sat Mar 29 07:10:27 2008">
+<test-database execution-time-sec="0.10" date="Sat Mar 29 12:53:36 2008">
     <last-used-diff-display-program name=""/>
-    <test title="Backwards Iteration" make-required="True" time-sum-sec="0.08"> 
+    <test title="Backwards Iteration" make-required="True" time-sum-sec="0.02"> 
         <application file-name="test-backward-get" info-request-time="1204721709L"/>
         <make-procedure success="True" />
         <choice-list number="4">
-           <choice name="Normal" result="OK" time-sec="0.07" crc="-904840909"/>
+           <choice name="Normal" result="OK" time-sec="0.01" crc="-904840909"/>
            <choice name="EOFC=1_BOFC=2_BLC=0" result="OK" time-sec="0.01" crc="-904840909"/>
            <choice name="EOFC=1_BOFC=0_BLC=2" result="OK" time-sec="0.01" crc="-904840909"/>
            <choice name="EOFC=0_BOFC=1_BLC=2" result="OK" time-sec="0.01" crc="-904840909"/>
@@ -30,7 +30,7 @@
         </test>
     </group>
     <group name="Miscenllaneous Scenarios">
-        <test title="Content Size = 11, Fallback Size = 10" make-required="True" time-sum-sec="0.02"> 
+        <test title="Content Size = 11, Fallback Size = 10" make-required="True" time-sum-sec="0.01"> 
             <application file-name="test-misc-I" info-request-time="1204721711L"/>
             <make-procedure success="True" />
             <choice-list number="2">
@@ -46,7 +46,7 @@
                <choice name="stdio" result="OK" time-sec="0.01" crc="1008654767"/>
             </choice-list>
         </test>
-        <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.02"> 
+        <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.01"> 
             <application file-name="test-misc-II" info-request-time="1204721713L"/>
             <make-procedure success="True" />
             <choice-list number="2">

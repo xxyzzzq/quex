@@ -17,7 +17,7 @@ print "## state machine = ", test_sm0
 print "## compute epsilon closures of all states:"
 
 normal_epsilon_closures = []
-for state_idx in test_sm0.get_state_indices():
+for state_idx in test_sm0.states.keys():
     ec =  test_sm0.get_epsilon_closure(state_idx)
     ec.sort()
     if len(ec) != 1: print "state = ", state_idx, "epsilon-closure = ", ec

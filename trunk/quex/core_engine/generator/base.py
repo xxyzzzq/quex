@@ -60,7 +60,7 @@ class GeneratorBase:
                 self.pre_context_sm_list.append(pre_sm)
                 self.pre_context_sm_id_list.append(pre_sm.get_id())
                 
-            if sm.has_trivial_pre_context_begin_of_line():
+            if sm.core().pre_context_begin_of_line_f():
                 self.begin_of_line_condition_f = True
 
             # [NOT IMPLEMENTED YET]    
