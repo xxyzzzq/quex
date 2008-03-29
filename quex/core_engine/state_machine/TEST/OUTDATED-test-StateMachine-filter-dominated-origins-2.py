@@ -49,7 +49,7 @@ def print_this(Title):
     print "(*) " + Title    
     print
 
-    for origin in si.get_origin_list():
+    for origin in si.origins().get_list():
         acceptance_mark = " "
         if origin.is_acceptance(): acceptance_mark = "*"
         print acceptance_mark + repr(origin)
@@ -98,7 +98,7 @@ add_origin(12, False)
 add_origin(13, False)    
 
 print_this("Only Acceptance/Non-Acceptance - Before")
-si.filter_dominated_origins()
+si.origins().filter_dominated()
 print_this("Only Acceptance/Non-Acceptance - After")
 
 # (2) acceptance and pre-conditioned states
@@ -121,7 +121,7 @@ add_origin(13, False)
     
 
 print_this("Acceptance and Pre-Conditioned Acceptance - Before")
-si.filter_dominated_origins()
+si.origins().filter_dominated()
 print_this("Acceptance and Pre-Conditioned Acceptance - After")
 
 # (3) acceptance and post-conditioned states
@@ -142,6 +142,6 @@ add_origin(12, True, PostConditionedAcceptanceF=1L)
 add_origin(13, True, PostConditionedAcceptanceF=1L)    
 
 print_this("Acceptance and Post-Conditioned Acceptance - Before")
-si.filter_dominated_origins()
+si.origins().filter_dominated()
 print_this("Acceptance and Post-Conditioned Acceptance - After")
 

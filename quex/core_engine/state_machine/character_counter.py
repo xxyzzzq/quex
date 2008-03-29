@@ -82,7 +82,7 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
     prev_idx      = TargetStateIdx
     for idx in Path[occurence_idx+1:] + [TargetStateIdx]:
         # does transition from prev_state to state contain newline?
-        trigger_set = state_machine.states[prev_idx].get_trigger_set_to_target(idx)
+        trigger_set = state_machine.states[prev_idx].transitions().get_trigger_set_to_target(idx)
         if trigger_set.contains(Character):
             return True                       # YES! recursion with critical character
         prev_idx = idx
@@ -119,7 +119,7 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     if state.core().post_context_id() != -1L: return character_n
     
     # trigger_map[target_state_index] = set that triggers to target state index
-    trigger_dict = state.get_trigger_dictionary()
+    trigger_dict = state.transitions().get_map()
     if trigger_dict == {}: return character_n
         
     if state.is_acceptance():  prev_characters_found_n = character_n

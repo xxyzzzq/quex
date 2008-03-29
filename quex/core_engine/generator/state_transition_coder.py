@@ -15,10 +15,10 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
        
     #_________________________________________________________________________________________    
-    TriggerMap = state.get_trigger_map()
+    TriggerMap = state.transitions().get_trigger_map()
     
     # note down information about success, if state is an acceptance state
-    acceptance_info = LanguageDB["$acceptance-info"](state.get_origin_list(), 
+    acceptance_info = LanguageDB["$acceptance-info"](state.origins().get_list(), 
                                                      LanguageDB, 
                                                      BackwardLexingF,
                                                      BackwardInputPositionDetectionF)
@@ -88,7 +88,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = not empty_trigger_map_f,
                                    CurrentStateIsAcceptanceF      = state.is_acceptance(),
-                                   OriginList                     = state.get_origin_list(),
+                                   OriginList                     = state.origins().get_list(),
                                    LanguageDB                     = LanguageDB,
                                    DropOutTargetStateID           = drop_out_target_state_id)
         
