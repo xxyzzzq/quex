@@ -257,7 +257,7 @@ def adapt_state_machine(sm, StateSetList):
     # Replace the indices of the thrown out states
     for x, y in replacement_list:
         for state in sm.states.values():
-            state.replace_target_index(x, y)
+            state.transitions().replace_target_index(x, y)
 
     return sm    
 

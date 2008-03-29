@@ -32,7 +32,7 @@ def output_trigger_map(tm, BeforeF):
 def test(state):
     # (*) compute the trigger map
     output_trigger_map(state.transitions().get_trigger_map(), BeforeF=True)
-    state.replace_drop_out_target_states_with_adjacent_targets()
+    state.transitions().replace_drop_out_target_states_with_adjacent_targets()
     output_trigger_map(state.transitions().get_trigger_map(), BeforeF=False)
 
 

@@ -58,9 +58,6 @@ class StateInfo:
     def transitions(self):
         return self.__transition_map
 
-    def is_empty(self):
-        return self.__transition_map.is_empty()
-
     def is_acceptance(self):
         return self.core().is_acceptance()
         
@@ -78,12 +75,6 @@ class StateInfo:
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__transition_map.add_transition(Trigger, TargetStateIdx)
     
-    def replace_target_index(self, OriginalIdx, NewTargetIdx):
-        self.__transition_map.replace_target_index(OriginalIdx, NewTargetIdx)
-
-    def replace_drop_out_target_states_with_adjacent_targets(self):
-        return self.__transition_map.replace_drop_out_target_states_with_adjacent_targets()
-
     def adapt_origins(self, StateMachineID, StateIndex):
         """Adapts all origins so that their original state is 'StateIndex' in state machine
            'StateMachineID'. Post- and pre-condition flags remain, and so the store input 
@@ -103,7 +94,7 @@ class StateInfo:
         # if replacement of indices is desired, than do it
         if ReplacementDictionary != None:
             for ti, replacement_ti in ReplacementDictionary.items():
-                result.replace_target_index(ti, replacement_ti)
+                result.transitions().replace_target_index(ti, replacement_ti)
         return result
 
     def verify_unique_origin(self, StateMachineID, StateIdx):
@@ -513,7 +504,7 @@ class StateMachine:
            then it is empty.
         """
         if len(self.states) != 1: return False
-        return self.states[self.init_state_index].is_empty()
+        return self.states[self.init_state_index].transitions().is_empty()
 
     def has_non_trivial_pre_context(self):
         return self.__core.pre_context_sm() != None

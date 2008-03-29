@@ -162,7 +162,7 @@ def __get_inverse_state_machine_that_finds_end_of_core_expression(PostConditionS
         # -- acceptance states can have 'drop-out' (actually, they need to have)
         if state.is_acceptance(): continue
 
-        state.replace_drop_out_target_states_with_adjacent_targets()
+        state.transitions().replace_drop_out_target_states_with_adjacent_targets()
 
     result = nfa_to_dfa.do(result)
     result = hopcroft.do(result)
