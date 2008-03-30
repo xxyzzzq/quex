@@ -1,7 +1,6 @@
 import sys
 
-from   quex.core_engine.interval_handling        import NumberSet, Interval
-from   quex.core_engine.state_machine.transition import Transition, EpsilonTransition
+from   quex.core_engine.interval_handling import NumberSet, Interval
 
 # definitions for 'history items':
 INTERVAL_BEGIN            = True
@@ -86,13 +85,6 @@ class TransitionMap:
 
         for target_index, trigger_set in self.__db.items():
             if trigger_set.is_empty(): del self.__db[target_index]
-
-    def get_list(self):
-        result = []
-        for target_index, trigger_set in self.__db.items():
-            result.append(Transition(trigger_set, target_index))
-
-        return result
 
     def get_trigger_set_union(self):
         result = NumberSet()
@@ -358,17 +350,19 @@ class TransitionMap:
 
     def get_string(self, FillStr, StateIndexMap):
         # print out transitionts
-        sorted_transitions = self.get_list()
-        sorted_transitions.sort(lambda a, b: cmp(a.trigger_set.minimum(), b.trigger_set.minimum()))
+        sorted_transitions = self.get_map().items()
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
 
         msg = ""
         # normal state transitions
-        for t in sorted_transitions:
-            # note: the fill string for the first line printed is empty, because
-            #       the start stae is printed before  this.
-            msg += "%s %s\n" % (FillStr, t.get_string(StateIndexMap=StateIndexMap))
+        for target_state_index, trigger_set in sorted_transitions:
+            trigger_str = trigger_set.get_utf8_string()
+            if StateIndexMap == None: target_str = "%05i" % target_state_index
+            else:                     target_str = "%05i" % StateIndexMap[target_state_index]
+                
+            msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
 
-        # the epsilon transition
+        # epsilon transitions
         if self.__epsilon_target_index_list != []:
             txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
             msg += "%s ==<epsilon>==> " % FillStr 
@@ -383,15 +377,22 @@ class TransitionMap:
         return msg
 
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
-        msg = ""
-        for t in self.get_list():
-            # note: the fill string for the first line printed is empty, because
-            #       the start stae is printed before  this.
-            msg += "%i %s" % (OwnStateIdx, t.get_graphviz_string(StateIndexMap))
+        sorted_transitions = self.get_map().items()
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
 
+        msg = ""
+        # normal state transitions
+        for target_state_index, trigger_set in sorted_transitions:
+            trigger_str = trigger_set.get_utf8_string()
+            if StateIndexMap == None: target_str  = "%i" % target_state_index
+            else:                     target_str  = "%i" % StateIndexMap[target_state_index]
+            msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
+
+        # epsilon transitions
         for ti in self.__epsilon_target_index_list:
             if StateIndexMap == None: target_str = "%i" % int(ti) 
             else:                     target_str = "%i" % int(StateIndexMap[ti]) 
             msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
 
         return msg
+

@@ -1,6 +1,6 @@
 // -*- C++ -*-   vim: set syntax=cpp:
-#ifndef __INCLUDE_GUARD__QUEX__%%INCLUDE_GUARD_EXTENSION%%
-#define __INCLUDE_GUARD__QUEX__%%INCLUDE_GUARD_EXTENSION%%
+#ifndef __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
+#define __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
 
 // STL (Std C++ Lib)
 #include<vector> 
@@ -21,10 +21,10 @@
 // -- Line Number / Column Number Counting:
 //    Turning counting off may result in engine speed-up.
 #ifndef QUEX_OPTION_LINE_NUMBER_COUNTING            
-%%SWITCH%% QUEX_OPTION_LINE_NUMBER_COUNTING         
+$$SWITCH$$ QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
 #ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING          
-%%SWITCH%% QUEX_OPTION_COLUMN_NUMBER_COUNTING       
+$$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 #endif
 
 // -- Mode Transitions:
@@ -32,7 +32,7 @@
 //    then code for mode transition control is inserted. It can be deactivated
 //    by commenting the following option out.
 #ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-%%SWITCH%% QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+$$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #endif
 
 // -- Debugging: 
@@ -40,13 +40,13 @@
 //    debugging code. The effect of this code fragments can be turned off
 //    by commenting the following options out.
 #ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
-%%SWITCH%% QUEX_OPTION_DEBUG_TOKEN_SENDING
+$$SWITCH$$ QUEX_OPTION_DEBUG_TOKEN_SENDING
 #endif
 #ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-%%SWITCH%% QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+$$SWITCH$$ QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #endif
 #ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-%%SWITCH%% QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+$$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #endif
 
 // -- Asserts
@@ -68,7 +68,7 @@
 //    Turn this off, if you do not use 'inclusion' in your files and
 //    you want to save some bytes.
 #ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-%%SWITCH%% QUEX_OPTION_INCLUDE_STACK_SUPPORT
+$$SWITCH$$ QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
 
 #ifndef     QUEX_SETTING_BUFFER_SIZE
@@ -78,19 +78,19 @@
 #    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  2048
 #endif
 
-%%SWITCH%% __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+$$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
 //
 //   If one mode requires indentation support, then the lexical analyser
 //   class must be setup for indentation counting. The following flag is
 //   defined or undefined by the lexical analyser generator quex.
-%%SWITCH%% __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+$$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 //
 //   Quex can determine whether certain handlers are not used at all.
 //   If so, computation time can be spared and quex comments the following
 //   options out.
-%%SWITCH%% __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-%%SWITCH%% __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-%%SWITCH%% __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+$$SWITCH$$ __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+$$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+$$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #    ifndef     QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE 65536
@@ -101,12 +101,12 @@
 //   Begin of line pre-condition introduces an extra flag in the buffer
 //   structure. Only out-comment this in case of tough memory restrictions,
 //   if no begin of line pre-condition is required.
-%%SWITCH%% __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+$$SWITCH$$ __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
 namespace quex {
     class $$LEXER_CLASS_NAME$$;
 
-%%LEX_ID_DEFINITIONS%%
+$$LEX_ID_DEFINITIONS$$
 }    
 
 typedef int QUEX_ANALYSER_RETURN_TYPE;
@@ -156,8 +156,8 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 
 #include <quex/code_base/token_queue>
 // Quex/User
-#include "%%TOKEN_ID_DEFINITION_FILE%%"
-#include "%%TOKEN_CLASS_DEFINITION_FILE%%"
+#include "$$TOKEN_ID_DEFINITION_FILE$$"
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 
 // RETURN: _____________________________________________________________________
@@ -190,7 +190,7 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
    }
 
 
-%%LEXER_DERIVED_CLASS_DECL%%
+$$LEXER_DERIVED_CLASS_DECL$$
 
 // User defined header content. _________________________________________________
 //
@@ -224,7 +224,7 @@ namespace quex {
     extern void
     $$LEXER_CLASS_NAME$$_on_entry_exit_null_function($$LEXER_CLASS_NAME$$*, const quex_mode*);
 
-%%MODE_SPECIFIC_ANALYSER_FUNCTIONS%%
+$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
     class $$LEXER_CLASS_NAME$$ :
         protected QUEX_CORE_ANALYSER_STRUCT {
@@ -240,7 +240,7 @@ namespace quex {
         virtual ~$$LEXER_CLASS_NAME$$();
         //
         // -- token stream: read next token
-        %%TOKEN_CLASS%%::id_type   get_token(%%TOKEN_CLASS%%* p_result);
+        $$TOKEN_CLASS$$::id_type   get_token($$TOKEN_CLASS$$* p_result);
         
         //
         // (*) Mode handling
@@ -274,11 +274,11 @@ namespace quex {
 
         //
         // (*) Token sending
-        void        send(const %%TOKEN_CLASS%%& That);
-        void        send(const %%TOKEN_CLASS%%::id_type TokenID);
-        void        send_n(const int N, const %%TOKEN_CLASS%%::id_type TokenID);
+        void        send(const $$TOKEN_CLASS$$& That);
+        void        send(const $$TOKEN_CLASS$$::id_type TokenID);
+        void        send_n(const int N, const $$TOKEN_CLASS$$::id_type TokenID);
         template <typename ContentT> 
-        void        send(const %%TOKEN_CLASS%%::id_type TokenID, ContentT Content);
+        void        send(const $$TOKEN_CLASS$$::id_type TokenID, ContentT Content);
         //
         // (*) Version information
         const char* version() const; // created by quex for version/date information
@@ -375,7 +375,7 @@ namespace quex {
             // (this can be a paragraph delimiter, or a command)
             ACCUMULATOR_tag($$LEXER_CLASS_NAME$$* lex) 
                 : _the_lexer(lex) { _accumulated_text.reserve(1024); }
-            void  flush(const %%TOKEN_CLASS%%::id_type TokenID);
+            void  flush(const $$TOKEN_CLASS$$::id_type TokenID);
             void  clear();
             void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
             void  add(const QUEX_LEXEME_CHARACTER_TYPE);
@@ -439,9 +439,9 @@ namespace quex {
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
         //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
         //      to quex's start mode.)
-        quex_mode*  mode_db[%%MAX_MODE_CLASS_N%%+1];  
+        quex_mode*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
     public:
-%%MODE_OBJECT_MEMBERS%%
+$$MODE_OBJECT_MEMBERS$$
     private:
         // -- keeping track of the currently active mode
         //    Inside analyzer function of a mode, it is possible that the analyzer
@@ -472,17 +472,17 @@ namespace quex {
     // 
     //       Otherwise, one would be restricted to sending one token by pattern.        
         //
-        token_queue<%%TOKEN_CLASS%%>*   _token_queue;
+        token_queue<$$TOKEN_CLASS$$>*   _token_queue;
         // (*) All Modes are Friends _____________________________________________________
-%%MODE_CLASS_FRIENDS%%  
+$$MODE_CLASS_FRIENDS$$  
     // (*) User defined Friends ______________________________________________________
-%%LEXER_CLASS_FRIENDS%%
+$$LEXER_CLASS_FRIENDS$$
     // (*) User's Lexer Class Body Extenstion ________________________________________
-%%CLASS_BODY_EXTENSION%%
+$$CLASS_BODY_EXTENSION$$
 
     public:
     // (*) Who and what am I ? _______________________________________________________
-        %%LEXER_DERIVED_CLASS_NAME%%&  self;
+        $$LEXER_DERIVED_CLASS_NAME$$&  self;
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         // (*) Python-like indentation support ___________________________________________
@@ -523,7 +523,7 @@ namespace quex {
     : 
         // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
         // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-        self(*((%%LEXER_DERIVED_CLASS_NAME%%*)this)),
+        self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
         accumulator(this)
     {
         // Buffer: Size = (see macro def.), Fallback = 10 Characters
@@ -540,7 +540,7 @@ namespace quex {
     :
         // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
         // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-        self(*((%%LEXER_DERIVED_CLASS_NAME%%*)this)),
+        self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
         accumulator(this)
     {
         __constructor_core(p_input_stream, IConvInputCodingName);
@@ -549,7 +549,7 @@ namespace quex {
     inline
     CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
     : 
-        self(*((%%LEXER_DERIVED_CLASS_NAME%%*)this)),
+        self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
         accumulator(this)
     {
         setbuf(fh, 0);   // turn off system based buffering!
@@ -607,19 +607,19 @@ namespace quex {
         _column_number_at_begin = 0;
         _column_number_at_end   = 1; 
 #endif
-        _token_queue = new token_queue<%%TOKEN_CLASS%%>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+        _token_queue = new token_queue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
-%%CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE%%
+$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-        set_mode_brutally(%%INITIAL_LEXER_MODE_ID%%);
+        set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
 
         __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
         //                                     // pattern actions
         __continue_analysis_after_adapting_mode_function_p_f = false;
 
-%%CONSTRUCTOR_EXTENSTION%%
+$$CONSTRUCTOR_EXTENSTION$$
     }   
 
     inline
@@ -631,7 +631,7 @@ namespace quex {
     }
 
     inline int
-    CLASS::get_token(%%TOKEN_CLASS%%* result_p) 
+    CLASS::get_token($$TOKEN_CLASS$$* result_p) 
         // NOTE: As long as the 'get_token()' function is not called there is nothing
         //       happening to the token in the queue. But, a parser very probably
         //       does a couple af calls to 'get_token()' before a rule triggers 
@@ -646,7 +646,7 @@ namespace quex {
         //
         // RETURNS:
         //    Token-ID of the currently read token.
-        //    Token-ID = '%%TOKEN_CLASS%%::ID_UNITIALIZED' is returned in 
+        //    Token-ID = '$$TOKEN_CLASS$$::ID_UNITIALIZED' is returned in 
         //               case that no  token could be read.
     {
         // The framework / constructor **should** ensure that at this point the two
@@ -680,7 +680,7 @@ namespace quex {
                 continue;
             }
             else if( _token_queue->is_empty() ) {
-                result_p->set(%%TOKEN_CLASS%%::ID_UNINITIALIZED);
+                result_p->set($$TOKEN_CLASS$$::ID_UNINITIALIZED);
             }
             break;
             
@@ -783,7 +783,7 @@ namespace quex {
     CLASS::map_mode_id_to_mode(const int ModeID)
     { 
         __quex_assert(ModeID >= 0);
-        __quex_assert(ModeID < %%MAX_MODE_CLASS_N%% + 1); // first mode is unused by quex
+        __quex_assert(ModeID < $$MAX_MODE_CLASS_N$$ + 1); // first mode is unused by quex
         return *(mode_db[ModeID]); 
     }
 
@@ -794,8 +794,8 @@ namespace quex {
     inline const char* 
     CLASS::version() const
     { 
-        return "$$LEXER_CLASS_NAME$$: Version %%LEXER_BUILD_VERSION%%. Date %%LEXER_BUILD_DATE%%\n"
-               "Generated by Quex %%QUEX_VERSION%%";
+        return "$$LEXER_CLASS_NAME$$: Version $$LEXER_BUILD_VERSION$$. Date $$LEXER_BUILD_DATE$$\n"
+               "Generated by Quex $$QUEX_VERSION$$";
     }
 
     inline void    
@@ -825,24 +825,24 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 #endif
 
     inline void   
-    CLASS::send(const %%TOKEN_CLASS%%& That) {
+    CLASS::send(const $$TOKEN_CLASS$$& That) {
         _token_queue->push(That);
         __QUEX_DEBUG_TOKEN_SENDING;
     }
     inline void   
-    CLASS::send(const %%TOKEN_CLASS%%::id_type ID) {
+    CLASS::send(const $$TOKEN_CLASS$$::id_type ID) {
         _token_queue->push(ID);
         __QUEX_DEBUG_TOKEN_SENDING;
     }
     inline void   
-    CLASS::send_n(const int N, %%TOKEN_CLASS%%::id_type ID) {
+    CLASS::send_n(const int N, $$TOKEN_CLASS$$::id_type ID) {
         __quex_assert(N > 0);
         for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
     }
 
     template <typename ContentT>
     inline void   
-    CLASS::send(const %%TOKEN_CLASS%%::id_type ID, ContentT Content) {
+    CLASS::send(const $$TOKEN_CLASS$$::id_type ID, ContentT Content) {
         _token_queue->push(ID, Content);
         __QUEX_DEBUG_TOKEN_SENDING;
     }
@@ -941,7 +941,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 */
 
     inline void
-    CLASS::ACCUMULATOR_tag::flush(const %%TOKEN_CLASS%%::id_type TokenID)
+    CLASS::ACCUMULATOR_tag::flush(const $$TOKEN_CLASS$$::id_type TokenID)
     {
         if( _accumulated_text.length() == 0 ) return;
 
@@ -1006,7 +1006,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
                               const char*    IConvInputCodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-        __quex_assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < %%MAX_MODE_CLASS_N%% + 1));
+        __quex_assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < $$MAX_MODE_CLASS_N$$ + 1));
         if( MODE_ID == -1 ) 
             __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName); 
         else
@@ -1103,4 +1103,4 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 
 }
 
-#endif // __INCLUDE_GUARD__QUEX__%%INCLUDE_GUARD_EXTENSION%%
+#endif // __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$

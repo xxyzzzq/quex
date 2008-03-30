@@ -248,8 +248,8 @@ def adapt_state_machine(sm, StateSetList):
         for state_idx in state_set[1:]:
             prototype.merge(sm.states[state_idx])
 
-        # Throw the meaningless states away. Transitions to them need to point to the
-        # prototype
+        # Throw the meaningless states away. Transitions to them need to 
+        # point to the prototype
         for state_index in state_set[1:]:
             replacement_list.append([state_index, prototype_index])
             del sm.states[state_index]

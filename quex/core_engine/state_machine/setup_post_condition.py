@@ -45,6 +45,11 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     assert not post_context_sm.is_empty(), \
             "empty state machine cannot be a post-context."
 
+    # -- state machines involved with post condition building are part of a pattern, 
+    #    but not configured out of multiple patterns. Thus there should be no origins.
+    assert the_state_machine.has_origins() == False
+    assert post_context_sm.has_origins() == False
+
     # -- a post context with an initial state that is acceptance is not
     #    really a 'context' since it accepts anything. The state machine remains
     #    un-post context.
@@ -77,8 +82,6 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     #     state machines to appear twice, or being used in 'larger'
     #     conglomerates.
     post_clone = post_context_sm.clone() 
-    #     origins of the post context are **irrelevant**
-    post_clone.delete_state_origins()
 
     # (*) collect all transitions from both state machines into a single one
     #

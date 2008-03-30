@@ -39,28 +39,28 @@ file_str = \
 // NOTE: This file has been created automatically by a
 //       quex program.
 //
-// DATE: %%DATE%%
+// DATE: $$DATE$$
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-#ifndef __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_%%DATE_IG%%__
-#define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_%%DATE_IG%%__
+#ifndef __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_$$DATE_IG$$__
+#define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_$$DATE_IG$$__
 
 #include<cstdio> // for: 'std::sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
-#include "%%TOKEN_CLASS_DEFINITION_FILE%%"
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 
-%%TOKEN_ID_DEFINITIONS%%
+$$TOKEN_ID_DEFINITIONS$$
 
 namespace quex {
 
-%%CONTENT%%
+$$CONTENT$$
 
 // NOT YET:
-//   template <%%TOKEN_CLASS%%::id_type TokenT>
+//   template <$$TOKEN_CLASS$$::id_type TokenT>
 //   struct token_trait;
 //
-%%TOKEN_TRAITS%%
+$$TOKEN_TRAITS$$
 }
 #endif // __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_GENERATED__
 """
@@ -68,10 +68,10 @@ namespace quex {
 func_str = \
 """
     inline const std::string&
-    %%TOKEN_CLASS%%::map_id_to_name(const %%TOKEN_CLASS%%::id_type TokenID)
+    $$TOKEN_CLASS$$::map_id_to_name(const $$TOKEN_CLASS$$::id_type TokenID)
     {
        static bool virginity_f = true;
-       static std::map<%%TOKEN_CLASS%%::id_type, std::string>  db;
+       static std::map<$$TOKEN_CLASS$$::id_type, std::string>  db;
        static std::string  error_string("");
        static std::string  uninitialized_string("<UNINITIALIZED>");
        static std::string  termination_string("<TERMINATION>");
@@ -81,12 +81,12 @@ func_str = \
        if( virginity_f ) {
            virginity_f = false;
            // Create the Database mapping TokenID -> TokenName
-           %%TOKEN_ID_CASES%%
+           $$TOKEN_ID_CASES$$
        }
 
-       if     ( TokenID == %%TOKEN_PREFIX%%TERMINATION )   return termination_string;
-       else if( TokenID == %%TOKEN_PREFIX%%UNINITIALIZED ) return uninitialized_string;
-       std::map<%%TOKEN_CLASS%%::id_type, std::string>::const_iterator it = db.find(TokenID);
+       if     ( TokenID == $$TOKEN_PREFIX$$TERMINATION )   return termination_string;
+       else if( TokenID == $$TOKEN_PREFIX$$UNINITIALIZED ) return uninitialized_string;
+       std::map<$$TOKEN_CLASS$$::id_type, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];
@@ -101,7 +101,7 @@ def do(global_setup):
     """Creates a file of token-ids from a given set of names.
        Creates also a function:
 
-       const string& %%token%%::map_id_to_name().
+       const string& $$token$$::map_id_to_name().
     """
     # file contains simply a whitespace separated list of token-names
     output(global_setup)
@@ -197,8 +197,8 @@ def output(global_setup):
                                                                           space(token_name),
                                                                           token_name)
     
-    txt = blue_print(func_str, [["%%TOKEN_ID_CASES%%", db_build_txt],
-                                ["%%TOKEN_PREFIX%%",   setup.token_prefix]])
+    txt = blue_print(func_str, [["$$TOKEN_ID_CASES$$", db_build_txt],
+                                ["$$TOKEN_PREFIX$$",   setup.token_prefix]])
 
 
     # -- define the token traits
@@ -215,14 +215,14 @@ def output(global_setup):
     # TODO: "struct data_x { type0, type1 }", the redefine the previous
     #       to 'typedef data_x  type;"
     content = blue_print(file_str,
-                         [["%%CONTENT%%",                     txt],
-                          ["%%TOKEN_ID_DEFINITIONS%%",        token_id_txt],
-                          ["%%DATE%%",                        time.asctime()],
-                          ["%%TOKEN_TRAITS%%",                trait_txt],
-                          ["%%TOKEN_CLASS_DEFINITION_FILE%%", setup.token_class_file],
-                          ["%%DATE_IG%%",                     date_str]])
+                         [["$$CONTENT$$",                     txt],
+                          ["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
+                          ["$$DATE$$",                        time.asctime()],
+                          ["$$TOKEN_TRAITS$$",                trait_txt],
+                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", setup.token_class_file],
+                          ["$$DATE_IG$$",                     date_str]])
 
-    content = content.replace("%%TOKEN_CLASS%%", setup.token_class)
+    content = content.replace("$$TOKEN_CLASS$$", setup.token_class)
 
     fh = open(setup.output_file, "w")
     if os.linesep == "\n": content = content.replace("\n", os.linesep)

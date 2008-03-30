@@ -31,19 +31,38 @@ def blue_print(BluePrintStr, Replacements):
 
            r[0] = original pattern
            r[1] = replacements
+
+       Original pattern must start with '$'.
     """
     # (*) sort the replacements so that long strings
     #     are replaced first
     Replacements.sort(lambda a, b: cmp(len(b[0]), len(a[0])))
 
-    txt = BluePrintStr
-    for orig, replacement in Replacements:
-        if type(replacement) == type(""):
-            txt = txt.replace(orig, replacement)
+    # -- the longest original
+    L = len(Replacements[0][0])
+
+    txt      = BluePrintStr
+    result   = ""
+    prev_end = 0
+    while 1 + 1 == 2:
+        i = txt.find("$", prev_end)
+        if i == -1: 
+            result += txt[prev_end:]
+            return result
+
+        for orig, replacement in Replacements:
+            assert orig[0] == "$"
+            if txt.find(orig, i, i + L) == i: 
+                result += txt[prev_end:i] + replacement
+                prev_end = i + len(orig)
+                break
         else:
-            txt = txt.replace(orig, repr(replacement))
-            
-    return txt
+            # Nothing matched the expression starting with '$' simply
+            # continue as if nothing happend.
+            result   += txt[prev_end:i+1]
+            prev_end  = i + 1
+            pass
+
 
 
 def tex_safe(Str):

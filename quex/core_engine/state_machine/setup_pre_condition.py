@@ -34,7 +34,7 @@ def do(the_state_machine, pre_context_state_machine):
     assert not the_state_machine.is_empty() 
     assert not pre_context_state_machine.is_empty()
     # -- trivial pre-conditions should be added last, for simplicity
-    assert not the_state_machine.has_trivial_pre_context(), \
+    assert not the_state_machine.core().pre_context_begin_of_line_f(), \
            "This function was not designed to deal with trivially pre-conditioned state machines." + \
            "Please, make sure the trivial pre-conditioning happens *after* regular pre-conditions."  
     #___________________________________________________________________________________________

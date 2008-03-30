@@ -78,15 +78,6 @@ class StateInfo:
         # use the own 'core' as only origin
         self.origins().set([self.core()])
 
-    def adapt_origins(self, StateMachineID, StateIndex):
-        """Adapts all origins so that their original state is 'StateIndex' in state machine
-           'StateMachineID'. Post- and pre-condition flags remain, and so the store input 
-           position flag.
-        """
-        self.core().state_machine_id = StateMachineID
-        self.core().state_index      = StateIndex
-        self.origins().adapt(StateMachineID, StateIndex)
-
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__transition_map.add_transition(Trigger, TargetStateIdx)
     
@@ -448,7 +439,7 @@ class StateMachine:
         #__________________________________________________________________________________________
         # TODO: See th above comment and think about it.
         assert     self.__core.pre_context_sm() == None \
-               and not self.has_trivial_pre_context(), \
+               and not self.core().pre_context_begin_of_line_f(), \
                "pre-conditioned state machines cannot be inverted via 'get_inverse()'"
 
         #__________________________________________________________________________________________
@@ -489,37 +480,14 @@ class StateMachine:
         if len(self.states) != 1: return False
         return self.states[self.init_state_index].transitions().is_empty()
 
-    def has_trivial_pre_context(self):
-        """NOTE: This function was initialy implemented to generalize the 
-                 begin of line precondition with the 
-                 'one special character preceeding pre-condition'.
-        """
-        return self.__core.pre_context_begin_of_line_f()
-
     def has_origins(self):
         for state in self.states.values():
             if not state.origins().is_empty(): return True
         return False
 
-    def delete_state_origins(self):
-        for state in self.states.values():
-            state.origins().clear()
-
     def delete_meaningless_origins(self):
-        """Deletes origins that are not concerned with one of the three:
-            -- post-conditions
-            -- pre-conditions/trivial pre-conditions included
-            -- store input positions
-           
-            NOTE: This function is only to be used for single patterns not for
-                combined state machines. During the NFA to DFA translation
-                more than one state is combined into one. This maybe reflected
-                in the origin list. However, only at the point when the 
-                pattern state machine is ready, then the origin states are something
-                meaningful. The other information has to be kept.
-                                                                                                                                            
-            NOTE: After applying this fuction to a single pattern, there should only
-                be one origin for each state.
+        """Delete origins that do not inform about acceptance, store input position,
+           post context, pre context, and the like.
         """
         for state in self.states.values():
             state.origins().delete_meaningless()
@@ -632,23 +600,6 @@ class StateMachine:
         assert self.states.has_key(self.init_state_index)
 
         self.states[self.init_state_index].transitions().add_epsilon_target_state(TargetStateIdx)
-
-    def adapt_origins(self, StateMachineID):
-        """Adapts origin to origin in a state machine 'StateMachineID'
-        """
-        for state_idx, state in self.states.items():
-            state.adapt_origins(StateMachineID, state_idx)
-
-        if self.__core.pre_context_sm() != None:
-            self.__core.pre_context_sm().adapt_origins(StateMachineID)
-
-    def adapt_origins_to_self(self):
-        """Considers all origins mentioned to be of this state machine, i.e.
-           it changes state machine id to its own and the state ids to their state ids.
-           The flags for pre-, and post-conditions remain, and so the store input
-           position flags.
-        """
-        self.adapt_origins(self.get_id())
 
     def filter_dominated_origins(self):
         for state in self.states.values(): 
