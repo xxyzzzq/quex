@@ -42,9 +42,9 @@ int main(int, char**)
     //
     int    success_f = 0;
     //
-    %%BUFFER_SPECIFIC_SETUP%%
+    $$BUFFER_SPECIFIC_SETUP$$
     //
-    printf("(*) test string: \\n'%%TEST_STRING%%'\\n");
+    printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
     printf("(*) result:\\n");
     do {
         success_f = lexer_state.__current_mode_analyser_function_p(&lexer_state);
@@ -53,14 +53,14 @@ int main(int, char**)
 }\n"""
 
 quex_buffer_based_test_program = """
-    istringstream   istr("%%TEST_STRING%%");
+    istringstream   istr("$$TEST_STRING$$");
     quex::buffer    buf(&istr, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$);
 
     analyser_init(&lexer_state, 0, &buf, analyser_do);
 """
 
 plain_memory_based_test_program = """
-    char   tmp[] = "\\0%%TEST_STRING%%";  // introduce first '0' for safe backward lexing
+    char   tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
     analyser_init(&lexer_state, &(tmp[1]), analyser_do);
 """
@@ -86,9 +86,8 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
 
-    txt = blue_print(txt,
-                     [["%%TEST_STRING%%",           test_str],
-                      ["%%BUFFER_SPECIFIC_SETUP%%", buffer_specific_str]])
+    txt = txt.replace("$$BUFFER_SPECIFIC_SETUP$$", buffer_specific_str)
+    txt = txt.replace("$$TEST_STRING$$",           test_str)
 
     return txt, core_engine_definition_file
 
@@ -149,7 +148,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
             # have origins! Actually, there are not more than patterns waiting
             # to be applied in regular expressions. The regular expressions 
             # can later be origins.
-            state_machine.delete_state_origins()
+            assert state_machine.has_origins() == False
 
             adapted_dict[key] = PatternShorthand(key, state_machine)
 
@@ -195,7 +194,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " # + \
                   # "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " + \
 
-    # print compile_str # DEBUG
+    ## print compile_str # DEBUG
     os.system(compile_str)
 
     print "## (3) running the test"

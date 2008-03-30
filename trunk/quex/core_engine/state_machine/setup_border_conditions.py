@@ -30,7 +30,7 @@ def do(sm, BeginOfLineF, EndOfLineF, BeginOfFile_Code, EndOfFile_Code,
             # by translating state machine into a DFA
             sm = setup_post_context.do(sm, post_sm) 
             sm = nfa_to_dfa.do(sm)
-            sm.delete_meaningless_origins()
+            assert sm.has_origins() == False
             
         else:
             post_context_id = sm.core().post_context_id()

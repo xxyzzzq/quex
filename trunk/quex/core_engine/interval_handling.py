@@ -15,7 +15,6 @@
 ################################################################################
 
 from copy import copy, deepcopy
-from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.generator.languages.core as languages
 import quex.core_engine.utf8                     as utf8

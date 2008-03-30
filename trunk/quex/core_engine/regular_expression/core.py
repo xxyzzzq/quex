@@ -56,9 +56,6 @@ import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
-class something:
-    pass
-
 def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF):
     """This function is to be used by the outer shell to the user. It ensures that 
        the state machine which is returned is conform to some assumptions.
@@ -94,6 +91,12 @@ def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF
                   "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
                   fh, DontExitF=True)
 
+    # (*) It is essential that state machines defined as patterns do not 
+    #     have origins.
+    if sm.has_origins():
+        error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
+                  "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
+        
     return sm
 
 def __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode):

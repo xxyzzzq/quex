@@ -30,33 +30,33 @@ def do(Modes):
 mode_function_implementation_str = \
 """
     void
-    $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_on_entry($$LEXER_CLASS_NAME$$* me, const quex_mode* FromMode) {
-%%ENTER-PROCEDURE%%
+    $$LEXER_CLASS_NAME$$__$$MODE_NAME$$_on_entry($$LEXER_CLASS_NAME$$* me, const quex_mode* FromMode) {
+$$ENTER-PROCEDURE$$
     }
     void
-    $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_on_exit($$LEXER_CLASS_NAME$$* me, const quex_mode* ToMode)  {
-%%EXIT-PROCEDURE%%
+    $$LEXER_CLASS_NAME$$__$$MODE_NAME$$_on_exit($$LEXER_CLASS_NAME$$* me, const quex_mode* ToMode)  {
+$$EXIT-PROCEDURE$$
     }
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_on_indentation($$LEXER_CLASS_NAME$$* me, const int Indentation) {
-%%INDENTATION-PROCEDURE%%
+    $$LEXER_CLASS_NAME$$__$$MODE_NAME$$_on_indentation($$LEXER_CLASS_NAME$$* me, const int Indentation) {
+$$INDENTATION-PROCEDURE$$
     }
 #endif
 
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
-    $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_has_base(const quex_mode* Mode) {
-%%HAS_BASE_MODE%%
+    $$LEXER_CLASS_NAME$$__$$MODE_NAME$$_has_base(const quex_mode* Mode) {
+$$HAS_BASE_MODE$$
     }
     bool
-    $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_has_entry_from(const quex_mode* Mode) {
-%%HAS_ENTRANCE_FROM%%
+    $$LEXER_CLASS_NAME$$__$$MODE_NAME$$_has_entry_from(const quex_mode* Mode) {
+$$HAS_ENTRANCE_FROM$$
     }
     bool
-    $$LEXER_CLASS_NAME$$__%%MODE_NAME%%_has_exit_to(const quex_mode* Mode) {
-%%HAS_EXIT_TO%%
+    $$LEXER_CLASS_NAME$$__$$MODE_NAME$$_has_exit_to(const quex_mode* Mode) {
+$$HAS_EXIT_TO$$
     }
 #endif    
 """                         
@@ -117,13 +117,13 @@ def  get_implementation_of_mode_functions(mode, Modes):
 
     
     txt = blue_print(mode_function_implementation_str,
-                     [["%%ENTER-PROCEDURE%%",           on_entry_str],
-                      ["%%EXIT-PROCEDURE%%",            on_exit_str],
-                      ["%%INDENTATION-PROCEDURE%%",     on_indentation_str],
-                      ["%%HAS_BASE_MODE%%",             has_base_mode_str],
-                      ["%%HAS_ENTRANCE_FROM%%",         has_entry_from_str],
-                      ["%%HAS_EXIT_TO%%",               has_exit_to_str],
-                      ["%%MODE_NAME%%",                 mode.name],
+                     [["$$ENTER-PROCEDURE$$",           on_entry_str],
+                      ["$$EXIT-PROCEDURE$$",            on_exit_str],
+                      ["$$INDENTATION-PROCEDURE$$",     on_indentation_str],
+                      ["$$HAS_BASE_MODE$$",             has_base_mode_str],
+                      ["$$HAS_ENTRANCE_FROM$$",         has_entry_from_str],
+                      ["$$HAS_EXIT_TO$$",               has_exit_to_str],
+                      ["$$MODE_NAME$$",                 mode.name],
                       ])
     return txt
 

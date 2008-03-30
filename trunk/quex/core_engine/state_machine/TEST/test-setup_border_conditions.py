@@ -43,19 +43,16 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     # print "DFA = ", result
     result = hopcroft.do(result)
     #
-    result.delete_meaningless_origins()
     # print "HOPCROFT = ", result
     result = setup_border_conditions.do(result, BOF_F, EOF_F, BeginOfFile_Code=0x0, EndOfFile_Code=0x0)
     #
-    #
-    result.adapt_origins_to_self()
     #
     print
     print "result sm.id     = ", result.get_id()
     if result.core().pre_context_sm() != None:
         print "result pre sm.id = ", result.core().pre_context_sm().get_id()
     print "result = ", result
-    print "trivially pre-conditioned = ", result.has_trivial_pre_context()
+    print "trivially pre-conditioned = ", result.core().pre_context_begin_of_line_f()
 
 tiny0 = StateMachine()
 tiny0.add_transition(tiny0.init_state_index, ord('0'), AcceptanceF=True)

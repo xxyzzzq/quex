@@ -593,18 +593,18 @@ namespace quex {
             return new basic_buffer<input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE> >(
                 input_strategy,
                 (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
-                /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
-                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
+                /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)0x19, 
+                /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)0x1A,
+                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
 #           endif
             return 0x0;
         }
         else {
             return new basic_buffer<input_strategy<InputHandleP, QUEX_CHARACTER_TYPE> >
                    (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                   /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)25, 
-                   /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)26,
-                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0);
+                   /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)0x19, 
+                   /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)0x1A,
+                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
         }
     }
 
@@ -850,8 +850,7 @@ namespace quex {
 //           -- lexical analysis with python indentation support
 //           -- lexical analysis without python indentation support
 //                
-// -*- C++ -*-   :vim set syntax=cpp:
-
+// -*- C++ -*-   vim: set syntax=cpp:
 // NOTE: Quex is pretty intelligent in choosing the right function
 //       to count line and column numbers. If, for example, a pattern
 //       does not contain newlines, then it simply adds the LexemeLength

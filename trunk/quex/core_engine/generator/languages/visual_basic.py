@@ -91,11 +91,11 @@ __cpp_terminal_state_str  = """
     //     NOTE: 'input' contains the next character already, so there is no
     //            need to read it from the stream again. Thus,
     //
-    //              goto QUEX_LABEL_%%STATE_MACHINE_NAME%%_ENTRY_INITIAL_STATE;
+    //              goto QUEX_LABEL_$$STATE_MACHINE_NAME$$_ENTRY_INITIAL_STATE;
     //
     //            at the end of each acceptance terminal state. However:
     //
-    //              goto %%INITIAL_STATE_INDEX_LABEL%%;
+    //              goto $$INITIAL_STATE_INDEX_LABEL$$;
     // 
     //            However, in cases that the related action contains a 'return' it has
     //            to be sure that the lexical analysis starts at the previous position.
@@ -105,9 +105,9 @@ __cpp_terminal_state_str  = """
 
     // specific terminal states, i.e. related to a 'winner pattern'. this means,
     // that the last input before the pattern matched a complete pattern.
-  %%SPECIFIC_TERMINAL_STATES%%
+  $$SPECIFIC_TERMINAL_STATES$$
 
-  %%GENERAL_TERMINAL_STATE_LABEL%%:
+  $$GENERAL_TERMINAL_STATE_LABEL$$:
     int tmp = last_acceptance;
     last_acceptance = 0x00;    // reset the last acceptance position for next run
     // jump to last acceptance state
@@ -118,12 +118,12 @@ __cpp_terminal_state_str  = """
     //        -- execute defaul action
     //        -- goto initial state    
     switch( tmp ) {
-        %%JUMPS_TO_ACCEPTANCE_STATE%%
+        $$JUMPS_TO_ACCEPTANCE_STATE$$
         default:
            // no acceptance state    
-           %%DEFAULT_ACTION%%
+           $$DEFAULT_ACTION$$
            QUEX_STREAM_GET(input);
-           goto QUEX_LABEL_%%STATE_MACHINE_NAME%%_ENTRY_INITIAL_STATE;     
+           goto QUEX_LABEL_$$STATE_MACHINE_NAME$$_ENTRY_INITIAL_STATE;     
     }
 """
 
@@ -155,12 +155,12 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
     #     -- reset character stream to last success             
     #     -- goto initial state 
     txt = blue_print(__cpp_terminal_state_str, 
-                     [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
-                      ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
-                      ["%%DEFAULT_ACTION%%",               DefaultAction.replace("\n", "        \n")],
-                      ["%%GENERAL_TERMINAL_STATE_LABEL%%", get_label("", None, None)],
-                      ["%%STATE_MACHINE_NAME%%",           StateMachineName],
-                      ["%%INITIAL_STATE_INDEX_LABEL%%",    get_label(StateMachineName, sm.init_state_index)]])
+                     [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
+                      ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
+                      ["$$DEFAULT_ACTION$$",               DefaultAction.replace("\n", "        \n")],
+                      ["$$GENERAL_TERMINAL_STATE_LABEL$$", get_label("", None, None)],
+                      ["$$STATE_MACHINE_NAME$$",           StateMachineName],
+                      ["$$INITIAL_STATE_INDEX_LABEL$$",    get_label(StateMachineName, sm.init_state_index)]])
     return txt
     
 db["C++"] = {

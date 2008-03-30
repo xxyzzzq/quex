@@ -542,16 +542,16 @@ __terminal_state_str  = """
   // pattern was according to the terminal state. The terminal states are 
   // numbered after the pattern id.
   //
-%%SPECIFIC_TERMINAL_STATES%%
+$$SPECIFIC_TERMINAL_STATES$$
 
   TERMINAL_END_OF_STREAM:
-%%END_OF_STREAM_ACTION%%
+$$END_OF_STREAM_ACTION$$
 
   TERMINAL_DEFAULT:
-%%DEFAULT_ACTION%%
+$$DEFAULT_ACTION$$
         goto __REENTRY_PREPARATION;
 
-  %%GENERAL_TERMINAL_STATE_LABEL%%: {
+  $$GENERAL_TERMINAL_STATE_LABEL$$: {
         int tmp = last_acceptance;
         //
         //  if last_acceptance => goto correspondent acceptance terminal state
@@ -559,7 +559,7 @@ __terminal_state_str  = """
         //
         __QUEX_DEBUG_INFO_TERMINAL(General);
         switch( tmp ) {
-%%JUMPS_TO_ACCEPTANCE_STATE%%
+$$JUMPS_TO_ACCEPTANCE_STATE$$
             default: goto TERMINAL_DEFAULT; /* nothing matched */
         }
     }
@@ -570,7 +570,7 @@ __terminal_state_str  = """
     //     at each time when CONTINUE is called at the end of a pattern.
     //
     last_acceptance = -1;
-%%DELETE_PRE_CONDITION_FULLFILLED_FLAGS%%
+$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //
     //  If a mode change happened, then the function must first return and
     //  indicate that another mode function is to be called. At this point, 
@@ -680,14 +680,14 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                                                         IndentationOffset=16)
 
     txt = blue_print(__terminal_state_str, 
-                     [["%%JUMPS_TO_ACCEPTANCE_STATE%%",    jumps_to_acceptance_states_str],   
-                      ["%%SPECIFIC_TERMINAL_STATES%%",     specific_terminal_states_str],
-                      ["%%DEFAULT_ACTION%%",               default_action_str],
-                      ["%%END_OF_STREAM_ACTION%%",         end_of_stream_code_action_str],
-                      ["%%GENERAL_TERMINAL_STATE_LABEL%%", label.get_terminal(StateMachineName, None)],
-                      ["%%STATE_MACHINE_NAME%%",           StateMachineName],
-                      ["%%INITIAL_STATE_INDEX_LABEL%%",    label.get(StateMachineName, sm.init_state_index)],
-                      ["%%DELETE_PRE_CONDITION_FULLFILLED_FLAGS%%", delete_pre_context_flags_str]])
+                     [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
+                      ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
+                      ["$$DEFAULT_ACTION$$",               default_action_str],
+                      ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
+                      ["$$GENERAL_TERMINAL_STATE_LABEL$$", label.get_terminal(StateMachineName, None)],
+                      ["$$STATE_MACHINE_NAME$$",           StateMachineName],
+                      ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index)],
+                      ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
 
     return txt
     

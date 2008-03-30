@@ -276,8 +276,7 @@ my_tester::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
 #include <my_tester.h>
 #include <cassert>
 #line 1 "../count_line_column.i"
-// -*- C++ -*-   :vim set syntax=cpp:
-
+// -*- C++ -*-   vim: set syntax=cpp:
 // NOTE: Quex is pretty intelligent in choosing the right function
 //       to count line and column numbers. If, for example, a pattern
 //       does not contain newlines, then it simply adds the LexemeLength

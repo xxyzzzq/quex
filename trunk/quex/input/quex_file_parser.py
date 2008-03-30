@@ -186,12 +186,6 @@ def parse_pattern_name_definitions(fh, Setup):
 
         # -- parse regular expression, build state machine
         regular_expression_obj, state_machine = regular_expression.parse(fh, Setup)
-
-        # It is ESSENTIAL that the state machines of defined patterns do not 
-        # have origins! Actually, there are not more than patterns waiting
-        # to be applied in regular expressions. The regular expressions 
-        # can later be origins.
-        state_machine.delete_state_origins()
         
         lexer_mode.shorthand_db[pattern_name] = \
                 lexer_mode.PatternShorthand(pattern_name, state_machine, 
