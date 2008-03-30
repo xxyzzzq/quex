@@ -1,0 +1,28 @@
+The following sections elaborate on the process of generating code for a directly coded lexical
+analyser. Each lexical analyzer mode consists of such an independent
+code fragment embedded into a function. In a first section, the big picture is
+discussed. This gives an overview about the major issues involved and build a
+basis for later sections to refer to. Many books discuss in detail the
+Thomson-construction and the Hopcroft-Optimization, but few (the author does
+	not know a single one) discusses the construction down to
+code-generation and its specialities in detail. Quex was created to handle
+efficiently Unicode character sets. As a consequence the table-driven approach,
+	    such as in lex \cite{} is no longer suitable%%
+%%  
+\footnote{In table driven analysers the table size is the square of the number
+    of characters. Unicode provides currently \$10.FFFF code points. A table
+	for this character set would blow the memory of todays computers (The
+		author writes these lines at the beginning of the 21$^{st}$
+		century).  Compressing the table might slow down the speed of
+	    the lexical analyser significantly.}.
+%% 
+Thus, quex implements a _directly coded lexical analyser_ where no state
+variable is needed and no character-trigger table. It is also a much faster
+approach, since no memory has to be referenced%%
+%%
+\footnote{Note, that an expression such as `vector$[$i$]$`' implies
+    generally a multiplication `offset = i * sizeof(type)`), an addition
+	`adress = vector + offset`), and a memory referencing  operation
+	`object = *adress`).}.
+%%	      
+
