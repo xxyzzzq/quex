@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.06" date="Mon Mar 31 05:45:17 2008">
+<test-database execution-time-sec="0.04" date="Mon Mar 31 07:38:50 2008">
     <last-used-diff-display-program name=""/>
     <test title="Backwards Iteration" make-required="True" time-sum-sec="0.01"> 
         <application file-name="test-backward-get" info-request-time="1204721709L"/>

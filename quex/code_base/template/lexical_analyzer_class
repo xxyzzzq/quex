@@ -362,8 +362,8 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         //       equal to '-1' then no post defined lexeme exists.
         //________________________________________________________________________________
         struct post_categorizer_tag {
-            void     enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
-            int      get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
+            void             enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
+            $$TOKEN_CLASS$$::id_type  get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
         private:
             std::map<std::string, int>  lexeme_to_token_id_map;
         } post_categorizer;
@@ -630,7 +630,7 @@ $$CONSTRUCTOR_EXTENSTION$$
         delete _token_queue;
     }
 
-    inline int
+    inline $$TOKEN_CLASS$$::id_type
     CLASS::get_token($$TOKEN_CLASS$$* result_p) 
         // NOTE: As long as the 'get_token()' function is not called there is nothing
         //       happening to the token in the queue. But, a parser very probably

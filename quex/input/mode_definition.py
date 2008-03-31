@@ -82,7 +82,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
         #       whitespace, if a regular expression is to be parsed.
         position = fh.tell()
 
-        word     = read_until_whitespace(fh)
+        word = read_until_whitespace(fh)
         if word == "}":
             return False
 
@@ -94,6 +94,13 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
             fh.seek(position)
             description = "start of mode element: regular expression"
             pattern, pattern_state_machine = regular_expression.parse(fh, Setup)
+
+            if new_mode.has_pattern(pattern):
+                previous = new_mode.get_match_object(pattern)
+                error_msg("Pattern has been defined twice.", fh, DontExitF=True)
+                error_msg("First defined here.", 
+                         previous.action.filename, previous.action.line_n)
+
 
         position    = fh.tell()
         description = "start of mode element: code fragment for '%s'" % pattern

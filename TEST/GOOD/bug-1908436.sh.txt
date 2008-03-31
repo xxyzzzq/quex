@@ -1,9 +1,5 @@
-error.qx:2:warning: Token id 'TKN_A' defined implicitly.
-error.qx:3:warning: Token id 'TKN_B' defined implicitly.
-error.qx:4:warning: Pattern '"a"' appeared twice in mode definition.
-error.qx:4:warning: Only the last definition is considered.
-warning: no initial mode defined via 'start'
-warning: using mode 'START' as initial mode
-(0) create token id file
-   token class file = 'quex/code_base/token'
-   => 'Simple-token_ids'
+error.qx:2:warning: Token id 'TKN_B' defined implicitly.
+error.qx:3:warning: Token id 'TKN_A' defined implicitly.
+error.qx:5:warning: Token id 'TKN_C' defined implicitly.
+error.qx:6:warning: Pattern has been defined twice.
+error.qx:4:error: First defined here.
