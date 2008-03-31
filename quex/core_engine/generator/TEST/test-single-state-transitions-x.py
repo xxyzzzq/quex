@@ -17,7 +17,7 @@ import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.interval_handling import NumberSet, Interval
-from quex.core_engine.state_machine.core import StateInfo
+from quex.core_engine.state_machine.core import State
 
 import quex.core_engine.generator.languages.core         as languages
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
@@ -28,7 +28,7 @@ if "--hwut-info" in sys.argv:
 
 
 # Create a large number of intervals with sizes 1 to 4. 
-state = StateInfo()
+state = State()
 interval_start = 0
 interval_end   = -1
 # initialize pseudo random generator: produces always the same numbers.

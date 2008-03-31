@@ -39,7 +39,7 @@ def test(state):
 # (*) create a couple of number sets and put them as triggers to four 
 #     different target states
 print "#---------------------------------------------------------------------------------------"
-s = StateInfo()
+s = State()
 s.add_transition(NumberSet(Interval(0, 10)).union(Interval(20, 30)).union(Interval(40, 50)), 1L)
 s.add_transition(NumberSet(Interval(10, 15)).union(Interval(31, 40)), 2L)
 s.add_transition(NumberSet(Interval(15, 16)).union(Interval(17, 18)), 2L)
@@ -52,18 +52,18 @@ test(s)
 # (*) special case that appeared during other unit test: only two intervals
 #     are intermediate 'empty intervals' propperly dealt with?    
 print "#---------------------------------------------------------------------------------------"
-s = StateInfo()
+s = State()
 s.add_transition(NumberSet([Interval(45, 46), Interval(47, 48)]), 1L)
 test(s)
 
 print "#---------------------------------------------------------------------------------------"
-s = StateInfo()
+s = State()
 s.add_transition(NumberSet(Interval(46, 47)), 1L)
 s.add_transition(NumberSet(Interval(48, 49)), 1L)
 test(s)
         
 # (*) special case: only one interval at all
-s = StateInfo()
+s = State()
 s.add_transition(NumberSet(Interval(46, 47)), 1L)
 test(s)
     

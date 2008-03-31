@@ -44,9 +44,7 @@ def test(RE_Core, RE_PostCondition):
 
     print "ambigous post condition =", core_sm
 
-    backward_detector_id = core_sm.core().post_context_backward_input_position_detector_sm_id()
-
-    print "backward detector =", sm_index.get_state_machine_by_id(backward_detector_id)
+    print "backward detector =", core_sm.core().post_context_backward_input_position_detector_sm()
 
 
 test('"xy"+', '((ab)+|xy)')

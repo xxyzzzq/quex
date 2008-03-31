@@ -1,8 +1,8 @@
 import quex.core_engine.generator.languages.core      as languages
 import quex.core_engine.generator.languages.label     as languages_label
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
-import quex.core_engine.generator.input_position_backward_detector     as backward_detector
-import quex.core_engine.generator.combined_pre_condition_state_machine as combined_pre_context_state_machine
+import quex.core_engine.generator.input_position_backward_detector   as backward_detector
+import quex.core_engine.generator.combined_pre_context_state_machine as combined_pre_context_state_machine
 #
 from quex.core_engine.generator.base import GeneratorBase
 
