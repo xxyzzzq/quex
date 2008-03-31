@@ -1,0 +1,63 @@
+The specification of character sets using unit code properties
+requires caution and an precise vision on the results of 
+character set operations. In order to allow to user to
+see results of character set operations, quex provides a query
+mode where the character set corresponding a specific property
+setting can be investigated. Additionally, whole character set
+expressions can be specified and quex displays the set of characters
+that results from it.
+
+In order to display the character set related to a unicode property
+setting, call quex with the option `--set-by-property` followed 
+a string that specifies the setting in the same as this is done in
+regular expressions with the `\P{...}` operation. Note, that 
+binary properties have no value in the sense that they are specified
+in a manner as `property-name=value`. Instead, it is sufficient to
+give the name of the binary property and quex displays all characters
+that have that property, e.g.
+
+[shell]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ > quex --set-by-property ASCII_Hex_Digit
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+displays all characters that have the property `ASCII_Hex_Digit`, i.e.
+
+[shell]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+00020:                               0 1 2 3 4 5 6 7 8 9 
+00040: A B C D E F 
+00060: a b c d e f 
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For non-binary properties the value of the property has to be specified.
+For example, the set of characters where the property `Block` is
+equal to `Ethiopic` can be displayed by calling
+
+[shell]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ > quex --set-by-property Block=Ethiopic
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.Characters for unicode property `Block=Ethiopic`.
+image::figures/screenshot-block-ethiopic.png[]
+
+and the result is displayed in figure <<fig:screenshot-block-ethiopic.png>>.
+Naturally, sets specified with a simple property setting are not precisely
+what the user desires. To apply complex operations of character set, quex
+provides character set operations <<sec:formal/patterns/operations>>. Again,
+it is essential to know what character sets these expressions expand. Thus,
+   quex provides a functionality to investigate set expressions with the
+   command line option `--set-by-expression`. The following call
+
+[shell]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ > quex --set-by-expression 'intersection(\P{Script=Arabic}, \G{Nd})'
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Displays all characters that are numeric digits in the arabic script. Note,
+that the display of characters on the screen it not always meaningful, so 
+you might specify the option `--numeric` in order to display numeric
+values of the characters. The option `--intervals` prints out character
+intervals instead of each isolated character. This way output may become
+more brief and understandable.
