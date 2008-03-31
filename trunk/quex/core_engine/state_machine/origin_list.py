@@ -17,7 +17,7 @@ class StateOriginList:
         else:    
             self.__list.append(Origin)
 
-    def add(self, X, StateIndex, StoreInputPositionF, SelfAcceptanceF):
+    def add(self, X, StateIndex, StoreInputPositionF=False, SelfAcceptanceF=False):
         """Add the StateMachineID and the given StateIdx to the list of origins of 
            this state.
            NOTE: The rule is that by default the 'store_input_position_f' flag
@@ -41,7 +41,7 @@ class StateOriginList:
                                      StoreInputPositionF = StoreInputPositionF))
 
     def append(self, OriginList, StoreInputPositionFollowsAcceptanceF, SelfAcceptanceF):
-        """Add list of origins to the StateInfo object. Optional argument tells wether
+        """Add list of origins. Optional argument tells wether
            the 'store_input_position_f' shall adapt to the acceptance of self, or
            the acceptance of the origin list is to be copied.
         """

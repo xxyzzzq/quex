@@ -236,7 +236,7 @@ quex_mode_init_call_str = """
 
 def __get_mode_init_call(mode, LexerClassName):
     
-    header_str = "%s__%s_" % (LexerClassName, mode.name)
+    header_str = "%s_%s_" % (LexerClassName, mode.name)
 
     analyser_function = header_str + "analyser_function" 
     on_indentation    = header_str + "on_indentation"    
@@ -278,7 +278,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     def __mode_functions(Prolog, ReturnType, NameList, ArgList):
         txt = ""
         for name in NameList:
-            function_signature = "%s %s__%s_%s(%s);" % \
+            function_signature = "%s %s_%s_%s(%s);" % \
                      (ReturnType, LexerClassName, mode.name, name, ArgList)
             txt += "%s" % Prolog + "    " + function_signature + "\n"
 

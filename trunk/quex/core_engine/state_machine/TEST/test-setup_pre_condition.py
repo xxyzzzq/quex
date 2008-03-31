@@ -4,7 +4,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-import quex.core_engine.state_machine.setup_pre_condition as setup_pre_context 
+import quex.core_engine.state_machine.setup_pre_context as setup_pre_context 
 from quex.core_engine.state_machine.TEST.test_state_machines import *
 
 if "--hwut-info" in sys.argv:

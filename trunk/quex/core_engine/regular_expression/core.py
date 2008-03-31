@@ -47,8 +47,8 @@ import quex.core_engine.regular_expression.snap_character_string      as snap_ch
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat
-import quex.core_engine.state_machine.setup_post_condition    as setup_post_context
-import quex.core_engine.state_machine.setup_pre_condition     as setup_pre_context
+import quex.core_engine.state_machine.setup_post_context    as setup_post_context
+import quex.core_engine.state_machine.setup_pre_context     as setup_pre_context
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
@@ -64,11 +64,11 @@ def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF
     """
 
     # (*) Delete EOF where it has no right to occur
-    __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode)
+    __delete_EOF_except_at_end_of_post_context(sm, EndOfFileCode)
 
     # (*) The buffer limit code has to appear absolutely nowhere!
     if BufferLimitCode != -1:
-        __delete_BLC_except_at_end_of_post_conditions(sm, BufferLimitCode)
+        __delete_BLC_except_at_end_of_post_context(sm, BufferLimitCode)
 
     # (*) Delete transitions that make practically no sense
     __delete_transitions_on_code_points_below_zero(sm)
@@ -99,7 +99,7 @@ def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF
         
     return sm
 
-def __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode):
+def __delete_EOF_except_at_end_of_post_context(sm, EndOfFileCode):
     """End of File is related to a special action which is treated by the code
        generator. No state shall 'swallow' and 'End of File' character. It must
        be sure, that end of file causes a drop out---except for one case: The
@@ -121,7 +121,7 @@ def __delete_EOF_except_at_end_of_post_conditions(sm, EndOfFileCode):
             # This state has been beaten enough. Next one, please!
             break
 
-def __delete_BLC_except_at_end_of_post_conditions(sm, BLC):
+def __delete_BLC_except_at_end_of_post_context(sm, BLC):
     """The buffer limit code is something that **needs** to cause a drop out.
        In the drop out handling, the buffer is reloaded.
     """

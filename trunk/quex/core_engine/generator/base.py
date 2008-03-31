@@ -1,7 +1,6 @@
 from   quex.frs_py.file_in                        import error_msg
 import quex.core_engine.state_machine.parallelize as     parallelize
 from   quex.core_engine.generator.action_info     import ActionInfo
-from   quex.core_engine.state_machine.index       import get_state_machine_by_id
 import quex.core_engine.state_machine.nfa_to_dfa  as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 

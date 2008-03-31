@@ -420,7 +420,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_do(QUEX_CORE_ANALYSER_STRUCT* me) {
 
 __function_header_quex_mode_based = __function_header_common + """
 QUEX_ANALYSER_RETURN_TYPE
-quex::$$QUEX_ANALYZER_STRUCT_NAME$$__$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) {
+quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) {
     // NOTE: Different modes correspond to different analyser functions. The analyser
     //       functions are all located inside the main class as static functions. That
     //       means, they are something like 'globals'. They receive a pointer to the 

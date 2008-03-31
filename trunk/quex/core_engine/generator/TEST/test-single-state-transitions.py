@@ -16,7 +16,7 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.interval_handling import NumberSet, Interval
-from quex.core_engine.state_machine.core import StateInfo
+from quex.core_engine.state_machine.core import State
 
 import quex.core_engine.generator.languages.core         as languages
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
@@ -25,7 +25,7 @@ if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation"
     sys.exit(0)
 
-state = StateInfo()
+state = State()
 state.add_transition(NumberSet([Interval(10,20),    Interval(195,196)]),  1L)
 state.add_transition(NumberSet([Interval(51,70),    Interval(261,280)]),  2L)
 state.add_transition(NumberSet([Interval(90,100),   Interval(110,130)]),  3L)

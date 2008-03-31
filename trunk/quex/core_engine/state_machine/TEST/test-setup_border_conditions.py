@@ -4,8 +4,8 @@ import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 
-import quex.core_engine.state_machine.setup_post_condition as setup_post_context
-import quex.core_engine.state_machine.setup_pre_condition as setup_pre_context 
+import quex.core_engine.state_machine.setup_post_context as setup_post_context
+import quex.core_engine.state_machine.setup_pre_context as setup_pre_context 
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions 
 import quex.core_engine.state_machine.nfa_to_dfa as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft

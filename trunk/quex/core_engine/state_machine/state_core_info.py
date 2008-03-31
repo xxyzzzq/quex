@@ -1,5 +1,3 @@
-from   quex.core_engine.state_machine.index import map_state_combination_to_index, \
-                                                   get_state_machine_by_id
 
 StateOriginInfo_POST_CONDITION_END          = 1
 StateOriginInfo_NON_ACCEPTANCE              = 2
@@ -59,7 +57,7 @@ class StateCoreInfo:
         #      that have a post condition.      
         #
         # NOTE: By default, the function 'set_acceptance(True)' and 'set_acceptance(False)'
-        #       of class StateInfo sets the 'store_input_position_f' to True, respectively
+        #       of class State sets the 'store_input_position_f' to True, respectively
         #       false, because this is the normal case. When a post condition is to be appended
         #       the 'store_input_position_f' is to be stored manually - see the function
         #       'state_machine.post_context_append.do(...).

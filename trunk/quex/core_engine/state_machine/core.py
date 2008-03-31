@@ -8,15 +8,9 @@ import quex.core_engine.state_machine.index      as     state_machine_index
 from   quex.core_engine.state_machine.transition_map  import *
 from   quex.core_engine.state_machine.state_core_info import StateCoreInfo
 from   quex.core_engine.state_machine.origin_list     import StateOriginList
-#
-import quex.core_engine.generator.languages.core  as languages
-import quex.core_engine.generator.languages.label as languages_label
-#
-from   quex.core_engine.state_machine.index import map_state_combination_to_index, \
-                                                   get_state_machine_by_id
 
 
-class StateInfo:
+class State:
     # Information about all transitions starting from a particular state. Transitions are
     # of two types:
     #   
@@ -26,7 +20,7 @@ class StateInfo:
     #                             triggers.
     #
     # Objects of this class are to be used in class StateMachine, where a dictionary maps 
-    # from a start state index to a StateInfo-object.
+    # from a start state index to a State-object.
     #
     #####################################################################################    
     def __init__(self, AcceptanceF=False, StateMachineID=-1L, StateIndex=-1L):
@@ -64,19 +58,15 @@ class StateInfo:
     def set_acceptance(self, Value=True, LeaveStoreInputPositionF=False):
         self.core().set_acceptance_f(Value, LeaveStoreInputPositionF)
 
-    def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=None):
-        self.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 
-                           StoreInputPositionF, self.is_acceptance())
-
-    def add_origin_list(self, OriginList, StoreInputPositionFollowsAcceptanceF=True):
-        self.origins().append(OriginList, StoreInputPositionFollowsAcceptanceF, 
-                              SelfAcceptanceF=self.is_acceptance())
-                
     def mark_self_as_origin(self, StateMachineID, StateIndex):
         self.core().state_machine_id = StateMachineID
         self.core().state_index      = StateIndex
         # use the own 'core' as only origin
         self.origins().set([self.core()])
+
+    def add_origin(self, StateMachineID_or_StateOriginInfo, StateIdx=None, StoreInputPositionF=None):
+        self.origins().add(StateMachineID_or_StateOriginInfo, StateIdx, 
+                           StoreInputPositionF, self.is_acceptance())
 
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__transition_map.add_transition(Trigger, TargetStateIdx)
@@ -84,7 +74,7 @@ class StateInfo:
     def clone(self, ReplacementDictionary=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
            determined in the ReplacementDictionary."""
-        result = StateInfo()
+        result = State()
         result.__core           = deepcopy(self.__core)
         result.__transition_map = deepcopy(self.__transition_map)
         result.__origin_list    = deepcopy(self.__origin_list)
@@ -174,12 +164,11 @@ class StateMachine:
         if InitStateIndex == None: self.init_state_index = state_machine_index.get()
         else:                      self.init_state_index = InitStateIndex
             
-        # State Index => StateInfo (information about what triggers
-        #                           transition to what target state).
-        self.states = { self.init_state_index: StateInfo(AcceptanceF) }        
+        # State Index => State (information about what triggers transition to what target state).
+        self.states = { self.init_state_index: State(AcceptanceF) }        
 
-        # Register this state machine and get a unique id for it
-        id = state_machine_index.register_state_machine(self)
+        # get a unique state machine id 
+        id = state_machine_index.get_state_machine_id()
 
         # Setup core information
         if Core != None: 
@@ -527,7 +516,7 @@ class StateMachine:
         else:
             new_state_index = StateIdx
 
-        self.states[new_state_index] = StateInfo(AcceptanceF)
+        self.states[new_state_index] = State(AcceptanceF)
         return new_state_index
         
     def add_transition(self, StartStateIdx, TriggerSet, TargetStateIdx = None, AcceptanceF = False):
@@ -535,7 +524,7 @@ class StateMachine:
 
            TriggerSet can be of different types: ... see add_transition()
            
-           (see comment on 'StateInfo::add_transition)
+           (see comment on 'State::add_transition)
 
            RETURNS: The target state index.
         """
@@ -547,8 +536,8 @@ class StateMachine:
 
         # If target state is undefined (None) then a new one has to be created
         if TargetStateIdx == None:                       TargetStateIdx = state_machine_index.get()
-        if self.states.has_key(StartStateIdx) == False:  self.states[StartStateIdx]  = StateInfo()        
-        if self.states.has_key(TargetStateIdx) == False: self.states[TargetStateIdx] = StateInfo()
+        if self.states.has_key(StartStateIdx) == False:  self.states[StartStateIdx]  = State()        
+        if self.states.has_key(TargetStateIdx) == False: self.states[TargetStateIdx] = State()
         if AcceptanceF:                                  self.states[TargetStateIdx].set_acceptance(True)
 
         self.states[StartStateIdx].add_transition(TriggerSet, TargetStateIdx)
@@ -560,11 +549,11 @@ class StateMachine:
 
         # create new state if index does not exist
         if not self.states.has_key(StartStateIdx):
-            self.states[StartStateIdx] = StateInfo()
+            self.states[StartStateIdx] = State()
         if TargetStateIdx == None:
             TargetStateIdx = self.create_new_state(AcceptanceF=RaiseAcceptanceF)
         elif not self.states.has_key(TargetStateIdx):
-            self.states[TargetStateIdx] = StateInfo()
+            self.states[TargetStateIdx] = State()
 
         # add the epsilon target state
         self.states[StartStateIdx].transitions().add_epsilon_target_state(TargetStateIdx)     

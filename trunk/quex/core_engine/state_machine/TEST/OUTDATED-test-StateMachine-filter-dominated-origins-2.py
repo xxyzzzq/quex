@@ -7,7 +7,7 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from quex.core_engine.state_machine.index import get_state_machine_by_id, \
                                 state_machine_ranking_db_register
-from quex.core_engine.state_machine.core  import StateMachine, StateInfo, StateOriginInfo
+from quex.core_engine.state_machine.core  import StateMachine, State, StateOriginInfo
 
 if "--hwut-info" in sys.argv:
     print "Ranking of State Machines: Filter Dominated Origins - Part 2"
@@ -81,7 +81,7 @@ StateMachine(InitStateIndex=106L, AcceptanceF=False)
 # add_priority(6L, 3L)   
 
 # (1) only acceptance and non-acceptance states    
-si = StateInfo()    
+si = State()    
 add_origin(1, True)    
 add_origin(4, True)    
 add_origin(0, True)    
@@ -102,7 +102,7 @@ si.origins().filter_dominated()
 print_this("Only Acceptance/Non-Acceptance - After")
 
 # (2) acceptance and pre-conditioned states
-si = StateInfo()    
+si = State()    
 add_origin(1, True, PreConditionedStateMachineID=1L)    
 add_origin(4, True)    
 add_origin(0, True, PreConditionedStateMachineID=1L)    
@@ -125,7 +125,7 @@ si.origins().filter_dominated()
 print_this("Acceptance and Pre-Conditioned Acceptance - After")
 
 # (3) acceptance and post-conditioned states
-si = StateInfo()    
+si = State()    
 add_origin(1, True, PostConditionedAcceptanceF=1L)    
 add_origin(4, True)    
 add_origin(0, True, PostConditionedAcceptanceF=1L)    

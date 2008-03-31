@@ -231,11 +231,11 @@ namespace quex {
     extern void
     Simple_on_entry_exit_null_function(Simple*, const quex_mode*);
 
-    extern     QUEX_ANALYSER_RETURN_TYPE Simple__ONE_AND_ONLY_analyser_function(Simple*);
+    extern     QUEX_ANALYSER_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(Simple*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-    extern     bool Simple__ONE_AND_ONLY_has_base(const quex_mode*);
-    extern     bool Simple__ONE_AND_ONLY_has_entry_from(const quex_mode*);
-    extern     bool Simple__ONE_AND_ONLY_has_exit_to(const quex_mode*);
+    extern     bool Simple_ONE_AND_ONLY_has_base(const quex_mode*);
+    extern     bool Simple_ONE_AND_ONLY_has_entry_from(const quex_mode*);
+    extern     bool Simple_ONE_AND_ONLY_has_exit_to(const quex_mode*);
 #endif
 
 
@@ -488,11 +488,11 @@ namespace quex {
         //
         token_queue<token>*   _token_queue;
         // (*) All Modes are Friends _____________________________________________________
-        friend     QUEX_ANALYSER_RETURN_TYPE Simple__ONE_AND_ONLY_analyser_function(Simple*);
+        friend     QUEX_ANALYSER_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(Simple*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-        friend     bool Simple__ONE_AND_ONLY_has_base(const quex_mode*);
-        friend     bool Simple__ONE_AND_ONLY_has_entry_from(const quex_mode*);
-        friend     bool Simple__ONE_AND_ONLY_has_exit_to(const quex_mode*);
+        friend     bool Simple_ONE_AND_ONLY_has_base(const quex_mode*);
+        friend     bool Simple_ONE_AND_ONLY_has_entry_from(const quex_mode*);
+        friend     bool Simple_ONE_AND_ONLY_has_exit_to(const quex_mode*);
 #endif
 
   
@@ -636,16 +636,16 @@ namespace quex {
 
         ONE_AND_ONLY.id   = LEX_ID_ONE_AND_ONLY;
         ONE_AND_ONLY.name = "ONE_AND_ONLY";
-        ONE_AND_ONLY.analyser_function = Simple__ONE_AND_ONLY_analyser_function;
+        ONE_AND_ONLY.analyser_function = Simple_ONE_AND_ONLY_analyser_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
         ONE_AND_ONLY.on_indentation = Simple_on_indentation_null_function;
 #    endif
         ONE_AND_ONLY.on_entry       = Simple_on_entry_exit_null_function;
         ONE_AND_ONLY.on_exit        = Simple_on_entry_exit_null_function;
 #    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-        ONE_AND_ONLY.has_base       = Simple__ONE_AND_ONLY_has_base;
-        ONE_AND_ONLY.has_entry_from = Simple__ONE_AND_ONLY_has_entry_from;
-        ONE_AND_ONLY.has_exit_to    = Simple__ONE_AND_ONLY_has_exit_to;
+        ONE_AND_ONLY.has_base       = Simple_ONE_AND_ONLY_has_base;
+        ONE_AND_ONLY.has_entry_from = Simple_ONE_AND_ONLY_has_entry_from;
+        ONE_AND_ONLY.has_exit_to    = Simple_ONE_AND_ONLY_has_exit_to;
 #    endif
         mode_db[LEX_ID_ONE_AND_ONLY] = &ONE_AND_ONLY;
 
@@ -1372,7 +1372,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     #endif  
     
     QUEX_ANALYSER_RETURN_TYPE
-    quex::Simple__ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) {
+    quex::Simple_ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) {
         // NOTE: Different modes correspond to different analyser functions. The analyser
         //       functions are all located inside the main class as static functions. That
         //       means, they are something like 'globals'. They receive a pointer to the 
@@ -3434,14 +3434,14 @@ namespace quex {
     {}
 
     void
-    Simple__ONE_AND_ONLY_on_entry(Simple* me, const quex_mode* FromMode) {
+    Simple_ONE_AND_ONLY_on_entry(Simple* me, const quex_mode* FromMode) {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
 #endif
 
     }
     void
-    Simple__ONE_AND_ONLY_on_exit(Simple* me, const quex_mode* ToMode)  {
+    Simple_ONE_AND_ONLY_on_exit(Simple* me, const quex_mode* ToMode)  {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #endif
@@ -3450,22 +3450,22 @@ __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    Simple__ONE_AND_ONLY_on_indentation(Simple* me, const int Indentation) {
+    Simple_ONE_AND_ONLY_on_indentation(Simple* me, const int Indentation) {
 __quex_assert(Indentation >= 0);
     }
 #endif
 
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
-    Simple__ONE_AND_ONLY_has_base(const quex_mode* Mode) {
+    Simple_ONE_AND_ONLY_has_base(const quex_mode* Mode) {
     return false;
     }
     bool
-    Simple__ONE_AND_ONLY_has_entry_from(const quex_mode* Mode) {
+    Simple_ONE_AND_ONLY_has_entry_from(const quex_mode* Mode) {
     return true; // default
     }
     bool
-    Simple__ONE_AND_ONLY_has_exit_to(const quex_mode* Mode) {
+    Simple_ONE_AND_ONLY_has_exit_to(const quex_mode* Mode) {
     return true; // default
     }
 #endif    
