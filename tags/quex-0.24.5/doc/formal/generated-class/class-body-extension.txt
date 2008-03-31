@@ -1,0 +1,38 @@
+Instead of deriving a class from the lexical analyser, it is sometimes more
+convenient to simply paste some more content into the class body. This can be
+done using the keyword `body` outside the mode definitions. The following
+code, for example, pastes the definition of an integer vector into the class'
+body, so that it can later be used to keep track of indentation columns.
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+body {
+  std::vector<int>    indentation_stack;
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note, that the namespace prefix `std::` is used. This is because the class
+definition's body appears inside a header file and in header files one better
+uses absolute namings, rather than abbreviating using namespaces. The newly
+defined member can then be used inside any pattern action or event handler via
+access of the `self` reference, e.g.
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode SOMETHING {
+   ...
+   on_indentation {
+      ...
+      // close any block that has higher indentation
+      while( Indentation < self.indentation_stack.back() ) {
+          // send token that indicates: block-end
+          self.send(TOKEN_END_OF_BLOCK);
+          // cut indentation block from list
+          self.indentation_stack.pop_back();
+      }
+      
+   }
+   ...
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

@@ -1,0 +1,21 @@
+Section \ref{sec:practical/patterns} already discussed the format of the
+pattern file. In this section, it is described how to specify patterns by means
+of regular expressions. The regular expression syntax follows the scheme of
+what is usually called _traditional UNIX syntax_ \cite{}, includes elements of
+_extended POSIX regular expressions_ \cite{IEEE POSIX Standard 1003.2} and
+_POSIX bracket expressions_ \cite{}. This facilitates the migration from and to
+other lexical analyzer generators and test environments. Additionally, quex
+provides support for _Unicode Propperties_. A compliance to _Unicode Regular
+Expressions_ \cite{Unicode 5.0 Technical Report Standard $$#18$$} is currently
+not targeted, though, because this expressive power is usually not required for
+compiler generation.
+
+Nevertheless, quex provides features that, for example, flex does not. If it is
+intended to maintain compatibility of regular expressions with flex, then
+please refer to the flex manual \cite{}, section 'Patterns' and do not use
+quex-specific constructs. This section discusses pure quex syntax. The
+explanation is divided into the consideration of context-free expressions and
+context-dependent expressions.
+
+
+     
