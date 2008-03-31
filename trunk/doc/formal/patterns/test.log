@@ -1,0 +1,237 @@
+This is TeX, Version 3.14159 (Web2C 7.4.5) (format=latex 2006.5.8)  19 MAR 2007 11:59
+**test.tex
+(./test.tex
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/usr/share/texmf/tex/latex/koma-script/scrbook.cls
+Document Class: scrbook 2003/01/31 v2.9n LaTeX2e KOMA document class
+(/usr/share/texmf/tex/latex/koma-script/scrlfile.sty
+Package: scrlfile 2003/01/31 v2.9n LaTeX2e KOMA package
+
+Package scrlfile, 2003/01/31 v2.9n LaTeX2e KOMA package
+                  Copyright (C) Markus Kohm
+
+) (/usr/share/texmf/tex/latex/base/bk11.clo
+File: bk11.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+(/usr/share/texmf/tex/latex/koma-script/typearea.sty
+Package: typearea 2003/01/31 v2.9n LaTeX2e KOMA package
+
+Package typearea, 2003/01/31 v2.9n LaTeX2e KOMA package
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-2002
+
+\ta@bcor=\skip41
+\ta@div=\count79
+\ta@hblk=\skip42
+\ta@vblk=\skip43
+\ta@temp=\skip44
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 10
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50793pt
+(typearea)              \textwidth      = 418.25555pt
+(typearea)              DIV-departure   = -6/100
+(typearea)              \evensidemargin = 47.2316pt
+(typearea)              \oddsidemargin  = -12.5192pt
+(typearea)             \paperheight     = 845.04694pt
+(typearea)              \textheight     = 595.80026pt
+(typearea)              \topmargin      = -25.16531pt
+(typearea)              \headheight     = 17.0pt
+(typearea)              \headsep        = 20.40001pt
+(typearea)              \topskip        = 11.0pt
+(typearea)              \footskip       = 47.60002pt
+(typearea)              \baselineskip   = 13.6pt
+(typearea)              on input line 625.
+)
+\c@part=\count80
+\c@chapter=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\c@figure=\count87
+\c@table=\count88
+\abovecaptionskip=\skip45
+\belowcaptionskip=\skip46
+\c@pti@nb@sid@b@x=\box26
+\bibindent=\dimen102
+) (../../header.tex (/usr/share/texmf/tex/latex/listings/listings.sty
+Package: listings 2002/04/01 1.0 (Carsten Heinz)
+
+(/usr/share/texmf/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+\lst@mode=\count89
+\lst@gtempboxa=\box27
+\lst@token=\toks15
+\lst@length=\count90
+\lst@currlwidth=\dimen103
+\lst@column=\count91
+\lst@pos=\count92
+\lst@lostspace=\dimen104
+\lst@width=\dimen105
+\lst@newlines=\count93
+\lst@lineno=\count94
+\c@lstlisting=\count95
+\lst@maxwidth=\dimen106
+
+(/usr/share/texmf/tex/latex/listings/lstpatch.sty
+File: lstpatch.sty 2002/10/13 1.0i (Carsten Heinz)
+)
+(/usr/share/texmf/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2002/04/01 1.0 (Carsten Heinz)
+\c@lstnumber=\count96
+\lst@skipnumbers=\count97
+\lst@framebox=\box28
+)
+(/usr/share/texmf/tex/latex/listings/listings.cfg
+File: listings.cfg 2002/04/01 v1.0 listings configuration
+))
+(/usr/share/texmf/tex/latex/graphics/color.sty
+Package: color 1999/02/16 v1.0i Standard LaTeX Color (DPC)
+
+(/usr/share/texmf/tex/latex/config/color.cfg
+File: color.cfg 2001/08/31 v1.1 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: dvips.def on input line 125.
+
+(/usr/share/texmf/tex/latex/graphics/dvips.def
+File: dvips.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+)
+(/usr/share/texmf/tex/latex/graphics/dvipsnam.def
+File: dvipsnam.def 1999/02/16 v3.0i Driver-dependant file (DPC,SPQR)
+))
+\@input{frs-showpic-pdf.aux}
+\openout2 = `frs-showpic-pdf.aux'.
+
+(/home/fschaef/prj/Documents/TeX-Library/frs-showpic-pdf.tex
+(/usr/share/texmf/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2001/08/31 v1.1 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: dvips.def on input line 80.
+)
+\Gin@req@height=\dimen107
+\Gin@req@width=\dimen108
+)
+(/usr/share/texmf/tex/latex/misc/rotating.sty
+Package: rotating 1997/09/26, v2.13 Rotation package
+
+(/usr/share/texmf/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\c@r@tfl@t=\count98
+\rot@float@box=\box29
+)
+\xtextwidth=\skip47
+\xcolwidth=\skip48
+\xhalfcolwidth=\skip49
+\xthirdcolwidth=\skip50
+)
+(/usr/share/texmf/tex/latex/listings/lstlang1.sty
+File: lstlang1 2002/07/31 v1.0d listings language file
+)
+(/usr/share/texmf/tex/latex/listings/lstlang1.sty
+File: lstlang1 2002/07/31 v1.0d listings language file
+)
+(/usr/share/texmf/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2002/04/01 1.0 (Carsten Heinz)
+)) (./test.aux)
+\openout1 = `test.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+ (./intro.tex
+
+LaTeX Warning: Reference `sec:practical/patterns' on page 1 undefined on input 
+line 1.
+
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 3.
+) (./context-free.tex
+LaTeX Font Info:    Try loading font information for OMS+cmss on input line 14.
+
+LaTeX Font Info:    No file OMScmss.fd. on input line 14.
+
+
+LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
+(Font)              using `OMS/cmsy/m/n' instead
+(Font)              for symbol `textbullet' on input line 14.
+
+
+Overfull \vbox (9.99599pt too high) has occurred while \output is active []
+
+
+[1
+
+
+
+]) (./context-free-pitfalls.tex)
+Overfull \vbox (9.99599pt too high) has occurred while \output is active []
+
+
+[2] (./context-dependent.tex
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 42.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 42.
+) (./context-dependent-pitfalls.tex
+Overfull \vbox (9.99599pt too high) has occurred while \output is active []
+
+
+[3]
+
+LaTeX Warning: Reference `formal/patterns/context-free-pitfalls' on page 4 unde
+fined on input line 41.
+
+)
+Overfull \vbox (9.99599pt too high) has occurred while \output is active []
+
+
+[4] (./test.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 2550 strings out of 95846
+ 35273 string characters out of 1195952
+ 99925 words of memory out of 1000001
+ 5461 multiletter control sequences out of 10000+50000
+ 12187 words of font info for 39 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 37i,8n,68p,249b,334s stack positions out of 5500i,500n,5000p,200000b,5000s
+
+Output written on test.dvi (4 pages, 14796 bytes).

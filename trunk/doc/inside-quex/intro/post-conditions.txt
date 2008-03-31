@@ -1,0 +1,49 @@
+A post-condition is a condition on the character stream after the 'real'
+pattern has matched. When the 'real' pattern notifies a match at position X,
+the analyser needs to proceed in the character stream until it
+determines whether the subsequent characters match the post-condition.
+If the post-condition is met it reports 'acceptance'---however, the
+lexical analyser's focus is put back to position X.	
+        
+[[fig:example-post-condition]]
+.State machine matching a post condition pattern.
+image::figures/post-conditions-patterns.pdf[]
+
+An example of a post-condition is shown in figure
+<<fig:example-post-condition, style=ref>>.  The rule for this pattern is that when a
+number comes in that is followed by a currency, then it has to be reported as
+{\it amount}, rather than a number. In this example there are two currencies:
+EUR for 'Euro' and USD for 'US-Dollars'. When a number is matched---with or
+without a floating point---then we reached the position to which we want to step
+back, if it was an {\it amount}. These acceptance states have a dashed inner
+circle, to indicate that the input position has to be marked, but we're not
+finished yet. Only after one of the currencies $$EUR$$ or $$USD$$ appeared,
+finally, an acceptance state is reached. But, the following analysis
+needs to start at the position, backwards, where the number matched. 
+
+[[fig:example-post-condition-sequence]]
+.Sequence of analysing steps detecting a post-conditioned pattern.
+image::figures/post-conditions-patterns-sequence.pdf[]
+
+Figure <<fig:example-post-condition-sequence, style=ref>> displays the sequence of
+actions for an incoming character stream.  When the $$12$$ has matched as
+a number the input position '2' is stored but the analysis continues. When
+$$USD$$ has matched it is now determined, that the previous number was
+indeed an amount.  A token 'AMOUNT(12)' can be reported. But, but one needs to
+go back to the position where the amount ended, i.e. to position '2'. From
+there, it detects a currency $$USD$$ and reports a token
+'CURRENCY("USD")'. The same thing happens now with the number $$45.10$$
+and the currency $$EUR$$ in the remainder of the stream.
+
+Post-conditions are implemented by setting a 'store-input-position mark' at the
+states where the 'real' pattern matches. The end of the post-condition is an
+acceptance state. Figure <<fig:post-conditions-merged, style=ref>>
+depicts the states of the amount/currency pattern webbed into a 
+state machine that contains other patterns. The process of combining
+and optimizing the state machine needs to make sure, that the information
+about saving input positions and acceptance states remains---here indicated
+as notes on a flag.
+
+[[fig:post-conditions-merged]]
+.States of a post-conditioned pattern in the combined state machine.
+image::figures/post-conditions-patterns-merged[]
