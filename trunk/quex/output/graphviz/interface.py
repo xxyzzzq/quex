@@ -14,7 +14,7 @@ class Generator(GeneratorBase):
         # -- check if graphics format is supported
         supported_format_list = get_supported_graphic_formats()
         if GraphicFormat not in supported_format_list:
-            error_msg("Graphic format '%s' not supported.\n" + \
+            error_msg("Graphic format '%s' not supported.\n" % GraphicFormat + \
                       get_supported_graphic_format_description())
 
         self.graphic_format = GraphicFormat

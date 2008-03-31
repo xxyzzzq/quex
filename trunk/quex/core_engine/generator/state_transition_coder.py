@@ -78,7 +78,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
 
     # -- in case of the init state, the end of file character has to be checked.
     if EndOfFile_Code != None and BackwardLexingF == False:
-        txt += "$if $input $== 0x%X $then\n" % EndOfFile_Code
+        txt += "$if %s $then\n" % LanguageDB["$=="]("input", "0x%X" % EndOfFile_Code)
 
         txt += "    /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state*/\n"
         txt += "    %s" % LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
@@ -171,10 +171,8 @@ def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry,
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt = "%s" % LanguageDB["$transition"](StateMachineName, 
-                                           StateIdx,
-                                           target_state_index,
-                                           BackwardLexingF) 
+    txt = LanguageDB["$transition"](StateMachineName, StateIdx, target_state_index, 
+                                    BackwardLexingF) 
     txt += "    $/* %s $*/" % interval.get_utf8_string()
 
     if IndentF: txt = "    " + txt.replace("\n", "\n    ")
@@ -198,18 +196,18 @@ def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
     second_interval = second[0]
 
     if   first_interval.size() == 1: 
-        txt = "$if input $== %s $then\n" % repr(first_interval.begin)
+        txt = LanguageDB["$if =="](repr(first_interval.begin))
     elif second_interval.size() == 1: 
-        txt = "$if input $!= %s $then\n" % repr(second_interval.begin)
+        txt = LanguageDB["$if !="](repr(second_interval.begin))
     else:                   
-        txt = "$if input $< %s $then\n"  % repr(second_interval.begin)
+        txt = LanguageDB["$if <"](repr(second_interval.begin))
 
     txt += __create_transition_code(StateMachineName, StateIdx, state, first, 
                                     LanguageDB, BackwardLexingF, IndentF=True)
-    txt += "$end$else\n"
+    txt += LanguageDB["$endif-else"]
     txt += __create_transition_code(StateMachineName, StateIdx, state, second, 
                                     LanguageDB, BackwardLexingF, IndentF=True)
-    txt += "$end\n" 
+    txt += LanguageDB["$end-else"]
 
     return txt
 
@@ -234,15 +232,15 @@ def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
 
     # (*) test: inner character is matched => goto its target
     #           else:                      => goto alternative target
-    txt = "$if input $== %s $then\n" % repr(TriggerMap[1][0].begin)
+    txt = LanguageDB["$if =="](repr(TriggerMap[1][0].begin))
     txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[1], 
                                     LanguageDB, BackwardLexingF, IndentF=True)
-    txt += "$end$else\n"
+    txt += LanguageDB["$endif-else"]
     # TODO: Add somehow a mechanism to report that here the intervals 0 **and** 1 are triggered
     #       (only for the comments in the generated code)
     txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
                                     LanguageDB, BackwardLexingF, IndentF=True)
-    txt += "$end\n" 
+    txt += LanguageDB["$end-else"]
     return txt
 
 def __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, StateMachineName, StateIdx, state, BackwardLexingF):
@@ -251,13 +249,13 @@ def __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, StateMachineNa
     assert middle[0].begin >= 0, \
            "code generation: error cannot split intervals at negative code points."
 
-    txt  = "$if input $< %s $then\n" % repr(middle[0].begin)
+    txt =  LanguageDB["$if <"](repr(middle[0].begin))
     txt += __get_code(state,TriggerMap[:MiddleTrigger_Idx], LanguageDB, 
                       StateMachineName, StateIdx, BackwardLexingF)
-    txt += "$end$else\n"
+    txt += LanguageDB["$endif-else"]
     txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
                       StateMachineName, StateIdx, BackwardLexingF)
-    txt += "$end\n" 
+    txt += LanguageDB["$end-else"]
 
     return txt
 

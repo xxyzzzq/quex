@@ -731,7 +731,7 @@ class NumberSet:
         if LowestInterval_Idx == UppestInterval_Idx \
            and middle.begin == middle.end - 1:
             # middle == one element
-            txt += "$if input $== %s $then\n" % repr(middle.begin)
+            txt += "$if %s $then\n" % LanguageDB["$=="]("input", repr(middle.begin))
             txt += "    $return_true\n"
             txt += "$end\n"
             txt += "$return_false\n"
