@@ -1,0 +1,20 @@
+Section \ref{sec:basics/token-queue} elaborated on the idea that the lexical
+analyser communicates tokens to the user. In the {\quex} generated lexical
+analyser the tokens are stored in a token-queue before they are delivered to
+the caller of {\tt get\_token()}. Inside the pattern-action the {\tt send}
+function group allows to send tokens:
+
+\begin{lstlisting}
+        void  &      send(const token& That);                             
+        void  &      send(const token::id_type TokenID);                 
+        void  &      send_n(const int N, const token::id_type TokenID);   
+        void  &      send(const token::id_type TokenID, const char* Text);
+        void  &      send(const token::id_type TokenID, const int Number1);
+\end{lstlisting}
+
+Figure \ref{fig:token-queue}, page \pageref{fig:token-queue}, displayed a sequence diagram depicting the
+communication of tokens. Using the {\tt send} function group the writer of
+pattern-action pairs does not need to care about the {\tt get\_token()}
+function call. He sends tokens and leaves the responsibility of delivery
+to the engine.
+
