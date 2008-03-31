@@ -1529,101 +1529,101 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_249_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 33 ) {
-                if( input < 13 ) {
-                    if( input < 9 ) {
+        if( input < 95) {
+            if( input < 33) {
+                if( input < 13) {
+                    if( input < 9) {
                         goto STATE_249_DROP_OUT;    // [-oo, \8] 
-                    }else {
-                        if( input < 11 ) {
+                    } else {
+                        if( input < 11) {
                             goto STATE_251;    // ['\t', '\n'] 
-                        }else {
+                        } else {
                             goto STATE_249_DROP_OUT;    // [\11, \12] 
                         }
                     }
-                }else {
-                    if( input < 14 ) {
+                } else {
+                    if( input < 14) {
                         goto STATE_251;    // '\r' 
-                    }else {
-                        if( input != 32 ) {
+                    } else {
+                        if( input != 32) {
                             goto STATE_249_DROP_OUT;    // [\14, \31] 
-                        }else {
+                        } else {
                             goto STATE_251;    // ' ' 
                         }
                     }
                 }
-            }else {
-                if( input < 59 ) {
-                    if( input < 48 ) {
+            } else {
+                if( input < 59) {
+                    if( input < 48) {
                         goto STATE_249_DROP_OUT;    // [\33, \47] 
-                    }else {
-                        if( input != 58 ) {
+                    } else {
+                        if( input != 58) {
                             goto STATE_259;    // ['0', '9'] 
-                        }else {
+                        } else {
                             goto STATE_249_DROP_OUT;    // ':' 
                         }
                     }
-                }else {
-                    if( input < 65 ) {
-                        if( input == 59 ) {
+                } else {
+                    if( input < 65) {
+                        if( input == 59) {
                             goto STATE_258;    // ';' 
-                        }else {
+                        } else {
                             goto STATE_249_DROP_OUT;    // ['<', '@'] 
                         }
-                    }else {
-                        if( input < 91 ) {
+                    } else {
+                        if( input < 91) {
                             goto STATE_255;    // ['A', 'Z'] 
-                        }else {
+                        } else {
                             goto STATE_249_DROP_OUT;    // ['[', '^'] 
                         }
                     }
                 }
             }
-        }else {
-            if( input < 106 ) {
-                if( input < 100 ) {
-                    if( input < 96 ) {
+        } else {
+            if( input < 106) {
+                if( input < 100) {
+                    if( input < 96) {
                         goto STATE_255;    // '_' 
-                    }else {
-                        if( input == 96 ) {
+                    } else {
+                        if( input == 96) {
                             goto STATE_249_DROP_OUT;    // '`' 
-                        }else {
+                        } else {
                             goto STATE_255;    // ['a', 'c'] 
                         }
                     }
-                }else {
-                    if( input < 102 ) {
-                        if( input == 100 ) {
+                } else {
+                    if( input < 102) {
+                        if( input == 100) {
                             goto STATE_252;    // 'd' 
-                        }else {
+                        } else {
                             goto STATE_250;    // 'e' 
                         }
-                    }else {
-                        if( input != 105 ) {
+                    } else {
+                        if( input != 105) {
                             goto STATE_255;    // ['f', 'h'] 
-                        }else {
+                        } else {
                             goto STATE_254;    // 'i' 
                         }
                     }
                 }
-            }else {
-                if( input < 123 ) {
-                    if( input == 115 ) {
+            } else {
+                if( input < 123) {
+                    if( input == 115) {
                         goto STATE_257;    // 's' 
-                    }else {
+                    } else {
                         goto STATE_255;    // ['j', 'r'] 
                     }
-                }else {
-                    if( input < 125 ) {
-                        if( input == 123 ) {
+                } else {
+                    if( input < 125) {
+                        if( input == 123) {
                             goto STATE_253;    // '{' 
-                        }else {
+                        } else {
                             goto STATE_249_DROP_OUT;    // '|' 
                         }
-                    }else {
-                        if( input == 125 ) {
+                    } else {
+                        if( input == 125) {
                             goto STATE_256;    // '}' 
-                        }else {
+                        } else {
                             goto STATE_249_DROP_OUT;    // ['~', oo] 
                         }
                     }
@@ -1633,6 +1633,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_249_DROP_OUT:
         if( input == 0x1A ) {
+    
             /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state*/
             goto TERMINAL_END_OF_STREAM;
         }
@@ -1670,38 +1671,38 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_257_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 97 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 97) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_257_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input < 95 ) {
+            } else {
+                if( input < 95) {
                     goto STATE_257_DROP_OUT;    // ['[', '^'] 
-                }else {
-                    if( input == 95 ) {
+                } else {
+                    if( input == 95) {
                         goto STATE_255;    // '_' 
-                    }else {
+                    } else {
                         goto STATE_257_DROP_OUT;    // '`' 
                     }
                 }
             }
-        }else {
-            if( input < 116 ) {
-                if( input == 101 ) {
+        } else {
+            if( input < 116) {
+                if( input == 101) {
                     goto STATE_260;    // 'e' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'd'] 
                 }
-            }else {
-                if( input < 117 ) {
+            } else {
+                if( input < 117) {
                     goto STATE_261;    // 't' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['u', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_257_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -1745,12 +1746,12 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_259_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 48 ) {
+        if( input < 48) {
             goto STATE_259_DROP_OUT;    // [-oo, \47] 
-        }else {
-            if( input < 58 ) {
+        } else {
+            if( input < 58) {
                 goto STATE_259;    // ['0', '9'] 
-            }else {
+            } else {
                 goto STATE_259_DROP_OUT;    // [':', oo] 
             }
         }
@@ -1777,34 +1778,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_260_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_260_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_260_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 110 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 110) {
+                if( input == 96) {
                     goto STATE_260_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'm'] 
                 }
-            }else {
-                if( input < 111 ) {
+            } else {
+                if( input < 111) {
                     goto STATE_266;    // 'n' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['o', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_260_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -1833,34 +1834,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_261_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_261_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_261_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 114 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 114) {
+                if( input == 96) {
                     goto STATE_261_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'q'] 
                 }
-            }else {
-                if( input < 115 ) {
+            } else {
+                if( input < 115) {
                     goto STATE_262;    // 'r' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['s', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_261_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -1889,34 +1890,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_262_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_262_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_262_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 117 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 117) {
+                if( input == 96) {
                     goto STATE_262_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 't'] 
                 }
-            }else {
-                if( input < 118 ) {
+            } else {
+                if( input < 118) {
                     goto STATE_263;    // 'u' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['v', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_262_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -1945,34 +1946,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_263_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_263_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_263_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 99 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 99) {
+                if( input == 96) {
                     goto STATE_263_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'b'] 
                 }
-            }else {
-                if( input < 100 ) {
+            } else {
+                if( input < 100) {
                     goto STATE_264;    // 'c' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['d', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_263_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2001,34 +2002,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_264_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_264_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_264_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 116 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 116) {
+                if( input == 96) {
                     goto STATE_264_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 's'] 
                 }
-            }else {
-                if( input < 117 ) {
+            } else {
+                if( input < 117) {
                     goto STATE_265;    // 't' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['u', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_264_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2057,27 +2058,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_265_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
+        if( input < 95) {
+            if( input < 65) {
                 goto STATE_265_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
+            } else {
+                if( input < 91) {
                     goto STATE_255;    // ['A', 'Z'] 
-                }else {
+                } else {
                     goto STATE_265_DROP_OUT;    // ['[', '^'] 
                 }
             }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
+        } else {
+            if( input < 97) {
+                if( input == 95) {
                     goto STATE_255;    // '_' 
-                }else {
+                } else {
                     goto STATE_265_DROP_OUT;    // '`' 
                 }
-            }else {
-                if( input < 123 ) {
+            } else {
+                if( input < 123) {
                     goto STATE_255;    // ['a', 'z'] 
-                }else {
+                } else {
                     goto STATE_265_DROP_OUT;    // ['{', oo] 
                 }
             }
@@ -2105,34 +2106,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_266_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_266_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_266_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 100 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 100) {
+                if( input == 96) {
                     goto STATE_266_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'c'] 
                 }
-            }else {
-                if( input < 101 ) {
+            } else {
+                if( input < 101) {
                     goto STATE_267;    // 'd' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['e', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_266_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2161,27 +2162,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_267_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
+        if( input < 95) {
+            if( input < 65) {
                 goto STATE_267_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
+            } else {
+                if( input < 91) {
                     goto STATE_255;    // ['A', 'Z'] 
-                }else {
+                } else {
                     goto STATE_267_DROP_OUT;    // ['[', '^'] 
                 }
             }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
+        } else {
+            if( input < 97) {
+                if( input == 95) {
                     goto STATE_255;    // '_' 
-                }else {
+                } else {
                     goto STATE_267_DROP_OUT;    // '`' 
                 }
-            }else {
-                if( input < 123 ) {
+            } else {
+                if( input < 123) {
                     goto STATE_255;    // ['a', 'z'] 
-                }else {
+                } else {
                     goto STATE_267_DROP_OUT;    // ['{', oo] 
                 }
             }
@@ -2209,34 +2210,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_268_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_268_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_268_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 116 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 116) {
+                if( input == 96) {
                     goto STATE_268_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 's'] 
                 }
-            }else {
-                if( input < 117 ) {
+            } else {
+                if( input < 117) {
                     goto STATE_269;    // 't' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['u', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_268_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2265,27 +2266,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_269_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
+        if( input < 95) {
+            if( input < 65) {
                 goto STATE_269_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
+            } else {
+                if( input < 91) {
                     goto STATE_255;    // ['A', 'Z'] 
-                }else {
+                } else {
                     goto STATE_269_DROP_OUT;    // ['[', '^'] 
                 }
             }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
+        } else {
+            if( input < 97) {
+                if( input == 95) {
                     goto STATE_255;    // '_' 
-                }else {
+                } else {
                     goto STATE_269_DROP_OUT;    // '`' 
                 }
-            }else {
-                if( input < 123 ) {
+            } else {
+                if( input < 123) {
                     goto STATE_255;    // ['a', 'z'] 
-                }else {
+                } else {
                     goto STATE_269_DROP_OUT;    // ['{', oo] 
                 }
             }
@@ -2313,34 +2314,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_270_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_270_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_270_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 117 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 117) {
+                if( input == 96) {
                     goto STATE_270_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 't'] 
                 }
-            }else {
-                if( input < 118 ) {
+            } else {
+                if( input < 118) {
                     goto STATE_271;    // 'u' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['v', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_270_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2369,34 +2370,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_271_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_271_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_271_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 98 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 98) {
+                if( input == 96) {
                     goto STATE_271_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // 'a' 
                 }
-            }else {
-                if( input < 99 ) {
+            } else {
+                if( input < 99) {
                     goto STATE_272;    // 'b' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['c', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_271_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2425,34 +2426,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_272_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_272_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_272_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 108 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 108) {
+                if( input == 96) {
                     goto STATE_272_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'k'] 
                 }
-            }else {
-                if( input < 109 ) {
+            } else {
+                if( input < 109) {
                     goto STATE_273;    // 'l' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['m', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_272_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2481,34 +2482,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_273_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_273_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_273_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 101 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 101) {
+                if( input == 96) {
                     goto STATE_273_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'd'] 
                 }
-            }else {
-                if( input < 102 ) {
+            } else {
+                if( input < 102) {
                     goto STATE_274;    // 'e' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['f', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_273_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2537,27 +2538,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_274_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
+        if( input < 95) {
+            if( input < 65) {
                 goto STATE_274_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
+            } else {
+                if( input < 91) {
                     goto STATE_255;    // ['A', 'Z'] 
-                }else {
+                } else {
                     goto STATE_274_DROP_OUT;    // ['[', '^'] 
                 }
             }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
+        } else {
+            if( input < 97) {
+                if( input == 95) {
                     goto STATE_255;    // '_' 
-                }else {
+                } else {
                     goto STATE_274_DROP_OUT;    // '`' 
                 }
-            }else {
-                if( input < 123 ) {
+            } else {
+                if( input < 123) {
                     goto STATE_255;    // ['a', 'z'] 
-                }else {
+                } else {
                     goto STATE_274_DROP_OUT;    // ['{', oo] 
                 }
             }
@@ -2585,34 +2586,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_275_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_275_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_275_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 112 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 112) {
+                if( input == 96) {
                     goto STATE_275_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'o'] 
                 }
-            }else {
-                if( input < 113 ) {
+            } else {
+                if( input < 113) {
                     goto STATE_276;    // 'p' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['q', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_275_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2641,34 +2642,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_276_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_276_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_276_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 101 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 101) {
+                if( input == 96) {
                     goto STATE_276_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'd'] 
                 }
-            }else {
-                if( input < 102 ) {
+            } else {
+                if( input < 102) {
                     goto STATE_277;    // 'e' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['f', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_276_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2697,34 +2698,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_277_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_277_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_277_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 99 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 99) {
+                if( input == 96) {
                     goto STATE_277_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'b'] 
                 }
-            }else {
-                if( input < 100 ) {
+            } else {
+                if( input < 100) {
                     goto STATE_278;    // 'c' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['d', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_277_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2753,34 +2754,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_278_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_278_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_278_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 116 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 116) {
+                if( input == 96) {
                     goto STATE_278_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 's'] 
                 }
-            }else {
-                if( input < 117 ) {
+            } else {
+                if( input < 117) {
                     goto STATE_279;    // 't' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['u', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_278_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2809,27 +2810,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_279_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
+        if( input < 95) {
+            if( input < 65) {
                 goto STATE_279_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
+            } else {
+                if( input < 91) {
                     goto STATE_255;    // ['A', 'Z'] 
-                }else {
+                } else {
                     goto STATE_279_DROP_OUT;    // ['[', '^'] 
                 }
             }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
+        } else {
+            if( input < 97) {
+                if( input == 95) {
                     goto STATE_255;    // '_' 
-                }else {
+                } else {
                     goto STATE_279_DROP_OUT;    // '`' 
                 }
-            }else {
-                if( input < 123 ) {
+            } else {
+                if( input < 123) {
                     goto STATE_255;    // ['a', 'z'] 
-                }else {
+                } else {
                     goto STATE_279_DROP_OUT;    // ['{', oo] 
                 }
             }
@@ -2857,34 +2858,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_250_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_250_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_250_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 120 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 120) {
+                if( input == 96) {
                     goto STATE_250_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'w'] 
                 }
-            }else {
-                if( input < 121 ) {
+            } else {
+                if( input < 121) {
                     goto STATE_275;    // 'x' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['y', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_250_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -2913,27 +2914,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_251_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 13 ) {
-            if( input < 9 ) {
+        if( input < 13) {
+            if( input < 9) {
                 goto STATE_251_DROP_OUT;    // [-oo, \8] 
-            }else {
-                if( input < 11 ) {
+            } else {
+                if( input < 11) {
                     goto STATE_251;    // ['\t', '\n'] 
-                }else {
+                } else {
                     goto STATE_251_DROP_OUT;    // [\11, \12] 
                 }
             }
-        }else {
-            if( input < 32 ) {
-                if( input == 13 ) {
+        } else {
+            if( input < 32) {
+                if( input == 13) {
                     goto STATE_251;    // '\r' 
-                }else {
+                } else {
                     goto STATE_251_DROP_OUT;    // [\14, \31] 
                 }
-            }else {
-                if( input == 32 ) {
+            } else {
+                if( input == 32) {
                     goto STATE_251;    // ' ' 
-                }else {
+                } else {
                     goto STATE_251_DROP_OUT;    // [\33, oo] 
                 }
             }
@@ -2961,34 +2962,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_252_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_252_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_252_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 111 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 111) {
+                if( input == 96) {
                     goto STATE_252_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'n'] 
                 }
-            }else {
-                if( input < 112 ) {
+            } else {
+                if( input < 112) {
                     goto STATE_270;    // 'o' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['p', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_252_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -3032,34 +3033,34 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_254_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96 ) {
-            if( input < 91 ) {
-                if( input < 65 ) {
+        if( input < 96) {
+            if( input < 91) {
+                if( input < 65) {
                     goto STATE_254_DROP_OUT;    // [-oo, '@'] 
-                }else {
+                } else {
                     goto STATE_255;    // ['A', 'Z'] 
                 }
-            }else {
-                if( input != 95 ) {
+            } else {
+                if( input != 95) {
                     goto STATE_254_DROP_OUT;    // ['[', '^'] 
-                }else {
+                } else {
                     goto STATE_255;    // '_' 
                 }
             }
-        }else {
-            if( input < 110 ) {
-                if( input == 96 ) {
+        } else {
+            if( input < 110) {
+                if( input == 96) {
                     goto STATE_254_DROP_OUT;    // '`' 
-                }else {
+                } else {
                     goto STATE_255;    // ['a', 'm'] 
                 }
-            }else {
-                if( input < 111 ) {
+            } else {
+                if( input < 111) {
                     goto STATE_268;    // 'n' 
-                }else {
-                    if( input < 123 ) {
+                } else {
+                    if( input < 123) {
                         goto STATE_255;    // ['o', 'z'] 
-                    }else {
+                    } else {
                         goto STATE_254_DROP_OUT;    // ['{', oo] 
                     }
                 }
@@ -3088,27 +3089,27 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
       STATE_255_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95 ) {
-            if( input < 65 ) {
+        if( input < 95) {
+            if( input < 65) {
                 goto STATE_255_DROP_OUT;    // [-oo, '@'] 
-            }else {
-                if( input < 91 ) {
+            } else {
+                if( input < 91) {
                     goto STATE_255;    // ['A', 'Z'] 
-                }else {
+                } else {
                     goto STATE_255_DROP_OUT;    // ['[', '^'] 
                 }
             }
-        }else {
-            if( input < 97 ) {
-                if( input == 95 ) {
+        } else {
+            if( input < 97) {
+                if( input == 95) {
                     goto STATE_255;    // '_' 
-                }else {
+                } else {
                     goto STATE_255_DROP_OUT;    // '`' 
                 }
-            }else {
-                if( input < 123 ) {
+            } else {
+                if( input < 123) {
                     goto STATE_255;    // ['a', 'z'] 
-                }else {
+                } else {
                     goto STATE_255_DROP_OUT;    // ['{', oo] 
                 }
             }
@@ -3147,7 +3148,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1838 "Simple-core-engine.cpp"
+#line 1839 "Simple-core-engine.cpp"
             
             }
         }
@@ -3180,7 +3181,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1871 "Simple-core-engine.cpp"
+#line 1872 "Simple-core-engine.cpp"
             
             }
         }
@@ -3199,7 +3200,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 28 "dos_lf_2.qx"
             self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1890 "Simple-core-engine.cpp"
+#line 1891 "Simple-core-engine.cpp"
             
             }
         }
@@ -3217,7 +3218,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 1908 "Simple-core-engine.cpp"
+#line 1909 "Simple-core-engine.cpp"
             
             }
         }
@@ -3235,7 +3236,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 1926 "Simple-core-engine.cpp"
+#line 1927 "Simple-core-engine.cpp"
             
             }
         }
@@ -3253,7 +3254,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 1944 "Simple-core-engine.cpp"
+#line 1945 "Simple-core-engine.cpp"
             
             }
         }
@@ -3271,7 +3272,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 1962 "Simple-core-engine.cpp"
+#line 1963 "Simple-core-engine.cpp"
             
             }
         }
@@ -3289,7 +3290,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 1980 "Simple-core-engine.cpp"
+#line 1981 "Simple-core-engine.cpp"
             
             }
         }
@@ -3307,7 +3308,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 1998 "Simple-core-engine.cpp"
+#line 1999 "Simple-core-engine.cpp"
             
             }
         }
@@ -3325,7 +3326,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2016 "Simple-core-engine.cpp"
+#line 2017 "Simple-core-engine.cpp"
             
             }
         }

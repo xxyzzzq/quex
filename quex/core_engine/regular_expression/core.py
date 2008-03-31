@@ -140,7 +140,6 @@ def __delete_transitions_on_code_points_below_zero(sm):
                 # NOTE: '0' is the end, meaning that it has is not part of the interval to be cut.
                 trigger_set.cut_interval(Interval(-sys.maxint, 0))
 
-
 def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0, BufferLimitCode=-1,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
 
@@ -523,7 +522,7 @@ def __beautify(the_state_machine):
     result = nfa_to_dfa.do(the_state_machine)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after conversion to DFA: orphaned states " + repr(the_state_machine)
-    result = hopcroft.do(result) # , CreateNewStateMachineF=False)
+    result = hopcroft.do(result)#, CreateNewStateMachineF=False)
     ## assert the_state_machine.get_orphaned_state_index_list() == [], \
     ##       "after hopcroft minimization: orphaned states " + repr(the_state_machine)
 

@@ -163,30 +163,6 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
                       ["%%INITIAL_STATE_INDEX_LABEL%%",    get_label(StateMachineName, sm.init_state_index)]])
     return txt
     
-db["C++"] = {
-    "$function_def":  "bool\n$$function_name$$(const int input)\n{\n",
-    "$function_end":  "}\n",
-    "$if":     "if(",
-    "$then":   ") {",
-    "$end":    "}",
-    "$<":      "<",
-    "$endif":  "}",
-    "$else":   "} else {",                                                   
-    "$and":    "&&",
-    "$==":     "==",
-    "$/*":     "//",
-    "$*/":     "\n",
-    "$input":               "input",
-    "$input/get":           "QUEX_STREAM_GET(input);",
-    "$input/tell_position": "QUEX_STREAM_TELL(last_acceptance_input_position);",        
-    "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
-    "$return_true":         "return true;",
-    "$return_false":        "return false;",
-    "$goto-state":       __cpp_goto_state,
-    "$acceptance-info":  __cpp_acceptance_info, 
-    "$analyser-func":    __cpp_analyser_function,
-    "$terminal-code":    __cpp_terminal_states, 
-    }
 
 #________________________________________________________________________________
 # C
@@ -231,43 +207,6 @@ def __python_note_acceptance(SuccessfulOriginalStateMachineID):
     else:
         txt = ""    
     return txt
-
-db["Python"] = {
-    "$function_def":  "def $$function_name$$(input):\n",
-    "$function_end":  "\n",                                                  
-    "$if":     "if ",
-    "$then":   ":",
-    "$end":    "",
-    "$<":      "<",
-    "$>=":     ">=",
-    "$endif": "",                                                    
-    "$else":   "else:",                                              
-    "$and":    "and",
-    "$==":     "==",
-    "$/*":     "#",
-    "$*/":     "\n",
-    "$input":  "input",
-    "$return_true":   "return True",
-    "$return_false":  "return False",
-    "$goto-state":        __python_goto_state, 
-    "$goto-terminate":    __python_goto_terminal_state, 
-    "$note-acceptance":   __python_note_acceptance,                    
-    "$label":             "",   
-}
-
-#________________________________________________________________________________
-# Visual Basic 6
-#    
-db["VisualBasic6"] = {
-    "$if":     "If",
-    "$then":   "Then",
-    "$end":    "End If",
-    "$>=":     ">=",
-    "$==":     "==",
-    "$input":  "input",
-    "$return_true":  "$the_function = True: Exit Function",
-    "$return_false": "$the_function = True: Exit Function",
-    }
 
 
 def replace_keywords(program_txt, LanguageDB, NoIndentF):
