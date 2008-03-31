@@ -1,0 +1,27 @@
+The buffer implementation in quex takes advantage of the mechanism of
+lexical analysis, and manages to keep the overhead of buffering extremely low.
+This works as shown in figure <<fig:algorithm, style=ref>>. First of all, some content of the
+information stream in stored in a fixed chunk of memory, the buffer. During the
+lexical analysis one basically iterates through this chunk. Whenever a new
+input character is required to determine a state transition, the pointer to the
+current character, short the 'current' pointer, is increased and the input is
+assigned the content to what this pointer points. The buffer limits, begin of
+file, and end of file is determined through special characters.  Thus, if the
+input that is received equals those, then one touched either a buffer limit,
+the begin of the file, or the end of the file. The trick here is that the
+transition checks of any state will drop if those characters occur. In
+any other case the business can continue as usual.
+
+[[fig:algorithm]]
+.Interaction of buffer and the lexical analyser state machine.
+image::figures/algorzthm.pdf[]
+
+The mechanism described above is highly efficient, since there is a _zero
+overhead_ as long as no limit is reached. Only when the buffer limit is reached
+some overhead occurs for identifying that the drop out occured either due to
+buffer limit or end of file (begin of file, if one iterates backwards during
+	pre-conditions).  Already with a buffer size of 64KB, the buffer limit
+is only reached every 65536 characters.  With an average of 4 operations per
+character the time overhead should not exceed 0.02\% for buffer loading.  The
+speed is basically equivalent to iterating directly through system memory.
+
