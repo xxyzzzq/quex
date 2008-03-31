@@ -17,5 +17,5 @@ result = blue_print(template_str,
                     ])
 
 open("install-builder.xml", "w").write(result)
-print "DIR: %s CONTAINS: %s" & (os.getcwd(), "install-builder.xml")
+print "DIR: %s CONTAINS: %s" % (os.getcwd(), "install-builder.xml")
 

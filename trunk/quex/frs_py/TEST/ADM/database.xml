@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.04" date="Mon Mar 31 05:45:45 2008">
+<test-database execution-time-sec="0.04" date="Mon Mar 31 07:39:18 2008">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function read_until_closing_bracket(...)" time-sum-sec="0.03"> 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.50" date="Mon Mar 31 05:45:42 2008">
+<test-database execution-time-sec="3.50" date="Mon Mar 31 07:39:15 2008">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" time-sum-sec="0.06"> 
         <application file-name="test-pattern-matching.py" info-request-time="1206742552L"/>
@@ -27,10 +27,10 @@
                <choice name="" result="OK" time-sec="0.03" crc="-1183632489"/>
             </choice-list>
         </test>
-        <test title="Snap string until (low level function)" time-sum-sec="0.04"> 
+        <test title="Snap string until (low level function)" time-sum-sec="0.03"> 
             <application file-name="test-snap_until.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="-1055637304"/>
+               <choice name="" result="OK" time-sec="0.03" crc="-1055637304"/>
             </choice-list>
         </test>
         <test title="Map character *range* to state machine" time-sum-sec="0.02"> 
@@ -47,16 +47,16 @@
         </test>
     </group>
     <group name="Combination">
-        <test title="Alternative Expressions" time-sum-sec="0.13"> 
+        <test title="Alternative Expressions" time-sum-sec="0.14"> 
             <application file-name="test-alternatives.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.13" crc="1918233877"/>
+               <choice name="" result="OK" time-sec="0.14" crc="1918233877"/>
             </choice-list>
         </test>
-        <test title="Simple repeated expressions" time-sum-sec="0.12"> 
+        <test title="Simple repeated expressions" time-sum-sec="0.11"> 
             <application file-name="test-repeated-expressions.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1016859185"/>
+               <choice name="" result="OK" time-sec="0.11" crc="1016859185"/>
             </choice-list>
         </test>
         <test title="Alternative Expressions" time-sum-sec="0.04"> 

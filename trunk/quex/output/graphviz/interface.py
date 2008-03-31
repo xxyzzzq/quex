@@ -84,8 +84,8 @@ def _call_dot(Code, OutputFormat, OutputFile, GetStdErrF=False):
         subprocess.call(["dot", input_file_name, "-T%s" % OutputFormat, output_str],
                         stdout=fh_out, stderr=fh_err)
     except: 
-        error_msg("Graphviz seems not to be installed on this system. Please, visit www.graphviz.org\n",
-                  "and download the package. This package is necessary for for plotting\n"
+        error_msg("Graphviz seems not to be installed on this system. Please, visit www.graphviz.org\n" + \
+                  "and download the package. This package is necessary for for plotting\n" + \
                   "transition graphs.")
 
     fh_out.close()

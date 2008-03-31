@@ -239,6 +239,12 @@ class LexMode:
         elif __check(self.on_end_of_stream): return True
         elif __check(self.on_indentation):   return True
 
+    def has_pattern(self, PatternStr):
+        return self.__matches.has_key(PatternStr)
+
+    def get_match_object(self, PatternStr):
+        return self.__matches[PatternStr]
+
     def has_matches(self):
         assert self.inheritance_circularity_check_done_f == True, \
                "called before consistency check!"
