@@ -1,0 +1,56 @@
+Before the lexical analyser can be used, one has to create an instance of it.
+Assuming that '`the\_lexer`' is the name of the lexical analyser engine
+(see command line option `--engine`) the following two constructors are
+provided:
+
+ - `the\_lexer(const istream* in\_stream, ostream* out\_stream = 0);`
+
+ - `the\_lexer(const string& in\_filename, ostream* out\_stream = 0);`
+
+The first constructor accepts an input stream of any kind and an optional
+output stream for unmatched characters. The second constructor directly
+accepts a filename instead of a stream. The stream or the filename act
+as the 'root-file' for the lexical analysis. The lexical analyser is now
+ready to run. Tokens are received by calling the member function
+
+  - `token::id\_type   get\_token(token* result\_p);`
+
+It initiates a lexical analyser process and fills the object at` 
+  result\_p` with the next token. Internally, tokens may be stacked 
+and not every call to `get\_token()` initiates an analysis. But the
+user does not care. He simply receives a sequence of tokens through this
+function until a token arrives with the the token-id 
+
+----------------------------------------------------------
+ quex::TKN_TERMINATION
+----------------------------------------------------------
+
+Note, that `TKN_` represents the token prefix. If the user decides to modify
+the token prefix to `TOK_`, for example, the identifier for termination is
+`TOK_TERMINATION`. Note, that the default action _on failure_ also sends this
+identifier, so that no second check at the end of the analyzing loop is required.
+This id is by default defined as zero, because also many
+parsers require that.  This id tells that the input has been totally treated
+and no further token will arrive. In order to keep track of different versions
+of generated lexers the member function
+
+  -  `const char* version() const;`
+
+returns a string telling about the version (see also command line option` 
+  --version`), and the date when quex produced the engine.  The current
+line and column numbers can be accessed using the functions
+
+  - `int  line\_number() const;`
+
+  - `int  line\_index() const;`
+
+  - `int  column\_number() const;`
+
+  - `int  column\_index() const;`
+
+where the '*\_number()' functions return the information where the last
+pattern started, and the '*\_index()' functions return the information where
+the last pattern ended.
+
+
+
