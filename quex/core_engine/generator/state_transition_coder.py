@@ -96,7 +96,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     txt = txt.replace("\n", "\n    ")
     code_str += txt + "\n"
 
-    return languages.replace_keywords(code_str, LanguageDB, NoIndentF=True)
+    return code_str # languages.replace_keywords(code_str, LanguageDB, NoIndentF=True)
 
 def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, BackwardLexingF):
     """Creates code for state transitions from this state. This function is very
@@ -154,8 +154,12 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
             txt += __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, 
                                       StateMachineName, StateIdx, state, BackwardLexingF)
         
-    # return program text for given language
-    return languages.replace_keywords(txt, LanguageDB, NoIndentF=False)
+
+    # (*) indent by four spaces (nested blocks are correctly indented)
+    #     delete the last newline, to prevent additional indentation
+    if txt[-1] == "\n": txt = txt[:-1]
+    txt = txt.replace("\n", "\n    ") + "\n"
+    return txt 
 
 def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry, 
                              LanguageDB, BackwardLexingF, IndentF=False):

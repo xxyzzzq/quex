@@ -127,7 +127,7 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
-    txt = "$/* origins = %s$*/\n" % repr(OriginList)
+    txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
     #
     for origin in OriginList:
         if origin.store_input_position_f():
@@ -155,7 +155,7 @@ def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
-    txt = "$/* origins = %s$*/\n" % repr(OriginList)
+    txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
     #
     for origin in OriginList:
         if origin.store_input_position_f():
@@ -259,7 +259,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
 
 def __acceptance_info_forward_lexing(OriginList, LanguageDB):
 
-    txt = "$/* origins = %s$*/\n" % repr(OriginList)
+    txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
     # -- get the pattern ids that indicate the start of a post-condition
     #    (i.e. the end of a core pattern where a post condition is to follow).
     # -- collect patterns that reach acceptance at this state.
