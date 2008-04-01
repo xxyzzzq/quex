@@ -60,13 +60,12 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
         empty_trigger_map_f = True
         # Empty State (no transitions, but the epsilon transition)
         txt  = "    "
-        txt += "$/* no trigger set, no 'get character' $*/"
+        txt += LanguageDB["$comment"]("no trigger set, no 'get character'") + "\n"
 
         # trigger outside the trigger intervals
-        txt += "\n" + LanguageDB["$transition"](StateMachineName, StateIdx,
-                                                None,
-                                                BackwardLexingF                = BackwardLexingF, 
-                                                BufferReloadRequiredOnDropOutF = False)
+        txt += LanguageDB["$transition"](StateMachineName, StateIdx, None,
+                                         BackwardLexingF                = BackwardLexingF, 
+                                         BufferReloadRequiredOnDropOutF = False)
         txt += "\n"
         txt  = txt.replace("\n", "\n    ")
 
@@ -78,12 +77,14 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
 
     # -- in case of the init state, the end of file character has to be checked.
     if EndOfFile_Code != None and BackwardLexingF == False:
-        txt += "$if %s $then\n" % LanguageDB["$=="]("input", "0x%X" % EndOfFile_Code)
+        txt += LanguageDB["$if =="]("0x%X" % EndOfFile_Code)
 
-        txt += "    /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state*/\n"
-        txt += "    %s" % LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
-                                                        BackwardLexingF=False) + "\n"
-        txt += "$end\n" 
+        txt += "    " + LanguageDB["$comment"](
+                "/* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state") 
+        txt += "\n"
+        txt += "    " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
+                                                  BackwardLexingF=False) + "\n"
+        txt += LanguageDB["$end"] + "\n"
 
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = not empty_trigger_map_f,
@@ -171,11 +172,12 @@ def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry,
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt = LanguageDB["$transition"](StateMachineName, StateIdx, target_state_index, 
-                                    BackwardLexingF) 
-    txt += "    $/* %s $*/" % interval.get_utf8_string()
+    txt =  "    " + LanguageDB["$transition"](StateMachineName, StateIdx, target_state_index, 
+                                              BackwardLexingF) 
+    txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
 
-    if IndentF: txt = "    " + txt.replace("\n", "\n    ")
+    if IndentF: 
+        txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
     return txt
         
 def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,

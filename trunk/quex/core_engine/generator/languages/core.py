@@ -40,10 +40,13 @@ db["C++"] = {
     "$<":      lambda left, right: left + " < " + right,
     "$==":     lambda left, right: left + " == " + right,
     "$!=":     lambda left, right: left + " != " + right,
+    "$comment":    lambda txt: "/* " + txt + " */",
+    "$ml-comment": lambda txt: "    /* " + txt.replace("\n", "\n    * ") + "\n     */",
     "$/*":     "//",
     "$*/":     "\n",
     "$*/\n":   "\n",    # make sure, that we do not introduce an extra '\n' in case that end of comment
     #                   # is followed directly by newline.
+    "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
     "$input/get":           "QUEX_STREAM_GET(input);",
     "$input/get-backwards": "QUEX_STREAM_GET_BACKWARDS(input);",
@@ -106,6 +109,7 @@ db["Python"] = {
     "$endif-else": "else:\n",
     "$end-else":   "",
     "$and":    "and",
+    "$comment": lambda txt: "# " + txt + "\n",
     "$/*":     "#",
     "$*/":     "\n",  
     "$*/\n":   "\n",    # make sure, that we do not introduce an extra '\n' in case that end of comment

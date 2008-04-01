@@ -37,7 +37,7 @@ state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71
 
 
 function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
-#print "#" + function.replace("\n", "\n#")
+# print "#" + function.replace("\n", "\n#")
 exec(function)
 
 differences = []    

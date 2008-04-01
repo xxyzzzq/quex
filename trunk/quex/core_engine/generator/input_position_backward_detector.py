@@ -16,8 +16,7 @@ function_str = """
 static void 
 PAPC_input_postion_backward_detector_$$ID$$(QUEX_CORE_ANALYSER_STRUCT* me) 
 {
-    QUEX_CHARACTER_TYPE      input = (QUEX_CHARACTER_TYPE)(0x00);\n
-    QUEX_CHARACTER_POSITION  end_of_core_pattern_position = (QUEX_CHARACTER_TYPE*)(0x00);
+$$LOCAL_VARIABLES$$
 $$STATE_MACHINE$$
 $$FUNCTION_BODY$$ 
 }
@@ -29,13 +28,13 @@ def do(sm, LanguageDB, PrintStateMachineF):
                                            BackwardLexingF                 = True,
                                            BackwardInputPositionDetectionF = True)
 
-    sm_str = "    $/* state machine $*/\n"
+    sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if PrintStateMachineF: 
-        sm_str += "    $/* " + repr(sm).replace("\n", "$*/\n    $/* ") + "\n"
+        sm_str += LanguageDB["$ml-comment"](sm.get_string(NormalizeF=False)) + "\n"
 
     # -- input position detectors simply the next 'catch' and return
     LabelName = languages_label.get_terminal("")
-    function_body += "%s\n" % LanguageDB["$label-definition"](LabelName) 
+    function_body += LanguageDB["$label-definition"](LabelName) + "\n"
     ## function_body += "    $/* ... rely on the compiler to delete the unnecessary assignment ... $*/\n"
     ## function_body += "    QUEX_STREAM_GET_BACKWARDS($input);\n"
     ## function_body += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
@@ -44,10 +43,15 @@ def do(sm, LanguageDB, PrintStateMachineF):
     ## function_body += "    $return\n"
     function_body += "    QUEX_STREAM_SEEK(end_of_core_pattern_position);\n"
 
+    variables_txt = LanguageDB["$local-variable-defs"](
+        [["QUEX_CHARACTER_TYPE",     "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
+         ["QUEX_CHARACTER_POSITION", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
+
     return blue_print(function_str, 
-                      [["$$ID$$",            repr(sm.get_id()).replace("L", "")],
-                       ["$$FUNCTION_BODY$$", function_body],
-                       ["$$STATE_MACHINE$$", sm_str],
+                      [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
+                       ["$$FUNCTION_BODY$$",   function_body],
+                       ["$$LOCAL_VARIABLES$$", variables_txt],
+                       ["$$STATE_MACHINE$$",   sm_str],
                       ])
 
 

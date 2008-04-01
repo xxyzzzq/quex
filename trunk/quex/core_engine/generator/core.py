@@ -43,9 +43,9 @@ class Generator(GeneratorBase):
         assert self.sm.get_orphaned_state_index_list() == []
 
         #  -- comment all state machine transitions 
-        txt = "    $/* state machine $*/\n"
+        txt = "    " + LanguageDB["$comment"]("state machine") + "\n"
         if self.print_state_machine_f: 
-            txt += "    $/* " + self.sm.get_string(NormalizeF=False).replace("\n", "$*/\n    $/* ") + "\n"
+            txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
 
         txt += state_machine_coder.do(self.sm, 
                                       LanguageDB                  = LanguageDB, 
@@ -70,9 +70,9 @@ class Generator(GeneratorBase):
 
         assert self.pre_context_sm.get_orphaned_state_index_list() == []
 
-        txt = "    $/* state machine for pre-condition test: $*/\n"
+        txt = "    " + LanguageDB["$comment"]("state machine for pre-condition test:") + "\n"
         if self.print_state_machine_f: 
-            txt += "    $/* " + repr(self.pre_context_sm).replace("\n", "$*/\n    $/* ") + "$*/\n"
+            txt += LanguageDB["$ml-comment"](self.pre_context_sm.get_string(NormalizeF=False)) + "\n"
 
         txt += state_machine_coder.do(self.pre_context_sm, 
                                       LanguageDB                  = LanguageDB, 
