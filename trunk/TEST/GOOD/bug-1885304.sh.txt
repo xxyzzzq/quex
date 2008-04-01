@@ -1520,7 +1520,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         * 
          */
       STATE_249:
-    // origins = [(5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)]
+    /*  origins = [(5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)] */
       STATE_249_INPUT:
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
@@ -1643,7 +1643,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         
       STATE_256:
         __QUEX_DEBUG_INFO_ENTER(256);
-    // origins = [(28, 125, A, S)]
+    /*  origins = [(28, 125, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(28);
     last_acceptance = 28;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1658,7 +1658,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_257:
         __QUEX_DEBUG_INFO_ENTER(257);
-    // origins = [(41, 159, A, S), (7, 33), (16, 83)]
+    /*  origins = [(41, 159, A, S), (7, 33), (16, 83)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1718,7 +1718,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_258:
         __QUEX_DEBUG_INFO_ENTER(258);
-    // origins = [(22, 113, A, S)]
+    /*  origins = [(22, 113, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(22);
     last_acceptance = 22;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1733,7 +1733,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_259:
         __QUEX_DEBUG_INFO_ENTER(259);
-    // origins = [(35, 142, A, S)]
+    /*  origins = [(35, 142, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(35);
     last_acceptance = 35;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1765,7 +1765,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_260:
         __QUEX_DEBUG_INFO_ENTER(260);
-    // origins = [(41, 159, A, S), (16, 84)]
+    /*  origins = [(41, 159, A, S), (16, 84)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1821,7 +1821,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_261:
         __QUEX_DEBUG_INFO_ENTER(261);
-    // origins = [(41, 159, A, S), (7, 34)]
+    /*  origins = [(41, 159, A, S), (7, 34)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1877,7 +1877,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_262:
         __QUEX_DEBUG_INFO_ENTER(262);
-    // origins = [(41, 159, A, S), (7, 35)]
+    /*  origins = [(41, 159, A, S), (7, 35)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1933,7 +1933,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_263:
         __QUEX_DEBUG_INFO_ENTER(263);
-    // origins = [(41, 159, A, S), (7, 36)]
+    /*  origins = [(41, 159, A, S), (7, 36)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -1989,7 +1989,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_264:
         __QUEX_DEBUG_INFO_ENTER(264);
-    // origins = [(41, 159, A, S), (7, 37)]
+    /*  origins = [(41, 159, A, S), (7, 37)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2045,7 +2045,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_265:
         __QUEX_DEBUG_INFO_ENTER(265);
-    // origins = [(7, 38, A, S)]
+    /*  origins = [(7, 38, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(7);
     last_acceptance = 7;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2093,7 +2093,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_266:
         __QUEX_DEBUG_INFO_ENTER(266);
-    // origins = [(41, 159, A, S), (16, 85)]
+    /*  origins = [(41, 159, A, S), (16, 85)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2149,7 +2149,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_267:
         __QUEX_DEBUG_INFO_ENTER(267);
-    // origins = [(16, 86, A, S)]
+    /*  origins = [(16, 86, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(16);
     last_acceptance = 16;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2197,7 +2197,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_268:
         __QUEX_DEBUG_INFO_ENTER(268);
-    // origins = [(41, 159, A, S), (10, 49)]
+    /*  origins = [(41, 159, A, S), (10, 49)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2253,7 +2253,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_269:
         __QUEX_DEBUG_INFO_ENTER(269);
-    // origins = [(10, 50, A, S)]
+    /*  origins = [(10, 50, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(10);
     last_acceptance = 10;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2301,7 +2301,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_270:
         __QUEX_DEBUG_INFO_ENTER(270);
-    // origins = [(41, 159, A, S), (13, 67)]
+    /*  origins = [(41, 159, A, S), (13, 67)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2357,7 +2357,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_271:
         __QUEX_DEBUG_INFO_ENTER(271);
-    // origins = [(41, 159, A, S), (13, 68)]
+    /*  origins = [(41, 159, A, S), (13, 68)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2413,7 +2413,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_272:
         __QUEX_DEBUG_INFO_ENTER(272);
-    // origins = [(41, 159, A, S), (13, 69)]
+    /*  origins = [(41, 159, A, S), (13, 69)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2469,7 +2469,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_273:
         __QUEX_DEBUG_INFO_ENTER(273);
-    // origins = [(41, 159, A, S), (13, 70)]
+    /*  origins = [(41, 159, A, S), (13, 70)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2525,7 +2525,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_274:
         __QUEX_DEBUG_INFO_ENTER(274);
-    // origins = [(13, 71, A, S)]
+    /*  origins = [(13, 71, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(13);
     last_acceptance = 13;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2573,7 +2573,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_275:
         __QUEX_DEBUG_INFO_ENTER(275);
-    // origins = [(41, 159, A, S), (19, 103)]
+    /*  origins = [(41, 159, A, S), (19, 103)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2629,7 +2629,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_276:
         __QUEX_DEBUG_INFO_ENTER(276);
-    // origins = [(41, 159, A, S), (19, 104)]
+    /*  origins = [(41, 159, A, S), (19, 104)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2685,7 +2685,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_277:
         __QUEX_DEBUG_INFO_ENTER(277);
-    // origins = [(41, 159, A, S), (19, 105)]
+    /*  origins = [(41, 159, A, S), (19, 105)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2741,7 +2741,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_278:
         __QUEX_DEBUG_INFO_ENTER(278);
-    // origins = [(41, 159, A, S), (19, 106)]
+    /*  origins = [(41, 159, A, S), (19, 106)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2797,7 +2797,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_279:
         __QUEX_DEBUG_INFO_ENTER(279);
-    // origins = [(19, 107, A, S)]
+    /*  origins = [(19, 107, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(19);
     last_acceptance = 19;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2845,7 +2845,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_250:
         __QUEX_DEBUG_INFO_ENTER(250);
-    // origins = [(41, 159, A, S), (19, 102)]
+    /*  origins = [(41, 159, A, S), (19, 102)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2901,7 +2901,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_251:
         __QUEX_DEBUG_INFO_ENTER(251);
-    // origins = [(5, 17, A, S)]
+    /*  origins = [(5, 17, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(5);
     last_acceptance = 5;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -2949,7 +2949,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_252:
         __QUEX_DEBUG_INFO_ENTER(252);
-    // origins = [(41, 159, A, S), (13, 66)]
+    /*  origins = [(41, 159, A, S), (13, 66)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -3005,7 +3005,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_253:
         __QUEX_DEBUG_INFO_ENTER(253);
-    // origins = [(25, 119, A, S)]
+    /*  origins = [(25, 119, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(25);
     last_acceptance = 25;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -3020,7 +3020,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_254:
         __QUEX_DEBUG_INFO_ENTER(254);
-    // origins = [(41, 159, A, S), (10, 48)]
+    /*  origins = [(41, 159, A, S), (10, 48)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);
@@ -3076,7 +3076,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
       STATE_255:
         __QUEX_DEBUG_INFO_ENTER(255);
-    // origins = [(41, 159, A, S)]
+    /*  origins = [(41, 159, A, S)] */
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
     QUEX_STREAM_TELL(last_acceptance_input_position);

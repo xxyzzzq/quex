@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.04" date="Tue Apr  1 09:31:57 2008">
+<test-database execution-time-sec="0.03" date="Tue Apr  1 13:12:02 2008">
     <last-used-diff-display-program name=""/>
     <test title="Converting Stream in N Tiny Beats" make-required="True" time-sum-sec="0.02"> 
         <application file-name="n-beat" info-request-time="1204721715L"/>
@@ -7,11 +7,11 @@
            <choice name="" result="OK" time-sec="0.02" crc="2006409243"/>
         </choice-list>
     </test>
-    <test title="Converting Stream in One Beat" make-required="True" time-sum-sec="0.01"> 
+    <test title="Converting Stream in One Beat" make-required="True" time-sum-sec="0.02"> 
         <application file-name="one-beat" info-request-time="1204721716L"/>
         <make-procedure success="True" />
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.01" crc="-1774545455"/>
+           <choice name="" result="OK" time-sec="0.02" crc="-1774545455"/>
         </choice-list>
     </test>
 </test-database>
