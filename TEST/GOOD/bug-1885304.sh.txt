@@ -1379,19 +1379,13 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         //       lexical analyser, since static member do not have access to the 'this' pointer.
         QUEX_LEXER_CLASS& self = *me;
         // static functions cannot access members, thus: create shortcuts
-        quex::quex_mode&  ONE_AND_ONLY = self.ONE_AND_ONLY;
+    /*  me = pointer to state of the lexical analyser */    quex::quex_mode& ONE_AND_ONLY = self.ONE_AND_ONLY;
+        int last_acceptance = -1;
+        QUEX_CHARACTER_POSITION last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
+        QUEX_CHARACTER_TYPE input = (QUEX_CHARACTER_TYPE)(0x00);
+        QUEX_LEXEME_CHARACTER_TYPE* Lexeme = 0x0;
+        size_t LexemeL = -1;
     
-        /*  me = pointer to state of the lexical analyser 
-        */
-        int                      last_acceptance = -1;
-        QUEX_CHARACTER_POSITION  last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
-        /**/
-        QUEX_CHARACTER_TYPE      input = (QUEX_CHARACTER_TYPE)(0x00);
-    
-        /**/
-        QUEX_LEXEME_CHARACTER_TYPE*  Lexeme  = 0x0;
-        size_t                       LexemeL = -1;
-        /**/
     #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
         int loaded_byte_n = 0; /* At transition Drop-Out: 
                                **    > 0  number of loaded bytes. 
@@ -1402,128 +1396,129 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
        __REENTRY_POINT:
         QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);
         QUEX_UNDO_PREPARE_LEXEME_OBJECT;
-        // state machine 
-        // init-state = 249L
-        // 00249() <~ (5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)
-        //       == ['\t', '\n'], '\r', ' ' ==> 00251
-        //       == ['0', '9'] ==> 00259
-        //       == ';' ==> 00258
-        //       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00255
-        //       == 'd' ==> 00252
-        //       == 'e' ==> 00250
-        //       == 'i' ==> 00254
-        //       == 's' ==> 00257
-        //       == '{' ==> 00253
-        //       == '}' ==> 00256
-        //       <no epsilon>
-        // 00256(A, S) <~ (28, 125, A, S)
-        //       <no epsilon>
-        // 00257(A, S) <~ (41, 159, A, S), (7, 33), (16, 83)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00255
-        //       == 'e' ==> 00260
-        //       == 't' ==> 00261
-        //       <no epsilon>
-        // 00260(A, S) <~ (41, 159, A, S), (16, 84)
-        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
-        //       == 'n' ==> 00266
-        //       <no epsilon>
-        // 00266(A, S) <~ (41, 159, A, S), (16, 85)
-        //       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00255
-        //       == 'd' ==> 00267
-        //       <no epsilon>
-        // 00267(A, S) <~ (16, 86, A, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-        //       <no epsilon>
-        // 00255(A, S) <~ (41, 159, A, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-        //       <no epsilon>
-        // 00261(A, S) <~ (41, 159, A, S), (7, 34)
-        //       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00255
-        //       == 'r' ==> 00262
-        //       <no epsilon>
-        // 00262(A, S) <~ (41, 159, A, S), (7, 35)
-        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
-        //       == 'u' ==> 00263
-        //       <no epsilon>
-        // 00263(A, S) <~ (41, 159, A, S), (7, 36)
-        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
-        //       == 'c' ==> 00264
-        //       <no epsilon>
-        // 00264(A, S) <~ (41, 159, A, S), (7, 37)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
-        //       == 't' ==> 00265
-        //       <no epsilon>
-        // 00265(A, S) <~ (7, 38, A, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-        //       <no epsilon>
-        // 00258(A, S) <~ (22, 113, A, S)
-        //       <no epsilon>
-        // 00259(A, S) <~ (35, 142, A, S)
-        //       == ['0', '9'] ==> 00259
-        //       <no epsilon>
-        // 00250(A, S) <~ (41, 159, A, S), (19, 102)
-        //       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00255
-        //       == 'x' ==> 00275
-        //       <no epsilon>
-        // 00275(A, S) <~ (41, 159, A, S), (19, 103)
-        //       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00255
-        //       == 'p' ==> 00276
-        //       <no epsilon>
-        // 00276(A, S) <~ (41, 159, A, S), (19, 104)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
-        //       == 'e' ==> 00277
-        //       <no epsilon>
-        // 00277(A, S) <~ (41, 159, A, S), (19, 105)
-        //       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
-        //       == 'c' ==> 00278
-        //       <no epsilon>
-        // 00278(A, S) <~ (41, 159, A, S), (19, 106)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
-        //       == 't' ==> 00279
-        //       <no epsilon>
-        // 00279(A, S) <~ (19, 107, A, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-        //       <no epsilon>
-        // 00251(A, S) <~ (5, 17, A, S)
-        //       == ['\t', '\n'], '\r', ' ' ==> 00251
-        //       <no epsilon>
-        // 00252(A, S) <~ (41, 159, A, S), (13, 66)
-        //       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00255
-        //       == 'o' ==> 00270
-        //       <no epsilon>
-        // 00270(A, S) <~ (41, 159, A, S), (13, 67)
-        //       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
-        //       == 'u' ==> 00271
-        //       <no epsilon>
-        // 00271(A, S) <~ (41, 159, A, S), (13, 68)
-        //       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00255
-        //       == 'b' ==> 00272
-        //       <no epsilon>
-        // 00272(A, S) <~ (41, 159, A, S), (13, 69)
-        //       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00255
-        //       == 'l' ==> 00273
-        //       <no epsilon>
-        // 00273(A, S) <~ (41, 159, A, S), (13, 70)
-        //       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
-        //       == 'e' ==> 00274
-        //       <no epsilon>
-        // 00274(A, S) <~ (13, 71, A, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-        //       <no epsilon>
-        // 00253(A, S) <~ (25, 119, A, S)
-        //       <no epsilon>
-        // 00254(A, S) <~ (41, 159, A, S), (10, 48)
-        //       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
-        //       == 'n' ==> 00268
-        //       <no epsilon>
-        // 00268(A, S) <~ (41, 159, A, S), (10, 49)
-        //       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
-        //       == 't' ==> 00269
-        //       <no epsilon>
-        // 00269(A, S) <~ (10, 50, A, S)
-        //       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-        //       <no epsilon>
-        // 
+        /* state machine */
+        /* init-state = 249L
+        * 00249() <~ (5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)
+        *       == ['\t', '\n'], '\r', ' ' ==> 00251
+        *       == ['0', '9'] ==> 00259
+        *       == ';' ==> 00258
+        *       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00255
+        *       == 'd' ==> 00252
+        *       == 'e' ==> 00250
+        *       == 'i' ==> 00254
+        *       == 's' ==> 00257
+        *       == '{' ==> 00253
+        *       == '}' ==> 00256
+        *       <no epsilon>
+        * 00256(A, S) <~ (28, 125, A, S)
+        *       <no epsilon>
+        * 00257(A, S) <~ (41, 159, A, S), (7, 33), (16, 83)
+        *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00255
+        *       == 'e' ==> 00260
+        *       == 't' ==> 00261
+        *       <no epsilon>
+        * 00260(A, S) <~ (41, 159, A, S), (16, 84)
+        *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
+        *       == 'n' ==> 00266
+        *       <no epsilon>
+        * 00266(A, S) <~ (41, 159, A, S), (16, 85)
+        *       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00255
+        *       == 'd' ==> 00267
+        *       <no epsilon>
+        * 00267(A, S) <~ (16, 86, A, S)
+        *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+        *       <no epsilon>
+        * 00255(A, S) <~ (41, 159, A, S)
+        *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+        *       <no epsilon>
+        * 00261(A, S) <~ (41, 159, A, S), (7, 34)
+        *       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00255
+        *       == 'r' ==> 00262
+        *       <no epsilon>
+        * 00262(A, S) <~ (41, 159, A, S), (7, 35)
+        *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
+        *       == 'u' ==> 00263
+        *       <no epsilon>
+        * 00263(A, S) <~ (41, 159, A, S), (7, 36)
+        *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
+        *       == 'c' ==> 00264
+        *       <no epsilon>
+        * 00264(A, S) <~ (41, 159, A, S), (7, 37)
+        *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+        *       == 't' ==> 00265
+        *       <no epsilon>
+        * 00265(A, S) <~ (7, 38, A, S)
+        *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+        *       <no epsilon>
+        * 00258(A, S) <~ (22, 113, A, S)
+        *       <no epsilon>
+        * 00259(A, S) <~ (35, 142, A, S)
+        *       == ['0', '9'] ==> 00259
+        *       <no epsilon>
+        * 00250(A, S) <~ (41, 159, A, S), (19, 102)
+        *       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00255
+        *       == 'x' ==> 00275
+        *       <no epsilon>
+        * 00275(A, S) <~ (41, 159, A, S), (19, 103)
+        *       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00255
+        *       == 'p' ==> 00276
+        *       <no epsilon>
+        * 00276(A, S) <~ (41, 159, A, S), (19, 104)
+        *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
+        *       == 'e' ==> 00277
+        *       <no epsilon>
+        * 00277(A, S) <~ (41, 159, A, S), (19, 105)
+        *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
+        *       == 'c' ==> 00278
+        *       <no epsilon>
+        * 00278(A, S) <~ (41, 159, A, S), (19, 106)
+        *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+        *       == 't' ==> 00279
+        *       <no epsilon>
+        * 00279(A, S) <~ (19, 107, A, S)
+        *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+        *       <no epsilon>
+        * 00251(A, S) <~ (5, 17, A, S)
+        *       == ['\t', '\n'], '\r', ' ' ==> 00251
+        *       <no epsilon>
+        * 00252(A, S) <~ (41, 159, A, S), (13, 66)
+        *       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00255
+        *       == 'o' ==> 00270
+        *       <no epsilon>
+        * 00270(A, S) <~ (41, 159, A, S), (13, 67)
+        *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
+        *       == 'u' ==> 00271
+        *       <no epsilon>
+        * 00271(A, S) <~ (41, 159, A, S), (13, 68)
+        *       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00255
+        *       == 'b' ==> 00272
+        *       <no epsilon>
+        * 00272(A, S) <~ (41, 159, A, S), (13, 69)
+        *       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00255
+        *       == 'l' ==> 00273
+        *       <no epsilon>
+        * 00273(A, S) <~ (41, 159, A, S), (13, 70)
+        *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
+        *       == 'e' ==> 00274
+        *       <no epsilon>
+        * 00274(A, S) <~ (13, 71, A, S)
+        *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+        *       <no epsilon>
+        * 00253(A, S) <~ (25, 119, A, S)
+        *       <no epsilon>
+        * 00254(A, S) <~ (41, 159, A, S), (10, 48)
+        *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
+        *       == 'n' ==> 00268
+        *       <no epsilon>
+        * 00268(A, S) <~ (41, 159, A, S), (10, 49)
+        *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+        *       == 't' ==> 00269
+        *       <no epsilon>
+        * 00269(A, S) <~ (10, 50, A, S)
+        *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+        *       <no epsilon>
+        * 
+         */
       STATE_249:
     // origins = [(5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)]
       STATE_249_INPUT:
@@ -1533,48 +1528,48 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             if( input < 33) {
                 if( input < 13) {
                     if( input < 9) {
-                        goto STATE_249_DROP_OUT;    // [-oo, \8] 
+                            goto STATE_249_DROP_OUT;    /* [-oo, \8] */
                     } else {
                         if( input < 11) {
-                            goto STATE_251;    // ['\t', '\n'] 
+                            goto STATE_251;    /* ['\t', '\n'] */
                         } else {
-                            goto STATE_249_DROP_OUT;    // [\11, \12] 
+                            goto STATE_249_DROP_OUT;    /* [\11, \12] */
                         }
                     }
                 } else {
                     if( input < 14) {
-                        goto STATE_251;    // '\r' 
+                            goto STATE_251;    /* '\r' */
                     } else {
                         if( input != 32) {
-                            goto STATE_249_DROP_OUT;    // [\14, \31] 
+                            goto STATE_249_DROP_OUT;    /* [\14, \31] */
                         } else {
-                            goto STATE_251;    // ' ' 
+                            goto STATE_251;    /* ' ' */
                         }
                     }
                 }
             } else {
                 if( input < 59) {
                     if( input < 48) {
-                        goto STATE_249_DROP_OUT;    // [\33, \47] 
+                            goto STATE_249_DROP_OUT;    /* [\33, \47] */
                     } else {
                         if( input != 58) {
-                            goto STATE_259;    // ['0', '9'] 
+                            goto STATE_259;    /* ['0', '9'] */
                         } else {
-                            goto STATE_249_DROP_OUT;    // ':' 
+                            goto STATE_249_DROP_OUT;    /* ':' */
                         }
                     }
                 } else {
                     if( input < 65) {
                         if( input == 59) {
-                            goto STATE_258;    // ';' 
+                            goto STATE_258;    /* ';' */
                         } else {
-                            goto STATE_249_DROP_OUT;    // ['<', '@'] 
+                            goto STATE_249_DROP_OUT;    /* ['<', '@'] */
                         }
                     } else {
                         if( input < 91) {
-                            goto STATE_255;    // ['A', 'Z'] 
+                            goto STATE_255;    /* ['A', 'Z'] */
                         } else {
-                            goto STATE_249_DROP_OUT;    // ['[', '^'] 
+                            goto STATE_249_DROP_OUT;    /* ['[', '^'] */
                         }
                     }
                 }
@@ -1583,48 +1578,48 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             if( input < 106) {
                 if( input < 100) {
                     if( input < 96) {
-                        goto STATE_255;    // '_' 
+                            goto STATE_255;    /* '_' */
                     } else {
                         if( input == 96) {
-                            goto STATE_249_DROP_OUT;    // '`' 
+                            goto STATE_249_DROP_OUT;    /* '`' */
                         } else {
-                            goto STATE_255;    // ['a', 'c'] 
+                            goto STATE_255;    /* ['a', 'c'] */
                         }
                     }
                 } else {
                     if( input < 102) {
                         if( input == 100) {
-                            goto STATE_252;    // 'd' 
+                            goto STATE_252;    /* 'd' */
                         } else {
-                            goto STATE_250;    // 'e' 
+                            goto STATE_250;    /* 'e' */
                         }
                     } else {
                         if( input != 105) {
-                            goto STATE_255;    // ['f', 'h'] 
+                            goto STATE_255;    /* ['f', 'h'] */
                         } else {
-                            goto STATE_254;    // 'i' 
+                            goto STATE_254;    /* 'i' */
                         }
                     }
                 }
             } else {
                 if( input < 123) {
                     if( input == 115) {
-                        goto STATE_257;    // 's' 
+                        goto STATE_257;    /* 's' */
                     } else {
-                        goto STATE_255;    // ['j', 'r'] 
+                        goto STATE_255;    /* ['j', 'r'] */
                     }
                 } else {
                     if( input < 125) {
                         if( input == 123) {
-                            goto STATE_253;    // '{' 
+                            goto STATE_253;    /* '{' */
                         } else {
-                            goto STATE_249_DROP_OUT;    // '|' 
+                            goto STATE_249_DROP_OUT;    /* '|' */
                         }
                     } else {
                         if( input == 125) {
-                            goto STATE_256;    // '}' 
+                            goto STATE_256;    /* '}' */
                         } else {
-                            goto STATE_249_DROP_OUT;    // ['~', oo] 
+                            goto STATE_249_DROP_OUT;    /* ['~', oo] */
                         }
                     }
                 }
@@ -1632,9 +1627,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         }
     
       STATE_249_DROP_OUT:
-        if( input == 0x1A ) {
-    
-            /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state*/
+        if( input == 0x1A) {
+            /* /* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state */
             goto TERMINAL_END_OF_STREAM;
         }
         __QUEX_DEBUG_INFO_DROP_OUT(249);
@@ -1653,7 +1647,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     __QUEX_DEBUG_INFO_ACCEPTANCE(28);
     last_acceptance = 28;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
+        /* no trigger set, no 'get character' */
         goto STATE_256_DROP_OUT;
         
       STATE_256_DROP_OUT:
@@ -1674,36 +1668,36 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 97) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_257_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_257_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input < 95) {
-                    goto STATE_257_DROP_OUT;    // ['[', '^'] 
+                        goto STATE_257_DROP_OUT;    /* ['[', '^'] */
                 } else {
                     if( input == 95) {
-                        goto STATE_255;    // '_' 
+                        goto STATE_255;    /* '_' */
                     } else {
-                        goto STATE_257_DROP_OUT;    // '`' 
+                        goto STATE_257_DROP_OUT;    /* '`' */
                     }
                 }
             }
         } else {
             if( input < 116) {
                 if( input == 101) {
-                    goto STATE_260;    // 'e' 
+                    goto STATE_260;    /* 'e' */
                 } else {
-                    goto STATE_255;    // ['a', 'd'] 
+                    goto STATE_255;    /* ['a', 'd'] */
                 }
             } else {
                 if( input < 117) {
-                    goto STATE_261;    // 't' 
+                        goto STATE_261;    /* 't' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['u', 'z'] 
+                        goto STATE_255;    /* ['u', 'z'] */
                     } else {
-                        goto STATE_257_DROP_OUT;    // ['{', oo] 
+                        goto STATE_257_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -1728,7 +1722,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     __QUEX_DEBUG_INFO_ACCEPTANCE(22);
     last_acceptance = 22;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
+        /* no trigger set, no 'get character' */
         goto STATE_258_DROP_OUT;
         
       STATE_258_DROP_OUT:
@@ -1747,12 +1741,12 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         QUEX_STREAM_GET(input);
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 48) {
-            goto STATE_259_DROP_OUT;    // [-oo, \47] 
+                goto STATE_259_DROP_OUT;    /* [-oo, \47] */
         } else {
             if( input < 58) {
-                goto STATE_259;    // ['0', '9'] 
+                goto STATE_259;    /* ['0', '9'] */
             } else {
-                goto STATE_259_DROP_OUT;    // [':', oo] 
+                goto STATE_259_DROP_OUT;    /* [':', oo] */
             }
         }
     
@@ -1781,32 +1775,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_260_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_260_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_260_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_260_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 110) {
                 if( input == 96) {
-                    goto STATE_260_DROP_OUT;    // '`' 
+                    goto STATE_260_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'm'] 
+                    goto STATE_255;    /* ['a', 'm'] */
                 }
             } else {
                 if( input < 111) {
-                    goto STATE_266;    // 'n' 
+                        goto STATE_266;    /* 'n' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['o', 'z'] 
+                        goto STATE_255;    /* ['o', 'z'] */
                     } else {
-                        goto STATE_260_DROP_OUT;    // ['{', oo] 
+                        goto STATE_260_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -1837,32 +1831,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_261_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_261_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_261_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_261_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 114) {
                 if( input == 96) {
-                    goto STATE_261_DROP_OUT;    // '`' 
+                    goto STATE_261_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'q'] 
+                    goto STATE_255;    /* ['a', 'q'] */
                 }
             } else {
                 if( input < 115) {
-                    goto STATE_262;    // 'r' 
+                        goto STATE_262;    /* 'r' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['s', 'z'] 
+                        goto STATE_255;    /* ['s', 'z'] */
                     } else {
-                        goto STATE_261_DROP_OUT;    // ['{', oo] 
+                        goto STATE_261_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -1893,32 +1887,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_262_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_262_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_262_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_262_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 117) {
                 if( input == 96) {
-                    goto STATE_262_DROP_OUT;    // '`' 
+                    goto STATE_262_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 't'] 
+                    goto STATE_255;    /* ['a', 't'] */
                 }
             } else {
                 if( input < 118) {
-                    goto STATE_263;    // 'u' 
+                        goto STATE_263;    /* 'u' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['v', 'z'] 
+                        goto STATE_255;    /* ['v', 'z'] */
                     } else {
-                        goto STATE_262_DROP_OUT;    // ['{', oo] 
+                        goto STATE_262_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -1949,32 +1943,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_263_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_263_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_263_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_263_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 99) {
                 if( input == 96) {
-                    goto STATE_263_DROP_OUT;    // '`' 
+                    goto STATE_263_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'b'] 
+                    goto STATE_255;    /* ['a', 'b'] */
                 }
             } else {
                 if( input < 100) {
-                    goto STATE_264;    // 'c' 
+                        goto STATE_264;    /* 'c' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['d', 'z'] 
+                        goto STATE_255;    /* ['d', 'z'] */
                     } else {
-                        goto STATE_263_DROP_OUT;    // ['{', oo] 
+                        goto STATE_263_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2005,32 +1999,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_264_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_264_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_264_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_264_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 116) {
                 if( input == 96) {
-                    goto STATE_264_DROP_OUT;    // '`' 
+                    goto STATE_264_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 's'] 
+                    goto STATE_255;    /* ['a', 's'] */
                 }
             } else {
                 if( input < 117) {
-                    goto STATE_265;    // 't' 
+                        goto STATE_265;    /* 't' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['u', 'z'] 
+                        goto STATE_255;    /* ['u', 'z'] */
                     } else {
-                        goto STATE_264_DROP_OUT;    // ['{', oo] 
+                        goto STATE_264_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2060,26 +2054,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95) {
             if( input < 65) {
-                goto STATE_265_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_265_DROP_OUT;    /* [-oo, '@'] */
             } else {
                 if( input < 91) {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 } else {
-                    goto STATE_265_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_265_DROP_OUT;    /* ['[', '^'] */
                 }
             }
         } else {
             if( input < 97) {
                 if( input == 95) {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 } else {
-                    goto STATE_265_DROP_OUT;    // '`' 
+                    goto STATE_265_DROP_OUT;    /* '`' */
                 }
             } else {
                 if( input < 123) {
-                    goto STATE_255;    // ['a', 'z'] 
+                    goto STATE_255;    /* ['a', 'z'] */
                 } else {
-                    goto STATE_265_DROP_OUT;    // ['{', oo] 
+                    goto STATE_265_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
@@ -2109,32 +2103,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_266_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_266_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_266_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_266_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 100) {
                 if( input == 96) {
-                    goto STATE_266_DROP_OUT;    // '`' 
+                    goto STATE_266_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'c'] 
+                    goto STATE_255;    /* ['a', 'c'] */
                 }
             } else {
                 if( input < 101) {
-                    goto STATE_267;    // 'd' 
+                        goto STATE_267;    /* 'd' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['e', 'z'] 
+                        goto STATE_255;    /* ['e', 'z'] */
                     } else {
-                        goto STATE_266_DROP_OUT;    // ['{', oo] 
+                        goto STATE_266_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2164,26 +2158,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95) {
             if( input < 65) {
-                goto STATE_267_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_267_DROP_OUT;    /* [-oo, '@'] */
             } else {
                 if( input < 91) {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 } else {
-                    goto STATE_267_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_267_DROP_OUT;    /* ['[', '^'] */
                 }
             }
         } else {
             if( input < 97) {
                 if( input == 95) {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 } else {
-                    goto STATE_267_DROP_OUT;    // '`' 
+                    goto STATE_267_DROP_OUT;    /* '`' */
                 }
             } else {
                 if( input < 123) {
-                    goto STATE_255;    // ['a', 'z'] 
+                    goto STATE_255;    /* ['a', 'z'] */
                 } else {
-                    goto STATE_267_DROP_OUT;    // ['{', oo] 
+                    goto STATE_267_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
@@ -2213,32 +2207,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_268_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_268_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_268_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_268_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 116) {
                 if( input == 96) {
-                    goto STATE_268_DROP_OUT;    // '`' 
+                    goto STATE_268_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 's'] 
+                    goto STATE_255;    /* ['a', 's'] */
                 }
             } else {
                 if( input < 117) {
-                    goto STATE_269;    // 't' 
+                        goto STATE_269;    /* 't' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['u', 'z'] 
+                        goto STATE_255;    /* ['u', 'z'] */
                     } else {
-                        goto STATE_268_DROP_OUT;    // ['{', oo] 
+                        goto STATE_268_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2268,26 +2262,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95) {
             if( input < 65) {
-                goto STATE_269_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_269_DROP_OUT;    /* [-oo, '@'] */
             } else {
                 if( input < 91) {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 } else {
-                    goto STATE_269_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_269_DROP_OUT;    /* ['[', '^'] */
                 }
             }
         } else {
             if( input < 97) {
                 if( input == 95) {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 } else {
-                    goto STATE_269_DROP_OUT;    // '`' 
+                    goto STATE_269_DROP_OUT;    /* '`' */
                 }
             } else {
                 if( input < 123) {
-                    goto STATE_255;    // ['a', 'z'] 
+                    goto STATE_255;    /* ['a', 'z'] */
                 } else {
-                    goto STATE_269_DROP_OUT;    // ['{', oo] 
+                    goto STATE_269_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
@@ -2317,32 +2311,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_270_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_270_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_270_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_270_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 117) {
                 if( input == 96) {
-                    goto STATE_270_DROP_OUT;    // '`' 
+                    goto STATE_270_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 't'] 
+                    goto STATE_255;    /* ['a', 't'] */
                 }
             } else {
                 if( input < 118) {
-                    goto STATE_271;    // 'u' 
+                        goto STATE_271;    /* 'u' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['v', 'z'] 
+                        goto STATE_255;    /* ['v', 'z'] */
                     } else {
-                        goto STATE_270_DROP_OUT;    // ['{', oo] 
+                        goto STATE_270_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2373,32 +2367,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_271_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_271_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_271_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_271_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 98) {
                 if( input == 96) {
-                    goto STATE_271_DROP_OUT;    // '`' 
+                    goto STATE_271_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // 'a' 
+                    goto STATE_255;    /* 'a' */
                 }
             } else {
                 if( input < 99) {
-                    goto STATE_272;    // 'b' 
+                        goto STATE_272;    /* 'b' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['c', 'z'] 
+                        goto STATE_255;    /* ['c', 'z'] */
                     } else {
-                        goto STATE_271_DROP_OUT;    // ['{', oo] 
+                        goto STATE_271_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2429,32 +2423,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_272_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_272_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_272_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_272_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 108) {
                 if( input == 96) {
-                    goto STATE_272_DROP_OUT;    // '`' 
+                    goto STATE_272_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'k'] 
+                    goto STATE_255;    /* ['a', 'k'] */
                 }
             } else {
                 if( input < 109) {
-                    goto STATE_273;    // 'l' 
+                        goto STATE_273;    /* 'l' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['m', 'z'] 
+                        goto STATE_255;    /* ['m', 'z'] */
                     } else {
-                        goto STATE_272_DROP_OUT;    // ['{', oo] 
+                        goto STATE_272_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2485,32 +2479,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_273_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_273_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_273_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_273_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 101) {
                 if( input == 96) {
-                    goto STATE_273_DROP_OUT;    // '`' 
+                    goto STATE_273_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'd'] 
+                    goto STATE_255;    /* ['a', 'd'] */
                 }
             } else {
                 if( input < 102) {
-                    goto STATE_274;    // 'e' 
+                        goto STATE_274;    /* 'e' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['f', 'z'] 
+                        goto STATE_255;    /* ['f', 'z'] */
                     } else {
-                        goto STATE_273_DROP_OUT;    // ['{', oo] 
+                        goto STATE_273_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2540,26 +2534,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95) {
             if( input < 65) {
-                goto STATE_274_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_274_DROP_OUT;    /* [-oo, '@'] */
             } else {
                 if( input < 91) {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 } else {
-                    goto STATE_274_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_274_DROP_OUT;    /* ['[', '^'] */
                 }
             }
         } else {
             if( input < 97) {
                 if( input == 95) {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 } else {
-                    goto STATE_274_DROP_OUT;    // '`' 
+                    goto STATE_274_DROP_OUT;    /* '`' */
                 }
             } else {
                 if( input < 123) {
-                    goto STATE_255;    // ['a', 'z'] 
+                    goto STATE_255;    /* ['a', 'z'] */
                 } else {
-                    goto STATE_274_DROP_OUT;    // ['{', oo] 
+                    goto STATE_274_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
@@ -2589,32 +2583,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_275_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_275_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_275_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_275_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 112) {
                 if( input == 96) {
-                    goto STATE_275_DROP_OUT;    // '`' 
+                    goto STATE_275_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'o'] 
+                    goto STATE_255;    /* ['a', 'o'] */
                 }
             } else {
                 if( input < 113) {
-                    goto STATE_276;    // 'p' 
+                        goto STATE_276;    /* 'p' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['q', 'z'] 
+                        goto STATE_255;    /* ['q', 'z'] */
                     } else {
-                        goto STATE_275_DROP_OUT;    // ['{', oo] 
+                        goto STATE_275_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2645,32 +2639,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_276_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_276_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_276_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_276_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 101) {
                 if( input == 96) {
-                    goto STATE_276_DROP_OUT;    // '`' 
+                    goto STATE_276_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'd'] 
+                    goto STATE_255;    /* ['a', 'd'] */
                 }
             } else {
                 if( input < 102) {
-                    goto STATE_277;    // 'e' 
+                        goto STATE_277;    /* 'e' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['f', 'z'] 
+                        goto STATE_255;    /* ['f', 'z'] */
                     } else {
-                        goto STATE_276_DROP_OUT;    // ['{', oo] 
+                        goto STATE_276_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2701,32 +2695,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_277_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_277_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_277_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_277_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 99) {
                 if( input == 96) {
-                    goto STATE_277_DROP_OUT;    // '`' 
+                    goto STATE_277_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'b'] 
+                    goto STATE_255;    /* ['a', 'b'] */
                 }
             } else {
                 if( input < 100) {
-                    goto STATE_278;    // 'c' 
+                        goto STATE_278;    /* 'c' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['d', 'z'] 
+                        goto STATE_255;    /* ['d', 'z'] */
                     } else {
-                        goto STATE_277_DROP_OUT;    // ['{', oo] 
+                        goto STATE_277_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2757,32 +2751,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_278_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_278_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_278_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_278_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 116) {
                 if( input == 96) {
-                    goto STATE_278_DROP_OUT;    // '`' 
+                    goto STATE_278_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 's'] 
+                    goto STATE_255;    /* ['a', 's'] */
                 }
             } else {
                 if( input < 117) {
-                    goto STATE_279;    // 't' 
+                        goto STATE_279;    /* 't' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['u', 'z'] 
+                        goto STATE_255;    /* ['u', 'z'] */
                     } else {
-                        goto STATE_278_DROP_OUT;    // ['{', oo] 
+                        goto STATE_278_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2812,26 +2806,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95) {
             if( input < 65) {
-                goto STATE_279_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_279_DROP_OUT;    /* [-oo, '@'] */
             } else {
                 if( input < 91) {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 } else {
-                    goto STATE_279_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_279_DROP_OUT;    /* ['[', '^'] */
                 }
             }
         } else {
             if( input < 97) {
                 if( input == 95) {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 } else {
-                    goto STATE_279_DROP_OUT;    // '`' 
+                    goto STATE_279_DROP_OUT;    /* '`' */
                 }
             } else {
                 if( input < 123) {
-                    goto STATE_255;    // ['a', 'z'] 
+                    goto STATE_255;    /* ['a', 'z'] */
                 } else {
-                    goto STATE_279_DROP_OUT;    // ['{', oo] 
+                    goto STATE_279_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
@@ -2861,32 +2855,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_250_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_250_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_250_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_250_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 120) {
                 if( input == 96) {
-                    goto STATE_250_DROP_OUT;    // '`' 
+                    goto STATE_250_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'w'] 
+                    goto STATE_255;    /* ['a', 'w'] */
                 }
             } else {
                 if( input < 121) {
-                    goto STATE_275;    // 'x' 
+                        goto STATE_275;    /* 'x' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['y', 'z'] 
+                        goto STATE_255;    /* ['y', 'z'] */
                     } else {
-                        goto STATE_250_DROP_OUT;    // ['{', oo] 
+                        goto STATE_250_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -2916,26 +2910,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 13) {
             if( input < 9) {
-                goto STATE_251_DROP_OUT;    // [-oo, \8] 
+                    goto STATE_251_DROP_OUT;    /* [-oo, \8] */
             } else {
                 if( input < 11) {
-                    goto STATE_251;    // ['\t', '\n'] 
+                    goto STATE_251;    /* ['\t', '\n'] */
                 } else {
-                    goto STATE_251_DROP_OUT;    // [\11, \12] 
+                    goto STATE_251_DROP_OUT;    /* [\11, \12] */
                 }
             }
         } else {
             if( input < 32) {
                 if( input == 13) {
-                    goto STATE_251;    // '\r' 
+                    goto STATE_251;    /* '\r' */
                 } else {
-                    goto STATE_251_DROP_OUT;    // [\14, \31] 
+                    goto STATE_251_DROP_OUT;    /* [\14, \31] */
                 }
             } else {
                 if( input == 32) {
-                    goto STATE_251;    // ' ' 
+                    goto STATE_251;    /* ' ' */
                 } else {
-                    goto STATE_251_DROP_OUT;    // [\33, oo] 
+                    goto STATE_251_DROP_OUT;    /* [\33, oo] */
                 }
             }
         }
@@ -2965,32 +2959,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_252_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_252_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_252_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_252_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 111) {
                 if( input == 96) {
-                    goto STATE_252_DROP_OUT;    // '`' 
+                    goto STATE_252_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'n'] 
+                    goto STATE_255;    /* ['a', 'n'] */
                 }
             } else {
                 if( input < 112) {
-                    goto STATE_270;    // 'o' 
+                        goto STATE_270;    /* 'o' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['p', 'z'] 
+                        goto STATE_255;    /* ['p', 'z'] */
                     } else {
-                        goto STATE_252_DROP_OUT;    // ['{', oo] 
+                        goto STATE_252_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -3015,7 +3009,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     __QUEX_DEBUG_INFO_ACCEPTANCE(25);
     last_acceptance = 25;
     QUEX_STREAM_TELL(last_acceptance_input_position);
-        // no trigger set, no 'get character' 
+        /* no trigger set, no 'get character' */
         goto STATE_253_DROP_OUT;
         
       STATE_253_DROP_OUT:
@@ -3036,32 +3030,32 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( input < 96) {
             if( input < 91) {
                 if( input < 65) {
-                    goto STATE_254_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_254_DROP_OUT;    /* [-oo, '@'] */
                 } else {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 }
             } else {
                 if( input != 95) {
-                    goto STATE_254_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_254_DROP_OUT;    /* ['[', '^'] */
                 } else {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 }
             }
         } else {
             if( input < 110) {
                 if( input == 96) {
-                    goto STATE_254_DROP_OUT;    // '`' 
+                    goto STATE_254_DROP_OUT;    /* '`' */
                 } else {
-                    goto STATE_255;    // ['a', 'm'] 
+                    goto STATE_255;    /* ['a', 'm'] */
                 }
             } else {
                 if( input < 111) {
-                    goto STATE_268;    // 'n' 
+                        goto STATE_268;    /* 'n' */
                 } else {
                     if( input < 123) {
-                        goto STATE_255;    // ['o', 'z'] 
+                        goto STATE_255;    /* ['o', 'z'] */
                     } else {
-                        goto STATE_254_DROP_OUT;    // ['{', oo] 
+                        goto STATE_254_DROP_OUT;    /* ['{', oo] */
                     }
                 }
             }
@@ -3091,26 +3085,26 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         __QUEX_DEBUG_INFO_INPUT(input);
         if( input < 95) {
             if( input < 65) {
-                goto STATE_255_DROP_OUT;    // [-oo, '@'] 
+                    goto STATE_255_DROP_OUT;    /* [-oo, '@'] */
             } else {
                 if( input < 91) {
-                    goto STATE_255;    // ['A', 'Z'] 
+                    goto STATE_255;    /* ['A', 'Z'] */
                 } else {
-                    goto STATE_255_DROP_OUT;    // ['[', '^'] 
+                    goto STATE_255_DROP_OUT;    /* ['[', '^'] */
                 }
             }
         } else {
             if( input < 97) {
                 if( input == 95) {
-                    goto STATE_255;    // '_' 
+                    goto STATE_255;    /* '_' */
                 } else {
-                    goto STATE_255_DROP_OUT;    // '`' 
+                    goto STATE_255_DROP_OUT;    /* '`' */
                 }
             } else {
                 if( input < 123) {
-                    goto STATE_255;    // ['a', 'z'] 
+                    goto STATE_255;    /* ['a', 'z'] */
                 } else {
-                    goto STATE_255_DROP_OUT;    // ['{', oo] 
+                    goto STATE_255_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
@@ -3148,7 +3142,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1839 "Simple-core-engine.cpp"
+#line 1833 "Simple-core-engine.cpp"
             
             }
         }
@@ -3181,7 +3175,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1872 "Simple-core-engine.cpp"
+#line 1866 "Simple-core-engine.cpp"
             
             }
         }
@@ -3200,7 +3194,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 28 "dos_lf_2.qx"
             self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1891 "Simple-core-engine.cpp"
+#line 1885 "Simple-core-engine.cpp"
             
             }
         }
@@ -3218,7 +3212,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 1909 "Simple-core-engine.cpp"
+#line 1903 "Simple-core-engine.cpp"
             
             }
         }
@@ -3236,7 +3230,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 1927 "Simple-core-engine.cpp"
+#line 1921 "Simple-core-engine.cpp"
             
             }
         }
@@ -3254,7 +3248,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 1945 "Simple-core-engine.cpp"
+#line 1939 "Simple-core-engine.cpp"
             
             }
         }
@@ -3272,7 +3266,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 1963 "Simple-core-engine.cpp"
+#line 1957 "Simple-core-engine.cpp"
             
             }
         }
@@ -3290,7 +3284,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 1981 "Simple-core-engine.cpp"
+#line 1975 "Simple-core-engine.cpp"
             
             }
         }
@@ -3308,7 +3302,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 1999 "Simple-core-engine.cpp"
+#line 1993 "Simple-core-engine.cpp"
             
             }
         }
@@ -3326,7 +3320,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2017 "Simple-core-engine.cpp"
+#line 2011 "Simple-core-engine.cpp"
             
             }
         }

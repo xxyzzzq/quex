@@ -389,6 +389,16 @@ __header_definitions_txt = """
 def __header_definitions(IncludeFile):
     return __header_definitions_txt.replace("$$INCLUDE$$", IncludeFile)
 
+def __local_variable_definitions(VariableInfoList):
+    txt = ""
+    for info in VariableInfoList:
+        type  = info[0]
+        name  = info[1]
+        value = info[2]
+        txt += "    %s %s = %s;\n" % (type, name, value)
+    return txt
+         
+
 __function_header_common = """
 #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 #    define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)   \\
@@ -429,17 +439,7 @@ quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUE
     // static functions cannot access members, thus: create shortcuts
 """
 
-__function_local_variable_definitions = """
-    /*  me = pointer to state of the lexical analyser 
-    */
-    int                      last_acceptance = -1;
-    QUEX_CHARACTER_POSITION  last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
-    /**/
-    QUEX_CHARACTER_TYPE      input = (QUEX_CHARACTER_TYPE)(0x00);\n
-    /**/
-    QUEX_LEXEME_CHARACTER_TYPE*  Lexeme  = 0x0;
-    size_t                       LexemeL = -1;
-    /**/
+__analyzer_function_start = """
 #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
     int loaded_byte_n = 0; /* At transition Drop-Out: 
                            **    > 0  number of loaded bytes. 
@@ -475,23 +475,38 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                      it is stored in 'me'.
     """              
     txt = ""
+    local_variable_list = []
     if StandAloneEngineF: 
         txt += __function_header_stand_alone
     else:                 
         txt += __function_header_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            txt += "    quex::quex_mode&  %s%s = self.%s;\n" % \
-                   (name, " " * (L- len(name)), name)
+            local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "self." + name]) 
 
-
-    txt += __function_local_variable_definitions
     txt = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
+    txt += "/*  me = pointer to state of the lexical analyser */"
 
+    local_variable_list.extend(
+            [ ["int",                         "last_acceptance",                "-1"],
+              ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
+              ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"], 
+              ["QUEX_LEXEME_CHARACTER_TYPE*", "Lexeme",                         "0x0"],
+              ["size_t",                      "LexemeL",                        "-1"] ])
+              
     # -- post-condition position: store position of original pattern
     for state_machine_id in PostConditionedStateMachineID_List:
-        txt += "    QUEX_CHARACTER_POSITION  last_acceptance_%s_input_position = (QUEX_CHARACTER_POSITION)(0x00);\n" % \
-               __nice(state_machine_id)
+         local_variable_list.append(["QUEX_CHARACTER_POSITION",
+                                     "last_acceptance_%s_input_position" % __nice(state_machine_id),
+                                     "(QUEX_CHARACTER_POSITION)(0x00)"])
+
+    # -- pre-condition fulfillment flags                
+    for pre_context_sm_id in PreConditionIDList:
+        local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
+
+    txt += __local_variable_definitions(local_variable_list)
+
+    txt += __analyzer_function_start
 
     # -- smart buffers require a reload procedure to adapt the positions of pointers.
     #    recall, that the pointer point to memory and do not refer to stream positions.
@@ -501,10 +516,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         load_procedure_txt += "        last_acceptance_%s_input_position -= (LoadedByteN); \\\n" % \
                               state_machine_id
     txt = txt.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", load_procedure_txt)                   
-
-    # -- pre-condition fulfillment flags                
-    for pre_context_sm_id in PreConditionIDList:
-        txt += "    int                        pre_context_%s_fulfilled_f = 0;\n" % __nice(pre_context_sm_id)
 
     # -- entry to the actual function body
     txt += "    QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);\n"
