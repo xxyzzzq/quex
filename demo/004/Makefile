@@ -30,6 +30,8 @@ CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
+all: $(APPLICATION) extensive-example.txt
+
 # -- application
 $(APPLICATION): $(APPLICATION).o \
 	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
@@ -43,6 +45,12 @@ $(APPLICATION): $(APPLICATION).o \
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
 
+# -- the example file (an extensive copy of example.txt)
+extensive-example.txt:  example.txt
+	rm -f tmp.txt
+	cp $< $@
+	for i in `seq 1 22`; do cat $@ >> tmp.txt; cp tmp.txt $@; done
+
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch $(MODE_FILES)
@@ -53,3 +61,5 @@ clean:
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.bak
+	rm -f extensive-example.txt
+

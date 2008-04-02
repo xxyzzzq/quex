@@ -80,7 +80,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
         txt += LanguageDB["$if =="]("0x%X" % EndOfFile_Code)
 
         txt += "    " + LanguageDB["$comment"](
-                "/* NO CHECK: last_acceptance != -1 ? since the first state can **never** be an acceptance state") 
+                "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"
         txt += "    " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
                                                   BackwardLexingF=False) + "\n"
