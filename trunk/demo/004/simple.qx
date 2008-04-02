@@ -126,7 +126,6 @@ mode PROGRAM :
     catch         => TKN_CATCH;
     else          => TKN_ELSE;
     if            => TKN_IF;
-    ";"           => TKN_SEMICOLON;
     {P_IDENTIFIER}  => TKN_IDENTIFIER(Lexeme);
     {P_NUMBER}      => TKN_NUMBER(atoi(Lexeme));
 
