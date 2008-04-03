@@ -1,21 +1,15 @@
-// -*- C++ -*-
+// -*- C++ -*- vim: set syntax=cpp:
 start = PROGRAM
 
-header {
-#include <cstdlib>  // C++ adapted 'stdlib.h'
-//                  // gets:  atoi(const char*) 
-}
-
 define {
-    // -*- C -*- // just to color it in emacs
     // Pattern definitions for example application
-    P_WHITESPACE  	  [ \t\n]+
+    P_WHITESPACE          [ \t\n]+
     P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
     P_NUMBER              [0-9]+
     //
-    P_STRING_DELIMITER                "\""
-    P_BACKSLASHED_STRING_DELIMITER    "\\\""
-    P_BACKSLASHED_BACKSLASH           "\\\\"
+    // String: 
+    //    Quote " followe by either \" or something different from " and then a final "
+    P_STRING              "\""(\\"\""|[^"])*"\""
 }
 
 token {
@@ -39,10 +33,12 @@ token {
     CURLY_BRACKET_C
     CURLY_BRACKET_O
     DIV
+    DO
     DOUBLE_COLON
     ELSE
     EQ
     FOR
+    FRIEND
     GREATER
     GR_EQ
     IDENTIFIER
@@ -51,8 +47,11 @@ token {
     LE_EQ
     MINUS
     MULT
+    MUTUAL
     NOT
+    NOT_EQ
     NUMBER
+    NAMESPACE
     OP_ASSIGNMENT
     PLUS
     PRIVATE
@@ -60,31 +59,20 @@ token {
     PUBLIC
     QUOTE
     SEMICOLON
-    SEMICOLON
     STRING
     STRUCT
-    STRUCT
+    SWITCH
     TEMPLATE
     THROW
     TRY
+    USING
     WHILE
 }
 
-mode END_OF_FILE :
-<inheritable: only>  
-{    
-    <<EOF>> {
-	self.send(quex::token::ID_TERMINATION);
-        RETURN;
-    }
-}
-
-
 mode PROGRAM :
-     END_OF_FILE
-<entry: STRING_READER>
-<exit:  STRING_READER>
 {
+    <<EOF>>       => TKN_TERMINATION;
+
     "("           => TKN_BRACKET_O;
     ")"           => TKN_BRACKET_C;
     "<"           => TKN_LESS;
@@ -103,58 +91,39 @@ mode PROGRAM :
     "*="          => TKN_ASSIGN_MULT;
     "/="          => TKN_ASSIGN_DIV;
     "=="          => TKN_EQ;
+    "!="          => TKN_NOT_EQ;
     ">="          => TKN_GR_EQ;
     "<="          => TKN_LE_EQ;
     "!"           => TKN_NOT;
     "&"           => TKN_AMPERSANT;
     "::"          => TKN_DOUBLE_COLON;
     ":"           => TKN_COLON;
-    for           => TKN_FOR;
-    while         => TKN_WHILE;
-    break         => TKN_BREAK;
-    continue      => TKN_CONTINUE;
+    namespace     => TKN_NAMESPACE;
+    using         => TKN_USING;
     class         => TKN_CLASS;
     struct        => TKN_STRUCT;
     template      => TKN_TEMPLATE;
     "public:"     => TKN_PUBLIC;
     "private:"    => TKN_PRIVATE;
     "protected:"  => TKN_PROTECTED;
-    ";"           => TKN_SEMICOLON;
+    friend        => TKN_FRIEND;
     const         => TKN_CONST;
+    mutual        => TKN_MUTUAL;
+    if            => TKN_IF;
+    else          => TKN_ELSE;
+    switch        => TKN_SWITCH;
+    for           => TKN_FOR;
+    do            => TKN_DO;
+    while         => TKN_WHILE;
+    break         => TKN_BREAK;
+    continue      => TKN_CONTINUE;
     throw         => TKN_THROW;
     try           => TKN_TRY;
     catch         => TKN_CATCH;
-    else          => TKN_ELSE;
-    if            => TKN_IF;
-    {P_IDENTIFIER}  => TKN_IDENTIFIER(Lexeme);
-    {P_NUMBER}      => TKN_NUMBER(atoi(Lexeme));
-
-    {P_WHITESPACE} {
-    }
-    {P_STRING_DELIMITER} {
-	self.send(TKN_QUOTE);
-	self << STRING_READER;
-    }
+    ";"           => TKN_SEMICOLON;
+    {P_IDENTIFIER}  => TKN_IDENTIFIER;
+    {P_NUMBER}      => TKN_NUMBER;
+    {P_WHITESPACE}  { }
+    {P_STRING}      => TKN_STRING;
 }
 
-mode STRING_READER :
-     END_OF_FILE
-<entry: PROGRAM>
-<exit:  PROGRAM>
-{
-    on_entry { self.accumulator.clear(); }
-    on_exit  { 
-	self.accumulator.flush(TKN_STRING); 
-	self.send(TKN_QUOTE);
-    }
-
-    {P_BACKSLASHED_STRING_DELIMITER} { self.accumulator.add(Lexeme); }
-    {P_BACKSLASHED_BACKSLASH}        { self.accumulator.add(Lexeme); }
-
-    {P_STRING_DELIMITER}             { self << PROGRAM; }
-
-    // default rule: shall always come last
-    . {
-	self.accumulator.add(Lexeme);
-    }
-}
