@@ -24,9 +24,10 @@ APPLICATION      = lexer
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
-CC = $(COMPILER) -c -fPIC \
+CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) 
 	 # -no-deprecated -Wall \
+	 #  -fPIC \
 
 LD = $(COMPILER) 
 

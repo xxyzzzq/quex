@@ -2,13 +2,14 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include <./tiny_lexer>
+#include "tiny_lexer"
 
-using namespace std;
 
 int 
 main(int argc, char** argv) 
 {        
+    using namespace std;
+
     // (*) create token
     quex::token        Token;
     // (*) create the lexical analyser
@@ -24,19 +25,19 @@ main(int argc, char** argv)
     int number_of_tokens = 0;
     // (*) loop until the 'termination' token arrives
     do {
-	// (*) get next token from the token stream
-	qlex->get_token(&Token);
+        // (*) get next token from the token stream
+        qlex->get_token(&Token);
 
-	// (*) print out token information
-	//     -- name of the token
-	// cout << Token.type_id_name() << endl;
+        // (*) print out token information
+        //     -- name of the token
+        cout << Token.type_id_name() << endl;
 
-	++number_of_tokens;
+        ++number_of_tokens;
 
-	// (*) check against 'termination'
+        // (*) check against 'termination'
     } while( Token.type_id() != quex::TKN_TERMINATION );
 
-	cout << Token.type_id_name() << endl;
+    // cout << Token.type_id_name() << endl;
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";
 
