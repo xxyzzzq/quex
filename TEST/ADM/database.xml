@@ -1,5 +1,5 @@
-<test-database execution-time-sec="0.00" date="Tue Apr  1 21:11:54 2008">
-    <last-used-diff-display-program name=""/>
+<test-database execution-time-sec="0.00" date="Thu Apr  3 07:11:39 2008">
+    <last-used-diff-display-program name="vimdiff"/>
     <group name="sphericalcow">
         <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.00"> 
             <application file-name="bug-1889871.sh" info-request-time="1202573865L"/>
@@ -130,7 +130,7 @@
         <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="-70565284"/>
+               <choice name="" result="FAIL" time-sec="0.00" crc="1368504904"/>
             </choice-list>
         </test>
         <test title="1905768" time-sum-sec="0.00"> 

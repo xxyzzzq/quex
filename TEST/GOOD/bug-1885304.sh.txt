@@ -1519,7 +1519,6 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
          *       <no epsilon>
          * 
          */
-      STATE_249:
     /*  origins = [(5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)] */
       STATE_249_INPUT:
         QUEX_STREAM_GET(input);
@@ -3142,7 +3141,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1833 "Simple-core-engine.cpp"
+#line 1832 "Simple-core-engine.cpp"
             
             }
         }
@@ -3175,7 +3174,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1866 "Simple-core-engine.cpp"
+#line 1865 "Simple-core-engine.cpp"
             
             }
         }
@@ -3194,7 +3193,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 28 "dos_lf_2.qx"
             self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1885 "Simple-core-engine.cpp"
+#line 1884 "Simple-core-engine.cpp"
             
             }
         }
@@ -3212,7 +3211,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 1903 "Simple-core-engine.cpp"
+#line 1902 "Simple-core-engine.cpp"
             
             }
         }
@@ -3230,7 +3229,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 1921 "Simple-core-engine.cpp"
+#line 1920 "Simple-core-engine.cpp"
             
             }
         }
@@ -3248,7 +3247,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 1939 "Simple-core-engine.cpp"
+#line 1938 "Simple-core-engine.cpp"
             
             }
         }
@@ -3266,7 +3265,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 1957 "Simple-core-engine.cpp"
+#line 1956 "Simple-core-engine.cpp"
             
             }
         }
@@ -3284,7 +3283,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 1975 "Simple-core-engine.cpp"
+#line 1974 "Simple-core-engine.cpp"
             
             }
         }
@@ -3302,7 +3301,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 1993 "Simple-core-engine.cpp"
+#line 1992 "Simple-core-engine.cpp"
             
             }
         }
@@ -3320,7 +3319,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2011 "Simple-core-engine.cpp"
+#line 2010 "Simple-core-engine.cpp"
             
             }
         }
@@ -3409,7 +3408,6 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         if( 0 == 1 ) {
             int unused = 0;
             unused = unused + ONE_AND_ONLY.id;
-            goto STATE_249;
         }
     }
 #include"Simple"

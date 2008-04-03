@@ -11,7 +11,7 @@ main(int argc, char** argv)
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
 	cout << "Miscenllaneous Scenarios: Content Size = 11, Fallback Size = 0\n";
 	cout << "CHOICES: istream, stdio\n";
-	return 1;
+	return 0;
     }
     if( argc < 2 ) {
 	cerr << "error: choice argument required (use --hwut-info)\n";
@@ -20,4 +20,6 @@ main(int argc, char** argv)
 
     if( strcmp(argv[1], "istream") == 0 ) test_istream(11, 0);
     else                                  test_stdio(11, 0);
+
+    return 0;
 }

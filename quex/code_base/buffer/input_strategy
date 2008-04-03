@@ -36,7 +36,11 @@ namespace quex {
     protected:
         InputHandleType* ih;
         size_t           __load_bytes(void* buffer_position, const size_t ByteNToRead)
-        { return ih->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); }
+        { 
+            ih->read((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            // std::fprintf(stderr, "gcount = %i\n", ih->gcount());
+            return ih->gcount();
+        }
     };
 
     template <class ProvidedCharacterType>
