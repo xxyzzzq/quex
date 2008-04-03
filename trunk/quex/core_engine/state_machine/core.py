@@ -226,6 +226,13 @@ class StateMachine:
 
     def get_init_state(self):
         return self.states[self.init_state_index]
+
+    def is_init_state_a_target_state(self):
+        init_state_index = self.init_state_index
+        for state in self.states.values():
+            target_state_index_list = state.transitions().get_target_state_index_list()
+            if init_state_index in target_state_index_list: return True
+        return False
         
     def get_orphaned_state_index_list(self):
         """This function checks for states that are not targeted via any trigger

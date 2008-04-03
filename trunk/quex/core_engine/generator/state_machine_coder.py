@@ -25,10 +25,13 @@ def do(state_machine, LanguageDB,
     if BackwardInputPositionDetectionF: assert BackwardLexingF
 
     txt = ""
+
     # -- treat initial state separately 
-    LabelName = languages_label.get(UserDefinedStateMachineName, state_machine.init_state_index)
-            
-    txt += "%s\n"  % LanguageDB["$label-definition"](LabelName)
+    if state_machine.is_init_state_a_target_state():
+        # (only define the init state label, if it is really needed)
+        LabelName = languages_label.get(UserDefinedStateMachineName, state_machine.init_state_index)
+        txt += "%s\n"  % LanguageDB["$label-definition"](LabelName)
+
     init_state = state_machine.states[state_machine.init_state_index]
     #
     # NOTE: Only the init state provides a transition via 'EndOfFile'! In any other

@@ -12,7 +12,7 @@ main(int argc, char** argv)
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         std::cout << "Backwards Iteration\n";
         std::cout << "CHOICES: Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2\n";
-        return 1;
+        return 0;
     }
     istringstream ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
     ifs.seekg(35);
@@ -53,4 +53,5 @@ main(int argc, char** argv)
         }
     }
     std::cout << "begin of file\n";
+    return 0;
 }

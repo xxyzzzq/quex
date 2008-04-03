@@ -293,7 +293,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
 
     txt = ""
-    if_statement = "$if"
+    if_statement = LanguageDB["$if"]
     OriginList.sort()
     for origin in OriginList:
         if not origin.is_acceptance(): continue
@@ -301,27 +301,27 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         info = get_on_detection_code_fragment(StateMachineName, origin)
 
         if origin.pre_context_id() != -1L:
-            txt += if_statement + " pre_context_%s_fulfilled_f $then\n" % origin.pre_context_id() 
+            txt += if_statement + " pre_context_%s_fulfilled_f " % origin.pre_context_id() + LanguageDB["$then"] + "\n" 
             txt += indent_this(info)
-            txt += "$end\n"
+            txt += LanguageDB["$end"] + "\n"
         
         elif origin.pre_context_begin_of_line_f():
-            txt += if_statement + " $begin-of-line-flag-true $then\n" 
+            txt += if_statement + " $begin-of-line-flag-true " + LanguageDB["$then"] + "\n"  
             txt += indent_this(info)
-            txt += "$end\n"
+            txt += LanguageDB["$end"] + "\n"
         
         else:
-            if if_statement == "$if": 
+            if if_statement == LanguageDB["$if"]: 
                 txt += info
             else:
                 # if an 'if' statements preceeded, the acceptance needs to appear in an else block
-                txt += "$else\n"; 
+                txt += LanguageDB["$else"] + "\n"; 
                 txt += indent_this(info)
-                txt += "$end\n"
+                txt += LanguageDB["$end"] + "\n"
 
             break  # no need for further pre-condition consideration
 
-        if_statement = "$elseif"
+        if_statement = LanguageDB["$elseif"]
 
     # (*) write code for the unconditional acceptance states
     return txt
@@ -531,7 +531,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "        int unused = 0;\n"
     for mode_name in ModeNameList:
         txt += "        unused = unused + %s.id;\n" % mode_name
-    txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
+    ## This was once we did not know ... if there was a goto to the initial state or not.
+    ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
 
     txt += "    }\n"
 
