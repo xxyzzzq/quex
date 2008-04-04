@@ -7,7 +7,8 @@
 extern "C" {
 #include <quex/code_base/compatibility/inttypes.h>
 }
-#include <cstdio>
+#include<cstdio>
+#include<stdexcept> // Standard C++ Exceptions
 
 namespace quex {
 
@@ -37,9 +38,19 @@ namespace quex {
         InputHandleType* ih;
         size_t           __load_bytes(void* buffer_position, const size_t ByteNToRead)
         { 
+            // std::fprintf(stdout, "tell 0 = %i\n", (long)(ih->tellg()));
+            const stream_position position_before = ih->tellg();
             ih->read((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
-            // std::fprintf(stderr, "gcount = %i\n", ih->gcount());
-            return ih->gcount();
+            const size_t Result = ih->gcount();
+            if( ih->eof() && ! ih->bad() ) {
+                ih->clear();
+                ih->seekg(position_before + (stream_offset)(Result));
+            } else if( ih->fail() ) {
+                throw std::runtime_error("Fatal error during stream reading.");
+            }
+            // const size_t Result = ih->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            // std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(ih->tellg()), Result);
+            return Result;
         }
     };
 
