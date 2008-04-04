@@ -61,7 +61,8 @@ class Generator(GeneratorBase):
                                             self.default_action, 
                                             self.end_of_stream_action, 
                                             self.begin_of_line_condition_f, 
-                                            self.pre_context_sm_id_list) 
+                                            self.pre_context_sm_id_list,
+                                            self.language_db) 
 
         return txt
 
@@ -80,7 +81,7 @@ class Generator(GeneratorBase):
                                       BackwardLexingF             = True)
 
         LabelName = languages_label.get_terminal(self.state_machine_name + "_PRE_CONDITION_")      
-        txt += "%s\n" % LanguageDB["$label-definition"](LabelName) 
+        txt += LanguageDB["$label-definition"](LabelName) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyser went backwards, so it needs to be reset.
         txt += "    QUEX_CORE_SEEK_ANALYSER_START_POSITION;\n"

@@ -131,7 +131,7 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     #
     for origin in OriginList:
         if origin.store_input_position_f():
-            txt += "pre_context_%s_fulfilled_f = 1;\n" % __nice(origin.state_machine_id)
+            txt += LanguageDB["$set-pre-context-flag"](origin.state_machine_id, 1)
     txt += "\n"    
 
     return txt
@@ -301,12 +301,12 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         info = get_on_detection_code_fragment(StateMachineName, origin)
 
         if origin.pre_context_id() != -1L:
-            txt += if_statement + " pre_context_%s_fulfilled_f " % origin.pre_context_id() + LanguageDB["$then"] + "\n" 
+            txt += LanguageDB["$if pre-context"](origin.pre_context_id())
             txt += indent_this(info)
             txt += LanguageDB["$end"] + "\n"
         
         elif origin.pre_context_begin_of_line_f():
-            txt += if_statement + " $begin-of-line-flag-true " + LanguageDB["$then"] + "\n"  
+            txt += LanguageDB["$if begin-of-line"]
             txt += indent_this(info)
             txt += LanguageDB["$end"] + "\n"
         
@@ -600,7 +600,7 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 """
 
 def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList):
+                      SupportBeginOfLineF, PreConditionIDList, LanguageDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -680,8 +680,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     #     delete all pre-condition fullfilled flags
     delete_pre_context_flags_str = ""
     for pre_context_sm_id in PreConditionIDList:
-        delete_pre_context_flags_str += "    pre_context_%s_fulfilled_f = 0;\n" \
-                                        % __nice(pre_context_sm_id)
+        delete_pre_context_flags_str += "    " + LanguageDB["$set-pre-context-flag"](pre_context_sm_id, 0)
 
     #  -- execute default pattern action 
     #  -- reset character stream to last success                
@@ -703,5 +702,3 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
 
     return txt
     
-def __pre_context_ok(PreConditionStateMachineID):
-    return "pre_context_%s_fulfilled_f = 1;" % __nice(PreConditionStateMachineID)
