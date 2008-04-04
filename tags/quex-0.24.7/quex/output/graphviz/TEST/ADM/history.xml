@@ -1,0 +1,101 @@
+<history date="Thu Apr  3 21:06:14 2008" element-n="43">
+    <day year="2008" month="02" day="16">
+        <history-init time="03:28:11"/>
+        <test-runs-today n="3" ok-n="0" fail-n="0" else-n="3" last-run="no verdict" last-time="09:46:34"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="09:16:15"/>
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="3" ok-n="0" fail-n="0" else-n="3" last-run="no verdict" last-time="16:11:32"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="4" ok-n="0" fail-n="0" else-n="4" last-run="no verdict" last-time="16:03:54"/>
+    </day>
+    <day year="2008" month="02" day="20">
+        <test-runs-today n="3" ok-n="0" fail-n="0" else-n="3" last-run="no verdict" last-time="16:34:58"/>
+    </day>
+    <day year="2008" month="02" day="21">
+        <test-runs-today n="2" ok-n="0" fail-n="0" else-n="2" last-run="no verdict" last-time="15:53:38"/>
+    </day>
+    <day year="2008" month="02" day="22">
+        <test-runs-today n="4" ok-n="0" fail-n="0" else-n="4" last-run="no verdict" last-time="23:57:55"/>
+    </day>
+    <day year="2008" month="02" day="23">
+        <accept    time="01:22:24" application="get_supported_formats.py" choice="" crc="-1342312020" />
+        <test-runs-today n="9" ok-n="3" fail-n="0" else-n="6" last-run="oll korrekt" last-time="23:45:56"/>
+    </day>
+    <day year="2008" month="02" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:01:23"/>
+    </day>
+    <day year="2008" month="02" day="25">
+        <accept    time="00:08:41" application="plot-core.py" choice="" crc="-913485699" />
+        <accept    time="00:08:41" application="plot-papc.py" choice="" crc="-60819449" />
+        <accept    time="00:08:41" application="plot-pre-context.py" choice="" crc="2024337280" />
+        <test-runs-today n="4" ok-n="3" fail-n="0" else-n="1" last-run="oll korrekt" last-time="23:49:52"/>
+    </day>
+    <day year="2008" month="02" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:36:07"/>
+    </day>
+    <day year="2008" month="02" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:09:37"/>
+    </day>
+    <day year="2008" month="02" day="29">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:45:17"/>
+    </day>
+    <day year="2008" month="03" day="01">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:34:57"/>
+    </day>
+    <day year="2008" month="03" day="02">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:27:50"/>
+    </day>
+    <day year="2008" month="03" day="03">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:19:04"/>
+    </day>
+    <day year="2008" month="03" day="04">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:17:53"/>
+    </day>
+    <day year="2008" month="03" day="05">
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="22:33:27"/>
+    </day>
+    <day year="2008" month="03" day="06">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="failure" last-time="22:29:55"/>
+    </day>
+    <day year="2008" month="03" day="08">
+        <test-runs-today n="5" ok-n="1" fail-n="4" else-n="0" last-run="failure" last-time="07:14:55"/>
+    </day>
+    <day year="2008" month="03" day="25">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="20:20:24"/>
+    </day>
+    <day year="2008" month="03" day="27">
+        <accept    time="20:24:03" application="plot-core.py" choice="" crc="-925326840" />
+        <accept    time="20:24:04" application="plot-papc.py" choice="" crc="0" />
+        <accept    time="20:24:05" application="plot-pre-context.py" choice="" crc="0" />
+        <accept    time="20:24:14" application="plot-core.py" choice="" crc="1920926486" />
+        <accept    time="20:24:14" application="plot-papc.py" choice="" crc="-1060066727" />
+        <accept    time="20:24:14" application="plot-pre-context.py" choice="" crc="-1946624164" />
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="oll korrekt" last-time="20:38:00"/>
+    </day>
+    <day year="2008" month="03" day="28">
+        <accept    time="19:55:46" application="plot-papc.py" choice="" crc="-1968807122" />
+        <accept    time="19:55:51" application="plot-pre-context.py" choice="" crc="1220693871" />
+        <accept    time="19:56:07" application="plot-core.py" choice="" crc="-322414128" />
+        <test-runs-today n="20" ok-n="13" fail-n="7" else-n="0" last-run="oll korrekt" last-time="23:42:47"/>
+    </day>
+    <day year="2008" month="03" day="29">
+        <accept    time="19:55:00" application="plot-papc.py" choice="" crc="-1052421152" />
+        <test-runs-today n="16" ok-n="12" fail-n="4" else-n="0" last-run="oll korrekt" last-time="23:36:52"/>
+    </day>
+    <day year="2008" month="03" day="30">
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="20:25:36"/>
+    </day>
+    <day year="2008" month="03" day="31">
+        <test-runs-today n="9" ok-n="8" fail-n="1" else-n="0" last-run="oll korrekt" last-time="05:39:32"/>
+    </day>
+    <day year="2008" month="04" day="01">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:13:33"/>
+    </day>
+    <day year="2008" month="04" day="03">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="19:06:14"/>
+    </day>
+</history>

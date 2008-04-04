@@ -1,0 +1,95 @@
+// vim:set syntax=cpp:
+// (C) 2007 Frank-Rene Schaefer
+//
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
+#define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
+
+extern "C" {
+#include <quex/code_base/compatibility/inttypes.h>
+}
+#include<cstdio>
+#include<stdexcept> // Standard C++ Exceptions
+
+namespace quex {
+
+    // NOTE: Specializations are only implemented for InputHandleTypeP = pointer.
+    //       Any other implementation is forbidden and will not compile.
+    //       This is intended! <fschaef 07y7m22d>
+    template <class InputHandleTypeP, class ProvidedCharacterType>
+        struct input_strategy_base;
+
+    template <class InputHandleTypeP, class ProvidedCharacterType=uint8_t>
+        struct input_strategy;
+
+
+    template <class InputHandleType, class ProvidedCharacterType>
+    struct input_strategy_base<InputHandleType*, ProvidedCharacterType> {
+
+        typedef typename InputHandleType::pos_type   stream_position;
+        typedef typename InputHandleType::off_type   stream_offset;
+        typedef InputHandleType                      input_handle_type;
+
+        stream_position    tell()                           { return ih->tellg(); }
+        void               seek(const stream_position& Pos) { ih->seekg(Pos); }
+        void               close()                          { /* ih->close(); */ }
+        void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
+
+    protected:
+        InputHandleType* ih;
+        size_t           __load_bytes(void* buffer_position, const size_t ByteNToRead)
+        { 
+            // std::fprintf(stdout, "tell 0 = %i\n", (long)(ih->tellg()));
+            const stream_position position_before = ih->tellg();
+            ih->read((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            const size_t Result = ih->gcount();
+            if( ih->eof() && ! ih->bad() ) {
+                ih->clear();
+                ih->seekg(position_before + (stream_offset)(Result));
+            } else if( ih->fail() ) {
+                throw std::runtime_error("Fatal error during stream reading.");
+            }
+            // const size_t Result = ih->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            // std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(ih->tellg()), Result);
+            return Result;
+        }
+    };
+
+    template <class ProvidedCharacterType>
+    struct input_strategy_base<std::FILE*, ProvidedCharacterType> {
+        typedef long        stream_position;
+        typedef long        stream_offset;
+        typedef std::FILE   input_handle_type;
+
+        stream_position    tell()                           { return ftell(ih); }
+        void               seek(const stream_position& Pos) { fseek(ih, Pos, SEEK_SET); }
+        void               close()                          { fclose(ih); }
+        void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
+
+    protected:
+        std::FILE*   ih;
+        size_t  __load_bytes(void* buffer_position, const size_t ByteNToRead)
+        { return fread(buffer_position, 1, ByteNToRead, ih); }
+    };
+
+    // specification on for InputHandleType*, no other specification.
+    template <class InputHandleType, class ProvidedCharacterType>
+    struct input_strategy<InputHandleType*, ProvidedCharacterType> : 
+        public input_strategy_base<InputHandleType*, ProvidedCharacterType> 
+    {
+        typedef input_strategy_base<InputHandleType*, ProvidedCharacterType> base;
+        typedef typename base::stream_position     stream_position;
+        typedef typename base::stream_offset       stream_offset;
+        typedef typename base::input_handle_type   input_handle_type;
+        typedef ProvidedCharacterType              provided_character_type;
+
+        static const size_t SizeOfCharacter = sizeof(provided_character_type);  
+
+        input_strategy(InputHandleType* InputHandle) { base::ih = InputHandle; }
+
+        int   read(ProvidedCharacterType* start_of_buffer, const int N)  
+        { return base::__load_bytes(start_of_buffer, N * SizeOfCharacter); }
+    };
+
+}
+
+#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
