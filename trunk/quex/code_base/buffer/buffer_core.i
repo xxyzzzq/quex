@@ -13,6 +13,8 @@
 extern "C" {
 #include <quex/code_base/compatibility/inttypes.h>
 }
+#include<cstdlib>
+#include<cstring>
 
 namespace quex {
 
@@ -202,18 +204,19 @@ namespace quex {
             // 
             size_t remaining_distance_to_target = Distance;
             while( 1 + 1 == 2 ) {
-                if( _end_of_file_p != 0x0 ) 
+                if( _end_of_file_p != 0x0 ) {
                     if( _current_p + remaining_distance_to_target >= _end_of_file_p ) {
                         _current_p      = _end_of_file_p;
                         _lexeme_start_p = _current_p;
                         return;
                     } 
-                else
+                } else {
                     if( _current_p + remaining_distance_to_target < content_end() ) {
                         _current_p      += remaining_distance_to_target;
                         _lexeme_start_p  = _current_p + 1;
                         return;
                     }
+                }
 
                 // move current_p to end of the buffer, thus decrease the remaining distance
                 remaining_distance_to_target -= (content_end() - _current_p);

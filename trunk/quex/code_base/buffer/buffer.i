@@ -71,7 +71,7 @@ namespace quex {
             __quex_assert(fill_start_adr     >= this->content_begin());
             __quex_assert(fill_start_adr + N <= this->content_end());
             //______________________________________________________________________________
-            const int ReadN = _input.read(fill_start_adr, N); 
+            const int ReadN = _input.read_characters(fill_start_adr, N); 
 
             return ReadN;
         }

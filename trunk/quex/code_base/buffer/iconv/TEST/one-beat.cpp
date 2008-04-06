@@ -22,7 +22,7 @@ main(int argc, char** argv)
 
     if( argc > 1 ) target_charset = argv[1];
 
-    const int LoadedN = is.read(buffer, 128);
+    const int LoadedN = is.read_characters(buffer, 128);
  
     for(int i=0; i < LoadedN ; i+=4) {
         unsigned char b0 = buffer[i+0];
