@@ -28,10 +28,20 @@ APPLICATION      = lexer
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
+# Some compiler distributions have iconv in a separate lib:
+#    -- Intel's icpc
+#    -- MS's cl
+#    -- Digital Mars dmc
+# Add any compiler that does so to
+ifneq (,$(findstring $(COMPILER),icpc cl dmc))
+	LIBICONV=-liconv
+else
+	LIBICONV=#
+endif
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
 	 -D___QUEX_UNIT_TESTING___ -ggdb
-LD = $(COMPILER) 
+LD = $(COMPILER) $(LIBICONV) 
 
 # (*) RULES ____________________________________________________________________
 # -- application

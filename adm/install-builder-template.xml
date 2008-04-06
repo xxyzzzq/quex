@@ -8,6 +8,7 @@
     <compressionAlgorithm>lzma</compressionAlgorithm>
     <enableRollback>1</enableRollback>
     <saveRelativePaths>1</saveRelativePaths>
+    <registerWithPackageDatabase>1</registerWithPackageDatabase>
     <componentList>
         <component>
             <name>default</name>
@@ -48,6 +49,13 @@
                             <scope>system</scope>
                             <value>${installdir}</value>
                         </addEnvironmentVariable>
+                        <addDirectoryToPath>
+                            <path>${installdir}/$$DISTRIBUTION_ROOT_DIR$$</path>
+                        </addDirectoryToPath>
+                        <createSymLink>
+                            <linkName>${installdir}/$$DISTRIBUTION_ROOT_DIR$$/quex-exe.py</linkName>
+                            <target>/usr/local/bin/quex</target>
+                        </createSymLink>
                     </actionList>
                     <distributionFileList>
                         <distributionDirectory>
@@ -66,6 +74,14 @@
                             <scope>system</scope>
                             <value>${installdir}</value>
                         </addEnvironmentVariable>
+                        <addDirectoryToPath>
+                            <scope>system</scope>
+                            <path>${installdir}</path>
+                        </addDirectoryToPath>
+                        <copyFile>
+                            <origin>${installdir}/$$DISTRIBUTION_ROOT_DIR$$/quex.bat</origin>
+                            <destination>${installdir}/quex.bat</destination>
+                        </copyFile>
                     </actionList>
                     <distributionFileList>
                         <distributionDirectory>

@@ -21,7 +21,7 @@ main(int argc, char** argv)
 
     if( argc > 1 ) target_charset = argv[1];
 
-    const int LoadedN = is.read((uint32_t*)buffer, 128);
+    const int LoadedN = is.read_characters((uint32_t*)buffer, 128);
 
     cout << "character n = " << LoadedN << endl;
  

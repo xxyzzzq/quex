@@ -14,8 +14,8 @@
 //
 //        tell()          returning a value of the current input position
 //        seek(pos)       sets the the current input position in the stream
-//        read(buffer, N) fills the buffer with N bytes from the stream.
-//                        returns the number of actually filled bytes.
+//        read_characters(buffer, N) fills the buffer with N characters from the stream.
+//                                   returns the number of actually filled characters.
 //  
 //  ASSUMPTION: 
 //  
@@ -78,10 +78,8 @@
 extern "C" { 
 #include <iconv.h>
 #include <quex/code_base/compatibility/inttypes.h>
-#include <quex/code_base/compatibility/iconv-argument-types.h>
 }
-
-
+#include <quex/code_base/compatibility/iconv-argument-types.h>
 
 namespace quex {
 
@@ -109,7 +107,7 @@ namespace quex {
                              const char* FromCoding, const char* ToCoding);
         ~input_strategy_iconv();
 
-        size_t       read(provided_character_type* user_buffer_p, const size_t N);
+        size_t       read_characters(provided_character_type* user_buffer_p, const size_t N);
 
     protected:
         struct buffer_info {
@@ -140,7 +138,7 @@ namespace quex {
 
 #       ifdef __QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
         void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* From, const char* To,
-                                                                                               iconv_t IconvResult);
+                                                                   iconv_t IconvResult);
         void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(size_t LoadedByteN);
         void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(size_t Report);
         void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(buffer_info* user_buffer);
@@ -177,12 +175,12 @@ namespace quex {
     TEMPLATE inline CLASS::~input_strategy_iconv() 
     { iconv_close(iconv_handle); }
 
-    TEMPLATE inline size_t CLASS::read(provided_character_type* user_buffer_p, const size_t N) 
+    TEMPLATE inline size_t CLASS::read_characters(provided_character_type* user_buffer_p, const size_t N) 
     {
         // NOTE: There was an idea to allow multiple input_strategy_iconv objects
-        //       access to the same intermediate buffer. In this case, i.e.
-        //       that this function is called with the same raw_buffer.start
-        //       inside two threads, the function would have to block.
+        //       access to the same intermediate buffer. In this case (i.e.
+        //       this function is called with the same raw_buffer.start
+        //       inside two threads) the function would have to block.
 
         buffer_info  user_buffer;
 
@@ -210,7 +208,7 @@ namespace quex {
 
 
             // -- has user buffer been filled to the given limit N ?
-            if( ! user_buffer.bytes_left_n ) return /* sum converted bytes = */ N;
+            if( ! user_buffer.bytes_left_n ) return /* sum converted characters = */ N;
 
             // -- are there still bytes in the stream? 
             if( LoadedByteN != bytes_to_read )  return statistics.sample_n; // EOF

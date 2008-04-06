@@ -21,7 +21,6 @@ namespace quex {
     template <class InputHandleTypeP, class ProvidedCharacterType=uint8_t>
         struct input_strategy;
 
-
     template <class InputHandleType, class ProvidedCharacterType>
     struct input_strategy_base<InputHandleType*, ProvidedCharacterType> {
 
@@ -86,8 +85,8 @@ namespace quex {
 
         input_strategy(InputHandleType* InputHandle) { base::ih = InputHandle; }
 
-        int   read(ProvidedCharacterType* start_of_buffer, const int N)  
-        { return base::__load_bytes(start_of_buffer, N * SizeOfCharacter); }
+        size_t   read_characters(ProvidedCharacterType* start_of_buffer, const int N)  
+        { return base::__load_bytes(start_of_buffer, N * SizeOfCharacter) / SizeOfCharacter; }
     };
 
 }
