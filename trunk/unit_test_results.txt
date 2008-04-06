@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: /TEST
-DATE:  Thu Apr  3 21:02:12 2008
+DATE:  Sun Apr  6 00:25:49 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -53,6 +53,9 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1885304.sh ..................................................[OK]
     1905768
         bug-1905768.sh ..................................................[OK]
+    1935701 - 0.24.7 buffer handling size mismatch
+        bug-1935701.exe FILE ............................................[OK]
+                        fstream .........................................[OK]
     1893880 0.20.5 allows inheritable
         bug-1893880.sh ..................................................[OK]
     1892809
@@ -76,7 +79,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: /demo/TEST
-DATE:  Thu Apr  3 21:05:29 2008
+DATE:  Sun Apr  6 00:27:25 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -147,7 +150,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: /quex/TEST
-DATE:  Thu Apr  3 21:05:29 2008
+DATE:  Sun Apr  6 00:27:25 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -162,7 +165,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: /quex/code_base/buffer/TEST
-DATE:  Thu Apr  3 21:05:29 2008
+DATE:  Sun Apr  6 00:27:30 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -202,7 +205,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: /quex/code_base/buffer/iconv/TEST
-DATE:  Thu Apr  3 21:05:29 2008
+DATE:  Sun Apr  6 00:27:31 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -219,7 +222,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: /quex/code_base/template/TEST
-DATE:  Thu Apr  3 21:05:29 2008
+DATE:  Sun Apr  6 00:27:33 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -239,7 +242,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: /quex/core_engine/TEST
-DATE:  Thu Apr  3 21:05:30 2008
+DATE:  Sun Apr  6 00:27:34 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -272,7 +275,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: /quex/core_engine/generator/TEST
-DATE:  Thu Apr  3 21:05:50 2008
+DATE:  Sun Apr  6 00:28:05 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -368,7 +371,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: /quex/core_engine/regular_expression/TEST
-DATE:  Thu Apr  3 21:05:55 2008
+DATE:  Sun Apr  6 00:28:10 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -430,7 +433,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: /quex/core_engine/state_machine/TEST
-DATE:  Thu Apr  3 21:05:59 2008
+DATE:  Sun Apr  6 00:28:15 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -526,7 +529,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: /quex/frs_py/TEST
-DATE:  Thu Apr  3 21:05:59 2008
+DATE:  Sun Apr  6 00:28:16 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -549,7 +552,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: /quex/input/TEST
-DATE:  Thu Apr  3 21:06:13 2008
+DATE:  Sun Apr  6 00:28:31 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -572,7 +575,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: /quex/output/graphviz/TEST
-DATE:  Thu Apr  3 21:06:14 2008
+DATE:  Sun Apr  6 00:28:32 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
