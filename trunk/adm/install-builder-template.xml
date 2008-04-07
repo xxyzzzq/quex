@@ -79,7 +79,7 @@
                             <path>${installdir}</path>
                         </addDirectoryToPath>
                         <copyFile>
-                            <origin>${installdir}/$$DISTRIBUTION_ROOT_DIR$$/quex.bat</origin>
+                            <origin>${installdir}/quex-$$VERSION$$/quex.bat</origin>
                             <destination>${installdir}/quex.bat</destination>
                         </copyFile>
                     </actionList>
