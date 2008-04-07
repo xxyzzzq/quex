@@ -10,6 +10,15 @@ extern "C" {
 #include<cstdio>
 #include<stdexcept> // Standard C++ Exceptions
 
+#ifndef __quex_asserts
+#   ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cassert>
+#      define  __quex_assert(X)   assert(X)
+#   else
+#      define  __quex_assert(X)   /*no assert*/
+#   endif
+#endif
+
 namespace quex {
 
     // NOTE: Specializations are only implemented for InputHandleTypeP = pointer.
@@ -86,7 +95,11 @@ namespace quex {
         input_strategy(InputHandleType* InputHandle) { base::ih = InputHandle; }
 
         size_t   read_characters(ProvidedCharacterType* start_of_buffer, const int N)  
-        { return base::__load_bytes(start_of_buffer, N * SizeOfCharacter) / SizeOfCharacter; }
+        { 
+            size_t byte_n = base::__load_bytes(start_of_buffer, N * SizeOfCharacter);
+            __quex_assert(byte_n % SizeOfCharacter == 0);
+            return byte_n / SizeOfCharacter; 
+        }
     };
 
 }
