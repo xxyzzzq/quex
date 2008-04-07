@@ -1,14 +1,15 @@
-===========================================================================
- || Hereby, I promise to report **AT LEAST ONE BUG**, if I find one that
- || has not yet been reported. Bugs can be reported under the URL:
+=================================================================
+ || Hereby, I promise to report **AT LEAST ONE BUG**, if I find 
+ || one that has not yet been reported. Bugs can be reported 
+ || under the URL:
  ||
- ||     https://sourceforge.net/tracker/?group_id=168259&atid=846112
+ || https://sourceforge.net/tracker/?group_id=168259&atid=846112
  ||
  || Alternatively, this page can easily be found starting from:
  || 
- ||     http://quex.sourceforge.net
+ || http://quex.sourceforge.net
  ||
-===========================================================================
+==================================================================
 
 The Software is free of charge, distributed open source under LPGL, 
 provided the following restriction:

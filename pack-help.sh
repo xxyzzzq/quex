@@ -29,6 +29,7 @@ echo "trunk/COPYRIGHT.txt" >> $input
 echo "trunk/README" >> $input
 echo "trunk/unit_test_results.txt" >> $input
 echo "trunk/quex-exe.py" >> $input
+echo "trunk/quex.bat" >> $input
 echo "trunk/__init__.py" >> $input
 
 
@@ -61,6 +62,7 @@ tar cf quex-$1.tar ./quex-$1
 
 # -- create xml file for the install builder
 $QUEX_PATH/make_install_builder_script.py `pwd`/quex-$1 $1
+exit
 
 # -- compress the tar file
 7z   a  quex-$1.tar.7z quex-$1.tar

@@ -37,17 +37,7 @@ BRIEF:
    ./demo subdirectory  contains examples  that should get you quickly up and
    running.
 
-NOTE: Quex requires python to be installed. If you want to use flex as the
-      core engine generator, than it needs to be installed too. But the quex
-      core engine is much faster (about 2.5 times), so you might probably 
-      not miss it.
-
-      If you are unsure if you want to stick with quex or not, you can always
-      set the '--flex-engine' command line option and quex generates a flex/lex
-      input file that can then be used by the traditional lexical analyzer
-      generator. The source code (regular expressions, action code) is anyway
-      very close to what flex/lex expect so possible migrating should not be
-      your worry.
+NOTE: Quex requires python to be installed. 
 
 INSTALLATION:
 
