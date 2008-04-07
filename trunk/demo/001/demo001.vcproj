@@ -19,6 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(QUEX_PATH)&quot;;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -66,6 +67,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="&quot;$(QUEX_PATH)&quot;;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"
@@ -134,7 +136,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="bash -c &quot;quex -i simple.qx --engine tiny_lexer --token-offset 0x1000&quot;"
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine tiny_lexer
+"
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -142,7 +145,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing simple.qx"
-						CommandLine="bash -c &quot;quex -i simple.qx --engine tiny_lexer --token-offset 0x1000&quot;"
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i simple.qx --engine tiny_lexer
+"
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
 				</FileConfiguration>
 			</File>
