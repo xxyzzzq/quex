@@ -1,0 +1,7 @@
+Lexical analysis is all about patterns. The following section recalls some
+basics on the mechanisms of pattern matching. For a detailed description see
+\cite{}, \cite{}, and \cite{}. It also explains how tokens are communicated to
+the caller of the lexical analyzer.  Further, it introduces the quex's
+concept of lexical analyzer modes.  Eventually, a final section explains the
+control and handling of mode transitions.
+
