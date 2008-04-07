@@ -47,13 +47,13 @@
                         <addEnvironmentVariable>
                             <name>QUEX_PATH</name>
                             <scope>system</scope>
-                            <value>${installdir}</value>
+                            <value>${installdir}/${product_shortname}-${product_version}/</value>
                         </addEnvironmentVariable>
                         <addDirectoryToPath>
-                            <path>${installdir}/$$DISTRIBUTION_ROOT_DIR$$</path>
+                            <path>${installdir}/${product_shortname}-${product_version}/</path>
                         </addDirectoryToPath>
                         <createSymLink>
-                            <linkName>${installdir}/$$DISTRIBUTION_ROOT_DIR$$/quex-exe.py</linkName>
+                            <linkName>${installdir}/${product_shortname}-${product_version}/quex-exe.py</linkName>
                             <target>/usr/local/bin/quex</target>
                         </createSymLink>
                     </actionList>
@@ -72,16 +72,16 @@
                         <addEnvironmentVariable>
                             <name>QUEX_PATH</name>
                             <scope>system</scope>
-                            <value>${installdir}</value>
+                            <value>${installdir}/${product_shortname}-${product_version}/</value>
                         </addEnvironmentVariable>
                         <addDirectoryToPath>
                             <scope>system</scope>
                             <path>${installdir}</path>
                         </addDirectoryToPath>
-                        <copyFile>
-                            <origin>${installdir}/quex-$$VERSION$$/quex.bat</origin>
-                            <destination>${installdir}/quex.bat</destination>
-                        </copyFile>
+                         <copyFile>
+                             <origin>${installdir}/${product_shortname}-${product_version}/quex.bat</origin>
+                             <destination>${installdir}/quex.bat</destination>
+                         </copyFile>
                     </actionList>
                     <distributionFileList>
                         <distributionDirectory>
@@ -108,8 +108,8 @@
             <name>installdir</name>
             <description>Installer.Parameter.installdir.description</description>
             <explanation>Installer.Parameter.installdir.explanation</explanation>
-            <value>${platform_install_prefix}/${product_shortname}-${product_version}</value>
-            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
+            <value>${platform_install_prefix}/${product_shortname}</value>
+            <default>${platform_install_prefix}/${product_shortname}</default>
             <allowEmptyValue>0</allowEmptyValue>
             <ask>yes</ask>
             <cliOptionName>prefix</cliOptionName>

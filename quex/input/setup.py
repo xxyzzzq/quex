@@ -87,14 +87,14 @@ def do(argv):
     if command_line.search("--version", "-v"):
         print "Quex - A Mode Oriented Lexical Analyser"
         print "Version " + QUEX_VERSION
-        print "(C) 2006, 2007 Frank-Rene Schaefer"
+        print "(C) 2006-2008 Frank-Rene Schaefer"
         sys.exit(0)
 
     if command_line.search("--help", "-h"):
         print "Quex - A Mode Oriented Lexical Analyser"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.sourceforge.net."
-        print "(C) 2006, 2007 Frank-Rene Schaefer"
+        print "(C) 2006-2008 Frank-Rene Schaefer"
         sys.exit(0)
 
     for variable_name, info in SETUP_INFO.items():
