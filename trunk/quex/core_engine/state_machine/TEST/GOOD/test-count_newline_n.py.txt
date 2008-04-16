@@ -89,13 +89,13 @@ fixed newline number =  1
 expression           = "12\n"/"ABC"|"XYZ"
 fixed newline number =  1
 expression           = "12\n"/"ABC"|"X"*
-warning: post context accepts anything---replaced by no post context.
+command line: Post context accepts anything---replaced by no post context.
 fixed newline number =  1
 expression           = "12\n"/"ABC"|"X"?
-warning: post context accepts anything---replaced by no post context.
+command line: Post context accepts anything---replaced by no post context.
 fixed newline number =  1
 expression           = "12\n"/"ABC"|""
-warning: post context accepts anything---replaced by no post context.
+command line: Post context accepts anything---replaced by no post context.
 fixed newline number =  1
 expression           = "12\n"/"X\nZ"+
 fixed newline number =  1

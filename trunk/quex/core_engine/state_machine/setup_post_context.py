@@ -1,10 +1,11 @@
 #! /usr/bin/env python
 import sys
+from   quex.frs_py.file_in import error_msg
 from   quex.core_engine.state_machine.core import *
 import quex.core_engine.state_machine.ambiguous_post_context as apc
 
 
-def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False):
+def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF=False, fh=-1):
     """ Appends a post context to the given state machine. This process is very
         similar to sequentialization. There is a major difference, though:
        
@@ -54,7 +55,8 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
     #    really a 'context' since it accepts anything. The state machine remains
     #    un-post context.
     if post_context_sm.get_init_state().is_acceptance():
-        print "warning: post context accepts anything---replaced by no post context."
+        error_msg("Post context accepts anything---replaced by no post context.", fh, 
+                  DontExitF=True)
         return the_state_machine
     
     # (*) Two ways of handling post-contexts:
@@ -69,7 +71,10 @@ def do(the_state_machine, post_context_sm, DEMONSTRATION_TurnOffSpecialSolutionF
             if apc.detect_backward(the_state_machine, post_context_sm):
                 # -- for post contexts that are forward and backward ambiguous
                 #    a philosophical cut is necessary.
+                error_msg("Post context requires philosophical cut---this operation is not reliable.", fh, 
+                          DontExitF=True)
                 post_context_sm = apc.philosophical_cut(the_state_machine, post_context_sm)
+
             apc.mount(the_state_machine, post_context_sm)
             return the_state_machine
 
