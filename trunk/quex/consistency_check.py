@@ -14,7 +14,7 @@ def do(Modes):
 
     # -- is there a mode that is applicable?
     for mode in Modes.values():
-        if mode.options["inheritable:"] != "only": break
+        if mode.options["inheritable"] != "only": break
     else:
         error_msg("There is no mode that can be applied---all existing modes are 'inheritable only'.\n" + \
                 "modes are = " + repr(map(lambda m: m.name, Modes.values()))[1:-1],
@@ -24,7 +24,7 @@ def do(Modes):
     if lexer_mode.initial_mode.line_n == -1:
         # find first mode that can actually be applied
         for mode in Modes.values():
-            if mode.options["inheritable:"] != "only":
+            if mode.options["inheritable"] != "only":
                 selected_mode = mode.name
                 break
             
@@ -41,7 +41,7 @@ def do(Modes):
         error_msg("Start mode '%s' has not been defined anywhere." % lexer_mode.initial_mode.code,
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
-    if Modes[lexer_mode.initial_mode.code].options["inheritable:"] == "only":
+    if Modes[lexer_mode.initial_mode.code].options["inheritable"] == "only":
         error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.code,
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 

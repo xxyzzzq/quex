@@ -44,7 +44,7 @@ def do(Setup):
 
     # (*) get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
-    mode_list = filter(lambda mode: mode.options["inheritable:"] != "only", 
+    mode_list = filter(lambda mode: mode.options["inheritable"] != "only", 
                        mode_db.values())
 
     mode_name_list = map(lambda mode: mode.name, mode_list)

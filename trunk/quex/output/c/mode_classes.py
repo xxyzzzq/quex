@@ -89,7 +89,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
         
     # (*) has entry from
     try:
-        entry_list = mode.options["entry:"]        
+        entry_list = mode.options["entry"]        
         has_entry_from_str = get_IsOneOfThoseCode(entry_list,
                                                   ConsiderDerivedClassesF=true)
         # check whether the mode we come from is an allowed mode
@@ -98,7 +98,7 @@ def  get_implementation_of_mode_functions(mode, Modes):
 
     # (*) has exit to
     try:
-        exit_list = mode.options["exit:"]
+        exit_list = mode.options["exit"]
         has_exit_to_str = get_IsOneOfThoseCode(exit_list,
                                                ConsiderDerivedClassesF=true)
     except:
