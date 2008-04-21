@@ -35,8 +35,8 @@ def parse(fh, Setup):
 
     # (*) check for modes w/o pattern definitions
     if not new_mode.has_event_handler() and new_mode.own_matches() == {}:
-        if new_mode.options["inheritable:"] != "only":
-            new_mode.options["inheritable:"] = "only"
+        if new_mode.options["inheritable"] != "only":
+            new_mode.options["inheritable"] = "only"
             error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
                       "<inheritable: only> has been added automatically.", fh,  DontExitF=True)
 
@@ -51,26 +51,17 @@ def parse_mode_option_list(new_mode, fh):
         new_mode.base_modes = split(base_modes)
 
         if i != 1: return
+        fh.seek(-1, 1)
 
         # (*) options
-        while 1 + 1 == 2:
-            skip_whitespace(fh)
-
-            content = read_until_letter(fh, [">"])
-            fields = split(content)
-            if len(fields) != 2:
-                error_msg("options must have exactly two arguments\n" + \
-                          "found: %s" % repr(fields), fh)
-            option, value = split(content)
-            new_mode.add_option(option, value)
-            content, i = read_until_letter(fh, ["<", "{"], Verbose=True)
-            if i != 0: break
+        while parse_mode_option(fh, new_mode):
+            pass
 
     except EndOfStreamException:
         fh.seek(position)
         error_msg("End of file reached while options of mode '%s'." % mode_name, fh)
 
-def parse_mode_option(new_mode, fh):
+def parse_mode_option(fh, new_mode):
     skip_whitespace(fh)
 
     # (*) base modes 
@@ -78,7 +69,8 @@ def parse_mode_option(new_mode, fh):
 
     skip_whitespace(fh)
 
-    identifier = read_identifier(fh)
+    identifier = read_identifier(fh).strip()
+
     if identifier == "":
         error_msg("missing identifer after start of mode option '<'", fh)
 
@@ -89,19 +81,29 @@ def parse_mode_option(new_mode, fh):
 
     elif identifier == "skip":
         pattern, pattern_sm = regular_expression.parse(fh, Setup)
-        new_mode.add_option("skip:", [pattern_state_machine])
+        new_mode.add_option("skip", [pattern_state_machine])
 
     elif identifier in ["skip-range", "skip-nesting-range"]:
         pattern, pattern_sm0 = regular_expression.parse(fh, Setup)
         skip_whitespace(fh)
         pattern, pattern_sm1 = regular_expression.parse(fh, Setup)
 
-        new_mode.add_option(identifier + ":", [pattern_sm0, pattern_sm1])
+        new_mode.add_option(identifier, [pattern_sm0, pattern_sm1])
+
     else:
-        if fh.read(1) != ">":
+        value, i = read_until_letter(fh, [">"], Verbose=1)
+        value = value.strip()
+
+        if i != 0:
             error_msg("missing closing '>' after mode option '%s'" % identifier, fh)
-        new_mode.add_option(identifier + ":", value)
-        return True
+
+        if not lexer_mode.mode_option_info_db.has_key(identifier):
+            error_msg("Tried to set option '%s' which does not exist!\n" % Option + \
+                      "options are %s" % repr(mode_option_info_db.keys()))
+
+        new_mode.add_option(identifier, value)
+
+    return True
 
     skip_whitespace(fh)
     if fh.read(1) != ">":

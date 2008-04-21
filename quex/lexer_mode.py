@@ -195,13 +195,13 @@ class LexMode:
         self.options = {}       # option settings
 
         # -- default settings for options
-        self.options["inheritable:"]        = "yes"
-        self.options["exit:"]               = []
-        self.options["entry:"]              = []
-        self.options["restrict:"]           = []
-        self.options["skip:"]               = []
-        self.options["skip-range:"]         = []
-        self.options["skip-nesting-range:"] = []
+        self.options["inheritable"]        = "yes"
+        self.options["exit"]               = []
+        self.options["entry"]              = []
+        self.options["restrict"]           = []
+        self.options["skip"]               = []
+        self.options["skip-range"]         = []
+        self.options["skip-nesting-range"] = []
 
         self.on_entry         = ReferencedCodeFragment()
         self.on_exit          = ReferencedCodeFragment()
@@ -434,9 +434,7 @@ class LexMode:
                 -- which ones are replaced
                 -- what are the values of the options
         """
-        if not mode_option_info_db.has_key(Option):
-            error_msg("tried to set option '%s' which does not exist!\n" % Option + \
-                      "options are %s" % repr(mode_option_info_db.keys()))
+        assert mode_option_info_db.has_key(Option)
 
         oi = mode_option_info_db[Option]
         if oi.type == "list":
@@ -471,7 +469,7 @@ class LexMode:
         #
         for base_mode_name in self.base_modes:
             # -- is base mode inheritable?
-            if mode_db[base_mode_name].options["inheritable:"] == "no":
+            if mode_db[base_mode_name].options["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is **not inheritable**." % \
                           (self.name, base_mode_name), self.filename, self.line_n)
 
@@ -482,7 +480,7 @@ class LexMode:
         #     A mode that contains only event handlers is not <inheritable: only>, but
         #     somehow, it needs some matches in the base classes, otherwise it cannot
         #     act as a pattern state machine.
-        if self.options["inheritable:"] != "only" and self.has_matches() == False:
+        if self.options["inheritable"] != "only" and self.has_matches() == False:
             error_msg("mode '%s' was allowed without <inheritable: only> despite it contains no matches\n" % \
                       (self.name) + \
                       "because it contains event handlers. Finally, though, it seems not want to inherit\n" + \
@@ -491,7 +489,7 @@ class LexMode:
                       self.filename, self.line_n)
 
         # (*) Enter/Exit Transitions
-        for mode_name in self.options["exit:"]:
+        for mode_name in self.options["exit"]:
             # -- does other mode exist?
             if mode_db.has_key(mode_name) == False:
                 error_msg("mode '%s'\nhas  an exit to mode '%s'\nbut no such mode exists." % \
@@ -501,10 +499,10 @@ class LexMode:
             #    (does this or any of the base modes have an entry to the other mode?)
             other_mode = mode_db[mode_name]
             #    -- no restrictions => OK
-            if other_mode.options["entry:"] == []: continue
+            if other_mode.options["entry"] == []: continue
             #    -- restricted entry => check if this mode ore one of the base modes can enter
             for base_mode in [self.name] + all_base_modes:
-                if base_mode in other_mode.options["entry:"]: break
+                if base_mode in other_mode.options["entry"]: break
             else:
                 error_msg("mode '%s'\nhas an exit to mode '%s'," % (self.name, mode_name),
                           self.filename, self.line_n, DontExitF=True)
@@ -512,7 +510,7 @@ class LexMode:
                           "or any of its base modes.",
                           other_mode.filename, other_mode.line_n)
 
-        for mode_name in self.options["entry:"]:
+        for mode_name in self.options["entry"]:
             # -- does other mode exist?
             if mode_db.has_key(mode_name) == False:
                 error_msg("mode '%s'\nhas an entry from mode '%s'\nbut no such mode exists." % \
@@ -523,10 +521,10 @@ class LexMode:
             #    (does this or any of the base modes have an exit to the other mode?)
             other_mode = mode_db[mode_name]
             #    -- no restrictions => OK
-            if other_mode.options["exit:"] == []: continue
+            if other_mode.options["exit"] == []: continue
             #    -- restricted exit => check if this mode ore one of the base modes can enter
             for base_mode in [self.name] + all_base_modes:
-                if base_mode in other_mode.options["exit:"]: break
+                if base_mode in other_mode.options["exit"]: break
             else:
                 error_msg("mode '%s'\nhas an entry for mode '%s'" % (self.name, mode_name),
                           self.filename, self.line_n, DontExitF=True)
@@ -556,9 +554,9 @@ mode_option_info_db = {
    #    then, a derived mode cannot add now exits or entrys
    "restrict":          OptionInfo("list", ["exit", "entry"]),
    # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
-   "skip":              OptionInfo("regular-expression-state-machine"),
-   "skip-range":        OptionInfo("2x regular-expression-state-machine"),
-   "skip-nested-range": OptionInfo("2x regular-expression-state-machine"),
+   "skip":              OptionInfo("multiple: RE-character-set"),
+   "skip-range":        OptionInfo("multiple: RE-character-string RE-character-string"),
+   "skip-nested-range": OptionInfo("multiple: RE-character-string RE-character-string"),
 }
 
 #-----------------------------------------------------------------------------------------

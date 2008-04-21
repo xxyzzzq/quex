@@ -246,7 +246,7 @@ def __get_mode_init_call(mode, LexerClassName):
     has_entry_from    = header_str + "has_entry_from"    
     has_exit_to       = header_str + "has_exit_to"       
 
-    if mode.options["inheritable:"] == "only": 
+    if mode.options["inheritable"] == "only": 
         analyser_function = LexerClassName + "_uncallable_analyser_function"
 
     if mode.on_entry_code_fragments() == []:
@@ -286,7 +286,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
 
     txt = ""
     for mode in Modes:
-        if mode.options["inheritable:"] != "only":
+        if mode.options["inheritable"] != "only":
             txt += __mode_functions(prolog, "QUEX_ANALYSER_RETURN_TYPE", ["analyser_function"],
                                     LexerClassName + "*")
     for mode in Modes:

@@ -519,7 +519,7 @@ class GetPot:
         return None
 
     # (*) flags
-    def  options_contain(self, FlagList):
+    def options_contain(self, FlagList):
         """Go through all arguments that start with a '-' and watch if they
         contain a flag in flaglist. In case a prefix is specified, the option
         must be preceeded with it, e.g. 'pack-options/-cvx'."""
