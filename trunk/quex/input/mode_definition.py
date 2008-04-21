@@ -54,6 +54,8 @@ def parse_mode_option_list(new_mode, fh):
 
         # (*) options
         while 1 + 1 == 2:
+            skip_whitespace(fh)
+
             content = read_until_letter(fh, [">"])
             fields = split(content)
             if len(fields) != 2:
@@ -67,6 +69,44 @@ def parse_mode_option_list(new_mode, fh):
     except EndOfStreamException:
         fh.seek(position)
         error_msg("End of file reached while options of mode '%s'." % mode_name, fh)
+
+def parse_mode_option(new_mode, fh):
+    skip_whitespace(fh)
+
+    # (*) base modes 
+    if fh.read(1) != "<": return False
+
+    skip_whitespace(fh)
+
+    identifier = read_identifier(fh)
+    if identifier == "":
+        error_msg("missing identifer after start of mode option '<'", fh)
+
+    skip_whitespace(fh)
+
+    if fh.read(1) != ":": 
+        error_msg("missing ':' after option name '%s'" % identifier, fh)
+
+    elif identifier == "skip":
+        pattern, pattern_sm = regular_expression.parse(fh, Setup)
+        new_mode.add_option("skip:", [pattern_state_machine])
+
+    elif identifier in ["skip-range", "skip-nesting-range"]:
+        pattern, pattern_sm0 = regular_expression.parse(fh, Setup)
+        skip_whitespace(fh)
+        pattern, pattern_sm1 = regular_expression.parse(fh, Setup)
+
+        new_mode.add_option(identifier + ":", [pattern_sm0, pattern_sm1])
+    else:
+        if fh.read(1) != ">":
+            error_msg("missing closing '>' after mode option '%s'" % identifier, fh)
+        new_mode.add_option(identifier + ":", value)
+        return True
+
+    skip_whitespace(fh)
+    if fh.read(1) != ">":
+        error_msg("missing closing '>' after mode option '%s'" % identifier, fh)
+    return True
 
 def parse_mode_element(Setup, new_mode, fh, pattern_i):
     """Returns: False, if a closing '}' has been found.
