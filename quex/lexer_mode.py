@@ -193,26 +193,15 @@ class LexMode:
 
         # (*) set the information about possible options
         self.options = {}       # option settings
-        #                       #
-        self.options_info = {}  # option information
 
-        # -- a mode can be inheritable or not or only inheritable. if a mode
-        #    is only inheritable it is not printed on its on, only as a base
-        #    mode for another mode. default is 'yes'
-        self.options_info["inheritable:"] = OptionInfo("single", ["no", "yes", "only"])
-        self.options["inheritable:"]      = "yes"
-        self.options["exit:"]             = []
-        self.options["entry:"]            = []
-        # -- a mode can restrict the possible modes to exit to. this for the
-        #    sake of clarity. if no exit is explicitly mentioned all modes are
-        #    possible. if it is tried to transit to a mode which is not in
-        #    the list of explicitly stated exits, an error occurs.
-        #    entrys work respectively.
-        self.options_info["exit:"]  = OptionInfo("list")
-        self.options_info["entry:"] = OptionInfo("list")
-        # -- a mode can restrict the exits and entrys explicitly mentioned
-        #    then, a derived mode cannot add now exits or entrys
-        self.options_info["restrict:"] = OptionInfo("list", ["exit", "entry"])
+        # -- default settings for options
+        self.options["inheritable:"]        = "yes"
+        self.options["exit:"]               = []
+        self.options["entry:"]              = []
+        self.options["restrict:"]           = []
+        self.options["skip:"]               = []
+        self.options["skip-range:"]         = []
+        self.options["skip-nesting-range:"] = []
 
         self.on_entry         = ReferencedCodeFragment()
         self.on_exit          = ReferencedCodeFragment()
@@ -445,11 +434,11 @@ class LexMode:
                 -- which ones are replaced
                 -- what are the values of the options
         """
-        if not self.options_info.has_key(Option):
+        if not mode_option_info_db.has_key(Option):
             error_msg("tried to set option '%s' which does not exist!\n" % Option + \
-                      "options are %s" % repr(self.options_info.keys()))
+                      "options are %s" % repr(mode_option_info_db.keys()))
 
-        oi = self.options_info[Option]
+        oi = mode_option_info_db[Option]
         if oi.type == "list":
             # append the value, assume in lists everything is allowed
             if self.options.has_key(Option): self.options[Option].append(Value)
@@ -546,6 +535,31 @@ class LexMode:
                           other_mode.filename, other_mode.line_n)
                 
         self.consistency_check_done_f = True
+
+
+#-----------------------------------------------------------------------------------------
+# mode option information/format: 
+#-----------------------------------------------------------------------------------------
+mode_option_info_db = {
+   # -- a mode can be inheritable or not or only inheritable. if a mode
+   #    is only inheritable it is not printed on its on, only as a base
+   #    mode for another mode. default is 'yes'
+   "inheritable": OptionInfo("single", ["no", "yes", "only"]),
+   # -- a mode can restrict the possible modes to exit to. this for the
+   #    sake of clarity. if no exit is explicitly mentioned all modes are
+   #    possible. if it is tried to transit to a mode which is not in
+   #    the list of explicitly stated exits, an error occurs.
+   #    entrys work respectively.
+   "exit":        OptionInfo("list"),
+   "entry":       OptionInfo("list"),
+   # -- a mode can restrict the exits and entrys explicitly mentioned
+   #    then, a derived mode cannot add now exits or entrys
+   "restrict":          OptionInfo("list", ["exit", "entry"]),
+   # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
+   "skip":              OptionInfo("regular-expression-state-machine"),
+   "skip-range":        OptionInfo("2x regular-expression-state-machine"),
+   "skip-nested-range": OptionInfo("2x regular-expression-state-machine"),
+}
 
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
