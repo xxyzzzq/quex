@@ -60,15 +60,11 @@ def do(Setup):
     token_id_maker.do(Setup) 
 
     # (3) implement the lexer mode-specific analyser functions
-    inheritance_info_str = "/* [dominating inheritance level] [pattern index] [pattern]\n"
+    inheritance_info_str = "[dominating inheritance level] [pattern index] [pattern]\n"
     analyzer_code = ""
     for mode in mode_list:        
         # -- some modes only define event handlers that are inherited
         if not mode.has_matches(): continue
-
-        # -- adapt pattern-action pair information so that it can be treated
-        #    by the code generator.
-        pattern_action_pair_info_list = mode.pattern_action_pairs().values()
 
         # -- end of stream action
         end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream_code_fragments(), Setup, 
@@ -77,12 +73,14 @@ def do(Setup):
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
                                                   "on_failure", None, DefaultOrEOF_ActionF=True)
 
-        # -- pattern-action pairs
+        # -- adapt pattern-action pair information so that it can be treated
+        #    by the code generator.
+        pattern_action_pair_info_list = mode.pattern_action_pairs().values()
         dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
                                                               Setup)
 
         # accumulate inheritance information for comment
-        inheritance_info_str += dummy + "**\n"
+        inheritance_info_str += dummy + "\n"
 
         analyzer_code += generator.do(pattern_action_pair_list, 
                                       DefaultAction                  = default_action, 
@@ -105,7 +103,7 @@ def do(Setup):
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + "-core-engine.cpp", "C")
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + ".cpp", "C")
 
-    inheritance_info_str += "*/\n"
+    ## TODO: inheritance_info_str <<Feature Request: 1948456>>
     
 def get_generator_input(Mode, match_info_list, Setup):
     """The module 'quex.core_engine.generator.core' produces the code for the 
