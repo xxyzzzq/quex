@@ -150,19 +150,18 @@ def output(global_setup):
 
     setup = Setup(global_setup)
     if global_setup.input_user_token_id_file != "":
-        print "(0) token ids provided by user"
-        print "   '%s'" % global_setup.input_user_token_id_file
+        ## print "(0) token ids provided by user"
+        ## print "   '%s'" % global_setup.input_user_token_id_file
 
         global_setup.output_token_id_file = global_setup.input_user_token_id_file
         return
     
-    print "(0) create token id file"
     if global_setup.input_token_id_db == "":
         print "error: token-id database not specified"
         sys.exit(-1)
         
-    print "   token class file = '%s'" % global_setup.input_token_class_file
-    print "   => '%s'" % global_setup.output_token_id_file
+    ## print "   token class file = '%s'" % global_setup.input_token_class_file
+    ## print "   => '%s'" % global_setup.output_token_id_file
     
     #______________________________________________________________________________________
     L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
