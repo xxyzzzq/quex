@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: /TEST
-DATE:  Mon Apr 14 19:51:51 2008
+DATE:  Mon Apr 21 18:27:03 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -33,18 +33,18 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1889086.sh ..................................................[OK]
     1889892 x, X or followed by a non-hex digit crashes 0.19.4
         bug-1889892.sh ..................................................[OK]
-    1889321 Quex does not handle actions including quote literal
-        bug-1889321.sh ..................................................[OK]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
         bug-1895500.sh ..................................................[OK]
+    1889321 Quex does not handle actions including quote literal
+        bug-1889321.sh ..................................................[OK]
     1885855 P{ ...} syntax does not work outside of [
         bug-1885855.sh ..................................................[OK]
     1892227 accepted as identifiers in def
         bug-1892227.sh ..................................................[OK]
     1889089 Single state mode causes quex to crash
         bug-1889089.sh ..................................................[OK]
-    1887163 Single state mode causes quex to crash
-        bug-1887163.sh ..................................................[OK]
+    1885846 Empty RE in define section
+        bug-1885846.sh ..................................................[OK]
     1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6
         bug-1894185.sh ..................................................[OK]
     1889702 0.19.4 forbids derived modes that only add event handlers
@@ -68,8 +68,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1890828.sh ..................................................[OK]
     1889692 0.19.4 does not gracefully handle unbalanced quotations
         bug-1889692.sh ..................................................[OK]
-    1885846 Empty RE in define section
-        bug-1885846.sh ..................................................[OK]
+    1887163 Single state mode causes quex to crash
+        bug-1887163.sh ..................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -79,7 +79,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: /demo/TEST
-DATE:  Mon Apr 14 19:53:27 2008
+DATE:  Mon Apr 21 18:19:46 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: /quex/TEST
-DATE:  Mon Apr 14 19:53:28 2008
+DATE:  Mon Apr 21 18:19:46 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: /quex/code_base/buffer/TEST
-DATE:  Mon Apr 14 19:53:32 2008
+DATE:  Mon Apr 21 18:19:50 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: /quex/code_base/buffer/iconv/TEST
-DATE:  Mon Apr 14 19:53:33 2008
+DATE:  Mon Apr 21 18:19:51 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: /quex/code_base/template/TEST
-DATE:  Mon Apr 14 19:53:35 2008
+DATE:  Mon Apr 21 18:19:53 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -242,7 +242,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: /quex/core_engine/TEST
-DATE:  Mon Apr 14 19:53:36 2008
+DATE:  Mon Apr 21 18:19:53 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -275,7 +275,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: /quex/core_engine/generator/TEST
-DATE:  Mon Apr 14 19:53:58 2008
+DATE:  Mon Apr 21 18:20:13 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -371,7 +371,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: /quex/core_engine/regular_expression/TEST
-DATE:  Mon Apr 14 19:54:03 2008
+DATE:  Mon Apr 21 18:20:17 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -433,7 +433,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: /quex/core_engine/state_machine/TEST
-DATE:  Mon Apr 14 19:54:08 2008
+DATE:  Mon Apr 21 18:20:21 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -505,14 +505,14 @@ TITLE: State Machine Operations
 
  -- Tracing origin:
 
-    NFA to DFA (subset construction)
-        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
+    Hopcroft optimization (minimize state set)
+        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
     Cloning
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Paralellization
         test-parallelize-trace-origin.py ................................[OK]
-    Hopcroft optimization (minimize state set)
-        test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    NFA to DFA (subset construction)
+        test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     NFA to DFA (subset construction) II
         test-StateMachine-trace-origin-create-DFA-2.py ..................[OK]
 
@@ -529,7 +529,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: /quex/frs_py/TEST
-DATE:  Mon Apr 14 19:54:08 2008
+DATE:  Mon Apr 21 18:20:22 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -552,7 +552,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: /quex/input/TEST
-DATE:  Mon Apr 14 19:54:22 2008
+DATE:  Mon Apr 21 18:20:35 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -575,7 +575,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: /quex/output/graphviz/TEST
-DATE:  Mon Apr 14 19:54:23 2008
+DATE:  Mon Apr 21 18:20:36 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

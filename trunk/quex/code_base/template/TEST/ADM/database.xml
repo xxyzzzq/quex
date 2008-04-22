@@ -1,15 +1,15 @@
-<test-database execution-time-sec="0.01" date="Mon Apr 21 18:08:23 2008">
+<test-database execution-time-sec="0.01" date="Mon Apr 21 18:19:53 2008">
     <last-used-diff-display-program name=""/>
     <group name="Count Line and Column">
         <test title="Without Indentation Count" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-simple" info-request-time="1208794103L"/>
+            <application file-name="test-simple" info-request-time="1208794792L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="821766212"/>
             </choice-list>
         </test>
         <test title="With Indentation" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-simple-2" info-request-time="1208794103L"/>
+            <application file-name="test-simple-2" info-request-time="1208794792L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="546192159"/>

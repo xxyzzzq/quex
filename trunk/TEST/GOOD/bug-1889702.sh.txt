@@ -2,9 +2,6 @@
 error.qx:2:warning: Token id 'TKN_A' defined implicitly.
 warning: no initial mode defined via 'start'
 warning: using mode 'BASE' as initial mode
-(0) create token id file
-   token class file = 'quex/code_base/token'
-   => 'Simple-token_ids'
 
 (2)
 warning: no initial mode defined via 'start'
