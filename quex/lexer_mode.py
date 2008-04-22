@@ -442,7 +442,7 @@ class LexMode:
             if self.options.has_key(Option): self.options[Option].append(Value)
             else:                            self.options[Option] = [ Value ]
         else:
-            assert Value in oi.domain:
+            assert Value in oi.domain
             self.options[Option] = Value
 
     def consistency_check(self):

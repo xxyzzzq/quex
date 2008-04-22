@@ -37,7 +37,7 @@ def parse(fh, Setup):
 
 def parse_character_set(Txt_or_File):
 
-    if Txt_or_File.__file == file or type(Txt_or_File.__class__ == StringIO:
+    if Txt_or_File.__class__ in [file, StringIO]:
         sh       = Txt_or_File
         sh_ref   = sh
         position = sh.tell()
@@ -63,7 +63,7 @@ def parse_character_set(Txt_or_File):
 
 def parse_character_string(Txt_or_File):
 
-    if Txt_or_File.__file == file or type(Txt_or_File.__class__ == StringIO:
+    if Txt_or_File.__class__ in [file, StringIO]:
         sh       = Txt_or_File
         sh_ref   = sh
         position = sh.tell()
