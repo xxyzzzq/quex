@@ -35,19 +35,55 @@ def parse(fh, Setup):
     return regular_expression, pattern_state_machine
 
 
-def parse_character_set(Txt):
+def parse_character_set(Txt_or_File):
+
+    if Txt_or_File.__file == file or type(Txt_or_File.__class__ == StringIO:
+        sh       = Txt_or_File
+        sh_ref   = sh
+        position = sh.tell()
+    else:
+        sh     = StringIO(Txt_or_File)
+        sh_ref = -1
 
     try:
         # -- parse regular expression, build state machine
-        character_set = charset_expression.snap_set_expression(StringIO("[:" + Txt + ":]"))
+        character_set = charset_expression.snap_set_expression(sh)
 
         if character_set == None:
-            error_msg("No valid regular character set expression detected.")
+            error_msg("No valid regular character set expression detected.", sh_ref)
 
     except RegularExpressionException, x:
-        error_msg("Regular expression parsing:\n" + x.message)
+        error_msg("Regular expression parsing:\n" + x.message, sh_ref)
 
     except EndOfStreamException:
-        error_msg("End of character set expression reached while parsing.")
+        if sh_ref != -1: sh_ref.seek(position)
+        error_msg("End of character set expression reached while parsing.", sh_ref)
 
     return character_set
+
+def parse_character_string(Txt_or_File):
+
+    if Txt_or_File.__file == file or type(Txt_or_File.__class__ == StringIO:
+        sh       = Txt_or_File
+        sh_ref   = sh
+        position = sh.tell()
+    else:
+        sh     = StringIO(Txt_or_File)
+        sh_ref = -1
+
+    try:
+        # -- parse regular expression, build state machine
+        state_machine = snap_character_string.do(sh)
+
+        if character_set == None:
+            error_msg("No valid regular character string expression detected.", sh_ref)
+
+    except RegularExpressionException, x:
+        error_msg("Regular expression parsing:\n" + x.message, sh_ref)
+
+    except EndOfStreamException:
+        if sh_ref != -1: sh_ref.seek(position)
+        error_msg("End of character string reached while parsing.", sh_ref)
+
+    return state_machine
+
