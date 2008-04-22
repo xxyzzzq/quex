@@ -97,6 +97,7 @@ class Generator(GeneratorBase):
             assert sm.get_orphaned_state_index_list() == []
             papc_input_postion_backward_detector_functions +=  \
                   backward_detector.do(sm, LanguageDB, self.print_state_machine_f)
+
         function_body = ""
         # -- write the combined pre-condition state machine
         if self.pre_context_sm_list != []:
@@ -107,12 +108,13 @@ class Generator(GeneratorBase):
 
         # -- pack the whole thing into a function 
         analyzer_function = LanguageDB["$analyser-func"](self.state_machine_name, 
-                                           self.analyzer_state_class_name, 
-                                           self.stand_alone_analyzer_f,
-                                           function_body, 
-                                           self.post_contexted_sm_id_list, self.pre_context_sm_id_list,
-                                           self.mode_name_list, 
-                                           InitialStateIndex=self.sm.init_state_index) 
+                                                         self.analyzer_state_class_name, 
+                                                         self.stand_alone_analyzer_f,
+                                                         function_body, 
+                                                         self.post_contexted_sm_id_list, 
+                                                         self.pre_context_sm_id_list,
+                                                         self.mode_name_list, 
+                                                         InitialStateIndex=self.sm.init_state_index) 
 
         option_str = ""
         if self.begin_of_line_condition_f: 
