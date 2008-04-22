@@ -442,11 +442,7 @@ class LexMode:
             if self.options.has_key(Option): self.options[Option].append(Value)
             else:                            self.options[Option] = [ Value ]
         else:
-            # check if the value is allowed
-            if Value not in oi.domain:
-                error_msg("Tried to set value '%s' for option '%s'. " % (Value, Option) + \
-                          "Though, possible \n" + \
-                          "for this option are %s" % repr(oi.domain))
+            assert Value in oi.domain:
             self.options[Option] = Value
 
     def consistency_check(self):
@@ -554,9 +550,9 @@ mode_option_info_db = {
    #    then, a derived mode cannot add now exits or entrys
    "restrict":          OptionInfo("list", ["exit", "entry"]),
    # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
-   "skip":              OptionInfo("multiple: RE-character-set"),
-   "skip-range":        OptionInfo("multiple: RE-character-string RE-character-string"),
-   "skip-nested-range": OptionInfo("multiple: RE-character-string RE-character-string"),
+   "skip":              OptionInfo("list"), # "multiple: RE-character-set
+   "skip-range":        OptionInfo("list"), # "multiple: RE-character-string RE-character-string
+   "skip-nested-range": OptionInfo("list"), # "multiple: RE-character-string RE-character-string
 }
 
 #-----------------------------------------------------------------------------------------
