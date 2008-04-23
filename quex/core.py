@@ -66,10 +66,10 @@ def do(Setup):
         # -- some modes only define event handlers that are inherited
         if not mode.has_matches(): continue
 
-        # -- end of stream action
+        # -- 'end of stream' action
         end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream_code_fragments(), Setup, 
                                                         "on_end_of_stream", None, DefaultOrEOF_ActionF=True)
-        # -- default action (nothing matched)
+        # -- 'default' action (nothing matched)
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
                                                   "on_failure", None, DefaultOrEOF_ActionF=True)
 

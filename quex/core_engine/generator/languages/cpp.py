@@ -702,3 +702,8 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
 
     return txt
     
+skip_character_code_str = """
+const inner_character_type   skip_end_str_$$SKIP_RANGE_ID$$ = {....};
+do {
+} while( 1 + 1 == 2 );
+"""
