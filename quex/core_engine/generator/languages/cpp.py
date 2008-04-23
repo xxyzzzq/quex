@@ -303,12 +303,12 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         if origin.pre_context_id() != -1L:
             txt += LanguageDB["$if pre-context"](origin.pre_context_id())
             txt += indent_this(info)
-            txt += LanguageDB["$end"] + "\n"
+            txt += LanguageDB["$endif"]
         
         elif origin.pre_context_begin_of_line_f():
             txt += LanguageDB["$if begin-of-line"]
             txt += indent_this(info)
-            txt += LanguageDB["$end"] + "\n"
+            txt += LanguageDB["$endif"] 
         
         else:
             if if_statement == LanguageDB["$if"]: 
@@ -317,7 +317,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
                 # if an 'if' statements preceeded, the acceptance needs to appear in an else block
                 txt += LanguageDB["$else"] + "\n"; 
                 txt += indent_this(info)
-                txt += LanguageDB["$end"] + "\n"
+                txt += LanguageDB["$endif"]
 
             break  # no need for further pre-condition consideration
 
@@ -702,8 +702,3 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
 
     return txt
     
-skip_character_code_str = """
-const inner_character_type   skip_end_str_$$SKIP_RANGE_ID$$ = {....};
-do {
-} while( 1 + 1 == 2 );
-"""

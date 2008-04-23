@@ -169,7 +169,7 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
 db["VisualBasic6"] = {
     "$if":     "If",
     "$then":   "Then",
-    "$end":    "End If",
+    "$endif":  "End If",
     "$>=":     ">=",
     "$==":     "==",
     "$input":  "input",

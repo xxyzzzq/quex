@@ -733,7 +733,7 @@ class NumberSet:
             # middle == one element
             txt += "$if %s $then\n" % LanguageDB["$=="]("input", repr(middle.begin))
             txt += "    $return_true\n"
-            txt += "$end\n"
+            txt += "$endif"
             txt += "$return_false\n"
             
         else:
@@ -743,16 +743,16 @@ class NumberSet:
             if MiddleInterval_Idx == UppestInterval_Idx:
                 # upper interval = none
                 txt += "    $return_false\n"
-                txt += "$end\n"
+                txt += "$endif"
             else:
                 # upper intervals = some
                 txt += self.__condition_code(LanguageDB,
                                              MiddleInterval_Idx + 1, UppestInterval_Idx)
-                txt += "$end\n"
+                txt += "$endif"
 
             txt += "$if input $>= %s $then\n" % repr(middle.begin)
             txt += "    $return_true\n"
-            txt += "$end\n" 
+            txt += "$endif" 
 
             if MiddleInterval_Idx == LowestInterval_Idx:
                 # lower intervals = none

@@ -84,7 +84,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
         txt += "\n"
         txt += "    " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
                                                   BackwardLexingF=False) + "\n"
-        txt += LanguageDB["$end"] + "\n"
+        txt += LanguageDB["$endif"]
 
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = not empty_trigger_map_f,
