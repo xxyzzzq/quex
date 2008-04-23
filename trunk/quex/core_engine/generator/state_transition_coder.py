@@ -232,6 +232,7 @@ def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
     #     -- the outer two intervals trigger to the same target state
     target_state_0 = TriggerMap[0][1]
     target_state_2 = TriggerMap[2][1]
+    #     -- if the special trick cannot be applied than bracket normally
     if size_one_map != [False, True, False] or target_state_0 != target_state_2:
         return __bracket_normally(1, TriggerMap, LanguageDB, 
                                   StateMachineName, StateIdx, state, BackwardLexingF)
