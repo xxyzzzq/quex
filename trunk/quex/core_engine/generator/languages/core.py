@@ -28,11 +28,14 @@ db["C++"] = {
     "$if":            "if(",
     "$then":          ") {\n",
     "$elseif":        "else if(",
-    "$end":           "}",
+    "$endif":         "}",
     "$endif-else":    "} else {\n",
     "$end-else":      "}\n",
     "$else":          "else {",                                                     
     "$and":           "&&",
+    "$loop-start-endless":  "while( 1 + 1 == 2 ) {\n",
+    "$loop-end":            "}\n",
+    "$continue":            "continue;\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if ==":             lambda value: "if( input == " + value + ") {\n",
     "$if !=":             lambda value: "if( input != " + value + ") {\n",
@@ -62,16 +65,16 @@ db["C++"] = {
     "$acceptance-info":     cpp.__acceptance_info,      
     "$analyser-func":       cpp.__analyser_function,
     "$terminal-code":       cpp.__terminal_states,      
-    "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
-                                               (repr(id).replace("L", ""), value),
-    "$drop-out":            cpp.__state_drop_out_code,
-    "$compile-option":      lambda option: "#define %s\n" % option,
-    "$assignment":          lambda variable, value: "%s = %s;\n" % (variable, value),
+    "$set-pre-context-flag":    lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
+                                                   (repr(id).replace("L", ""), value),
+    "$drop-out":                 cpp.__state_drop_out_code,
+    "$compile-option":           lambda option: "#define %s\n" % option,
+    "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",
     #
-    "$debug-info-input":    "__QUEX_DEBUG_INFO_INPUT(input);",
+    "$debug-info-input":         "__QUEX_DEBUG_INFO_INPUT(input);",
     #
-    "$header-definitions":  cpp.__header_definitions,
+    "$header-definitions":       cpp.__header_definitions,
     }
 
 #________________________________________________________________________________
@@ -98,7 +101,6 @@ db["Python"] = {
     "$function_end":  "\n",                                                  
     "$if":     "if ",
     "$then":   ":",
-    "$end":    "",
     "$if <":   lambda value: "if input < "  + value + ":\n",
     "$if ==":  lambda value: "if input == " + value + ":\n",
     "$if !=":  lambda value: "if input != " + value + ":\n",
@@ -138,7 +140,7 @@ db["Python"] = {
 db["VisualBasic6"] = {
     "$if":     "If",
     "$then":   "Then",
-    "$end":    "End If",
+    "$endif":  "End If",
     "$>=":     ">=",
     "$==":     lambda left, right: left + " == " + right,
     "$!=":     lambda left, right: left + " <> " + right,
