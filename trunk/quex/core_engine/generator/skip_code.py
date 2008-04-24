@@ -1,5 +1,6 @@
 
-def get_character_range_skip_code(LanguageDB, EndSequence, BufferEndLimitCode):
+def get_character_range_skip_code(EndSequence, LanguageDB, BufferEndLimitCode,
+                                  BufferReloadRequiredOnDropOutF=True):
     """Produces a 'range skipper until an ending string occurs. This follows 
        the following scheme:
 
@@ -21,33 +22,39 @@ def get_character_range_skip_code(LanguageDB, EndSequence, BufferEndLimitCode):
         } while( input != buffer_limit_code );
 
     """
-    assert EndSequence.__class__     == list
-    assert lambda(type, EndSequence) == [int] * len(EndSequence)
+    assert EndSequence.__class__  == list
+    assert map(type, EndSequence) == [int] * len(EndSequence)
 
     # Use two endless loops in order to avoid gotos
-    txt = LanguageDB["$loop-start-endless"]
-    txt = "    " + LanguageDB["$loop-start-endless"]
-    for value in EndSequence[:-1]:
-        txt += LanguageDB["$input/get"]
-        txt += LanguageDB["$if !="](value)
-        txt += "    " + LanguageDB["$break"]
-        txt += LanguageDB["$endif"]
-    # If the last character of the sequence matches than we break out
-    txt += LanguageDB["$input/get"]
-    txt += LanguageDB["$if =="](value)
-    txt += "    " + LanguageDB["$goto-initial-state"]
-    txt += LanguageDB["$endif"]
-
-    txt += LanguageDB["$loop-end"]
-
-    txt += LanguageDB["$if =="](repr(BufferEndLimitCode))
-    txt += LanguageDB["$drop-out"](StateMachineName, CurrentStateIdx, BackwardLexingF=False,
+    msg  = LanguageDB["$loop-start-endless"]
+    msg += "    " + LanguageDB["$loop-start-endless"]
+    msg += "        " + LanguageDB["$input/get"] + "\n"
+    msg += "        " + LanguageDB["$if =="](repr(EndSequence[0]))
+    msg += "            " + LanguageDB["$break"]
+    msg += "        " + LanguageDB["$endif"]
+    msg += "        " + LanguageDB["$if =="](repr(BufferEndLimitCode))
+    msg += "        " + LanguageDB["$drop-out"](StateMachineName="<<TestMachine>>", 
+                                   CurrentStateIdx=4711, 
+                                   BackwardLexingF=False,
                                    BufferReloadRequiredOnDropOutF=BufferReloadRequiredOnDropOutF,
-                                   DropOutTargetStateID=InitStateIndex)
-    txt += LanguageDB["$endif"]
-    txt += LanguageDB["$loop-end"]
+                                   DropOutTargetStateID=4711).replace("\n", "\n        ")
+    msg += "        " + LanguageDB["$endif"]
+    msg += "    " + LanguageDB["$loop-end"]
+    txt  = ""
+    for value in EndSequence[1:]:
+        # If the last character of the sequence matches than we break out
+        sgm  = LanguageDB["$input/get"] + "\n"
+        sgm += LanguageDB["$if =="](repr(value))
+        sgm += "    " + LanguageDB["$goto-start"]
+        sgm += LanguageDB["$endif"]
+        txt += "    " + sgm.replace("\n", "\n    ")
+
+    msg += "    " + txt.replace("\n", "\n    ")
+
+    msg += LanguageDB["$loop-end"]
 
 
+    return msg
 
 
 

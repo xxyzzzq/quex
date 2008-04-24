@@ -28,14 +28,15 @@ db["C++"] = {
     "$if":            "if(",
     "$then":          ") {\n",
     "$elseif":        "else if(",
-    "$endif":         "}",
+    "$endif":         "}\n",
     "$endif-else":    "} else {\n",
     "$end-else":      "}\n",
     "$else":          "else {",                                                     
     "$and":           "&&",
     "$loop-start-endless":  "while( 1 + 1 == 2 ) {\n",
     "$loop-end":            "}\n",
-    "$continue":            "continue;\n",
+    "$continue":          "continue;\n",
+    "$break":             "break;\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if ==":             lambda value: "if( input == " + value + ") {\n",
     "$if !=":             lambda value: "if( input != " + value + ") {\n",
@@ -75,6 +76,7 @@ db["C++"] = {
     "$debug-info-input":         "__QUEX_DEBUG_INFO_INPUT(input);",
     #
     "$header-definitions":       cpp.__header_definitions,
+    "$goto-start":               "goto __REENTRY_PREPARATION;\n",
     }
 
 #________________________________________________________________________________

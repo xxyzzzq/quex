@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.23" date="Tue Apr 22 18:59:29 2008">
+<test-database execution-time-sec="0.22" date="Wed Apr 23 18:11:58 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" time-sum-sec="0.04"> 
@@ -19,22 +19,22 @@
                <choice name="" result="OK" time-sec="0.03" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Intersection" time-sum-sec="0.05"> 
+        <test title="Intersection" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1205646835L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="892506273"/>
+               <choice name="" result="OK" time-sec="0.03" crc="892506273"/>
             </choice-list>
         </test>
-        <test title="Union" time-sum-sec="0.03"> 
+        <test title="Union" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-union.py" info-request-time="1205646835L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="973910203"/>
+               <choice name="" result="OK" time-sec="0.04" crc="973910203"/>
             </choice-list>
         </test>
-        <test title="Condition Code Generation" time-sum-sec="0.04"> 
+        <test title="Condition Code Generation" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-condition-code.py" info-request-time="1205646835L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="-1284156277"/>
+               <choice name="" result="OK" time-sec="0.03" crc="-1284156277"/>
             </choice-list>
         </test>
     </group>
