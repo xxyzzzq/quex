@@ -78,6 +78,7 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
     assert EndSequence.__class__  == list
     assert len(EndSequence)       >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
+    assert StartSequence != EndSequence
 
     # Identify the common start of 'StartSequence' and 'EndSequence'
     CommonSequence    = []
@@ -93,4 +94,14 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
              characters_from_begin_to_i_are_common_f = False
         else: 
             CommonSequence.append(StartSequence[i])
+
+    if CommonSequence != []:
+        msg += "        " + LanguageDB["$if =="](repr(CommonSequence[0]))
+        msg += "            " + action_on_first_character_match
+        msg += "        " + LanguageDB["$endif"]
+    else:
+        msg += "        " + LanguageDB["$if =="](repr(StartSequenceTail[0]))
+        msg += "            " + action_on_first_character_match
+        msg += "        " + LanguageDB["$endif"]
+
 
