@@ -118,7 +118,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 #define  __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 
 QUEX_INLINE_KEYWORD int
-forward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
+quex_on_drop_out_forward_try_buffer_reload(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
 {
     // not BOFC: See ./quex/buffer/README.txt
     __quex_assert( input != me->__buffer->BOFC );
@@ -132,7 +132,7 @@ forward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input
 }
 
 QUEX_INLINE_KEYWORD int
-backward_lexing_drop_out(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
+quex_on_drop_out_backward_try_buffer_reload(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
 {
     // not EOFC: See ./quex/buffer/README.txt
     __quex_assert( input != me->__buffer->EOFC );

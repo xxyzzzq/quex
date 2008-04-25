@@ -68,7 +68,22 @@ db["C++"] = {
     "$terminal-code":       cpp.__terminal_states,      
     "$set-pre-context-flag":    lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
                                                    (repr(id).replace("L", ""), value),
-    "$drop-out":                 cpp.__state_drop_out_code,
+    "$drop-out":          cpp.__state_drop_out_code,
+    "$drop-out-forward":  lambda OnReloadGotoLabel: \
+                          "if( input == me->__buffer->BLC ) {\n"                                     + \
+                          "    loaded_byte_n = me->__buffer->load_forward();\n"             + \
+                          "    if( loaded_byte_n != -1 ) {\n"                                         + \
+                          "        $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n" + \
+                          "        goto %s;\n" %  OnReloadGotoLabel                                  + \
+                          "    }\n"                                                                  + \
+                          "    // no load possible => end of file\n"                                 + \
+                          "    goto TERMINAL_END_OF_STREAM;\n"                                       + \
+                          "}\n",
+    "$drop-out-backward": lambda OnReloadGotoLabel:
+                          "if( input == me->__buffer->BLC ) {\n"                                 + \
+                          "    me->__buffer->load_backward();\n"                                 + \
+                          "    goto %s; /* no adr. adaptions necessary */\n" % OnReloadGotoLabel + \
+                          "}\n",                                                                         
     "$compile-option":           lambda option: "#define %s\n" % option,
     "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",

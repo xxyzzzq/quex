@@ -174,7 +174,7 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
     if BackwardLexingF: 
         txt += __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
                                                      BufferReloadRequiredOnDropOutF,
-                                                     DropOutTargetStateID)
+                                                     DropOutTargetStateID, LanguageDB)
     else:
         txt += __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
                                                     BufferReloadRequiredOnDropOutF,
@@ -187,12 +187,11 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
 
 def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx, 
                                           BufferReloadRequiredOnDropOutF, 
-                                          DropOutTargetStateID):      
+                                          DropOutTargetStateID, LanguageDB):      
     txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += "if( backward_lexing_drop_out(me, input) ) " 
-        txt += "goto %s; /* no adr. adaptions necessary */\n" % label.get_input(StateMachineName, CurrentStateIdx)
+        txt += LanguageDB["$drop-out-backward"](label.get_input(StateMachineName, CurrentStateIdx))
         txt += "#endif\n"
 
     if DropOutTargetStateID != -1L:
@@ -213,12 +212,9 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += "loaded_byte_n = forward_lexing_drop_out(me, input);\n"
-        txt += "if( loaded_byte_n ) {\n" 
-        txt += "    $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n"
-        txt += "    goto %s;\n" % label.get_input(StateMachineName, CurrentStateIdx)
-        txt += "}\n"
-        txt += "#endif\n"
+        txt += LanguageDB["$drop-out-forward"](
+                OnReloadGotoLabel=label.get_input(StateMachineName, CurrentStateIdx))
+        txt += "#endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */\n"
 
     # From here on: input is not a 'buffer limit code' 
     #               (i.e. input does **not** mean: 'load buffer')
@@ -343,33 +339,33 @@ __header_definitions_txt = """
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-        std::fprintf(stderr, "%s:%i: \\t", __FILE__, __LINE__);            
+        std::fprintf(stdout, "%s:%i: \\t", __FILE__, __LINE__);            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "START:    %s\\n", #Name)
+              std::fprintf(stdout, "START:    %s\\n", #Name)
 
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "enter:    %i\\n", (int)StateIdx)
+              std::fprintf(stdout, "enter:    %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "drop:     %i\\n", (int)StateIdx)
+              std::fprintf(stdout, "drop:     %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "accept:   %i\\n", (int)StateIdx)
+              std::fprintf(stdout, "accept:   %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \\
               __QUEX_PRINT_SOURCE_POSITION()                   \\
-              std::fprintf(stderr, "terminal: %s\\n", #Terminal)
+              std::fprintf(stdout, "terminal: %s\\n", #Terminal)
 
 #      define __QUEX_DEBUG_INFO_INPUT(Character)                             \\
               __QUEX_PRINT_SOURCE_POSITION()                                 \\
-                Character == '\\n' ? std::fprintf(stderr, "input:    '\\\\n'\\n") \\
-              : Character == '\\t' ? std::fprintf(stderr, "input:    '\\\\t'\\n") \\
-              :                      std::fprintf(stderr, "input:    '%c'\\n", (char)Character) 
+                Character == '\\n' ? std::fprintf(stdout, "input:    '\\\\n'\\n") \\
+              : Character == '\\t' ? std::fprintf(stdout, "input:    '\\\\t'\\n") \\
+              :                      std::fprintf(stdout, "input:    '%c'\\n", (char)Character) 
 #   else
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
