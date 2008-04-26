@@ -142,8 +142,9 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
         for key, regular_expression in PatternDictionary.items():
             string_stream = StringIO(regular_expression)
             state_machine = regex.do(string_stream, adapted_dict, 
-                                     EndOfFile_Code  = EndOfFile_Code, 
-                                     BufferLimitCode = BufferLimitCode)
+                                     BeginOfFile_Code = EndOfFile_Code,
+                                     EndOfFile_Code   = EndOfFile_Code, 
+                                     BufferLimitCode  = BufferLimitCode)
             # It is ESSENTIAL that the state machines of defined patterns do not 
             # have origins! Actually, there are not more than patterns waiting
             # to be applied in regular expressions. The regular expressions 

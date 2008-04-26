@@ -351,7 +351,7 @@ namespace quex {
             // tmp[content_size()+2]     = buffer limit
             // tmp[content_size()+3]     = outer border
             // tmp[content_size()+4]     = terminating zero
-            for(int i=2; i<content_size()+2; ++i) tmp[i] = ' ';
+            for(size_t i=2; i<content_size()+2; ++i) tmp[i] = ' ';
             tmp[content_size()+4] = '\0';
             tmp[content_size()+3] = '|';
             tmp[content_size()+2] = get_border_char(end_p != content_end() ? 

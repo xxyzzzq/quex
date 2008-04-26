@@ -25,7 +25,11 @@ APPLICATION      = lexer
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) 
+	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+     -DQUEX_SETTING_BUFFER_SIZE=64 \
+	 -D__QUEX_OPTION_UNIT_TEST \
+     -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+     -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
 
 LD = $(COMPILER)
 
@@ -48,7 +52,7 @@ $(ENGINE_SOURCES): $(MODE_FILES)
 # -- the example file (an extensive copy of example.txt)
 example-x.txt:  example.txt
 	rm -f $@
-	for i in `seq 1 22`; do cat $< >> $@; done
+	for i in `seq 1 10000`; do cat $< >> $@; done
 
 # (*) HELPERS __________________________________________________________________
 clean:	

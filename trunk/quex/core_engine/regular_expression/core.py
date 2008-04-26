@@ -62,7 +62,6 @@ def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF
 
        BLC == -1: means that there is no buffer limit code.
     """
-
     # (*) Delete EOF where it has no right to occur
     __delete_EOF_except_at_end_of_post_context(sm, EndOfFileCode)
 
@@ -140,7 +139,7 @@ def __delete_transitions_on_code_points_below_zero(sm):
                 # NOTE: '0' is the end, meaning that it has is not part of the interval to be cut.
                 trigger_set.cut_interval(Interval(-sys.maxint, 0))
 
-def do(UTF8_String_or_Stream, PatternDict=None, BeginOfFile_Code=0, EndOfFile_Code=0, BufferLimitCode=-1,
+def do(UTF8_String_or_Stream, PatternDict, BeginOfFile_Code, EndOfFile_Code, BufferLimitCode,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
 
 

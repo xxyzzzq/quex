@@ -15,7 +15,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString, PatternDict):
     try:
         print "expression    = " + TestString 
-        print "state machine\n", core.do(TestString, PatternDict)
+        print "state machine\n", core.do(TestString, PatternDict, 0, 0, -1)
     except RegularExpressionException, x:
         print "Expression Expansion:\n" + repr(x)
 
@@ -30,7 +30,7 @@ try:
     adapted_dict = {}
     for key, regular_expression in pattern_dict.items():
         string_stream = StringIO(regular_expression)
-        state_machine = core.do(string_stream, adapted_dict)
+        state_machine = core.do(string_stream, adapted_dict, 0, 0, -1)
         # It is ESSENTIAL that the state machines of defined patterns do not 
         # have origins! Actually, there are not more than patterns waiting
         # to be applied in regular expressions. The regular expressions 
