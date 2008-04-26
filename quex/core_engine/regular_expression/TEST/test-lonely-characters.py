@@ -13,7 +13,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     # state_machine_index.clear()
     print "expression    = \"" + TestString + "\""
-    print "state machine\n", core.do(TestString)
+    print "state machine\n", core.do(TestString, {}, 0, 0, -1)
 
 test('you(a|b)you')
 test('[fb]oo-a')

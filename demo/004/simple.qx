@@ -121,6 +121,9 @@ mode PROGRAM :
     try           => TKN_TRY;
     catch         => TKN_CATCH;
     ";"           => TKN_SEMICOLON;
+    "."           => TKN_DOT;
+    "/*"([^*]|("*"[^/]))*"*/"  => TKN_COMMENT;
+    "//"[^\n]*"\n"  => TKN_COMMENT;
     {P_IDENTIFIER}  => TKN_IDENTIFIER;
     {P_NUMBER}      => TKN_NUMBER;
     {P_WHITESPACE}  { }

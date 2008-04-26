@@ -12,7 +12,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString):
     print "-------------------------------------------------------------------"
     print "expression    = \"" + TestString + "\""
-    sm = core.do(TestString)
+    sm = core.do(TestString, {}, 0, 0, -1, )
     print "state machine\n", sm 
 
 test('"a"/";"')

@@ -365,7 +365,7 @@ __header_definitions_txt = """
               __QUEX_PRINT_SOURCE_POSITION()                                 \\
                 Character == '\\n' ? std::fprintf(stdout, "input:    '\\\\n'\\n") \\
               : Character == '\\t' ? std::fprintf(stdout, "input:    '\\\\t'\\n") \\
-              :                      std::fprintf(stdout, "input:    '%c'\\n", (char)Character) 
+              :                      std::fprintf(stdout, "input:    (%x) '%c'\\n", (char)Character, (int)Character) 
 #   else
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
