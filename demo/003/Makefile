@@ -40,7 +40,9 @@ else
 endif
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-	 -D___QUEX_UNIT_TESTING___ -ggdb
+	 -D___QUEX_UNIT_TESTING___ -ggdb \
+     -DQUEX_OPTION_ACTIVATE_ASSERTS	
+
 LD = $(COMPILER) $(LIBICONV) 
 
 # (*) RULES ____________________________________________________________________

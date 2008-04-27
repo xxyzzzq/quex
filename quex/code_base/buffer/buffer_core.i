@@ -87,8 +87,13 @@ namespace quex {
         CLASS::is_end_of_file() {
             __quex_assert(this->_current_p <= this->buffer_end() );
             __quex_assert(this->_current_p >= this->buffer_begin() );
-            if( this->_end_of_file_p != 0x0 )              { return false; }
+
+            // if the end of file pointer is not set, then there is no EOF inside the buffer
+            if( this->_end_of_file_p == 0x0 )              { return false; }
+            
+            // if the 'current' pointer points to the place of EOF then, that's what is to say about it
             if( this->_current_p == this->_end_of_file_p ) { return true; }
+
             // double check: the 'current' pointer shall never be put beyond the end of file pointer
             __quex_assert(this->_current_p < this->_end_of_file_p);
             if( this->_current_p < this->buffer_begin() )  { return true; } // strange urgency ...
@@ -99,8 +104,13 @@ namespace quex {
         CLASS::is_begin_of_file() {
             __quex_assert(this->_current_p <= this->buffer_end() );
             __quex_assert(this->_current_p >= this->buffer_begin() );
+
+            // if buffer does not start at 'begin of file', then there is no way that we're at BOF
             if( this->_start_pos_of_buffer != 0 )   { return false; }
+
+            // if we're at the beginning of the buffer, then this is also the beginning of the file
             if( this->_current_p == this->_buffer ) { return true; }
+
             // double check: the 'current' pointer shall never be put below the buffer start
             __quex_assert(this->_current_p < this->buffer_begin() );
             if( this->_current_p < this->buffer_begin() ) { return true; } // strange urgency ...
