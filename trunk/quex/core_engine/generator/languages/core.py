@@ -71,13 +71,14 @@ db["C++"] = {
     "$drop-out":          cpp.__state_drop_out_code,
     "$drop-out-forward":  lambda OnReloadGotoLabel: \
                           "if( input == me->__buffer->BLC ) {\n"                                     + \
-                          "    loaded_byte_n = me->__buffer->load_forward();\n"             + \
-                          "    if( loaded_byte_n != -1 ) {\n"                                         + \
+                          "    loaded_byte_n = me->__buffer->load_forward();\n"                      + \
+                          "    if( loaded_byte_n != -1 ) {\n"                                        + \
                           "        $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n" + \
                           "        goto %s;\n" %  OnReloadGotoLabel                                  + \
                           "    }\n"                                                                  + \
-                          "    // no load possible => end of file\n"                                 + \
-                          "    goto TERMINAL_END_OF_STREAM;\n"                                       + \
+                          "    // no load possible => (i) goto general terminal\n"                   + \
+                          "    //                     (ii) init state triggers EOF action\n"         + \
+                          "    goto GENERAL_TERMINAL;\n"                                             + \
                           "}\n",
     "$drop-out-backward": lambda OnReloadGotoLabel:
                           "if( input == me->__buffer->BLC ) {\n"                                 + \
