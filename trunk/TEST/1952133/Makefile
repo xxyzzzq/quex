@@ -26,11 +26,18 @@ APPLICATION      = lexer
 COMPILER = g++
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-     -DQUEX_OPTION_ACTIVATE_ASSERTS	
+     -DQUEX_SETTING_BUFFER_SIZE=15 \
+	 -DQUEX_OPTION_ACTIVATE_ASSERTS
+     # -DQUEX_SETTING_BUFFER_SIZE=128
+	 #-D__QUEX_OPTION_UNIT_TEST \
+     #-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+     #-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
 
 LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
+all: $(APPLICATION) 
+
 # -- application
 $(APPLICATION): $(APPLICATION).o \
 	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
@@ -44,6 +51,7 @@ $(APPLICATION): $(APPLICATION).o \
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
 
+
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch $(MODE_FILES)
@@ -54,3 +62,5 @@ clean:
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.bak
+	rm -f extensive-example.txt
+
