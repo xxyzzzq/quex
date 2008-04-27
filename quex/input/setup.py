@@ -141,6 +141,12 @@ def do(argv):
 def validate(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
     """
+    # if the mode is 'plotting', then check wether a graphic format is speicified
+    if argv.find(SETUP_INFO["plot_graphic_format"][0]) != -1:
+        if setup.plot_graphic_format == "":
+            error_msg("Option '%s' must be followed by a graphic format specifier (bmp, svg, jpg, ...)" % \
+                      SETUP_INFO["plot_graphic_format"][0])
+
     # ensure that options are not specified twice
     for parameter, info in SETUP_INFO.items():
         occurence_n = 0 
