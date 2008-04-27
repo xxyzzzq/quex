@@ -59,8 +59,8 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me, 
-	                       QUEX_CHARACTER_TYPE*       InputStartPosition, 
-			       QUEX_MODE_FUNCTION_P       TheInitianAnalyserFunctionP) 
+                               QUEX_CHARACTER_TYPE*       InputStartPosition, 
+                               QUEX_MODE_FUNCTION_P       TheInitianAnalyserFunctionP) 
 {
     /* Provide a string object 'Lexeme' and an integer 'LexemeL' to support
      ** further treatment inside the action.
@@ -82,6 +82,8 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 #endif
 }
 
+#define  QUEX_END_OF_FILE() \
+         0
 
 QUEX_INLINE_KEYWORD
 void

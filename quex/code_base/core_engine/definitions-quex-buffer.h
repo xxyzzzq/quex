@@ -117,32 +117,8 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 */
 #define  __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 
-QUEX_INLINE_KEYWORD int
-quex_on_drop_out_forward_try_buffer_reload(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
-{
-    // not BOFC: See ./quex/buffer/README.txt
-    __quex_assert( input != me->__buffer->BOFC );
-    if( input == me->__buffer->BLC ) {                                        
-        // request: go back to 'get next input': REQUEST UPDATE ADDRESSES!   
-        const int DeletedByteN = me->__buffer->load_forward(); 
-        // no load possible => same as normal drop out
-        return DeletedByteN == -1 ? 0 : DeletedByteN;
-    }                                                                         
-    return 0;      /* => normal drop out */       
-}
-
-QUEX_INLINE_KEYWORD int
-quex_on_drop_out_backward_try_buffer_reload(QUEX_CORE_ANALYSER_STRUCT* me, QUEX_CHARACTER_TYPE input)
-{
-    // not EOFC: See ./quex/buffer/README.txt
-    __quex_assert( input != me->__buffer->EOFC );
-    if( input == me->__buffer->BLC ) {                                        
-        me->__buffer->load_backward();                                           
-        return 1;  /* request: go back to 'get next input': UPDATE ADDRESSES! */   
-    }                                                                         
-    return 0;      /* => normal drop out */       
-}
-
+#define  QUEX_END_OF_FILE() \
+         me->__buffer->is_end_of_file()
 
 #define QUEX_STREAM_GET(character)                 \
         (character) = me->__buffer->get_forward(); \

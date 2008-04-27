@@ -83,6 +83,30 @@ namespace quex {
             return tmp; 
         }
 
+    TEMPLATE inline const bool  
+        CLASS::is_end_of_file() {
+            __quex_assert(this->_current_p <= this->buffer_end() );
+            __quex_assert(this->_current_p >= this->buffer_begin() );
+            if( this->_end_of_file_p != 0x0 )              { return false; }
+            if( this->_current_p == this->_end_of_file_p ) { return true; }
+            // double check: the 'current' pointer shall never be put beyond the end of file pointer
+            __quex_assert(this->_current_p < this->_end_of_file_p);
+            if( this->_current_p < this->buffer_begin() )  { return true; } // strange urgency ...
+            return false;
+        }
+
+    TEMPLATE inline const bool  
+        CLASS::is_begin_of_file() {
+            __quex_assert(this->_current_p <= this->buffer_end() );
+            __quex_assert(this->_current_p >= this->buffer_begin() );
+            if( this->_start_pos_of_buffer != 0 )   { return false; }
+            if( this->_current_p == this->_buffer ) { return true; }
+            // double check: the 'current' pointer shall never be put below the buffer start
+            __quex_assert(this->_current_p < this->buffer_begin() );
+            if( this->_current_p < this->buffer_begin() ) { return true; } // strange urgency ...
+            return false;
+        }
+
     TEMPLATE void              
         CLASS::set_subsequent_character(const int Value) {
             __quex_assert(_current_p > _buffer );
@@ -126,7 +150,7 @@ namespace quex {
         CLASS::__set_end_of_file(character_type* EOF_p)
         {
             _end_of_file_p  = EOF_p; 
-            *_end_of_file_p = buffer_core::EOFC;
+            *_end_of_file_p = buffer_core::BLC; // buffer_core::EOFC;
         }
 
     TEMPLATE inline void 
@@ -139,7 +163,7 @@ namespace quex {
     TEMPLATE inline void 
         CLASS::__set_begin_of_file()
         {
-            *(buffer_begin()) = buffer_core::BOFC; 
+            *(buffer_begin()) = buffer_core::BLC; // buffer_core::BOFC; 
         }
 
     TEMPLATE inline void 

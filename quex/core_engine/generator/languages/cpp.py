@@ -560,7 +560,7 @@ $$END_OF_STREAM_ACTION$$
 $$DEFAULT_ACTION$$
         goto __REENTRY_PREPARATION;
 
-  $$GENERAL_TERMINAL_STATE_LABEL$$: {
+  TERMINAL_GENERAL: {
         int tmp = last_acceptance;
         //
         //  if last_acceptance => goto correspondent acceptance terminal state
@@ -680,19 +680,25 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         delete_pre_context_flags_str += "    " + LanguageDB["$set-pre-context-flag"](pre_context_sm_id, 0)
 
     #  -- execute default pattern action 
-    #  -- reset character stream to last success                
     #  -- goto initial state    
-    default_action_str = __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
-                                             IndentationOffset=16)
     end_of_stream_code_action_str = __adorn_action_code(ActionInfo(-1, EndOfStreamAction), SupportBeginOfLineF,
                                                         IndentationOffset=16)
+    # -- DEFAULT ACTION: Under 'normal' circumstances the default action is simply to be executed
+    #                    since the 'get_forward()' incremented the 'current' pointer.
+    #                    HOWEVER, when end of file has been reached the 'current' pointer has to
+    #                    be reset so that the initial state can drop out on the buffer limit code
+    #                    and then transit to the end of file action.
+    default_action_str  = "if( QUEX_END_OF_FILE() ) {\n"
+    default_action_str += "    QUEX_STREAM_GET_BACKWARDS(/* dummy (important is that we go backwards */input);\n"
+    default_action_str += "}\n"
+    default_action_str += __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
+                                              IndentationOffset=16)
 
     txt = blue_print(__terminal_state_str, 
                      [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
                       ["$$DEFAULT_ACTION$$",               default_action_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
-                      ["$$GENERAL_TERMINAL_STATE_LABEL$$", label.get_terminal(StateMachineName, None)],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
                       ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index)],
                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
