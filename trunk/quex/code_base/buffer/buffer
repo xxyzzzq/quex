@@ -149,6 +149,8 @@ namespace quex {
             int  get_backward();
             virtual int  load_forward() = 0;
             virtual int  load_backward() = 0;
+            const bool   is_end_of_file();
+            const bool   is_begin_of_file();
 
             void              set_subsequent_character(const int Value);
             character_type    get_subsequent_character();

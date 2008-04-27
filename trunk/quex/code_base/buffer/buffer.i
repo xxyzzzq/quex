@@ -77,8 +77,8 @@ namespace quex {
         }
 
 
-    template<class InputStrategy, class OverflowPolicy> inline int  
-        basic_buffer<InputStrategy, OverflowPolicy>::load_forward() {
+    TEMPLATE inline int  
+        CLASS::load_forward() {
             // RETURNS: Distance that was loaded forward in the stream.
             //          -1 in case that forward loading was not possible (end of file)
             this->EMPTY_or_show_buffer_load("LOAD FORWARD(entry)");

@@ -17,11 +17,8 @@ def get_input(StateMachineName, StateIdx):
 def get_terminal(StateMachineName, TerminalStateIdx=None):
 
     if TerminalStateIdx == None:
-        ## return "QUEX_LABEL_%s_TERMINAL" % StateMachineName
-        return "GENERAL_%s_TERMINAL" % StateMachineName
-        ## return "GENERAL_TERMINAL"
+        return "TERMINAL_GENERAL"
     else:       
-        ## return "QUEX_LABEL_%s_TERMINAL_%s" % (StateMachineName, __nice(TerminalStateIdx))
         return "TERMINAL_%s" % __nice(TerminalStateIdx)
 
 def get_drop_out(StateMachineName, StateIdx):

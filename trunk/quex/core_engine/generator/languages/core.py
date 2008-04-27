@@ -37,6 +37,7 @@ db["C++"] = {
     "$loop-end":            "}\n",
     "$continue":          "continue;\n",
     "$break":             "break;\n",
+    "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if ==":             lambda value: "if( input == " + value + ") {\n",
     "$if !=":             lambda value: "if( input != " + value + ") {\n",
@@ -76,9 +77,9 @@ db["C++"] = {
                           "        $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n" + \
                           "        goto %s;\n" %  OnReloadGotoLabel                                  + \
                           "    }\n"                                                                  + \
-                          "    // no load possible => (i) goto general terminal\n"                   + \
-                          "    //                     (ii) init state triggers EOF action\n"         + \
-                          "    goto GENERAL_TERMINAL;\n"                                             + \
+                          "    // no load possible (EOF) => (i) goto general terminal\n"             + \
+                          "    //                           (ii) init state triggers EOF action\n"   + \
+                          "    goto TERMINAL_GENERAL;\n"                                             + \
                           "}\n",
     "$drop-out-backward": lambda OnReloadGotoLabel:
                           "if( input == me->__buffer->BLC ) {\n"                                 + \
@@ -119,6 +120,7 @@ db["Python"] = {
     "$function_end":  "\n",                                                  
     "$if":     "if ",
     "$then":   ":",
+    "$if EOF": "if True:\n",
     "$if <":   lambda value: "if input < "  + value + ":\n",
     "$if ==":  lambda value: "if input == " + value + ":\n",
     "$if !=":  lambda value: "if input != " + value + ":\n",

@@ -4,7 +4,7 @@ from copy import deepcopy
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
-       BackwardInputPositionDetectionF=False, EndOfFile_Code=None):
+       BackwardInputPositionDetectionF=False, CheckEndOfFile_F=None):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -76,9 +76,8 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     txt  = LanguageDB["$label-definition"](drop_out_label) + "\n"
 
     # -- in case of the init state, the end of file character has to be checked.
-    if EndOfFile_Code != None and BackwardLexingF == False:
-        txt += LanguageDB["$if =="]("0x%X" % EndOfFile_Code)
-
+    if CheckEndOfFile_F and BackwardLexingF == False:
+        txt += LanguageDB["$if EOF"]
         txt += "    " + LanguageDB["$comment"](
                 "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"

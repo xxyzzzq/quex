@@ -107,7 +107,7 @@ __cpp_terminal_state_str  = """
     // that the last input before the pattern matched a complete pattern.
   $$SPECIFIC_TERMINAL_STATES$$
 
-  $$GENERAL_TERMINAL_STATE_LABEL$$:
+  TERMINAL_GENERAL:
     int tmp = last_acceptance;
     last_acceptance = 0x00;    // reset the last acceptance position for next run
     // jump to last acceptance state
@@ -158,7 +158,6 @@ def __cpp_terminal_states(StateMachineName, sm, action_db, DefaultAction):
                      [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
                       ["$$DEFAULT_ACTION$$",               DefaultAction.replace("\n", "        \n")],
-                      ["$$GENERAL_TERMINAL_STATE_LABEL$$", get_label("", None, None)],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
                       ["$$INITIAL_STATE_INDEX_LABEL$$",    get_label(StateMachineName, sm.init_state_index)]])
     return txt
