@@ -147,10 +147,11 @@ namespace quex {
             // (*) Analyzer Main functions _________________________________________________________________
             int  get_forward();
             int  get_backward();
-            virtual int  load_forward() = 0;
-            virtual int  load_backward() = 0;
-            const bool   is_end_of_file();
-            const bool   is_begin_of_file();
+            virtual int          load_forward() = 0;
+            virtual int          load_backward() = 0;
+            virtual const bool   is_end_of_file() = 0;
+            virtual const bool   is_begin_of_file() = 0;
+            virtual void         close_input() = 0;
 
             void              set_subsequent_character(const int Value);
             character_type    get_subsequent_character();
@@ -172,7 +173,6 @@ namespace quex {
             character_type*   buffer_begin()  { return _buffer; }                   // 1st in buffer
             character_type*   buffer_end()    { return _buffer + BUFFER_SIZE; }     // 1st after buffer
 
-            virtual void      close_input() = 0;
 
         public:
             // NOT private: for usage in the template type OverflowPolicy
@@ -184,7 +184,7 @@ namespace quex {
 
 #ifdef __QUEX_OPTION_UNIT_TEST
             // NOTE: Include <iostream> for unit tests before this header!
-            character_type   get_border_char(const character_type);
+            character_type   get_border_char(const character_type*);
             void             show_content();
 #endif
         protected:
@@ -200,7 +200,7 @@ namespace quex {
             const size_t  FALLBACK_N;
             //
             void          EMPTY_or_assert_consistency(bool AllowTerminatingZeroF = true);
-#ifndef NDEBUG
+#if ! defined(NDEBUG) || defined(__QUEX_OPTION_UNIT_TEST)
             // When NDEBUG is not defined the memory_position stores the _start_pos_of_buffer
             // with every address. This way, one can compare if memory addresses are consistent.
             virtual long  DEBUG_get_start_position_of_buffer() = 0;
@@ -242,16 +242,11 @@ namespace quex {
             virtual ~basic_buffer() {}
 
             // (*) loading according input strategy
-
-            virtual int  load_forward();
-            virtual int  load_backward();
-            virtual void close_input()  { _input.close(); }
-
-#ifdef __QUEX_OPTION_UNIT_TEST
-            // NOTE: Include <iostream> for unit tests before this header!
-            void             show_brief_content(); 
-            void             x_show_content(); 
-#endif
+            virtual int        load_forward();
+            virtual int        load_backward();
+            virtual const bool is_end_of_file() = 0;
+            virtual const bool is_begin_of_file() = 0;
+            virtual void       close_input()  { _input.close(); }
 
         protected:
             void  __constructor_core();
@@ -261,8 +256,14 @@ namespace quex {
             //
             InputStrategy    _input;               // DESIGN PATTERN: 'Strategy'
             stream_position  _start_pos_of_buffer; // position in stream that corresponds to _content[0]
-#ifndef NDEBUG
+#if ! defined(NDEBUG) || defined(__QUEX_OPTION_UNIT_TEST)
             virtual long     DEBUG_get_start_position_of_buffer() { return _start_pos_of_buffer; }
+#endif
+#ifdef __QUEX_OPTION_UNIT_TEST
+        public:
+            // NOTE: Include <iostream> for unit tests before this header!
+            void             show_brief_content(); 
+            void             x_show_content(); 
 #endif
         };    
 
@@ -272,7 +273,7 @@ namespace quex {
     template<class X, class Y> inline bool   
         DefaultOverflowPolicy::forward(basic_buffer<X,Y>* that) { 
 #ifdef __QUEX_OPTION_UNIT_TEST
-            std::cerr << "ALERT: Lexeme start drops beyond end of buffer (buffer overflow)." << std::endl;
+            throw std::range_error("Lexeme start falls back before begin of buffer (buffer overflow).");
 #endif
             that->__set_end_of_file(that->content_begin());
             return false; /* => END OF FILE */ 
@@ -282,7 +283,7 @@ namespace quex {
     template<class X, class Y> inline bool   
         DefaultOverflowPolicy::backward(basic_buffer<X,Y>* that) { 
 #ifdef __QUEX_OPTION_UNIT_TEST
-            std::cerr << "ALERT: Lexeme start drops beyond begin of buffer (buffer underflow)." << std::endl;
+            throw std::range_error("Lexeme start falls back beyond end of buffer (buffer overflow).");
 #endif
             that->__set_begin_of_file();
             return false; /* => BEGIN OF FILE */ 

@@ -46,7 +46,7 @@ main(int argc, char** argv)
         //
         if( tmp == ' ' ) x.mark_lexeme_start();
         // See file README.txt in directory ./quex/buffer      
-        else if( tmp == x.EOFC ) { ; /* we are at the end, simply do get_forward again */ }
+        else if( x.is_begin_of_file() ) { ; /* we are at the end, simply do get_backward() again */ }
         else if( tmp == x.BLC || tmp == x.EOFC || tmp == x.BOFC ) {
             std::cout << "try load\n";
             if( x.load_backward() == -1 ) break;
