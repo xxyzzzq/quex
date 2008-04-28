@@ -62,7 +62,8 @@ test_istream(int ContentSz, int BackupSz)
     // '+2' because of two positions for begin and end of buffer
     quex::basic_buffer<input_strategy<std::istream*, char> >  x(&ifs, ContentSz + 2, BackupSz); 
 
-    cout << "-(total size = " << ContentSz << ", border = " << BackupSz << ")-istream-----------------------------------\n";
+    cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
+    cout << ")-istream-----------------------------------\n";
     test_this(x);
 }
 
@@ -79,7 +80,8 @@ test_stdio(int ContentSz, int BackupSz)
     // '+2' because of two positions for begin and end of buffer
     quex::basic_buffer<input_strategy<std::FILE*, char> >  x(fh, ContentSz + 2, BackupSz); 
 
-    cout << "-(total size = " << ContentSz << ", border = " << BackupSz << ")-stdio-------------------------------------\n";
+    cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
+    cout << ")-stdio-------------------------------------\n";
 
     test_this(x);
 }

@@ -24,9 +24,7 @@ extern "C" {
 
 namespace quex {
 
-    const uint8_t  DEFAULT_BUFFER_BEGIN_OF_FILE_CODE = 0x19;
-    const uint8_t  DEFAULT_BUFFER_END_OF_FILE_CODE   = 0x1A;
-    const uint8_t  DEFAULT_BUFFER_LIMIT_CODE         = 0x00;
+    const uint8_t  DEFAULT_BUFFER_LIMIT_CODE = 0x00;
 
     template <class InputStrategy, class OverflowPolicy> class basic_buffer;
     
@@ -131,15 +129,11 @@ namespace quex {
 #else
             typedef character_type*                          memory_position;
 #endif
-            const character_type BOFC;
-            const character_type EOFC;
             const character_type BLC;
 
             // (*) Constructor/Destructor __________________________________________________________________
         protected:
             buffer_core(size_t BufferSz=65536, size_t BackupSectionSz=64,
-                        character_type   Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
-                        character_type   Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
                         character_type   Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
         public:
             virtual ~buffer_core();
@@ -231,21 +225,17 @@ namespace quex {
             // (*) Constructor/Destructor __________________________________________________________________
             basic_buffer(InputStrategy& input_strategy, 
                          size_t BufferSz=65536, size_t BackupSectionSz=64,
-                         character_type Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
-                         character_type Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
                          character_type Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
             basic_buffer(input_handle_type* input_handle, 
                          size_t BufferSz=65536, size_t BackupSectionSz=64,
-                         character_type Value_BOFC = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE,   // BOFC: begin of file code
-                         character_type Value_EOFC = DEFAULT_BUFFER_END_OF_FILE_CODE,     // EOFC: end of file code
                          character_type Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
             virtual ~basic_buffer() {}
 
             // (*) loading according input strategy
             virtual int        load_forward();
             virtual int        load_backward();
-            virtual const bool is_end_of_file() = 0;
-            virtual const bool is_begin_of_file() = 0;
+            virtual const bool is_end_of_file();
+            virtual const bool is_begin_of_file();
             virtual void       close_input()  { _input.close(); }
 
         protected:

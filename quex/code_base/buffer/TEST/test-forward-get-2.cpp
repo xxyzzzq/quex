@@ -26,8 +26,8 @@ main(int argc, char** argv)
         x.show_content();
         //
         if( tmp == ' ' ) x.mark_lexeme_start();
-        else if( tmp == x.BOFC ) { ; /* we are at the end, simply do get_forward again */ }
-        else if(  tmp == x.BLC || tmp == x.EOFC || tmp == x.BOFC ) {
+        else if( x.is_begin_of_file() ) { break; /* we are at the end, simply do get_forward again */ }
+        else if( tmp == x.BLC ) {
             cout << "try load\n";
             // x.x_show_content();
             if( x.load_forward() == -1 ) break;
