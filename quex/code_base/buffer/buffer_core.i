@@ -319,14 +319,18 @@ namespace quex {
             if( _end_of_file_p == 0x0 ) {
                 __quex_assert(_current_p  <=  buffer_end()); 
                 __quex_assert(_lexeme_start_p < buffer_end());
-                if( AllowTerminatingZeroF ) {
-                    __quex_assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
-                            || *(content_end()) == buffer_core::BLC    // the last character of content.
-                            || *(content_end()) == character_type(0));  
-                } else {
-                    __quex_assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
-                            || *(content_end()) == buffer_core::BLC);  // the last character of content.
-                }
+                /* NOTE: These asserts go back to a time where there where different delimiters
+                 *       for 'begin of file', 'end of file', and 'buffer limit'.
+                 *
+                 * if( AllowTerminatingZeroF ) {
+                 *   __quex_assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
+                 *           || *(content_end()) == buffer_core::BLC    // the last character of content.
+                 *           || *(content_end()) == character_type(0));  
+                 * } else {
+                 *   __quex_assert(    *(content_end()) == buffer_core::EOFC   // content_end -> 1st character after
+                 *                  || *(content_end()) == buffer_core::BLC);  // the last character of content.
+                 *}
+                 */
                 // NOTE: strange '+1' because: 
                 //         -- LexemeStartOffSet == -1 is ok and 
                 //         -- size_t might be and unsigned type.
@@ -336,12 +340,15 @@ namespace quex {
                 __quex_assert(_end_of_file_p  < content_end());
                 __quex_assert(_lexeme_start_p <= _end_of_file_p);  
                 __quex_assert(_current_p      <= _end_of_file_p); 
-                if( AllowTerminatingZeroF ) 
-                    __quex_assert(*_end_of_file_p == buffer_core::EOFC
-                           || *_end_of_file_p == character_type(0));  
-                else                        
-                    __quex_assert(*_end_of_file_p == buffer_core::EOFC);
-                
+                /* NOTE: These asserts go back to a time where there where different delimiters
+                 *       for 'begin of file', 'end of file', and 'buffer limit'.
+                 *
+                 * if( AllowTerminatingZeroF ) 
+                 *   __quex_assert(   *_end_of_file_p == buffer_core::EOFC
+                 *                 || *_end_of_file_p == character_type(0));  
+                 * else                        
+                 *   __quex_assert(*_end_of_file_p == buffer_core::EOFC);
+                 */ 
                 __quex_assert(LexemeStartOffSet <= _end_of_file_p - content_begin());
             }
         }
@@ -351,13 +358,11 @@ namespace quex {
 
 #ifdef __QUEX_OPTION_UNIT_TEST
     TEMPLATE inline typename CLASS::character_type  
-        CLASS::get_border_char(const character_type C) {
-            if     ( C == buffer_core::BLC )  return '|';
-            else if( C == buffer_core::EOFC ) return ']';
-            else if( C == buffer_core::BOFC)  return '[';
-            else {
-                return '?';
-            }
+        CLASS::get_border_char(const character_type* C) {
+            if( *C != buffer_core::BLC )                                     return '?';
+            else if( C == this->_end_of_file_p )                             return ']';
+            else if( this->DEBUG_get_start_position_of_buffer() != 0 && C == this->_buffer ) return '[';
+            return '|';
         }
 
     // Do not forget to include <iostream> before this header when doing those unit tests
@@ -388,9 +393,8 @@ namespace quex {
             for(size_t i=2; i<content_size()+2; ++i) tmp[i] = ' ';
             tmp[content_size()+4] = '\0';
             tmp[content_size()+3] = '|';
-            tmp[content_size()+2] = get_border_char(end_p != content_end() ? 
-                                                    BLC : (char)covered_char);
-            tmp[1]                = get_border_char(*(content_begin()-1));
+            tmp[content_size()+2] = get_border_char(end_p);
+            tmp[1]                = get_border_char(content_begin()-1);
             tmp[0]                = '|';
             //
             tmp[_current_fallback_n - 1 + 2]      = ':';        
@@ -409,8 +413,8 @@ namespace quex {
             }
             // std::cout << " = 0x" << std::hex << int(*_current_p) << std::dec 
             std::cout << std::endl;
-            std::cout << "|" << get_border_char(*(buffer_begin())) << content_begin();
-            std::cout << get_border_char(covered_char);
+            std::cout << "|" << get_border_char(buffer_begin()) << content_begin();
+            std::cout << get_border_char(end_p);
             //
             const size_t L = _end_of_file_p == 0x0 ? 0 : content_end() - _end_of_file_p;
             for(size_t i=0; i < L; ++i) std::cout << "|";

@@ -20,8 +20,8 @@ def create_Match_object(match_info):
 
     return Match(match_info[0], 
                  ReferencedCodeFragment("std::cout << \"%s\" << std::endl;\n" % match_info[1], "", -1), 
-                 regex.do(match_info[0]), 0,
-                 IL=inheritance_level) 
+                                        regex.do(match_info[0], {}, 0, 0, -1), 0,
+                                        IL=inheritance_level) 
 
 pattern_action_pair_list = [
     # identifier

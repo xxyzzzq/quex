@@ -27,7 +27,7 @@ class Generator(GeneratorBase):
         self.analyzer_state_class_name           = AnalyserStateClassName
         self.programming_language                = Language
         self.language_db                         = languages.db[self.programming_language]
-        self.end_of_stream_action                = DefaultAction
+        self.end_of_stream_action                = EndOfStreamAction
         self.default_action                      = DefaultAction
         self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
         self.mode_name_list                      = ModeNameList
