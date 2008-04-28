@@ -41,5 +41,7 @@ main(int argc, char** argv)
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";
 
+    cout << "buffer size = " << QUEX_SETTING_BUFFER_SIZE << endl;
+
     return 0;
 }

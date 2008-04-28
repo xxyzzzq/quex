@@ -1,6 +1,9 @@
 // -*- C++ -*- vim: set syntax=cpp:
 start = PROGRAM
 
+header { 
+#include<stdio.h>
+}
 define {
     // Pattern definitions for example application
     P_WHITESPACE          [ \t\n]+
@@ -71,7 +74,10 @@ token {
 
 mode PROGRAM :
 {
-    <<EOF>>       => TKN_TERMINATION;
+    <<EOF>>       { 
+        std::printf("This is the end and looks good. Buffer Size = %i\n", QUEX_SETTING_BUFFER_SIZE); 
+        self.send(TKN_TERMINATION); 
+    }
 
     "("           => TKN_BRACKET_O;
     ")"           => TKN_BRACKET_C;

@@ -280,8 +280,8 @@ namespace quex {
 
         // (*) buffers
         template <class InputHandleP> 
-        quex::buffer_core<QUEX_CHARACTER_TYPE>* get_buffer(InputHandleP input_handle, 
-                                                           const char*  IConvInputCodingName = 0x0);
+        quex::buffer_core<QUEX_CHARACTER_TYPE>* create_buffer(InputHandleP input_handle, 
+                                                              const char*  IConvInputCodingName = 0x0);
 
         //
         // (*) Token sending
@@ -577,7 +577,7 @@ namespace quex {
  
     template <class InputHandleP> inline
     quex::buffer_core<QUEX_CHARACTER_TYPE>*
-    CLASS::get_buffer(InputHandleP input_handle, const char* IConvInputCodingName /* = 0x0 */)
+    CLASS::create_buffer(InputHandleP input_handle, const char* IConvInputCodingName /* = 0x0 */)
     {
         if( IConvInputCodingName != 0x0 ) {
 #           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
@@ -608,7 +608,7 @@ namespace quex {
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
     {
-        QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(input_handle, IConvInputCodingName);
+        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
         QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
@@ -1249,7 +1249,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 #       endif
 
         // (2) initializing the new state of the lexer for reading the new input file/stream
-        QUEX_CORE_BUFFER_TYPE* tmp = get_buffer(new_input_handle_p, IConvInputCodingName);
+        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(new_input_handle_p, IConvInputCodingName);
         QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
@@ -1341,7 +1341,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
               __QUEX_PRINT_SOURCE_POSITION()                                 \
                 Character == '\n' ? std::fprintf(stdout, "input:    '\\n'\n") \
               : Character == '\t' ? std::fprintf(stdout, "input:    '\\t'\n") \
-              :                      std::fprintf(stdout, "input:    '%c'\n", (char)Character) 
+              :                      std::fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
 #   else
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
@@ -1623,7 +1623,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         }
     
       STATE_249_DROP_OUT:
-        if( input == 0x1A) {
+        if( QUEX_END_OF_FILE() ) {
             /* NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state */
             goto TERMINAL_END_OF_STREAM;
         }
@@ -1635,11 +1635,12 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_249_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        goto GENERAL_ONE_AND_ONLY_TERMINAL;
+        goto TERMINAL_GENERAL;
         
       STATE_256:
         __QUEX_DEBUG_INFO_ENTER(256);
@@ -1712,8 +1713,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_257_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -1763,8 +1765,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_259_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(35);
@@ -1823,8 +1826,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_260_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -1883,8 +1887,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_261_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -1943,8 +1948,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_262_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2003,8 +2009,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_263_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2063,8 +2070,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_264_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2115,8 +2123,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_265_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(7);
@@ -2175,8 +2184,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_266_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2227,8 +2237,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_267_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(16);
@@ -2287,8 +2298,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_268_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2339,8 +2351,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_269_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(10);
@@ -2399,8 +2412,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_270_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2459,8 +2473,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_271_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2519,8 +2534,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_272_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2579,8 +2595,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_273_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2631,8 +2648,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_274_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(13);
@@ -2691,8 +2709,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_275_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2751,8 +2770,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_276_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2811,8 +2831,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_277_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2871,8 +2892,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_278_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -2923,8 +2945,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_279_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(19);
@@ -2983,8 +3006,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_250_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -3035,8 +3059,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_251_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(5);
@@ -3095,8 +3120,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_252_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -3170,8 +3196,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_254_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -3222,8 +3249,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                 Simple_on_buffer_reload(loaded_byte_n);
                 goto STATE_255_INPUT;
             }
-            // no load possible => end of file
-            goto TERMINAL_END_OF_STREAM;
+            // no load possible (EOF) => (i) goto general terminal
+            //                           (ii) init state triggers EOF action
+            goto TERMINAL_GENERAL;
         }
         #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
         __QUEX_DEBUG_INFO_ACCEPTANCE(41);
@@ -3250,7 +3278,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 27 "dos_lf_2.qx"
             self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1944 "Simple-core-engine.cpp"
+#line 1972 "Simple-core-engine.cpp"
             
             }
         }
@@ -3283,7 +3311,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 19 "dos_lf_2.qx"
             self.send(TKN_STRUCT); RETURN;
-#line 1977 "Simple-core-engine.cpp"
+#line 2005 "Simple-core-engine.cpp"
             
             }
         }
@@ -3302,7 +3330,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 28 "dos_lf_2.qx"
             self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1996 "Simple-core-engine.cpp"
+#line 2024 "Simple-core-engine.cpp"
             
             }
         }
@@ -3320,7 +3348,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 20 "dos_lf_2.qx"
             self.send(TKN_TYPE_INT); RETURN;
-#line 2014 "Simple-core-engine.cpp"
+#line 2042 "Simple-core-engine.cpp"
             
             }
         }
@@ -3338,7 +3366,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 21 "dos_lf_2.qx"
             self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 2032 "Simple-core-engine.cpp"
+#line 2060 "Simple-core-engine.cpp"
             
             }
         }
@@ -3356,7 +3384,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 22 "dos_lf_2.qx"
             self.send(TKN_SEND); RETURN;
-#line 2050 "Simple-core-engine.cpp"
+#line 2078 "Simple-core-engine.cpp"
             
             }
         }
@@ -3374,7 +3402,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 23 "dos_lf_2.qx"
             self.send(TKN_EXPECT); RETURN;
-#line 2068 "Simple-core-engine.cpp"
+#line 2096 "Simple-core-engine.cpp"
             
             }
         }
@@ -3392,7 +3420,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 24 "dos_lf_2.qx"
             self.send(TKN_SEMICOLON); RETURN;
-#line 2086 "Simple-core-engine.cpp"
+#line 2114 "Simple-core-engine.cpp"
             
             }
         }
@@ -3410,7 +3438,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 25 "dos_lf_2.qx"
             self.send(TKN_BRACKET_OPEN); RETURN;
-#line 2104 "Simple-core-engine.cpp"
+#line 2132 "Simple-core-engine.cpp"
             
             }
         }
@@ -3428,7 +3456,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
             
             #line 26 "dos_lf_2.qx"
             self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2122 "Simple-core-engine.cpp"
+#line 2150 "Simple-core-engine.cpp"
             
             }
         }
@@ -3444,15 +3472,20 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
                         {
             self.__count_shift_end_values_to_start_values();
             self.count(Lexeme, LexemeL);
-            self.send(TKN_TERMINATION);
-            return TKN_TERMINATION;
+            
+            #line 16 "dos_lf_2.qx"
+            self.send(TKN_TERMINATION); RETURN;
+#line 2169 "Simple-core-engine.cpp"
             
             }
                     }
     
-            goto __REENTRY_PREPARATION;
+            return TKN_TERMINATION;
     
       TERMINAL_DEFAULT:
+    if( QUEX_END_OF_FILE() ) {
+        QUEX_STREAM_GET_BACKWARDS(/* dummy (important is that we go backwards */input);
+    }
                     QUEX_PREPARE_LEXEME_OBJECT
                     QUEX_PREPARE_LEXEME_LENGTH
                     {
@@ -3467,7 +3500,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     
             goto __REENTRY_PREPARATION;
     
-      GENERAL_ONE_AND_ONLY_TERMINAL: {
+      TERMINAL_GENERAL: {
             int tmp = last_acceptance;
             //
             //  if last_acceptance => goto correspondent acceptance terminal state

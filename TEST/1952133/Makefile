@@ -23,15 +23,18 @@ APPLICATION      = lexer
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+#     
+#     Buffer sizes:   28 --> buffer overflow
+#                     29 --> OK
 COMPILER = g++
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-     -DQUEX_SETTING_BUFFER_SIZE=15 \
-	 -DQUEX_OPTION_ACTIVATE_ASSERTS
-     # -DQUEX_SETTING_BUFFER_SIZE=128
-	 #-D__QUEX_OPTION_UNIT_TEST \
-     #-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
-     #-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
+     -DQUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE) \
+	 -DQUEX_OPTION_ACTIVATE_ASSERTS \
+	 # -D__QUEX_OPTION_UNIT_TEST \
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+     # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
+     #-DQUEX_SETTING_BUFFER_SIZE=128
 
 LD = $(COMPILER)
 
