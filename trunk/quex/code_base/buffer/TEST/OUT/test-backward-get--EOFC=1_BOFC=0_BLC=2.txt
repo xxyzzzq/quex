@@ -91,7 +91,6 @@ try load
 |[Das Korn wird geerntet und z||
 |[C: S                        || 'D'
 |[Das Korn wird geerntet und z||
-|C : S                        || BOFC
+|C : S                        || BLC
 |[Das Korn wird geerntet und z||
-try load
 begin of file

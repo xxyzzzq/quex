@@ -13,12 +13,8 @@ namespace quex {
     TEMPLATE inline
         CLASS::basic_buffer(InputStrategy& input_strategy, 
                size_t BufferSz /* = 65536 */, size_t BackupSectionSz /* = 64 */,
-               character_type Value_BOFC /* = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE */,
-               character_type Value_EOFC /* = DEFAULT_BUFFER_END_OF_FILE_CODE */,
                character_type Value_BLC  /* = DEFAULT_BUFFER_LIMIT_CODE */)
-        : BASE_CLASS(BufferSz, BackupSectionSz, 
-                     Value_BOFC, Value_EOFC, Value_BLC),
-        _input(input_strategy)
+        : BASE_CLASS(BufferSz, BackupSectionSz, Value_BLC), _input(input_strategy)
     {
         __constructor_core();
     }
@@ -27,12 +23,8 @@ namespace quex {
     TEMPLATE inline
         CLASS::basic_buffer(input_handle_type* input_handle, 
                             size_t BufferSz/* = 65536 */, size_t BackupSectionSz/* = 64 */,
-                            character_type Value_BOFC /* = DEFAULT_BUFFER_BEGIN_OF_FILE_CODE */,
-                            character_type Value_EOFC /* = DEFAULT_BUFFER_END_OF_FILE_CODE */,
                             character_type Value_BLC  /* = DEFAULT_BUFFER_LIMIT_CODE */)   
-        : BASE_CLASS(BufferSz, BackupSectionSz, 
-                     Value_BOFC, Value_EOFC, Value_BLC),
-        _input(InputStrategy(input_handle))
+        : BASE_CLASS(BufferSz, BackupSectionSz, Value_BLC), _input(InputStrategy(input_handle))
     {
         __constructor_core();
     }
@@ -85,12 +77,13 @@ namespace quex {
 
             // This function assumes that the _current_p has reached either
             // the buffer's border, or the _end_of_file_p.
-            if( this->_end_of_file_p ) {
-                if( this->_current_p != this->_end_of_file_p ) {
-                    throw std::range_error("Inaddmissible 'EndOfFile' character code appeared in input stream.\n" 
-                                           "(Check character encoding)");  
-                }
-            }
+            // The 'BLC' code can also appear in by 'get_forward' if we reach the beginning of
+            // the file. This is so, since _current_p stands on 'buffer_begin() - 1' and then
+            // no reloading happens. Thus it remains there and the next 'get_forward()' returns
+            // the value at 'content_begin()' which is 'BLC' --- but reload is not required now!
+            // The next 'get_forward()' will step over the BLC border.
+            if     ( this->_current_p == this->buffer_begin() ) { return 0; }
+            else if( this->_current_p == this->_end_of_file_p ) { return -1; }
             else if( this->_current_p != this->_buffer + this->BUFFER_SIZE - 1) {
                 throw std::range_error("Inaddmissible 'BufferLimit' character code appeared in input stream.\n" 
                                        "(Check character encoding)");  
@@ -191,15 +184,23 @@ namespace quex {
             //
             this->EMPTY_or_show_buffer_load("LOAD BACKWARD(entry)");
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
+
             // This function should only be called when the iterator has reached 
-            // the lower border of the buffer. 
-            if( this->_current_p != this->content_begin() - 2 ) 
-                throw std::range_error("Inaddmissible character code appeared in input stream.\n" 
+            // the lower border of the buffer. Detection, though happens on the Buffer Limit Code.
+            // A special use case is where the current pointer stands on 'end of file' which
+            // is also labeled as 'BLC'. If at this momement a 'get_backward()' is applied
+            // this reports also a 'BLC' and we are here in this part of the code.
+            // => Thus, if the current_p points to _end_of_file_p then we simply know that there
+            //    is nothing to load and return.
+            if( this->_current_p != this->buffer_begin() - 1 ) { 
+                if( this->_current_p + 1 == this->_end_of_file_p ) return /* backward distance = */0; 
+                throw std::range_error("Buffer reload backwards where 'current' does not point to buffer -1.\n" 
                                        "(Check character encoding)");  
+            }
 
             const int LexemeStartOffSet = this->_lexeme_start_p - this->content_begin();
             //_______________________________________________________________________________
-            if( *(this->buffer_begin()) == basic_buffer::BOFC ) return -1; // we cannot go further back
+            if( this->_start_pos_of_buffer == 0 ) return -1; // we cannot go further back
 
             // (*) compute the distance to go backwards
             int backward_distance = (int)(this->content_size() / 3);   // go back a third of the buffer 
@@ -260,14 +261,49 @@ namespace quex {
             return backward_distance;
         }
 
+    TEMPLATE inline const bool  
+        CLASS::is_end_of_file() {
+            __quex_assert(this->_current_p <= this->buffer_end() );
+            __quex_assert(this->_current_p >= this->buffer_begin() );
+
+            // if the end of file pointer is not set, then there is no EOF inside the buffer
+            if( this->_end_of_file_p == 0x0 )              { return false; }
+            
+            // if the 'current' pointer points to the place of EOF then, that's what is to say about it
+            if( this->_current_p == this->_end_of_file_p ) { return true; }
+
+            // double check: the 'current' pointer shall never be put beyond the end of file pointer
+            __quex_assert(this->_current_p < this->_end_of_file_p);
+            if( this->_current_p < this->buffer_begin() )  { return true; } // strange urgency ...
+            return false;
+        }
+
+    TEMPLATE inline const bool  
+        CLASS::is_begin_of_file() {
+            __quex_assert(this->_current_p <= this->buffer_end() );
+            __quex_assert(this->_current_p >= this->buffer_begin() );
+
+            // if buffer does not start at 'begin of file', then there is no way that we're at BOF
+            if( this->_start_pos_of_buffer != 0 )   { return false; }
+
+            // if we're at the beginning of the buffer, then this is also the beginning of the file
+            if( this->_current_p == this->buffer_begin() - 1 ) { return true; }
+
+            // double check: the 'current' pointer shall never be put below the buffer start
+            __quex_assert(this->_current_p < this->buffer_begin() );
+            if( this->_current_p < this->buffer_begin() - 1 ) { return true; } // strange urgency ...
+            return false;
+        }
+
+
 #ifdef __QUEX_OPTION_UNIT_TEST
     TEMPLATE inline void 
         CLASS::show_brief_content() {
             std::cout << "start-pos:  " << this->_start_pos_of_buffer << std::endl;
             const stream_position  Pos = this->_input.tell();
             std::cout << "stream-pos: " << Pos << std::endl;
-            std::cout << "EOF = " << bool(this->_end_of_file_p);
-            std::cout << ", BOF = " << bool(*(this->buffer_begin()) == basic_buffer::BOFC) << std::endl;
+            std::cout << "EOF = "       << bool(this->_end_of_file_p);
+            std::cout << ", BOF = "     << bool(_start_pos_of_buffer == 0) << std::endl;
             std::cout << "current_p (offset)    = " << this->_current_p - this->content_begin() << std::endl;
             std::cout << "lexeme start (offset) = " << this->_lexeme_start_p - this->content_begin() << std::endl;
         }

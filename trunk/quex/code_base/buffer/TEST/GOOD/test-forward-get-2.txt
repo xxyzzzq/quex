@@ -1,4 +1,4 @@
-|CS   :                         || BOFC
+|CS   :                         || BLC
 |[La vie est belle.]||||||||||||||
 |[S   :                         || 'L'
 |[La vie est belle.]||||||||||||||
@@ -34,7 +34,7 @@
 |[La vie est belle.]||||||||||||||
 |[    :      S    C             || '.'
 |[La vie est belle.]||||||||||||||
-|[    :      S     C            || EOFC
+|[    :      S     C            || BLC
 |[La vie est belle.]||||||||||||||
 try load
 end of file

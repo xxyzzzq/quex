@@ -1,4 +1,4 @@
-|CS   :                  || BOFC
+|CS   :                  || BLC
 |[Das Korn wird geerntet ||
 |[S   :                  || 'D'
 |[Das Korn wird geerntet ||
@@ -112,7 +112,6 @@ try load
 ||Verarbeitung gemahlen.]||
 ||         :   S       C || '.'
 ||Verarbeitung gemahlen.]||
-||         :   S        C|| EOFC
+||         :   S        C|| BLC
 ||Verarbeitung gemahlen.]||
-try load
 end of file

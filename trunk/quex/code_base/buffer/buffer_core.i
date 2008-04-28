@@ -23,11 +23,8 @@ namespace quex {
 
     TEMPLATE inline CLASS::buffer_core(size_t           BufferSz        /*=65536*/, 
                                        size_t           BackupSectionSz /*=64*/,
-                                       character_type   Value_BOFC      /*=Default ...*/,
-                                       character_type   Value_EOFC      /*=Default ...*/,
                                        character_type   Value_BLC       /*=Default ...*/)
-        : BOFC(Value_BOFC), EOFC(Value_EOFC), BLC(Value_BLC), 
-          BUFFER_SIZE(BufferSz), FALLBACK_N(BackupSectionSz)
+        : BLC(Value_BLC), BUFFER_SIZE(BufferSz), FALLBACK_N(BackupSectionSz)
     {
         __quex_assert(BUFFER_SIZE > 2); 
         __quex_assert(FALLBACK_N < BUFFER_SIZE - 2);  // '-2' because of the border chars.
@@ -59,12 +56,12 @@ namespace quex {
     TEMPLATE inline int  
         CLASS::get_forward() {
             __quex_assert(_current_p >= buffer_begin() - 1);
-            __quex_assert(_current_p <  buffer_end()   - 1);
+            __quex_assert(_current_p <  buffer_end() - 1);
             //________________________________________________________________________________
             // NOTE: Limit codes are stored at the end of the buffer. This causes
             //       all transitions to fail in the state machine. The 'fail'
-            //       case has now to check wether the current input is zero.
-            //       if so, the load_new_content() function is to be called.
+            //       case has now to check wether the current input is BLC.
+            //       If so, the load_new_content() function is to be called.
             // THUS: Under normal conditions (99.99% of the cases) no extra
             //       check for end of buffer is necessary => speed up.
             return *(++_current_p);
@@ -72,8 +69,8 @@ namespace quex {
 
     TEMPLATE inline int  
         CLASS::get_backward() {
-            // NOTE: When a BLC/BOF is returned due to reaching the begin of the buffer,
-            //       the current_p == content_begin() - 2. The following asserts ensure that the
+            // NOTE: When a BLC is returned due to reaching the begin of the buffer,
+            //       the current_p == buffer_begin() - 1. The following asserts ensure that the
             //       'get_backward()' is not called in such cases, except after 'load_backwards()'
             __quex_assert(_current_p >= buffer_begin());
             __quex_assert(_current_p <  buffer_end());
@@ -81,40 +78,6 @@ namespace quex {
             int tmp = *_current_p;
             --_current_p;
             return tmp; 
-        }
-
-    TEMPLATE inline const bool  
-        CLASS::is_end_of_file() {
-            __quex_assert(this->_current_p <= this->buffer_end() );
-            __quex_assert(this->_current_p >= this->buffer_begin() );
-
-            // if the end of file pointer is not set, then there is no EOF inside the buffer
-            if( this->_end_of_file_p == 0x0 )              { return false; }
-            
-            // if the 'current' pointer points to the place of EOF then, that's what is to say about it
-            if( this->_current_p == this->_end_of_file_p ) { return true; }
-
-            // double check: the 'current' pointer shall never be put beyond the end of file pointer
-            __quex_assert(this->_current_p < this->_end_of_file_p);
-            if( this->_current_p < this->buffer_begin() )  { return true; } // strange urgency ...
-            return false;
-        }
-
-    TEMPLATE inline const bool  
-        CLASS::is_begin_of_file() {
-            __quex_assert(this->_current_p <= this->buffer_end() );
-            __quex_assert(this->_current_p >= this->buffer_begin() );
-
-            // if buffer does not start at 'begin of file', then there is no way that we're at BOF
-            if( this->_start_pos_of_buffer != 0 )   { return false; }
-
-            // if we're at the beginning of the buffer, then this is also the beginning of the file
-            if( this->_current_p == this->_buffer ) { return true; }
-
-            // double check: the 'current' pointer shall never be put below the buffer start
-            __quex_assert(this->_current_p < this->buffer_begin() );
-            if( this->_current_p < this->buffer_begin() ) { return true; } // strange urgency ...
-            return false;
         }
 
     TEMPLATE void              
@@ -279,7 +242,7 @@ namespace quex {
             size_t remaining_distance_to_target = Distance;
             while( 1 + 1 == 2 ) {
                 if( _current_p - remaining_distance_to_target <= content_begin() ) {
-                    if( _buffer[0] == BOFC ) {
+                    if( _buffer[0] == BLC ) {
                         _current_p      = _buffer;
                         _lexeme_start_p = _current_p + 1; 
                         return;
@@ -359,9 +322,9 @@ namespace quex {
 #ifdef __QUEX_OPTION_UNIT_TEST
     TEMPLATE inline typename CLASS::character_type  
         CLASS::get_border_char(const character_type* C) {
-            if( *C != buffer_core::BLC )                                     return '?';
-            else if( C == this->_end_of_file_p )                             return ']';
-            else if( this->DEBUG_get_start_position_of_buffer() != 0 && C == this->_buffer ) return '[';
+            if     ( *C != buffer_core::BLC )                                                return '?';
+            else if( C == this->_end_of_file_p )                                             return ']';
+            else if( this->DEBUG_get_start_position_of_buffer() == 0 && C == this->_buffer ) return '[';
             return '|';
         }
 
@@ -376,7 +339,7 @@ namespace quex {
             int             covered_char = 0xFFFF;
             character_type* end_p = 0x0;
             for(end_p = content_begin(); end_p < buffer_end() ; ++end_p) {
-                if( *end_p == buffer_core::EOFC || *end_p == buffer_core::BLC ) { 
+                if( end_p == _end_of_file_p || *end_p == buffer_core::BLC ) { 
                     covered_char = *end_p; *end_p = '\0'; break; 
                 }
             }
@@ -393,7 +356,7 @@ namespace quex {
             for(size_t i=2; i<content_size()+2; ++i) tmp[i] = ' ';
             tmp[content_size()+4] = '\0';
             tmp[content_size()+3] = '|';
-            tmp[content_size()+2] = get_border_char(end_p);
+            tmp[content_size()+2] = get_border_char(content_end());
             tmp[1]                = get_border_char(content_begin()-1);
             tmp[0]                = '|';
             //
@@ -406,10 +369,8 @@ namespace quex {
                 std::cout << tmp << " <out>";
             } else {
                 char current = end_p != _current_p ? (*_current_p) : covered_char; 
-                if( current == buffer_core::BOFC)      std::cout << tmp << " BOFC";
-                else if( current == buffer_core::EOFC) std::cout << tmp << " EOFC";
-                else if( current == buffer_core::BLC)  std::cout << tmp << " BLC"; 
-                else                                    std::cout << tmp << " '" << current << "'";
+                if( current == buffer_core::BLC) std::cout << tmp << " BLC"; 
+                else                             std::cout << tmp << " '" << current << "'";
             }
             // std::cout << " = 0x" << std::hex << int(*_current_p) << std::dec 
             std::cout << std::endl;

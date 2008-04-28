@@ -21,9 +21,9 @@ main(int argc, char** argv)
     buffer* p = 0x0;
     if( argc > 1 ) {
         if(      strcmp(argv[1], "Normal") == 0 )              p = new buffer(&ifs, 30, 2);
-        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer(&ifs, 30, 2, 1, 2, 0); 
-        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer(&ifs, 30, 2, 1, 0, 2);
-        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer(&ifs, 30, 2, 0, 1, 2);
+        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer(&ifs, 30, 0); 
+        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer(&ifs, 30, 2);
+        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer(&ifs, 30, 2);
         else {
             cout << "argv[0] == '" << argv[1] << "' --- unrecognized choice\n";
             exit(-1);
@@ -46,8 +46,8 @@ main(int argc, char** argv)
         //
         if( tmp == ' ' ) x.mark_lexeme_start();
         // See file README.txt in directory ./quex/buffer      
-        else if( x.is_begin_of_file() ) { ; /* we are at the end, simply do get_backward() again */ }
-        else if( tmp == x.BLC || tmp == x.EOFC || tmp == x.BOFC ) {
+        else if( x.is_begin_of_file() ) { break; /* we are at the end, simply do get_backward() again */ }
+        else if( tmp == x.BLC ) {
             std::cout << "try load\n";
             if( x.load_backward() == -1 ) break;
         }

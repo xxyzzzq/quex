@@ -1,97 +1,96 @@
 --------------------------------------------
-||S:  C                       || 't'
+|:S   C                       || 't'
 ||rbeitung gemahlen.]|||||||||||
-||S: C                        || 'i'
+|:S  C                        || 'i'
 ||rbeitung gemahlen.]|||||||||||
-||S:C                         || 'e'
+|:S C                         || 'e'
 ||rbeitung gemahlen.]|||||||||||
-||SC                          || 'b'
+|:SC                          || 'b'
 ||rbeitung gemahlen.]|||||||||||
-||S:                          || 'r'
+|:S                           || 'r'
 ||rbeitung gemahlen.]|||||||||||
-|CS:                          || BLC
+|CS                           || BLC
 ||rbeitung gemahlen.]|||||||||||
 try load
-|| :      CS                  || 'a'
+|:        CS                  || 'a'
 || zur Verarbeitung gemahlen.]||
-|| :     C S                  || 'r'
+|:       C S                  || 'r'
 || zur Verarbeitung gemahlen.]||
-|| :    C  S                  || 'e'
+|:      C  S                  || 'e'
 || zur Verarbeitung gemahlen.]||
-|| :   C   S                  || 'V'
+|:     C   S                  || 'V'
 || zur Verarbeitung gemahlen.]||
-|| :  C    S                  || ' '
+|:    C    S                  || ' '
 || zur Verarbeitung gemahlen.]||
-|| : CS                       || 'r'
+|:   CS                       || 'r'
 || zur Verarbeitung gemahlen.]||
-|| :C S                       || 'u'
+|:  C S                       || 'u'
 || zur Verarbeitung gemahlen.]||
-|| C  S                       || 'z'
+|: C  S                       || 'z'
 || zur Verarbeitung gemahlen.]||
-||C:  S                       || ' '
+|:C   S                       || ' '
 || zur Verarbeitung gemahlen.]||
-|CS:                          || BLC
+|CS                           || BLC
 || zur Verarbeitung gemahlen.]||
 try load
-|| :      CS                  || 'd'
+|:        CS                  || 'd'
 ||rntet und zur Verarbeitung g||
-|| :     C S                  || 'n'
+|:       C S                  || 'n'
 ||rntet und zur Verarbeitung g||
-|| :    C  S                  || 'u'
+|:      C  S                  || 'u'
 ||rntet und zur Verarbeitung g||
-|| :   C   S                  || ' '
+|:     C   S                  || ' '
 ||rntet und zur Verarbeitung g||
-|| :  CS                      || 't'
+|:    CS                      || 't'
 ||rntet und zur Verarbeitung g||
-|| : C S                      || 'e'
+|:   C S                      || 'e'
 ||rntet und zur Verarbeitung g||
-|| :C  S                      || 't'
+|:  C  S                      || 't'
 ||rntet und zur Verarbeitung g||
-|| C   S                      || 'n'
+|: C   S                      || 'n'
 ||rntet und zur Verarbeitung g||
-||C:   S                      || 'r'
+|:C    S                      || 'r'
 ||rntet und zur Verarbeitung g||
-|C :   S                      || BLC
+|C     S                      || BLC
 ||rntet und zur Verarbeitung g||
 try load
-|| :      C     S             || 'e'
+|:        C     S             || 'e'
 || wird geerntet und zur Verar||
-|| :     C      S             || 'e'
+|:       C      S             || 'e'
 || wird geerntet und zur Verar||
-|| :    C       S             || 'g'
+|:      C       S             || 'g'
 || wird geerntet und zur Verar||
-|| :   C        S             || ' '
+|:     C        S             || ' '
 || wird geerntet und zur Verar||
-|| :  CS                      || 'd'
+|:    CS                      || 'd'
 || wird geerntet und zur Verar||
-|| : C S                      || 'r'
+|:   C S                      || 'r'
 || wird geerntet und zur Verar||
-|| :C  S                      || 'i'
+|:  C  S                      || 'i'
 || wird geerntet und zur Verar||
-|| C   S                      || 'w'
+|: C   S                      || 'w'
 || wird geerntet und zur Verar||
-||C:   S                      || ' '
+|:C    S                      || ' '
 || wird geerntet und zur Verar||
-|CS:                          || BLC
+|CS                           || BLC
 || wird geerntet und zur Verar||
 try load
-|[ :     CS                   || 'n'
+|:       CS                   || 'n'
 |[Das Korn wird geerntet und z||
-|[ :    C S                   || 'r'
+|:      C S                   || 'r'
 |[Das Korn wird geerntet und z||
-|[ :   C  S                   || 'o'
+|:     C  S                   || 'o'
 |[Das Korn wird geerntet und z||
-|[ :  C   S                   || 'K'
+|:    C   S                   || 'K'
 |[Das Korn wird geerntet und z||
-|[ : C    S                   || ' '
+|:   C    S                   || ' '
 |[Das Korn wird geerntet und z||
-|[ :CS                        || 's'
+|:  CS                        || 's'
 |[Das Korn wird geerntet und z||
-|[ C S                        || 'a'
+|: C S                        || 'a'
 |[Das Korn wird geerntet und z||
-|[C: S                        || 'D'
+|:C  S                        || 'D'
 |[Das Korn wird geerntet und z||
-|C : S                        || BOFC
+|C   S                        || BLC
 |[Das Korn wird geerntet und z||
-try load
 begin of file
