@@ -171,16 +171,11 @@ namespace quex {
         public:
             // NOT private: for usage in the template type OverflowPolicy
             //              (template friends are not solved propperly on all compilers)
-            void   __set_end_of_file(character_type* EOF_p);
+            void   __set_end_of_file(character_type*);
             void   __set_begin_of_file();
             void   __unset_end_of_file();
             void   __unset_begin_of_file();
 
-#ifdef __QUEX_OPTION_UNIT_TEST
-            // NOTE: Include <iostream> for unit tests before this header!
-            character_type   get_border_char(const character_type*);
-            void             show_content();
-#endif
         protected:
             // (*) Member Variables ___________________________________________________________________________
             character_type*  _buffer;              
@@ -189,7 +184,6 @@ namespace quex {
             character_type*  _lexeme_start_p;
             character_type*  _end_of_file_p;       // pointer to position in buffer that corresponds EOF, 
             //                                     // == 0x0 if EOF not in buffer.
-
             const size_t  BUFFER_SIZE;
             const size_t  FALLBACK_N;
             //
@@ -198,6 +192,13 @@ namespace quex {
             // When NDEBUG is not defined the memory_position stores the _start_pos_of_buffer
             // with every address. This way, one can compare if memory addresses are consistent.
             virtual long  DEBUG_get_start_position_of_buffer() = 0;
+#endif
+#ifdef __QUEX_OPTION_UNIT_TEST
+        public:
+            // NOTE: Include <iostream> for unit tests before this header!
+            character_type   get_border_char(const character_type*);
+            void             show_content();
+            character_type*  end_of_file_p() { return _end_of_file_p; }
 #endif
         };
 
@@ -224,11 +225,13 @@ namespace quex {
         public:
             // (*) Constructor/Destructor __________________________________________________________________
             basic_buffer(InputStrategy& input_strategy, 
-                         size_t BufferSz=65536, size_t BackupSectionSz=64,
-                         character_type Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+                         size_t BufferSz          = 65536, 
+                         size_t BackupSectionSz   = 64,
+                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
             basic_buffer(input_handle_type* input_handle, 
-                         size_t BufferSz=65536, size_t BackupSectionSz=64,
-                         character_type Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+                         size_t BufferSz          = 65536, 
+                         size_t BackupSectionSz   = 64,
+                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
             virtual ~basic_buffer() {}
 
             // (*) loading according input strategy

@@ -19,10 +19,10 @@ main(int argc, char** argv)
     
     buffer* p = 0x0;
     if( argc > 1 ) {
-        if(      strcmp(argv[1], "Normal") == 0 )              p = new buffer(&ifs, 25, 5);
-        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer(&ifs, 25, 0); 
-        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer(&ifs, 25, 2);
-        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer(&ifs, 25, 2);
+        if(      strcmp(argv[1], "Normal") == 0 )              p = new buffer(&ifs, 25, 5, 0);
+        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer(&ifs, 25, 5, 0); 
+        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer(&ifs, 25, 5, 2);
+        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer(&ifs, 25, 5, 2);
         else {
             cout << "argv[0] == '" << argv[1] << "' --- unrecognized choice\n";
             exit(-1);

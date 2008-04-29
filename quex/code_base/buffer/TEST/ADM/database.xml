@@ -1,7 +1,7 @@
-<test-database execution-time-sec="0.00" date="Sun Apr 27 18:24:32 2008">
+<test-database execution-time-sec="0.00" date="Mon Apr 28 17:40:46 2008">
     <last-used-diff-display-program name="vimdiff"/>
     <test title="Backwards Iteration" make-required="True" time-sum-sec="0.00"> 
-        <application file-name="test-backward-get" info-request-time="1209313351L"/>
+        <application file-name="test-backward-get" info-request-time="1209397119L"/>
         <make-procedure success="True" />
         <choice-list number="4">
            <choice name="Normal" result="OK" time-sec="0.00" crc="-1673454451"/>
@@ -12,26 +12,25 @@
     </test>
     <group name="Forward Iteration">
         <test title="EOF at first load." make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-forward-get-2" info-request-time="1209313347L"/>
+            <application file-name="test-forward-get-2" info-request-time="1209397114L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-269791112"/>
             </choice-list>
         </test>
-        <test title="Multiple Loads." make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-forward-get" info-request-time="1209313346L"/>
-            <make-procedure success="True" />
+        <test title="Multiple Loads." time-sum-sec="0.00"> 
+            <application file-name="test-forward-get" info-request-time="1209397162L"/>
             <choice-list number="4">
                <choice name="Normal" result="OK" time-sec="0.00" crc="272519265"/>
-               <choice name="EOFC=1_BOFC=2_BLC=0" result="FAIL" time-sec="0.00" crc="272519265"/>
-               <choice name="EOFC=1_BOFC=0_BLC=2" result="FAIL" time-sec="0.00" crc="-930894154"/>
-               <choice name="EOFC=0_BOFC=1_BLC=2" result="FAIL" time-sec="0.00" crc="-930894154"/>
+               <choice name="EOFC=1_BOFC=2_BLC=0" result="OK" time-sec="0.00" crc="272519265"/>
+               <choice name="EOFC=1_BOFC=0_BLC=2" result="OK" time-sec="0.00" crc="272519265"/>
+               <choice name="EOFC=0_BOFC=1_BLC=2" result="OK" time-sec="0.00" crc="272519265"/>
             </choice-list>
         </test>
     </group>
     <group name="Miscenllaneous Scenarios">
         <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-misc-III" info-request-time="1209313350L"/>
+            <application file-name="test-misc-III" info-request-time="1209397118L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="FAIL" time-sec="0.00" crc="52723627"/>
@@ -39,7 +38,7 @@
             </choice-list>
         </test>
         <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-misc-II" info-request-time="1209313349L"/>
+            <application file-name="test-misc-II" info-request-time="1209397117L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="FAIL" time-sec="0.00" crc="1918046248"/>
@@ -47,7 +46,7 @@
             </choice-list>
         </test>
         <test title="Content Size = 11, Fallback Size = 10" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-misc-I" info-request-time="1209313365L"/>
+            <application file-name="test-misc-I" info-request-time="1209397115L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="FAIL" time-sec="0.00" crc="-947181815"/>
