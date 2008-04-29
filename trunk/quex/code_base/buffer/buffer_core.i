@@ -322,7 +322,10 @@ namespace quex {
 #ifdef __QUEX_OPTION_UNIT_TEST
     TEMPLATE inline typename CLASS::character_type  
         CLASS::get_border_char(const character_type* C) {
-            if     ( *C != buffer_core::BLC )                                                return '?';
+            if( *C != buffer_core::BLC ) { 
+                std::cout << "BLC = " << (int)(*C) << " " << int(buffer_core::BLC) << std::endl; 
+                return '?'; 
+            }
             else if( C == this->_end_of_file_p )                                             return ']';
             else if( this->DEBUG_get_start_position_of_buffer() == 0 && C == this->_buffer ) return '[';
             return '|';
@@ -336,15 +339,12 @@ namespace quex {
             //       a terminating zero.
             // NOTE: this is a **simple** printing function for unit testing and debugging
             //       it is thought to print only ASCII characters (i.e. code points < 0xFF)
-            int             covered_char = 0xFFFF;
-            character_type* end_p = 0x0;
+            int              covered_char = 0xFFFF;
+            character_type*  end_p = 0x0;
+
             for(end_p = content_begin(); end_p < buffer_end() ; ++end_p) {
-                if( end_p == _end_of_file_p || *end_p == buffer_core::BLC ) { 
-                    covered_char = *end_p; *end_p = '\0'; break; 
-                }
+                if( end_p == _end_of_file_p || *end_p == buffer_core::BLC ) { break; }
             }
-            // check for missing limit character
-            __quex_assert(covered_char != 0xFFFF);
             //_________________________________________________________________________________
             char tmp[content_size()+4];
             // tmp[0]                  = outer border
@@ -368,21 +368,21 @@ namespace quex {
             if ( _current_p == content_begin() - 2 ) {
                 std::cout << tmp << " <out>";
             } else {
-                char current = end_p != _current_p ? (*_current_p) : covered_char; 
-                if( current == buffer_core::BLC) std::cout << tmp << " BLC"; 
-                else                             std::cout << tmp << " '" << current << "'";
+                std::cout << tmp << " ";
+                if( *_current_p == buffer_core::BLC ) std::cout << "BLC";
+                else                                  std::cout << "'" << *_current_p << "'";
             }
             // std::cout << " = 0x" << std::hex << int(*_current_p) << std::dec 
             std::cout << std::endl;
-            std::cout << "|" << get_border_char(buffer_begin()) << content_begin();
+            std::cout << "|" << get_border_char(buffer_begin());
+            for(character_type* iterator = content_begin(); iterator != end_p; ++iterator) {
+                std::cout << *iterator;
+            }
             std::cout << get_border_char(end_p);
             //
             const size_t L = _end_of_file_p == 0x0 ? 0 : content_end() - _end_of_file_p;
             for(size_t i=0; i < L; ++i) std::cout << "|";
 
-            // undo the temporary covering ___________________________________________________
-            *end_p = covered_char;
-            //
             std::cout << "|\n";
         }
 

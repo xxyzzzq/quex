@@ -24,26 +24,6 @@ lexeme start (offset) = 2
 
 (*) read to end of buffer
 end of buffer
-<>
-|C  S      : || BLC
-|[Im Wald ste||
-start-pos:  0
-stream-pos: 1
-EOF = 0, BOF = 1
-current_p (offset)    = -1
-lexeme start (offset) = 2
-
-(*) load_forward:
-|C  S      : || BLC
-|[Im Wald ste||
-start-pos:  0
-stream-pos: 1
-EOF = 0, BOF = 1
-current_p (offset)    = -1
-lexeme start (offset) = 2
-
-(*) read to end of buffer
-end of buffer
 <Im Wald ste>
 |[        S: C| BLC
 |[Im Wald ste||
@@ -62,9 +42,29 @@ EOF = 0, BOF = 0
 current_p (offset)    = 9
 lexeme start (offset) = 7
 
+(*) read to end of buffer
+end of buffer
+<h>
+||       S : C| BLC
+||m Wald steh||
+start-pos:  1
+stream-pos: 12
+EOF = 0, BOF = 0
+current_p (offset)    = 11
+lexeme start (offset) = 7
+
+(*) load_forward:
+||      S  C || 'h'
+|| Wald steht||
+start-pos:  2
+stream-pos: 13
+EOF = 0, BOF = 0
+current_p (offset)    = 9
+lexeme start (offset) = 6
+
 (*) read to end of file
 - end of file
-<ht ein Baum.>
+<t ein Baum.>
 ||     S   :C|| BLC
 || ein Baum.]||
 start-pos:  13

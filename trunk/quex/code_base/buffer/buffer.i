@@ -193,7 +193,8 @@ namespace quex {
             // => Thus, if the current_p points to _end_of_file_p then we simply know that there
             //    is nothing to load and return.
             if( this->_current_p != this->buffer_begin() - 1 ) { 
-                if( this->_current_p + 1 == this->_end_of_file_p ) return /* backward distance = */0; 
+                if(    this->_current_p + 1 == this->_end_of_file_p 
+                    || this->_current_p + 1 == this->buffer_end() ) return /* backward distance = */0; 
                 throw std::range_error("Buffer reload backwards where 'current' does not point to buffer -1.\n" 
                                        "(Check character encoding)");  
             }
