@@ -53,31 +53,27 @@ namespace quex {
             delete [] _buffer;
         }
 
-    TEMPLATE inline int  
-        CLASS::get_forward() {
-            __quex_assert(_current_p >= buffer_begin() - 1);
-            __quex_assert(_current_p <  buffer_end() - 1);
-            //________________________________________________________________________________
-            // NOTE: Limit codes are stored at the end of the buffer. This causes
-            //       all transitions to fail in the state machine. The 'fail'
-            //       case has now to check wether the current input is BLC.
-            //       If so, the load_new_content() function is to be called.
-            // THUS: Under normal conditions (99.99% of the cases) no extra
-            //       check for end of buffer is necessary => speed up.
+    //________________________________________________________________________________
+    // NOTE: With the forward/backward behavior implemented below it is
+    //       **always** safe to say that the character which they return is
+    //       the character underneath '_current_p'. This significantly simplfies
+    //       the discussion about possible use-cases.
+    // NOTE: Limit codes are stored at the end of the buffer. This causes
+    //       all transitions to fail in the state machine. The 'fail'
+    //       case has now to check wether the current input is BLC.
+    //       If so, the load_new_content() function is to be called.
+    // THUS: Under normal conditions (99.99% of the cases) no extra
+    //       check for end of buffer is necessary => speed up.
+    TEMPLATE inline int  CLASS::get_forward() {
+            __quex_assert(_current_p >= buffer_begin());
+            __quex_assert(_current_p <  buffer_end());
             return *(++_current_p);
         }
 
-    TEMPLATE inline int  
-        CLASS::get_backward() {
-            // NOTE: When a BLC is returned due to reaching the begin of the buffer,
-            //       the current_p == buffer_begin() - 1. The following asserts ensure that the
-            //       'get_backward()' is not called in such cases, except after 'load_backwards()'
+    TEMPLATE inline int  CLASS::get_backward() {
             __quex_assert(_current_p >= buffer_begin());
             __quex_assert(_current_p <  buffer_end());
-            //________________________________________________________________________________
-            int tmp = *_current_p;
-            --_current_p;
-            return tmp; 
+            return *(--current_p); 
         }
 
     TEMPLATE void              
@@ -103,7 +99,7 @@ namespace quex {
 
     TEMPLATE void       
         CLASS::mark_lexeme_start() { 
-            // allow: *_current_p = BLC, BOF, or EOF
+            // allow: *_current_p = BLC
             __quex_assert(_current_p >= content_begin() - 2);                
             __quex_assert(_end_of_file_p != 0x0 || _current_p < content_end());  
             __quex_assert(_end_of_file_p == 0x0 || _current_p <= _end_of_file_p);  
