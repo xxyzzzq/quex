@@ -125,21 +125,9 @@ namespace quex {
     TEMPLATE inline void 
         CLASS::__unset_end_of_file()
         {
-            _end_of_file_p  = 0x0; 
-            *(content_end()) = buffer_core::BLC;
+            _end_of_file_p   = 0x0; 
         }
 
-    TEMPLATE inline void 
-        CLASS::__set_begin_of_file()
-        {
-            *(buffer_begin()) = buffer_core::BLC; // buffer_core::BOFC; 
-        }
-
-    TEMPLATE inline void 
-        CLASS::__unset_begin_of_file()
-        {
-            *(buffer_begin()) = buffer_core::BLC; 
-        }
 
     TEMPLATE inline typename CLASS::character_type*    
         CLASS::get_lexeme_start_p()
