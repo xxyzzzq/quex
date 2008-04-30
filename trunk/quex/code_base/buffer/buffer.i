@@ -33,9 +33,11 @@ namespace quex {
         CLASS::__constructor_core()
     {
         // -- load initial content starting from position zero
-        const size_t LoadedN = __load_core(BASE_CLASS::content_begin(), BASE_CLASS::content_size());
+        this->_begin_of_file_f = (_input.tell() == stream_position(0));
 
-        this->_start_pos_of_buffer = _input.tell() - (stream_position)(LoadedN);
+        const size_t LoadedN = __load_core(this->content_begin(), this->content_size());
+
+        this->_end_pos_of_buffer = _input.tell();
 
         // -- the fallback border (this->_current_fallback_n is required for 'show' functions)
         this->_current_fallback_n  = this->FALLBACK_N;
@@ -45,12 +47,6 @@ namespace quex {
             this->__set_end_of_file(this->content_begin() + LoadedN); // end of file
         else
             this->__unset_end_of_file();                              // buffer limit
-        
-        // -- begin of buffer?
-        if( this->_start_pos_of_buffer == (stream_position)(0) ) 
-            this->__set_begin_of_file();   // begin of file                
-        else
-            this->__unset_begin_of_file(); // buffer limit
 
         this->EMPTY_or_assert_consistency(/* allow terminating zero = */ false);
     }

@@ -239,7 +239,7 @@ namespace quex {
             virtual int        load_backward();
             virtual const bool is_end_of_file();
             virtual const bool is_begin_of_file();
-            virtual void       close_input()  { _input.close(); }
+            virtual void       close_input() { _input.close(); }
 
         protected:
             void  __constructor_core();
