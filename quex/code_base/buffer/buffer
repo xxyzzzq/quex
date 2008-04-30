@@ -247,11 +247,10 @@ namespace quex {
             //
             void  EMPTY_or_show_buffer_load(const char*);
             //
-            InputStrategy    _input;               // DESIGN PATTERN: 'Strategy'
-            stream_position  _start_pos_of_buffer; // position in stream that corresponds to _content[0]
-#if ! defined(NDEBUG) || defined(__QUEX_OPTION_UNIT_TEST)
-            virtual long     DEBUG_get_start_position_of_buffer() { return _start_pos_of_buffer; }
-#endif
+            InputStrategy    _input;             // DESIGN PATTERN: 'Strategy'
+            bool             _begin_of_file_f;   // Is the begin of the buffer == begin of file?
+            stream_position  _end_pos_of_buffer; // position in stream that corresponds to last element in buffer
+
 #ifdef __QUEX_OPTION_UNIT_TEST
         public:
             // NOTE: Include <iostream> for unit tests before this header!

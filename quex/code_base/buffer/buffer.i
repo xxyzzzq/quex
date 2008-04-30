@@ -71,93 +71,115 @@ namespace quex {
 
     TEMPLATE inline int  
         CLASS::load_forward() {
-            // RETURNS: Distance that was loaded forward in the stream.
-            //          -1 in case that forward loading was not possible (end of file)
+            // PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
+            //          as returned by 'get_forward()'. Its task is to load new content into the 
+            //          buffer such that 'get_forward() can continue iterating. This means that the 
+            //          '_current_p' points to one of the following positions:
+            //
+            //          (1) Beginning of the Buffer: In this case, no reload needs to take place.
+            //              It can basically only appear if 'load_forward()' is called after
+            //              'get_backward()'---and this does not make sense. But returning a '0'
+            //              (which is >= 0 and indicates that everything is ok) tells the application 
+            //              that nothing has been loaded, and the next 'get_forward()' will work 
+            //              normally.
+            //
+            //          (2) End of File Pointer: (which may be equal to the end of the buffer) 
+            //              In this case no further content can be loaded. The function returns '-1'.
+            //
+            //          (3) End of Buffer (if it is != End of File Pointer): Here a 'normal' load of
+            //              new data into the buffer can happen.
+            //
+            //
+            // RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
+            //          '-1'     if forward loading was not possible (end of file)
             this->EMPTY_or_show_buffer_load("LOAD FORWARD(entry)");
 
-            // This function assumes that the _current_p has reached either
-            // the buffer's border, or the _end_of_file_p.
-            // The 'BLC' code can also appear in by 'get_forward' if we reach the beginning of
-            // the file. This is so, since _current_p stands on 'buffer_begin() - 1' and then
-            // no reloading happens. Thus it remains there and the next 'get_forward()' returns
-            // the value at 'content_begin()' which is 'BLC' --- but reload is not required now!
-            // The next 'get_forward()' will step over the BLC border.
+            // (*) Check for the three possibilities mentioned above
             if     ( this->_current_p == this->buffer_begin() ) { return 0; }
             else if( this->_current_p == this->_end_of_file_p ) { return -1; }
-            else if( this->_current_p != this->_buffer + this->BUFFER_SIZE - 1) {
+            else if( this->_current_p != this->buffer_end() ) {
                 throw std::range_error("Inaddmissible 'BufferLimit' character code appeared in input stream.\n" 
                                        "(Check character encoding)");  
             }
-            this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
             //
-            // If the lexeme start pointer is at the beginning of the buffer,
-            // then no new content can be loaded without a special strategy.
-            // At this point '=0' is permitted, but downwards we call a virtual
-            // function that handles this case, derive from this class to 
-            // implement your personal strategy to handle this. 
-            const int LexemeStartOffSet = this->_lexeme_start_p - this->content_begin();
+            // NOTE: From here on, the current pointer points to the END OF THE BUFFER!
+            // 
+            // (*) Double check on consistency
+            //     -- 'load_forward()' should only be called, if the '_current_p' reached a border.
+            //        Since we know from above, that we did not reach end of file, it can be assumed
+            //        that the _end_of_file_p == 0x0 (buffer does not contain EOF).
+            __quex_assert(this->_end_of_file_p == 0x0);
+            this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
 
-            if( this->_end_of_file_p ) return -1; 
-            // buffer:
-            //             fallback_n
-            //                :
-            // |11111111111111:22222222222222222222222222222222222222|
-            //   copy of      :   new loaded content of buffer
-            //   end of old   
-            //   buffer      
-            this->_current_fallback_n = this->FALLBACK_N;
+            // (1) Fallback: A certain region of the current buffer is copied in front such that
+            //               if necessary the stream can go backwards without a backward load.
+            //
+            //                            fallback_n
+            //                               :
+            //                |11111111111111:22222222222222222222222222222222222222|
+            //                  copy of      :   new loaded content of buffer
+            //                  end of old   
+            //                  buffer      
+            //
+            //     The fallback region is related to the lexeme start pointer. The lexeme start 
+            //     pointer always needs to lie inside the buffer, because applications might read
+            //     their characters from it. The 'stretch' [lexeme start, current_p] must be 
+            //     contained in the new buffer (precisely in the fallback region).
+            __quex_assert(this->_current_p >= this->_lexeme_start_p);
+            const int MinFallbackN = this->_current_p - this->_lexeme_start_p;
 
-            // (*) calculate the fallback area:
-            //     -- the lexeme start pointer has to be inside the buffer 
-            //        content_size() - LexemeStartOffSet  - 1 >= border
-            if( this->content_size() - LexemeStartOffSet > this->_current_fallback_n ) {
-                this->_current_fallback_n = this->content_size() - LexemeStartOffSet;
-                if( this->_current_fallback_n == this->content_size() ) {
-                    // if the lexeme covers the whole buffer, than the _current_fallback_n would reach
-                    // the end of the buffer. this is a case for a call to a virtual event
-                    // handler: 
-                    if( OverflowPolicy::forward(this) == false ) return -1;
-                }
+            // (*) Fallback region = max(default size, necessary size)
+            const int FallBackN = this->FALLBACK_N > MinFallbackN ? this->FALLBACK_N : MinFallbackN;
+
+            // (*) Copy fallback region
+            //     If there is no 'overlap' from source and drain than the faster memcpy() can 
+            //     used instead of memmove().
+            character_type* source = this->content_end() - this->_current_fallback_n;
+            character_type* drain  = this->content_begin();
+            if( drain + FallBackN >= source  ) {
+                std::memmove(drain, source, FallBackN * sizeof(character_type));
+            } else { 
+                std::memcpy(drain, source, FallBackN * sizeof(character_type));
             }
-            //     -- there cannot be more fallback than what was read
-            size_t putback_n = this->_current_p - this->content_begin();
-            if( putback_n > this->_current_fallback_n ) putback_n = this->_current_fallback_n;
+            this->_current_fallback_n = FallBackN;
 
-            // (*) copy fallback content
-            std::memmove(this->content_begin() + this->_current_fallback_n - putback_n, 
-                         this->content_end() - putback_n, putback_n);
+            // (2) Load new content
+            //
+            //     ** The current end position of the buffer needs to be STORED in '_end_pos_of_buffer' **
+            //     ** It cannot be computed by _start_pos_of_buffer + buffer_size, since some character **
+            //     ** encodings need varying number of bytes for different characters (e.g. UTF-8).     **
+            //
+            if( this->tell() != this->_end_pos_of_buffer ) _input.seek(this->_end_pos_of_buffer);
 
-            // (*) load new content starting from beyond the fallback border
-            const stream_position CurrentPos = _input.tell();
-            const stream_position EndPosOfBuffer(this->_start_pos_of_buffer + 
-                                                 (stream_offset)(this->content_size()));
-            if( ! (EndPosOfBuffer == CurrentPos) ) _input.seek(EndPosOfBuffer);
+            const size_t    LoadN       = this->content_size() - FallBackN;
+            // (*) If more characters need to be loaded than the buffer can hold,
+            //     then this is a critical overflow. Example: If lexeme extends over 
+            //     the whole buffer (==> MinFallbackN >= content_size).
+            if( LoadN == 0 ) { if( OverflowPolicy::forward(this) == false ) return -1; }
 
-            const size_t LoadN   = this->content_size() - this->_current_fallback_n;
-            const size_t LoadedN = __load_core(this->content_begin() + this->_current_fallback_n, LoadN);
+            character_type* new_content = this->content_begin() + FallBackN;
+            const size_t    LoadedN     = __load_core(new_content, LoadN);
 
-            // -- end of file / end of buffer:
-            if( LoadedN != LoadN ) this->__set_end_of_file(this->content_begin() + this->_current_fallback_n + LoadedN);
+            //     If end of file has been reached, then the 'end of file' pointer needs to be set
+            if( LoadedN != LoadN ) this->__set_end_of_file(this->content_begin() + FallBackN + LoadedN);
             else                   this->__unset_end_of_file();
 
-            // -- begin of file / begin of buffer
-            //    any 'load forward' undoes a 'begin of file touched', since now we can
-            //    try to read again backwards. reading of zero bytes is impossible, since
-            //    FALLBACK_N has to be < content_size().
+            //    Since 'LoadN != 0' it is safe to say that some characters have been loaded and we
+            //    are no longer at the beginning of the file.
             this->__unset_begin_of_file();
 
-            // (*) adapt pointers
-            // next char to be read: '_current_p + 1'
-            this->_current_p = this->content_begin() + this->_current_fallback_n - 1;   
-            // LoadN = number of elements deleted
-            //       => independent on number of elements that were actually read !!
-            this->_lexeme_start_p      = this->content_begin() + LexemeStartOffSet - LoadN; 
-            this->_start_pos_of_buffer = _input.tell() - (stream_position)(LoadedN + this->_current_fallback_n);
-            // NOTE: Return value used for adaptions of memory addresses. The same rule as for
-            //       _lexeme_start_p holds for those addresses.
+            // (3) Pointer adaption
+            //     Next char to be read: '_current_p + 1'
+            this->_current_p         = this->content_begin() + this->_current_fallback_n - 1;   
+            //     MinFallbackN = distance from '_lexeme_start_p' to '_current_p'
+            this->_lexeme_start_p    = this->_current_p - MinFallbackN; 
+            this->_end_pos_of_buffer = _input.tell();
 
             this->EMPTY_or_show_buffer_load("LOAD FORWARD(exit)");
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
+
+            // NOTE: Return value used for adaptions of memory addresses. The same rule as for
+            //       _lexeme_start_p holds for those addresses.
             return LoadN;
         }
 
