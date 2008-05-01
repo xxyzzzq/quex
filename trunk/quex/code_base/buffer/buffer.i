@@ -33,36 +33,25 @@ namespace quex {
         CLASS::__constructor_core()
     {
         // -- load initial content starting from position zero
-        this->_begin_of_file_f = (_input.tell() == stream_position(0));
+        const size_t LoadedN = _input.read_characters(this->content_begin(), this->content_size());
 
-        const size_t LoadedN = __load_core(this->content_begin(), this->content_size());
-
-        this->_end_pos_of_buffer = _input.tell();
+        this->_end_pos_of_buffer        = _input.tell();
+        this->_character_index_at_begin = 0;
+        // -- for a later 'map_to_stream_position(character_index), the strategy might
+        //    have some plans.
+        _input.register_current_position_for_character_index_equal_zero();
 
         // -- the fallback border (this->_current_fallback_n is required for 'show' functions)
         this->_current_fallback_n  = this->FALLBACK_N;
 
         // -- end of file / end of buffer:
         if( LoadedN != this->content_size() ) 
-            this->__set_end_of_file(this->content_begin() + LoadedN); // end of file
+            this->__end_of_file_set(this->content_begin() + LoadedN); // end of file
         else
-            this->__unset_end_of_file();                              // buffer limit
+            this->__end_of_file_unset();                              // buffer limit
 
         this->EMPTY_or_assert_consistency(/* allow terminating zero = */ false);
     }
-
-    TEMPLATE inline int  
-        CLASS::__load_core(character_type* fill_start_adr, const int N) {
-            // -- Reads N bytes into buffer starting at 'fill_start_adr'. If less then
-            //    N bytes could be read, the end of file flag is raised.
-            //  
-            __quex_assert(fill_start_adr     >= this->content_begin());
-            __quex_assert(fill_start_adr + N <= this->content_end());
-            //______________________________________________________________________________
-            const int ReadN = _input.read_characters(fill_start_adr, N); 
-
-            return ReadN;
-        }
 
 
     TEMPLATE inline int  
@@ -85,21 +74,23 @@ namespace quex {
             //          (3) End of Buffer (if it is != End of File Pointer): Here a 'normal' load of
             //              new data into the buffer can happen.
             //
-            //
             // RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
             //          '-1'     if forward loading was not possible (end of file)
             this->EMPTY_or_show_buffer_load("LOAD FORWARD(entry)");
 
             // (*) Check for the three possibilities mentioned above
-            if     ( this->_current_p == this->buffer_begin() ) { return 0; }
-            else if( this->_current_p == this->_end_of_file_p ) { return -1; }
-            else if( this->_current_p != this->buffer_end() ) {
+            if     ( this->_current_p == this->buffer_begin() ) { return 0; }       // (1)
+            else if( this->_current_p == this->_end_of_file_p ) { return -1; }      // (2)
+            else if( this->_current_p != this->buffer_end() ) {                     
                 throw std::range_error("Inaddmissible 'BufferLimit' character code appeared in input stream.\n" 
                                        "(Check character encoding)");  
             }
+            //                                                                      // (3)
+
             //
-            // NOTE: From here on, the current pointer points to the END OF THE BUFFER!
+            // HERE: current_p == END OF THE BUFFER!
             // 
+
             // (*) Double check on consistency
             //     -- 'load_forward()' should only be called, if the '_current_p' reached a border.
             //        Since we know from above, that we did not reach end of file, it can be assumed
@@ -107,6 +98,7 @@ namespace quex {
             __quex_assert(this->_end_of_file_p == 0x0);
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
 
+            //___________________________________________________________________________________
             // (1) Fallback: A certain region of the current buffer is copied in front such that
             //               if necessary the stream can go backwards without a backward load.
             //
@@ -139,6 +131,7 @@ namespace quex {
             }
             this->_current_fallback_n = FallBackN;
 
+            //___________________________________________________________________________________
             // (2) Load new content
             //
             //     ** The current end position of the buffer needs to be STORED in '_end_pos_of_buffer' **
@@ -154,19 +147,18 @@ namespace quex {
             if( LoadN == 0 ) { if( OverflowPolicy::forward(this) == false ) return -1; }
 
             character_type* new_content = this->content_begin() + FallBackN;
-            const size_t    LoadedN     = __load_core(new_content, LoadN);
+            const size_t    LoadedN     = _input.read_characters(new_content, LoadN);
 
             //     If end of file has been reached, then the 'end of file' pointer needs to be set
-            if( LoadedN != LoadN ) this->__set_end_of_file(this->content_begin() + FallBackN + LoadedN);
-            else                   this->__unset_end_of_file();
+            if( LoadedN != LoadN ) this->__end_of_file_set(this->content_begin() + FallBackN + LoadedN);
+            else                   this->__end_of_file_unset();
 
-            //    Since 'LoadN != 0' it is safe to say that some characters have been loaded and we
-            //    are no longer at the beginning of the file.
-            this->__unset_begin_of_file();
+            this->_character_index_at_begin += LoadN - FallBackN;
 
+            //___________________________________________________________________________________
             // (3) Pointer adaption
             //     Next char to be read: '_current_p + 1'
-            this->_current_p         = this->content_begin() + this->_current_fallback_n - 1;   
+            this->_current_p         = this->content_begin() + FallBackN - 1;   
             //     MinFallbackN = distance from '_lexeme_start_p' to '_current_p'
             this->_lexeme_start_p    = this->_current_p - MinFallbackN; 
             this->_end_pos_of_buffer = _input.tell();
@@ -181,103 +173,137 @@ namespace quex {
 
     TEMPLATE inline int  
         CLASS::load_backward() {
+            // PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
+            //          as returned by 'get_backward()'. Its task is the same as the one of 
+            //          'load_forward()'--only in opposite direction. Here only two cases need 
+            //          to be distinguished. The current_p points to 
+            //
+            //          (1) End of Buffer or End of File pointer: No backward load needs to 
+            //              happen. This can only occur if a 'get_forward()' was called right
+            //              before.
+            //
+            //          (2) Begin of the buffer and the buffer is the 'start buffer':
+            //              in this case no backward load can happen, because we are at the 
+            //              beginning. The function returns -1.
+            //
+            //          (3) Begin of buffer and _begin_of_file_f is not set!: This is the case
+            //              where this function, actually, has some work to do. It loads the
+            //              buffer with 'earlier' content from the file.
+            //
+            //
             // RETURNS: Distance that was loaded backwards.
             //          -1 in case of backward loading is not possible (begin of file)
             //     
-            // PURPOSE: 
+            // COMMENT: 
             //     
-            // Going backwards, because a call to get_backward() hit the front
-            // of the buffer. Usually, there are the 'FALLBACK_N' buffer bytes that
-            // allows a certain distance backwards. If still the begin of the
-            // buffer is reached, then this is an indication that something is
+            // For normal cases the fallback region, i.e. the 'FALLBACK_N' buffer bytes 
+            // allows to go a certain distance backwards immediately. If still the begin 
+            // of the buffer is reached, then this is an indication that something is
             // 'off-the-norm'. Lexical analysis is not supposed to go longtimes
             // backwards. For such cases we step a long stretch backwards: A
             // THIRD of the buffer's size! 
             //
-            // A meaningful fallback_n would be 10 Bytes. If the buffer's size
+            // A meaningful fallback_n would be 64 Bytes. If the buffer's size
             // is for example 512 kB then the backwards_distance of A THIRD means 170
-            // kB. This leaves a  safety region which is about 17.476 times
-            // greater than normal (10 Bytes). After all, lexical analysis means
-            // to go mainly forward and not backwards.
+            // kB. This leaves a  safety region which is about 2730 times
+            // greater than normal (64 Bytes). After all, lexical analysis means
+            // to go **mainly forward** and not backwards.
             //
             this->EMPTY_or_show_buffer_load("LOAD BACKWARD(entry)");
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
 
-            // This function should only be called when the iterator has reached 
-            // the lower border of the buffer. Detection, though happens on the Buffer Limit Code.
-            // A special use case is where the current pointer stands on 'end of file' which
-            // is also labeled as 'BLC'. If at this momement a 'get_backward()' is applied
-            // this reports also a 'BLC' and we are here in this part of the code.
-            // => Thus, if the current_p points to _end_of_file_p then we simply know that there
-            //    is nothing to load and return.
-            if( this->_current_p != this->buffer_begin() - 1 ) { 
-                if(    this->_current_p + 1 == this->_end_of_file_p 
-                    || this->_current_p + 1 == this->buffer_end() ) return /* backward distance = */0; 
-                throw std::range_error("Buffer reload backwards where 'current' does not point to buffer -1.\n" 
+            // (*) Check for the three possibilities mentioned above
+            if     ( this->_current_p == this->buffer_end() )   { return 0; }   // (1)
+            else if( this->_current_p == this->_end_of_file_p ) { return 0; }   // (1)
+            else if( this->current_p != this->buffer_begin()) {
+                throw std::range_error("Inaddmissible 'BufferLimit' character code appeared in input stream.\n" 
                                        "(Check character encoding)");  
             }
-
-            const int LexemeStartOffSet = this->_lexeme_start_p - this->content_begin();
-            //_______________________________________________________________________________
-            if( this->_start_pos_of_buffer == 0 ) return -1; // we cannot go further back
-
-            // (*) compute the distance to go backwards
-            int backward_distance = (int)(this->content_size() / 3);   // go back a third of the buffer 
+            else if( this->_begin_of_file_f ) { return -1; }                    // (2)
+            //                                                                  // (3)
+            // HERE: current_p == BEGIN OF THE BUFFER!
             //
-            if( this->_start_pos_of_buffer < (stream_position)backward_distance ) 
-                backward_distance = (int)(this->_start_pos_of_buffer); 
 
-            // -- _lexeme_start_p shall never be beyond the content limit
-            if( (size_t)(LexemeStartOffSet + backward_distance) > this->content_size() ) {
-                // later on: 
-                //      _lexeme_start_p (new) = _lexeme_start_p (old) + backward_distance
-                // thus extreme case:
-                //      content_end() - 1 = _lexeme_start_p (old) + backward_distance
-                // with:
-                //      LexemeStartOffSet = _lexeme_start_p - content_begin()
-                backward_distance =this->content_size() - LexemeStartOffSet - 1;
-            }
-            if( backward_distance <= 0 ) 
+            //_______________________________________________________________________________
+            // (1) Compute distance to go backwards
+            //
+            //     We need to make sure, that the lexeme start pointer remains inside the
+            //     buffer, so that we do not loose the reference. From current_p == buffer begin
+            //     it is safe to say that _lexeme_start_p > _current_p (the lexeme starts
+            //     on a letter not the buffer limit).
+            __quex_assert(this->_lexeme_start_p > _current_p);
+            const int IntendedBackwardDistance = (int)(this->content_size() / 3);   
+
+            //     Before:    |C      L                  |
+            //
+            //     After:     |       C      L           |
+            //                 ------->
+            //                 backward distance
+            //
+            //     Lexeme start pointer L shall lie inside the buffer. Thus, it is required:
+            //
+            //               backward distance + (C - L) < size
+            //           =>            backward distance < size - (C - L)
+            //          
+            if( this->_lexeme_start_p == this->content_end() ) {
                 if( OverflowPolicy::backward(this) == false ) return -1;
+            }
+            const int MaxBackwardDistance =   this->content_size() 
+                                            - (int)(this->_lexeme_start_p - this->_current_p);
+            const int BackwardDistance = IntendedBackwardDistance > MaxBackwardDistance ? 
+                                             MaxBackwardDistance : IntendedBackwardDistance;
 
+            //_______________________________________________________________________________
+            // (2) Compute the stream position of the 'start to read' 
+            //
+            // It is not safe to assume that the character size is fixed. Thus it is up to
+            // the input strategy to determine the input position that belongs to a character
+            // position.
+            int start_character_index =   this->_character_index_at_begin
+                                        - BackwardDistance;
+            if( start_character_index < 0 ) start_character_index = 0;
+
+            const stream_position    start_pos = _input.map_to_stream_position(start_character_index);
 
             // (*) copy content that is already there to its new position.
             //     (copying is much faster then loading new content from file)
-            std::memmove(this->content_begin() + backward_distance,
-                         this->content_begin(),this->content_size() - backward_distance);
+            std::memmove(this->content_begin() + BackwardDistance,
+                         this->content_begin(),this->content_size() - BackwardDistance);
 
-            // (*) load content
-            _input.seek(this->_start_pos_of_buffer - (stream_offset)(backward_distance));
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-            const size_t LoadedN = __load_core(this->content_begin(), backward_distance);
+            //_______________________________________________________________________________
+            // (3) Load content
+            //
+            _input.seek(start_pos);
+#           ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+            const size_t LoadedN = // avoid unused variable in case '__quex_assert()' is deactivated
+#           endif
+            _input.read_characters(this->content_begin(), BackwardDistance);
             // -- If file content < buffer size, then the start position of the stream to which
             //    the buffer refers is always 0 and no backward loading will ever happen.
             // -- If the file content >= buffer size, then backward loading must always fill
             //    the buffer. 
-            __quex_assert(LoadedN == (size_t)backward_distance);
-#else
-            __load_core(this->content_begin(), backward_distance);  // avoid unused LoadedN
-#endif
+            __quex_assert(LoadedN == (size_t)BackwardDistance);
+
+            _input.read_characters(this->content_begin(), BackwardDistance);
+
             // -- end of file / end of buffer:
             if( this->_end_of_file_p ) {
-                character_type*   NewEndOfFileP = this->_end_of_file_p + backward_distance;
-                if( NewEndOfFileP <this->content_end() ) this->__set_end_of_file(NewEndOfFileP);
-                else                                     this->__unset_end_of_file();
+                character_type*   NewEndOfFileP = this->_end_of_file_p + BackwardDistance;
+                if( NewEndOfFileP < this->content_end() ) this->__end_of_file_set(NewEndOfFileP);
+                else                                      this->__end_of_file_unset();
             }
-            if( (stream_position)backward_distance == this->_start_pos_of_buffer ) this->__set_begin_of_file();
-            else                                                                   this->__unset_begin_of_file();
-
-            // (*) set the read pointer
-            this->_current_p            = this->_current_p + backward_distance + 1; 
-            this->_lexeme_start_p       = this->_lexeme_start_p + backward_distance;
-            this->_start_pos_of_buffer -= backward_distance;  
+            this->_character_index_at_begin -= BackwardDistance;
 
             //________________________________________________________________________________
-            // -- any 'load backward' undoes a 'end of file touched', since now we can
-            //    try to read again backwards.
+            // (4) Adapt pointers
+            //
+            this->_current_p            = this->_current_p + BackwardDistance + 1; 
+            this->_lexeme_start_p       = this->_lexeme_start_p + BackwardDistance;
+            this->_start_pos_of_buffer -= BackwardDistance;  
+
             this->EMPTY_or_show_buffer_load("LOAD BACKWARD(exit)");
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
-            return backward_distance;
+            return BackwardDistance;
         }
 
     TEMPLATE inline const bool  
@@ -302,15 +328,12 @@ namespace quex {
             __quex_assert(this->_current_p <= this->buffer_end() );
             __quex_assert(this->_current_p >= this->buffer_begin() );
 
-            // if buffer does not start at 'begin of file', then there is no way that we're at BOF
-            if( this->_start_pos_of_buffer != 0 )   { return false; }
+            // if buffer does not start at 'begin of file', then there is no way that we're there
+            if( this->_character_index_at_begin != 0 ) { return false; }
 
             // if we're at the beginning of the buffer, then this is also the beginning of the file
-            if( this->_current_p == this->buffer_begin() - 1 ) { return true; }
+            if( this->_current_p == this->buffer_begin() ) { return true; }
 
-            // double check: the 'current' pointer shall never be put below the buffer start
-            __quex_assert(this->_current_p < this->buffer_begin() );
-            if( this->_current_p < this->buffer_begin() - 1 ) { return true; } // strange urgency ...
             return false;
         }
 
@@ -322,7 +345,7 @@ namespace quex {
             const stream_position  Pos = this->_input.tell();
             std::cout << "stream-pos: " << Pos << std::endl;
             std::cout << "EOF = "       << bool(this->_end_of_file_p);
-            std::cout << ", BOF = "     << bool(_start_pos_of_buffer == 0) << std::endl;
+            std::cout << ", BOF = "     << bool(this->_character_index_at_begin == 0) << std::endl;
             std::cout << "current_p (offset)    = " << this->_current_p - this->content_begin() << std::endl;
             std::cout << "lexeme start (offset) = " << this->_lexeme_start_p - this->content_begin() << std::endl;
         }

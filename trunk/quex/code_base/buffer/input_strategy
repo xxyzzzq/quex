@@ -21,6 +21,39 @@ extern "C" {
 
 namespace quex {
 
+    template <>
+    struct InputPolicy<InputHandleType*> { 
+        static InputHandleType::stream_position tell(InputHandleType* me)                     { return me->tellg(); }
+        static void    seek(InputHandleType* me, const InputHandleType::stream_position& Pos) { me->seekg(Pos); }
+        static void    close()                                                                { me->close(); }
+
+        static size_t load_bytes(InputHandleType* me, void* buffer_position, const size_t ByteNToRead) 
+        { 
+            // std::fprintf(stdout, "tell 0 = %i\n", (long)(me->tellg()));
+            const stream_position position_before = me->tellg();
+            me->read((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            const size_t Result = me->gcount();
+            if( me->eof() && ! me->bad() ) {
+                me->clear();
+                me->seekg(position_before + (stream_offset)(Result));
+            } else if( me->fail() ) {
+                throw std::runtime_error("Fatal error during stream reading.");
+            }
+            // const size_t Result = me->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            // std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(me->tellg()), Result);
+            return Result;
+        }
+    };
+    template <>
+    struct InputPolicy<std::FILE*> { 
+        static long    tell(std::FILE* me)            { return std::ftell(fh); }
+        static void    seek(std::FILE* me, long& Pos) { std::fseek(Pos); }
+        static void    close(std::FILE* me)           { std::fclose(me); }
+
+        static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
+        { return fread(buffer_position, 1, ByteNToRead, ih); }
+    };
+
     // NOTE: Specializations are only implemented for InputHandleTypeP = pointer.
     //       Any other implementation is forbidden and will not compile.
     //       This is intended! <fschaef 07y7m22d>
@@ -30,53 +63,35 @@ namespace quex {
     template <class InputHandleTypeP, class ProvidedCharacterType=uint8_t>
         struct input_strategy;
 
+    template <class StreamPosition>
+    struct input_strategy { 
+        StreamPosition    tell() = 0;
+        void              seek(const StreamPosition& Pos) = 0;
+        void              close() = 0;
+        void              destroy_handle() = 0;
+
+        size_t            read_characters(const int CharN) = 0;
+        StreamPosition    map_to_stream_position(const int CharacterIndex) = 0;
+        StreamPosition    register_current_position_for_character_index_equal_zero() = 0;
+    };
+
     template <class InputHandleType, class ProvidedCharacterType>
-    struct input_strategy_base<InputHandleType*, ProvidedCharacterType> {
+    struct input_strategy_plain<InputHandleType*, ProvidedCharacterType> {
 
         typedef typename InputHandleType::pos_type   stream_position;
         typedef typename InputHandleType::off_type   stream_offset;
         typedef InputHandleType                      input_handle_type;
 
-        stream_position    tell()                           { return ih->tellg(); }
-        void               seek(const stream_position& Pos) { ih->seekg(Pos); }
-        void               close()                          { /* ih->close(); */ }
-        void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
+        stream_position    tell()                           { InputPolicy<InputHandleType>::tell(ih); }
+        void               seek(const stream_position& Pos) { InputHandleType<InputHandleType>::seekg(ih, Pos); }
+        void               close()                          { InputHandleType<InputHandleType>::close(ih); }
+        void               destroy_handle()                 { if( ih ) delete ih; ih = 0x0; }
 
     protected:
         InputHandleType* ih;
-        size_t           __load_bytes(void* buffer_position, const size_t ByteNToRead)
-        { 
-            // std::fprintf(stdout, "tell 0 = %i\n", (long)(ih->tellg()));
-            const stream_position position_before = ih->tellg();
-            ih->read((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
-            const size_t Result = ih->gcount();
-            if( ih->eof() && ! ih->bad() ) {
-                ih->clear();
-                ih->seekg(position_before + (stream_offset)(Result));
-            } else if( ih->fail() ) {
-                throw std::runtime_error("Fatal error during stream reading.");
-            }
-            // const size_t Result = ih->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
-            // std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(ih->tellg()), Result);
-            return Result;
-        }
-    };
-
-    template <class ProvidedCharacterType>
-    struct input_strategy_base<std::FILE*, ProvidedCharacterType> {
-        typedef long        stream_position;
-        typedef long        stream_offset;
-        typedef std::FILE   input_handle_type;
-
-        stream_position    tell()                           { return ftell(ih); }
-        void               seek(const stream_position& Pos) { fseek(ih, Pos, SEEK_SET); }
-        void               close()                          { fclose(ih); }
-        void               destroy()                        { if( ih ) delete ih; ih = 0x0; }
-
-    protected:
-        std::FILE*   ih;
-        size_t  __load_bytes(void* buffer_position, const size_t ByteNToRead)
-        { return fread(buffer_position, 1, ByteNToRead, ih); }
+        size_t            read_characters(const int CharN) = 0;
+        StreamPosition    map_to_stream_position(const int CharacterIndex) = 0;
+        StreamPosition    register_current_position_for_character_index_equal_zero() = 0;
     };
 
     // specification on for InputHandleType*, no other specification.
@@ -96,7 +111,7 @@ namespace quex {
 
         size_t   read_characters(ProvidedCharacterType* start_of_buffer, const int N)  
         { 
-            size_t byte_n = base::__load_bytes(start_of_buffer, N * SizeOfCharacter);
+            size_t byte_n = LoadBytePolicy<InputHandleType*>::do(base::ih, start_of_buffer, N * SizeOfCharacter);
             __quex_assert(byte_n % SizeOfCharacter == 0);
             return byte_n / SizeOfCharacter; 
         }
