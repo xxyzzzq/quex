@@ -21,8 +21,26 @@ extern "C" {
 
 namespace quex {
 
+    template <InputHandleTypeP> struct InputPolicy;
+
+    template <>
+    struct InputPolicy<std::FILE*> { 
+        typedef long   stream_position;
+        typedef long   stream_offset;
+
+        static long    tell(std::FILE* me)            { return std::ftell(fh); }
+        static void    seek(std::FILE* me, long& Pos) { std::fseek(Pos); }
+        static void    close(std::FILE* me)           { std::fclose(me); }
+
+        static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
+        { return fread(buffer_position, 1, ByteNToRead, ih); }
+    };
+
     template <>
     struct InputPolicy<InputHandleType*> { 
+        typedef typename InputHandleType::pos_type   stream_position;
+        typedef typename InputHandleType::off_type   stream_offset;
+
         static InputHandleType::stream_position tell(InputHandleType* me)                     { return me->tellg(); }
         static void    seek(InputHandleType* me, const InputHandleType::stream_position& Pos) { me->seekg(Pos); }
         static void    close()                                                                { me->close(); }
@@ -44,25 +62,6 @@ namespace quex {
             return Result;
         }
     };
-    template <>
-    struct InputPolicy<std::FILE*> { 
-        static long    tell(std::FILE* me)            { return std::ftell(fh); }
-        static void    seek(std::FILE* me, long& Pos) { std::fseek(Pos); }
-        static void    close(std::FILE* me)           { std::fclose(me); }
-
-        static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
-        { return fread(buffer_position, 1, ByteNToRead, ih); }
-    };
-
-    // NOTE: Specializations are only implemented for InputHandleTypeP = pointer.
-    //       Any other implementation is forbidden and will not compile.
-    //       This is intended! <fschaef 07y7m22d>
-    template <class InputHandleTypeP, class ProvidedCharacterType>
-        struct input_strategy_base;
-
-    template <class InputHandleTypeP, class ProvidedCharacterType=uint8_t>
-        struct input_strategy;
-
     template <class StreamPosition>
     struct input_strategy { 
         StreamPosition    tell() = 0;
@@ -76,45 +75,46 @@ namespace quex {
     };
 
     template <class InputHandleType, class ProvidedCharacterType>
-    struct input_strategy_plain<InputHandleType*, ProvidedCharacterType> {
+    struct input_strategy_plain<InputHandleType, ProvidedCharacterType> {
+    public:
 
-        typedef typename InputHandleType::pos_type   stream_position;
-        typedef typename InputHandleType::off_type   stream_offset;
-        typedef InputHandleType                      input_handle_type;
-
-        stream_position    tell()                           { InputPolicy<InputHandleType>::tell(ih); }
-        void               seek(const stream_position& Pos) { InputHandleType<InputHandleType>::seekg(ih, Pos); }
-        void               close()                          { InputHandleType<InputHandleType>::close(ih); }
-        void               destroy_handle()                 { if( ih ) delete ih; ih = 0x0; }
+        typedef typename InputPolicy<InputHandleType>::stream_position stream_position;
+        typedef typename InputPolicy<InputHandleType>::stream_offset   stream_offset;
+        typedef InputHandleType                                        input_handle_type;
 
     protected:
         InputHandleType* ih;
-        size_t            read_characters(const int CharN) = 0;
-        StreamPosition    map_to_stream_position(const int CharacterIndex) = 0;
-        StreamPosition    register_current_position_for_character_index_equal_zero() = 0;
-    };
+        stream_position  start_position;
 
-    // specification on for InputHandleType*, no other specification.
-    template <class InputHandleType, class ProvidedCharacterType>
-    struct input_strategy<InputHandleType*, ProvidedCharacterType> : 
-        public input_strategy_base<InputHandleType*, ProvidedCharacterType> 
-    {
-        typedef input_strategy_base<InputHandleType*, ProvidedCharacterType> base;
-        typedef typename base::stream_position     stream_position;
-        typedef typename base::stream_offset       stream_offset;
-        typedef typename base::input_handle_type   input_handle_type;
-        typedef ProvidedCharacterType              provided_character_type;
 
-        static const size_t SizeOfCharacter = sizeof(provided_character_type);  
-
-        input_strategy(InputHandleType* InputHandle) { base::ih = InputHandle; }
+        stream_position    tell()                           { InputPolicy<InputHandleType>::tell(ih); }
+        void               seek(const stream_position& Pos) { InputPolicy<InputHandleType>::seekg(ih, Pos); }
+        void               close()                          { InputPolicy<InputHandleType>::close(ih); }
+        void               destroy_handle()                 { if( ih ) delete ih; ih = 0x0; }
 
         size_t   read_characters(ProvidedCharacterType* start_of_buffer, const int N)  
         { 
-            size_t byte_n = LoadBytePolicy<InputHandleType*>::do(base::ih, start_of_buffer, N * SizeOfCharacter);
+            size_t byte_n = InputPolicy<InputHandleType>::load_bytes(ih, start_of_buffer, N * SizeOfCharacter);
             __quex_assert(byte_n % SizeOfCharacter == 0);
             return byte_n / SizeOfCharacter; 
         }
+        StreamPosition    map_to_stream_position(const int CharacterIndex);
+        { 
+            // Some weirdos use negative stream positions to go forward. The following
+            // code fragment catches those guys.
+            if( InputPolicy<InputHandleType>::tell(ih) < start_position ) {
+                // NOTE: Their might be still cases of doubt, since the MS lib sometimes
+                //       goes back two characters instead of one, if the last one is '\n'.
+                //       This can be a trouble when parsing Unix files with MS istream objects.
+                return - (CharacterIndex * sizeof(ProvidedCharacterType)) + start_of_buffer; 
+            } else { 
+                // Here's the normal case
+                return CharacterIndex * sizeof(ProvidedCharacterType) + start_of_buffer; 
+            }
+        } 
+        StreamPosition    register_current_position_for_character_index_equal_zero() 
+        { start_position = InputPolicy<InputHandleType>::tell(ih); }
+
     };
 
 }
