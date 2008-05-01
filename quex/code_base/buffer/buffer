@@ -28,7 +28,7 @@ namespace quex {
 
     template <class InputStrategy, class OverflowPolicy> class basic_buffer;
     
-#ifndef NDEBUG
+#ifndef QUEX_OPTION_ACTIVATE_ASSERTS
     /* DEBUG: 
     **
     ** The 'memory_position' type is a pointer mimiking class that stores also the
@@ -117,24 +117,24 @@ namespace quex {
             //
             // If the buffer definition is split into base and derived class, the lexical 
             // analyser can contain 'buffer_core<character_type>*' which can hold any buffer
-            // that runs on the same character type. It is independent on the input strategy,
+            // that runs on the same character type. It is independent of the input strategy,
             // as long as it also runs on the same character type (e.g. uin8_t, uint16_t ...).
             //
             // IMPORTANT: The function calls to get_forward() and get_backward() can be perfectly
             //            inlined, since the size of increment/decrement is known at compile time.
         public:
             typedef CharacterType  character_type;
-#ifndef NDEBUG
+#           ifndef QUEX_OPTION_ACTIVATE_ASSERTS
             typedef memory_position_mimiker<character_type>  memory_position;
-#else
+#           else
             typedef character_type*                          memory_position;
-#endif
-            const character_type BLC;
+#           endif
+            const character_type   BLC;
 
             // (*) Constructor/Destructor __________________________________________________________________
         protected:
             buffer_core(size_t BufferSz=65536, size_t BackupSectionSz=64,
-                        character_type   Value_BLC  = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+                        character_type   Value_BLC = DEFAULT_BUFFER_LIMIT_CODE); // BLC: buffer limit code
         public:
             virtual ~buffer_core();
 
@@ -171,28 +171,23 @@ namespace quex {
         public:
             // NOT private: for usage in the template type OverflowPolicy
             //              (template friends are not solved propperly on all compilers)
-            void   __set_end_of_file(character_type*);
-            void   __set_begin_of_file();
-            void   __unset_end_of_file();
-            void   __unset_begin_of_file();
+            void   __end_of_file_set(character_type*);
+            void   __end_of_file_unset();
 
         protected:
             // (*) Member Variables ___________________________________________________________________________
             character_type*  _buffer;              
             character_type*  _current_p;
-            size_t           _current_fallback_n;  // is required for 'show' functions
+            size_t           _current_fallback_n;       // is required for 'show' functions
             character_type*  _lexeme_start_p;
-            character_type*  _end_of_file_p;       // pointer to position in buffer that corresponds EOF, 
-            //                                     // == 0x0 if EOF not in buffer.
+            character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
+            size_t           _character_index_at_begin; // global index of the character at the begin of buffer
+            //                                          // == 0x0 if EOF not in buffer.
             const size_t  BUFFER_SIZE;
             const size_t  FALLBACK_N;
             //
             void          EMPTY_or_assert_consistency(bool AllowTerminatingZeroF = true);
-#if ! defined(NDEBUG) || defined(__QUEX_OPTION_UNIT_TEST)
-            // When NDEBUG is not defined the memory_position stores the _start_pos_of_buffer
-            // with every address. This way, one can compare if memory addresses are consistent.
-            virtual long  DEBUG_get_start_position_of_buffer() = 0;
-#endif
+
 #ifdef __QUEX_OPTION_UNIT_TEST
         public:
             // NOTE: Include <iostream> for unit tests before this header!
@@ -243,7 +238,6 @@ namespace quex {
 
         protected:
             void  __constructor_core();
-            int   __load_core(character_type* fill_start_adr, const int N);
             //
             void  EMPTY_or_show_buffer_load(const char*);
             //
@@ -267,7 +261,7 @@ namespace quex {
 #ifdef __QUEX_OPTION_UNIT_TEST
             throw std::range_error("Lexeme start falls back before begin of buffer (buffer overflow).");
 #endif
-            that->__set_end_of_file(that->content_begin());
+            that->__end_of_file_set(that->content_begin());
             return false; /* => END OF FILE */ 
         }
 

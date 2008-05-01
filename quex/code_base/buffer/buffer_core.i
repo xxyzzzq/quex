@@ -116,14 +116,14 @@ namespace quex {
         }
 
     TEMPLATE inline void 
-        CLASS::__set_end_of_file(character_type* EOF_p)
+        CLASS::__end_of_file_set(character_type* EOF_p)
         {
             _end_of_file_p  = EOF_p; 
-            *_end_of_file_p = buffer_core::BLC; // buffer_core::EOFC;
+            *_end_of_file_p = buffer_core::BLC; 
         }
 
     TEMPLATE inline void 
-        CLASS::__unset_end_of_file()
+        CLASS::__end_of_file_unset()
         {
             _end_of_file_p   = 0x0; 
         }
@@ -140,8 +140,9 @@ namespace quex {
         CLASS::tell_adr()
         {
             EMPTY_or_assert_consistency();
-#ifndef NDEBUG
-            return memory_position(_current_p, DEBUG_get_start_position_of_buffer());
+#ifndef QUEX_OPTION_ACTIVATE_ASSERTS
+            const long begin_pos = (long)(_input.map_to_stream_position(this->_character_index_at_begin));
+            return memory_position(_current_p, begin_pos);
 #else
             return memory_position(_current_p);
 #endif
@@ -150,11 +151,12 @@ namespace quex {
     TEMPLATE inline void 
         CLASS::seek_adr(const memory_position Adr)
         {
-#ifndef NDEBUG
+#ifndef QUEX_OPTION_ACTIVATE_ASSERTS
             // Check wether the memory_position is relative to the current start position 
             // of the stream. That means, that the tell_adr() command was called on the
             // same buffer setting or the positions have been adapted using the += operator.
-            __quex_assert(Adr.buffer_start_position == DEBUG_get_start_position_of_buffer());
+            const long begin_pos = (long)(_input.map_to_stream_position(this->_character_index_at_begin));
+            __quex_assert(Adr.buffer_start_position == begin_pos);
             _current_p = Adr.address;
 #else
             _current_p = Adr;
@@ -310,8 +312,8 @@ namespace quex {
                 std::cout << "BLC = " << (int)(*C) << " " << int(buffer_core::BLC) << std::endl; 
                 return '?'; 
             }
-            else if( C == this->_end_of_file_p )                                             return ']';
-            else if( this->DEBUG_get_start_position_of_buffer() == 0 && C == this->_buffer ) return '[';
+            else if( C == this->_end_of_file_p )                                  return ']';
+            else if( this->_character_index_at_begin == 0 && C == this->_buffer ) return '[';
             return '|';
         }
 
