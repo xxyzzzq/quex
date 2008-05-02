@@ -89,15 +89,14 @@ namespace quex {
     // specification only for InputHandleType*, no other specification.
     template <class InputHandleType, class ProvidedCharacterType>
     struct input_strategy_iconv<InputHandleType*, ProvidedCharacterType> 
-        : public input_strategy_base<InputHandleType*, ProvidedCharacterType> {
+        : public input_strategy<InputHandleType> {
 
-        typedef input_strategy_base<InputHandleType*, ProvidedCharacterType> base;
-        typedef typename base::stream_position    stream_position;
-        typedef typename base::stream_offset      stream_offset;
-        typedef typename base::input_handle_type  input_handle_type;
-        typedef ProvidedCharacterType             provided_character_type;
+        typedef typename InputPolicy<InputHandleType>::stream_position stream_position;
+        typedef typename InputPolicy<InputHandleType>::stream_offset   stream_offset;
 
-        static const size_t SizeOfCharacter = sizeof(provided_character_type);  
+        typedef InputHandleType        input_handle_type;
+
+        static const size_t SizeOfCharacter = sizeof(ProvidedCharacterType);  
 
         // NOTE: It makes sense to have multiple input_strategy_iconv objects use
         //       the same raw buffer, since this buffer is only used temporarily
@@ -107,7 +106,32 @@ namespace quex {
                              const char* FromCoding, const char* ToCoding);
         ~input_strategy_iconv();
 
-        size_t       read_characters(provided_character_type* user_buffer_p, const size_t N);
+        stream_position    tell()                           { InputPolicy<InputHandleType>::tell(ih); }
+        void               seek(const stream_position& Pos) { InputPolicy<InputHandleType>::seekg(ih, Pos); }
+        void               close()                          { InputPolicy<InputHandleType>::close(ih); }
+        void               destroy_handle()                 { if( ih ) delete ih; ih = 0x0; }
+
+        size_t   read_characters(ProvidedCharacterType* start_of_buffer, const int N)  
+        { 
+        }
+        StreamPosition    map_to_stream_position(const int CharacterIndex);
+        { 
+            // Some weirdos use negative stream positions to go forward. The following
+            // code fragment catches those guys.
+            if( InputPolicy<InputHandleType>::tell(ih) < start_position ) {
+                // NOTE: Their might be still cases of doubt, since the MS lib sometimes
+                //       goes back two characters instead of one, if the last one is '\n'.
+                //       This can be a trouble when parsing Unix files with MS istream objects.
+                return - (CharacterIndex * sizeof(ProvidedCharacterType)) + start_of_buffer; 
+            } else { 
+                // Here's the normal case
+                return CharacterIndex * sizeof(ProvidedCharacterType) + start_of_buffer; 
+            }
+        } 
+        StreamPosition    register_current_position_for_character_index_equal_zero() 
+        { start_position = InputPolicy<InputHandleType>::tell(ih); }
+
+        size_t       read_characters(ProvidedCharacterType* user_buffer_p, const size_t N);
 
     protected:
         struct buffer_info {
@@ -126,6 +150,9 @@ namespace quex {
             void     adapt(size_t ConvertedByteN, buffer_info* user_buffer, size_t SizeOfChar);
             size_t   estimate_raw_byte_n(const int CharacterN, const size_t BufferSize);
         };
+
+        InputHandleType* ih;
+        stream_position  start_position;
 
         iconv_t          iconv_handle;
 
@@ -159,7 +186,7 @@ namespace quex {
                                     uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                     const char* FromCoding,   const char* ToCoding) 
         { 
-            base::ih = input_handle;
+            ih = input_handle;
 
             raw_buffer.start = raw_buffer_p;
             raw_buffer.size  = raw_buffer_size;
@@ -175,7 +202,8 @@ namespace quex {
     TEMPLATE inline CLASS::~input_strategy_iconv() 
     { iconv_close(iconv_handle); }
 
-    TEMPLATE inline size_t CLASS::read_characters(provided_character_type* user_buffer_p, const size_t N) 
+    TEMPLATE inline size_t 
+        CLASS::read_characters(ProvidedCharacterType* user_buffer_p, const size_t N) 
     {
         // NOTE: There was an idea to allow multiple input_strategy_iconv objects
         //       access to the same intermediate buffer. In this case (i.e.
@@ -205,7 +233,6 @@ namespace quex {
             size_t report = __convert(LoadedByteN, &user_buffer);
             const size_t ConvertedByteN = LoadedByteN - raw_buffer.bytes_left_n;
             statistics.adapt(ConvertedByteN, &user_buffer, SizeOfCharacter);
-
 
             // -- has user buffer been filled to the given limit N ?
             if( ! user_buffer.bytes_left_n ) return /* sum converted characters = */ N;
@@ -292,6 +319,45 @@ namespace quex {
                                                   raw_buffer.size - byte_n_from_last_run);
         }
 
+    TEMPLATE inline void
+        CLASS::map_to_stream_position(const int CharacterIndex)
+        { 
+            stream_position   position_backup = InputPolicy<InputHandleType>::tell(ih);
+
+            /* There is a potential problem with varying character sizes of some encodings.
+             * Since the function is (most probably) called seldomly--namely only in 'load_backward()'
+             * which is only called when stepping backwards very far for a **long** precondition.
+             * Thus, this function implements the safe variant by stepping through the stream
+             * until the position is reached. */
+
+            /* Let's assume we are able to estimate the position with a precision not worse
+             * then 128 characters (This means that for example, one character may be coded with
+             * one byte, the other one with 256 bytes). Thus we target a position of 256 
+             * characters below the CharacterIndex, and then step character by character until
+             * the CharacterIndex is reached. */ 
+            const int             CharacterIndex_Minus1 = CharacterIndex - 1;
+            ProvidedCharacterType tmp[32];
+            int                   characters_to_read = 0;
+            const int             StepN = (int)(CharacterIndex_Minus1 / 16);
+
+            for(int i=0; i <= StepN ; ++i) {
+                CLASS::read_characters((ProvidedCharacterType*)tmp, 16);
+            }
+            if( CharacterIndex_Minus1 % 16 ) {
+                CLASS::read_characters((ProvidedCharacterType*)tmp, CharacterIndex_Minus1 % 16);
+            }
+
+            stream_position   result = InputPolicy<InputHandleType>::tell(ih);
+            InputPolicy<InputHandleType>::seek(ih, position_backup);
+            return result;
+
+
+            // __quex_assert(character_n == CharacterIndex_Minus1);
+        } 
+
+    TEMPLATE inline InputPolicy<InputHandleType>::stream_position    
+        CLASS::register_current_position_for_character_index_equal_zero() 
+        { start_position = InputPolicy<InputHandleType>::tell(ih); }
 
     TEMPLATE inline void 
         CLASS::statistic_info::adapt(size_t ConvertedByteN, buffer_info* user_buffer, size_t SizeOfChar) 

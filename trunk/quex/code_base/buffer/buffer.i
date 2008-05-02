@@ -32,14 +32,15 @@ namespace quex {
     TEMPLATE inline void  
         CLASS::__constructor_core()
     {
-        // -- load initial content starting from position zero
-        const size_t LoadedN = _input.read_characters(this->content_begin(), this->content_size());
-
-        this->_end_pos_of_buffer        = _input.tell();
-        this->_character_index_at_begin = 0;
         // -- for a later 'map_to_stream_position(character_index), the strategy might
         //    have some plans.
         _input.register_current_position_for_character_index_equal_zero();
+
+        // -- load initial content starting from position zero
+        const size_t LoadedN = _input.read_characters(this->content_begin(), this->content_size());
+
+        this->_character_index_at_end   = LoadedN;
+        this->_character_index_at_begin = 0;
 
         // -- the fallback border (this->_current_fallback_n is required for 'show' functions)
         this->_current_fallback_n  = this->FALLBACK_N;
@@ -134,11 +135,14 @@ namespace quex {
             //___________________________________________________________________________________
             // (2) Load new content
             //
-            //     ** The current end position of the buffer needs to be STORED in '_end_pos_of_buffer' **
-            //     ** It cannot be computed by _start_pos_of_buffer + buffer_size, since some character **
-            //     ** encodings need varying number of bytes for different characters (e.g. UTF-8).     **
+            // The input_strategy emulates a stream of characters of constant width, independtly 
+            // of the character coding that is used. Thus, it is safe to compute the position at the
+            // end of the buffer by simple addition of 'content size' to '_character_index_at_begin'.
             //
-            if( this->tell() != this->_end_pos_of_buffer ) _input.seek(this->_end_pos_of_buffer);
+            const int CharacterIndexAtEnd = this->_character_index_at_begin + (BUFFER_SIZE - 2);
+            if( _input.tell_character_index() != CharacterIndexAtEnd  ) { 
+                _input.seek_character_index(CharacterIndexAtEnd);
+            }
 
             const size_t    LoadN       = this->content_size() - FallBackN;
             // (*) If more characters need to be loaded than the buffer can hold,
@@ -154,6 +158,7 @@ namespace quex {
             else                   this->__end_of_file_unset();
 
             this->_character_index_at_begin += LoadN - FallBackN;
+            this->_character_index_at_end   += LoadedN - FallBackN;
 
             //___________________________________________________________________________________
             // (3) Pointer adaption
@@ -161,7 +166,6 @@ namespace quex {
             this->_current_p         = this->content_begin() + FallBackN - 1;   
             //     MinFallbackN = distance from '_lexeme_start_p' to '_current_p'
             this->_lexeme_start_p    = this->_current_p - MinFallbackN; 
-            this->_end_pos_of_buffer = _input.tell();
 
             this->EMPTY_or_show_buffer_load("LOAD FORWARD(exit)");
             this->EMPTY_or_assert_consistency(/* allow terminating zero = */false);
@@ -342,7 +346,7 @@ namespace quex {
     TEMPLATE inline void 
         CLASS::show_brief_content() {
             std::cout << "start-pos:  " << this->_start_pos_of_buffer << std::endl;
-            const stream_position  Pos = this->_input.tell();
+            const long  Pos = this->_input.tell_character_index();
             std::cout << "stream-pos: " << Pos << std::endl;
             std::cout << "EOF = "       << bool(this->_end_of_file_p);
             std::cout << ", BOF = "     << bool(this->_character_index_at_begin == 0) << std::endl;
