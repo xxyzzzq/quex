@@ -6,40 +6,55 @@
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_I_
 
 namespace quex {
-#   define TEMPLATE   template<class InputStrategy, class OverflowPolicy>
-#   define CLASS      basic_buffer<InputStrategy, OverflowPolicy>   
-#   define BASE_CLASS buffer_core<typename InputStrategy::provided_character_type>
+#   define TEMPLATE   template<class CharacterCarrierType>
+#   define CLASS      buffer<CharacterCarrierType>   
 
     TEMPLATE inline
-        CLASS::basic_buffer(InputStrategy& input_strategy, 
+        CLASS::basic_buffer(input_strategy<CharacterCarrierType>* _input_strategy, 
                size_t BufferSz /* = 65536 */, size_t BackupSectionSz /* = 64 */,
                character_type Value_BLC  /* = DEFAULT_BUFFER_LIMIT_CODE */)
-        : BASE_CLASS(BufferSz, BackupSectionSz, Value_BLC), _input(input_strategy)
+        : BASE_CLASS(BufferSz, BackupSectionSz, Value_BLC), _input(_input_strategy)
     {
         __constructor_core();
     }
                   
 
-    TEMPLATE inline
-        CLASS::basic_buffer(input_handle_type* input_handle, 
-                            size_t BufferSz/* = 65536 */, size_t BackupSectionSz/* = 64 */,
-                            character_type Value_BLC  /* = DEFAULT_BUFFER_LIMIT_CODE */)   
-        : BASE_CLASS(BufferSz, BackupSectionSz, Value_BLC), _input(InputStrategy(input_handle))
-    {
-        __constructor_core();
-    }
-
     TEMPLATE inline void  
-        CLASS::__constructor_core()
+        CLASS::__constructor_core(CharacterCarrierType* buffer_memory, const size_t BufferSize)
     {
+        __quex_assert(BUFFER_SIZE > 2); 
+        __quex_assert(FALLBACK_N < BUFFER_SIZE - 2);  // '-2' because of the border chars.
+        //___________________________________________________________________________
+        //
+        // NOTE: The borders are filled with buffer limit codes, end of file or
+        //       begin of file codes. Thus the buffer's volume is two elements greater
+        //       then the buffer's content.
+        //
+        if( buffer_memory == 0x0 ) _buffer.begin = new character_type[BufferSize];      
+        else                       _buffer.begin = buffer_memory;
+        _buffer.end = _buffer.begin + BufferSize;
+
+        // _buffer[0]             = lower buffer limit code character
+        // _buffer[1]             = first char of content
+        // _buffer[BUFFER_SIZE-2] = last char of content
+        // _buffer[BUFFER_SIZE-1] = upper buffer limit code character
+        _buffer.begin[0]            = CLASS::BLC; // set buffer limit code
+        _buffer.begin[BufferSize-1] = CLASS::BLC; // set buffer limit code
+
+        // -- current = 1 before content, 
+        //    because we always read '_current_p + 1' as next char.
+        _current_p      = _buffer.begin;     
+        // -- initial lexeme start, of course, at the start
+        _lexeme_start_p = _buffer.begin + 1;
+
         // -- for a later 'map_to_stream_position(character_index), the strategy might
         //    have some plans.
         _input.register_current_position_for_character_index_equal_zero();
 
         // -- load initial content starting from position zero
-        const size_t LoadedN = _input.read_characters(this->content_begin(), this->content_size());
+        const size_t LoadedN = _input.read_characters(content_begin(), content_size());
+        __quex_assert(LoadedN <= content_size());
 
-        this->_character_index_at_end   = LoadedN;
         this->_character_index_at_begin = 0;
 
         // -- the fallback border (this->_current_fallback_n is required for 'show' functions)
@@ -47,12 +62,17 @@ namespace quex {
 
         // -- end of file / end of buffer:
         if( LoadedN != this->content_size() ) 
-            this->__end_of_file_set(this->content_begin() + LoadedN); // end of file
+            this->__end_of_file_set(content_begin() + LoadedN); // end of file
         else
-            this->__end_of_file_unset();                              // buffer limit
+            this->__end_of_file_unset();                        // buffer limit
 
-        this->EMPTY_or_assert_consistency(/* allow terminating zero = */ false);
+        ASSERT_CONSISTENCY();
     }
+
+    TEMPLATE inline
+        CLASS::~buffer_core() {
+            delete [] _buffer;
+        }
 
 
     TEMPLATE inline int  
@@ -342,34 +362,6 @@ namespace quex {
         }
 
 
-#ifdef __QUEX_OPTION_UNIT_TEST
-    TEMPLATE inline void 
-        CLASS::show_brief_content() {
-            std::cout << "start-pos:  " << this->_start_pos_of_buffer << std::endl;
-            const long  Pos = this->_input.tell_character_index();
-            std::cout << "stream-pos: " << Pos << std::endl;
-            std::cout << "EOF = "       << bool(this->_end_of_file_p);
-            std::cout << ", BOF = "     << bool(this->_character_index_at_begin == 0) << std::endl;
-            std::cout << "current_p (offset)    = " << this->_current_p - this->content_begin() << std::endl;
-            std::cout << "lexeme start (offset) = " << this->_lexeme_start_p - this->content_begin() << std::endl;
-        }
-    TEMPLATE inline void 
-        CLASS::x_show_content() {
-            this->show_content();
-            show_brief_content();
-        }
-#endif
-
-#ifndef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
-    TEMPLATE inline void CLASS::EMPTY_or_show_buffer_load(const char* InfoStr) { }
-#else
-    TEMPLATE inline void 
-        CLASS::EMPTY_or_show_buffer_load(const char* InfoStr)
-        {
-            std::cout << InfoStr << "\n";
-            this->show_content();
-        }
-#endif
 
 #undef TEMPLATE
 #undef CLASS
