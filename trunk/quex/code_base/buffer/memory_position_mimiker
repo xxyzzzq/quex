@@ -1,0 +1,80 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+//
+// (C) 2007 Frank-Rene Schaefer
+// 
+#ifndef __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__
+#define __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__
+
+namespace quex { 
+    /* DEBUG: 
+    **
+    ** The 'memory_position' type is a pointer mimiking class that stores also the
+    ** **base position** of the buffer to which it referes. Locations are
+    ** memory addresses. When a buffer-reload happens, those addresses have
+    ** to be adapted. Imagine:
+    **
+    ** before:  
+    **          Start                PosX                   Start = 0    
+    **          |                    |                      PosX  = 21 
+    **          [1234567890abcdfeghijklmnopqrstuvwxyzABC] 
+    **
+    **  after:
+    **          Start    PosX                               Start = 13
+    **          |        |                                  PosX  = 11 
+    **          [cdfeghijklmnopqrstuvwxyzABCDEFGHIJKLMNO] 
+    **
+    ** -- If NDEBUG is not defined, this type is used, so that asserts in seek
+    **    functions can check wether the start position refers to the current start
+    **    position of the buffer (i.e. the memory_position has been updated).
+    **
+    ** -- If NDEBUG is defined, than this type is defined as a normal pointer to 
+    **    the buffers character_type.
+    **
+    ** NOTE: This is only applied to the tell_adr() and seek_adr() functions.
+    **       The lexeme start pointer is not effected, since it is entirely handled
+    **       **inside** the buffer. Internal addresses **cannot** be considered
+    **       as memory positions of this type, since they have to be adapted
+    **       independently of the start position.
+    **____________________________________________________________________________
+    ** IMPORTANT: The one and only purpose of this class is to ensure that      **
+    **            '+=' is called in the right manner, whenever a buffer         **
+    **            reload has occured. IT CANNOT BE LINKED LOGICALLY TO THE      **
+    **            OPERATORS +,-,++,--! DO NOT USE THIS TYPE EXCEPT FOR SIMPLE   **
+    **            'TELL' AND 'SEEK'.                                            **
+    */
+    template <class character_type> 
+    struct memory_position_mimiker {
+
+        typedef long stream_position; // Assume: Any stream position type can be 
+        //                            // casted to 'long'. Templating with stream 
+        //                            // position would screw the whole buffer design, 
+        //                            // where we want to have a base class that is 
+        //                            // independent of the input handle type.                     
+
+        // for compatibility with 'character_type*'
+        memory_position_mimiker(character_type* Adr = 0x0, stream_position Pos = 0x0) 
+            : address(Adr), buffer_start_position(Pos) {}
+
+        character_type*  address;
+        stream_position  buffer_start_position;
+
+        bool operator==(const memory_position_mimiker& That)
+        { 
+          __quex_assert(this->buffer_start_position == That.buffer_start_position); 
+          return this->address == That.address; 
+        }
+        bool operator!=(const memory_position_mimiker& That)
+        { return ! (this->operator==(That)); }
+
+        // When loading forward from the stream, the pointers to memory_positions move backwards.
+        // Thus, the signs in the operators are mirrored.
+        // (operators not to be used in concatination -> void)
+        void operator+=(const int Value) { address += Value; buffer_start_position -= Value; }
+        void operator-=(const int Value) { address -= Value; buffer_start_position += Value; }
+
+        // conversion operator, so that the object can be used at any place
+        // where a normal provided_character_type pointer is required (integrates seemingless)
+        operator character_type*() { return address; }
+    };
+}
+#endif // __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__

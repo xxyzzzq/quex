@@ -21,109 +21,39 @@ extern "C" {
 #include <quex/code_base/compatibility/inttypes.h>
 }
 
+#ifndef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include<quex/code_base/buffer/memory_position_mimiker>
+#endif          
 
 namespace quex {
 
     const uint8_t  DEFAULT_BUFFER_LIMIT_CODE = 0x00;
 
-    template <class InputStrategy, class OverflowPolicy> class basic_buffer;
-    
-#ifndef QUEX_OPTION_ACTIVATE_ASSERTS
-    /* DEBUG: 
-    **
-    ** The 'memory_position' type is a pointer mimiking class that stores also the
-    ** **base position** of the buffer to which it referes. Locations are
-    ** memory addresses. When a buffer-reload happens, those addresses have
-    ** to be adapted. Imagine:
-    **
-    ** before:  
-    **          Start                PosX                   Start = 0    
-    **          |                    |                      PosX  = 21 
-    **          [1234567890abcdfeghijklmnopqrstuvwxyzABC] 
-    **
-    **  after:
-    **          Start    PosX                               Start = 13
-    **          |        |                                  PosX  = 11 
-    **          [cdfeghijklmnopqrstuvwxyzABCDEFGHIJKLMNO] 
-    **
-    ** -- If NDEBUG is not defined, this type is used, so that asserts in seek
-    **    functions can check wether the start position refers to the current start
-    **    position of the buffer (i.e. the memory_position has been updated).
-    **
-    ** -- If NDEBUG is defined, than this type is defined as a normal pointer to 
-    **    the buffers character_type.
-    **
-    ** NOTE: This is only applied to the tell_adr() and seek_adr() functions.
-    **       The lexeme start pointer is not effected, since it is entirely handled
-    **       **inside** the buffer. Internal addresses **cannot** be considered
-    **       as memory positions of this type, since they have to be adapted
-    **       independently of the start position.
-    **____________________________________________________________________________
-    ** IMPORTANT: The one and only purpose of this class is to ensure that      **
-    **            '+=' is called in the right manner, whenever a buffer         **
-    **            reload has occured. IT CANNOT BE LINKED LOGICALLY TO THE      **
-    **            OPERATORS +,-,++,--! DO NOT USE THIS TYPE EXCEPT FOR SIMPLE   **
-    **            'TELL' AND 'SEEK'.                                            **
-    */
-    template <class character_type> 
-    struct memory_position_mimiker {
-
-        typedef long stream_position; // Assume: Any stream position type can be 
-        //                            // casted to 'long'. Templating with stream 
-        //                            // position would screw the whole buffer design, 
-        //                            // where we want to have a base class that is 
-        //                            // independent of the input handle type.                     
-
-        // for compatibility with 'character_type*'
-        memory_position_mimiker(character_type* Adr = 0x0, stream_position Pos = 0x0) 
-            : address(Adr), buffer_start_position(Pos) {}
-
-        character_type*  address;
-        stream_position  buffer_start_position;
-
-        bool operator==(const memory_position_mimiker& That)
-        { 
-          __quex_assert(this->buffer_start_position == That.buffer_start_position); 
-          return this->address == That.address; 
-        }
-        bool operator!=(const memory_position_mimiker& That)
-        { return ! (this->operator==(That)); }
-
-        // When loading forward from the stream, the pointers to memory_positions move backwards.
-        // Thus, the signs in the operators are mirrored.
-        // (operators not to be used in concatination -> void)
-        void operator+=(const int Value) { address += Value; buffer_start_position -= Value; }
-        void operator-=(const int Value) { address -= Value; buffer_start_position += Value; }
-
-        // conversion operator, so that the object can be used at any place
-        // where a normal provided_character_type pointer is required (integrates seemingless)
-        operator character_type*() { return address; }
-    };
-#endif          
-
-    struct DefaultOverflowPolicy {
-        template<class X, class Y> bool static forward(basic_buffer<X,Y>* that);
-        template<class X, class Y> bool static backward(basic_buffer<X,Y>* that);
-    };
-
     template<class CharacterType=uint8_t>
         class buffer_core {
-            // IDEA: The iteration over the character has to happen as fast as possible,
-            //       since this operation is performed very often. The loading of the
-            //       buffer happens seldom, and one can be more tolerant. For iterating
-            //       we do not want virtual functions since those are slower and cannot
-            //       be inlined. For loading, virtual functions are OK, it is just one
-            //       word more to dereference (probably neglectable when e.g. 65536 bytes are loaded).
-            //
-            // If the buffer definition is split into base and derived class, the lexical 
-            // analyser can contain 'buffer_core<character_type>*' which can hold any buffer
-            // that runs on the same character type. It is independent of the input strategy,
-            // as long as it also runs on the same character type (e.g. uin8_t, uint16_t ...).
-            //
-            // IMPORTANT: The function calls to get_forward() and get_backward() can be perfectly
-            //            inlined, since the size of increment/decrement is known at compile time.
+            // (*) Analyzer Main functions _________________________________________________________________
         public:
-            typedef CharacterType  character_type;
+        protected:
+        };
+
+    template<class CharacterCarrierType = uint8_t>
+        class buffer {
+        // IDEA: The iteration over the character has to happen as fast as possible,
+        //       since this operation is performed very often. The loading of the
+        //       buffer happens seldom, and one can be more tolerant. For iterating
+        //       we do not want virtual functions since those are slower and cannot
+        //       be inlined. For loading, virtual functions are OK, it is just one
+        //       word more to dereference (probably neglectable when e.g. 65536 bytes are loaded).
+        //
+        // If the buffer definition is split into base and derived class, the lexical 
+        // analyser can contain 'buffer_core<character_type>*' which can hold any buffer
+        // that runs on the same character type. It is independent of the input strategy,
+        // as long as it also runs on the same character type (e.g. uin8_t, uint16_t ...).
+        //
+        // IMPORTANT: The function calls to get_forward() and get_backward() can be perfectly
+        //            inlined, since the size of increment/decrement is known at compile time.
+        public:
+            typedef CharacterCarrierType  character_type;
 #           ifndef QUEX_OPTION_ACTIVATE_ASSERTS
             typedef memory_position_mimiker<character_type>  memory_position;
 #           else
@@ -131,22 +61,45 @@ namespace quex {
 #           endif
             const character_type   BLC;
 
-            // (*) Constructor/Destructor __________________________________________________________________
-        protected:
-            buffer_core(size_t BufferSz=65536, size_t BackupSectionSz=64,
-                        character_type   Value_BLC = DEFAULT_BUFFER_LIMIT_CODE); // BLC: buffer limit code
+            typedef typename InputStrategy::stream_position           stream_position;
+            typedef typename InputStrategy::stream_offset             stream_offset;
+            typedef typename InputStrategy::input_handle_type         input_handle_type;
+            typedef typename InputStrategy::provided_character_type   character_type;
+#ifndef NDEBUG
+            typedef memory_position_mimiker<character_type>  memory_position;
+#else
+            typedef character_type*                          memory_position;
+#endif
+        private:
+            // buffers cannot be copied!
+            /* DISABLED */ buffer(const buffer&);
+            /* DISABLED */ buffer operator=(const buffer&);
+
         public:
-            virtual ~buffer_core();
+            // (*) Constructor/Destructor __________________________________________________________________
+            buffer(InputStrategy& input_strategy, 
+                         size_t BufferSz          = 65536, 
+                         size_t BackupSectionSz   = 64,
+                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            buffer(input_handle_type* input_handle, 
+                         size_t BufferSz          = 65536, 
+                         size_t BackupSectionSz   = 64,
+                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            virtual ~buffer() {}
 
-            // (*) Analyzer Main functions _________________________________________________________________
-            int  get_forward();
-            int  get_backward();
-            virtual int          load_forward() = 0;
-            virtual int          load_backward() = 0;
-            virtual const bool   is_end_of_file() = 0;
-            virtual const bool   is_begin_of_file() = 0;
-            virtual void         close_input() = 0;
+            // (*) Main functions
+            //     -- iteration over buffer content
+            int    get_forward();
+            int    get_backward();
 
+            //     -- loading according input strategy
+            int    load_forward();
+            int    load_backward();
+            bool   is_end_of_file();
+            bool   is_begin_of_file();
+            void   close_input() { _input->close(); }
+
+            //     -- miscaleneous
             void              set_subsequent_character(const int Value);
             character_type    get_subsequent_character();
             character_type    get_current_character();
@@ -161,32 +114,30 @@ namespace quex {
             void              seek_adr(memory_position Adr);
             void              seek_offset(const int Offset);
 
-            size_t            content_size()  { return BUFFER_SIZE - 2; }
-            character_type*   content_begin() { return _buffer + 1; }               // 1st in content
-            character_type*   content_end()   { return _buffer + BUFFER_SIZE - 1; } // 1st after content
-            character_type*   buffer_begin()  { return _buffer; }                   // 1st in buffer
-            character_type*   buffer_end()    { return _buffer + BUFFER_SIZE; }     // 1st after buffer
-
-
-        public:
-            // NOT private: for usage in the template type OverflowPolicy
-            //              (template friends are not solved propperly on all compilers)
+            //     -- what happens if there's not enough space?
+            void       (*on_overflow)(buffer*);
+        protected:
+            void   __constructor_core();
             void   __end_of_file_set(character_type*);
             void   __end_of_file_unset();
-
-        protected:
+            //
             // (*) Member Variables ___________________________________________________________________________
-            character_type*  _buffer;              
+            struct { 
+                character_type*  begin;             // first in buffer 
+                character_type*  end;               // behind last in buffer
+                size_t           fallback_n;
+                size_t           size() const { return end - begin; }
+            } _buffer;
+            size_t            content_size()  { return _buffer.size() - 2; }
+            character_type*   content_begin() { return _buffer.begin + 1; } 
+            character_type*   content_end()   { return _buffer.end - 1; }  
+            //
             character_type*  _current_p;
-            size_t           _current_fallback_n;       // is required for 'show' functions
             character_type*  _lexeme_start_p;
             character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
             size_t           _character_index_at_begin; // global index of the character at the begin of buffer
             //                                          // == 0x0 if EOF not in buffer.
-            const size_t  BUFFER_SIZE;
-            const size_t  FALLBACK_N;
-            //
-            void          EMPTY_or_assert_consistency(bool AllowTerminatingZeroF = true);
+            input_strategy<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
 
 #ifdef __QUEX_OPTION_UNIT_TEST
         public:
@@ -194,89 +145,31 @@ namespace quex {
             character_type   get_border_char(const character_type*);
             void             show_content();
             character_type*  end_of_file_p() { return _end_of_file_p; }
-#endif
-        };
-
-    template<class InputStrategy  = input_strategy<std::istream*, uint8_t>,
-             class OverflowPolicy = DefaultOverflowPolicy> 
-        class basic_buffer  
-                : public buffer_core<typename InputStrategy::provided_character_type> {
-        public:
-            typedef InputStrategy my;
-            typedef typename InputStrategy::stream_position           stream_position;
-            typedef typename InputStrategy::stream_offset             stream_offset;
-            typedef typename InputStrategy::input_handle_type         input_handle_type;
-            typedef typename InputStrategy::provided_character_type   character_type;
-#ifndef NDEBUG
-            typedef memory_position_mimiker<character_type>  memory_position;
-#else
-            typedef character_type*                          memory_position;
-#endif
-        private:
-            // buffers cannot be copied!
-            /* DISABLED */ basic_buffer(const basic_buffer&);
-            /* DISABLED */ basic_buffer operator=(const basic_buffer&);
-
-        public:
-            // (*) Constructor/Destructor __________________________________________________________________
-            basic_buffer(InputStrategy& input_strategy, 
-                         size_t BufferSz          = 65536, 
-                         size_t BackupSectionSz   = 64,
-                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
-            basic_buffer(input_handle_type* input_handle, 
-                         size_t BufferSz          = 65536, 
-                         size_t BackupSectionSz   = 64,
-                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
-            virtual ~basic_buffer() {}
-
-            // (*) loading according input strategy
-            virtual int        load_forward();
-            virtual int        load_backward();
-            virtual const bool is_end_of_file();
-            virtual const bool is_begin_of_file();
-            virtual void       close_input() { _input.close(); }
-
-        protected:
-            void  __constructor_core();
-            //
-            void  EMPTY_or_show_buffer_load(const char*);
-            //
-            InputStrategy    _input;             // DESIGN PATTERN: 'Strategy'
-            bool             _begin_of_file_f;   // Is the begin of the buffer == begin of file?
-            stream_position  _end_pos_of_buffer; // position in stream that corresponds to last element in buffer
-
-#ifdef __QUEX_OPTION_UNIT_TEST
-        public:
-            // NOTE: Include <iostream> for unit tests before this header!
             void             show_brief_content(); 
             void             x_show_content(); 
+            void             SHOW_BUFFER_LOAD(const char*);
+            void             ASSERT_CONSISTENCY();
+#else
+            void             SHOW_BUFFER_LOAD(const char*) { }
+            void             ASSERT_CONSISTENCY() { }
 #endif
         };    
 
-    typedef basic_buffer<> buffer;
-
-
-    template<class X, class Y> inline bool   
-        DefaultOverflowPolicy::forward(basic_buffer<X,Y>* that) { 
-#ifdef __QUEX_OPTION_UNIT_TEST
-            throw std::range_error("Lexeme start falls back before begin of buffer (buffer overflow).");
-#endif
-            that->__end_of_file_set(that->content_begin());
+    template<class CharacterCarrierType*> static bool   
+        default_buffer_overflow_policy(buffer<CharacterCarrierType>* that, bool ForwardF) { 
+            if( ForwardF ) { 
+                throw std::range_error("Lexeme start falls beyond buffer limits (buffer overflow in forward direction).");
+            } else { 
+                throw std::range_error("Lexeme start falls beyond buffer limits (buffer overflow in backward direction).");
+            }
             return false; /* => END OF FILE */ 
         }
 
-
-    template<class X, class Y> inline bool   
-        DefaultOverflowPolicy::backward(basic_buffer<X,Y>* that) { 
-#ifdef __QUEX_OPTION_UNIT_TEST
-            throw std::range_error("Lexeme start falls back beyond end of buffer (buffer overflow).");
-#endif
-            that->__set_begin_of_file();
-            return false; /* => BEGIN OF FILE */ 
-        }
 }
 
-#include <quex/code_base/buffer/buffer_core.i>
+#ifdef __QUEX_OPTION_UNIT_TEST
+#   include <quex/code_base/buffer/buffer_unit_test.i>
+#endif
 #include <quex/code_base/buffer/buffer.i>
 
 
