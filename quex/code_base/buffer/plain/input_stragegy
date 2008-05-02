@@ -1,0 +1,72 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+// (C) 2008 Frank-Rene Schaefer
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
+#define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
+//
+#include <quex/code_base/buffer/input_strategy>
+
+#include <iostream>       // for: input_strategy_base<istream*>
+#include <cstdio>         // for: input_strategy_base<FILE*>
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
+#else
+#   define  __quex_assert(X)   /*no assert*/
+#endif
+#include <cerrno>
+#include <stdexcept>
+extern "C" { 
+#include <quex/code_base/compatibility/inttypes.h>
+}
+
+namespace quex {
+
+    template <class InputHandleType, class CharacterCarrierType>
+        struct input_strategy_plain
+        : public input_strategy<CharacterCarrierType> {
+
+            static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
+            typedef typename InputPolicy<InputHandleType>::stream_position stream_position;
+            typedef typename InputPolicy<InputHandleType>::stream_offset   stream_offset;
+            typedef InputHandleType                                        input_handle_type;
+
+        protected:
+            InputHandleType* ih;
+            stream_position  start_position;  // position in stream where analysis started
+
+        public:
+
+            stream_position    tell_character_index() { 
+                return (InputPolicy<InputHandleType>::tell(ih) - start_position) / SizeOfCharacter; 
+            }
+            void               seek_character_index(const size_t CharacterIndex) { 
+                InputPolicy<InputHandleType>::seekg(ih, CharacterIndex * SizeOfCharacter + start_position); 
+            }
+            void               close()                          { InputPolicy<InputHandleType>::close(ih); }
+            void               destroy_handle()                 { if( ih ) delete ih; ih = 0x0; }
+
+            size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N)  
+            { 
+                const size_t ByteN = InputPolicy<InputHandleType>::load_bytes(ih, start_of_buffer, N * SizeOfCharacter);
+                __quex_assert(ByteN % SizeOfCharacter == 0);
+                return ByteN / SizeOfCharacter; 
+            }
+            long      map_to_stream_position(const int CharacterIndex);
+            { 
+                // Some weirdos use negative stream positions to go forward. The following
+                // code fragment catches those guys.
+                if( InputPolicy<InputHandleType>::tell(ih) < start_position ) {
+                    // NOTE: Their might be still cases of doubt, since the MS lib sometimes
+                    //       goes back two characters instead of one, if the last one is '\n'.
+                    //       This can be a trouble when parsing Unix files with MS istream objects.
+                    return - (CharacterIndex * SizeOfCharacter) + start_of_buffer; 
+                } else { 
+                    // Here's the normal case
+                    return CharacterIndex * SizeOfCharacter + start_of_buffer; 
+                }
+            } 
+            void     register_current_position_for_character_index_equal_zero() 
+            { start_position = InputPolicy<InputHandleType>::tell(ih); }
+
+        };
+}
