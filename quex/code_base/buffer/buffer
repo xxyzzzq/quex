@@ -77,14 +77,10 @@ namespace quex {
 
         public:
             // (*) Constructor/Destructor __________________________________________________________________
-            buffer(InputStrategy& input_strategy, 
-                         size_t BufferSz          = 65536, 
-                         size_t BackupSectionSz   = 64,
-                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
-            buffer(input_handle_type* input_handle, 
-                         size_t BufferSz          = 65536, 
-                         size_t BackupSectionSz   = 64,
-                         character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            buffer(input_strategy<CharacterCarrierType>* input_strategy, 
+                   size_t BufferSz          = 65536, 
+                   size_t BackupSectionSz   = 64,
+                   character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
             virtual ~buffer() {}
 
             // (*) Main functions
@@ -117,9 +113,6 @@ namespace quex {
             //     -- what happens if there's not enough space?
             void       (*on_overflow)(buffer*);
         protected:
-            void   __constructor_core();
-            void   __end_of_file_set(character_type*);
-            void   __end_of_file_unset();
             //
             // (*) Member Variables ___________________________________________________________________________
             struct { 
@@ -139,6 +132,10 @@ namespace quex {
             //                                          // == 0x0 if EOF not in buffer.
             input_strategy<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
 
+            // (*) Helper _____________________________________________________________________________________
+            void   __constructor_core();
+            void   __end_of_file_set(character_type*);
+            void   __end_of_file_unset();
 #ifdef __QUEX_OPTION_UNIT_TEST
         public:
             // NOTE: Include <iostream> for unit tests before this header!
