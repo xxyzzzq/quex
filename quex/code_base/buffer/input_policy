@@ -15,29 +15,29 @@ namespace quex {
     //          'istream' types are directly supported. For new types of input, e.g.
     //          via TCP/IP over the internet or whatsoever, only a new policy has
     //          to be provided. The remaining framework still works the same.
-    template <InputHandleTypeP> struct InputPolicy;
+    template <class InputHandleTypeP> struct InputPolicy;
 
     template <>
     struct InputPolicy<std::FILE*> { 
         typedef long   stream_position;
         typedef long   stream_offset;
 
-        static long    tell(std::FILE* me)            { return std::ftell(fh); }
-        static void    seek(std::FILE* me, long& Pos) { std::fseek(Pos); }
+        static long    tell(std::FILE* me)            { return std::ftell(me); }
+        static void    seek(std::FILE* me, long& Pos) { std::fseek(me, Pos, SEEK_SET); }
         static void    close(std::FILE* me)           { std::fclose(me); }
 
         static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
         { return fread(buffer_position, 1, ByteNToRead, ih); }
     };
 
-    template <>
+    template <class InputHandleType>
     struct InputPolicy<InputHandleType*> { 
         typedef typename InputHandleType::pos_type   stream_position;
         typedef typename InputHandleType::off_type   stream_offset;
 
-        static InputHandleType::stream_position tell(InputHandleType* me)                     { return me->tellg(); }
-        static void    seek(InputHandleType* me, const InputHandleType::stream_position& Pos) { me->seekg(Pos); }
-        static void    close()                                                                { me->close(); }
+        static stream_position tell(InputHandleType* me)                     { return me->tellg(); }
+        static void    seek(InputHandleType* me, const stream_position& Pos) { me->seekg(Pos); }
+        static void    close(InputHandleType* me)                            { me->close(); }
 
         static size_t  load_bytes(InputHandleType* me, void* buffer_position, const size_t ByteNToRead) 
         { 
