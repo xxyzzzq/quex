@@ -59,17 +59,7 @@ namespace quex {
 #           else
             typedef character_type*                          memory_position;
 #           endif
-            const character_type   BLC;
 
-            typedef typename InputStrategy::stream_position           stream_position;
-            typedef typename InputStrategy::stream_offset             stream_offset;
-            typedef typename InputStrategy::input_handle_type         input_handle_type;
-            typedef typename InputStrategy::provided_character_type   character_type;
-#ifndef NDEBUG
-            typedef memory_position_mimiker<character_type>  memory_position;
-#else
-            typedef character_type*                          memory_position;
-#endif
         private:
             // buffers cannot be copied!
             /* DISABLED */ buffer(const buffer&);
@@ -80,8 +70,8 @@ namespace quex {
             buffer(input_strategy<CharacterCarrierType>* input_strategy, 
                    size_t BufferSz          = 65536, 
                    size_t BackupSectionSz   = 64,
-                   character_type Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
-            virtual ~buffer() {}
+                   CharacterCarrierType Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            virtual ~buffer();
 
             // (*) Main functions
             //     -- iteration over buffer content
@@ -113,31 +103,41 @@ namespace quex {
             //     -- what happens if there's not enough space?
             void       (*on_overflow)(buffer*);
         protected:
-            //
+
             // (*) Member Variables ___________________________________________________________________________
+            const character_type   BLC;              // buffer limit code
             struct { 
-                character_type*  begin;             // first in buffer 
-                character_type*  end;               // behind last in buffer
-                size_t           fallback_n;
-                size_t           size() const { return end - begin; }
+                character_type*  _front;             // first in buffer 
+                character_type*  _back;              // last in buffer
+                size_t           _default_fallback_n;
+
+                size_t           size() const               { return _back - _front + 1; }
+                size_t           default_fallback_n() const { return _default_fallback_n; }
+                character_type*  front() const { return _front; }
+                character_type*  back() const  { return _back; }
             } _buffer;
+            //
             size_t            content_size()  { return _buffer.size() - 2; }
-            character_type*   content_begin() { return _buffer.begin + 1; } 
-            character_type*   content_end()   { return _buffer.end - 1; }  
+            character_type*   content_front() { return _buffer.front + 1; } 
+            character_type*   content_back()  { return _buffer.back  - 1; }  
             //
             character_type*  _current_p;
             character_type*  _lexeme_start_p;
             character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
-            size_t           _character_index_at_begin; // global index of the character at the begin of buffer
+            size_t           _character_index_at_front; // global index of the character at the begin of buffer
             //                                          // == 0x0 if EOF not in buffer.
             input_strategy<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
 
             // (*) Helper _____________________________________________________________________________________
-            void   __constructor_core();
-            void   __end_of_file_set(character_type*);
-            void   __end_of_file_unset();
+            void __constructor_core(input_strategy<CharacterCarrierType>* _input_strategy, 
+                                      CharacterCarrierType* buffer_memory, size_t BufferSz, 
+                                      size_t FallBackN);
+            void __end_of_file_set(character_type*);
+            void __end_of_file_unset();
+
 #ifdef __QUEX_OPTION_UNIT_TEST
         public:
+            // (*) Debugging/Unit Tests ______________________________________________________________________
             // NOTE: Include <iostream> for unit tests before this header!
             character_type   get_border_char(const character_type*);
             void             show_content();
@@ -146,6 +146,8 @@ namespace quex {
             void             x_show_content(); 
             void             SHOW_BUFFER_LOAD(const char*);
             void             ASSERT_CONSISTENCY();
+            //
+            size_t           _SHOW_current_fallback_n;
 #else
             void             SHOW_BUFFER_LOAD(const char*) { }
             void             ASSERT_CONSISTENCY() { }
@@ -153,7 +155,7 @@ namespace quex {
         };    
 
     template<class CharacterCarrierType*> static bool   
-        default_buffer_overflow_policy(buffer<CharacterCarrierType>* that, bool ForwardF) { 
+        default_buffer_on_overflow_handler(buffer<CharacterCarrierType>* that, bool ForwardF) { 
             if( ForwardF ) { 
                 throw std::range_error("Lexeme start falls beyond buffer limits (buffer overflow in forward direction).");
             } else { 

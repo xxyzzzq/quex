@@ -6,7 +6,7 @@
 
 namespace quex {
 
-    template <CharacterCarrierType>  // CharacterCarrierType = uin8_t, uint16_t, uint32_t, ...
+    template <class CharacterCarrierType>  // CharacterCarrierType = uin8_t, uint16_t, uint32_t, ...
     struct input_strategy { 
         // PURPOSE: The 'input_strategy' provides the illusion of a continous character
         //          stream consisting of characters coded all with the same byte-width.
@@ -16,7 +16,7 @@ namespace quex {
         void     close() = 0;
         void     destroy_handle() = 0;
 
-        size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N)  
+        size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N);
         long     register_begin_of_file() = 0;
     };
 

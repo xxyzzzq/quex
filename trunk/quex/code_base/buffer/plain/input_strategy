@@ -18,6 +18,7 @@
 extern "C" { 
 #include <quex/code_base/compatibility/inttypes.h>
 }
+#include <quex/code_base/buffer/input_policy>
 
 namespace quex {
 
@@ -51,7 +52,7 @@ namespace quex {
                 __quex_assert(ByteN % SizeOfCharacter == 0);
                 return ByteN / SizeOfCharacter; 
             }
-            long      map_to_stream_position(const int CharacterIndex);
+            long      map_to_stream_position(const int CharacterIndex)
             { 
                 // Some weirdos use negative stream positions to go forward. The following
                 // code fragment catches those guys.
@@ -70,3 +71,4 @@ namespace quex {
 
         };
 }
+#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__

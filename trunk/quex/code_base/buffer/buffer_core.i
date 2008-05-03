@@ -98,7 +98,7 @@ namespace quex {
         {
             ASSERT_CONSISTENCY();
 #           ifndef QUEX_OPTION_ACTIVATE_ASSERTS
-            const long begin_pos = (long)(_input.map_to_stream_position(this->_character_index_at_begin));
+            const long begin_pos = (long)(_input.map_to_stream_position(this->_character_index_at_front));
             return memory_position(_current_p, begin_pos);
 #           else
             return memory_position(_current_p);
@@ -112,7 +112,7 @@ namespace quex {
             // Check wether the memory_position is relative to the current start position 
             // of the stream. That means, that the tell_adr() command was called on the
             // same buffer setting or the positions have been adapted using the += operator.
-            const long begin_pos = (long)(_input.map_to_stream_position(this->_character_index_at_begin));
+            const long begin_pos = (long)(_input.map_to_stream_position(this->_character_index_at_front));
             __quex_assert(Adr.buffer_start_position == begin_pos);
             _current_p = Adr.address;
 #           else
@@ -139,8 +139,6 @@ namespace quex {
             // does not hold it loads the buffer contents stepwise. A direct jump to more
             // then one load ahead would require a different load function. Please, consider
             // that different input strategies might rely on dynamic character length codings
-            __quex_assert(_current_p >= buffer_begin() - 1);
-            __quex_assert(_current_p <  buffer_end()   - 1);
             // 
             size_t remaining_distance_to_target = Distance;
             while( 1 + 1 == 2 ) {
@@ -153,7 +151,7 @@ namespace quex {
                         return;
                     } 
                 } else {
-                    if( _current_p + remaining_distance_to_target < content_end() ) {
+                    if( _current_p + remaining_distance_to_target < _buffer.back() ) {
                         _current_p      += remaining_distance_to_target;
                         _lexeme_start_p  = _current_p + 1;
                         ASSERT_CONSISTENCY();
@@ -162,9 +160,9 @@ namespace quex {
                 }
 
                 // move current_p to end of the buffer, thus decrease the remaining distance
-                remaining_distance_to_target -= (content_end() - _current_p);
-                _current_p      = content_end();
-                _lexeme_start_p = content_end();  // safe not to hit asserts (?)
+                remaining_distance_to_target -= (_buffer.back() - _current_p);
+                _current_p      = _buffer.back();
+                _lexeme_start_p = _buffer.back();
 
                 // load subsequent segment into buffer
                 load_forward();
@@ -182,13 +180,11 @@ namespace quex {
             // does not hold it loads the buffer contents stepwise. A direct jump to more
             // then one load ahead would require a different load function. Please, consider
             // that different input strategies might rely on dynamic character length codings
-            __quex_assert(_current_p >= buffer_begin());
-            __quex_assert(_current_p <  buffer_end());
             // 
             size_t remaining_distance_to_target = Distance;
             while( 1 + 1 == 2 ) {
                 ASSERT_CONSISTENCY();
-                if( _current_p - remaining_distance_to_target <= content_begin() ) {
+                if( _current_p - remaining_distance_to_target <= content_front() ) {
                     if( _buffer[0] == BLC ) {
                         _current_p      = _buffer;
                         _lexeme_start_p = _current_p + 1; 
@@ -197,9 +193,9 @@ namespace quex {
                     }
                 }
                 // move current_p to begin of the buffer, thus decrease the remaining distance
-                remaining_distance_to_target -= (_current_p - content_begin());
-                _current_p      = content_begin();
-                _lexeme_start_p = content_begin() + 1;
+                remaining_distance_to_target -= (_current_p - content_front());
+                _current_p      = content_front();
+                _lexeme_start_p = content_front() + 1;
 
                 load_backward();
             }

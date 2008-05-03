@@ -2,33 +2,34 @@
 #include <sstream>
 #include <cstring>
 
+#include <quex/code_base/buffer/plain/input_strategy>
 #include <test-core.h>
-
-using namespace quex;
-using namespace std;
 
 int
 main(int argc, char** argv)
 {
+    using namespace quex;
+    using namespace std;
+
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         std::cout << "Forward Iteration: Multiple Loads.\n";
-        std::cout << "CHOICES: Normal, EOFC=1_BOFC=2_BLC=0, EOFC=1_BOFC=0_BLC=2, EOFC=0_BOFC=1_BLC=2\n";
+        std::cout << "CHOICES: BLC=0, BLC=1, BLC=0xFF\n";
         return 0;
     }
-    istringstream ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
-    
-    buffer* p = 0x0;
+    istringstream  ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
+    input_strategy_plain<uint8_t, istringstream>  input_strategy;
+
+    buffer<uint8_t>* p = 0x0;
     if( argc > 1 ) {
-        if(      strcmp(argv[1], "Normal") == 0 )              p = new buffer(&ifs, 25, 5, 0);
-        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer(&ifs, 25, 5, 0); 
-        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer(&ifs, 25, 5, 2);
-        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer(&ifs, 25, 5, 2);
+        if(      strcmp(argv[1], "BLC=0") == 0 )    p = new buffer<uint8_t>(&input_strategy, 25, 5, (uint8_t)0);
+        else if( strcmp(argv[1], "BLC=1") == 0 )    p = new buffer<uint8_t>(&input_strategy, 25, 5, (uint8_t)1); 
+        else if( strcmp(argv[1], "BLC=0xFF") == 0 ) p = new buffer<uint8_t>(&input_strategy, 25, 5, (uint8_t)0xFF); 
         else {
             cout << "argv[0] == '" << argv[1] << "' --- unrecognized choice\n";
             exit(-1);
         }
     } else {
-        cout << "no choice specified\n";
+        cout << "No choice specified. User '--hwut-info'.\n";
         exit(-1);
     }
     buffer& x = *p;
