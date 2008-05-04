@@ -16,7 +16,7 @@ main(int argc, char** argv)
         return 0;
     }
     istringstream ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
-    input_strategy_plain<istringstream, uint8_t>  input_strategy;
+    input_strategy_plain<istringstream, uint8_t>  input_strategy(&ifs);
     ifs.seekg(35);
 
 

@@ -61,7 +61,7 @@ test_istream(int ContentSz, int BackupSz)
     istringstream ifs("Im Wald steht ein Baum.");
 
     // '+2' because of two positions for begin and end of buffer
-    input_strategy_plain<istringstream, char>  input_strategy;
+    input_strategy_plain<istringstream, char>  input_strategy(&ifs);
     quex::buffer<char>                         x(&input_strategy, ContentSz + 2, BackupSz, '\0'); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
@@ -80,8 +80,8 @@ test_stdio(int ContentSz, int BackupSz)
     __quex_assert(fh != 0x0);
     //
     // '+2' because of two positions for begin and end of buffer
-    input_strategy_plain<istringstream, char>  input_strategy;
-    quex::buffer<char>                         x(&input_strategy, ContentSz + 2, BackupSz, 0); 
+    input_strategy_plain<std::FILE, char>  input_strategy(fh);
+    quex::buffer<char>                     x(&input_strategy, ContentSz + 2, BackupSz, 0); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
     cout << ")-stdio-------------------------------------\n";

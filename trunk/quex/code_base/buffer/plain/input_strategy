@@ -23,18 +23,22 @@ extern "C" {
 namespace quex {
 
     template <class InputHandleType, class CharacterCarrierType>
-        struct input_strategy_plain
+        class input_strategy_plain
         : public input_strategy<CharacterCarrierType> {
 
             static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
             typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
             typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
-
+           
+            /* DISABLED */ input_strategy_plain();
         protected:
             InputHandleType* ih;
             stream_position  start_position;  // position in stream where analysis started
 
         public:
+            input_strategy_plain(InputHandleType* _ih) 
+                : ih(_ih) 
+            {}
 
             virtual size_t   tell_character_index() 
             { 
@@ -43,7 +47,8 @@ namespace quex {
 
             virtual void     seek_character_index(const size_t CharacterIndex) 
             { 
-                InputPolicy<InputHandleType*>::seek(ih, CharacterIndex * SizeOfCharacter + start_position); 
+                long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
+                InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
             }
 
             virtual void     close()          
