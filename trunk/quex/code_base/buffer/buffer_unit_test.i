@@ -45,7 +45,7 @@ namespace quex {
     TEMPLATE inline void 
         CLASS::show_brief_content() {
             std::cout << "start-pos:  " << _character_index_at_front << std::endl;
-            const long  Pos = _input.tell_character_index();
+            const long  Pos = _input->tell_character_index();
             std::cout << "stream-pos: " << Pos << std::endl;
             std::cout << "EOF = "       << bool(_end_of_file_p);
             std::cout << ", BOF = "     << bool(_character_index_at_front == 0) << std::endl;

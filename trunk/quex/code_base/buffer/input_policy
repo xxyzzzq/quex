@@ -15,6 +15,8 @@ namespace quex {
     //          'istream' types are directly supported. For new types of input, e.g.
     //          via TCP/IP over the internet or whatsoever, only a new policy has
     //          to be provided. The remaining framework still works the same.
+    // NOTE: The input policy does not provide a way to open or close those interfaces.
+    //       This is up to the user somewhere up in the hierarchie.
     template <class InputHandleTypeP> struct InputPolicy;
 
     template <>
@@ -24,7 +26,6 @@ namespace quex {
 
         static long    tell(std::FILE* me)            { return std::ftell(me); }
         static void    seek(std::FILE* me, long& Pos) { std::fseek(me, Pos, SEEK_SET); }
-        static void    close(std::FILE* me)           { std::fclose(me); }
 
         static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
         { return fread(buffer_position, 1, ByteNToRead, ih); }
@@ -37,7 +38,6 @@ namespace quex {
 
         static stream_position tell(InputHandleType* me)                     { return me->tellg(); }
         static void    seek(InputHandleType* me, const stream_position& Pos) { me->seekg(Pos); }
-        static void    close(InputHandleType* me)                            { me->close(); }
 
         static size_t  load_bytes(InputHandleType* me, void* buffer_position, const size_t ByteNToRead) 
         { 

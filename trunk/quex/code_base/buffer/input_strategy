@@ -11,13 +11,13 @@ namespace quex {
         // PURPOSE: The 'input_strategy' provides the illusion of a continous character
         //          stream consisting of characters coded all with the same byte-width.
         //          It hides coding/uncoding and differing character sizes.
-        long     tell_character_index() = 0;
-        void     seek_character_index(const long Index) = 0;
-        void     close() = 0;
-        void     destroy_handle() = 0;
+        virtual size_t   tell_character_index() = 0;
+        virtual void     seek_character_index(const size_t Index) = 0;
+        virtual void     close() = 0;
+        virtual void     destroy_handle() = 0;
 
-        size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N);
-        long     register_begin_of_file() = 0;
+        virtual size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N) = 0;
+        virtual long     register_begin_of_file() = 0;
     };
 
 }

@@ -17,7 +17,7 @@ main(int argc, char** argv)
         return 0;
     }
     istringstream  ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
-    input_strategy_plain<uint8_t, istringstream>  input_strategy;
+    input_strategy_plain<istringstream, uint8_t>  input_strategy;
 
     buffer<uint8_t>* p = 0x0;
     if( argc > 1 ) {
@@ -32,7 +32,7 @@ main(int argc, char** argv)
         cout << "No choice specified. User '--hwut-info'.\n";
         exit(-1);
     }
-    buffer& x = *p;
+    buffer<uint8_t>& x = *p;
     //_____________________________________________________________________________________________
 
     x.show_content();

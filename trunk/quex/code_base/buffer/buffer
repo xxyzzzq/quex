@@ -83,6 +83,8 @@ namespace quex {
             int    load_backward();
             bool   is_end_of_file();
             bool   is_begin_of_file();
+            bool   is_begin_of_buffer();
+            bool   is_end_of_buffer();
             void   close_input() { _input->close(); }
 
             //     -- miscaleneous
@@ -101,15 +103,19 @@ namespace quex {
             void              seek_offset(const int Offset);
 
             //     -- what happens if there's not enough space?
-            void       (*on_overflow)(buffer*);
+            bool   (*on_overflow)(buffer<CharacterCarrierType>*, bool ForwardF);
+
+            // (*) Constants __________________________________________________________________________________
+            const character_type   BLC;              // buffer limit code
+
         protected:
 
             // (*) Member Variables ___________________________________________________________________________
-            const character_type   BLC;              // buffer limit code
             struct { 
                 character_type*  _front;             // first in buffer 
                 character_type*  _back;              // last in buffer
                 size_t           _default_fallback_n;
+                bool             _external_owner_f; 
 
                 size_t           size() const               { return _back - _front + 1; }
                 size_t           default_fallback_n() const { return _default_fallback_n; }
@@ -118,8 +124,8 @@ namespace quex {
             } _buffer;
             //
             size_t            content_size()  { return _buffer.size() - 2; }
-            character_type*   content_front() { return _buffer.front + 1; } 
-            character_type*   content_back()  { return _buffer.back  - 1; }  
+            character_type*   content_front() { return _buffer.front() + 1; } 
+            character_type*   content_back()  { return _buffer.back()  - 1; }  
             //
             character_type*  _current_p;
             character_type*  _lexeme_start_p;
@@ -170,6 +176,8 @@ namespace quex {
 #   include <quex/code_base/buffer/buffer_unit_test.i>
 #endif
 #include <quex/code_base/buffer/buffer.i>
+#include <quex/code_base/buffer/buffer_core.i>
+
 
 
 #endif // __INCLUDE_GUARD_QUEX_BUFFER__
