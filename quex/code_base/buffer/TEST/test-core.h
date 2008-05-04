@@ -17,12 +17,10 @@ read_backward_until_begin_of_buffer(Buffer& x) {
         const int tmp = x.get_backward();
         // See file README.txt in directory ./quex/buffer      
         if( x.is_begin_of_file() ) { break; /* we are at the end, simply do get_backward again */ }
-        else if( tmp == x.BLC ) {
-            if(    (x.current_p() + 1 != x.end_of_file_p())
-                && (x.current_p() + 1 != x.content_end()) ) {
-                std::cout << "begin of buffer\n";
-                return result;
-            }
+        else if( x.is_begin_of_buffer() ) { 
+            assert(tmp == x.BLC);
+            std::cout << "begin of buffer\n";
+            return result;
         }
         else {
             if( tmp == ' ' ) x.mark_lexeme_start();
@@ -45,11 +43,10 @@ read_forward_until_end_of_buffer(Buffer& x) {
         //
         // See file README.txt in directory ./quex/buffer      
         if( x.is_end_of_file() ) { break; /* we are at the end, simply do get_forward again */ }
-        else if( tmp == x.BLC ) {
-            if( x.current_p() != x.buffer_begin() ) {
-                std::cout << "end of buffer\n";
-                return result;
-            }
+        else if( x.is_end_of_file() ) {
+            assert(tmp == x.BLC);
+            std::cout << "end of buffer\n";
+            return result;
         }
         else {
             if( tmp == ' ' ) x.mark_lexeme_start();

@@ -2,6 +2,7 @@
 #include <sstream>
 #include <cstring>
 
+#include <quex/code_base/buffer/plain/input_strategy>
 #include <test-core.h>
 
 using namespace quex;
@@ -15,8 +16,9 @@ main(int argc, char** argv)
         return 0;
     }
     istringstream ifs("La vie est belle.");
+    input_strategy_plain<istringstream, uint8_t>  input_strategy;
     
-    buffer x(&ifs, 32, 5);
+    buffer<uint8_t> x(&input_strategy, 32, 5, 0);
     //_____________________________________________________________________________________________
 
     x.show_content();

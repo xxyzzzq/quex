@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <quex/code_base/buffer/plain/input_strategy>
 #include <test-core.h>
 
 using namespace quex;
@@ -15,15 +16,16 @@ main(int argc, char** argv)
         return 0;
     }
     istringstream ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
+    input_strategy_plain<istringstream, uint8_t>  input_strategy;
     ifs.seekg(35);
 
 
-    buffer* p = 0x0;
+    buffer<uint8_t>* p = 0x0;
     if( argc > 1 ) {
-        if(      strcmp(argv[1], "Normal") == 0 )              p = new buffer(&ifs, 30, 2);
-        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer(&ifs, 30, 0); 
-        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer(&ifs, 30, 2);
-        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer(&ifs, 30, 2);
+        if(      strcmp(argv[1], "Normal") == 0 )              p = new buffer<uint8_t>(&input_strategy, 30, 2);
+        else if( strcmp(argv[1], "EOFC=1_BOFC=2_BLC=0") == 0 ) p = new buffer<uint8_t>(&input_strategy, 30, 0); 
+        else if( strcmp(argv[1], "EOFC=1_BOFC=0_BLC=2") == 0 ) p = new buffer<uint8_t>(&input_strategy, 30, 2);
+        else if( strcmp(argv[1], "EOFC=0_BOFC=1_BLC=2") == 0 ) p = new buffer<uint8_t>(&input_strategy, 30, 2);
         else {
             cout << "argv[0] == '" << argv[1] << "' --- unrecognized choice\n";
             exit(-1);
@@ -32,7 +34,7 @@ main(int argc, char** argv)
         cout << "no choice specified\n";
         exit(-1);
     }
-    buffer& x = *p;
+    buffer<uint8_t>& x = *p;
     //_____________________________________________________________________________________________
     //
     x.seek_offset(5);
