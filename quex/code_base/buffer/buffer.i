@@ -58,6 +58,7 @@ namespace quex {
 
         // -- for a later 'map_to_stream_position(character_index), the strategy might
         //    have some plans.
+        _input = _input_strategy;
         _input->register_begin_of_file();
 
         // -- load initial content starting from position zero

@@ -1,5 +1,5 @@
-<test-database execution-time-sec="0.00" date="Mon Apr 28 17:40:46 2008">
-    <last-used-diff-display-program name="vimdiff"/>
+<test-database execution-time-sec="0.01" date="Sun May  4 11:11:41 2008">
+    <last-used-diff-display-program name=""/>
     <test title="Backwards Iteration" make-required="True" time-sum-sec="0.00"> 
         <application file-name="test-backward-get" info-request-time="1209397119L"/>
         <make-procedure success="True" />
@@ -18,13 +18,12 @@
                <choice name="" result="OK" time-sec="0.00" crc="-269791112"/>
             </choice-list>
         </test>
-        <test title="Multiple Loads." time-sum-sec="0.00"> 
-            <application file-name="test-forward-get" info-request-time="1209397162L"/>
-            <choice-list number="4">
-               <choice name="Normal" result="OK" time-sec="0.00" crc="272519265"/>
-               <choice name="EOFC=1_BOFC=2_BLC=0" result="OK" time-sec="0.00" crc="272519265"/>
-               <choice name="EOFC=1_BOFC=0_BLC=2" result="OK" time-sec="0.00" crc="272519265"/>
-               <choice name="EOFC=0_BOFC=1_BLC=2" result="OK" time-sec="0.00" crc="272519265"/>
+        <test title="Multiple Loads." time-sum-sec="0.01"> 
+            <application file-name="test-forward-get" info-request-time="1209892296L"/>
+            <choice-list number="3">
+               <choice name="BLC=0" result="NO GOOD FILE" time-sec="0.00" crc="None"/>
+               <choice name="BLC=1" result="NO GOOD FILE" time-sec="0.00" crc="None"/>
+               <choice name="BLC=0xFF" result="NO GOOD FILE" time-sec="0.00" crc="None"/>
             </choice-list>
         </test>
     </group>

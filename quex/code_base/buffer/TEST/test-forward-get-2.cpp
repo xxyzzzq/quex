@@ -16,7 +16,7 @@ main(int argc, char** argv)
         return 0;
     }
     istringstream ifs("La vie est belle.");
-    input_strategy_plain<istringstream, uint8_t>  input_strategy;
+    input_strategy_plain<istringstream, uint8_t>  input_strategy(&ifs);
     
     buffer<uint8_t> x(&input_strategy, 32, 5, 0);
     //_____________________________________________________________________________________________
