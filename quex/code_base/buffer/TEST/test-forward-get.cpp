@@ -13,7 +13,8 @@ main(int argc, char** argv)
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         std::cout << "Forward Iteration: Multiple Loads.\n";
-        std::cout << "CHOICES: BLC=0, BLC=1, BLC=0xFF\n";
+        std::cout << "CHOICES: BLC=0, BLC=1, BLC=0xFF;\n";
+        std::cout << "SAME;\n";
         return 0;
     }
     istringstream  ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");

@@ -150,7 +150,11 @@ namespace quex {
             character_type*  end_of_file_p() { return _end_of_file_p; }
             void             show_brief_content(); 
             void             x_show_content(); 
+#    ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
             void             SHOW_BUFFER_LOAD(const char*);
+#    else
+            void             SHOW_BUFFER_LOAD(const char*) { }
+#    endif
             void             ASSERT_CONSISTENCY();
             //
             size_t           _SHOW_current_fallback_n;
@@ -160,23 +164,12 @@ namespace quex {
 #endif
         };    
 
-    template<class CharacterCarrierType*> static bool   
-        default_buffer_on_overflow_handler(buffer<CharacterCarrierType>* that, bool ForwardF) { 
-            if( ForwardF ) { 
-                throw std::range_error("Lexeme start falls beyond buffer limits (buffer overflow in forward direction).");
-            } else { 
-                throw std::range_error("Lexeme start falls beyond buffer limits (buffer overflow in backward direction).");
-            }
-            return false; /* => END OF FILE */ 
-        }
-
 }
 
 #ifdef __QUEX_OPTION_UNIT_TEST
 #   include <quex/code_base/buffer/buffer_unit_test.i>
 #endif
 #include <quex/code_base/buffer/buffer.i>
-#include <quex/code_base/buffer/buffer_core.i>
 
 
 
