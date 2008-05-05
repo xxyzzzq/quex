@@ -43,6 +43,8 @@ namespace quex {
         }
         _buffer._back = _buffer._front + BufferSize - 1;
 
+        _buffer._default_fallback_n = FallBackN;
+
         // _buffer[0]             = lower buffer limit code character
         // _buffer[1]             = first char of content
         // _buffer[BUFFER_SIZE-2] = last char of content
@@ -78,6 +80,7 @@ namespace quex {
             __end_of_file_unset();                        // buffer limit
 
         // -- function pointer for overflow handling
+        on_overflow = 0x0;
         // TODO: on_overflow = default_buffer_on_overflow_handler<CharacterCarrierType>;
 
         ASSERT_CONSISTENCY();
@@ -133,7 +136,7 @@ namespace quex {
         if     ( _current_p == _buffer.front() ) { return 0; }       // (1)
         else if( _current_p == _end_of_file_p )  { return -1; }      // (2)
         else if( _current_p != _buffer.back() ) {                     
-            throw std::range_error("Inaddmissible 'BufferLimitCode' character appeared in input stream.\n" 
+            throw std::range_error("Call to 'load_forward() but '_current_p' not on buffer border.\n" 
                                    "(Check character encoding)");  
         }
         //                                                           // (3)
@@ -201,7 +204,15 @@ namespace quex {
         // (*) If more characters need to be loaded than the buffer can hold,
         //     then this is a critical overflow. Example: If lexeme extends over 
         //     the whole buffer (==> MinFallbackN >= content_size).
-        if( LoadN == 0 ) { if( on_overflow(this, /* ForwardF */true) == false) return -1; }
+        if( LoadN == 0 ) { 
+            if( on_overflow == 0x0 ) {
+                throw std::range_error("Distance between lexeme start and current pointer exceeds buffer size.\n"
+                                       "(tried to load buffer in forward direction)");
+            }
+            else if( on_overflow(this, /* ForwardF */true) == false ) {
+                return -1; 
+            }
+        }
 
         character_type* new_content = content_front() + FallBackN;
         const size_t    LoadedN     = _input->read_characters(new_content, LoadN);
@@ -210,14 +221,16 @@ namespace quex {
         if( LoadedN != LoadN ) __end_of_file_set(content_front() + FallBackN + LoadedN);
         else                   __end_of_file_unset();
 
-        _character_index_at_front += LoadN - FallBackN;
+        _character_index_at_front += content_size() - FallBackN;
 
         //___________________________________________________________________________________
         // (3) Pointer adaption
         //     Next char to be read: '_current_p + 1'
         _current_p      = content_front() + FallBackN - 1;   
-        //     MinFallbackN = distance from '_lexeme_start_p' to '_current_p'
-        _lexeme_start_p = _current_p - MinFallbackN; 
+        //     MinFallbackN = distance from '_current_p' to '_lexeme_start_p'
+        //     NOTE: _current_p is set to (_current_p - 1) so that the next get_forward()
+        //           reads the _current_p.
+        _lexeme_start_p = (_current_p + 1) - MinFallbackN; 
 
         SHOW_BUFFER_LOAD("LOAD FORWARD(exit)");
         ASSERT_CONSISTENCY();
@@ -271,7 +284,7 @@ namespace quex {
         if     ( _current_p == _buffer.back() )  { return 0; }   // (1)
         else if( _current_p == _end_of_file_p )  { return 0; }   // (1)
         else if( _current_p != _buffer.front() ) {
-            throw std::range_error("Inaddmissible 'BufferLimit' character code appeared in input stream.\n" 
+            throw std::range_error("Call to 'load_backward() but '_current_p' not on buffer border.\n" 
                                    "(Check character encoding)");  
         }
         else if( _character_index_at_front == 0 ) { return -1; } // (2)
@@ -301,10 +314,18 @@ namespace quex {
         //           =>            backward distance < size - (C - L)
         //          
         if( _lexeme_start_p == content_back() ) {
-            if( on_overflow(this, /* ForwardF */false) == false ) return -1;
+            if( on_overflow == 0x0 ) {
+                throw std::range_error("Distance between lexeme start and current pointer exceeds buffer size.\n"
+                                       "(tried to load buffer in backward direction)");
+            }
+            else if( on_overflow(this, /* ForwardF */false) == false ) {
+                return -1; 
+            }
         }
-        const int MaxBackwardDistance =   content_size() 
-            - (int)(_lexeme_start_p - _current_p);
+        const int MaxBackwardDistance_pre = content_size() - (int)(_lexeme_start_p - _current_p);
+        const int MaxBackwardDistance = MaxBackwardDistance_pre < _character_index_at_front ?
+                                        MaxBackwardDistance_pre : _character_index_at_front;
+
         const int BackwardDistance = IntendedBackwardDistance > MaxBackwardDistance ? 
             MaxBackwardDistance : IntendedBackwardDistance;
 
@@ -315,7 +336,7 @@ namespace quex {
         // the input strategy to determine the input position that belongs to a character
         // position.
         int start_character_index = _character_index_at_front - BackwardDistance;
-        if( start_character_index < 0 ) start_character_index = 0;
+        __quex_assert( start_character_index >= 0 );
 
         // (*) copy content that is already there to its new position.
         //     (copying is much faster then loading new content from file)
@@ -326,10 +347,9 @@ namespace quex {
         // (3) Load content
         //
         _input->seek_character_index(start_character_index);
-#           ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
         const size_t LoadedN = // avoid unused variable in case '__quex_assert()' is deactivated
-#           endif
-            _input->read_characters(content_front(), BackwardDistance);
+#       endif
         // -- If file content < buffer size, then the start position of the stream to which
         //    the buffer refers is always 0 and no backward loading will ever happen.
         // -- If the file content >= buffer size, then backward loading must always fill

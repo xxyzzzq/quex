@@ -11,7 +11,7 @@ DEBUGF = -ggdb \
 
 INCLUDE_DIRS = -I./ -I$(QUEX_PATH)
 
-OPTF   = # -Os
+OPTF   = -ggdb # -Os
 FLAGS  = #-lefence
 
 all: $(PROGRAMS) 

@@ -5,6 +5,8 @@
 // __QUEX_OPTION_UNIT_TEST: enables functions and features that are
 //                          only available for testing.
 #include<../buffer>
+#include<cassert>
+
 using namespace std;
 
 template<class Buffer> inline 
