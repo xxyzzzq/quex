@@ -25,20 +25,20 @@ namespace quex {
         //       ward lexing this is vice versa. 
         //       See "code_base/core_engine/definitions-quex-buffer.h"
         //
-        __quex_assert( _current_p      >= buffer_front() );
-        __quex_assert( _lexeme_start_p >= buffer_front() );
-        __quex_assert(*(_buffer.begin)   == CLASS::BLC );
-        __quex_assert(*(_buffer.end - 1) == CLASS::BLC );
+        __quex_assert( _current_p      >= _buffer.front() );
+        __quex_assert( _lexeme_start_p >= _buffer.front() );
+        __quex_assert(*(_buffer.front()) == CLASS::BLC );
+        __quex_assert(*(_buffer.back())  == CLASS::BLC );
         //
         if( _end_of_file_p == 0x0 ) {
-            __quex_assert(_current_p      <= buffer_back()); 
-            __quex_assert(_lexeme_start_p <= buffer_back());
+            __quex_assert(_current_p      <= _buffer.back()); 
+            __quex_assert(_lexeme_start_p <= _buffer.back());
         } else {
             __quex_assert(_current_p      <= _end_of_file_p); 
             __quex_assert(_lexeme_start_p <= _end_of_file_p);
 
             __quex_assert(_end_of_file_p  >= content_front());
-            __quex_assert(_end_of_file_p  <= buffer_back());
+            __quex_assert(_end_of_file_p  <= _buffer.back());
         }
     }
 

@@ -14,12 +14,12 @@ lexeme start (offset) = 0
 
 (*) read to begin of file
 - begin of file
-<.muaBuaB nie thets dlaW>
-|C:    S     || BLC
-|[Wald steht ||
+<.muaB nie thets dlaW mI>
+|C:  S       || BLC
+|[Im Wald ste||
 start-pos:  0
 end-pos:    11
-stream-pos: 6
+stream-pos: 3
 EOF = 0, BOF = 1
 current_p (offset)    = -1
-lexeme start (offset) = 5
+lexeme start (offset) = 3
