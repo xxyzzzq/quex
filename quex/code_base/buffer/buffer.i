@@ -354,9 +354,9 @@ namespace quex {
         //    the buffer refers is always 0 and no backward loading will ever happen.
         // -- If the file content >= buffer size, then backward loading must always fill
         //    the buffer. 
-        __quex_assert(LoadedN == (size_t)BackwardDistance);
-
         _input->read_characters(content_front(), BackwardDistance);
+
+        __quex_assert(LoadedN == (size_t)BackwardDistance);
 
         // -- end of file / end of buffer:
         if( _end_of_file_p ) {
@@ -436,7 +436,9 @@ namespace quex {
     {
         _end_of_file_p  = EOF_p; 
         *_end_of_file_p = CLASS::BLC; 
-        ASSERT_CONSISTENCY();
+        // NOT YET: ASSERT_CONSISTENCY();
+        __quex_assert(_end_of_file_p >  _buffer.front());
+        __quex_assert(_end_of_file_p <= _buffer.back());
     }
 
     TEMPLATE_IN  void CLASS::__end_of_file_unset()
