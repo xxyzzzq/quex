@@ -2,7 +2,7 @@
 #include <sstream>
 #include <cstring>
 
-#include <quex/code_base/buffer/plain/input_strategy>
+#include <quex/code_base/buffer/plain/fixed_size_character_stream>
 #include <test-core.h>
 
 int
@@ -18,7 +18,7 @@ main(int argc, char** argv)
         return 0;
     }
     istringstream  ifs("Das Korn wird geerntet und zur Verarbeitung gemahlen.");
-    input_strategy_plain<istringstream, uint8_t>  input_strategy(&ifs);
+    fixed_size_character_stream_plain<istringstream, uint8_t>  input_strategy(&ifs);
 
     buffer<uint8_t>* p = 0x0;
     if( argc > 1 ) {

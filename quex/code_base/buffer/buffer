@@ -5,7 +5,7 @@
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER__
 #define __INCLUDE_GUARD_QUEX_BUFFER__
 
-#include <quex/code_base/buffer/input_strategy>
+#include <quex/code_base/buffer/fixed_size_character_stream>
 
 #include <iostream>
 #include <stdexcept>
@@ -21,7 +21,7 @@ extern "C" {
 #include <quex/code_base/compatibility/inttypes.h>
 }
 
-#ifndef QUEX_OPTION_ACTIVATE_ASSERTS
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
 #   include<quex/code_base/buffer/memory_position_mimiker>
 #endif          
 
@@ -54,7 +54,7 @@ namespace quex {
         //            inlined, since the size of increment/decrement is known at compile time.
         public:
             typedef CharacterCarrierType  character_type;
-#           ifndef QUEX_OPTION_ACTIVATE_ASSERTS
+#           ifdef QUEX_OPTION_ACTIVATE_ASSERTS
             typedef memory_position_mimiker<character_type>  memory_position;
 #           else
             typedef character_type*                          memory_position;
@@ -67,7 +67,7 @@ namespace quex {
 
         public:
             // (*) Constructor/Destructor __________________________________________________________________
-            buffer(input_strategy<CharacterCarrierType>* input_strategy, 
+            buffer(fixed_size_character_stream<CharacterCarrierType>* input_strategy, 
                    size_t BufferSz          = 65536, 
                    size_t BackupSectionSz   = 64,
                    CharacterCarrierType Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
@@ -132,10 +132,10 @@ namespace quex {
             character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
             size_t           _character_index_at_front; // global index of the character at the begin of buffer
             //                                          // == 0x0 if EOF not in buffer.
-            input_strategy<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
+            fixed_size_character_stream<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
 
             // (*) Helper _____________________________________________________________________________________
-            void __constructor_core(input_strategy<CharacterCarrierType>* _input_strategy, 
+            void __constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
                                       CharacterCarrierType* buffer_memory, size_t BufferSz, 
                                       size_t FallBackN);
             void __end_of_file_set(character_type*);
@@ -144,6 +144,7 @@ namespace quex {
 #ifdef __QUEX_OPTION_UNIT_TEST
         public:
             // (*) Debugging/Unit Tests ______________________________________________________________________
+            size_t           _SHOW_current_fallback_n;
             // NOTE: Include <iostream> for unit tests before this header!
             character_type   get_border_char(const character_type*);
             void             show_content();
@@ -155,11 +156,10 @@ namespace quex {
 #    else
             void             SHOW_BUFFER_LOAD(const char*) { }
 #    endif
+#endif
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
             void             ASSERT_CONSISTENCY();
-            //
-            size_t           _SHOW_current_fallback_n;
 #else
-            void             SHOW_BUFFER_LOAD(const char*) { }
             void             ASSERT_CONSISTENCY() { }
 #endif
         };    

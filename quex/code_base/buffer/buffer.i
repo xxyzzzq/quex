@@ -5,14 +5,14 @@
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_I_
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_I_
 
-#include <quex/code_base/buffer/input_strategy>
+#include <quex/code_base/buffer/fixed_size_character_stream>
 
 namespace quex {
 #   define TEMPLATE_IN  template<class CharacterCarrierType> inline
 #   define CLASS        buffer<CharacterCarrierType>   
 
     TEMPLATE_IN 
-        CLASS::buffer(input_strategy<CharacterCarrierType>* _input_strategy, 
+        CLASS::buffer(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
                size_t BufferSize /* = 65536 */, size_t BackupSectionSize /* = 64 */,
                character_type Value_BLC  /* = DEFAULT_BUFFER_LIMIT_CODE */)
         : BLC(Value_BLC)
@@ -22,7 +22,7 @@ namespace quex {
                   
 
     TEMPLATE_IN  void  
-        CLASS::__constructor_core(input_strategy<CharacterCarrierType>* _input_strategy, 
+        CLASS::__constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
                                   CharacterCarrierType* buffer_memory, size_t BufferSize, 
                                   size_t FallBackN) 
     {
@@ -105,8 +105,19 @@ namespace quex {
     //       If so, the load_new_content() function is to be called.
     // THUS: Under normal conditions (99.99% of the cases) no extra
     //       check for end of buffer is necessary => speed up.
-    TEMPLATE_IN  int CLASS::get_forward()  { ASSERT_CONSISTENCY(); return *(++_current_p); }
-    TEMPLATE_IN  int CLASS::get_backward() { ASSERT_CONSISTENCY(); return *(--_current_p); }
+    TEMPLATE_IN  int CLASS::get_forward()  
+    { 
+        ASSERT_CONSISTENCY(); 
+        __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.front());
+        // '*_end_of_file_p == BLC' is checked in ASSERT_CONSISTENCY()
+        return *(++_current_p); 
+    }
+    TEMPLATE_IN  int CLASS::get_backward() 
+    { 
+        ASSERT_CONSISTENCY(); 
+        __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.back() || _current_p == _end_of_file_p);
+        return *(--_current_p); 
+    }
 
     TEMPLATE_IN  int CLASS::load_forward() 
     {
@@ -191,7 +202,7 @@ namespace quex {
         //___________________________________________________________________________________
         // (2) Load new content
         //
-        // The input_strategy emulates a stream of characters of constant width, independtly 
+        // The _input object simulates a stream of characters of constant width, independtly 
         // of the character coding that is used. Thus, it is safe to compute the position at the
         // end of the buffer by simple addition of 'content size' to '_character_index_at_front'.
         //

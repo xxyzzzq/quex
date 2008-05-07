@@ -7,10 +7,10 @@
 namespace quex {
 
     template <class CharacterCarrierType>  // CharacterCarrierType = uin8_t, uint16_t, uint32_t, ...
-    struct input_strategy { 
-        // PURPOSE: The 'input_strategy' provides the illusion of a continous character
-        //          stream consisting of characters coded all with the same byte-width.
-        //          It hides coding/uncoding and differing character sizes.
+    struct fixed_size_character_stream { 
+        // PURPOSE: The 'fixed_size_character_stream' provides the illusion of a continous 
+        //          character stream consisting of characters coded all with the **same** 
+        //          byte-width.  It hides coding/uncoding and differing character sizes.
         virtual size_t   tell_character_index() = 0;
         virtual void     seek_character_index(const size_t Index) = 0;
         virtual void     close() = 0;

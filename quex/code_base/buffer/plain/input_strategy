@@ -3,10 +3,10 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
 #define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
 //
-#include <quex/code_base/buffer/input_strategy>
+#include <quex/code_base/buffer/fixed_size_character_stream>
 
-#include <iostream>       // for: input_strategy_base<istream*>
-#include <cstdio>         // for: input_strategy_base<FILE*>
+#include <iostream> 
+#include <cstdio>  
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
 #   include <cassert>
 #   define  __quex_assert(X)   assert(X)
@@ -23,20 +23,20 @@ extern "C" {
 namespace quex {
 
     template <class InputHandleType, class CharacterCarrierType>
-        class input_strategy_plain
-        : public input_strategy<CharacterCarrierType> {
+        class fixed_size_character_stream_plain
+        : public fixed_size_character_stream<CharacterCarrierType> {
 
             static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
             typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
             typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
            
-            /* DISABLED */ input_strategy_plain();
+            /* DISABLED */ fixed_size_character_stream_plain();
         protected:
             InputHandleType* ih;
             stream_position  start_position;  // position in stream where analysis started
 
         public:
-            input_strategy_plain(InputHandleType* _ih) 
+            fixed_size_character_stream_plain(InputHandleType* _ih) 
                 : ih(_ih) 
             {}
 

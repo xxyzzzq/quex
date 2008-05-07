@@ -63,10 +63,10 @@
 //  (2b) see above.
 
 
-#include <quex/code_base/buffer/input_strategy>
+#include <quex/code_base/buffer/fixed_size_character_stream>
 
-#include <iostream>       // for: input_strategy_base<istream*>
-#include <cstdio>         // for: input_strategy_base<FILE*>
+#include <iostream>       // for: fixed_size_character_stream_base<istream*>
+#include <cstdio>         // for: fixed_size_character_stream_base<FILE*>
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
 #   include <cassert>
 #   define  __quex_assert(X)   assert(X)
@@ -84,12 +84,12 @@ extern "C" {
 namespace quex {
 
     template <class InputHandleTypeP, class ProvidedCharacterType=uint8_t>
-    struct input_strategy_iconv; 
+    struct fixed_size_character_stream_iconv; 
 
     // specification only for InputHandleType*, no other specification.
     template <class InputHandleType, class ProvidedCharacterType>
-    struct input_strategy_iconv<InputHandleType*, ProvidedCharacterType> 
-        : public input_strategy<InputHandleType> {
+    struct fixed_size_character_stream_iconv<InputHandleType*, ProvidedCharacterType> 
+        : public fixed_size_character_stream<InputHandleType> {
 
         typedef typename InputPolicy<InputHandleType>::stream_position stream_position;
         typedef typename InputPolicy<InputHandleType>::stream_offset   stream_offset;
@@ -98,13 +98,13 @@ namespace quex {
 
         static const size_t SizeOfCharacter = sizeof(ProvidedCharacterType);  
 
-        // NOTE: It makes sense to have multiple input_strategy_iconv objects use
+        // NOTE: It makes sense to have multiple fixed_size_character_stream_iconv objects use
         //       the same raw buffer, since this buffer is only used temporarily
         //       while loading.
-        input_strategy_iconv(input_handle_type* input_handle, 
+        fixed_size_character_stream_iconv(input_handle_type* input_handle, 
                              uint8_t* raw_buffer_p, size_t raw_buffer_size,
                              const char* FromCoding, const char* ToCoding);
-        ~input_strategy_iconv();
+        ~fixed_size_character_stream_iconv();
 
         stream_position    tell()                           { InputPolicy<InputHandleType>::tell(ih); }
         void               seek(const stream_position& Pos) { InputPolicy<InputHandleType>::seekg(ih, Pos); }
@@ -174,15 +174,15 @@ namespace quex {
 }
 
 #define TEMPLATE   template<class InputHandleType, class ProvidedCharacterType>
-#define CLASS      input_strategy_iconv<InputHandleType*, ProvidedCharacterType>
-#define BASE_CLASS input_strategy_base<InputHandleType*, ProvidedCharacterType> 
+#define CLASS      fixed_size_character_stream_iconv<InputHandleType*, ProvidedCharacterType>
+#define BASE_CLASS fixed_size_character_stream<InputHandleType*, ProvidedCharacterType> 
 
 #include <quex/code_base/buffer/iconv/unit-test-helper>
 
 namespace quex {
 
     TEMPLATE inline
-        CLASS::input_strategy_iconv(input_handle_type* input_handle, 
+        CLASS::fixed_size_character_stream_iconv(input_handle_type* input_handle, 
                                     uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                     const char* FromCoding,   const char* ToCoding) 
         { 
@@ -199,13 +199,13 @@ namespace quex {
             QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
         }
 
-    TEMPLATE inline CLASS::~input_strategy_iconv() 
+    TEMPLATE inline CLASS::~fixed_size_character_stream_iconv() 
     { iconv_close(iconv_handle); }
 
     TEMPLATE inline size_t 
         CLASS::read_characters(ProvidedCharacterType* user_buffer_p, const size_t N) 
     {
-        // NOTE: There was an idea to allow multiple input_strategy_iconv objects
+        // NOTE: There was an idea to allow multiple fixed_size_character_stream_iconv objects
         //       access to the same intermediate buffer. In this case (i.e.
         //       this function is called with the same raw_buffer.start
         //       inside two threads) the function would have to block.
