@@ -9,39 +9,7 @@ namespace quex {
 #   define TEMPLATE_IN  template<class InputStrategy> inline
 #   define CLASS        buffer<InputStrategy>   
 
-#   ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
-    TEMPLATE_IN void CLASS::SHOW_BUFFER_LOAD(const char* InfoStr)
-    {
-        std::cout << InfoStr << "\n";
-        show_content();
-    }
-#   endif
-
-    TEMPLATE_IN void CLASS::ASSERT_CONSISTENCY() 
-    {
-        // NOTE: No assumptions can be made in general on the relation between
-        //       _current_p and _lexeme_start_p, since for forwards lexing
-        //       _current_p comes before _lexeme_start_p, wherelse for back-
-        //       ward lexing this is vice versa. 
-        //       See "code_base/core_engine/definitions-quex-buffer.h"
-        //
-        __quex_assert( _current_p      >= _buffer.front() );
-        __quex_assert( _lexeme_start_p >= _buffer.front() );
-        __quex_assert(*(_buffer.front()) == CLASS::BLC );
-        __quex_assert(*(_buffer.back())  == CLASS::BLC );
-        //
-        if( _end_of_file_p == 0x0 ) {
-            __quex_assert(_current_p      <= _buffer.back()); 
-            __quex_assert(_lexeme_start_p <= _buffer.back());
-        } else {
-            __quex_assert(_current_p      <= _end_of_file_p); 
-            __quex_assert(_lexeme_start_p <= _end_of_file_p);
-
-            __quex_assert(_end_of_file_p  >= content_front());
-            __quex_assert(_end_of_file_p  <= _buffer.back());
-        }
-    }
-
+#ifdef __QUEX_OPTION_UNIT_TEST
     TEMPLATE_IN void CLASS::show_brief_content() 
     {
         std::cout << "start-pos:  " << _character_index_at_front << std::endl;
@@ -122,6 +90,46 @@ namespace quex {
 
         std::cout << "|\n";
     }
+
+#   ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
+    TEMPLATE_IN void CLASS::SHOW_BUFFER_LOAD(const char* InfoStr)
+    {
+        std::cout << InfoStr << "\n";
+        show_content();
+    }
+#   endif
+
+#endif // __QUEX_OPTION_UNIT_TEST
+
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+    TEMPLATE_IN void CLASS::ASSERT_CONSISTENCY() 
+    {
+        // NOTE: No assumptions can be made in general on the relation between
+        //       _current_p and _lexeme_start_p, since for forwards lexing
+        //       _current_p comes before _lexeme_start_p, wherelse for back-
+        //       ward lexing this is vice versa. 
+        //       See "code_base/core_engine/definitions-quex-buffer.h"
+        //
+        __quex_assert(_buffer.front()    <  _buffer.back());
+        __quex_assert(_current_p         >= _buffer.front());
+        __quex_assert(_lexeme_start_p    >= _buffer.front());
+        __quex_assert(*(_buffer.front()) == CLASS::BLC );
+        __quex_assert(*(_buffer.back())  == CLASS::BLC );
+        //
+        if( _end_of_file_p == 0x0 ) {
+            __quex_assert(_current_p      <= _buffer.back()); 
+            __quex_assert(_lexeme_start_p <= _buffer.back());
+        } else {
+            __quex_assert(_current_p      <= _end_of_file_p); 
+            __quex_assert(_lexeme_start_p <= _end_of_file_p);
+
+            __quex_assert(_end_of_file_p  >= content_front());
+            __quex_assert(_end_of_file_p  <= _buffer.back());
+
+            __quex_assert(*_end_of_file_p == CLASS::BLC);
+        }
+    }
+#endif // QUEX_OPTION_ACTIVATE_ASSERTS
 
 #undef TEMPLATE_IN
 #undef CLASS

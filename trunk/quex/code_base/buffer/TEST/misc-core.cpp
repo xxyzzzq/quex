@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <quex/code_base/buffer/plain/input_strategy>
+#include <quex/code_base/buffer/plain/fixed_size_character_stream>
 #include <test-core.h>
 
 using namespace quex;
@@ -61,7 +61,7 @@ test_istream(int ContentSz, int BackupSz)
     istringstream ifs("Im Wald steht ein Baum.");
 
     // '+2' because of two positions for begin and end of buffer
-    input_strategy_plain<istringstream, char>  input_strategy(&ifs);
+    fixed_size_character_stream_plain<istringstream, char>  input_strategy(&ifs);
     quex::buffer<char>                         x(&input_strategy, ContentSz + 2, BackupSz, '\0'); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
@@ -80,7 +80,7 @@ test_stdio(int ContentSz, int BackupSz)
     __quex_assert(fh != 0x0);
     //
     // '+2' because of two positions for begin and end of buffer
-    input_strategy_plain<std::FILE, char>  input_strategy(fh);
+    fixed_size_character_stream_plain<std::FILE, char>  input_strategy(fh);
     quex::buffer<char>                     x(&input_strategy, ContentSz + 2, BackupSz, 0); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz;

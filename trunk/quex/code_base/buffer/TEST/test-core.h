@@ -34,7 +34,8 @@ read_backward_until_begin_of_buffer(Buffer& x) {
 
 template<class Buffer> inline 
 std::string
-read_forward_until_end_of_buffer(Buffer& x) {
+read_forward_until_end_of_buffer(Buffer& x) 
+{
     std::string result;
 
     cout << "\n(*) read to end of buffer\n";
@@ -45,7 +46,7 @@ read_forward_until_end_of_buffer(Buffer& x) {
         //
         // See file README.txt in directory ./quex/buffer      
         if( x.is_end_of_file() ) { break; /* we are at the end, simply do get_forward again */ }
-        else if( x.is_end_of_file() ) {
+        else if( x.is_end_of_buffer() ) {
             assert(tmp == x.BLC);
             std::cout << "end of buffer\n";
             return result;
