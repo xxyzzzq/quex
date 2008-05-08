@@ -1,9 +1,9 @@
--(total size = 11, border = 10)-------------------------------------------
+-(total size = 11, border = 10)-istream-----------------------------------
 
 (*) read to end of file
 - end of file
 <Im Wald steht ein Baum.>
-||     S   :C|| EOFC
+||     S   :C|| BLC
 || ein Baum.]||
 start-pos:  13
 stream-pos: 23
@@ -65,7 +65,7 @@ lexeme start (offset) = 6
 (*) read to end of file
 - end of file
 <t ein Baum.>
-||     S   :C|| EOFC
+||     S   :C|| BLC
 || ein Baum.]||
 start-pos:  13
 stream-pos: 23

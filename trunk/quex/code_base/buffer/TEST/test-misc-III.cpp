@@ -10,7 +10,8 @@ main(int argc, char** argv)
 {
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
 	cout << "Miscenllaneous Scenarios: Content Size = 11, Fallback Size = 0\n";
-	cout << "CHOICES: istream, stdio\n";
+	cout << "CHOICES: istream, stdio;\n";
+	cout << "SAME;\n";
 	return 0;
     }
     if( argc < 2 ) {
