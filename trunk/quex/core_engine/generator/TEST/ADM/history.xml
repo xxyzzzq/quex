@@ -1,4 +1,4 @@
-<history date="Sun Apr 27 16:34:40 2008" element-n="54">
+<history date="Thu May  8 05:36:12 2008" element-n="56">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -154,5 +154,11 @@
     </day>
     <day year="2008" month="04" day="27">
         <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="14:34:40"/>
+    </day>
+    <day year="2008" month="05" day="07">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="16:39:18"/>
+    </day>
+    <day year="2008" month="05" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="03:36:12"/>
     </day>
 </history>

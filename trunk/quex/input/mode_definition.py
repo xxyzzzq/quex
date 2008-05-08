@@ -150,7 +150,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
         else:
             fh.seek(position)
             description = "start of mode element: regular expression"
-            pattern, pattern_state_machine = regular_expression.parse(fh, Setup)
+            pattern, pattern_state_machine = regular_expression.parse(fh)
 
             if new_mode.has_pattern(pattern):
                 previous = new_mode.get_match_object(pattern)

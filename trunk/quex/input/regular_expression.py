@@ -1,11 +1,13 @@
 from StringIO import StringIO
+from   quex.input.setup import setup as Setup
+
 from   quex.frs_py.file_in          import EndOfStreamException, error_msg
 from   quex.exception               import RegularExpressionException
 import quex.lexer_mode              as lexer_mode
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.regular_expression.character_set_expression as charset_expression
 
-def parse(fh, Setup):
+def parse(fh):
 
     start_position = fh.tell()
     try:

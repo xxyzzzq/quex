@@ -7,6 +7,7 @@ import sys
 
 from   quex.frs_py.file_in import error_msg
 
+from   quex.input.setup import setup as Setup
 import quex.token_id_maker                      as token_id_maker
 import quex.lexer_mode                          as lexer_mode
 from   quex.lexer_mode                          import ReferencedCodeFragment_straighten_open_line_pragmas, \
@@ -24,7 +25,7 @@ import quex.output.graphviz.interface           as plot_generator
 
 
 
-def do(Setup):
+def do():
     """Generates state machines for all modes. Each mode results into 
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
@@ -76,8 +77,7 @@ def do(Setup):
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
         pattern_action_pair_info_list = mode.pattern_action_pairs().values()
-        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
-                                                              Setup)
+        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list)
 
         # accumulate inheritance information for comment
         inheritance_info_str += dummy + "\n"
@@ -105,7 +105,7 @@ def do(Setup):
 
     ## TODO: inheritance_info_str <<Feature Request: 1948456>>
     
-def get_generator_input(Mode, match_info_list, Setup):
+def get_generator_input(Mode, match_info_list):
     """The module 'quex.core_engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
        adapts the mode information to this format. Additional code is added 
@@ -168,7 +168,7 @@ def get_generator_input(Mode, match_info_list, Setup):
     
     return inheritance_info_str, pattern_action_pair_list
 
-def do_plot(Setup):
+def do_plot():
 
     mode_db = __get_mode_db(Setup)
 

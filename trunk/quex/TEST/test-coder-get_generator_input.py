@@ -4,6 +4,7 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+import quex.input.setup
 import quex.core                                as coder
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
@@ -33,18 +34,15 @@ pattern_action_pair_list = [
 match_list = map(lambda x: create_Match_object(x), 
                  pattern_action_pair_list)
 
-class pseudo_setup:
-    def __init__(self):
-        self.output_debug_f                = False
-        self.begin_of_stream_code          = 0x19
-        self.end_of_stream_code            = 0x1A
-        self.no_dos_carriage_return_newline_f = True
-
-Setup = pseudo_setup()
+# This is brutal!
+quex.input.setup.setup.output_debug_f                = False
+quex.input.setup.setup.begin_of_stream_code          = 0x19
+quex.input.setup.setup.end_of_stream_code            = 0x1A
+quex.input.setup.setup.no_dos_carriage_return_newline_f = True
 
 Mode = LexMode("TEST", "", 0)
 
-inheritance_info, generator_input = coder.get_generator_input(Mode, match_list, Setup)
+inheritance_info, generator_input = coder.get_generator_input(Mode, match_list)
 
 print "/*\n" + inheritance_info + "*/\n"
 
