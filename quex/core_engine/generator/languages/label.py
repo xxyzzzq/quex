@@ -14,10 +14,11 @@ def get_input(StateMachineName, StateIdx):
     return "STATE_%s_INPUT" % __nice(StateIdx)
 
 
-def get_terminal(StateMachineName, TerminalStateIdx=None):
+def get_terminal(TerminalStateIdx=None, BackwardLexingF=False):
 
     if TerminalStateIdx == None:
-        return "TERMINAL_GENERAL"
+        if BackwardLexingF: return "TERMINAL_GENERAL_PRE_CONTEXT"
+        else:               return "TERMINAL_GENERAL"
     else:       
         return "TERMINAL_%s" % __nice(TerminalStateIdx)
 

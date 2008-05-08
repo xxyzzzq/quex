@@ -201,7 +201,7 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
         return txt
     
     #  -- general drop out: goto general terminal state
-    txt += "goto %s;\n" % label.get_terminal(StateMachineName) 
+    txt += "goto %s;\n" % label.get_terminal(BackwardLexingF=True) 
 
     return txt
 
@@ -226,7 +226,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     
     #     -- 'drop out' in non-acceptance --> goto general terminal
     if CurrentStateIsAcceptanceF == False:  
-        txt += "goto %s;\n" % label.get_terminal(StateMachineName)
+        txt += "goto %s;\n" % label.get_terminal()
         return txt
      
     #    -- 'drop out' in acceptance state --> check pre-conditions (if there are some)
@@ -242,7 +242,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     #
     def __on_detection_code(StateMachineName, Origin):
         txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-        terminal_label = label.get_terminal(StateMachineName, Origin.state_machine_id)
+        terminal_label = label.get_terminal(Origin.state_machine_id)
         return txt + "goto %s;\n" % terminal_label
 
     t_txt = get_acceptance_detector(OriginList, __on_detection_code,
@@ -643,7 +643,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         if state_machine.core().post_context_id() != -1L: 
             post_context_number_str = state_machine_id_str + "_"
         #
-        txt += "  %s:\n" % label.get_terminal(StateMachineName, state_machine_id)
+        txt += "  %s:\n" % label.get_terminal(state_machine_id)
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
@@ -669,7 +669,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     for state_machine_id in action_db.keys():
         txt += "            case %s: goto %s;\n" % \
                 (repr(state_machine_id), 
-                      label.get_terminal(StateMachineName, state_machine_id))
+                      label.get_terminal(state_machine_id))
 
     jumps_to_acceptance_states_str = txt
 
