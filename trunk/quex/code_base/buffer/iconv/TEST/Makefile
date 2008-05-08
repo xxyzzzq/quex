@@ -5,7 +5,7 @@ all: $(FILES)
 hwut-info:
 	@echo $(FILES)
 
-%: %.cpp ../input_strategy
+%: %.cpp ../fixed_size_character_stream
 	g++ -I$(QUEX_PATH) \
 		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV $< -o $@
 
