@@ -31,6 +31,7 @@ test_program_common_declarations = """
 struct QUEX_CORE_ANALYSER_STRUCT;
 static int    analyser_do(QUEX_CORE_ANALYSER_STRUCT* me);
 static int    analyser_do_2(QUEX_CORE_ANALYSER_STRUCT* me);
+const int TKN_TERMINATION = 0;
 """
 
 test_program_common = """

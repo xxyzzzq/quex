@@ -8,11 +8,11 @@ struct QUEX_CORE_ANALYSER_STRUCT;
 #ifdef __QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION
     typedef int                                    QUEX_ANALYSER_RETURN_TYPE;
     typedef QUEX_CORE_ANALYSER_STRUCT              QUEX_LEXER_CLASS;   
-    typedef quex::buffer_core</*default*/>::character_type    QUEX_CHARACTER_TYPE;
-    typedef quex::buffer_core</*default*/>::character_type    QUEX_LEXEME_CHARACTER_TYPE;
+    typedef quex::buffer<uint8_t>::character_type    QUEX_CHARACTER_TYPE;
+    typedef quex::buffer<uint8_t>::character_type    QUEX_LEXEME_CHARACTER_TYPE;
 #endif
-typedef quex::buffer_core<QUEX_CHARACTER_TYPE>   QUEX_CORE_BUFFER_TYPE;
-typedef quex::buffer_core<QUEX_CHARACTER_TYPE>::memory_position   QUEX_CHARACTER_POSITION;
+typedef quex::buffer<QUEX_CHARACTER_TYPE>   QUEX_CORE_BUFFER_TYPE;
+typedef quex::buffer<QUEX_CHARACTER_TYPE>::memory_position   QUEX_CHARACTER_POSITION;
 
 
 // The Analyzer Function for a Mode:
@@ -22,8 +22,8 @@ typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 #define QUEX_INLINE_KEYWORD inline
 
 struct QUEX_CORE_ANALYSER_STRUCT {
-    quex::buffer_core<QUEX_CHARACTER_TYPE>*  __buffer;
-    QUEX_MODE_FUNCTION_P                     __current_mode_analyser_function_p;
+    quex::buffer<QUEX_CHARACTER_TYPE>*  __buffer;
+    QUEX_MODE_FUNCTION_P                __current_mode_analyser_function_p;
 
 #ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
     // A mode change must force a return from to the caller function so that the
@@ -53,15 +53,15 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST \
         QUEX_CORE_ANALYSER_STRUCT*,                  \
         QUEX_CHARACTER_TYPE*,                        \
-        quex::buffer_core<QUEX_CHARACTER_TYPE>*,     \
+        quex::buffer<QUEX_CHARACTER_TYPE>*,          \
         QUEX_MODE_FUNCTION_P 
 
 QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me, 
                                QUEX_CHARACTER_TYPE*         InputStartPosition,
-                               quex::buffer_core<QUEX_CHARACTER_TYPE>* the_buffer,
-                               QUEX_MODE_FUNCTION_P                    TheInitialAnalyserFunctionP) 
+                               quex::buffer<QUEX_CHARACTER_TYPE>* the_buffer,
+                               QUEX_MODE_FUNCTION_P               TheInitialAnalyserFunctionP) 
 {
     /* Provide a string object 'Lexeme' and an integer 'LexemeL' to support
      ** further treatment inside the action.

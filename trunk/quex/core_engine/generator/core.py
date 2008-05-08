@@ -77,10 +77,10 @@ class Generator(GeneratorBase):
 
         txt += state_machine_coder.do(self.pre_context_sm, 
                                       LanguageDB                  = LanguageDB, 
-                                      UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONDITION_",
+                                      UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONTEXT",
                                       BackwardLexingF             = True)
 
-        LabelName = languages_label.get_terminal(self.state_machine_name + "_PRE_CONDITION_")      
+        LabelName = languages_label.get_terminal(BackwardLexingF=True)      
         txt += LanguageDB["$label-definition"](LabelName) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyser went backwards, so it needs to be reset.
