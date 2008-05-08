@@ -1,4 +1,4 @@
--(total size = 11, border = 0)-------------------------------------------
+-(total size = 11, border = 0)-istream-----------------------------------
 
 (*) read to end of file
 - end of file
