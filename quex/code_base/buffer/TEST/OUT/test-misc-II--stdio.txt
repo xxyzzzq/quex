@@ -1,4 +1,4 @@
--(total size = 11, border = 1)-stdio-------------------------------------
+-(total size = 11, border = 1)-------------------------------------------
 
 (*) read to end of file
 - end of file
