@@ -167,7 +167,7 @@ namespace quex {
 }
 
 #ifdef __QUEX_OPTION_UNIT_TEST
-#   include <quex/code_base/buffer/buffer_unit_test.i>
+#   include <quex/code_base/buffer/debug.i>
 #endif
 #include <quex/code_base/buffer/buffer.i>
 

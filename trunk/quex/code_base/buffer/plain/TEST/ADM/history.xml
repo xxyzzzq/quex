@@ -1,4 +1,4 @@
-<history date="Thu May  8 06:24:23 2008" element-n="66">
+<history date="Thu May  8 06:28:05 2008" element-n="66">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -165,6 +165,6 @@
         <accept    time="03:53:51" application="test-misc-I" choice="istream" crc="1204038460" />
         <accept    time="03:54:00" application="test-misc-II" choice="istream" crc="-2031045566" />
         <accept    time="03:54:14" application="test-misc-III" choice="istream" crc="900586920" />
-        <test-runs-today n="14" ok-n="11" fail-n="3" else-n="0" last-run="oll korrekt" last-time="04:24:23"/>
+        <test-runs-today n="16" ok-n="13" fail-n="3" else-n="0" last-run="oll korrekt" last-time="04:28:05"/>
     </day>
 </history>
