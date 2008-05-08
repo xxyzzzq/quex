@@ -22,9 +22,10 @@ import tempfile
 # This script needs to be located one directory above 'quex.'
 # so that it ca get the imports straight.
 import quex.DEFINITIONS
-import quex.input.setup as setup_parser
-import quex.input.query as query_parser
-import quex.core        as core
+from   quex.input.setup        import setup as Setup
+import quex.input.setup_parser as setup_parser
+import quex.input.query        as query_parser
+import quex.core               as core
 
 from quex.frs_py.file_in  import error_msg
 
@@ -38,15 +39,15 @@ if __name__ == "__main__":
             sys.exit(0)                 # query, then no further processing is performed
 
         # (*) Get Setup from Command Line and Config File ____________________________________
-        setup = setup_parser.do(sys.argv)
+        setup_parser.do(sys.argv)
 
-        if setup.plot_graphic_format_list_f:
+        if Setup.plot_graphic_format_list_f:
             print quex.output.graphviz.interface.get_supported_graphic_format_description()
             sys.exit(0)
 
         # (*) Run the Quex ___________________________________________________________________
-        if setup.plot_graphic_format == "": core.do(setup)       # 'normal' code generation
-        else:                               core.do_plot(setup)  # plot transition graphs
+        if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
+        else:                               core.do_plot()  # plot transition graphs
 
     except "": # AssertionError:
         error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")

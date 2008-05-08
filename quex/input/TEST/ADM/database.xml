@@ -1,23 +1,23 @@
-<test-database execution-time-sec="13.59" date="Sun Apr 27 16:35:02 2008">
+<test-database execution-time-sec="28.01" date="Wed May  7 18:40:03 2008">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" time-sum-sec="1.36"> 
+        <test title="Wildcard Property Values" time-sum-sec="2.79"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.36" crc="-989951512"/>
+               <choice name="" result="OK" time-sec="2.79" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" time-sum-sec="11.89"> 
+        <test title="Information about Properties" time-sum-sec="24.62"> 
             <application file-name="test-query.py" info-request-time="1205646836L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="10.51" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="1.38" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time-sec="21.75" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="2.87" crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" time-sum-sec="0.34"> 
+        <test title="Character Sets for Property Settings" time-sum-sec="0.60"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.34" crc="-1719645304"/>
+               <choice name="" result="FAIL" time-sec="0.60" crc="-1719645304"/>
             </choice-list>
         </test>
     </group>
