@@ -65,7 +65,7 @@ test_istream(int ContentSz, int BackupSz)
     quex::buffer<char>                         x(&input_strategy, ContentSz + 2, BackupSz, '\0'); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
-    cout << ")-istream-----------------------------------\n";
+    cout << ")-------------------------------------------\n";
     test_this(x);
 }
 
@@ -84,7 +84,7 @@ test_stdio(int ContentSz, int BackupSz)
     quex::buffer<char>                     x(&input_strategy, ContentSz + 2, BackupSz, 0); 
 
     cout << "-(total size = " << ContentSz << ", border = " << BackupSz;
-    cout << ")-stdio-------------------------------------\n";
+    cout << ")-------------------------------------------\n";
 
     test_this(x);
 }
