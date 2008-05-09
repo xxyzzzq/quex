@@ -1,3 +1,45 @@
+(*) 08y5m9d:
+
+    Init state: a 'pure get()' would be more appropriate. For this the _current_p
+    needs to point to one position afer the last match. This would also make the
+    check for 'begin of buffer' unnecessary in case of backward lexing at the
+    initial state.
+
+(*) 08y5m9d:
+
+    Ensure, that 'drop-outs' are in the else statement if possible, because
+    then they might be dropped easier, e.g.
+
+        if( input < 10) {
+            if( input != 9) {
+                goto STATE_155_DROP_OUT;    /* [-oo, \8] */
+            } else {
+                goto STATE_156;    /* '\t' */
+            }
+        } else {
+            goto STATE_155_DROP_OUT;
+        }
+
+    might become
+
+        if( input < 10) {
+            if( input == 9) {
+                goto STATE_156;    /* '\t' */
+            } else {
+                goto STATE_155_DROP_OUT;    /* [-oo, \8] */
+            }
+        } else {
+            goto STATE_155_DROP_OUT;
+        }
+
+    and thus:
+
+        if( input < 10) {
+            if( input == 9) {
+                goto STATE_156;    /* '\t' */
+            } 
+        }
+
 (*) 08y3m10d:
 
     The constructor of the state machine allows for an initial acceptance state.

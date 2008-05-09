@@ -119,6 +119,8 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 
 #define  QUEX_END_OF_FILE() \
          me->__buffer->is_end_of_file()
+#define QUEX_BEGIN_OF_FILE() \
+         me->__buffer->is_begin_of_file()
 
 #define QUEX_STREAM_GET(character)                 \
         (character) = me->__buffer->get_forward(); \

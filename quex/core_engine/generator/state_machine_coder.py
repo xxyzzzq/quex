@@ -44,7 +44,7 @@ def do(state_machine, LanguageDB,
                                      state_machine.init_state_index,
                                      BackwardLexingF                 = BackwardLexingF,
                                      BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                     CheckEndOfFile_F                = True)
+                                     InitStateF                      = True)
 
     # -- all other states
     for state_index, state in state_machine.states.items():

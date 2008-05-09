@@ -45,18 +45,17 @@ namespace quex {
     template <class character_type> 
     struct memory_position_mimiker {
 
-        typedef long stream_position; // Assume: Any stream position type can be 
-        //                            // casted to 'long'. Templating with stream 
-        //                            // position would screw the whole buffer design, 
-        //                            // where we want to have a base class that is 
-        //                            // independent of the input handle type.                     
+        typedef long character_index; // Assume: The 'start position' is stored in
+        //                            // terms of 'character index' rather the stream
+        //                            // position. This is so, since some coding have
+        //                            // a dynamically sized character encoding.
 
         // for compatibility with 'character_type*'
-        memory_position_mimiker(character_type* Adr = 0x0, stream_position Pos = 0x0) 
+        memory_position_mimiker(character_type* Adr, character_index Pos) 
             : address(Adr), buffer_start_position(Pos) {}
 
         character_type*  address;
-        stream_position  buffer_start_position;
+        character_index  buffer_start_position;
 
         bool operator==(const memory_position_mimiker& That)
         { 

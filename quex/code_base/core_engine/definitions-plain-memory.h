@@ -26,6 +26,7 @@ typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 struct QUEX_CORE_ANALYSER_STRUCT {
     QUEX_CHARACTER_TYPE*  initial_position_p;                 
     QUEX_CHARACTER_TYPE*  input_p;
+    QUEX_CHARACTER_TYPE*  buffer_begin;
     QUEX_CHARACTER_TYPE   char_covered_by_terminating_zero;   // MANDATORY MEMBER!
     QUEX_MODE_FUNCTION_P  __current_mode_analyser_function_p;
 
@@ -76,14 +77,18 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
      */
     me->char_covered_by_terminating_zero   = '\0';              
     me->input_p                            = InputStartPosition; 
+    me->buffer_begin                       = InputStartPosition;
     me->__current_mode_analyser_function_p = TheInitianAnalyserFunctionP;
 #ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION    
     me->begin_of_line_f                    = 1;
 #endif
 }
 
-#define  QUEX_END_OF_FILE() \
+#define QUEX_END_OF_FILE() \
          0
+#define QUEX_BEGIN_OF_FILE() \
+        (me->input_p == me->buffer_begin)
+
 
 QUEX_INLINE_KEYWORD
 void
