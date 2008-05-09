@@ -4,7 +4,7 @@ from copy import deepcopy
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
-       BackwardInputPositionDetectionF=False, CheckEndOfFile_F=None):
+       BackwardInputPositionDetectionF=False, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -34,13 +34,22 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     if TriggerMap != []:
         empty_trigger_map_f = False
 
+        if InitStateF and BackwardLexingF:
+            # At the very start of parsing the input position may be right on the buffer
+            # border. Thus the inverse state machine needs to check wether it sits on a border.
+            code_str += LanguageDB["$if BOF"]
+            code_str += "    " + "goto %s;\n" % languages_label.get_drop_out(StateMachineName, StateIdx)
+            code_str += LanguageDB["$endif"]
+
         input_label = languages_label.get_input(StateMachineName, StateIdx)
         code_str += LanguageDB["$label-definition"](input_label) + "\n"
         #
         code_str += "    "
-        if not BackwardLexingF: code_str += "%s\n" % LanguageDB["$input/get"] 
-        else:                   code_str += "%s\n" % LanguageDB["$input/get-backwards"] 
-
+        if not BackwardLexingF: 
+            code_str += "%s\n" % LanguageDB["$input/get"] 
+        else:                   
+            code_str += "%s\n" % LanguageDB["$input/get-backwards"]   
+            
         code_str += "    " + LanguageDB["$debug-info-input"] + "\n"
 
         if len(TriggerMap) > 1:
@@ -75,8 +84,9 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     drop_out_label = languages_label.get_drop_out(StateMachineName, StateIdx)
     txt  = LanguageDB["$label-definition"](drop_out_label) + "\n"
 
-    # -- in case of the init state, the end of file character has to be checked.
-    if CheckEndOfFile_F and BackwardLexingF == False:
+    # -- in case of the init state, the end of file has to be checked.
+    #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
+    if InitStateF and BackwardLexingF == False:
         txt += LanguageDB["$if EOF"]
         txt += "    " + LanguageDB["$comment"](
                 "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 

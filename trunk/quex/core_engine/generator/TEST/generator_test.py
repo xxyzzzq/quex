@@ -54,8 +54,9 @@ int main(int, char**)
 }\n"""
 
 quex_buffer_based_test_program = """
-    istringstream   istr("$$TEST_STRING$$");
-    quex::buffer    buf(&istr, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$);
+    istringstream                                           istr("$$TEST_STRING$$");
+    quex::fixed_size_character_stream_plain<istringstream, QUEX_CHARACTER_TYPE>  fscs(&istr);
+    quex::buffer< QUEX_CHARACTER_TYPE>   buf(&fscs, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$);
 
     analyser_init(&lexer_state, 0, &buf, analyser_do);
 """
@@ -75,7 +76,10 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     
     if BufferType=="QuexBuffer": 
         if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
-        txt = "#include <sstream>\n" + txt
+        include_str  = "#include <quex/code_base/buffer/plain/fixed_size_character_stream>\n"
+        include_str += "#include <sstream>\n" 
+
+        txt = include_str + txt
 
         buffer_specific_str = quex_buffer_based_test_program.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
         buffer_specific_str = buffer_specific_str.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
@@ -192,9 +196,9 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
-                  "-ggdb " # + \
-                  # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
-                  # "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+                  "-ggdb "# + \
+                  #"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     ## print compile_str # DEBUG
     os.system(compile_str)

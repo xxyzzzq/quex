@@ -3,22 +3,17 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
 #define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
 //
-#include <quex/code_base/buffer/fixed_size_character_stream>
 
 #include <iostream> 
 #include <cstdio>  
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-#   include <cassert>
-#   define  __quex_assert(X)   assert(X)
-#else
-#   define  __quex_assert(X)   /*no assert*/
-#endif
 #include <cerrno>
 #include <stdexcept>
 extern "C" { 
 #include <quex/code_base/compatibility/inttypes.h>
 }
+#include <quex/code_base/asserts>
 #include <quex/code_base/buffer/input_policy>
+#include <quex/code_base/buffer/fixed_size_character_stream>
 
 namespace quex {
 

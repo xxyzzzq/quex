@@ -468,25 +468,25 @@ namespace quex {
     TEMPLATE_IN  typename CLASS::memory_position CLASS::tell_adr()
     {
         ASSERT_CONSISTENCY();
-#           ifndef QUEX_OPTION_ACTIVATE_ASSERTS
-        return memory_position(_current_p, _character_index_at_front);
-#           else
+#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+        return memory_position_mimiker<CharacterCarrierType>(_current_p, _character_index_at_front);
+#       else
         return memory_position(_current_p);
-#           endif
+#       endif
     }
 
     TEMPLATE_IN  void CLASS::seek_adr(const memory_position Adr)
     {
-#           ifndef QUEX_OPTION_ACTIVATE_ASSERTS
+#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
         // Check wether the memory_position is relative to the current start position 
         // of the stream. That means, that the tell_adr() command was called on the
         // same buffer setting or the positions have been adapted using the += operator.
         const long begin_pos = _character_index_at_front; 
         __quex_assert(Adr.buffer_start_position == _character_index_at_front);
         _current_p = Adr.address;
-#           else
+#       else
         _current_p = Adr;
-#           endif
+#       endif
         ASSERT_CONSISTENCY();
     }
 

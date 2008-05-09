@@ -38,6 +38,7 @@ db["C++"] = {
     "$continue":          "continue;\n",
     "$break":             "break;\n",
     "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
+    "$if BOF":            "if( QUEX_BEGIN_OF_FILE() ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if ==":             lambda value: "if( input == " + value + ") {\n",
     "$if !=":             lambda value: "if( input != " + value + ") {\n",
@@ -82,9 +83,10 @@ db["C++"] = {
                           "    goto TERMINAL_GENERAL;\n"                                             + \
                           "}\n",
     "$drop-out-backward": lambda OnReloadGotoLabel:
-                          "if( input == me->__buffer->BLC ) {\n"                                 + \
-                          "    me->__buffer->load_backward();\n"                                 + \
-                          "    goto %s; /* no adr. adaptions necessary */\n" % OnReloadGotoLabel + \
+                          "if( input == me->__buffer->BLC ) {\n"             + \
+                          "    me->__buffer->load_backward();\n"             + \
+                          "    if( ! (me->__buffer->is_begin_of_file()) )\n" + \
+                          "        goto %s; /* no adr. adaptions necessary */\n" % OnReloadGotoLabel + \
                           "}\n",                                                                         
     "$compile-option":           lambda option: "#define %s\n" % option,
     "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),

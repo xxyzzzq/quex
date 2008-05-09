@@ -127,8 +127,9 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
-    txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
+    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
     #
+    txt = ""
     for origin in OriginList:
         if origin.store_input_position_f():
             txt += LanguageDB["$set-pre-context-flag"](origin.state_machine_id, 1)
@@ -155,8 +156,9 @@ def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
-    txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
+    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
     #
+    txt = ""
     for origin in OriginList:
         if origin.store_input_position_f():
             txt += "QUEX_STREAM_TELL(end_of_core_pattern_position);\n"
@@ -481,7 +483,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
             local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "self." + name]) 
 
     txt = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
-    txt += "/*  me = pointer to state of the lexical analyser */"
+    txt += "/* me = pointer to state of the lexical analyser */\n"
 
     local_variable_list.extend(
             [ ["int",                         "last_acceptance",                "-1"],
@@ -668,8 +670,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     txt = ""    
     for state_machine_id in action_db.keys():
         txt += "            case %s: goto %s;\n" % \
-                (repr(state_machine_id), 
-                      label.get_terminal(state_machine_id))
+                (repr(state_machine_id), label.get_terminal(state_machine_id))
 
     jumps_to_acceptance_states_str = txt
 
