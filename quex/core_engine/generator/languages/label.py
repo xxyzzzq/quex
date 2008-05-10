@@ -9,7 +9,7 @@ def get(StateMachineName, StateIdx):
     return "STATE_%s" % __nice(StateIdx)
 
 
-def get_input(StateMachineName, StateIdx):
+def get_input(StateIdx):
 
     return "STATE_%s_INPUT" % __nice(StateIdx)
 
@@ -22,6 +22,6 @@ def get_terminal(TerminalStateIdx=None, BackwardLexingF=False):
     else:       
         return "TERMINAL_%s" % __nice(TerminalStateIdx)
 
-def get_drop_out(StateMachineName, StateIdx):
+def get_drop_out(StateIdx):
 
     return "STATE_%s_DROP_OUT" % __nice(StateIdx)
