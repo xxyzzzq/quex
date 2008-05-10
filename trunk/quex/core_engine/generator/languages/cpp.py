@@ -59,7 +59,7 @@ def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateI
     if TargetStateIdx >= 0:
         return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
     else:
-        return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
+        return "goto %s;" % label.get_drop_out(CurrentStateIdx)
 
 def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx):
     """
@@ -80,7 +80,7 @@ def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateId
     
     # (*) Target State Defined (not a 'drop out') --> go there
     if TargetStateIdx == None:   
-        return "goto %s;" % label.get_drop_out(StateMachineName, CurrentStateIdx)
+        return "goto %s;" % label.get_drop_out(CurrentStateIdx)
     elif TargetStateIdx == "END_OF_FILE":
         return "goto TERMINAL_END_OF_STREAM;" 
     else:
@@ -193,7 +193,7 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
     txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += LanguageDB["$drop-out-backward"](label.get_input(StateMachineName, CurrentStateIdx))
+        txt += LanguageDB["$drop-out-backward"](label.get_input(CurrentStateIdx))
         txt += "#endif\n"
 
     if DropOutTargetStateID != -1L:
@@ -215,7 +215,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     if BufferReloadRequiredOnDropOutF:
         txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += LanguageDB["$drop-out-forward"](
-                OnReloadGotoLabel=label.get_input(StateMachineName, CurrentStateIdx))
+                OnReloadGotoLabel=label.get_input(CurrentStateIdx))
         txt += "#endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */\n"
 
     # From here on: input is not a 'buffer limit code' 
