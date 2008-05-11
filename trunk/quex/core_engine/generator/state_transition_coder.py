@@ -15,23 +15,53 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                "epsilon transition contained target states: state machine was not made a DFA!\n" + \
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
        
-    #_________________________________________________________________________________________    
     TriggerMap = state.transitions().get_trigger_map()
+    #_________________________________________________________________________________________    
     
+    txt = ""
     # note down information about success, if state is an acceptance state
-    txt = LanguageDB["$acceptance-info"](state.origins().get_list(), 
-                                         LanguageDB, 
-                                         BackwardLexingF,
-                                         BackwardInputPositionDetectionF)
-
     txt += input_block(StateIdx, TriggerMap == [], InitStateF, BackwardLexingF, LanguageDB)
+
+    txt += acceptance_info(state, LanguageDB, 
+                           BackwardLexingF, BackwardInputPositionDetectionF)
+
     
     txt += transition_block.do(state, StateIdx, TriggerMap, LanguageDB, 
                                InitStateF, BackwardLexingF, StateMachineName)
 
-    txt += drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, StateMachineName, LanguageDB)
+    txt += drop_out_block(state, StateIdx, TriggerMap, 
+                          InitStateF, BackwardLexingF, StateMachineName, LanguageDB)
     
     return txt.replace("\n", "\n    ") + "\n"
+
+
+def acceptance_info(state, LanguageDB, 
+                    BackwardLexingF, 
+                    BackwardInputPositionDetectionF=False):
+    """Two cases:
+       -- an origin marks an acceptance state without any post-condition:
+          store input position and mark last acceptance state as the state machine of 
+          the origin (note: this origin may result through a priorization)
+       -- an origin marks an acceptance of an expression that has a post-condition.
+          store the input position in a dedicated input position holder for the 
+          origins state machine.
+    """
+    if BackwardInputPositionDetectionF: assert BackwardLexingF
+
+    OriginList = state.origins().get_list()
+
+    if BackwardLexingF:
+        # (*) Backward Lexing 
+        if not BackwardInputPositionDetectionF:
+            return LanguageDB["$acceptance-info-bw"](OriginList, LanguageDB)
+        else:
+            return LanguageDB["$acceptance-info-bwfc"](OriginList, LanguageDB)
+
+    else:
+        # (*) Forward Lexing 
+        return LanguageDB["$acceptance-info-fw"](OriginList, LanguageDB)
+
+
 
 def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, LanguageDB):
 

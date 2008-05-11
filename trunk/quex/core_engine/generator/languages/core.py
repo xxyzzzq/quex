@@ -63,13 +63,15 @@ db["C++"] = {
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
-    "$transition":          cpp.__transition,
-    "$label-definition":    cpp.__label_definition,
-    "$acceptance-info":     cpp.__acceptance_info,      
-    "$analyser-func":       cpp.__analyser_function,
-    "$terminal-code":       cpp.__terminal_states,      
-    "$set-pre-context-flag":    lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
-                                                   (repr(id).replace("L", ""), value),
+    "$transition":           cpp.__transition,
+    "$label-definition":     cpp.__label_definition,
+    "$acceptance-info-fw":   cpp. __acceptance_info_forward_lexing,      
+    "$acceptance-info-bw":   cpp. __acceptance_info_backward_lexing,      
+    "$acceptance-info-bwfc": cpp. __acceptance_info_backward_lexing_find_core_pattern,      
+    "$analyser-func":        cpp.__analyser_function,
+    "$terminal-code":        cpp.__terminal_states,      
+    "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
+                                               (repr(id).replace("L", ""), value),
     "$drop-out":          cpp.__state_drop_out_code,
     "$drop-out-forward":  lambda OnReloadGotoLabel: \
                           "if( input == me->__buffer->BLC ) {\n"                                     + \
