@@ -158,7 +158,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 
 /* IMPORTANT: 
 **
-**    The lexeme length must user the **current position** as a reference.
+**    The lexeme length must use the **current position** as a reference.
 **    It can be assumed, that in case of acceptance, the SEEK to the last
 **    acceptance has preceeded this command. 
 **
