@@ -109,6 +109,7 @@ namespace quex {
     { 
         ASSERT_CONSISTENCY(); 
         __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.front());
+        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());
         // '*_end_of_file_p == BLC' is checked in ASSERT_CONSISTENCY()
         return *(++_current_p); 
     }
@@ -116,6 +117,10 @@ namespace quex {
     { 
         ASSERT_CONSISTENCY(); 
         __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.back() || _current_p == _end_of_file_p);
+        // NOTE: __quex_assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
+        //       Does not make sense here, since the macro may be used for backward input
+        //       position detection after a post condition has triggered (pseudo ambiguous
+        //       post conditions).
         return *(--_current_p); 
     }
 

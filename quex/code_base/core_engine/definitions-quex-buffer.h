@@ -117,27 +117,13 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 */
 #define  __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 
-#define  QUEX_END_OF_FILE() \
-         me->__buffer->is_end_of_file()
-#define QUEX_BEGIN_OF_FILE() \
-         me->__buffer->is_begin_of_file()
+#define QUEX_END_OF_FILE()   me->__buffer->is_end_of_file()
+#define QUEX_BEGIN_OF_FILE() me->__buffer->is_begin_of_file()
 
-#define QUEX_STREAM_GET(character)                 \
-        (character) = me->__buffer->get_forward(); \
-        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());
-
-#define QUEX_STREAM_GET_BACKWARDS(character)        \
-        (character) = me->__buffer->get_backward(); 
-// NOTE: __quex_assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
-//       Does not make sense here, since the macro may be used for backward input
-//       position detection after a post condition has triggered (pseudo ambiguous
-//       post conditions).
-
-#define QUEX_STREAM_TELL(position)            \
-        (position)  = me->__buffer->tell_adr();
-
-#define QUEX_STREAM_SEEK(position)            \
-        me->__buffer->seek_adr(position);    
+#define QUEX_STREAM_GET(character)            (character) = me->__buffer->get_forward(); 
+#define QUEX_STREAM_GET_BACKWARDS(character)  (character) = me->__buffer->get_backward(); 
+#define QUEX_STREAM_TELL(position)            (position)  = me->__buffer->tell_adr();
+#define QUEX_STREAM_SEEK(position)            me->__buffer->seek_adr(position);    
 
     
 /* NOTE: See note at the member definition of '.begin_of_line_f'
