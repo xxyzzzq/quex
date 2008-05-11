@@ -258,6 +258,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
 def __acceptance_info_forward_lexing(OriginList, LanguageDB):
 
     ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
+    txt = ""
     #
     # -- get the pattern ids that indicate the start of a post-condition
     #    (i.e. the end of a core pattern where a post condition is to follow).

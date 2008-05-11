@@ -20,12 +20,11 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     
     txt = ""
     # note down information about success, if state is an acceptance state
-    txt += input_block(StateIdx, TriggerMap == [], InitStateF, BackwardLexingF, LanguageDB)
-
     txt += acceptance_info(state, LanguageDB, 
                            BackwardLexingF, BackwardInputPositionDetectionF)
 
-    
+    txt += input_block(StateIdx, TriggerMap == [], InitStateF, BackwardLexingF, LanguageDB)
+
     txt += transition_block.do(state, StateIdx, TriggerMap, LanguageDB, 
                                InitStateF, BackwardLexingF, StateMachineName)
 
