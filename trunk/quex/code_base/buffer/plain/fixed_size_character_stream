@@ -63,7 +63,7 @@ namespace quex {
                 return ByteN / SizeOfCharacter; 
             }
 
-            virtual long     register_begin_of_file() 
+            virtual void     register_begin_of_file() 
             { 
                 start_position = InputPolicy<InputHandleType*>::tell(ih); 
             }

@@ -184,11 +184,11 @@ namespace quex {
         //     their characters from it. The 'stretch' [lexeme start, current_p] must be 
         //     contained in the new buffer (precisely in the fallback region).
         __quex_assert(_current_p >= _lexeme_start_p);
-        const int MinFallbackN = _current_p - _lexeme_start_p;
+        const size_t MinFallbackN = _current_p - _lexeme_start_p;
 
         // (*) Fallback region = max(default size, necessary size)
-        const int FallBackN = _buffer.default_fallback_n() > MinFallbackN ? 
-                              _buffer.default_fallback_n() : MinFallbackN;
+        const size_t FallBackN = _buffer.default_fallback_n() > MinFallbackN ? 
+                                 _buffer.default_fallback_n() : MinFallbackN;
 
         // (*) Copy fallback region
         //     If there is no 'overlap' from source and drain than the faster memcpy() can 
@@ -211,7 +211,7 @@ namespace quex {
         // of the character coding that is used. Thus, it is safe to compute the position at the
         // end of the buffer by simple addition of 'content size' to '_character_index_at_front'.
         //
-        const int CharacterIndexAtEnd = _character_index_at_front + content_size();
+        const size_t CharacterIndexAtEnd = (size_t)(_character_index_at_front + content_size());
         if( _input->tell_character_index() != CharacterIndexAtEnd  ) { 
             _input->seek_character_index(CharacterIndexAtEnd);
         }
@@ -339,8 +339,8 @@ namespace quex {
             }
         }
         const int MaxBackwardDistance_pre = content_size() - (int)(_lexeme_start_p - _current_p);
-        const int MaxBackwardDistance = MaxBackwardDistance_pre < _character_index_at_front ?
-                                        MaxBackwardDistance_pre : _character_index_at_front;
+        const size_t MaxBackwardDistance = MaxBackwardDistance_pre < _character_index_at_front ?
+                       size_t                    MaxBackwardDistance_pre : _character_index_at_front;
 
         const int BackwardDistance = IntendedBackwardDistance > MaxBackwardDistance ? 
             MaxBackwardDistance : IntendedBackwardDistance;

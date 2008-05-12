@@ -155,8 +155,8 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Le
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength);  
 
-    __quex_assert(Begin >= __buffer->content.front());
-    __quex_assert(Begin < __buffer->content.back());  // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_front());
+    __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1
     __quex_assert(End <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
     __quex_assert(Begin < End);                       // LexemeLength >= 1
 
