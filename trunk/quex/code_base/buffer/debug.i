@@ -1,6 +1,6 @@
+// -*- C++ -*-  vim: set syntax=cpp:
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
-// -*- C++ -*-  vim: set syntax=cpp:
 //
 // (C) 2008 Frank-Rene Schaefer
 //

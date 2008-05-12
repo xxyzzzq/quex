@@ -8,6 +8,7 @@
 #include<fstream>
 #include<cassert>
 #include<quex/code_base/compatibility/inttypes.h>
+#include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
 // OPTIONS: ____________________________________________________________________
@@ -47,20 +48,6 @@ $$SWITCH$$ QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #endif
 #ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 $$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-#endif
-
-// -- Asserts
-//    Standard asserts are active as long as 'NDEBUG' is not defined.
-//
-//    The asserts in quex are so many to make it safe. However, when they
-//    are active, they make the system run very slowly. For the default
-//    user, these things are turned off. Use the following macro to re-activate.
-//
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-#   include <cassert>
-#   define  __quex_assert(X)   assert(X)
-#else
-#   define  __quex_assert(X)   /*no assert*/
 #endif
 
 // -- Include Stack Support:
@@ -148,8 +135,9 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #   include<quex/code_base/core_engine/definitions-plain-memory.h>
 #else
 #   ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#       include<quex/code_base/buffer/iconv/input_strategy>
+#       include<quex/code_base/buffer/iconv/fixed_size_character_stream>
 #   endif
+#   include<quex/code_base/buffer/plain/fixed_size_character_stream>
 #   include<quex/code_base/buffer/buffer>
 #   include<quex/code_base/core_engine/definitions-quex-buffer.h>
 #endif
@@ -268,9 +256,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         const int   map_mode_to_mode_id(const quex_mode& Mode) const;
 
         // (*) buffers
-        template <class InputHandleP> 
-        quex::buffer_core<QUEX_CHARACTER_TYPE>* create_buffer(InputHandleP input_handle, 
-                                                              const char*  IConvInputCodingName = 0x0);
+        template <class InputHandle> 
+        quex::buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
+                                                         const char*  IConvInputCodingName = 0x0);
 
         //
         // (*) Token sending
@@ -285,7 +273,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         struct memento {
-            quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
+            quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
             QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
             QUEX_MODE_FUNCTION_P     current_mode_analyser_function_p;
             bool                     continue_analysis_after_adapting_mode_function_p_f;
@@ -557,34 +545,28 @@ $$CLASS_BODY_EXTENSION$$
         __constructor_core(fh, IConvInputCodingName);
     }
  
-    template <class InputHandleP> inline
-    quex::buffer_core<QUEX_CHARACTER_TYPE>*
-    CLASS::create_buffer(InputHandleP input_handle, const char* IConvInputCodingName /* = 0x0 */)
+    template <class InputHandle> inline
+    quex::buffer<QUEX_CHARACTER_TYPE>*
+    CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName /* = 0x0 */)
     {
+        fixed_size_character_stream<QUEX_CHARACTER_TYPE>*  is = 0x0;
+
         if( IConvInputCodingName != 0x0 ) {
 #           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-            // NOTE: default copy operation (== memcpy) for input_strategy_inconv is OK
-            input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE>  input_strategy(
-                input_handle, 
-                iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
-                IConvInputCodingName, QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
+            is = new  fixed_size_character_stream_iconv<InputHandle, QUEX_CHARACTER_TYPE>
+                           (input_handle, 
+                            iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
+                            IConvInputCodingName,     QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
 
-            return new basic_buffer<input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE> >(
-                input_strategy,
-                (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)$$BEGIN_OF_STREAM_CODE$$, 
-                /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)$$END_OF_STREAM_CODE$$,
-                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
-#           endif
+#           else
             return 0x0;
+#           endif
         }
         else {
-            return new basic_buffer<input_strategy<InputHandleP, QUEX_CHARACTER_TYPE> >
-                   (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                   /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)$$BEGIN_OF_STREAM_CODE$$, 
-                   /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)$$END_OF_STREAM_CODE$$,
-                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
+            is = new fixed_size_character_stream_plain<InputHandle, QUEX_CHARACTER_TYPE>(input_handle);
         }
+        return new buffer<QUEX_CHARACTER_TYPE>(is, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
+                    /* buffer limit code = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
     }
 
     template <class InputHandleP> inline void

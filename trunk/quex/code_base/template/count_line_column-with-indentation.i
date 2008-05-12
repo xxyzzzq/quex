@@ -1,4 +1,4 @@
-// -*- C++ -*-   :vim set syntax=cpp:
+// -*- C++ -*-   vim: set syntax=cpp:
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 // NOTE: Quex is pretty intelligent in choosing the right function
@@ -63,10 +63,10 @@ $$LEXER_CLASS_NAME$$::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     QUEX_CHARACTER_TYPE* Last  = End - 1;                
     QUEX_CHARACTER_TYPE* it    = Last;
 
-    __quex_assert(Begin >= __buffer->content_begin());
-    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
-    __quex_assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin >= __buffer->content_front());
+    __quex_assert(Begin < __buffer->content_back());     // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_back() + 1);  // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < End);                          // LexemeLength >= 1
 
 
     // (1) Last character == newline ? _______________________________________________
@@ -155,9 +155,9 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Le
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength);  
 
-    __quex_assert(Begin >= __buffer->content_begin());
-    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin >= __buffer->content.front());
+    __quex_assert(Begin < __buffer->content.back());  // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
     __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // (1) Last character == newline ? _______________________________________________

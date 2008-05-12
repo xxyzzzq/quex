@@ -19,7 +19,7 @@ $$LEXER_CLASS_NAME$$::__count_assert_consistency()
     // if line number remained the same, then the column number **must** have increased.
     // there is not pattern of a length less than 1
     __quex_assert(_line_number_at_begin != _line_number_at_end || 
-           _column_number_at_begin <  _column_number_at_end);
+                  _column_number_at_begin <  _column_number_at_end);
 }
 
 inline void             
@@ -138,9 +138,9 @@ $$LEXER_CLASS_NAME$$::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Be
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
-    __quex_assert(Begin >= __buffer->content_begin());
-    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin >= __buffer->content_front());
+    __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
     __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // loop from [End] to [Begin]:

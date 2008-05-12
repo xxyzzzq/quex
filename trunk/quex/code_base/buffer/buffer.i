@@ -109,7 +109,7 @@ namespace quex {
     { 
         ASSERT_CONSISTENCY(); 
         __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.front());
-        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());
+        __quex_assert(_current_p >= _lexeme_start_p);
         // '*_end_of_file_p == BLC' is checked in ASSERT_CONSISTENCY()
         return *(++_current_p); 
     }
@@ -556,9 +556,9 @@ namespace quex {
         while( 1 + 1 == 2 ) {
             ASSERT_CONSISTENCY();
             if( _current_p - remaining_distance_to_target <= content_front() ) {
-                if( _buffer[0] == BLC ) {
-                    _current_p      = _buffer;
-                    _lexeme_start_p = _current_p + 1; 
+                if( *(_buffer.front()) == CLASS::BLC ) {
+                    _current_p      = content_front();
+                    _lexeme_start_p = content_front() + 1; 
                     ASSERT_CONSISTENCY();
                     return;
                 }

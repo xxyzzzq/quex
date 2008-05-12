@@ -343,7 +343,9 @@ __header_definitions_txt = """
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-        std::fprintf(stdout, "%s:%i: \\t", __FILE__, __LINE__);            
+        std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p));            
+//      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr()));            
+//      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
