@@ -124,8 +124,10 @@ namespace quex {
             } _buffer;
             //
             size_t            content_size()  { return _buffer.size() - 2; }
+        public:
             character_type*   content_front() { return _buffer.front() + 1; } 
             character_type*   content_back()  { return _buffer.back()  - 1; }  
+        protected:
             //
             character_type*  _current_p;
             character_type*  _lexeme_start_p;
@@ -153,9 +155,9 @@ namespace quex {
             void             x_show_content(); 
 #    ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
             void             SHOW_BUFFER_LOAD(const char*);
-#    else
-            void             SHOW_BUFFER_LOAD(const char*) { }
 #    endif
+#else
+            void             SHOW_BUFFER_LOAD(const char*) { }
 #endif
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
             void             ASSERT_CONSISTENCY();
@@ -166,9 +168,7 @@ namespace quex {
 
 }
 
-#ifdef __QUEX_OPTION_UNIT_TEST
-#   include <quex/code_base/buffer/debug.i>
-#endif
+#include <quex/code_base/buffer/debug.i>
 #include <quex/code_base/buffer/buffer.i>
 
 

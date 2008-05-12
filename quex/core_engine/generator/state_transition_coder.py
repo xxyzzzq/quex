@@ -72,12 +72,17 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
     if not BackwardLexingF:
         txt += "%s\n" % LanguageDB["$input/get"] 
     else:
-        if InitStateF:
-            # At the very start of parsing the input position may be right on the buffer
-            # border. Thus the inverse state machine needs to check wether it sits on a border.
-            txt += LanguageDB["$if BOF"]
-            txt += "    " + "goto %s;\n" % languages_label.get_drop_out(StateIdx)
-            txt += LanguageDB["$endif"]
+        # At the init state, the lexial analyzer stands **before** the next character
+        # to be read in forward direction. When backward lexing is involved the input
+        # position needs to be put one ahead.
+        #                               LE
+        #                                *
+        #         | | | | | | |p|r|i|n|t|f|(| | | | | | | | | | | | |
+        #                                  *
+        #                                  NC
+        # current_p = LE (lexeme end), so that "input = *(++current_p)" is '('.
+        # NOW: current_p = NC, so that         "input = *(--current_p)" is 'f'.
+        if InitStateF: txt += LanguageDB["$input/get"]
         txt += "%s\n" % LanguageDB["$input/get-backwards"]   
     txt += "    " + LanguageDB["$debug-info-input"] + "\n"
 

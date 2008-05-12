@@ -45,10 +45,15 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #endif
 };
 
-#define QUEX_STREAM_GET(character)            character = *(me->input_p); ++(me->input_p); 
-#define QUEX_STREAM_GET_BACKWARDS(character)  --(me->input_p); character = (*(me->input_p)); 
-#define QUEX_STREAM_TELL(position)            position = me->input_p;
+#define QUEX_END_OF_FILE()   0
+#define QUEX_BEGIN_OF_FILE() (me->input_p == me->buffer_begin)
+
+#define QUEX_STREAM_GET(character)            character   = *(++(me->input_p));
+#define QUEX_STREAM_GET_BACKWARDS(character)  character   = *(--(me->input_p)); 
+#define QUEX_STREAM_TELL(position)            position    = me->input_p;
 #define QUEX_STREAM_SEEK(position)            me->input_p = position;
+
+
 #define QUEX_INLINE_KEYWORD                   static
 
 
@@ -76,7 +81,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
      **       to be matched---even in case of post-conditions.
      */
     me->char_covered_by_terminating_zero   = '\0';              
-    me->input_p                            = InputStartPosition; 
+    me->input_p                            = InputStartPosition - 1; 
     me->buffer_begin                       = InputStartPosition;
     me->__current_mode_analyser_function_p = TheInitianAnalyserFunctionP;
 #ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION    
@@ -84,17 +89,12 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 #endif
 }
 
-#define QUEX_END_OF_FILE() \
-         0
-#define QUEX_BEGIN_OF_FILE() \
-        (me->input_p == me->buffer_begin)
-
 
 QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 {
-    me->initial_position_p = me->input_p;
+    me->initial_position_p = me->input_p + 1;
 }
 
 /* After pre-condition state machines analyzed backwards, the analyzer needs
@@ -130,10 +130,10 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 #define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN \
         me->begin_of_line_f = (*(me->input_p - 1) == '\n');
         
-#define QUEX_PREPARE_LEXEME_OBJECT                           \
-        me->char_covered_by_terminating_zero = *me->input_p; \
-        *me->input_p = '\0';                                 \
-	Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->initial_position_p);                              
+#define QUEX_PREPARE_LEXEME_OBJECT                                 \
+        me->char_covered_by_terminating_zero = *(me->input_p + 1); \
+        *(me->input_p + 1)= '\0';                                  \
+	    Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->initial_position_p);                              
 
 /* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
 ** QUEX_PREPARE_LEXEME_OBJECT in case that no Lexeme object is
@@ -150,7 +150,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 */
 #define QUEX_UNDO_PREPARE_LEXEME_OBJECT                                            \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {  \
-           *(me->input_p) = me->char_covered_by_terminating_zero;                  \
+           *(me->input_p + 1) = me->char_covered_by_terminating_zero;              \
         }
 
 /* IMPORTANT: 
