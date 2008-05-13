@@ -1,4 +1,4 @@
-<history date="Tue May 13 19:44:04 2008" element-n="64">
+<history date="Tue May 13 22:56:37 2008" element-n="64">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -177,6 +177,6 @@
         <accept    time="04:58:05" application="test-single-state-transitions-x.py" choice="" crc="-44469151" />
         <accept    time="17:43:07" application="test-no-backward-reloading.py" choice="No_NDEBUG" crc="-404862054" />
         <accept    time="17:43:12" application="test-no-backward-reloading.py" choice="NDEBUG" crc="-404862054" />
-        <test-runs-today n="15" ok-n="3" fail-n="12" else-n="0" last-run="failure" last-time="17:44:04"/>
+        <test-runs-today n="16" ok-n="3" fail-n="13" else-n="0" last-run="failure" last-time="20:56:37"/>
     </day>
 </history>
