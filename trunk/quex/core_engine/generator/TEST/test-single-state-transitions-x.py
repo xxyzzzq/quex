@@ -34,7 +34,7 @@ interval_end   = -1
 # initialize pseudo random generator: produces always the same numbers.
 random.seed(110270)   # must set the seed for randomness, otherwise system time
 #                     # is used which is no longer deterministic.
-for i in range(300):
+for i in range(4000):
     interval_end = interval_start + int(random.random() * 4) + 1
     state.add_transition(Interval(interval_start, interval_end), long(i % 24))
     interval_start = interval_end
@@ -43,8 +43,9 @@ function = "def example_func(input):\n" + state_transition_coder.do(languages.db
 exec(function)
 
 differences = []    
+transitions = state.transitions()
 for number in range(interval_end):
-    result_state_idx = state.transitions().get_resulting_target_state_index(number)
+    result_state_idx = transitions.get_resulting_target_state_index(number)
     if result_state_idx == None: result_state_idx = -1
     sys.stdout.write("%i %s %s\n" % (number, repr(example_func(number)), repr(result_state_idx)))
     if example_func(number) != result_state_idx:

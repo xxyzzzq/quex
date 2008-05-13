@@ -1,4 +1,4 @@
-<history date="Fri May  9 18:31:58 2008" element-n="67">
+<history date="Tue May 13 06:39:23 2008" element-n="80">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -169,5 +169,20 @@
     </day>
     <day year="2008" month="05" day="09">
         <test-runs-today n="3" ok-n="2" fail-n="0" else-n="1" last-run="oll korrekt" last-time="16:31:58"/>
+    </day>
+    <day year="2008" month="05" day="13">
+        <accept    time="04:35:41" application="test-misc-III" choice="istream" crc="-1682822371" />
+        <crc-error time="04:35:41" application="test-misc-III" choice="stdio" database-crc="900586920" real-crc="-1682822371"/>
+        <accept    time="04:36:06" application="test-misc-II" choice="istream" crc="686768887" />
+        <crc-error time="04:36:06" application="test-misc-II" choice="stdio" database-crc="-2031045566" real-crc="686768887"/>
+        <accept    time="04:36:24" application="test-misc-I" choice="istream" crc="1168455883" />
+        <crc-error time="04:36:24" application="test-misc-I" choice="stdio" database-crc="1204038460" real-crc="1168455883"/>
+        <crc-error time="04:36:24" application="test-misc-I" choice="istream" database-crc="1204038460" real-crc="1168455883"/>
+        <crc-error time="04:36:24" application="test-misc-I" choice="stdio" database-crc="1204038460" real-crc="1168455883"/>
+        <crc-error time="04:36:24" application="test-misc-II" choice="istream" database-crc="-2031045566" real-crc="686768887"/>
+        <crc-error time="04:36:24" application="test-misc-II" choice="stdio" database-crc="-2031045566" real-crc="686768887"/>
+        <crc-error time="04:36:24" application="test-misc-III" choice="istream" database-crc="900586920" real-crc="-1682822371"/>
+        <crc-error time="04:36:24" application="test-misc-III" choice="stdio" database-crc="900586920" real-crc="-1682822371"/>
+        <test-runs-today n="5" ok-n="2" fail-n="3" else-n="0" last-run="oll korrekt" last-time="04:39:23"/>
     </day>
 </history>

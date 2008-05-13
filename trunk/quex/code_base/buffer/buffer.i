@@ -109,7 +109,7 @@ namespace quex {
     { 
         ASSERT_CONSISTENCY(); 
         __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.front());
-        __quex_assert(_current_p >= _lexeme_start_p);
+        __quex_assert(_current_p >= _lexeme_start_p - 1);
         // '*_end_of_file_p == BLC' is checked in ASSERT_CONSISTENCY()
         return *(++_current_p); 
     }
@@ -338,9 +338,9 @@ namespace quex {
                 return -1; 
             }
         }
-        const int MaxBackwardDistance_pre = content_size() - (int)(_lexeme_start_p - _current_p);
+        const int    MaxBackwardDistance_pre = content_size() - (int)(_lexeme_start_p - _current_p);
         const size_t MaxBackwardDistance = MaxBackwardDistance_pre < _character_index_at_front ?
-                       size_t                    MaxBackwardDistance_pre : _character_index_at_front;
+                                           MaxBackwardDistance_pre : _character_index_at_front;
 
         const int BackwardDistance = IntendedBackwardDistance > MaxBackwardDistance ? 
             MaxBackwardDistance : IntendedBackwardDistance;
