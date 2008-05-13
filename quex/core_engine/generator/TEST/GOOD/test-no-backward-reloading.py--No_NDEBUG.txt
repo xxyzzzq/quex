@@ -1,6 +1,9 @@
 (*) test string: 
 '   0xxxxxa lola'
 (*) result:
+LOAD BACKWARD(entry)
+|CS:       || BLC
+|[   0xxxxx||
          WHITESPACE  '   '
          IDENTIFIER  '0x'
          IDENTIFIER  'xx'
