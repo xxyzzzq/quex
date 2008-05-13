@@ -82,8 +82,8 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
         #                                  NC
         # current_p = LE (lexeme end), so that "input = *(++current_p)" is '('.
         # NOW: current_p = NC, so that         "input = *(--current_p)" is 'f'.
-        if InitStateF: txt += LanguageDB["$input/get"]
-        txt += "%s\n" % LanguageDB["$input/get-backwards"]   
+        if InitStateF: txt += LanguageDB["$input/get"] + "\n"
+        txt += LanguageDB["$input/get-backwards"] + "\n"
     txt += "    " + LanguageDB["$debug-info-input"] + "\n"
 
     return txt
