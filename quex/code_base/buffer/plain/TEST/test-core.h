@@ -22,6 +22,7 @@ read_backward_until_begin_of_buffer(Buffer& x) {
         else if( x.is_begin_of_buffer() ) { 
             assert(tmp == x.BLC);
             std::cout << "begin of buffer\n";
+            x.mark_lexeme_start();
             return result;
         }
         else {
@@ -29,7 +30,6 @@ read_backward_until_begin_of_buffer(Buffer& x) {
             result += tmp;
         }
     }
-    return result;
 }
 
 template<class Buffer> inline 
@@ -112,6 +112,7 @@ read_to_begin_of_file(Buffer& x) {
         }
     }
     std::cout << "- begin of file\n";
+    x.mark_lexeme_start();
     return result;
 }
 

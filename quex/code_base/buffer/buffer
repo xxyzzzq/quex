@@ -156,6 +156,7 @@ namespace quex {
 #    ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
             void             SHOW_BUFFER_LOAD(const char*);
 #    endif
+            void             SHOW_BUFFER_LOAD(const char*) { }
 #else
             void             SHOW_BUFFER_LOAD(const char*) { }
 #endif

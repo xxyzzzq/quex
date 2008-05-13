@@ -8,6 +8,8 @@ using namespace std;
 int
 main(int argc, char** argv) 
 {
+    using namespace quex;
+
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "Converting Stream in One Beat\n";
         return 0;
@@ -17,7 +19,7 @@ main(int argc, char** argv)
     uint8_t      raw_buffer[128];
     char*        target_charset = (char*)"UCS-4BE";
     uint8_t      buffer[512];
-    quex::fixed_size_character_stream_iconv<std::FILE*>   is(fh, raw_buffer, 128, "UTF8", target_charset);
+    fixed_size_character_stream_iconv<std::FILE, uint8_t>   is(fh, raw_buffer, 128, "UTF8", target_charset);
 
 
     if( argc > 1 ) target_charset = argv[1];

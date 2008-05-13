@@ -79,22 +79,18 @@ extern "C" {
 
 namespace quex {
 
-    template <class InputHandleType, class CharacterCarrierType=uint8_t>
-    struct fixed_size_character_stream_iconv; 
-
-    // specification only for InputHandleType*, no other specification.
     template <class InputHandleType, class CharacterCarrierType>
-    class fixed_size_character_stream_iconv<InputHandleType*, CharacterCarrierType> 
-        : public fixed_size_character_stream<InputHandleType> {
+    class fixed_size_character_stream_iconv
+        : public fixed_size_character_stream<CharacterCarrierType> {
 
-        size_t  next_character_to_be_read_i;
+
+        static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
+        typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
+        typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
+       
+        /* DISABLED */ fixed_size_character_stream_iconv();
 
      public:
-
-        typedef typename InputPolicy<InputHandleType*>::stream_position   stream_position;
-
-        static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);  
-
         // NOTE: It makes sense to have multiple fixed_size_character_stream_iconv objects use
         //       the same raw buffer, since this buffer is only used temporarily
         //       while loading.
@@ -103,16 +99,18 @@ namespace quex {
                                           const char* FromCoding, const char* ToCoding);
         ~fixed_size_character_stream_iconv();
 
-        size_t    tell_character_index()                  { InputPolicy<InputHandleType*>::tell(ih); }
-        void      seek_character_index(const size_t& Pos) { InputPolicy<InputHandleType*>::seekg(ih, Pos); }
-        void      close()                                 { InputPolicy<InputHandleType*>::close(ih); }
-        void      destroy_handle()                        { if( ih ) delete ih; ih = 0x0; }
+        virtual size_t    tell_character_index()                 { return InputPolicy<InputHandleType*>::tell(ih); }
+        virtual void      seek_character_index(const size_t Pos) { 
+            long tmp = (long)Pos;
+            InputPolicy<InputHandleType*>::seek(ih, tmp); 
+        }
+        virtual void      close()                                {  }
+        virtual void      destroy_handle()                       { if( ih ) delete ih; ih = 0x0; }
 
-        void      register_begin_of_file() { start_position = InputPolicy<InputHandleType*>::tell(ih); }
+        virtual size_t    read_characters(CharacterCarrierType* buffer, const size_t N);
+        virtual void      register_begin_of_file();
 
-        size_t       read_characters(CharacterCarrierType* user_buffer_p, const size_t N);
-
-    protected:
+    private:
         struct buffer_info {
             uint8_t*  start;
             size_t    size;
@@ -131,14 +129,15 @@ namespace quex {
         };
 
         InputHandleType* ih;
-        stream_position  start_position;
+        stream_position  start_position;  // position in stream where analysis started
+        size_t           next_character_to_be_read_i;
 
+        // -- conversion data
         iconv_t          iconv_handle;
 
         buffer_info      raw_buffer;
         statistic_info   statistics;
 
-    private:
         size_t __convert(const size_t LoadedByteN, buffer_info* user_buffer);
         size_t __prepare_next_run(size_t iconv_report, buffer_info* user_buffer);
 
@@ -160,7 +159,7 @@ namespace quex {
 namespace quex {
 
     TEMPLATE_IN 
-        CLASS::fixed_size_character_stream_iconv(input_handle_type* input_handle, 
+        CLASS::fixed_size_character_stream_iconv(InputHandleType* input_handle, 
                                                  uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                                  const char* FromCoding,   const char* ToCoding) 
         { 
@@ -205,7 +204,8 @@ namespace quex {
         size_t bytes_to_read = statistics.estimate_raw_byte_n(N, raw_buffer.size); 
         //
         while( 1 + 1 == 2 ) {
-            const size_t LoadedByteN = InputPolicy<InputHandleType*>::load_bytes(raw_buffer.position, bytes_to_read);
+            const size_t LoadedByteN = \
+                         InputPolicy<InputHandleType*>::load_bytes(ih, raw_buffer.position, bytes_to_read);
 
             QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
 
@@ -274,7 +274,6 @@ namespace quex {
 
     TEMPLATE_IN size_t CLASS::__prepare_next_run(size_t iconv_report, buffer_info* user_buffer) 
     {
-
 #       ifdef  __QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
         std::cout << "(*) prepare next run\n";
 #       endif
@@ -302,21 +301,22 @@ namespace quex {
                                               raw_buffer.size - byte_n_from_last_run);
     }
 
+    /*
     TEMPLATE_IN void CLASS::map_to_stream_position(const int CharacterIndex)
     { 
         stream_position   position_backup = InputPolicy<InputHandleType*>::tell(ih);
 
-        /* There is a potential problem with varying character sizes of some encodings.
+        /-*- There is a potential problem with varying character sizes of some encodings.
          * Since the function is (most probably) called seldomly--namely only in 'load_backward()'
          * which is only called when stepping backwards very far for a **long** precondition.
          * Thus, this function implements the safe variant by stepping through the stream
-         * until the position is reached. */
+         * until the position is reached. -*-/
 
-        /* Let's assume we are able to estimate the position with a precision not worse
+        /-*- Let's assume we are able to estimate the position with a precision not worse
          * then 128 characters (This means that for example, one character may be coded with
          * one byte, the other one with 256 bytes). Thus we target a position of 256 
          * characters below the CharacterIndex, and then step character by character until
-         * the CharacterIndex is reached. */ 
+         * the CharacterIndex is reached. -*-/ 
         const int             CharacterIndex_Minus1 = CharacterIndex - 1;
         CharacterCarrierType  tmp[32];
         int                   characters_to_read = 0;
@@ -332,10 +332,11 @@ namespace quex {
         stream_position   result = InputPolicy<InputHandleType*>::tell(ih);
         InputPolicy<InputHandleType*>::seek(ih, position_backup);
         return result;
-    } 
+    }
+    */
 
-    TEMPLATE_IN void CLASS::register_current_position_for_character_index_equal_zero() 
-    { start_position = InputPolicy<InputHandleType>::tell(ih); }
+    TEMPLATE_IN void CLASS::register_begin_of_file() 
+    { start_position = InputPolicy<InputHandleType*>::tell(ih); }
 
     TEMPLATE_IN void CLASS::statistic_info::adapt(size_t ConvertedByteN, 
                                                   buffer_info* user_buffer, 

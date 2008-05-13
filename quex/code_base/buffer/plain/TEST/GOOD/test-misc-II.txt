@@ -15,14 +15,14 @@ lexeme start (offset) = 0
 (*) read to begin of file
 - begin of file
 <.muaB nie thets dlaW mI>
-|C:  S       || BLC
+|CS          || BLC
 |[Im Wald ste||
 start-pos:  0
 end-pos:    11
 stream-pos: 3
 EOF = 0, BOF = 1
 current_p (offset)    = -1
-lexeme start (offset) = 3
+lexeme start (offset) = 0
 
 (*) read to end of buffer
 end of buffer
@@ -105,36 +105,36 @@ lexeme start (offset) = 3
 (*) read to begin of buffer
 begin of buffer
 < ni>
-|C:  S       || BLC
+|CS          || BLC
 ||in Baum.]||||
 start-pos:  15
 end-pos:    26
 stream-pos: 18
 EOF = 1, BOF = 0
 current_p (offset)    = -1
-lexeme start (offset) = 3
+lexeme start (offset) = 0
 
 (*) load_backward:
-||:  C  S    || 'i'
+||:  S       || 'i'
 ||t ein Baum.||
 start-pos:  12
 end-pos:    23
 stream-pos: 15
 EOF = 0, BOF = 0
 current_p (offset)    = 3
-lexeme start (offset) = 6
+lexeme start (offset) = 3
 
 (*) read to begin of file
 - begin of file
 <e thets dlaW mI>
-|C:  S       || BLC
+|CS          || BLC
 |[Im Wald ste||
 start-pos:  0
 end-pos:    11
 stream-pos: 3
 EOF = 0, BOF = 1
 current_p (offset)    = -1
-lexeme start (offset) = 3
+lexeme start (offset) = 0
 
 (*) read to end of file
 - end of file
