@@ -1,6 +1,8 @@
+make: bug-1935701.exe
+Error: make failed on 'bug-1935701.exe'
 ===============================================================================
 ENTER: TEST
-DATE:  Tue May 13 06:24:36 2008
+DATE:  Tue May 13 22:53:26 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -81,8 +83,8 @@ TITLE: Regression Tests on Fixed Bugs
     1893874 Missing colon in mode definition crashes 0.20.5
         bug-1893874.sh ..................................................[OK]
     1935701 - 0.24.7 buffer handling size mismatch
-        bug-1935701.exe FILE ............................................[OK]
-                        fstream .........................................[OK]
+        bug-1935701.exe FILE ...................................[MAKE FAILED]
+                        fstream ................................[MAKE FAILED]
 -------------------------------------------------------------------------------
  _____     _ _                  _
 |  ___|_ _(_) |_   _ _ __ ___  | |
@@ -92,9 +94,12 @@ TITLE: Regression Tests on Fixed Bugs
 
 Error: bug-1885304.sh 
 Error: bug-1895066.sh 
+Error: bug-1935701.exe FILE
+Error: bug-1935701.exe fstream
+EXIT:  TEST
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Tue May 13 06:26:14 2008
+DATE:  Tue May 13 22:54:09 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -107,14 +112,14 @@ TITLE: Demo-Applications
                                  002 ....................................[OK]
                                  003 ....................................[OK]
                                  005 ....................................[OK]
-                                 006 ..................................[FAIL]
+                                 006 ....................................[OK]
     Sun Microsystem's sunCC
         other-compilers-sun.sh 000 ......................................[OK]
                                001 ......................................[OK]
                                002 ......................................[OK]
                                003 ......................................[OK]
                                005 ......................................[OK]
-                               006 ....................................[FAIL]
+                               006 ......................................[OK]
 
  -- demo/000:
 
@@ -154,22 +159,19 @@ TITLE: Demo-Applications
  -- demo/006:
 
     Pseudo Ambiguous Post Conditions
-        006.sh NDEBUG .................................................[FAIL]
-               DEBUG ..................................................[FAIL]
+        006.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-Error: other-compilers-intel.sh 006
-Error: other-compilers-sun.sh 006
-Error: 006.sh NDEBUG
-Error: 006.sh DEBUG
+EXIT:  demo/TEST
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Tue May 13 06:26:14 2008
+DATE:  Tue May 13 22:55:43 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -182,9 +184,12 @@ TITLE: Miscellaneous Basic Tests
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/TEST
+make: one-beat
+make: n-beat
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Tue May 13 06:26:15 2008
+DATE:  Tue May 13 22:55:44 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -199,9 +204,16 @@ TITLE: Input Buffers Based on the IConv - Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/code_base/buffer/iconv/TEST
+make: test-forward-get
+make: test-forward-get-2
+make: test-misc-I
+make: test-misc-II
+make: test-misc-III
+make: test-backward-get
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Tue May 13 06:26:18 2008
+DATE:  Tue May 13 22:55:49 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -237,9 +249,12 @@ TITLE: Input Buffers
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/code_base/buffer/plain/TEST
+make: test-simple
+make: test-simple-2
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Tue May 13 06:26:20 2008
+DATE:  Tue May 13 22:55:51 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -257,9 +272,10 @@ TITLE: Lexical Analyzer Class Template
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/code_base/template/TEST
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Tue May 13 06:26:20 2008
+DATE:  Tue May 13 22:55:52 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -290,9 +306,10 @@ TITLE: Core Functionalities
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/TEST
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Tue May 13 06:26:38 2008
+DATE:  Tue May 13 22:55:53 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -301,84 +318,84 @@ TITLE: Code Generation for Lexical Analyzer
  -- Buffer Reload:
 
     No Backward Reload -- Precondition at Border
-        test-no-backward-reloading.py No_NDEBUG .......................[FAIL]
-                                      NDEBUG ..........................[FAIL]
+        test-no-backward-reloading.py No_NDEBUG .........................[OK]
+                                      NDEBUG ............................[OK]
     Backwards
         test-backward_loading.py No_NDEBUG ............................[FAIL]
                                  NDEBUG ...............................[FAIL]
     Forward Position Adaption
-        test-position_adaption.py No_NDEBUG ...........................[FAIL]
-                                  NDEBUG ..............................[FAIL]
+        test-position_adaption.py No_NDEBUG .............................[OK]
+                                  NDEBUG ................................[OK]
 
  -- CONTINUE:
 
     Mode Changes
-        test-mode-changes.py PlainMemory ..............................[FAIL]
-                             QuexBuffer ...............................[FAIL]
+        test-mode-changes.py PlainMemory ................................[OK]
+                             QuexBuffer .................................[OK]
     Reentry analysis without return from function
-        test-continue-without-return.py PlainMemory ...................[FAIL]
-                                        QuexBuffer ....................[FAIL]
+        test-continue-without-return.py PlainMemory .....................[OK]
+                                        QuexBuffer ......................[OK]
     (special use case)
-        test-continue-without-return-2.py PlainMemory .................[FAIL]
-                                          QuexBuffer ..................[FAIL]
+        test-continue-without-return-2.py PlainMemory ...................[OK]
+                                          QuexBuffer ....................[OK]
 
  -- Post Conditions:
 
     Part 2
-        test-post-conditions-2.py PlainMemory .........................[FAIL]
-                                  QuexBuffer ..........................[FAIL]
+        test-post-conditions-2.py PlainMemory ...........................[OK]
+                                  QuexBuffer ............................[OK]
     Part 1
-        test-post-conditions.py PlainMemory ...........................[FAIL]
-                                QuexBuffer ............................[FAIL]
+        test-post-conditions.py PlainMemory .............................[OK]
+                                QuexBuffer ..............................[OK]
 
  -- Pre Conditions:
 
     Part 1
         test-pre-conditions.py PlainMemory ............................[FAIL]
-                               QuexBuffer .............................[FAIL]
+                               QuexBuffer ...............................[OK]
     Multiple Identical Pre-Conditions
         test-pre-conditions-3.py PlainMemory ..........................[FAIL]
-                                 QuexBuffer ...........................[FAIL]
+                                 QuexBuffer .............................[OK]
     Part 2
         test-pre-conditions-2.py PlainMemory ..........................[FAIL]
-                                 QuexBuffer ...........................[FAIL]
+                                 QuexBuffer .............................[OK]
 
  -- Pre- and Post- Conditions:
 
     Simple
         test-pre-post-condition.py PlainMemory ........................[FAIL]
-                                   QuexBuffer .........................[FAIL]
+                                   QuexBuffer ...........................[OK]
 
  -- Pseudo Ambgiguous Post Condition:
 
     Part I
-        test-pseudo_ambiguous_post_conditions.py PlainMemory ..........[FAIL]
-                                                 QuexBuffer ...........[FAIL]
+        test-pseudo_ambiguous_post_conditions.py PlainMemory ............[OK]
+                                                 QuexBuffer .............[OK]
     Part II
-        test-pseudo_ambiguous_post_conditions-2.py PlainMemory ........[FAIL]
-                                                   QuexBuffer .........[FAIL]
+        test-pseudo_ambiguous_post_conditions-2.py PlainMemory ..........[OK]
+                                                   QuexBuffer ...........[OK]
 
  -- Simple:
 
     Tiny Expressions
-        test-simple.py PlainMemory ....................................[FAIL]
-                       QuexBuffer .....................................[FAIL]
+        test-simple.py PlainMemory ......................................[OK]
+                       QuexBuffer .......................................[OK]
     Maximum Length Match
-        test-simple-2.py PlainMemory ..................................[FAIL]
-                         QuexBuffer ...................................[FAIL]
+        test-simple-2.py PlainMemory ....................................[OK]
+                         QuexBuffer .....................................[OK]
     Begin of Line (BOL), End of Line (EOL)
         test-bol-eol.py PlainMemory ...................................[FAIL]
                         QuexBuffer ....................................[FAIL]
     Special Case '.' (drop out on valid target state)
-        test-simple-3.py PlainMemory ..................................[FAIL]
-                         QuexBuffer ...................................[FAIL]
+        test-simple-3.py PlainMemory ....................................[OK]
+                         QuexBuffer .....................................[OK]
 
  -- Single State:
 
     Transition Code Generation
-        test-single-state-transitions.py ..............................[FAIL]
+        test-single-state-transitions.py ................................[OK]
     Extensive Transition Code Generation
-        test-single-state-transitions-x.py ............................[FAIL]
+        test-single-state-transitions-x.py ..............................[OK]
 -------------------------------------------------------------------------------
  _____     _ _                  _
 |  ___|_ _(_) |_   _ _ __ ___  | |
@@ -386,47 +403,18 @@ TITLE: Code Generation for Lexical Analyzer
 |  _| (_| | | | |_| | | |  __/ |_|
 |_|  \__,_|_|_|\__,_|_|  \___| (_)
 
-Error: test-no-backward-reloading.py No_NDEBUG
-Error: test-no-backward-reloading.py NDEBUG
 Error: test-backward_loading.py No_NDEBUG
 Error: test-backward_loading.py NDEBUG
-Error: test-position_adaption.py No_NDEBUG
-Error: test-position_adaption.py NDEBUG
-Error: test-mode-changes.py PlainMemory
-Error: test-mode-changes.py QuexBuffer
-Error: test-continue-without-return.py PlainMemory
-Error: test-continue-without-return.py QuexBuffer
-Error: test-continue-without-return-2.py PlainMemory
-Error: test-continue-without-return-2.py QuexBuffer
-Error: test-post-conditions-2.py PlainMemory
-Error: test-post-conditions-2.py QuexBuffer
-Error: test-post-conditions.py PlainMemory
-Error: test-post-conditions.py QuexBuffer
 Error: test-pre-conditions.py PlainMemory
-Error: test-pre-conditions.py QuexBuffer
 Error: test-pre-conditions-3.py PlainMemory
-Error: test-pre-conditions-3.py QuexBuffer
 Error: test-pre-conditions-2.py PlainMemory
-Error: test-pre-conditions-2.py QuexBuffer
 Error: test-pre-post-condition.py PlainMemory
-Error: test-pre-post-condition.py QuexBuffer
-Error: test-pseudo_ambiguous_post_conditions.py PlainMemory
-Error: test-pseudo_ambiguous_post_conditions.py QuexBuffer
-Error: test-pseudo_ambiguous_post_conditions-2.py PlainMemory
-Error: test-pseudo_ambiguous_post_conditions-2.py QuexBuffer
-Error: test-simple.py PlainMemory
-Error: test-simple.py QuexBuffer
-Error: test-simple-2.py PlainMemory
-Error: test-simple-2.py QuexBuffer
 Error: test-bol-eol.py PlainMemory
 Error: test-bol-eol.py QuexBuffer
-Error: test-simple-3.py PlainMemory
-Error: test-simple-3.py QuexBuffer
-Error: test-single-state-transitions.py 
-Error: test-single-state-transitions-x.py 
+EXIT:  quex/core_engine/generator/TEST
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Tue May 13 06:26:43 2008
+DATE:  Tue May 13 22:56:38 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -486,9 +474,10 @@ TITLE: Regular Expression Parsing
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/regular_expression/TEST
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Tue May 13 06:26:49 2008
+DATE:  Tue May 13 22:56:43 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -582,9 +571,10 @@ TITLE: State Machine Operations
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/state_machine/TEST
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Tue May 13 06:26:49 2008
+DATE:  Tue May 13 22:56:47 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -605,9 +595,10 @@ TITLE: Frank-Rene Schaefers Little Python Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/frs_py/TEST
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Tue May 13 06:27:04 2008
+DATE:  Tue May 13 22:56:47 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -628,9 +619,10 @@ TITLE: Character Set Queries
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/input/TEST
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Tue May 13 06:27:05 2008
+DATE:  Tue May 13 22:57:02 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -654,10 +646,11 @@ TITLE: <no file 'ADM/title.txt'>
 Error: plot-core.py 
 Error: plot-pre-context.py 
 Error: plot-papc.py 
+EXIT:  quex/output/graphviz/TEST
 ===============================================================================
 SUMMARY:
 .//TEST ...............................................................[FAIL]
-./demo/TEST ...........................................................[FAIL]
+./demo/TEST .............................................................[OK]
 ./quex/TEST .............................................................[OK]
 ./quex/code_base/buffer/iconv/TEST ......................................[OK]
 ./quex/code_base/buffer/plain/TEST ......................................[OK]
