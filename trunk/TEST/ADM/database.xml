@@ -1,26 +1,26 @@
-<test-database execution-time-sec="41.55" date="Tue May 13 22:54:08 2008">
+<test-database execution-time-sec="42.35" date="Wed May 14 07:11:53 2008">
     <last-used-diff-display-program name=""/>
     <group name="fschaef">
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="29.63"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="29.54"> 
             <application file-name="bug-1952133.sh" info-request-time="1209260158L"/>
             <choice-list number="9">
-               <choice name="29" result="OK" time-sec="3.27" crc="-1020317142"/>
-               <choice name="30" result="OK" time-sec="3.28" crc="-1769829012"/>
-               <choice name="127" result="OK" time-sec="3.30" crc="1159892932"/>
-               <choice name="128" result="OK" time-sec="3.29" crc="-1539255043"/>
-               <choice name="129" result="OK" time-sec="3.28" crc="-1219881466"/>
-               <choice name="2499" result="OK" time-sec="3.30" crc="220117901"/>
-               <choice name="2500" result="OK" time-sec="3.31" crc="888187144"/>
-               <choice name="2501" result="OK" time-sec="3.31" crc="1677544258"/>
-               <choice name="2502" result="OK" time-sec="3.28" crc="-1695847012"/>
+               <choice name="29" result="OK" time-sec="3.24" crc="-1020317142"/>
+               <choice name="30" result="OK" time-sec="3.30" crc="-1769829012"/>
+               <choice name="127" result="OK" time-sec="3.28" crc="1159892932"/>
+               <choice name="128" result="OK" time-sec="3.36" crc="-1539255043"/>
+               <choice name="129" result="OK" time-sec="3.30" crc="-1219881466"/>
+               <choice name="2499" result="OK" time-sec="3.27" crc="220117901"/>
+               <choice name="2500" result="OK" time-sec="3.27" crc="888187144"/>
+               <choice name="2501" result="OK" time-sec="3.22" crc="1677544258"/>
+               <choice name="2502" result="OK" time-sec="3.29" crc="-1695847012"/>
             </choice-list>
         </test>
     </group>
     <group name="sphericalcow">
-        <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.06"> 
+        <test title="1889871 0.19.4 crashes if [] expression contains unescaped -" time-sum-sec="0.07"> 
             <application file-name="bug-1889871.sh" info-request-time="1202573865L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="-429266748"/>
+               <choice name="" result="OK" time-sec="0.07" crc="-429266748"/>
             </choice-list>
         </test>
         <test title="1898125 invalid argument for --token-offset can crash 0.21.4" time-sum-sec="0.17"> 
@@ -29,46 +29,46 @@
                <choice name="" result="OK" time-sec="0.17" crc="1051315050"/>
             </choice-list>
         </test>
-        <test title="1900391 malformed --set-by-expression can crash 0.21.8" time-sum-sec="0.23"> 
+        <test title="1900391 malformed --set-by-expression can crash 0.21.8" time-sum-sec="0.20"> 
             <application file-name="bug-1900391.sh" info-request-time="1203950695L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.23" crc="-1949253838"/>
+               <choice name="" result="OK" time-sec="0.20" crc="-1949253838"/>
             </choice-list>
         </test>
-        <test title="1893874 Missing colon in mode definition crashes 0.20.5" time-sum-sec="0.06"> 
+        <test title="1893874 Missing colon in mode definition crashes 0.20.5" time-sum-sec="0.08"> 
             <application file-name="bug-1893874.sh" info-request-time="1203006557L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="744506208"/>
+               <choice name="" result="OK" time-sec="0.08" crc="744506208"/>
             </choice-list>
         </test>
-        <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" time-sum-sec="1.86"> 
+        <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" time-sum-sec="1.93"> 
             <application file-name="bug-1894578.sh" info-request-time="1203129010L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.86" crc="1096694076"/>
+               <choice name="" result="OK" time-sec="1.93" crc="1096694076"/>
             </choice-list>
         </test>
-        <test title="1891254 Lone ? as regex does not give an error in 0.19.9" time-sum-sec="0.12"> 
+        <test title="1891254 Lone ? as regex does not give an error in 0.19.9" time-sum-sec="0.14"> 
             <application file-name="bug-1891254.sh" info-request-time="1202834730L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1488678156"/>
+               <choice name="" result="OK" time-sec="0.14" crc="1488678156"/>
             </choice-list>
         </test>
-        <test title="1889877 '*' or '+' without prececing expression crashes 0.19.4" time-sum-sec="0.07"> 
+        <test title="1889877 '*' or '+' without prececing expression crashes 0.19.4" time-sum-sec="0.10"> 
             <application file-name="bug-1889877.sh" info-request-time="1202576192L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07" crc="-2122143967"/>
+               <choice name="" result="OK" time-sec="0.10" crc="-2122143967"/>
             </choice-list>
         </test>
-        <test title="1890876 {} handled oddly in define blocks in 0.19.9" time-sum-sec="0.12"> 
+        <test title="1890876 {} handled oddly in define blocks in 0.19.9" time-sum-sec="0.27"> 
             <application file-name="bug-1890876.sh" info-request-time="1202833518L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1086595520"/>
+               <choice name="" result="OK" time-sec="0.27" crc="1086595520"/>
             </choice-list>
         </test>
-        <test title="1895066" time-sum-sec="0.09"> 
+        <test title="1895066" time-sum-sec="0.33"> 
             <application file-name="bug-1895066.sh" info-request-time="1203220067L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.09" crc="-356422183"/>
+               <choice name="" result="FAIL" time-sec="0.33" crc="-356422183"/>
             </choice-list>
         </test>
         <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" time-sum-sec="0.06"> 
@@ -77,82 +77,82 @@
                <choice name="" result="OK" time-sec="0.06" crc="-895622030"/>
             </choice-list>
         </test>
-        <test title="1902175 invalid escape in character set expression crashes 0.21.12" time-sum-sec="0.08"> 
+        <test title="1902175 invalid escape in character set expression crashes 0.21.12" time-sum-sec="0.07"> 
             <application file-name="bug-1902175.sh" info-request-time="1204240412L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.08" crc="-2033217112"/>
+               <choice name="" result="OK" time-sec="0.07" crc="-2033217112"/>
             </choice-list>
         </test>
-        <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.27"> 
+        <test title="1889086 Single state mode causes quex to crash" time-sum-sec="0.48"> 
             <application file-name="bug-1889086.sh" info-request-time="1202526432L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.27" crc="-873278874"/>
+               <choice name="" result="OK" time-sec="0.48" crc="-873278874"/>
             </choice-list>
         </test>
-        <test title="1889892 x, X or followed by a non-hex digit crashes 0.19.4" time-sum-sec="0.22"> 
+        <test title="1889892 x, X or followed by a non-hex digit crashes 0.19.4" time-sum-sec="0.28"> 
             <application file-name="bug-1889892.sh" info-request-time="1202781202L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.22" crc="-1117047420"/>
+               <choice name="" result="OK" time-sec="0.28" crc="-1117047420"/>
             </choice-list>
         </test>
-        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="3.70"> 
-            <application file-name="bug-1895500.sh" info-request-time="1203725950L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="3.70" crc="-1888187264"/>
-            </choice-list>
-        </test>
-        <test title="1889321 Quex does not handle actions including quote literal" time-sum-sec="0.31"> 
+        <test title="1889321 Quex does not handle actions including quote literal" time-sum-sec="0.20"> 
             <application file-name="bug-1889321.sh" info-request-time="1202558032L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.31" crc="-183459496"/>
+               <choice name="" result="OK" time-sec="0.20" crc="-183459496"/>
             </choice-list>
         </test>
-        <test title="1885855 P{ ...} syntax does not work outside of [" time-sum-sec="0.48"> 
+        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="3.80"> 
+            <application file-name="bug-1895500.sh" info-request-time="1203725950L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="3.80" crc="-1888187264"/>
+            </choice-list>
+        </test>
+        <test title="1885855 P{ ...} syntax does not work outside of [" time-sum-sec="0.58"> 
             <application file-name="bug-1885855.sh" info-request-time="1202919220L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.48" crc="584772075"/>
+               <choice name="" result="OK" time-sec="0.58" crc="584772075"/>
             </choice-list>
         </test>
-        <test title="1892227 accepted as identifiers in def" time-sum-sec="0.12"> 
+        <test title="1892227 accepted as identifiers in def" time-sum-sec="0.07"> 
             <application file-name="bug-1892227.sh" info-request-time="1202835179L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="1038686624"/>
+               <choice name="" result="OK" time-sec="0.07" crc="1038686624"/>
             </choice-list>
         </test>
-        <test title="1889089 Single state mode causes quex to crash" time-sum-sec="0.07"> 
+        <test title="1889089 Single state mode causes quex to crash" time-sum-sec="0.12"> 
             <application file-name="bug-1889089.sh" info-request-time="1202555658L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07" crc="107363452"/>
+               <choice name="" result="OK" time-sec="0.12" crc="107363452"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" time-sum-sec="0.07"> 
-            <application file-name="bug-1885846.sh" info-request-time="1202439526L"/>
+        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.18"> 
+            <application file-name="bug-1887163.sh" info-request-time="1202571808L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07" crc="2110266544"/>
+               <choice name="" result="OK" time-sec="0.18" crc="-2036118939"/>
             </choice-list>
         </test>
-        <test title="1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6" time-sum-sec="0.12"> 
+        <test title="1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6" time-sum-sec="0.13"> 
             <application file-name="bug-1894185.sh" info-request-time="1203154582L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="781076954"/>
+               <choice name="" result="OK" time-sec="0.13" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.23"> 
+        <test title="1889702 0.19.4 forbids derived modes that only add event handlers" time-sum-sec="0.21"> 
             <application file-name="bug-1889702.sh" info-request-time="1204419878L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.23" crc="-1186799545"/>
+               <choice name="" result="OK" time-sec="0.21" crc="-1186799545"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.40"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.43"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.40" crc="-1793624070"/>
+               <choice name="" result="FAIL" time-sec="0.43" crc="-1793624070"/>
             </choice-list>
         </test>
-        <test title="1905768" time-sum-sec="0.12"> 
+        <test title="1905768" time-sum-sec="0.39"> 
             <application file-name="bug-1905768.sh" info-request-time="1204667830L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.12" crc="463982673"/>
+               <choice name="" result="FAIL" time-sec="0.39" crc="463982673"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.00"> 
@@ -163,22 +163,22 @@
                <choice name="fstream" result="OK" time-sec="0.00" crc="-1598919026"/>
             </choice-list>
         </test>
-        <test title="1893880 0.20.5 allows inheritable" time-sum-sec="0.16"> 
+        <test title="1893880 0.20.5 allows inheritable" time-sum-sec="0.09"> 
             <application file-name="bug-1893880.sh" info-request-time="1203151606L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.16" crc="1628237482"/>
+               <choice name="" result="OK" time-sec="0.09" crc="1628237482"/>
             </choice-list>
         </test>
-        <test title="1892809" time-sum-sec="2.11"> 
+        <test title="1892809" time-sum-sec="1.92"> 
             <application file-name="bug-1892809.sh" info-request-time="1203129378L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.11" crc="-1535149083"/>
+               <choice name="" result="OK" time-sec="1.92" crc="-1535149083"/>
             </choice-list>
         </test>
-        <test title="1893849 0.20.5 allows engine names that are not valid identifiers" time-sum-sec="0.07"> 
+        <test title="1893849 0.20.5 allows engine names that are not valid identifiers" time-sum-sec="0.06"> 
             <application file-name="bug-1893849.sh" info-request-time="1203131191L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07" crc="-1988005010"/>
+               <choice name="" result="OK" time-sec="0.06" crc="-1988005010"/>
             </choice-list>
         </test>
         <test title="1908436 0.23.6 rule precedence reversed for identical patterns" time-sum-sec="0.08"> 
@@ -187,10 +187,10 @@
                <choice name="" result="OK" time-sec="0.08" crc="106667216"/>
             </choice-list>
         </test>
-        <test title="1890828 0.19.9 crashes trying to call error handler in several cases" time-sum-sec="0.13"> 
+        <test title="1890828 0.19.9 crashes trying to call error handler in several cases" time-sum-sec="0.17"> 
             <application file-name="bug-1890828.sh" info-request-time="1202834137L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.13" crc="-656582305"/>
+               <choice name="" result="OK" time-sec="0.17" crc="-656582305"/>
             </choice-list>
         </test>
         <test title="1889692 0.19.4 does not gracefully handle unbalanced quotations" time-sum-sec="0.16"> 
@@ -199,10 +199,10 @@
                <choice name="" result="OK" time-sec="0.16" crc="1055383844"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" time-sum-sec="0.18"> 
-            <application file-name="bug-1887163.sh" info-request-time="1202571808L"/>
+        <test title="1885846 Empty RE in define section" time-sum-sec="0.06"> 
+            <application file-name="bug-1885846.sh" info-request-time="1202439526L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.18" crc="-2036118939"/>
+               <choice name="" result="OK" time-sec="0.06" crc="2110266544"/>
             </choice-list>
         </test>
     </group>

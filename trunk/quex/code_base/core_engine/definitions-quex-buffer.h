@@ -120,10 +120,10 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 #define QUEX_END_OF_FILE()   me->__buffer->is_end_of_file()
 #define QUEX_BEGIN_OF_FILE() me->__buffer->is_begin_of_file()
 
-#define QUEX_STREAM_GET(character)            (character) = me->__buffer->get_forward(); 
-#define QUEX_STREAM_GET_BACKWARDS(character)  (character) = me->__buffer->get_backward(); 
-#define QUEX_STREAM_TELL(position)            (position)  = me->__buffer->tell_adr();
-#define QUEX_STREAM_SEEK(position)            me->__buffer->seek_adr(position);    
+#define QUEX_BUFFER_INCREMENT_AND_GET(character)  (character) = me->__buffer->get_forward(); 
+#define QUEX_BUFFER_DECREMENT_AND_GET(character)  (character) = me->__buffer->get_backward(); 
+#define QUEX_BUFFER_TELL_ADR(position)            (position)  = me->__buffer->tell_adr();
+#define QUEX_BUFFER_SEEK_ADR(position)            me->__buffer->seek_adr(position);    
 
     
 /* NOTE: See note at the member definition of '.begin_of_line_f'

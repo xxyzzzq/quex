@@ -6,8 +6,6 @@ Then it is shown how to specify whole regular expressions to express
 conditions on the surroundings of the pattern to be matched. The traditional
 characters to condition begin and end of line are:
 
-
-
 `^R`:: 
 
    an  regular expression `R`, but only at the beginning of a line. This condition
@@ -19,18 +17,21 @@ characters to condition begin and end of line are:
 
 `R$`:: 
 
-    a regular expression R, but only at the end of a line or right before the end of the
-     file. Note, that the meaning of this shortcut can be adapted according to the 
-     target operating system. Some operating systems, such as DOS and Windows, code
-     a newline as a sequence '\r\n' (hexadecimal 0D, 0A), i.e.
-     as two characters. If you want to use this feature on those systems, you need 
-     to specify the `--DOS` option on the command line (or in your makefile).
-     Otherwise, `$` will scan only for the newline character (hexadecimal 0A). 
+    a regular expression R, but only at the end of a line and _not_ at the end of the
+    file. Note, that the meaning of this shortcut can be adapted according to the 
+    target operating system. Some operating systems, such as DOS and Windows, code
+    a newline as a sequence '\r\n' (hexadecimal 0D, 0A), i.e.
+    as two characters. If you want to use this feature on those systems, you need 
+    to specify the `--DOS` option on the command line (or in your makefile).
+    Otherwise, `$` will scan only for the newline character (hexadecimal 0A). 
      +
-     Note, that for the trivial end-of-line post condition the newline coding
-     convention is essential.  If newline is coded as 0D, 0A then the
-     first 0D would discard a pattern that was supposed to be followed by
-     0A only.
+    Note, that for the trivial end-of-line post condition the newline coding
+    convention is essential.  If newline is coded as 0D, 0A then the
+    first 0D would discard a pattern that was supposed to be followed by
+    0A only.
+     +
+    Note, that if the '$' shall trigger at the end of the file, it might be 
+    advantageous to add a newline at the end of the file by default.
 
 For more sophisticated case 'real' regular expressions can be defined to handle
 pre- and post-conditions. Note, that pre- and post-conditions can only appear

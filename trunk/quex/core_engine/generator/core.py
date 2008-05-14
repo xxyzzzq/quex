@@ -113,7 +113,8 @@ class Generator(GeneratorBase):
                                                          self.post_contexted_sm_id_list, 
                                                          self.pre_context_sm_id_list,
                                                          self.mode_name_list, 
-                                                         InitialStateIndex=self.sm.init_state_index) 
+                                                         InitialStateIndex=self.sm.init_state_index,
+                                                         LanguageDB=LanguageDB) 
 
         option_str = ""
         if self.begin_of_line_condition_f: 

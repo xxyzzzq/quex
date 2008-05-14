@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.83" date="Tue May 13 22:57:03 2008">
+<test-database execution-time-sec="0.75" date="Wed May 14 07:14:48 2008">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." time-sum-sec="0.70"> 
+    <test title="Check supported formats." time-sum-sec="0.61"> 
         <application file-name="get_supported_formats.py" info-request-time="1205646836L"/>
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.70" crc="-1342312020"/>
+           <choice name="" result="OK" time-sec="0.61" crc="-1342312020"/>
         </choice-list>
     </test>
     <group name="Plot">

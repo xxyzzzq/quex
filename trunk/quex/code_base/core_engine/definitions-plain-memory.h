@@ -48,13 +48,13 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_END_OF_FILE()   0
 #define QUEX_BEGIN_OF_FILE() (me->input_p == me->buffer_begin)
 
-#define QUEX_STREAM_GET(character)            character   = *(++(me->input_p));
-#define QUEX_STREAM_GET_BACKWARDS(character)  character   = *(--(me->input_p)); 
-#define QUEX_STREAM_TELL(position)            position    = me->input_p;
-#define QUEX_STREAM_SEEK(position)            me->input_p = position;
+#define QUEX_BUFFER_INCREMENT_AND_GET(character)  character   = *(++(me->input_p));
+#define QUEX_BUFFER_DECREMENT_AND_GET(character)  character   = *(--(me->input_p)); 
+#define QUEX_BUFFER_TELL_ADR(position)            position    = me->input_p;
+#define QUEX_BUFFER_SEEK_ADR(position)            me->input_p = position;
 
 
-#define QUEX_INLINE_KEYWORD                   static
+#define QUEX_INLINE_KEYWORD static
 
 
 #define QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST \
@@ -102,7 +102,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 ** performs this positioning of the input pointer.
 */
 #define QUEX_CORE_SEEK_ANALYSER_START_POSITION \
-       me->input_p = me->initial_position_p; 
+        me->input_p = me->initial_position_p; 
 
 /* Drop Out Procedures: 
 **   

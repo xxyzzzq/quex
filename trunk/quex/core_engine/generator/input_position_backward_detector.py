@@ -41,8 +41,8 @@ def do(sm, LanguageDB, PrintStateMachineF):
     ## function_body += "    backward_lexing_drop_out(me, input);\n" 
     ## function_body += "#   endif\n"
     ## function_body += "    $return\n"
-    function_body += "    QUEX_STREAM_SEEK(end_of_core_pattern_position);\n"
-    function_body += LanguageDB["$input/get-backwards"] + "\n"
+    function_body += "    QUEX_BUFFER_SEEK_ADR(end_of_core_pattern_position);\n"
+    function_body += "    " + LanguageDB["$input/get-backwards"] + "\n"
 
     variables_txt = LanguageDB["$local-variable-defs"](
         [["QUEX_CHARACTER_TYPE",     "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],

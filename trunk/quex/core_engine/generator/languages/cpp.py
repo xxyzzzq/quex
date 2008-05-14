@@ -132,7 +132,7 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
     txt = ""
     for origin in OriginList:
         if origin.store_input_position_f():
-            txt += LanguageDB["$set-pre-context-flag"](origin.state_machine_id, 1)
+            txt += "    " + LanguageDB["$set-pre-context-flag"](origin.state_machine_id, 1)
     txt += "\n"    
 
     return txt
@@ -161,7 +161,37 @@ def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
     txt = ""
     for origin in OriginList:
         if origin.store_input_position_f():
-            txt += "QUEX_STREAM_TELL(end_of_core_pattern_position);\n"
+            txt += "    QUEX_BUFFER_TELL_ADR(end_of_core_pattern_position);\n"
+
+    return txt
+
+def __acceptance_info_forward_lexing(OriginList, LanguageDB):
+
+    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
+    txt = ""
+    #
+    # -- get the pattern ids that indicate the start of a post-condition
+    #    (i.e. the end of a core pattern where a post condition is to follow).
+    # -- collect patterns that reach acceptance at this state.
+    final_acceptance_origin_list     = []
+    for origin in OriginList: 
+        if origin.is_end_of_post_contexted_core_pattern():
+            # store current input position, to be restored when post condition really matches
+            txt += "    " + LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
+        elif origin.is_acceptance():
+            final_acceptance_origin_list.append(origin)
+   
+    def __on_detection_code(StateMachineName, Origin):
+        info  = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
+        info += LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
+        # NOTE: When post conditioned patterns end they do not store the input position.
+        #       Rather, the acceptance position of the core pattern is considered.
+        if Origin.store_input_position_f():
+            info += LanguageDB["$input/tell_position"]() + "\n"
+        return info
+
+    txt += get_acceptance_detector(final_acceptance_origin_list, __on_detection_code,
+                                   LanguageDB)
 
     return txt
 
@@ -172,7 +202,7 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           LanguageDB                = None,
                           DropOutTargetStateID      = -1L):
 
-    txt = "__QUEX_DEBUG_INFO_DROP_OUT(%i);\n" % CurrentStateIdx
+    txt = "    __QUEX_DEBUG_INFO_DROP_OUT(%i);\n" % CurrentStateIdx
     if BackwardLexingF: 
         txt += __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
                                                      BufferReloadRequiredOnDropOutF,
@@ -192,18 +222,18 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
                                           DropOutTargetStateID, LanguageDB):      
     txt = ""
     if BufferReloadRequiredOnDropOutF:
-        txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += LanguageDB["$drop-out-backward"](label.get_input(CurrentStateIdx))
-        txt += "#endif\n"
+        txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
+        txt += "    " + LanguageDB["$drop-out-backward"](label.get_input(CurrentStateIdx)).replace("\n", "\n    ")
+        txt += "\n#   endif\n"
 
     if DropOutTargetStateID != -1L:
         # -- A 'match all' is implemented as 'drop out to target'. This happens
         #    in order to ensure that the buffer limits are checked.
-        txt += "goto %s;" % label.get(StateMachineName, DropOutTargetStateID)
+        txt += "    goto %s;\n" % label.get(StateMachineName, DropOutTargetStateID)
         return txt
     
     #  -- general drop out: goto general terminal state
-    txt += "goto %s;\n" % label.get_terminal(BackwardLexingF=True) 
+    txt += "    goto %s;\n" % label.get_terminal(BackwardLexingF=True) 
 
     return txt
 
@@ -213,22 +243,23 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
                                          DropOutTargetStateID):      
     txt = ""
     if BufferReloadRequiredOnDropOutF:
-        txt += "#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
+        txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
+        txt += "    "
         txt += LanguageDB["$drop-out-forward"](
-                OnReloadGotoLabel=label.get_input(CurrentStateIdx))
-        txt += "#endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */\n"
+                OnReloadGotoLabel=label.get_input(CurrentStateIdx)).replace("\n", "\n    ")
+        txt += "\n#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */\n"
 
     # From here on: input is not a 'buffer limit code' 
     #               (i.e. input does **not** mean: 'load buffer')
     if DropOutTargetStateID != -1L:
         # -- A 'match all' is implemented as 'drop out to target'. This happens
         #    in order to ensure that the buffer limits are checked.
-        txt += "goto %s;" % label.get(StateMachineName, DropOutTargetStateID)
+        txt += "    goto %s;" % label.get(StateMachineName, DropOutTargetStateID)
         return txt
     
     #     -- 'drop out' in non-acceptance --> goto general terminal
     if CurrentStateIsAcceptanceF == False:  
-        txt += "goto %s;\n" % label.get_terminal()
+        txt += "    goto %s;\n" % label.get_terminal()
         return txt
      
     #    -- 'drop out' in acceptance state --> check pre-conditions (if there are some)
@@ -254,36 +285,6 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     assert t_txt != "", "Acceptance state without acceptance origins!"        
 
     return txt + t_txt
-
-def __acceptance_info_forward_lexing(OriginList, LanguageDB):
-
-    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
-    txt = ""
-    #
-    # -- get the pattern ids that indicate the start of a post-condition
-    #    (i.e. the end of a core pattern where a post condition is to follow).
-    # -- collect patterns that reach acceptance at this state.
-    final_acceptance_origin_list     = []
-    for origin in OriginList: 
-        if origin.is_end_of_post_contexted_core_pattern():
-            # store current input position, to be restored when post condition really matches
-            txt += LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
-        elif origin.is_acceptance():
-            final_acceptance_origin_list.append(origin)
-   
-    def __on_detection_code(StateMachineName, Origin):
-        info  = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-        info += LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
-        # NOTE: When post conditioned patterns end they do not store the input position.
-        #       Rather, the acceptance position of the core pattern is considered.
-        if Origin.store_input_position_f():
-            info += LanguageDB["$input/tell_position"]() + "\n"
-        return info
-
-    txt += get_acceptance_detector(final_acceptance_origin_list, __on_detection_code,
-                                   LanguageDB)
-
-    return txt
 
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment, 
                             LanguageDB, StateMachineName=""):
@@ -324,16 +325,14 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         if_statement = LanguageDB["$elseif"]
 
     # (*) write code for the unconditional acceptance states
-    return txt
+    if txt == "": return ""
+    else:         return "    " + txt[:-1].replace("\n", "\n    ") + txt[-1]
 
 def __tell_position(StateMachineID=None):
     if StateMachineID == None: msg = ""   
     else:                      msg = __nice(StateMachineID) + "_"
     
-    return "QUEX_STREAM_TELL(last_acceptance_%sinput_position);" % msg 
-
-def __label_definition(LabelName):
-    return "  " + LabelName + ":"
+    return "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg 
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
@@ -343,8 +342,8 @@ __header_definitions_txt = """
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-        std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr()));            
-//      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p));            
+        std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p));            
+//      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr()));            
 //      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
@@ -427,12 +426,14 @@ void (*$$QUEX_ANALYZER_STRUCT_NAME$$_init)(QUEX_CORE_ANALYSER_STRUCT_init_ARGUME
 
 QUEX_INLINE_KEYWORD
 QUEX_ANALYSER_RETURN_TYPE
-$$QUEX_ANALYZER_STRUCT_NAME$$_do(QUEX_CORE_ANALYSER_STRUCT* me) {
+$$QUEX_ANALYZER_STRUCT_NAME$$_do(QUEX_CORE_ANALYSER_STRUCT* me) 
+{
 """
 
 __function_header_quex_mode_based = __function_header_common + """
 QUEX_ANALYSER_RETURN_TYPE
-quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) {
+quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) 
+{
     // NOTE: Different modes correspond to different analyser functions. The analyser
     //       functions are all located inside the main class as static functions. That
     //       means, they are something like 'globals'. They receive a pointer to the 
@@ -442,19 +443,19 @@ quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUE
 """
 
 __analyzer_function_start = """
-#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
     int loaded_byte_n = 0; /* At transition Drop-Out: 
                            **    > 0  number of loaded bytes. 
                            **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
                            */
-#endif
+#  endif
    __QUEX_DEBUG_INFO_START_LEXING($$QUEX_ANALYZER_STRUCT_NAME$$);
-   __REENTRY_POINT:
+__REENTRY_POINT:
 """
 
 def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                         function_body, PostConditionedStateMachineID_List, PreConditionIDList,
-                        ModeNameList=[], InitialStateIndex=-1):   
+                        ModeNameList=[], InitialStateIndex=-1, LanguageDB=None):   
     """EngineClassName = name of the structure that contains the engine state.
                          if a mode of a complete quex environment is created, this
                          is the mode name. otherwise, any name can be chosen. 
@@ -487,7 +488,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
             local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "self." + name]) 
 
     txt = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
-    txt += "/* me = pointer to state of the lexical analyser */\n"
+    txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
 
     local_variable_list.extend(
             [ ["int",                         "last_acceptance",                "-1"],
@@ -543,8 +544,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     # -- the name of the game
     txt = txt.replace("$$QUEX_ANALYZER_STRUCT_NAME$$", EngineClassName)
 
-    txt = "    " + txt.replace("\n", "\n    ")
-    if txt[-4:] == "    ": txt = txt[:-4]
 
     return txt
 
@@ -558,15 +557,15 @@ __terminal_state_str  = """
   //
 $$SPECIFIC_TERMINAL_STATES$$
 
-  TERMINAL_END_OF_STREAM:
+TERMINAL_END_OF_STREAM:
 $$END_OF_STREAM_ACTION$$
         return TKN_TERMINATION;
 
-  TERMINAL_DEFAULT:
+TERMINAL_DEFAULT:
 $$DEFAULT_ACTION$$
         goto __REENTRY_PREPARATION;
 
-  TERMINAL_GENERAL: {
+TERMINAL_GENERAL: {
         int tmp = last_acceptance;
         //
         //  if last_acceptance => goto correspondent acceptance terminal state
@@ -580,7 +579,7 @@ $$JUMPS_TO_ACCEPTANCE_STATE$$
     }
 
   
-  __REENTRY_PREPARATION:
+__REENTRY_PREPARATION:
     // (*) Common point for **restarting** lexical analysis.
     //     at each time when CONTINUE is called at the end of a pattern.
     //
@@ -653,14 +652,14 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
-            txt += "    QUEX_STREAM_SEEK(last_acceptance_%sinput_position);\n" % \
+            txt += "    QUEX_BUFFER_SEEK_ADR(last_acceptance_%sinput_position);\n" % \
                    post_context_number_str
         else:
             # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
             #       pattern. However, after a match a backward detection of the end
             #       of the core pattern is done. Here, we first need to go to the point
             #       where the 'normal' pattern ended, then we can do a backward detection.
-            txt += "    QUEX_STREAM_SEEK(last_acceptance_input_position);\n"
+            txt += "    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);\n"
             txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
                    __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
         # -- paste the action code that correponds to the pattern   
@@ -694,7 +693,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     #                    be reset so that the initial state can drop out on the buffer limit code
     #                    and then transit to the end of file action.
     default_action_str  = "if( QUEX_END_OF_FILE() ) {\n"
-    default_action_str += "    QUEX_STREAM_GET_BACKWARDS(/* dummy (important is that we go backwards */input);\n"
+    default_action_str += "    QUEX_BUFFER_DECREMENT_AND_GET(/* dummy (important is that we go backwards */input);\n"
     default_action_str += "}\n"
     default_action_str += __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
                                               IndentationOffset=16)

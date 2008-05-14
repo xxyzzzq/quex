@@ -31,8 +31,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     txt += drop_out_block(state, StateIdx, TriggerMap, 
                           InitStateF, BackwardLexingF, StateMachineName, LanguageDB)
     
-    return txt.replace("\n", "\n    ") + "\n"
-
+    return txt # .replace("\n", "\n    ") + "\n"
 
 def acceptance_info(state, LanguageDB, 
                     BackwardLexingF, 
@@ -60,8 +59,6 @@ def acceptance_info(state, LanguageDB,
         # (*) Forward Lexing 
         return LanguageDB["$acceptance-info-fw"](OriginList, LanguageDB)
 
-
-
 def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, LanguageDB):
 
     if TriggerMapEmptyF: return ""
@@ -70,7 +67,7 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
     txt = LanguageDB["$label-definition"](input_label) + "\n"
 
     if not BackwardLexingF:
-        txt += "%s\n" % LanguageDB["$input/get"] 
+        txt += "    %s\n" % LanguageDB["$input/get"] 
     else:
         # At the init state, the lexial analyzer stands **before** the next character
         # to be read in forward direction. When backward lexing is involved the input
@@ -82,8 +79,8 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
         #                                  NC
         # current_p = LE (lexeme end), so that "input = *(++current_p)" is '('.
         # NOW: current_p = NC, so that         "input = *(--current_p)" is 'f'.
-        if InitStateF: txt += LanguageDB["$input/get"] + "\n"
-        txt += LanguageDB["$input/get-backwards"] + "\n"
+        if InitStateF: txt += "    " + LanguageDB["$input/get"] + "\n"
+        txt += "    " + LanguageDB["$input/get-backwards"] + "\n"
     txt += "    " + LanguageDB["$debug-info-input"] + "\n"
 
     return txt
@@ -105,13 +102,13 @@ def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, Sta
     # -- in case of the init state, the end of file has to be checked.
     #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
     if InitStateF and BackwardLexingF == False:
-        txt += LanguageDB["$if EOF"]
-        txt += "    " + LanguageDB["$comment"](
+        txt += "    " + LanguageDB["$if EOF"]
+        txt += "        " + LanguageDB["$comment"](
                 "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"
-        txt += "    " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
+        txt += "        " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
                                                   BackwardLexingF=False) + "\n"
-        txt += LanguageDB["$endif"]
+        txt += "    " + LanguageDB["$endif"]
 
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = TriggerMap != [],
