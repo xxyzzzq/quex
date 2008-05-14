@@ -1,4 +1,4 @@
-<history date="Tue May 13 22:56:37 2008" element-n="64">
+<history date="Wed May 14 07:14:23 2008" element-n="74">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -178,5 +178,17 @@
         <accept    time="17:43:07" application="test-no-backward-reloading.py" choice="No_NDEBUG" crc="-404862054" />
         <accept    time="17:43:12" application="test-no-backward-reloading.py" choice="NDEBUG" crc="-404862054" />
         <test-runs-today n="16" ok-n="3" fail-n="13" else-n="0" last-run="failure" last-time="20:56:37"/>
+    </day>
+    <day year="2008" month="05" day="14">
+        <crc-error time="02:52:23" application="test-bol-eol.py" choice="QuexBuffer" database-crc="445214074" real-crc="684028106"/>
+        <crc-error time="02:52:45" application="test-bol-eol.py" choice="PlainMemory" database-crc="445214074" real-crc="684028106"/>
+        <accept    time="02:53:18" application="test-bol-eol.py" choice="PlainMemory" crc="-1893329280" />
+        <crc-error time="02:53:21" application="test-bol-eol.py" choice="QuexBuffer" database-crc="684028106" real-crc="-1893329280"/>
+        <accept    time="02:53:41" application="test-bol-eol.py" choice="QuexBuffer" crc="-795451360" />
+        <crc-error time="02:53:51" application="test-bol-eol.py" choice="PlainMemory" database-crc="-1893329280" real-crc="-795451360"/>
+        <crc-error time="03:08:58" application="test-backward_loading.py" choice="NDEBUG" database-crc="962615018" real-crc="-413667162"/>
+        <accept    time="03:09:59" application="test-backward_loading.py" choice="NDEBUG" crc="449398091" />
+        <crc-error time="03:10:10" application="test-backward_loading.py" choice="No_NDEBUG" database-crc="962615018" real-crc="449398091"/>
+        <test-runs-today n="21" ok-n="12" fail-n="9" else-n="0" last-run="failure" last-time="05:14:23"/>
     </day>
 </history>

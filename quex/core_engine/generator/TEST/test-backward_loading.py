@@ -5,8 +5,9 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 import generator_test
 
 if "--hwut-info" in sys.argv:
-    print "Buffer Reload: Backwards"
-    print "CHOICES: No_NDEBUG, NDEBUG"
+    print "Buffer Reload: Backwards;"
+    print "CHOICES: No_NDEBUG, NDEBUG;"
+    print "SAME;"
     sys.exit(0)
 
 if "NDEBUG" in sys.argv:

@@ -1,54 +1,60 @@
 (*) test string: 
 '   0xxxxxxalola 0xxxxxxxa'
 (*) result:
+LOAD BACKWARD(entry)
+|CS:       || BLC
+|[   0xxxxx||
          WHITESPACE  '   '
          IDENTIFIER  '0x'
          IDENTIFIER  'xx'
          IDENTIFIER  'xx'
-LOAD FORWARD
+LOAD FORWARD(entry)
 |[ :       S| BLC
 |[   0xxxxx||
-LOAD FORWARD (end)
+LOAD FORWARD(exit)
 || CS      || 'x'
 ||xxxalola ||
          IDENTIFIER  'xa'
          IDENTIFIER  'lo'
          IDENTIFIER  'la'
-LOAD FORWARD
+LOAD FORWARD(entry)
 || :      SC| BLC
 ||xxxalola ||
-LOAD FORWARD (end)
+LOAD FORWARD(exit)
 || S       || ' '
 ||a 0xxxxxx||
          WHITESPACE  ' '
          IDENTIFIER  '0x'
          IDENTIFIER  'xx'
          IDENTIFIER  'xx'
-LOAD FORWARD
+LOAD FORWARD(entry)
 || :      SC| BLC
 ||a 0xxxxxx||
-LOAD FORWARD (end)
+LOAD FORWARD(exit)
 || S       || 'x'
 ||xxxa]||||||
          IDENTIFIER  'xx'
-LOAD BACK
-C| : S     || <out>
+LOAD BACKWARD(entry)
+|C : S     || BLC
 ||xxxa]||||||
-LOAD BACK (end)
-|| :C   S  || 'x'
+LOAD BACKWARD(exit)
+|| : C  S  || 'x'
 ||xxxxxxa]|||
-LOAD BACK
-C| :    S  || <out>
+LOAD BACKWARD(entry)
+|C :    S  || BLC
 ||xxxxxxa]|||
-LOAD BACK (end)
-|| :C      S| 'x'
-|| 0xxxxxxx||
-LOAD FORWARD
-|| :       S| BLC
-|| 0xxxxxxx||
-LOAD FORWARD (end)
-|| CS      || 'x'
-||xxa]|||||||
+LOAD BACKWARD(exit)
+|| :C     S|| 'x'
+||0xxxxxxxa||
+LOAD FORWARD(entry)
+|| :      SC| BLC
+||0xxxxxxxa||
+LOAD FORWARD(exit)
+|| S       || 'a'
+||xa]||||||||
+LOAD FORWARD(entry)
+|| SC      || BLC
+||xa]||||||||
        0xxxxxxx / a  'a'
   ''
 (*) Lexical Analyser Patterns:

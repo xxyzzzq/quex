@@ -56,18 +56,18 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
-    "$input/get":           "QUEX_STREAM_GET(input);",
-    "$input/get-backwards": "QUEX_STREAM_GET_BACKWARDS(input);",
+    "$input/get":           "QUEX_BUFFER_INCREMENT_AND_GET(input);",
+    "$input/get-backwards": "QUEX_BUFFER_DECREMENT_AND_GET(input);",
     "$input/tell_position": cpp.__tell_position, 
     "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$transition":           cpp.__transition,
-    "$label-definition":     cpp.__label_definition,
-    "$acceptance-info-fw":   cpp. __acceptance_info_forward_lexing,      
-    "$acceptance-info-bw":   cpp. __acceptance_info_backward_lexing,      
-    "$acceptance-info-bwfc": cpp. __acceptance_info_backward_lexing_find_core_pattern,      
+    "$label-definition":     lambda LabelName: LabelName + ":",
+    "$acceptance-info-fw":   cpp.__acceptance_info_forward_lexing,      
+    "$acceptance-info-bw":   cpp.__acceptance_info_backward_lexing,      
+    "$acceptance-info-bwfc": cpp.__acceptance_info_backward_lexing_find_core_pattern,      
     "$analyser-func":        cpp.__analyser_function,
     "$terminal-code":        cpp.__terminal_states,      
     "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
@@ -83,13 +83,13 @@ db["C++"] = {
                           "    // no load possible (EOF) => (i) goto general terminal\n"             + \
                           "    //                           (ii) init state triggers EOF action\n"   + \
                           "    goto TERMINAL_GENERAL;\n"                                             + \
-                          "}\n",
+                          "}",
     "$drop-out-backward": lambda OnReloadGotoLabel:
                           "if( input == me->__buffer->BLC ) {\n"             + \
                           "    me->__buffer->load_backward();\n"             + \
                           "    if( ! (me->__buffer->is_begin_of_file()) )\n" + \
                           "        goto %s; /* no adr. adaptions necessary */\n" % OnReloadGotoLabel + \
-                          "}\n",                                                                         
+                          "}",                                                                         
     "$compile-option":           lambda option: "#define %s\n" % option,
     "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",

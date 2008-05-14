@@ -1,4 +1,4 @@
-(*) test strings: 
+(*) test string: 
 'HERE: THERE:
 THIS  THAT
 HERE: THERE:
@@ -21,7 +21,7 @@ THIS  THAT'
 '
          IDENTIFIER  'THIS'
          WHITESPACE  '  '
-     EOL-IDENTIFIER  'THAT'
+         IDENTIFIER  'THAT'
   ''
 (*) Lexical Analyser Patterns:
           ^[A-Z]+":" --> BOL-LABEL
