@@ -127,6 +127,7 @@ namespace quex {
         public:
             character_type*   content_front() { return _buffer.front() + 1; } 
             character_type*   content_back()  { return _buffer.back()  - 1; }  
+
         protected:
             //
             character_type*  _current_p;

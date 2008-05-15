@@ -24,7 +24,7 @@ typedef char*  QUEX_CHARACTER_POSITION;
 typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 
 struct QUEX_CORE_ANALYSER_STRUCT {
-    QUEX_CHARACTER_TYPE*  initial_position_p;                 
+    QUEX_CHARACTER_TYPE*  lexeme_start_p;                 
     QUEX_CHARACTER_TYPE*  input_p;
     QUEX_CHARACTER_TYPE*  buffer_begin;
     QUEX_CHARACTER_TYPE   char_covered_by_terminating_zero;   // MANDATORY MEMBER!
@@ -46,12 +46,20 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 };
 
 #define QUEX_END_OF_FILE()   0
-#define QUEX_BEGIN_OF_FILE() (me->input_p == me->buffer_begin)
+#define QUEX_BEGIN_OF_FILE() (me->input_p == me->buffer_begin - 1)
 
 #define QUEX_BUFFER_INCREMENT_AND_GET(character)  character   = *(++(me->input_p));
 #define QUEX_BUFFER_DECREMENT_AND_GET(character)  character   = *(--(me->input_p)); 
 #define QUEX_BUFFER_TELL_ADR(position)            position    = me->input_p;
 #define QUEX_BUFFER_SEEK_ADR(position)            me->input_p = position;
+
+/* QUEX_BUFFER_SEEK_START_POSITION()
+ *
+ *    After pre-condition state machines analyzed backwards, the analyzer needs
+ *    to go to the point where the actual analysis starts. The macro
+ *    performs this positioning of the input pointer.
+ */
+#define QUEX_BUFFER_SEEK_START_POSITION() (me->input_p) = (me->lexeme_start_p - 1); 
 
 
 #define QUEX_INLINE_KEYWORD static
@@ -84,9 +92,9 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
     me->input_p                            = InputStartPosition - 1; 
     me->buffer_begin                       = InputStartPosition;
     me->__current_mode_analyser_function_p = TheInitianAnalyserFunctionP;
-#ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION    
+#   ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION    
     me->begin_of_line_f                    = 1;
-#endif
+#   endif
 }
 
 
@@ -94,15 +102,8 @@ QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 {
-    me->initial_position_p = me->input_p + 1;
+    me->lexeme_start_p = me->input_p + 1;
 }
-
-/* After pre-condition state machines analyzed backwards, the analyzer needs
-** to go to the point where the actual analysis starts. The following macro
-** performs this positioning of the input pointer.
-*/
-#define QUEX_CORE_SEEK_ANALYSER_START_POSITION \
-        me->input_p = me->initial_position_p; 
 
 /* Drop Out Procedures: 
 **   
@@ -128,12 +129,12 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 **       'me->input_p - 1' is always welldefined.
 */
 #define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN \
-        me->begin_of_line_f = (*(me->input_p - 1) == '\n');
+        me->begin_of_line_f = (*(me->input_p) == '\n');
         
 #define QUEX_PREPARE_LEXEME_OBJECT                                 \
         me->char_covered_by_terminating_zero = *(me->input_p + 1); \
         *(me->input_p + 1)= '\0';                                  \
-	    Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->initial_position_p);                              
+	    Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->lexeme_start_p);                              
 
 /* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
 ** QUEX_PREPARE_LEXEME_OBJECT in case that no Lexeme object is
@@ -155,7 +156,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 
 /* IMPORTANT: 
 **
-**    The lexeme length must user the **current position** as a reference.
+**    The lexeme length must use the **current position** as a reference.
 **    It can be assumed, that in case of acceptance, the SEEK to the last
 **    acceptance has preceeded this command. 
 **
@@ -163,9 +164,8 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 **    THE DEFAULT ACTION MAY FAIL, BECAUSE THE LAST_ACCEPTANCE_INPUT_POSITION
 **    CAN BE ANYTHING.
 */
-#define QUEX_PREPARE_LEXEME_LENGTH                                 \
-	LexemeL = (size_t)(me->input_p - me->initial_position_p);       
-
+#define QUEX_PREPARE_LEXEME_LENGTH  \
+	    LexemeL = (size_t)(me->input_p - me->lexeme_start_p);       
 
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE    /* nothing happens here (yet) */                         
 

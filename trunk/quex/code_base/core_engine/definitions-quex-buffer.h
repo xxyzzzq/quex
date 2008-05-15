@@ -96,13 +96,6 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
     me->__buffer->mark_lexeme_start();
 }
 
-/* After pre-condition state machines analyzed backwards, the analyzer needs
-** to go to the point where the actual analysis starts. The following macro
-** performs this positioning of the input pointer.
-*/
-#define QUEX_CORE_SEEK_ANALYSER_START_POSITION \
-        me->__buffer->set_current_p(me->__buffer->get_lexeme_start_p() - 1);
-
 /* Drop Out Procedures: 
 **   
 **   A buffer model can (and the quex buffer does) profit from the fact that
@@ -124,6 +117,15 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 #define QUEX_BUFFER_DECREMENT_AND_GET(character)  (character) = me->__buffer->get_backward(); 
 #define QUEX_BUFFER_TELL_ADR(position)            (position)  = me->__buffer->tell_adr();
 #define QUEX_BUFFER_SEEK_ADR(position)            me->__buffer->seek_adr(position);    
+
+/* QUEX_BUFFER_SEEK_START_POSITION()
+ *
+ *    After pre-condition state machines analyzed backwards, the analyzer needs
+ *    to go to the point where the actual analysis starts. The macro
+ *    performs this positioning of the input pointer.
+ */
+#define QUEX_BUFFER_SEEK_START_POSITION() \
+        me->__buffer->set_current_p(me->__buffer->get_lexeme_start_p() - 1);
 
     
 /* NOTE: See note at the member definition of '.begin_of_line_f'

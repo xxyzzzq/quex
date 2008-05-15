@@ -83,7 +83,7 @@ class Generator(GeneratorBase):
         txt += LanguageDB["$label-definition"](LabelName) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyser went backwards, so it needs to be reset.
-        txt += "    QUEX_CORE_SEEK_ANALYSER_START_POSITION;\n"
+        txt += "    QUEX_BUFFER_SEEK_START_POSITION();\n"
 
         return txt
 
