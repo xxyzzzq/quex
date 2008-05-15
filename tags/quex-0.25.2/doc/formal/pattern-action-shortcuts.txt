@@ -1,0 +1,96 @@
+In practical applications for programming languages, the large majority of
+patterns to be identified are simple and do not require large algorithms to
+handle them. Keywords, such as '`if`', '`then`', and '`foreach`',
+operators, such as '$+$' and '`*`' and delimiters such as '`;`', `'
+  '`(`' and '`)`' simply need to send a token telling that such and such
+appeared. Their pattern action pairs all look similar to the following:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ...
+  {P_KEYWORD_IF} {
+       self.send(TKN_KEYWORD_IF);
+       RETURN;
+  }
+  {P_KEYWORD_THEN} {
+       self.send(TKN_KEYWORD_THEN);
+       RETURN;
+  }
+  {P_OPERATOR_PLUS} {
+       self.send(TKN_OP_PLUS);
+       RETURN;
+  }
+  ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Quex allows to write such simple token sendings in a more elegant manner.
+If a pattern is followed by a `=>` operator and a name _xyz_ then
+this is translated into 'pattern sends token with name _xyz_'. The code as
+shown above will be internally generated. The above code segment is equivalent
+to the following:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ...
+  {P_KEYWORD_IF}    => TKN_KEYWORD_IF;
+  {P_KEYWORD_THEN}  => TKN_KEYWORD_THEN;
+  {P_OPERATOR_PLUS} => TKN_OP_PLUS;
+  ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For simple patterns that consist of a fixed string and that appear only in one
+place it does not make sense to define a pattern explicitly. They can also be
+given directly, i.e. one can write
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ...
+  "if"    => TKN_KEYWORD_IF;
+  "then"  => TKN_KEYWORD_THEN;
+  "+"     => TKN_OP_PLUS;
+  ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+thus avoiding long lists of pattern definitions external to the mode
+definition. Sometimes, though, things are little more complicated.  It might
+be necessary to extract some of the information in the lexeme and store it
+into the token as in the following pattern action pairs:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ...
+  {P_NUMBER} {
+    self.send(TKN_NUMBER, atoi(Lexeme));
+    RETURN; 
+  }
+  {P_IDENTIFIER} { 
+    self.send(TKN_IDENTIFIER, Lexeme); 
+    RETURN; 
+  }
+  ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In these cases, one passes arguments to the send function other then the
+token-id. In order to specify additional arguments to the send functions the
+token-ids have to be followed by a pair of brackets containing the list of
+arguments (possibly separated by comma). This way, the above two pattern
+action pairs can be rewritten elegantly as:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ...
+  {P_NUMBER}     => TKN_NUMBER(atoi(Lexeme));
+  {P_IDENTIFIER} => TKN_IDENTIFIER(Lexeme); 
+  ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These abbreviations not only speed up the generation of a lexical analyser
+tremendously, but they make the lexical analyser descriptions also very
+readable. Long lists of pattern-action pairs can be understood and
+analysed in a few seconds.
+
+Note, that if an identifier is used that is not declared in a `token`-section,
+then quex implicitly declares this token, but still a warning is reported.
+In order to get things setup quickly, it is possible to complete renounce
+on `token` sections. However, for a good style the output of these warnings
+might be pasted into one of the `token`-sections.
