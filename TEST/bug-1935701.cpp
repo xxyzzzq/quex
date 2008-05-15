@@ -1,7 +1,7 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/input_strategy>
+#include<quex/code_base/buffer/plain/fixed_size_character_stream>
 
 using namespace std;
 
@@ -29,19 +29,19 @@ main(int argc, char** argv)
             cout << "error file 'misc/bug-1935701-text.dat' not found.\n";
             return 0;
         }
-        quex::input_strategy<std::FILE*, uint8_t>     is1(fh);
+        quex::fixed_size_character_stream_plain<std::FILE, uint8_t>     is1(fh);
         loaded_character_n = is1.read_characters(buffer, 512);
         fclose(fh);
         cout << "1 byte mode: loaded characters = " << loaded_character_n << "\n";
         
         fh = fopen("misc/bug-1935701-text.dat", "r");
-        quex::input_strategy<std::FILE*, uint16_t>    is2(fh);
+        quex::fixed_size_character_stream_plain<std::FILE, uint16_t>    is2(fh);
         loaded_character_n = is2.read_characters((uint16_t*)buffer, 256);
         fclose(fh);
         cout << "2 byte mode: loaded characters = " << loaded_character_n << "\n";
         
         fh = fopen("misc/bug-1935701-text.dat", "r");
-        quex::input_strategy<std::FILE*, uint32_t>    is3(fh);
+        quex::fixed_size_character_stream_plain<std::FILE, uint32_t>    is3(fh);
         loaded_character_n = is3.read_characters((uint32_t*)buffer, 128);
         fclose(fh);
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
@@ -53,19 +53,19 @@ main(int argc, char** argv)
             cout << "error file 'misc/bug-1935701-text.dat' not found.\n";
             return 0;
         }
-        quex::input_strategy<std::istream*, uint8_t>     is1(&fh);
+        quex::fixed_size_character_stream_plain<std::istream, uint8_t>     is1(&fh);
         loaded_character_n = is1.read_characters(buffer, 512);
         fh.close();
         cout << "1 byte mode: loaded characters = " << loaded_character_n << "\n";
         
         fh.open("misc/bug-1935701-text.dat");
-        quex::input_strategy<std::istream*, uint16_t>    is2(&fh);
+        quex::fixed_size_character_stream_plain<std::istream, uint16_t>    is2(&fh);
         loaded_character_n = is2.read_characters((uint16_t*)buffer, 256);
         fh.close();
         cout << "2 byte mode: loaded characters = " << loaded_character_n << "\n";
         
         fh.open("misc/bug-1935701-text.dat");
-        quex::input_strategy<std::istream*, uint32_t>    is3(&fh);
+        quex::fixed_size_character_stream_plain<std::istream, uint32_t>    is3(&fh);
         loaded_character_n = is3.read_characters((uint32_t*)buffer, 128);
         fh.close();
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";

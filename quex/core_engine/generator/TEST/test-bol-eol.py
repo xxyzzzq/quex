@@ -7,7 +7,6 @@ import quex.core_engine.regular_expression.core as regex
 if "--hwut-info" in sys.argv:
     print "Simple: Begin of Line (BOL), End of Line (EOL)"
     print "CHOICES: PlainMemory, QuexBuffer;"
-    print "SAME;"
     sys.exit(0)
 
 if len(sys.argv) < 2:

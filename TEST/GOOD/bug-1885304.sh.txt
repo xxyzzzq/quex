@@ -10,6 +10,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<fstream>
 #include<cassert>
 #include<quex/code_base/compatibility/inttypes.h>
+#include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
 // OPTIONS: ____________________________________________________________________
@@ -49,20 +50,6 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #endif
 #ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 // #define QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-#endif
-
-// -- Asserts
-//    Standard asserts are active as long as 'NDEBUG' is not defined.
-//
-//    The asserts in quex are so many to make it safe. However, when they
-//    are active, they make the system run very slowly. For the default
-//    user, these things are turned off. Use the following macro to re-activate.
-//
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-#   include <cassert>
-#   define  __quex_assert(X)   assert(X)
-#else
-#   define  __quex_assert(X)   /*no assert*/
 #endif
 
 // -- Include Stack Support:
@@ -151,8 +138,9 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
 #   include<quex/code_base/core_engine/definitions-plain-memory.h>
 #else
 #   ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#       include<quex/code_base/buffer/iconv/input_strategy>
+#       include<quex/code_base/buffer/iconv/fixed_size_character_stream>
 #   endif
+#   include<quex/code_base/buffer/plain/fixed_size_character_stream>
 #   include<quex/code_base/buffer/buffer>
 #   include<quex/code_base/core_engine/definitions-quex-buffer.h>
 #endif
@@ -279,9 +267,9 @@ namespace quex {
         const int   map_mode_to_mode_id(const quex_mode& Mode) const;
 
         // (*) buffers
-        template <class InputHandleP> 
-        quex::buffer_core<QUEX_CHARACTER_TYPE>* create_buffer(InputHandleP input_handle, 
-                                                              const char*  IConvInputCodingName = 0x0);
+        template <class InputHandle> 
+        quex::buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
+                                                         const char*  IConvInputCodingName = 0x0);
 
         //
         // (*) Token sending
@@ -295,7 +283,7 @@ namespace quex {
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         struct memento {
-            quex::buffer_core<QUEX_CHARACTER_TYPE>*  buffer_p;
+            quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
             QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
             QUEX_MODE_FUNCTION_P     current_mode_analyser_function_p;
             bool                     continue_analysis_after_adapting_mode_function_p_f;
@@ -575,34 +563,28 @@ namespace quex {
         __constructor_core(fh, IConvInputCodingName);
     }
  
-    template <class InputHandleP> inline
-    quex::buffer_core<QUEX_CHARACTER_TYPE>*
-    CLASS::create_buffer(InputHandleP input_handle, const char* IConvInputCodingName /* = 0x0 */)
+    template <class InputHandle> inline
+    quex::buffer<QUEX_CHARACTER_TYPE>*
+    CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName /* = 0x0 */)
     {
+        fixed_size_character_stream<QUEX_CHARACTER_TYPE>*  is = 0x0;
+
         if( IConvInputCodingName != 0x0 ) {
 #           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-            // NOTE: default copy operation (== memcpy) for input_strategy_inconv is OK
-            input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE>  input_strategy(
-                input_handle, 
-                iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
-                IConvInputCodingName, QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
+            is = new  fixed_size_character_stream_iconv<InputHandle, QUEX_CHARACTER_TYPE>
+                           (input_handle, 
+                            iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
+                            IConvInputCodingName,     QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
 
-            return new basic_buffer<input_strategy_iconv<InputHandleP, QUEX_CHARACTER_TYPE> >(
-                input_strategy,
-                (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)0x19, 
-                /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)0x1A,
-                /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
-#           endif
+#           else
             return 0x0;
+#           endif
         }
         else {
-            return new basic_buffer<input_strategy<InputHandleP, QUEX_CHARACTER_TYPE> >
-                   (input_handle, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                   /* begin of stream/file = */ (QUEX_CHARACTER_TYPE)0x19, 
-                   /* end of stream/file   = */ (QUEX_CHARACTER_TYPE)0x1A,
-                   /* buffer limit         = */ (QUEX_CHARACTER_TYPE)0x0);
+            is = new fixed_size_character_stream_plain<InputHandle, QUEX_CHARACTER_TYPE>(input_handle);
         }
+        return new buffer<QUEX_CHARACTER_TYPE>(is, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
+                    /* buffer limit code = */ (QUEX_CHARACTER_TYPE)0x0);
     }
 
     template <class InputHandleP> inline void
@@ -868,7 +850,7 @@ Simple::__count_assert_consistency()
     // if line number remained the same, then the column number **must** have increased.
     // there is not pattern of a length less than 1
     __quex_assert(_line_number_at_begin != _line_number_at_end || 
-           _column_number_at_begin <  _column_number_at_end);
+                  _column_number_at_begin <  _column_number_at_end);
 }
 
 inline void             
@@ -987,9 +969,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
-    __quex_assert(Begin >= __buffer->content_begin());
-    __quex_assert(Begin < __buffer->content_end()-1); // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_end());    // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin >= __buffer->content_front());
+    __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1
+    __quex_assert(End <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
     __quex_assert(Begin < End);                       // LexemeLength >= 1
 
     // loop from [End] to [Begin]:
@@ -1315,7 +1297,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \
-        std::fprintf(stdout, "%s:%i: \t", __FILE__, __LINE__);            
+   std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__);            
+//        std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, (int)(me->input_p - (me->buffer_begin -1)));            
+// std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr() - (me->__buffer->content_front() - 1) ));            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \
               __QUEX_PRINT_SOURCE_POSITION()                    \
@@ -1357,2202 +1341,2173 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 #   define CONTINUE  goto __REENTRY_PREPARATION
 
 #endif
-    
-    #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-    #    define Simple_on_buffer_reload(LoadedByteN)   \
-            /* Is this condition really necessary? <fschaef 07y7m26d> */      \
-            if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \
-                last_acceptance_input_position -= LoadedByteN;                \
-                                                                              \
-                    
-    
-    #endif  
-    
-    QUEX_ANALYSER_RETURN_TYPE
-    quex::Simple_ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) {
-        // NOTE: Different modes correspond to different analyser functions. The analyser
-        //       functions are all located inside the main class as static functions. That
-        //       means, they are something like 'globals'. They receive a pointer to the 
-        //       lexical analyser, since static member do not have access to the 'this' pointer.
-        QUEX_LEXER_CLASS& self = *me;
-        // static functions cannot access members, thus: create shortcuts
-    /*  me = pointer to state of the lexical analyser */    quex::quex_mode& ONE_AND_ONLY = self.ONE_AND_ONLY;
-        int last_acceptance = -1;
-        QUEX_CHARACTER_POSITION last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
-        QUEX_CHARACTER_TYPE input = (QUEX_CHARACTER_TYPE)(0x00);
-        QUEX_LEXEME_CHARACTER_TYPE* Lexeme = 0x0;
-        size_t LexemeL = -1;
-    
-    #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        int loaded_byte_n = 0; /* At transition Drop-Out: 
-                               **    > 0  number of loaded bytes. 
-                               **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
-                               */
-    #endif
-       __QUEX_DEBUG_INFO_START_LEXING(Simple);
-       __REENTRY_POINT:
-        QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);
-        QUEX_UNDO_PREPARE_LEXEME_OBJECT;
-        /* state machine */
-        /* init-state = 249L
-         * 00249() <~ (5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)
-         *       == ['\t', '\n'], '\r', ' ' ==> 00251
-         *       == ['0', '9'] ==> 00259
-         *       == ';' ==> 00258
-         *       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00255
-         *       == 'd' ==> 00252
-         *       == 'e' ==> 00250
-         *       == 'i' ==> 00254
-         *       == 's' ==> 00257
-         *       == '{' ==> 00253
-         *       == '}' ==> 00256
-         *       <no epsilon>
-         * 00256(A, S) <~ (28, 125, A, S)
-         *       <no epsilon>
-         * 00257(A, S) <~ (41, 159, A, S), (7, 33), (16, 83)
-         *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00255
-         *       == 'e' ==> 00260
-         *       == 't' ==> 00261
-         *       <no epsilon>
-         * 00260(A, S) <~ (41, 159, A, S), (16, 84)
-         *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
-         *       == 'n' ==> 00266
-         *       <no epsilon>
-         * 00266(A, S) <~ (41, 159, A, S), (16, 85)
-         *       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00255
-         *       == 'd' ==> 00267
-         *       <no epsilon>
-         * 00267(A, S) <~ (16, 86, A, S)
-         *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-         *       <no epsilon>
-         * 00255(A, S) <~ (41, 159, A, S)
-         *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-         *       <no epsilon>
-         * 00261(A, S) <~ (41, 159, A, S), (7, 34)
-         *       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00255
-         *       == 'r' ==> 00262
-         *       <no epsilon>
-         * 00262(A, S) <~ (41, 159, A, S), (7, 35)
-         *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
-         *       == 'u' ==> 00263
-         *       <no epsilon>
-         * 00263(A, S) <~ (41, 159, A, S), (7, 36)
-         *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
-         *       == 'c' ==> 00264
-         *       <no epsilon>
-         * 00264(A, S) <~ (41, 159, A, S), (7, 37)
-         *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
-         *       == 't' ==> 00265
-         *       <no epsilon>
-         * 00265(A, S) <~ (7, 38, A, S)
-         *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-         *       <no epsilon>
-         * 00258(A, S) <~ (22, 113, A, S)
-         *       <no epsilon>
-         * 00259(A, S) <~ (35, 142, A, S)
-         *       == ['0', '9'] ==> 00259
-         *       <no epsilon>
-         * 00250(A, S) <~ (41, 159, A, S), (19, 102)
-         *       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00255
-         *       == 'x' ==> 00275
-         *       <no epsilon>
-         * 00275(A, S) <~ (41, 159, A, S), (19, 103)
-         *       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00255
-         *       == 'p' ==> 00276
-         *       <no epsilon>
-         * 00276(A, S) <~ (41, 159, A, S), (19, 104)
-         *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
-         *       == 'e' ==> 00277
-         *       <no epsilon>
-         * 00277(A, S) <~ (41, 159, A, S), (19, 105)
-         *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
-         *       == 'c' ==> 00278
-         *       <no epsilon>
-         * 00278(A, S) <~ (41, 159, A, S), (19, 106)
-         *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
-         *       == 't' ==> 00279
-         *       <no epsilon>
-         * 00279(A, S) <~ (19, 107, A, S)
-         *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-         *       <no epsilon>
-         * 00251(A, S) <~ (5, 17, A, S)
-         *       == ['\t', '\n'], '\r', ' ' ==> 00251
-         *       <no epsilon>
-         * 00252(A, S) <~ (41, 159, A, S), (13, 66)
-         *       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00255
-         *       == 'o' ==> 00270
-         *       <no epsilon>
-         * 00270(A, S) <~ (41, 159, A, S), (13, 67)
-         *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
-         *       == 'u' ==> 00271
-         *       <no epsilon>
-         * 00271(A, S) <~ (41, 159, A, S), (13, 68)
-         *       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00255
-         *       == 'b' ==> 00272
-         *       <no epsilon>
-         * 00272(A, S) <~ (41, 159, A, S), (13, 69)
-         *       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00255
-         *       == 'l' ==> 00273
-         *       <no epsilon>
-         * 00273(A, S) <~ (41, 159, A, S), (13, 70)
-         *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
-         *       == 'e' ==> 00274
-         *       <no epsilon>
-         * 00274(A, S) <~ (13, 71, A, S)
-         *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-         *       <no epsilon>
-         * 00253(A, S) <~ (25, 119, A, S)
-         *       <no epsilon>
-         * 00254(A, S) <~ (41, 159, A, S), (10, 48)
-         *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
-         *       == 'n' ==> 00268
-         *       <no epsilon>
-         * 00268(A, S) <~ (41, 159, A, S), (10, 49)
-         *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
-         *       == 't' ==> 00269
-         *       <no epsilon>
-         * 00269(A, S) <~ (10, 50, A, S)
-         *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
-         *       <no epsilon>
-         * 
-         */
-    /*  origins = [(5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)] */
-      STATE_249_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
-            if( input < 33) {
-                if( input < 13) {
-                    if( input < 9) {
-                            goto STATE_249_DROP_OUT;    /* [-oo, \8] */
-                    } else {
-                        if( input < 11) {
-                            goto STATE_251;    /* ['\t', '\n'] */
-                        } else {
-                            goto STATE_249_DROP_OUT;    /* [\11, \12] */
-                        }
-                    }
+
+#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+#    define Simple_on_buffer_reload(LoadedByteN)   \
+        /* Is this condition really necessary? <fschaef 07y7m26d> */      \
+        if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \
+            last_acceptance_input_position -= LoadedByteN;                \
+                                                                          \
+                
+
+#endif  
+
+QUEX_ANALYSER_RETURN_TYPE
+quex::Simple_ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) 
+{
+    // NOTE: Different modes correspond to different analyser functions. The analyser
+    //       functions are all located inside the main class as static functions. That
+    //       means, they are something like 'globals'. They receive a pointer to the 
+    //       lexical analyser, since static member do not have access to the 'this' pointer.
+    QUEX_LEXER_CLASS& self = *me;
+    // static functions cannot access members, thus: create shortcuts
+    /* me = pointer to state of the lexical analyser */
+    quex::quex_mode& ONE_AND_ONLY = self.ONE_AND_ONLY;
+    int last_acceptance = -1;
+    QUEX_CHARACTER_POSITION last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
+    QUEX_CHARACTER_TYPE input = (QUEX_CHARACTER_TYPE)(0x00);
+    QUEX_LEXEME_CHARACTER_TYPE* Lexeme = 0x0;
+    size_t LexemeL = -1;
+
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    int loaded_byte_n = 0; /* At transition Drop-Out: 
+                           **    > 0  number of loaded bytes. 
+                           **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
+                           */
+#  endif
+   __QUEX_DEBUG_INFO_START_LEXING(Simple);
+__REENTRY_POINT:
+    QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);
+    QUEX_UNDO_PREPARE_LEXEME_OBJECT;
+    /* state machine */
+    /* init-state = 249L
+     * 00249() <~ (5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)
+     *       == ['\t', '\n'], '\r', ' ' ==> 00251
+     *       == ['0', '9'] ==> 00259
+     *       == ';' ==> 00258
+     *       == ['A', 'Z'], '_', ['a', 'c'], ['f', 'h'], ['j', 'r'], ['t', 'z'] ==> 00255
+     *       == 'd' ==> 00252
+     *       == 'e' ==> 00250
+     *       == 'i' ==> 00254
+     *       == 's' ==> 00257
+     *       == '{' ==> 00253
+     *       == '}' ==> 00256
+     *       <no epsilon>
+     * 00256(A, S) <~ (28, 125, A, S)
+     *       <no epsilon>
+     * 00257(A, S) <~ (41, 159, A, S), (7, 33), (16, 83)
+     *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 's'], ['u', 'z'] ==> 00255
+     *       == 'e' ==> 00260
+     *       == 't' ==> 00261
+     *       <no epsilon>
+     * 00260(A, S) <~ (41, 159, A, S), (16, 84)
+     *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
+     *       == 'n' ==> 00266
+     *       <no epsilon>
+     * 00266(A, S) <~ (41, 159, A, S), (16, 85)
+     *       == ['A', 'Z'], '_', ['a', 'c'], ['e', 'z'] ==> 00255
+     *       == 'd' ==> 00267
+     *       <no epsilon>
+     * 00267(A, S) <~ (16, 86, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+     *       <no epsilon>
+     * 00255(A, S) <~ (41, 159, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+     *       <no epsilon>
+     * 00261(A, S) <~ (41, 159, A, S), (7, 34)
+     *       == ['A', 'Z'], '_', ['a', 'q'], ['s', 'z'] ==> 00255
+     *       == 'r' ==> 00262
+     *       <no epsilon>
+     * 00262(A, S) <~ (41, 159, A, S), (7, 35)
+     *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
+     *       == 'u' ==> 00263
+     *       <no epsilon>
+     * 00263(A, S) <~ (41, 159, A, S), (7, 36)
+     *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
+     *       == 'c' ==> 00264
+     *       <no epsilon>
+     * 00264(A, S) <~ (41, 159, A, S), (7, 37)
+     *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+     *       == 't' ==> 00265
+     *       <no epsilon>
+     * 00265(A, S) <~ (7, 38, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+     *       <no epsilon>
+     * 00258(A, S) <~ (22, 113, A, S)
+     *       <no epsilon>
+     * 00259(A, S) <~ (35, 142, A, S)
+     *       == ['0', '9'] ==> 00259
+     *       <no epsilon>
+     * 00250(A, S) <~ (41, 159, A, S), (19, 102)
+     *       == ['A', 'Z'], '_', ['a', 'w'], ['y', 'z'] ==> 00255
+     *       == 'x' ==> 00275
+     *       <no epsilon>
+     * 00275(A, S) <~ (41, 159, A, S), (19, 103)
+     *       == ['A', 'Z'], '_', ['a', 'o'], ['q', 'z'] ==> 00255
+     *       == 'p' ==> 00276
+     *       <no epsilon>
+     * 00276(A, S) <~ (41, 159, A, S), (19, 104)
+     *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
+     *       == 'e' ==> 00277
+     *       <no epsilon>
+     * 00277(A, S) <~ (41, 159, A, S), (19, 105)
+     *       == ['A', 'Z'], '_', ['a', 'b'], ['d', 'z'] ==> 00255
+     *       == 'c' ==> 00278
+     *       <no epsilon>
+     * 00278(A, S) <~ (41, 159, A, S), (19, 106)
+     *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+     *       == 't' ==> 00279
+     *       <no epsilon>
+     * 00279(A, S) <~ (19, 107, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+     *       <no epsilon>
+     * 00251(A, S) <~ (5, 17, A, S)
+     *       == ['\t', '\n'], '\r', ' ' ==> 00251
+     *       <no epsilon>
+     * 00252(A, S) <~ (41, 159, A, S), (13, 66)
+     *       == ['A', 'Z'], '_', ['a', 'n'], ['p', 'z'] ==> 00255
+     *       == 'o' ==> 00270
+     *       <no epsilon>
+     * 00270(A, S) <~ (41, 159, A, S), (13, 67)
+     *       == ['A', 'Z'], '_', ['a', 't'], ['v', 'z'] ==> 00255
+     *       == 'u' ==> 00271
+     *       <no epsilon>
+     * 00271(A, S) <~ (41, 159, A, S), (13, 68)
+     *       == ['A', 'Z'], '_', 'a', ['c', 'z'] ==> 00255
+     *       == 'b' ==> 00272
+     *       <no epsilon>
+     * 00272(A, S) <~ (41, 159, A, S), (13, 69)
+     *       == ['A', 'Z'], '_', ['a', 'k'], ['m', 'z'] ==> 00255
+     *       == 'l' ==> 00273
+     *       <no epsilon>
+     * 00273(A, S) <~ (41, 159, A, S), (13, 70)
+     *       == ['A', 'Z'], '_', ['a', 'd'], ['f', 'z'] ==> 00255
+     *       == 'e' ==> 00274
+     *       <no epsilon>
+     * 00274(A, S) <~ (13, 71, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+     *       <no epsilon>
+     * 00253(A, S) <~ (25, 119, A, S)
+     *       <no epsilon>
+     * 00254(A, S) <~ (41, 159, A, S), (10, 48)
+     *       == ['A', 'Z'], '_', ['a', 'm'], ['o', 'z'] ==> 00255
+     *       == 'n' ==> 00268
+     *       <no epsilon>
+     * 00268(A, S) <~ (41, 159, A, S), (10, 49)
+     *       == ['A', 'Z'], '_', ['a', 's'], ['u', 'z'] ==> 00255
+     *       == 't' ==> 00269
+     *       <no epsilon>
+     * 00269(A, S) <~ (10, 50, A, S)
+     *       == ['A', 'Z'], '_', ['a', 'z'] ==> 00255
+     *       <no epsilon>
+     * 
+     */
+STATE_249_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 33) {
+            if( input < 13) {
+                if( input < 9) {
+                        goto STATE_249_DROP_OUT;    /* [-oo, \8] */
                 } else {
-                    if( input < 14) {
-                            goto STATE_251;    /* '\r' */
+                    if( input < 11) {
+                        goto STATE_251;    /* ['\t', '\n'] */
                     } else {
-                        if( input != 32) {
-                            goto STATE_249_DROP_OUT;    /* [\14, \31] */
-                        } else {
-                            goto STATE_251;    /* ' ' */
-                        }
+                        goto STATE_249_DROP_OUT;    /* [\11, \12] */
                     }
                 }
             } else {
-                if( input < 59) {
-                    if( input < 48) {
-                            goto STATE_249_DROP_OUT;    /* [\33, \47] */
-                    } else {
-                        if( input != 58) {
-                            goto STATE_259;    /* ['0', '9'] */
-                        } else {
-                            goto STATE_249_DROP_OUT;    /* ':' */
-                        }
-                    }
+                if( input < 14) {
+                        goto STATE_251;    /* '\r' */
                 } else {
-                    if( input < 65) {
-                        if( input == 59) {
-                            goto STATE_258;    /* ';' */
-                        } else {
-                            goto STATE_249_DROP_OUT;    /* ['<', '@'] */
-                        }
+                    if( input != 32) {
+                        goto STATE_249_DROP_OUT;    /* [\14, \31] */
                     } else {
-                        if( input < 91) {
-                            goto STATE_255;    /* ['A', 'Z'] */
-                        } else {
-                            goto STATE_249_DROP_OUT;    /* ['[', '^'] */
-                        }
+                        goto STATE_251;    /* ' ' */
                     }
                 }
             }
         } else {
-            if( input < 106) {
-                if( input < 100) {
-                    if( input < 96) {
-                            goto STATE_255;    /* '_' */
-                    } else {
-                        if( input == 96) {
-                            goto STATE_249_DROP_OUT;    /* '`' */
-                        } else {
-                            goto STATE_255;    /* ['a', 'c'] */
-                        }
-                    }
+            if( input < 59) {
+                if( input < 48) {
+                        goto STATE_249_DROP_OUT;    /* [\33, \47] */
                 } else {
-                    if( input < 102) {
-                        if( input == 100) {
-                            goto STATE_252;    /* 'd' */
-                        } else {
-                            goto STATE_250;    /* 'e' */
-                        }
+                    if( input != 58) {
+                        goto STATE_259;    /* ['0', '9'] */
                     } else {
-                        if( input != 105) {
-                            goto STATE_255;    /* ['f', 'h'] */
-                        } else {
-                            goto STATE_254;    /* 'i' */
-                        }
+                        goto STATE_249_DROP_OUT;    /* ':' */
                     }
                 }
             } else {
-                if( input < 123) {
-                    if( input == 115) {
-                        goto STATE_257;    /* 's' */
+                if( input < 65) {
+                    if( input == 59) {
+                        goto STATE_258;    /* ';' */
                     } else {
-                        goto STATE_255;    /* ['j', 'r'] */
+                        goto STATE_249_DROP_OUT;    /* ['<', '@'] */
                     }
                 } else {
-                    if( input < 125) {
-                        if( input == 123) {
-                            goto STATE_253;    /* '{' */
-                        } else {
-                            goto STATE_249_DROP_OUT;    /* '|' */
-                        }
+                    if( input < 91) {
+                        goto STATE_255;    /* ['A', 'Z'] */
                     } else {
-                        if( input == 125) {
-                            goto STATE_256;    /* '}' */
-                        } else {
-                            goto STATE_249_DROP_OUT;    /* ['~', oo] */
-                        }
+                        goto STATE_249_DROP_OUT;    /* ['[', '^'] */
                     }
                 }
             }
         }
-    
-      STATE_249_DROP_OUT:
-        if( QUEX_END_OF_FILE() ) {
-            /* NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state */
-            goto TERMINAL_END_OF_STREAM;
-        }
-        __QUEX_DEBUG_INFO_DROP_OUT(249);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_249_INPUT;
+    } else {
+        if( input < 106) {
+            if( input < 100) {
+                if( input < 96) {
+                        goto STATE_255;    /* '_' */
+                } else {
+                    if( input == 96) {
+                        goto STATE_249_DROP_OUT;    /* '`' */
+                    } else {
+                        goto STATE_255;    /* ['a', 'c'] */
+                    }
+                }
+            } else {
+                if( input < 102) {
+                    if( input == 100) {
+                        goto STATE_252;    /* 'd' */
+                    } else {
+                        goto STATE_250;    /* 'e' */
+                    }
+                } else {
+                    if( input != 105) {
+                        goto STATE_255;    /* ['f', 'h'] */
+                    } else {
+                        goto STATE_254;    /* 'i' */
+                    }
+                }
             }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
+        } else {
+            if( input < 123) {
+                if( input == 115) {
+                    goto STATE_257;    /* 's' */
+                } else {
+                    goto STATE_255;    /* ['j', 'r'] */
+                }
+            } else {
+                if( input < 125) {
+                    if( input == 123) {
+                        goto STATE_253;    /* '{' */
+                    } else {
+                        goto STATE_249_DROP_OUT;    /* '|' */
+                    }
+                } else {
+                    if( input == 125) {
+                        goto STATE_256;    /* '}' */
+                    } else {
+                        goto STATE_249_DROP_OUT;    /* ['~', oo] */
+                    }
+                }
+            }
         }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    }
+
+STATE_249_DROP_OUT:
+    if( QUEX_END_OF_FILE() ) {
+        /* NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state */
+        goto TERMINAL_END_OF_STREAM;
+    }
+    __QUEX_DEBUG_INFO_DROP_OUT(249);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_249_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
         goto TERMINAL_GENERAL;
-        
-      STATE_256:
-        __QUEX_DEBUG_INFO_ENTER(256);
-    /*  origins = [(28, 125, A, S)] */
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    goto TERMINAL_GENERAL;
+
+STATE_256:
+    __QUEX_DEBUG_INFO_ENTER(256);
     __QUEX_DEBUG_INFO_ACCEPTANCE(28);
     last_acceptance = 28;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-        /* no trigger set, no 'get character' */
-        goto STATE_256_DROP_OUT;
-        
-      STATE_256_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(256);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(28);
-        goto TERMINAL_28;
-        
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    /* no trigger set, no 'get character' */
+    goto STATE_256_DROP_OUT;
     
-      STATE_257:
-        __QUEX_DEBUG_INFO_ENTER(257);
-    /*  origins = [(41, 159, A, S), (7, 33), (16, 83)] */
+STATE_256_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(256);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(28);
+    goto TERMINAL_28;
+
+
+STATE_257:
+    __QUEX_DEBUG_INFO_ENTER(257);
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_257_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 97) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_257_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_257_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 97) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_257_DROP_OUT;    /* [-oo, '@'] */
             } else {
-                if( input < 95) {
-                        goto STATE_257_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    if( input == 95) {
-                        goto STATE_255;    /* '_' */
-                    } else {
-                        goto STATE_257_DROP_OUT;    /* '`' */
-                    }
-                }
+                goto STATE_255;    /* ['A', 'Z'] */
             }
         } else {
-            if( input < 116) {
-                if( input == 101) {
-                    goto STATE_260;    /* 'e' */
-                } else {
-                    goto STATE_255;    /* ['a', 'd'] */
-                }
+            if( input < 95) {
+                    goto STATE_257_DROP_OUT;    /* ['[', '^'] */
             } else {
-                if( input < 117) {
-                        goto STATE_261;    /* 't' */
+                if( input == 95) {
+                    goto STATE_255;    /* '_' */
                 } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['u', 'z'] */
-                    } else {
-                        goto STATE_257_DROP_OUT;    /* ['{', oo] */
-                    }
+                    goto STATE_257_DROP_OUT;    /* '`' */
                 }
             }
         }
-    
-      STATE_257_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(257);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_257_INPUT;
+    } else {
+        if( input < 116) {
+            if( input == 101) {
+                goto STATE_260;    /* 'e' */
+            } else {
+                goto STATE_255;    /* ['a', 'd'] */
             }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
+        } else {
+            if( input < 117) {
+                    goto STATE_261;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_257_DROP_OUT;    /* ['{', oo] */
+                }
+            }
         }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_258:
-        __QUEX_DEBUG_INFO_ENTER(258);
-    /*  origins = [(22, 113, A, S)] */
+    }
+
+STATE_257_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(257);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_257_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_258:
+    __QUEX_DEBUG_INFO_ENTER(258);
     __QUEX_DEBUG_INFO_ACCEPTANCE(22);
     last_acceptance = 22;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-        /* no trigger set, no 'get character' */
-        goto STATE_258_DROP_OUT;
-        
-      STATE_258_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(258);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(22);
-        goto TERMINAL_22;
-        
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    /* no trigger set, no 'get character' */
+    goto STATE_258_DROP_OUT;
     
-      STATE_259:
-        __QUEX_DEBUG_INFO_ENTER(259);
-    /*  origins = [(35, 142, A, S)] */
+STATE_258_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(258);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(22);
+    goto TERMINAL_22;
+
+
+STATE_259:
+    __QUEX_DEBUG_INFO_ENTER(259);
     __QUEX_DEBUG_INFO_ACCEPTANCE(35);
     last_acceptance = 35;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_259_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 48) {
-                goto STATE_259_DROP_OUT;    /* [-oo, \47] */
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_259_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 48) {
+            goto STATE_259_DROP_OUT;    /* [-oo, \47] */
+    } else {
+        if( input < 58) {
+            goto STATE_259;    /* ['0', '9'] */
         } else {
-            if( input < 58) {
-                goto STATE_259;    /* ['0', '9'] */
-            } else {
-                goto STATE_259_DROP_OUT;    /* [':', oo] */
-            }
+            goto STATE_259_DROP_OUT;    /* [':', oo] */
         }
-    
-      STATE_259_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(259);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_259_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
+    }
+
+STATE_259_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(259);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_259_INPUT;
         }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(35);
-        goto TERMINAL_35;
-        
-    
-      STATE_260:
-        __QUEX_DEBUG_INFO_ENTER(260);
-    /*  origins = [(41, 159, A, S), (16, 84)] */
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(35);
+    goto TERMINAL_35;
+
+
+STATE_260:
+    __QUEX_DEBUG_INFO_ENTER(260);
     __QUEX_DEBUG_INFO_ACCEPTANCE(41);
     last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_260_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_260_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_260_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 110) {
-                if( input == 96) {
-                    goto STATE_260_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'm'] */
-                }
-            } else {
-                if( input < 111) {
-                        goto STATE_266;    /* 'n' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['o', 'z'] */
-                    } else {
-                        goto STATE_260_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_260_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(260);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_260_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_261:
-        __QUEX_DEBUG_INFO_ENTER(261);
-    /*  origins = [(41, 159, A, S), (7, 34)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_261_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_261_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_261_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 114) {
-                if( input == 96) {
-                    goto STATE_261_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'q'] */
-                }
-            } else {
-                if( input < 115) {
-                        goto STATE_262;    /* 'r' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['s', 'z'] */
-                    } else {
-                        goto STATE_261_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_261_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(261);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_261_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_262:
-        __QUEX_DEBUG_INFO_ENTER(262);
-    /*  origins = [(41, 159, A, S), (7, 35)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_262_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_262_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_262_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 117) {
-                if( input == 96) {
-                    goto STATE_262_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 't'] */
-                }
-            } else {
-                if( input < 118) {
-                        goto STATE_263;    /* 'u' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['v', 'z'] */
-                    } else {
-                        goto STATE_262_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_262_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(262);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_262_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_263:
-        __QUEX_DEBUG_INFO_ENTER(263);
-    /*  origins = [(41, 159, A, S), (7, 36)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_263_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_263_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_263_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 99) {
-                if( input == 96) {
-                    goto STATE_263_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'b'] */
-                }
-            } else {
-                if( input < 100) {
-                        goto STATE_264;    /* 'c' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['d', 'z'] */
-                    } else {
-                        goto STATE_263_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_263_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(263);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_263_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_264:
-        __QUEX_DEBUG_INFO_ENTER(264);
-    /*  origins = [(41, 159, A, S), (7, 37)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_264_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_264_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_264_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 116) {
-                if( input == 96) {
-                    goto STATE_264_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 's'] */
-                }
-            } else {
-                if( input < 117) {
-                        goto STATE_265;    /* 't' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['u', 'z'] */
-                    } else {
-                        goto STATE_264_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_264_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(264);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_264_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_265:
-        __QUEX_DEBUG_INFO_ENTER(265);
-    /*  origins = [(7, 38, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(7);
-    last_acceptance = 7;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_265_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_260_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
             if( input < 65) {
-                    goto STATE_265_DROP_OUT;    /* [-oo, '@'] */
+                goto STATE_260_DROP_OUT;    /* [-oo, '@'] */
             } else {
-                if( input < 91) {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                } else {
-                    goto STATE_265_DROP_OUT;    /* ['[', '^'] */
-                }
+                goto STATE_255;    /* ['A', 'Z'] */
             }
         } else {
-            if( input < 97) {
-                if( input == 95) {
-                    goto STATE_255;    /* '_' */
-                } else {
-                    goto STATE_265_DROP_OUT;    /* '`' */
-                }
+            if( input != 95) {
+                goto STATE_260_DROP_OUT;    /* ['[', '^'] */
             } else {
-                if( input < 123) {
-                    goto STATE_255;    /* ['a', 'z'] */
-                } else {
-                    goto STATE_265_DROP_OUT;    /* ['{', oo] */
-                }
+                goto STATE_255;    /* '_' */
             }
         }
-    
-      STATE_265_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(265);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_265_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(7);
-        goto TERMINAL_7;
-        
-    
-      STATE_266:
-        __QUEX_DEBUG_INFO_ENTER(266);
-    /*  origins = [(41, 159, A, S), (16, 85)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_266_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_266_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
+    } else {
+        if( input < 110) {
+            if( input == 96) {
+                goto STATE_260_DROP_OUT;    /* '`' */
             } else {
-                if( input != 95) {
-                    goto STATE_266_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 100) {
-                if( input == 96) {
-                    goto STATE_266_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'c'] */
-                }
-            } else {
-                if( input < 101) {
-                        goto STATE_267;    /* 'd' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['e', 'z'] */
-                    } else {
-                        goto STATE_266_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_266_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(266);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_266_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_267:
-        __QUEX_DEBUG_INFO_ENTER(267);
-    /*  origins = [(16, 86, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(16);
-    last_acceptance = 16;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_267_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
-            if( input < 65) {
-                    goto STATE_267_DROP_OUT;    /* [-oo, '@'] */
-            } else {
-                if( input < 91) {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                } else {
-                    goto STATE_267_DROP_OUT;    /* ['[', '^'] */
-                }
-            }
-        } else {
-            if( input < 97) {
-                if( input == 95) {
-                    goto STATE_255;    /* '_' */
-                } else {
-                    goto STATE_267_DROP_OUT;    /* '`' */
-                }
-            } else {
-                if( input < 123) {
-                    goto STATE_255;    /* ['a', 'z'] */
-                } else {
-                    goto STATE_267_DROP_OUT;    /* ['{', oo] */
-                }
-            }
-        }
-    
-      STATE_267_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(267);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_267_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(16);
-        goto TERMINAL_16;
-        
-    
-      STATE_268:
-        __QUEX_DEBUG_INFO_ENTER(268);
-    /*  origins = [(41, 159, A, S), (10, 49)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_268_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_268_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_268_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 116) {
-                if( input == 96) {
-                    goto STATE_268_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 's'] */
-                }
-            } else {
-                if( input < 117) {
-                        goto STATE_269;    /* 't' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['u', 'z'] */
-                    } else {
-                        goto STATE_268_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_268_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(268);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_268_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_269:
-        __QUEX_DEBUG_INFO_ENTER(269);
-    /*  origins = [(10, 50, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(10);
-    last_acceptance = 10;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_269_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
-            if( input < 65) {
-                    goto STATE_269_DROP_OUT;    /* [-oo, '@'] */
-            } else {
-                if( input < 91) {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                } else {
-                    goto STATE_269_DROP_OUT;    /* ['[', '^'] */
-                }
-            }
-        } else {
-            if( input < 97) {
-                if( input == 95) {
-                    goto STATE_255;    /* '_' */
-                } else {
-                    goto STATE_269_DROP_OUT;    /* '`' */
-                }
-            } else {
-                if( input < 123) {
-                    goto STATE_255;    /* ['a', 'z'] */
-                } else {
-                    goto STATE_269_DROP_OUT;    /* ['{', oo] */
-                }
-            }
-        }
-    
-      STATE_269_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(269);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_269_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(10);
-        goto TERMINAL_10;
-        
-    
-      STATE_270:
-        __QUEX_DEBUG_INFO_ENTER(270);
-    /*  origins = [(41, 159, A, S), (13, 67)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_270_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_270_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_270_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 117) {
-                if( input == 96) {
-                    goto STATE_270_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 't'] */
-                }
-            } else {
-                if( input < 118) {
-                        goto STATE_271;    /* 'u' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['v', 'z'] */
-                    } else {
-                        goto STATE_270_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_270_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(270);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_270_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_271:
-        __QUEX_DEBUG_INFO_ENTER(271);
-    /*  origins = [(41, 159, A, S), (13, 68)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_271_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_271_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_271_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 98) {
-                if( input == 96) {
-                    goto STATE_271_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* 'a' */
-                }
-            } else {
-                if( input < 99) {
-                        goto STATE_272;    /* 'b' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['c', 'z'] */
-                    } else {
-                        goto STATE_271_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_271_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(271);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_271_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_272:
-        __QUEX_DEBUG_INFO_ENTER(272);
-    /*  origins = [(41, 159, A, S), (13, 69)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_272_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_272_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_272_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 108) {
-                if( input == 96) {
-                    goto STATE_272_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'k'] */
-                }
-            } else {
-                if( input < 109) {
-                        goto STATE_273;    /* 'l' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['m', 'z'] */
-                    } else {
-                        goto STATE_272_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_272_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(272);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_272_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_273:
-        __QUEX_DEBUG_INFO_ENTER(273);
-    /*  origins = [(41, 159, A, S), (13, 70)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_273_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_273_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_273_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 101) {
-                if( input == 96) {
-                    goto STATE_273_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'd'] */
-                }
-            } else {
-                if( input < 102) {
-                        goto STATE_274;    /* 'e' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['f', 'z'] */
-                    } else {
-                        goto STATE_273_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_273_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(273);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_273_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_274:
-        __QUEX_DEBUG_INFO_ENTER(274);
-    /*  origins = [(13, 71, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(13);
-    last_acceptance = 13;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_274_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
-            if( input < 65) {
-                    goto STATE_274_DROP_OUT;    /* [-oo, '@'] */
-            } else {
-                if( input < 91) {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                } else {
-                    goto STATE_274_DROP_OUT;    /* ['[', '^'] */
-                }
-            }
-        } else {
-            if( input < 97) {
-                if( input == 95) {
-                    goto STATE_255;    /* '_' */
-                } else {
-                    goto STATE_274_DROP_OUT;    /* '`' */
-                }
-            } else {
-                if( input < 123) {
-                    goto STATE_255;    /* ['a', 'z'] */
-                } else {
-                    goto STATE_274_DROP_OUT;    /* ['{', oo] */
-                }
-            }
-        }
-    
-      STATE_274_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(274);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_274_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(13);
-        goto TERMINAL_13;
-        
-    
-      STATE_275:
-        __QUEX_DEBUG_INFO_ENTER(275);
-    /*  origins = [(41, 159, A, S), (19, 103)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_275_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_275_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_275_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 112) {
-                if( input == 96) {
-                    goto STATE_275_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'o'] */
-                }
-            } else {
-                if( input < 113) {
-                        goto STATE_276;    /* 'p' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['q', 'z'] */
-                    } else {
-                        goto STATE_275_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_275_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(275);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_275_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_276:
-        __QUEX_DEBUG_INFO_ENTER(276);
-    /*  origins = [(41, 159, A, S), (19, 104)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_276_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_276_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_276_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 101) {
-                if( input == 96) {
-                    goto STATE_276_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'd'] */
-                }
-            } else {
-                if( input < 102) {
-                        goto STATE_277;    /* 'e' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['f', 'z'] */
-                    } else {
-                        goto STATE_276_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_276_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(276);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_276_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_277:
-        __QUEX_DEBUG_INFO_ENTER(277);
-    /*  origins = [(41, 159, A, S), (19, 105)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_277_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_277_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_277_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 99) {
-                if( input == 96) {
-                    goto STATE_277_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'b'] */
-                }
-            } else {
-                if( input < 100) {
-                        goto STATE_278;    /* 'c' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['d', 'z'] */
-                    } else {
-                        goto STATE_277_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_277_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(277);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_277_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_278:
-        __QUEX_DEBUG_INFO_ENTER(278);
-    /*  origins = [(41, 159, A, S), (19, 106)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_278_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_278_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_278_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 116) {
-                if( input == 96) {
-                    goto STATE_278_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 's'] */
-                }
-            } else {
-                if( input < 117) {
-                        goto STATE_279;    /* 't' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['u', 'z'] */
-                    } else {
-                        goto STATE_278_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_278_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(278);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_278_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_279:
-        __QUEX_DEBUG_INFO_ENTER(279);
-    /*  origins = [(19, 107, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(19);
-    last_acceptance = 19;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_279_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
-            if( input < 65) {
-                    goto STATE_279_DROP_OUT;    /* [-oo, '@'] */
-            } else {
-                if( input < 91) {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                } else {
-                    goto STATE_279_DROP_OUT;    /* ['[', '^'] */
-                }
-            }
-        } else {
-            if( input < 97) {
-                if( input == 95) {
-                    goto STATE_255;    /* '_' */
-                } else {
-                    goto STATE_279_DROP_OUT;    /* '`' */
-                }
-            } else {
-                if( input < 123) {
-                    goto STATE_255;    /* ['a', 'z'] */
-                } else {
-                    goto STATE_279_DROP_OUT;    /* ['{', oo] */
-                }
-            }
-        }
-    
-      STATE_279_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(279);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_279_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(19);
-        goto TERMINAL_19;
-        
-    
-      STATE_250:
-        __QUEX_DEBUG_INFO_ENTER(250);
-    /*  origins = [(41, 159, A, S), (19, 102)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_250_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_250_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_250_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 120) {
-                if( input == 96) {
-                    goto STATE_250_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'w'] */
-                }
-            } else {
-                if( input < 121) {
-                        goto STATE_275;    /* 'x' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['y', 'z'] */
-                    } else {
-                        goto STATE_250_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_250_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(250);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_250_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_251:
-        __QUEX_DEBUG_INFO_ENTER(251);
-    /*  origins = [(5, 17, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(5);
-    last_acceptance = 5;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_251_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 13) {
-            if( input < 9) {
-                    goto STATE_251_DROP_OUT;    /* [-oo, \8] */
-            } else {
-                if( input < 11) {
-                    goto STATE_251;    /* ['\t', '\n'] */
-                } else {
-                    goto STATE_251_DROP_OUT;    /* [\11, \12] */
-                }
-            }
-        } else {
-            if( input < 32) {
-                if( input == 13) {
-                    goto STATE_251;    /* '\r' */
-                } else {
-                    goto STATE_251_DROP_OUT;    /* [\14, \31] */
-                }
-            } else {
-                if( input == 32) {
-                    goto STATE_251;    /* ' ' */
-                } else {
-                    goto STATE_251_DROP_OUT;    /* [\33, oo] */
-                }
-            }
-        }
-    
-      STATE_251_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(251);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_251_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(5);
-        goto TERMINAL_5;
-        
-    
-      STATE_252:
-        __QUEX_DEBUG_INFO_ENTER(252);
-    /*  origins = [(41, 159, A, S), (13, 66)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_252_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_252_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_252_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
+                goto STATE_255;    /* ['a', 'm'] */
             }
         } else {
             if( input < 111) {
-                if( input == 96) {
-                    goto STATE_252_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'n'] */
-                }
-            } else {
-                if( input < 112) {
-                        goto STATE_270;    /* 'o' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['p', 'z'] */
-                    } else {
-                        goto STATE_252_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_252_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(252);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_252_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_253:
-        __QUEX_DEBUG_INFO_ENTER(253);
-    /*  origins = [(25, 119, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(25);
-    last_acceptance = 25;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-        /* no trigger set, no 'get character' */
-        goto STATE_253_DROP_OUT;
-        
-      STATE_253_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(253);
-        __QUEX_DEBUG_INFO_ACCEPTANCE(25);
-        goto TERMINAL_25;
-        
-    
-      STATE_254:
-        __QUEX_DEBUG_INFO_ENTER(254);
-    /*  origins = [(41, 159, A, S), (10, 48)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_254_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 96) {
-            if( input < 91) {
-                if( input < 65) {
-                    goto STATE_254_DROP_OUT;    /* [-oo, '@'] */
-                } else {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                }
-            } else {
-                if( input != 95) {
-                    goto STATE_254_DROP_OUT;    /* ['[', '^'] */
-                } else {
-                    goto STATE_255;    /* '_' */
-                }
-            }
-        } else {
-            if( input < 110) {
-                if( input == 96) {
-                    goto STATE_254_DROP_OUT;    /* '`' */
-                } else {
-                    goto STATE_255;    /* ['a', 'm'] */
-                }
-            } else {
-                if( input < 111) {
-                        goto STATE_268;    /* 'n' */
-                } else {
-                    if( input < 123) {
-                        goto STATE_255;    /* ['o', 'z'] */
-                    } else {
-                        goto STATE_254_DROP_OUT;    /* ['{', oo] */
-                    }
-                }
-            }
-        }
-    
-      STATE_254_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(254);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_254_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
-        }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
-        
-    
-      STATE_255:
-        __QUEX_DEBUG_INFO_ENTER(255);
-    /*  origins = [(41, 159, A, S)] */
-    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-    last_acceptance = 41;
-    QUEX_STREAM_TELL(last_acceptance_input_position);
-      STATE_255_INPUT:
-        QUEX_STREAM_GET(input);
-        __QUEX_DEBUG_INFO_INPUT(input);
-        if( input < 95) {
-            if( input < 65) {
-                    goto STATE_255_DROP_OUT;    /* [-oo, '@'] */
-            } else {
-                if( input < 91) {
-                    goto STATE_255;    /* ['A', 'Z'] */
-                } else {
-                    goto STATE_255_DROP_OUT;    /* ['[', '^'] */
-                }
-            }
-        } else {
-            if( input < 97) {
-                if( input == 95) {
-                    goto STATE_255;    /* '_' */
-                } else {
-                    goto STATE_255_DROP_OUT;    /* '`' */
-                }
+                    goto STATE_266;    /* 'n' */
             } else {
                 if( input < 123) {
-                    goto STATE_255;    /* ['a', 'z'] */
+                    goto STATE_255;    /* ['o', 'z'] */
                 } else {
-                    goto STATE_255_DROP_OUT;    /* ['{', oo] */
+                    goto STATE_260_DROP_OUT;    /* ['{', oo] */
                 }
             }
         }
-    
-      STATE_255_DROP_OUT:
-        __QUEX_DEBUG_INFO_DROP_OUT(255);
-        #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-        if( input == me->__buffer->BLC ) {
-            loaded_byte_n = me->__buffer->load_forward();
-            if( loaded_byte_n != -1 ) {
-                Simple_on_buffer_reload(loaded_byte_n);
-                goto STATE_255_INPUT;
-            }
-            // no load possible (EOF) => (i) goto general terminal
-            //                           (ii) init state triggers EOF action
-            goto TERMINAL_GENERAL;
+    }
+
+STATE_260_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(260);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_260_INPUT;
         }
-        #endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
-        __QUEX_DEBUG_INFO_ACCEPTANCE(41);
-        goto TERMINAL_41;
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_261:
+    __QUEX_DEBUG_INFO_ENTER(261);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_261_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_261_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_261_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 114) {
+            if( input == 96) {
+                goto STATE_261_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'q'] */
+            }
+        } else {
+            if( input < 115) {
+                    goto STATE_262;    /* 'r' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['s', 'z'] */
+                } else {
+                    goto STATE_261_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_261_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(261);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_261_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_262:
+    __QUEX_DEBUG_INFO_ENTER(262);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_262_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_262_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_262_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 117) {
+            if( input == 96) {
+                goto STATE_262_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 't'] */
+            }
+        } else {
+            if( input < 118) {
+                    goto STATE_263;    /* 'u' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['v', 'z'] */
+                } else {
+                    goto STATE_262_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_262_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(262);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_262_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_263:
+    __QUEX_DEBUG_INFO_ENTER(263);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_263_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_263_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_263_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 99) {
+            if( input == 96) {
+                goto STATE_263_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'b'] */
+            }
+        } else {
+            if( input < 100) {
+                    goto STATE_264;    /* 'c' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['d', 'z'] */
+                } else {
+                    goto STATE_263_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_263_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(263);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_263_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_264:
+    __QUEX_DEBUG_INFO_ENTER(264);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_264_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_264_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_264_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 96) {
+                goto STATE_264_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 's'] */
+            }
+        } else {
+            if( input < 117) {
+                    goto STATE_265;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_264_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_264_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(264);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_264_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_265:
+    __QUEX_DEBUG_INFO_ENTER(265);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(7);
+    last_acceptance = 7;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_265_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 65) {
+                goto STATE_265_DROP_OUT;    /* [-oo, '@'] */
+        } else {
+            if( input < 91) {
+                goto STATE_255;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_265_DROP_OUT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95) {
+                goto STATE_255;    /* '_' */
+            } else {
+                goto STATE_265_DROP_OUT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_255;    /* ['a', 'z'] */
+            } else {
+                goto STATE_265_DROP_OUT;    /* ['{', oo] */
+            }
+        }
+    }
+
+STATE_265_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(265);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_265_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(7);
+    goto TERMINAL_7;
+
+
+STATE_266:
+    __QUEX_DEBUG_INFO_ENTER(266);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_266_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_266_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_266_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 100) {
+            if( input == 96) {
+                goto STATE_266_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'c'] */
+            }
+        } else {
+            if( input < 101) {
+                    goto STATE_267;    /* 'd' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['e', 'z'] */
+                } else {
+                    goto STATE_266_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_266_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(266);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_266_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_267:
+    __QUEX_DEBUG_INFO_ENTER(267);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(16);
+    last_acceptance = 16;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_267_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 65) {
+                goto STATE_267_DROP_OUT;    /* [-oo, '@'] */
+        } else {
+            if( input < 91) {
+                goto STATE_255;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_267_DROP_OUT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95) {
+                goto STATE_255;    /* '_' */
+            } else {
+                goto STATE_267_DROP_OUT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_255;    /* ['a', 'z'] */
+            } else {
+                goto STATE_267_DROP_OUT;    /* ['{', oo] */
+            }
+        }
+    }
+
+STATE_267_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(267);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_267_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(16);
+    goto TERMINAL_16;
+
+
+STATE_268:
+    __QUEX_DEBUG_INFO_ENTER(268);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_268_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_268_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_268_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 96) {
+                goto STATE_268_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 's'] */
+            }
+        } else {
+            if( input < 117) {
+                    goto STATE_269;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_268_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_268_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(268);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_268_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_269:
+    __QUEX_DEBUG_INFO_ENTER(269);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(10);
+    last_acceptance = 10;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_269_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 65) {
+                goto STATE_269_DROP_OUT;    /* [-oo, '@'] */
+        } else {
+            if( input < 91) {
+                goto STATE_255;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_269_DROP_OUT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95) {
+                goto STATE_255;    /* '_' */
+            } else {
+                goto STATE_269_DROP_OUT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_255;    /* ['a', 'z'] */
+            } else {
+                goto STATE_269_DROP_OUT;    /* ['{', oo] */
+            }
+        }
+    }
+
+STATE_269_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(269);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_269_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(10);
+    goto TERMINAL_10;
+
+
+STATE_270:
+    __QUEX_DEBUG_INFO_ENTER(270);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_270_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_270_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_270_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 117) {
+            if( input == 96) {
+                goto STATE_270_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 't'] */
+            }
+        } else {
+            if( input < 118) {
+                    goto STATE_271;    /* 'u' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['v', 'z'] */
+                } else {
+                    goto STATE_270_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_270_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(270);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_270_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_271:
+    __QUEX_DEBUG_INFO_ENTER(271);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_271_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_271_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_271_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 98) {
+            if( input == 96) {
+                goto STATE_271_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* 'a' */
+            }
+        } else {
+            if( input < 99) {
+                    goto STATE_272;    /* 'b' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['c', 'z'] */
+                } else {
+                    goto STATE_271_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_271_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(271);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_271_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_272:
+    __QUEX_DEBUG_INFO_ENTER(272);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_272_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_272_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_272_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 108) {
+            if( input == 96) {
+                goto STATE_272_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'k'] */
+            }
+        } else {
+            if( input < 109) {
+                    goto STATE_273;    /* 'l' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['m', 'z'] */
+                } else {
+                    goto STATE_272_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_272_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(272);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_272_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_273:
+    __QUEX_DEBUG_INFO_ENTER(273);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_273_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_273_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_273_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 101) {
+            if( input == 96) {
+                goto STATE_273_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'd'] */
+            }
+        } else {
+            if( input < 102) {
+                    goto STATE_274;    /* 'e' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['f', 'z'] */
+                } else {
+                    goto STATE_273_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_273_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(273);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_273_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_274:
+    __QUEX_DEBUG_INFO_ENTER(274);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(13);
+    last_acceptance = 13;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_274_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 65) {
+                goto STATE_274_DROP_OUT;    /* [-oo, '@'] */
+        } else {
+            if( input < 91) {
+                goto STATE_255;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_274_DROP_OUT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95) {
+                goto STATE_255;    /* '_' */
+            } else {
+                goto STATE_274_DROP_OUT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_255;    /* ['a', 'z'] */
+            } else {
+                goto STATE_274_DROP_OUT;    /* ['{', oo] */
+            }
+        }
+    }
+
+STATE_274_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(274);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_274_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(13);
+    goto TERMINAL_13;
+
+
+STATE_275:
+    __QUEX_DEBUG_INFO_ENTER(275);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_275_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_275_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_275_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 112) {
+            if( input == 96) {
+                goto STATE_275_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'o'] */
+            }
+        } else {
+            if( input < 113) {
+                    goto STATE_276;    /* 'p' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['q', 'z'] */
+                } else {
+                    goto STATE_275_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_275_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(275);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_275_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_276:
+    __QUEX_DEBUG_INFO_ENTER(276);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_276_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_276_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_276_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 101) {
+            if( input == 96) {
+                goto STATE_276_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'd'] */
+            }
+        } else {
+            if( input < 102) {
+                    goto STATE_277;    /* 'e' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['f', 'z'] */
+                } else {
+                    goto STATE_276_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_276_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(276);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_276_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_277:
+    __QUEX_DEBUG_INFO_ENTER(277);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_277_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_277_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_277_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 99) {
+            if( input == 96) {
+                goto STATE_277_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'b'] */
+            }
+        } else {
+            if( input < 100) {
+                    goto STATE_278;    /* 'c' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['d', 'z'] */
+                } else {
+                    goto STATE_277_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_277_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(277);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_277_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_278:
+    __QUEX_DEBUG_INFO_ENTER(278);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_278_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_278_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_278_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 116) {
+            if( input == 96) {
+                goto STATE_278_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 's'] */
+            }
+        } else {
+            if( input < 117) {
+                    goto STATE_279;    /* 't' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['u', 'z'] */
+                } else {
+                    goto STATE_278_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_278_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(278);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_278_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_279:
+    __QUEX_DEBUG_INFO_ENTER(279);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(19);
+    last_acceptance = 19;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_279_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 65) {
+                goto STATE_279_DROP_OUT;    /* [-oo, '@'] */
+        } else {
+            if( input < 91) {
+                goto STATE_255;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_279_DROP_OUT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95) {
+                goto STATE_255;    /* '_' */
+            } else {
+                goto STATE_279_DROP_OUT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_255;    /* ['a', 'z'] */
+            } else {
+                goto STATE_279_DROP_OUT;    /* ['{', oo] */
+            }
+        }
+    }
+
+STATE_279_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(279);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_279_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(19);
+    goto TERMINAL_19;
+
+
+STATE_250:
+    __QUEX_DEBUG_INFO_ENTER(250);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_250_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_250_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_250_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 120) {
+            if( input == 96) {
+                goto STATE_250_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'w'] */
+            }
+        } else {
+            if( input < 121) {
+                    goto STATE_275;    /* 'x' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['y', 'z'] */
+                } else {
+                    goto STATE_250_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_250_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(250);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_250_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_251:
+    __QUEX_DEBUG_INFO_ENTER(251);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(5);
+    last_acceptance = 5;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_251_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 13) {
+        if( input < 9) {
+                goto STATE_251_DROP_OUT;    /* [-oo, \8] */
+        } else {
+            if( input < 11) {
+                goto STATE_251;    /* ['\t', '\n'] */
+            } else {
+                goto STATE_251_DROP_OUT;    /* [\11, \12] */
+            }
+        }
+    } else {
+        if( input < 32) {
+            if( input == 13) {
+                goto STATE_251;    /* '\r' */
+            } else {
+                goto STATE_251_DROP_OUT;    /* [\14, \31] */
+            }
+        } else {
+            if( input == 32) {
+                goto STATE_251;    /* ' ' */
+            } else {
+                goto STATE_251_DROP_OUT;    /* [\33, oo] */
+            }
+        }
+    }
+
+STATE_251_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(251);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_251_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(5);
+    goto TERMINAL_5;
+
+
+STATE_252:
+    __QUEX_DEBUG_INFO_ENTER(252);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_252_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_252_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_252_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 111) {
+            if( input == 96) {
+                goto STATE_252_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'n'] */
+            }
+        } else {
+            if( input < 112) {
+                    goto STATE_270;    /* 'o' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['p', 'z'] */
+                } else {
+                    goto STATE_252_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_252_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(252);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_252_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_253:
+    __QUEX_DEBUG_INFO_ENTER(253);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(25);
+    last_acceptance = 25;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    /* no trigger set, no 'get character' */
+    goto STATE_253_DROP_OUT;
+    
+STATE_253_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(253);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(25);
+    goto TERMINAL_25;
+
+
+STATE_254:
+    __QUEX_DEBUG_INFO_ENTER(254);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_254_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 96) {
+        if( input < 91) {
+            if( input < 65) {
+                goto STATE_254_DROP_OUT;    /* [-oo, '@'] */
+            } else {
+                goto STATE_255;    /* ['A', 'Z'] */
+            }
+        } else {
+            if( input != 95) {
+                goto STATE_254_DROP_OUT;    /* ['[', '^'] */
+            } else {
+                goto STATE_255;    /* '_' */
+            }
+        }
+    } else {
+        if( input < 110) {
+            if( input == 96) {
+                goto STATE_254_DROP_OUT;    /* '`' */
+            } else {
+                goto STATE_255;    /* ['a', 'm'] */
+            }
+        } else {
+            if( input < 111) {
+                    goto STATE_268;    /* 'n' */
+            } else {
+                if( input < 123) {
+                    goto STATE_255;    /* ['o', 'z'] */
+                } else {
+                    goto STATE_254_DROP_OUT;    /* ['{', oo] */
+                }
+            }
+        }
+    }
+
+STATE_254_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(254);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_254_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+STATE_255:
+    __QUEX_DEBUG_INFO_ENTER(255);
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    last_acceptance = 41;
+    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+STATE_255_INPUT:
+    QUEX_BUFFER_INCREMENT_AND_GET(input);
+    __QUEX_DEBUG_INFO_INPUT(input);
+    if( input < 95) {
+        if( input < 65) {
+                goto STATE_255_DROP_OUT;    /* [-oo, '@'] */
+        } else {
+            if( input < 91) {
+                goto STATE_255;    /* ['A', 'Z'] */
+            } else {
+                goto STATE_255_DROP_OUT;    /* ['[', '^'] */
+            }
+        }
+    } else {
+        if( input < 97) {
+            if( input == 95) {
+                goto STATE_255;    /* '_' */
+            } else {
+                goto STATE_255_DROP_OUT;    /* '`' */
+            }
+        } else {
+            if( input < 123) {
+                goto STATE_255;    /* ['a', 'z'] */
+            } else {
+                goto STATE_255_DROP_OUT;    /* ['{', oo] */
+            }
+        }
+    }
+
+STATE_255_DROP_OUT:
+    __QUEX_DEBUG_INFO_DROP_OUT(255);
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            Simple_on_buffer_reload(loaded_byte_n);
+            goto STATE_255_INPUT;
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+        goto TERMINAL_GENERAL;
+    }
+#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */
+    __QUEX_DEBUG_INFO_ACCEPTANCE(41);
+    goto TERMINAL_41;
+
+
+
+  // (*) Terminal states _______________________________________________________
+  //
+  // Acceptance terminal states, i.e. the 'winner patterns'. This means
+  // that the last input dropped out of a state where the longest matching
+  // pattern was according to the terminal state. The terminal states are 
+  // numbered after the pattern id.
+  //
+  TERMINAL_35:
+    __QUEX_DEBUG_INFO_TERMINAL(35);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_PREPARE_LEXEME_OBJECT
+    QUEX_PREPARE_LEXEME_LENGTH
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(LexemeL);
         
-    
-    
-      // (*) Terminal states _______________________________________________________
-      //
-      // Acceptance terminal states, i.e. the 'winner patterns'. This means
-      // that the last input dropped out of a state where the longest matching
-      // pattern was according to the terminal state. The terminal states are 
-      // numbered after the pattern id.
-      //
-      TERMINAL_35:
-        __QUEX_DEBUG_INFO_TERMINAL(35);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_PREPARE_LEXEME_OBJECT
-        QUEX_PREPARE_LEXEME_LENGTH
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(LexemeL);
-            
-            #line 27 "dos_lf_2.qx"
-            self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1972 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_5:
-        __QUEX_DEBUG_INFO_TERMINAL(5);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_PREPARE_LEXEME_OBJECT
-        QUEX_PREPARE_LEXEME_LENGTH
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count(Lexeme, LexemeL);
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_7:
-        __QUEX_DEBUG_INFO_TERMINAL(7);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(6);
-            
-            #line 19 "dos_lf_2.qx"
-            self.send(TKN_STRUCT); RETURN;
-#line 2005 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_41:
-        __QUEX_DEBUG_INFO_TERMINAL(41);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_PREPARE_LEXEME_OBJECT
-        QUEX_PREPARE_LEXEME_LENGTH
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(LexemeL);
-            
-            #line 28 "dos_lf_2.qx"
-            self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 2024 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_10:
-        __QUEX_DEBUG_INFO_TERMINAL(10);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(3);
-            
-            #line 20 "dos_lf_2.qx"
-            self.send(TKN_TYPE_INT); RETURN;
-#line 2042 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_13:
-        __QUEX_DEBUG_INFO_TERMINAL(13);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(6);
-            
-            #line 21 "dos_lf_2.qx"
-            self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 2060 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_16:
-        __QUEX_DEBUG_INFO_TERMINAL(16);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(4);
-            
-            #line 22 "dos_lf_2.qx"
-            self.send(TKN_SEND); RETURN;
-#line 2078 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_19:
-        __QUEX_DEBUG_INFO_TERMINAL(19);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(6);
-            
-            #line 23 "dos_lf_2.qx"
-            self.send(TKN_EXPECT); RETURN;
-#line 2096 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_22:
-        __QUEX_DEBUG_INFO_TERMINAL(22);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(1);
-            
-            #line 24 "dos_lf_2.qx"
-            self.send(TKN_SEMICOLON); RETURN;
-#line 2114 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_25:
-        __QUEX_DEBUG_INFO_TERMINAL(25);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(1);
-            
-            #line 25 "dos_lf_2.qx"
-            self.send(TKN_BRACKET_OPEN); RETURN;
-#line 2132 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-      TERMINAL_28:
-        __QUEX_DEBUG_INFO_TERMINAL(28);
-        QUEX_STREAM_SEEK(last_acceptance_input_position);
-        QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
-        {
-            {
-            self.__count_shift_end_values_to_start_values();
-            self.count_NoNewline(1);
-            
-            #line 26 "dos_lf_2.qx"
-            self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2150 "Simple-core-engine.cpp"
-            
-            }
-        }
-    
-        goto __REENTRY_PREPARATION;
-    
-    
-    
-      TERMINAL_END_OF_STREAM:
-                    QUEX_PREPARE_LEXEME_OBJECT
-                    QUEX_PREPARE_LEXEME_LENGTH
-                    {
-                        {
-            self.__count_shift_end_values_to_start_values();
-            self.count(Lexeme, LexemeL);
-            
-            #line 16 "dos_lf_2.qx"
-            self.send(TKN_TERMINATION); RETURN;
-#line 2169 "Simple-core-engine.cpp"
-            
-            }
-                    }
-    
-            return TKN_TERMINATION;
-    
-      TERMINAL_DEFAULT:
-    if( QUEX_END_OF_FILE() ) {
-        QUEX_STREAM_GET_BACKWARDS(/* dummy (important is that we go backwards */input);
-    }
-                    QUEX_PREPARE_LEXEME_OBJECT
-                    QUEX_PREPARE_LEXEME_LENGTH
-                    {
-                        {
-            self.__count_shift_end_values_to_start_values();
-            self.count(Lexeme, LexemeL);
-            self.send(TKN_TERMINATION);
-            return TKN_TERMINATION;
-            
-            }
-                    }
-    
-            goto __REENTRY_PREPARATION;
-    
-      TERMINAL_GENERAL: {
-            int tmp = last_acceptance;
-            //
-            //  if last_acceptance => goto correspondent acceptance terminal state
-            //  else               => execute defaul action
-            //
-            __QUEX_DEBUG_INFO_TERMINAL(General);
-            switch( tmp ) {
-                case 35L: goto TERMINAL_35;
-                case 5L: goto TERMINAL_5;
-                case 7L: goto TERMINAL_7;
-                case 41L: goto TERMINAL_41;
-                case 10L: goto TERMINAL_10;
-                case 13L: goto TERMINAL_13;
-                case 16L: goto TERMINAL_16;
-                case 19L: goto TERMINAL_19;
-                case 22L: goto TERMINAL_22;
-                case 25L: goto TERMINAL_25;
-                case 28L: goto TERMINAL_28;
-    
-                default: goto TERMINAL_DEFAULT; /* nothing matched */
-            }
-        }
-    
-      
-      __REENTRY_PREPARATION:
-        // (*) Common point for **restarting** lexical analysis.
-        //     at each time when CONTINUE is called at the end of a pattern.
-        //
-        last_acceptance = -1;
-    
-        //
-        //  If a mode change happened, then the function must first return and
-        //  indicate that another mode function is to be called. At this point, 
-        //  we to force a 'return' on a mode change. 
-        //
-        //  Pseudo Code: if( previous_mode != current_mode ) {
-        //                   return 0;
-        //               }
-        // 
-        //  When the analyzer returns, the caller function has to watch if a mode change
-        //  occured. If not it can call this function again.
-        //
-        __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
-        goto __REENTRY_POINT;
-    
-        // prevent compiler warning 'unused variable': use variables once in a part of the code
-        // that is never reached (and deleted by the compiler anyway).
-        if( 0 == 1 ) {
-            int unused = 0;
-            unused = unused + ONE_AND_ONLY.id;
+        #line 27 "dos_lf_2.qx"
+        self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
+#line 1945 "Simple-core-engine.cpp"
+        
         }
     }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_5:
+    __QUEX_DEBUG_INFO_TERMINAL(5);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_PREPARE_LEXEME_OBJECT
+    QUEX_PREPARE_LEXEME_LENGTH
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count(Lexeme, LexemeL);
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_7:
+    __QUEX_DEBUG_INFO_TERMINAL(7);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(6);
+        
+        #line 19 "dos_lf_2.qx"
+        self.send(TKN_STRUCT); RETURN;
+#line 1978 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_41:
+    __QUEX_DEBUG_INFO_TERMINAL(41);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_PREPARE_LEXEME_OBJECT
+    QUEX_PREPARE_LEXEME_LENGTH
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(LexemeL);
+        
+        #line 28 "dos_lf_2.qx"
+        self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
+#line 1997 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_10:
+    __QUEX_DEBUG_INFO_TERMINAL(10);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(3);
+        
+        #line 20 "dos_lf_2.qx"
+        self.send(TKN_TYPE_INT); RETURN;
+#line 2015 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_13:
+    __QUEX_DEBUG_INFO_TERMINAL(13);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(6);
+        
+        #line 21 "dos_lf_2.qx"
+        self.send(TKN_TYPE_DOUBLE); RETURN;
+#line 2033 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_16:
+    __QUEX_DEBUG_INFO_TERMINAL(16);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(4);
+        
+        #line 22 "dos_lf_2.qx"
+        self.send(TKN_SEND); RETURN;
+#line 2051 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_19:
+    __QUEX_DEBUG_INFO_TERMINAL(19);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(6);
+        
+        #line 23 "dos_lf_2.qx"
+        self.send(TKN_EXPECT); RETURN;
+#line 2069 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_22:
+    __QUEX_DEBUG_INFO_TERMINAL(22);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(1);
+        
+        #line 24 "dos_lf_2.qx"
+        self.send(TKN_SEMICOLON); RETURN;
+#line 2087 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_25:
+    __QUEX_DEBUG_INFO_TERMINAL(25);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(1);
+        
+        #line 25 "dos_lf_2.qx"
+        self.send(TKN_BRACKET_OPEN); RETURN;
+#line 2105 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+  TERMINAL_28:
+    __QUEX_DEBUG_INFO_TERMINAL(28);
+    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
+    {
+        {
+        self.__count_shift_end_values_to_start_values();
+        self.count_NoNewline(1);
+        
+        #line 26 "dos_lf_2.qx"
+        self.send(TKN_BRACKET_CLOSE); RETURN;
+#line 2123 "Simple-core-engine.cpp"
+        
+        }
+    }
+
+    goto __REENTRY_PREPARATION;
+
+
+
+TERMINAL_END_OF_STREAM:
+                QUEX_PREPARE_LEXEME_OBJECT
+                QUEX_PREPARE_LEXEME_LENGTH
+                {
+                    {
+        self.__count_shift_end_values_to_start_values();
+        self.count(Lexeme, LexemeL);
+        
+        #line 16 "dos_lf_2.qx"
+        self.send(TKN_TERMINATION); RETURN;
+#line 2142 "Simple-core-engine.cpp"
+        
+        }
+                }
+
+        return TKN_TERMINATION;
+
+TERMINAL_DEFAULT:
+if( QUEX_END_OF_FILE() ) {
+    QUEX_BUFFER_DECREMENT_AND_GET(/* dummy (important is that we go backwards */input);
+}
+                QUEX_PREPARE_LEXEME_OBJECT
+                QUEX_PREPARE_LEXEME_LENGTH
+                {
+                    {
+        self.__count_shift_end_values_to_start_values();
+        self.count(Lexeme, LexemeL);
+        self.send(TKN_TERMINATION);
+        return TKN_TERMINATION;
+        
+        }
+                }
+
+        goto __REENTRY_PREPARATION;
+
+TERMINAL_GENERAL: {
+        int tmp = last_acceptance;
+        //
+        //  if last_acceptance => goto correspondent acceptance terminal state
+        //  else               => execute defaul action
+        //
+        __QUEX_DEBUG_INFO_TERMINAL(General);
+        switch( tmp ) {
+            case 35L: goto TERMINAL_35;
+            case 5L: goto TERMINAL_5;
+            case 7L: goto TERMINAL_7;
+            case 41L: goto TERMINAL_41;
+            case 10L: goto TERMINAL_10;
+            case 13L: goto TERMINAL_13;
+            case 16L: goto TERMINAL_16;
+            case 19L: goto TERMINAL_19;
+            case 22L: goto TERMINAL_22;
+            case 25L: goto TERMINAL_25;
+            case 28L: goto TERMINAL_28;
+
+            default: goto TERMINAL_DEFAULT; /* nothing matched */
+        }
+    }
+
+  
+__REENTRY_PREPARATION:
+    // (*) Common point for **restarting** lexical analysis.
+    //     at each time when CONTINUE is called at the end of a pattern.
+    //
+    last_acceptance = -1;
+
+    //
+    //  If a mode change happened, then the function must first return and
+    //  indicate that another mode function is to be called. At this point, 
+    //  we to force a 'return' on a mode change. 
+    //
+    //  Pseudo Code: if( previous_mode != current_mode ) {
+    //                   return 0;
+    //               }
+    // 
+    //  When the analyzer returns, the caller function has to watch if a mode change
+    //  occured. If not it can call this function again.
+    //
+    __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
+    goto __REENTRY_POINT;
+
+    // prevent compiler warning 'unused variable': use variables once in a part of the code
+    // that is never reached (and deleted by the compiler anyway).
+    if( 0 == 1 ) {
+        int unused = 0;
+        unused = unused + ONE_AND_ONLY.id;
+    }
+}
 #include"Simple"
 namespace quex {
 #define self  (*me)

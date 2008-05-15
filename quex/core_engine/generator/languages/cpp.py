@@ -224,11 +224,14 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += "    " + LanguageDB["$drop-out-backward"](label.get_input(CurrentStateIdx)).replace("\n", "\n    ")
+        ## txt += "\n#   else\n"
+        ## txt += "        " + LanguageDB["$input/get"] + "\n"
+        ## txt += "        goto %s;\n" % label.get_input(CurrentStateIdx)
         txt += "\n#   endif\n"
 
     if DropOutTargetStateID != -1L:
-        # -- A 'match all' is implemented as 'drop out to target'. This happens
-        #    in order to ensure that the buffer limits are checked.
+        # A 'match all' is implemented as 'drop out to target'. This happens
+        # in order to ensure that the buffer limits are checked.
         txt += "    goto %s;\n" % label.get(StateMachineName, DropOutTargetStateID)
         return txt
     
@@ -342,9 +345,9 @@ __header_definitions_txt = """
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-        std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p));            
-//      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr()));            
-//      std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
+   std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
+//        std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p - (me->buffer_begin -1)));            
+// std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr() - (me->__buffer->content_front() - 1) ));            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\

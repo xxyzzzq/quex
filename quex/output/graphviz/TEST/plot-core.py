@@ -16,7 +16,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 
-sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))")
+sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {}, 0, 0, 0)
 pattern_action_pair_list = [ ActionInfo(sm, "Don't worry, be happy!") ]
 
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")

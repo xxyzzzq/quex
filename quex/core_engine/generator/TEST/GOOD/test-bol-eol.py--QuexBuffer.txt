@@ -21,7 +21,7 @@ THIS  THAT'
 '
          IDENTIFIER  'THIS'
          WHITESPACE  '  '
-     EOL-IDENTIFIER  'THAT'
+         IDENTIFIER  'THAT'
   ''
 (*) Lexical Analyser Patterns:
           ^[A-Z]+":" --> BOL-LABEL
