@@ -1,0 +1,29 @@
+<test-database execution-time-sec="0.75" date="Wed May 14 07:14:48 2008">
+    <last-used-diff-display-program name=""/>
+    <test title="Check supported formats." time-sum-sec="0.61"> 
+        <application file-name="get_supported_formats.py" info-request-time="1205646836L"/>
+        <choice-list number="1">
+           <choice name="" result="OK" time-sec="0.61" crc="-1342312020"/>
+        </choice-list>
+    </test>
+    <group name="Plot">
+        <test title="Core state machine." time-sum-sec="0.04"> 
+            <application file-name="plot-core.py" info-request-time="1208195480L"/>
+            <choice-list number="1">
+               <choice name="" result="FAIL" time-sec="0.04" crc="-322414128"/>
+            </choice-list>
+        </test>
+        <test title="Backward Detector (for pseudo-ambiguous post context)." time-sum-sec="0.05"> 
+            <application file-name="plot-papc.py" info-request-time="1206649392L"/>
+            <choice-list number="1">
+               <choice name="" result="FAIL" time-sec="0.05" crc="-1052421152"/>
+            </choice-list>
+        </test>
+        <test title="Pre-Context." time-sum-sec="0.04"> 
+            <application file-name="plot-pre-context.py" info-request-time="1206649432L"/>
+            <choice-list number="1">
+               <choice name="" result="FAIL" time-sec="0.04" crc="1220693871"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
