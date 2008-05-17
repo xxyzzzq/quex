@@ -102,6 +102,9 @@ namespace quex {
             void              seek_adr(memory_position Adr);
             void              seek_offset(const int Offset);
 
+            // handle with extreme care
+            void              _reset();
+
             //     -- what happens if there's not enough space?
             bool   (*on_overflow)(buffer<CharacterCarrierType>*, bool ForwardF);
 

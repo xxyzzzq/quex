@@ -59,10 +59,13 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
 
 #ifndef     QUEX_SETTING_BUFFER_SIZE
-#    define QUEX_SETTING_BUFFER_SIZE  65536
+#    define QUEX_SETTING_BUFFER_SIZE  ((size_t)65536)
+#endif
+#ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
+#    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
 #endif
 #ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
-#    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  2048
+#    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
 #endif
 
 $$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
@@ -80,7 +83,7 @@ $$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 $$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #    ifndef     QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE
-#        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE 65536
+#        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE ((size_t)65536)
 #    endif
 #endif
 
@@ -259,7 +262,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         template <class InputHandle> 
         quex::buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
                                                          const char*  IConvInputCodingName = 0x0);
-
         //
         // (*) Token sending
         void        send(const $$TOKEN_CLASS$$& That);
@@ -301,6 +303,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void   include_stack_push(InputHandle*, const quex_mode&,
                                   const char* IConvInputCodingName = 0x0);
         bool   include_stack_pop();
+
+        // handle with extreme care:
+        void   _reset();
 
      private:
         template <class InputHandle> 
@@ -382,8 +387,8 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
     private:
         // (*) Helper
         //      -- put whole pattern back into the 'stream to be lexed'
-        void    move_forward(const size_t);
-        void    move_backward(const size_t);
+        void  move_forward(const size_t);
+        void  move_backward(const size_t);
 
         //      -- functions computing the current line and column number
         void  count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
@@ -518,6 +523,7 @@ $$CLASS_BODY_EXTENSION$$
         // prefer FILE* based buffers, because we can turn low-level buffering off.
         // ownership of FILE* id passed to the input strategy of the buffer
         std::FILE* fh = std::fopen(Filename.c_str(), "r");
+        if( fh == NULL ) throw std::runtime_error("Error on attempt to open specified file.");
         setbuf(fh, 0);   // turn off system based buffering!
         //               // this is essential to profit from the quex buffer!
         __constructor_core(fh, IConvInputCodingName);
@@ -531,6 +537,7 @@ $$CLASS_BODY_EXTENSION$$
         self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
         accumulator(this)
     {
+        if( p_input_stream == NULL ) throw std::runtime_error("Error: received NULL as pointer to input stream.");
         __constructor_core(p_input_stream, IConvInputCodingName);
     }
 
@@ -540,6 +547,7 @@ $$CLASS_BODY_EXTENSION$$
         self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
         accumulator(this)
     {
+        if( fh == NULL ) throw std::runtime_error("Error: received NULL as a file handle.");
         setbuf(fh, 0);   // turn off system based buffering!
         //               // this is essential to profit from the quex buffer!
         __constructor_core(fh, IConvInputCodingName);
@@ -565,8 +573,8 @@ $$CLASS_BODY_EXTENSION$$
         else {
             is = new fixed_size_character_stream_plain<InputHandle, QUEX_CHARACTER_TYPE>(input_handle);
         }
-        return new buffer<QUEX_CHARACTER_TYPE>(is, (size_t)QUEX_SETTING_BUFFER_SIZE, (size_t)10,
-                    /* buffer limit code = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
+        return new buffer<QUEX_CHARACTER_TYPE>(is, QUEX_SETTING_BUFFER_SIZE, QUEX_SETTING_BUFFER_FALLBACK_SIZE,
+                                               /* buffer limit code = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
     }
 
     template <class InputHandleP> inline void
@@ -1080,6 +1088,35 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
         return true;
     }
 #   endif
+
+    inline void
+    CLASS::_reset()
+    {
+        // NOTE: We do not create a new buffer here, since we assume that it has been created
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, 0x0, mode_db[$$INITIAL_LEXER_MODE_ID$$]->analyser_function);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        _indentation = 0;
+        _indentation_count_enabled_f = false;
+        _indentation_event_enabled_f = true;
+#endif
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        _line_number_at_begin = 0;
+        _line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        _column_number_at_begin = 0;
+        _column_number_at_end   = 1; 
+#endif
+        set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
+
+        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
+        //                                     // pattern actions
+        __continue_analysis_after_adapting_mode_function_p_f = false;
+
+        // Reset the buffer
+        this->__buffer->_reset();
+    }
 
 #undef CLASS
 

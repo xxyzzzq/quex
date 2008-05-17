@@ -45,10 +45,10 @@ namespace quex {
     template <class character_type> 
     struct memory_position_mimiker {
 
-        typedef long character_index; // Assume: The 'start position' is stored in
-        //                            // terms of 'character index' rather the stream
-        //                            // position. This is so, since some coding have
-        //                            // a dynamically sized character encoding.
+        typedef size_t character_index; // Assume: The 'start position' is stored in
+        //                              // terms of 'character index' rather the stream
+        //                              // position. This is so, since some coding have
+        //                              // a dynamically sized character encoding.
 
         // for compatibility with 'character_type*'
         // ALLOW: Only Adr, so that variable of type memory_position_mimiker can be

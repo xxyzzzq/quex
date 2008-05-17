@@ -8,4 +8,5 @@ fi
 tmp=`pwd`
 cd $bug/ 
 quex -i error.qx 
+rm lexer*
 cd $tmp
