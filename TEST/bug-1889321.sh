@@ -13,4 +13,5 @@ echo
 echo "Use Case 2:"
 quex -i error-2.qx 
 echo
+rm lexer*
 cd $tmp

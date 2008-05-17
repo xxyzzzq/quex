@@ -66,6 +66,7 @@ $QUEX_PATH/make_install_builder_script.py `pwd`/quex-$1 $1
 # -- compress the tar file
 7z   a  quex-$1.tar.7z quex-$1.tar
 gzip -9 quex-$1.tar
+zip  -r quex-$1.zip ./quex-$1
 
 # (*) clean up
 rm $input $output

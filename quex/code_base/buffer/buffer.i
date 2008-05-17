@@ -316,7 +316,7 @@ namespace quex {
         //     it is safe to say that _lexeme_start_p > _current_p (the lexeme starts
         //     on a letter not the buffer limit).
         __quex_assert(_lexeme_start_p > _current_p);
-        const int IntendedBackwardDistance = (int)(content_size() / 3);   
+        const size_t IntendedBackwardDistance = (size_t)(content_size() / 3);   
 
         //     Before:    |C      L                  |
         //
@@ -339,11 +339,15 @@ namespace quex {
             }
         }
         const int    MaxBackwardDistance_pre = content_size() - (int)(_lexeme_start_p - _current_p);
-        const size_t MaxBackwardDistance = MaxBackwardDistance_pre < _character_index_at_front ?
-                                           MaxBackwardDistance_pre : _character_index_at_front;
+        // NOTE: Split the minimum operation, because 'size_t' might be defined as 'unsigned'
+        // NOTE: It holds: _character_index_at_front >= 0
+        const size_t MaxBackwardDistance =
+                            MaxBackwardDistance_pre < 0 ?                          MaxBackwardDistance_pre 
+                  : (size_t)MaxBackwardDistance_pre < _character_index_at_front ?  MaxBackwardDistance_pre 
+                  : _character_index_at_front;
 
         const int BackwardDistance = IntendedBackwardDistance > MaxBackwardDistance ? 
-            MaxBackwardDistance : IntendedBackwardDistance;
+                                     MaxBackwardDistance : IntendedBackwardDistance;
 
         //_______________________________________________________________________________
         // (2) Compute the stream position of the 'start to read' 
@@ -486,7 +490,6 @@ namespace quex {
         // Check wether the memory_position is relative to the current start position 
         // of the stream. That means, that the tell_adr() command was called on the
         // same buffer setting or the positions have been adapted using the += operator.
-        const long begin_pos = _character_index_at_front; 
         __quex_assert(Adr.buffer_start_position == _character_index_at_front);
         _current_p = Adr.address;
 #       else

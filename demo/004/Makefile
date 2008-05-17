@@ -24,10 +24,11 @@ APPLICATION      = lexer
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
-CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
+CC = $(COMPILER) -c -ggdb -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-     -DQUEX_OPTION_ACTIVATE_ASSERTS	\
-     -DQUEX_SETTING_BUFFER_SIZE=64 \
+	 -DQUEX_BENCHMARK_SERIOUS
+     #-DQUEX_OPTION_ACTIVATE_ASSERTS	\
+     #-DQUEX_SETTING_BUFFER_SIZE=64 \
 	 # -D__QUEX_OPTION_UNIT_TEST \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
      # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
@@ -35,7 +36,7 @@ CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
-all: $(APPLICATION) example-x.txt
+all: $(APPLICATION)
 
 # -- application
 $(APPLICATION): $(APPLICATION).o \
@@ -49,11 +50,6 @@ $(APPLICATION): $(APPLICATION).o \
 
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
-
-# -- the example file (an extensive copy of example.txt)
-example-x.txt:  example.txt
-	rm -f $@
-	for i in `seq 1 10000`; do cat $< >> $@; done
 
 # (*) HELPERS __________________________________________________________________
 clean:	

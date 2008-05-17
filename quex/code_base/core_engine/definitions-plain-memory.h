@@ -89,8 +89,9 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
      **       to be matched---even in case of post-conditions.
      */
     me->char_covered_by_terminating_zero   = '\0';              
-    me->input_p                            = InputStartPosition - 1; 
-    me->buffer_begin                       = InputStartPosition;
+    /* InputStartPosition == 0x0 means that no new buffer has been allocated, take to old one */
+    me->buffer_begin                       = InputStartPosition == 0x0 ? me->buffer_begin : InputStartPosition;
+    me->input_p                            = me->buffer_begin - 1; 
     me->__current_mode_analyser_function_p = TheInitianAnalyserFunctionP;
 #   ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION    
     me->begin_of_line_f                    = 1;
