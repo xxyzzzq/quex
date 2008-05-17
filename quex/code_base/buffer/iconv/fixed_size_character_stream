@@ -109,6 +109,7 @@ namespace quex {
 
         virtual size_t    read_characters(CharacterCarrierType* buffer, const size_t N);
         virtual void      register_begin_of_file();
+        virtual void      seek_begin_of_file();
 
     private:
         struct buffer_info {
@@ -335,8 +336,15 @@ namespace quex {
     }
     */
 
-    TEMPLATE_IN void CLASS::register_begin_of_file() 
-    { start_position = InputPolicy<InputHandleType*>::tell(ih); }
+    TEMPLATE_IN void  CLASS::register_begin_of_file() 
+    { 
+        start_position = InputPolicy<InputHandleType*>::tell(ih); 
+    }
+
+    TEMPLATE_IN void  CLASS::seek_begin_of_file()
+    {
+        InputPolicy<InputHandleType*>::seek(ih, start_position);
+    }
 
     TEMPLATE_IN void CLASS::statistic_info::adapt(size_t ConvertedByteN, 
                                                   buffer_info* user_buffer, 

@@ -68,6 +68,11 @@ namespace quex {
                 start_position = InputPolicy<InputHandleType*>::tell(ih); 
             }
 
+            virtual void     seek_begin_of_file()
+            {
+                InputPolicy<InputHandleType*>::seek(ih, start_position);
+            }
+
         };
 }
 #endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__

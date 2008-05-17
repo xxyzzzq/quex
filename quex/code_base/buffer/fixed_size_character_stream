@@ -18,6 +18,7 @@ namespace quex {
 
         virtual size_t   read_characters(CharacterCarrierType* buffer, const size_t N) = 0;
         virtual void     register_begin_of_file() = 0;
+        virtual void     seek_begin_of_file() = 0;
     };
 
 }

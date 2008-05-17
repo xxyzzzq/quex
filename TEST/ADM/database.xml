@@ -1,5 +1,5 @@
-<test-database execution-time-sec="45.56" date="Sat May 17 06:37:00 2008">
-    <last-used-diff-display-program name=""/>
+<test-database execution-time-sec="0.00" date="Sat May 17 22:15:15 2008">
+    <last-used-diff-display-program name="vimdiff"/>
     <group name="fschaef">
         <test title="1952747 TKN_TERMINATION" time-sum-sec="0.00"> 
             <application file-name="bug-1952747.sh" info-request-time="1210879325L"/>
@@ -7,18 +7,18 @@
                <choice name="" result="OK" time-sec="0.00" crc="-703497109"/>
             </choice-list>
         </test>
-        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="38.57"> 
+        <test title="1952133 0.24.11 Crash in Buffer Handling with tiny buffer size" time-sum-sec="0.00"> 
             <application file-name="bug-1952133.sh" info-request-time="1209260158L"/>
             <choice-list number="9">
-               <choice name="29" result="OK" time-sec="3.42" crc="-1020317142"/>
-               <choice name="30" result="OK" time-sec="3.50" crc="-1769829012"/>
-               <choice name="127" result="OK" time-sec="3.60" crc="1159892932"/>
-               <choice name="128" result="OK" time-sec="3.75" crc="-1539255043"/>
-               <choice name="129" result="OK" time-sec="5.76" crc="-1219881466"/>
-               <choice name="2499" result="OK" time-sec="6.62" crc="220117901"/>
-               <choice name="2500" result="OK" time-sec="4.28" crc="888187144"/>
-               <choice name="2501" result="OK" time-sec="3.90" crc="1677544258"/>
-               <choice name="2502" result="OK" time-sec="3.74" crc="-1695847012"/>
+               <choice name="29" result="OK" time-sec="0.00" crc="-1020317142"/>
+               <choice name="30" result="OK" time-sec="0.00" crc="-1769829012"/>
+               <choice name="127" result="OK" time-sec="0.00" crc="1159892932"/>
+               <choice name="128" result="OK" time-sec="0.00" crc="-1539255043"/>
+               <choice name="129" result="OK" time-sec="0.00" crc="-1219881466"/>
+               <choice name="2499" result="OK" time-sec="0.00" crc="220117901"/>
+               <choice name="2500" result="OK" time-sec="0.00" crc="888187144"/>
+               <choice name="2501" result="OK" time-sec="0.00" crc="1677544258"/>
+               <choice name="2502" result="OK" time-sec="0.00" crc="-1695847012"/>
             </choice-list>
         </test>
     </group>
@@ -71,10 +71,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="1086595520"/>
             </choice-list>
         </test>
-        <test title="1895066" time-sum-sec="0.10"> 
+        <test title="1895066" time-sum-sec="0.00"> 
             <application file-name="bug-1895066.sh" info-request-time="1203220067L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.10" crc="-1219415394"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-957145527"/>
             </choice-list>
         </test>
         <test title="1902175 invalid escape in character set expression crashes 0.21.12" time-sum-sec="0.00"> 
@@ -95,10 +95,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="-1117047420"/>
             </choice-list>
         </test>
-        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="4.22"> 
+        <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" time-sum-sec="0.00"> 
             <application file-name="bug-1895500.sh" info-request-time="1203725950L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="4.22" crc="-1888187264"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1888187264"/>
             </choice-list>
         </test>
         <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" time-sum-sec="0.00"> 
@@ -149,10 +149,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="-1186799545"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.46"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.46" crc="629418015"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-477029900"/>
             </choice-list>
         </test>
         <test title="1905768" time-sum-sec="0.00"> 
@@ -162,7 +162,7 @@
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1935701.exe" info-request-time="1210998974L"/>
+            <application file-name="bug-1935701.exe" info-request-time="1211055241L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="FILE" result="OK" time-sec="0.00" crc="-1598919026"/>
@@ -175,10 +175,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="1628237482"/>
             </choice-list>
         </test>
-        <test title="1892809" time-sum-sec="2.22"> 
+        <test title="1892809" time-sum-sec="0.00"> 
             <application file-name="bug-1892809.sh" info-request-time="1203129378L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="2.22" crc="-1535149083"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1535149083"/>
             </choice-list>
         </test>
         <test title="1893849 0.20.5 allows engine names that are not valid identifiers" time-sum-sec="0.00"> 
