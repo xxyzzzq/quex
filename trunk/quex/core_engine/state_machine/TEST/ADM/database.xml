@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Sat May 17 06:38:57 2008">
+<test-database execution-time-sec="0.00" date="Sat May 17 22:10:34 2008">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Get Trigger Map (intervals --> target states)" time-sum-sec="0.00"> 

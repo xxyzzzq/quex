@@ -22,9 +22,9 @@ namespace quex {
                   
 
     TEMPLATE_IN  void  
-        CLASS::__constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
-                                  CharacterCarrierType* buffer_memory, size_t BufferSize, 
-                                  size_t FallBackN) 
+    CLASS::__constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
+                              CharacterCarrierType* buffer_memory, size_t BufferSize, 
+                              size_t FallBackN) 
     {
         __quex_assert(BufferSize > 2); 
         __quex_assert(FallBackN < BufferSize - 2);  // '-2' because of the border chars.
@@ -553,8 +553,7 @@ namespace quex {
         // that one buffer load ahead is sufficient for most cases. In cases that this
         // does not hold it loads the buffer contents stepwise. A direct jump to more
         // then one load ahead would require a different load function. Please, consider
-        // that different input strategies might rely on dynamic character length codings
-        // 
+        // that different input strategies might rely on dynamic character length codings.
         size_t remaining_distance_to_target = Distance;
         while( 1 + 1 == 2 ) {
             ASSERT_CONSISTENCY();
@@ -573,6 +572,20 @@ namespace quex {
 
             load_backward();
         }
+    }
+
+    TEMPLATE_IN  void CLASS::_reset()
+    {
+        // reload the 'front' of the file into the 'front'
+        if( _character_index_at_front != 0 ) _input->seek_begin_of_file();
+
+        // What happens here is exactly the same as when constructing a new
+        // buffer with a given bunch of memory (the currently used one). Then
+        // however, one needs to set the flag 'external memory' according to
+        // what it was before.
+        const bool Tmp = _buffer._external_owner_f;
+        CLASS::__constructor_core(_input, _buffer.front(), _buffer.size(), _buffer.default_fallback_n());
+        _buffer._external_owner_f = Tmp;
     }
 
 #undef TEMPLATE_IN

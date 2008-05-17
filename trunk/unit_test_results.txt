@@ -1,7 +1,6 @@
-make: bug-1935701.exe
 ===============================================================================
 ENTER: TEST
-DATE:  Sat May 17 04:53:00 2008
+DATE:  Sat May 17 22:15:15 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -42,9 +41,9 @@ TITLE: Regression Tests on Fixed Bugs
     1885855 P{ ...} syntax does not work outside of [
         bug-1885855.sh ..................................................[OK]
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh ................................................[FAIL]
+        bug-1885304.sh ..................................................[OK]
     1895066
-        bug-1895066.sh ................................................[FAIL]
+        bug-1895066.sh ..................................................[OK]
     1889089 Single state mode causes quex to crash
         bug-1889089.sh ..................................................[OK]
     1892809
@@ -55,6 +54,9 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1885846.sh ..................................................[OK]
     1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6
         bug-1894185.sh ..................................................[OK]
+    1935701 - 0.24.7 buffer handling size mismatch
+        bug-1935701.exe FILE ............................................[OK]
+                        fstream .........................................[OK]
     1890876 {} handled oddly in define blocks in 0.19.9
         bug-1890876.sh ..................................................[OK]
     1889892 x, X or followed by a non-hex digit crashes 0.19.4
@@ -87,18 +89,15 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1935701.exe FILE ............................................[OK]
                         fstream .........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-Error: bug-1885304.sh 
-Error: bug-1895066.sh 
-EXIT:  TEST
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sat May 17 04:53:49 2008
+DATE:  Sat May 17 22:10:22 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -167,10 +166,9 @@ TITLE: Demo-Applications
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  demo/TEST
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sat May 17 04:55:47 2008
+DATE:  Sat May 17 22:10:23 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -183,12 +181,9 @@ TITLE: Miscellaneous Basic Tests
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/TEST
-make: one-beat
-make: n-beat
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Sat May 17 04:55:49 2008
+DATE:  Sat May 17 22:10:24 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -203,16 +198,9 @@ TITLE: Input Buffers Based on the IConv - Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/code_base/buffer/iconv/TEST
-make: test-forward-get
-make: test-forward-get-2
-make: test-misc-I
-make: test-misc-II
-make: test-misc-III
-make: test-backward-get
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Sat May 17 04:55:54 2008
+DATE:  Sat May 17 22:10:29 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -248,12 +236,9 @@ TITLE: Input Buffers
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/code_base/buffer/plain/TEST
-make: test-simple
-make: test-simple-2
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sat May 17 04:55:56 2008
+DATE:  Sat May 17 22:10:31 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -271,10 +256,9 @@ TITLE: Lexical Analyzer Class Template
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/code_base/template/TEST
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sat May 17 04:55:57 2008
+DATE:  Sat May 17 22:10:31 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -305,10 +289,9 @@ TITLE: Core Functionalities
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/core_engine/TEST
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sat May 17 04:55:58 2008
+DATE:  Sat May 17 22:10:32 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -402,10 +385,9 @@ TITLE: Code Generation for Lexical Analyzer
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/core_engine/generator/TEST
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sat May 17 04:56:43 2008
+DATE:  Sat May 17 22:10:33 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -465,10 +447,9 @@ TITLE: Regular Expression Parsing
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/core_engine/regular_expression/TEST
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sat May 17 04:56:48 2008
+DATE:  Sat May 17 22:10:34 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -562,10 +543,9 @@ TITLE: State Machine Operations
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/core_engine/state_machine/TEST
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sat May 17 04:56:55 2008
+DATE:  Sat May 17 22:10:34 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -586,10 +566,9 @@ TITLE: Frank-Rene Schaefers Little Python Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/frs_py/TEST
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sat May 17 04:56:56 2008
+DATE:  Sat May 17 22:10:34 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -610,10 +589,9 @@ TITLE: Character Set Queries
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/input/TEST
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Sat May 17 04:57:17 2008
+DATE:  Sat May 17 22:10:35 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -634,10 +612,9 @@ TITLE: <no file 'ADM/title.txt'>
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
-EXIT:  quex/output/graphviz/TEST
 ===============================================================================
 SUMMARY:
-.//TEST ...............................................................[FAIL]
+.//TEST .................................................................[OK]
 ./demo/TEST .............................................................[OK]
 ./quex/TEST .............................................................[OK]
 ./quex/code_base/buffer/iconv/TEST ......................................[OK]
