@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -*- C++ -*- vim: set syntax=cpp:
 //
 // NOTE: This circular queue is about three times as fast as the std::deque!
 //       (To the astonishment of the author).
@@ -87,8 +87,8 @@ public:
 	ostr << std::dec << "):\n";
     }
 
+#if defined(QUEX_OPTION_ACTIVATE_ASSERTS) && (! defined(NDEBUG)) || defined(___UNIT_TEST__FRANK_RENE_SCHAEFER__CIRCULAR_QUEUE___)
     void assert_consistency() {
-#if (! defined(NDEBUG)) || defined(___UNIT_TEST__FRANK_RENE_SCHAEFER__CIRCULAR_QUEUE___)
 	// NOTE: If NDEBUG is define, the following asserts are taken out
 	//       and this function is a null function that is deleted by the compiler.
 	if( ! (_end_buffer > _begin_buffer) )            std::abort(); 
@@ -97,8 +97,10 @@ public:
 	if( ! (_top        < _end_buffer) )              std::abort();
 	if( ! (_bottom     < _end_buffer) )              std::abort();
 	if( ! (_end_buffer - _begin_buffer) == _size )   std::abort();
-#endif
     }
+#else 
+    void assert_consistency() { }
+#endif
 };
 
 /*

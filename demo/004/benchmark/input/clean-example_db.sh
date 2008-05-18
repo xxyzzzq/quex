@@ -1,3 +1,3 @@
-rm -f example-*.txt
-rm EXAMPLE-DB-CREATED
+rm -f data-*.txt
+rm -f EXAMPLE-DB-CREATED
 

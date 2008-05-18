@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -*- C++ -*- vim: set syntax=cpp:
 
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN_QUEUE__
 #define __INCLUDE_GUARD__QUEX__TOKEN_QUEUE__

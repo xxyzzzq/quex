@@ -25,7 +25,8 @@ APPLICATION      = lexer
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
 CC = $(COMPILER) -c -ggdb -Wno-deprecated -Wall \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+	 -I./ -I$(QUEX_PATH) -O3 \
+	 -DNDEBUG \
 	 -DQUEX_BENCHMARK_SERIOUS
      #-DQUEX_OPTION_ACTIVATE_ASSERTS	\
      #-DQUEX_SETTING_BUFFER_SIZE=64 \

@@ -576,8 +576,11 @@ namespace quex {
 
     TEMPLATE_IN  void CLASS::_reset()
     {
-        // reload the 'front' of the file into the 'front'
-        if( _character_index_at_front != 0 ) _input->seek_begin_of_file();
+        // Reload the 'front' of the file into the 'front'!
+        // ALWAYS! --- independent of current position! This is so, since the
+        // __constructor_core() will set the 'base' to the current input position
+        // of the stream.
+        _input->seek_begin_of_file();
 
         // What happens here is exactly the same as when constructing a new
         // buffer with a given bunch of memory (the currently used one). Then
