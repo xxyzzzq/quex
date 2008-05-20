@@ -11,7 +11,11 @@ benchmark(quex::tiny_lexer* qlex, const size_t FileSize);
 
 void 
 reference(quex::tiny_lexer* qlex, 
-          const size_t SimulatedFileSize_kB, const float RepetitionN);
+          const int SimulatedFileSize_kB, const size_t SimulatedTokenN, 
+          const float RepetitionN);
+
+void
+count_token_n(quex::tiny_lexer* qlex);
 
 void
 report(const clock_t StartTime, const float RepetitionN, 
@@ -20,19 +24,36 @@ report(const clock_t StartTime, const float RepetitionN,
 int 
 main(int argc, char** argv) 
 {        
-    if( argc < 3 ) return 0;
+    using namespace std;
+
+    if( argc < 2 || argc == 4 || argc > 5 ) {
+        cout << "Please, read the README.txt file!\n";
+        return 0;
+    }
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::tiny_lexer*  qlex     = new quex::tiny_lexer(argv[1]);
-    const size_t       FileSize = atoi(argv[2]);
 
-    if( argc <= 3 ) { 
+    cout << argv[1];
+    if( argc == 2 ) {
+        cout << endl;
+        count_token_n(qlex);
+    }
+    else if( argc == 3 ) { 
+        // (*) The Benchmark Procedure
+        cout << " " << argv[2] << endl;
+        const size_t FileSize = atoi(argv[2]);
         benchmark(qlex, FileSize);
     }
-    else { 
-        const float  RepetitionN = atof(argv[3]);
-        reference(qlex, FileSize, RepetitionN);
-    }
+    else if( argc == 5 ) { 
+        // (*) Measure the Environment
+        cout << " " << argv[2] << " " << argv[3] << endl;
+        const size_t SimulatedFileSize_kB  = atof(argv[2]);
+        const int    SimulatedTokenNPerRun = atof(argv[3]);
+        const float  RepetitionN           = atoi(argv[4]);
+        reference(qlex, SimulatedFileSize_kB, SimulatedTokenNPerRun, RepetitionN);
+    } 
+
     return 0;
 } 
 
@@ -40,17 +61,17 @@ void
 benchmark(quex::tiny_lexer* qlex, const size_t FileSize_kB)
 {
     using namespace std;
-    quex::token     Token;
+    quex::token*   TokenP;
     //
     // -- repeat the experiment, so that it takes at least 5 seconds
-    const clock_t  MinExperimentTime = 5 * CLOCKS_PER_SEC;
+    const clock_t  MinExperimentTime = 10 * CLOCKS_PER_SEC;
     const clock_t  StartTime = clock();
     int            checksum = 0;
     int            checksum_ref = -1;
     float          repetition_n = 0.0;
 
     while( clock() < MinExperimentTime ) { 
-        checksum = 0;
+        checksum      = 0;
         repetition_n += 1.0f;
 #       ifndef QUEX_BENCHMARK_SERIOUS
         cout << ",------------------------------------------------------------------------------------\n";
@@ -61,18 +82,18 @@ benchmark(quex::tiny_lexer* qlex, const size_t FileSize_kB)
         // (*) loop until the 'termination' token arrives
         do {
             // (*) get next token from the token stream
-            qlex->get_token(&Token);
+            qlex->get_token(&TokenP);
 
-            checksum = (checksum + Token.type_id()) % 0x1000000; 
+            checksum = checksum + TokenP->type_id(); 
 
             // (*) print out token information
             //     -- name of the token
 #           ifndef QUEX_BENCHMARK_SERIOUS
-            cout << Token.type_id_name() << endl;
+            cout << TokenP->type_id_name() << endl;
             ++number_of_tokens;
 #           endif
             // (*) check against 'termination'
-        } while( Token.type_id() != quex::TKN_TERMINATION );
+        } while( TokenP->type_id() != quex::TKN_TERMINATION );
 
 #       ifndef QUEX_BENCHMARK_SERIOUS
         cout << "| [END] number of token = " << number_of_tokens << "\n";
@@ -94,28 +115,26 @@ benchmark(quex::tiny_lexer* qlex, const size_t FileSize_kB)
 
 void 
 reference(quex::tiny_lexer* qlex, 
-          const size_t SimulatedFileSize_kB, const float RepetitionN)
+          const int SimulatedFileSize_kB, const size_t SimulatedTokenN, const float RepetitionN)
 {
     // This function is supposed to perform all 'frame' operations, but not the
     // analyzer function. This is to estimate the overhead implied by the test program.
     const clock_t StartTime = clock();
     float         repetition_n = 0.0;
     int           checksum = 0;
+    const size_t  end = SimulatedTokenN * RepetitionN;
 
-    if( SimulatedFileSize_kB > 0x1000000 ) { return; }
-
-    checksum = 0; // here: prevent optimizing away of byte_n --> out of loop
+    checksum = 0; // here: prevent optimizing away of token_n --> out of loop
     while( repetition_n < RepetitionN ) { 
         repetition_n += 1.0f;
         
-        for(int i = 0; i < 1024; ++i) {
-            size_t byte_n = 0;
-            do {
-                byte_n = (byte_n + 1) % 0x1000000; 
-            } while( byte_n != SimulatedFileSize_kB );
-            checksum += byte_n % 0x1000; // ensure that the 'byte_n' is not optimized away
-            //                           // This costs us a '^' every 1024 characters
-        }
+        size_t token_n = 0;
+        do {
+            token_n = token_n + RepetitionN;  // use argument RepetitionN instead of a 
+            //                              // constant, so that it cannot be optimized away.
+        } while( token_n != end );
+        // clock() needs to be called also 'repetition_n' times. 
+        checksum += token_n ^ clock();
 
         qlex->_reset();
     }
@@ -148,3 +167,17 @@ report(const clock_t StartTime, const float RepetitionN,
     cout << "Clocks/Char: " << CCC               << " [clock cycles]" << endl;
 }
 
+void
+count_token_n(quex::tiny_lexer* qlex)
+{
+    using namespace std;
+    quex::token*   TokenP;
+    int token_n = 0;
+
+    // (*) loop until the 'termination' token arrives
+    for(token_n=0; ; ++token_n) {
+        qlex->get_token(&TokenP);
+        if( TokenP->type_id() == quex::TKN_TERMINATION ) break;
+    } 
+    cout << "TokenN: " << token_n << " [1]"   << endl;
+}

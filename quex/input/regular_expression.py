@@ -13,8 +13,6 @@ def parse(fh):
     try:
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
-                                         BeginOfFile_Code           = Setup.begin_of_stream_code,
-                                         EndOfFile_Code             = Setup.end_of_stream_code,
                                          BufferLimitCode            = Setup.buffer_limit_code,
                                          DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f)
 

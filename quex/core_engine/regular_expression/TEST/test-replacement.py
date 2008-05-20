@@ -15,7 +15,7 @@ if "--hwut-info" in sys.argv:
 def test(TestString, PatternDict):
     try:
         print "expression    = " + TestString 
-        print "state machine\n", core.do(TestString, PatternDict, 0, 0, -1)
+        print "state machine\n", core.do(TestString, PatternDict, -1)
     except RegularExpressionException, x:
         print "Expression Expansion:\n" + repr(x)
 

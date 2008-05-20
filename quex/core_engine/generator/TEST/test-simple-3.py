@@ -1,8 +1,6 @@
 #! /usr/bin/env python
 import sys
 import generator_test
-from generator_test import action
-import quex.core_engine.regular_expression.core as regex
 
 if "--hwut-info" in sys.argv:
     print "Simple: Special Case '.' (drop out on valid target state)"

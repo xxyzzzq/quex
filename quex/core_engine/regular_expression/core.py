@@ -56,15 +56,12 @@ import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
-def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF):
+def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF):
     """This function is to be used by the outer shell to the user. It ensures that 
        the state machine which is returned is conform to some assumptions.
 
        BLC == -1: means that there is no buffer limit code.
     """
-    # (*) Delete EOF where it has no right to occur
-    __delete_EOF_except_at_end_of_post_context(sm, EndOfFileCode)
-
     # (*) The buffer limit code has to appear absolutely nowhere!
     if BufferLimitCode != -1:
         __delete_BLC_except_at_end_of_post_context(sm, BufferLimitCode)
@@ -98,28 +95,6 @@ def __clean_and_validate(sm, EndOfFileCode, BufferLimitCode, AllowNothingIsFineF
         
     return sm
 
-def __delete_EOF_except_at_end_of_post_context(sm, EndOfFileCode):
-    """End of File is related to a special action which is treated by the code
-       generator. No state shall 'swallow' and 'End of File' character. It must
-       be sure, that end of file causes a drop out---except for one case: The
-       end of a post condition. In the later case, it is safe to say that after
-       the termination of the analysis step, the input will happen before the 
-       end of file character, since the input pointer will be set before the post
-       condition tail.
-    """
-    for state in sm.states.values():
-        for target_state_index, trigger_set in state.transitions().get_map().items():
-            if not trigger_set.contains(EndOfFileCode): continue
-            # State contains transition on End of File!
-            # Is the target state the end of a post condition?
-            target_core = sm.states[target_state_index].core()
-            if target_core.post_context_id() != -1 and target_core.is_acceptance(): continue
-            # Target state **is not** end of post condition!
-            # => End of file code needs to be deleted from the trigger set!
-            state.transitions().delete_transitions_on_character_list([EndOfFileCode])
-            # This state has been beaten enough. Next one, please!
-            break
-
 def __delete_BLC_except_at_end_of_post_context(sm, BLC):
     """The buffer limit code is something that **needs** to cause a drop out.
        In the drop out handling, the buffer is reloaded.
@@ -139,7 +114,7 @@ def __delete_transitions_on_code_points_below_zero(sm):
                 # NOTE: '0' is the end, meaning that it has is not part of the interval to be cut.
                 trigger_set.cut_interval(Interval(-sys.maxint, 0))
 
-def do(UTF8_String_or_Stream, PatternDict, BeginOfFile_Code, EndOfFile_Code, BufferLimitCode,
+def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
        DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
 
 
@@ -171,7 +146,7 @@ def do(UTF8_String_or_Stream, PatternDict, BeginOfFile_Code, EndOfFile_Code, Buf
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
 
-    return __clean_and_validate(sm, EndOfFile_Code, BufferLimitCode, AllowNothingIsFineF)
+    return __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF)
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression

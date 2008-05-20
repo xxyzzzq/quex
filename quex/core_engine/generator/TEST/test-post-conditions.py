@@ -2,8 +2,6 @@
 import sys
 sys.path.append("../../../../")
 import generator_test
-from generator_test import action
-import quex.core_engine.regular_expression.core as regex
 
 if "--hwut-info" in sys.argv:
     print "Post Conditions: Part 1"
