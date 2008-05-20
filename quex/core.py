@@ -180,8 +180,8 @@ def do_plot():
         pattern_action_pair_info_list = mode.pattern_action_pairs().values()
 
         # -- pattern-action pairs
-        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list, 
-                                                              Setup)
+        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list)
+
         plotter = plot_generator.Generator(pattern_action_pair_list, 
                                            StateMachineName = mode.name,
                                            GraphicFormat    = Setup.plot_graphic_format)
