@@ -231,7 +231,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         virtual ~$$LEXER_CLASS_NAME$$();
         //
         // -- token stream: read next token
-        $$TOKEN_CLASS$$::id_type   get_token($$TOKEN_CLASS$$* p_result);
+        $$TOKEN_CLASS$$::id_type   get_token();
+        $$TOKEN_CLASS$$::id_type   get_token($$TOKEN_CLASS$$*  result_p);
+        void                       get_token($$TOKEN_CLASS$$** result_pp);
         
         //
         // (*) Mode handling
@@ -620,8 +622,8 @@ $$CONSTRUCTOR_EXTENSTION$$
         delete _token_queue;
     }
 
-    inline $$TOKEN_CLASS$$::id_type
-    CLASS::get_token($$TOKEN_CLASS$$* result_p) 
+    inline void
+    CLASS::get_token($$TOKEN_CLASS$$** result_pp) 
         // NOTE: As long as the 'get_token()' function is not called there is nothing
         //       happening to the token in the queue. But, a parser very probably
         //       does a couple af calls to 'get_token()' before a rule triggers 
@@ -649,8 +651,8 @@ $$CONSTRUCTOR_EXTENSTION$$
         // (i) tokens are in queue --> take next token from stack
         if( _token_queue->is_empty() == false ) {
             // DEBUG    
-            *result_p = *(_token_queue->quick_pop());
-            return result_p->type_id();
+            *result_pp = _token_queue->quick_pop();
+            return;
         }
     
         // token queue is empty 
@@ -670,13 +672,22 @@ $$CONSTRUCTOR_EXTENSTION$$
                 continue;
             }
             else if( _token_queue->is_empty() ) {
-                result_p->set($$TOKEN_CLASS$$::ID_UNINITIALIZED);
+                throw std::runtime_error("Empty token stack after CONTINUE.");
             }
             break;
             
         } while( 1 + 1 == 2 );
 
-        *result_p = *(_token_queue->quick_pop());
+        *result_pp = _token_queue->quick_pop();
+        return;
+    }
+
+    inline $$TOKEN_CLASS$$::id_type
+    CLASS::get_token($$TOKEN_CLASS$$* result_p) 
+    {
+        $$TOKEN_CLASS$$* tmp = 0x0;
+        get_token(&tmp);
+        *result_p = *tmp;
         return result_p->type_id();
     }
 

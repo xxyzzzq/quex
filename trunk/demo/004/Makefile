@@ -50,7 +50,7 @@ $(APPLICATION): $(APPLICATION).o \
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

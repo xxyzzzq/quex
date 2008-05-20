@@ -14,7 +14,6 @@ from   quex.lexer_mode                          import ReferencedCodeFragment_st
                                                        ReferencedCodeFragment
 from quex.token_id_maker                        import TokenInfo
 
-import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
 from   quex.core_engine.generator.action_info   import ActionInfo
 import quex.input.quex_file_parser              as quex_file_parser

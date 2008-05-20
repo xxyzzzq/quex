@@ -4,7 +4,6 @@ import os
 from StringIO import StringIO
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-
 from quex.exception                                          import RegularExpressionException
 from quex.core_engine.state_machine.core                     import *
 import quex.core_engine.regular_expression.core              as regex
@@ -22,13 +21,13 @@ def __test(RE_Core, RE_PostCondition):
     string_stream_PostCondition = StringIO(RE_PostCondition)
 
     try:
-        core_sm           = regex.do(string_stream_Core, {}, 0, 0, -1)
+        core_sm           = regex.do(string_stream_Core, {}, -1)
     except RegularExpressionException, x:
         print "Core Pattern:\n" + repr(x)
         return
 
     try:
-        post_context_sm = regex.do(string_stream_PostCondition, {}, 0, 0, -1)
+        post_context_sm = regex.do(string_stream_PostCondition, {}, -1)
         print "post condition sm = ", post_context_sm
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)

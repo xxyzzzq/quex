@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import sys
 import subprocess
 import os
 
@@ -27,23 +28,43 @@ class DB:
         return items
             
 
-def get_time_value():
+def get_value(Str):
     fh = open("tmp.txt")
-    lines = fh.readlines()
+    content = fh.read()
     fh.close()
+    lines = content.split("\n")
     for line in lines:
-        if line.find("TimePerRun:") == 0:
-            time_str = line.split()[1]
-            return float(time_str)
-    print "ERROR"
+        if line.find(Str) == 0:
+            value_str = line.split()[1]
+            return float(value_str)
+    print "ERROR", Str
     print lines
     return None
+
     
 db = DB(find_data_files("input"))
 
 for file_name, size in db.items():
+    file_name = "input/" + file_name
+
+    # The benchmark call
     fh = open("tmp.txt", "w")
-    subprocess.call(["../lexer", "input/" + file_name], stdout = fh)
+    subprocess.call(["../lexer", file_name, repr(size)], stdout = fh)
     fh.close()
-    print "%08i %f" % (size, get_time_value())
+    repetition_n = get_value("Runs:")
+    run_time     = get_value("Clocks/Char:")
+
+    # The token counter
+    fh = open("tmp.txt", "w")
+    subprocess.call(["../lexer", file_name], stdout = fh)
+    fh.close()
+    token_n = get_value("TokenN:")
+
+    # The reference call
+    fh = open("tmp.txt", "w")
+    subprocess.call(["../lexer", file_name, repr(size), "%i" % int(token_n), "%i" % int(repetition_n)], stdout = fh)
+    fh.close()
+    ref_run_time = get_value("Clocks/Char:")
+
+    print "%08i %f %f %f" % (size, run_time - ref_run_time, run_time, ref_run_time)
 

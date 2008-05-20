@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Mon May 19 06:23:38 2008
+DATE:  Tue May 20 06:39:33 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -54,6 +54,9 @@ TITLE: Regression Tests on Fixed Bugs
         bug-1885846.sh ..................................................[OK]
     1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6
         bug-1894185.sh ..................................................[OK]
+    1935701 - 0.24.7 buffer handling size mismatch
+        bug-1935701.exe FILE ............................................[OK]
+                        fstream .........................................[OK]
     1890876 {} handled oddly in define blocks in 0.19.9
         bug-1890876.sh ..................................................[OK]
     1889892 x, X or followed by a non-hex digit crashes 0.19.4
@@ -95,7 +98,7 @@ TITLE: Regression Tests on Fixed Bugs
 Error: bug-1885304.sh 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Mon May 19 06:25:14 2008
+DATE:  Tue May 20 06:41:19 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -166,7 +169,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Mon May 19 06:25:14 2008
+DATE:  Tue May 20 06:41:19 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -181,7 +184,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Mon May 19 06:25:16 2008
+DATE:  Tue May 20 06:41:20 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -198,7 +201,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Mon May 19 06:25:22 2008
+DATE:  Tue May 20 06:41:25 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -236,7 +239,7 @@ TITLE: Input Buffers
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Mon May 19 06:25:24 2008
+DATE:  Tue May 20 06:41:28 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -256,7 +259,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Mon May 19 06:25:24 2008
+DATE:  Tue May 20 06:41:28 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -289,7 +292,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Mon May 19 06:26:10 2008
+DATE:  Tue May 20 06:42:14 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -364,10 +367,10 @@ TITLE: Code Generation for Lexical Analyzer
         test-simple-2.py PlainMemory ....................................[OK]
                          QuexBuffer .....................................[OK]
     Begin of Line (BOL), End of Line (EOL)
-        test-bol-eol.py PlainMemory .....................................[OK]
-                        QuexBuffer ......................................[OK]
+        test-bol-eol.py PlainMemory ...................................[FAIL]
+                        QuexBuffer ....................................[FAIL]
     Special Case '.' (drop out on valid target state)
-        test-simple-3.py PlainMemory ....................................[OK]
+        test-simple-3.py PlainMemory ..................................[FAIL]
                          QuexBuffer .....................................[OK]
 
  -- Single State:
@@ -377,15 +380,18 @@ TITLE: Code Generation for Lexical Analyzer
     Extensive Transition Code Generation
         test-single-state-transitions-x.py ..............................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+Error: test-bol-eol.py PlainMemory
+Error: test-bol-eol.py QuexBuffer
+Error: test-simple-3.py PlainMemory
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Mon May 19 06:26:15 2008
+DATE:  Tue May 20 06:42:20 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -408,7 +414,7 @@ TITLE: Regular Expression Parsing
     Map character *range* to state machine
         test-set.py .....................................................[OK]
     Lonestanding characters
-        test-lonely-characters.py .......................................[OK]
+        test-lonely-characters.py .....................................[FAIL]
 
  -- Combination:
 
@@ -424,9 +430,9 @@ TITLE: Regular Expression Parsing
     pre- and post-conditions
         test-pre-and-post-condition.py ..................................[OK]
     Begin of Line '^', End of Line '$'
-        test-bol-eol.py .................................................[OK]
+        test-bol-eol.py ...............................................[FAIL]
     End of Line '$' (with DOS/Windows '\r\n')
-        test-eol-carriage-return-newline.py .............................[OK]
+        test-eol-carriage-return-newline.py ...........................[FAIL]
     post conditions
         test-post-condition.py ..........................................[OK]
     pre conditions
@@ -439,15 +445,18 @@ TITLE: Regular Expression Parsing
     Simple
         test-properties.py ..............................................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+Error: test-lonely-characters.py 
+Error: test-bol-eol.py 
+Error: test-eol-carriage-return-newline.py 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Mon May 19 06:26:20 2008
+DATE:  Tue May 20 06:42:26 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -543,7 +552,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Mon May 19 06:26:21 2008
+DATE:  Tue May 20 06:42:26 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -566,7 +575,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Mon May 19 06:26:36 2008
+DATE:  Tue May 20 06:42:40 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -589,7 +598,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Mon May 19 06:26:38 2008
+DATE:  Tue May 20 06:42:45 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -619,8 +628,8 @@ SUMMARY:
 ./quex/code_base/buffer/plain/TEST ......................................[OK]
 ./quex/code_base/template/TEST ..........................................[OK]
 ./quex/core_engine/TEST .................................................[OK]
-./quex/core_engine/generator/TEST .......................................[OK]
-./quex/core_engine/regular_expression/TEST ..............................[OK]
+./quex/core_engine/generator/TEST .....................................[FAIL]
+./quex/core_engine/regular_expression/TEST ............................[FAIL]
 ./quex/core_engine/state_machine/TEST ...................................[OK]
 ./quex/frs_py/TEST ......................................................[OK]
 ./quex/input/TEST .......................................................[OK]

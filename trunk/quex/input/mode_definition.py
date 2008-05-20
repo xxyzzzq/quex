@@ -2,7 +2,6 @@ from   quex.frs_py.file_in          import *
 from   quex.token_id_maker          import TokenInfo
 from   quex.exception               import RegularExpressionException
 import quex.lexer_mode                          as lexer_mode
-import quex.core_engine.regular_expression.core as regex
 import quex.input.regular_expression            as regular_expression
 import quex.input.code_fragment                 as code_fragment
 
