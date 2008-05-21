@@ -1,4 +1,4 @@
-Quex provides a token-class that allows the storage of a `string`
+Quex provides a default token class that allows the storage of a `string`
 object, an `int` value. Note, that any complex structure might be
 transformed later on by the parser based on the given string. In some cases,
 though, it may be promising to implement a dedicated token class that is
@@ -56,9 +56,9 @@ interoperate with the framework smoothly. The inner structure of the token
 class can be freely implemented according to the programmer's optimization
 concepts. Note, that the name of the token class is also of free choice.  When
 invoquing quex, the command line option `--token-class` needs to be
-followed by the user defined token class name. The command line option` 
-  --token-class-file` tell quex the name of the while where this class is
-defined. As long as this option are not defined quex will not consider
+followed by the user defined token class name. The command line option 
+`--token-class-file` tells quex the name of the file where this class is
+defined. As long as this options are not defined quex will not consider
 user defined token classes and provide the standard token class.
 
 

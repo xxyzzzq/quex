@@ -44,7 +44,7 @@ def test(Idx, sm_pre, sm, sm_post, BOF_F, EOF_F):
     result = hopcroft.do(result)
     #
     # print "HOPCROFT = ", result
-    result = setup_border_conditions.do(result, BOF_F, EOF_F, BeginOfFile_Code=0x0, EndOfFile_Code=0x0)
+    result = setup_border_conditions.do(result, BOF_F, EOF_F)
     #
     #
     print

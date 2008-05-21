@@ -139,7 +139,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
        NDEBUG_str=""):    
 
     if BufferType=="QuexBuffer": BufferLimitCode = 0;
-    else:                        BufferLimitCode = -1;
+    else:                        BufferLimitCode = 0;
 
     try:
         adapted_dict = {}
