@@ -242,7 +242,9 @@ namespace quex {
         virtual ~Simple();
         //
         // -- token stream: read next token
-        token::id_type   get_token(token* p_result);
+        token::id_type   get_token();
+        token::id_type   get_token(token*  result_p);
+        void                       get_token(token** result_pp);
         
         //
         // (*) Mode handling
@@ -654,8 +656,8 @@ namespace quex {
         delete _token_queue;
     }
 
-    inline token::id_type
-    CLASS::get_token(token* result_p) 
+    inline void
+    CLASS::get_token(token** result_pp) 
         // NOTE: As long as the 'get_token()' function is not called there is nothing
         //       happening to the token in the queue. But, a parser very probably
         //       does a couple af calls to 'get_token()' before a rule triggers 
@@ -683,8 +685,8 @@ namespace quex {
         // (i) tokens are in queue --> take next token from stack
         if( _token_queue->is_empty() == false ) {
             // DEBUG    
-            *result_p = *(_token_queue->quick_pop());
-            return result_p->type_id();
+            *result_pp = _token_queue->quick_pop();
+            return;
         }
     
         // token queue is empty 
@@ -704,13 +706,22 @@ namespace quex {
                 continue;
             }
             else if( _token_queue->is_empty() ) {
-                result_p->set(token::ID_UNINITIALIZED);
+                throw std::runtime_error("Empty token stack after CONTINUE.");
             }
             break;
             
         } while( 1 + 1 == 2 );
 
-        *result_p = *(_token_queue->quick_pop());
+        *result_pp = _token_queue->quick_pop();
+        return;
+    }
+
+    inline token::id_type
+    CLASS::get_token(token* result_p) 
+    {
+        token* tmp = 0x0;
+        get_token(&tmp);
+        *result_p = *tmp;
         return result_p->type_id();
     }
 
@@ -1296,7 +1307,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
     CLASS::_reset()
     {
         // NOTE: We do not create a new buffer here, since we assume that it has been created
-        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, 0x0, mode_db[LEX_ID_ONE_AND_ONLY]->analyser_function);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, /* use same current buffer */0x0, 
+                                       mode_db[LEX_ID_ONE_AND_ONLY]->analyser_function);
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         _indentation = 0;
@@ -1311,6 +1323,9 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
         _column_number_at_begin = 0;
         _column_number_at_end   = 1; 
 #endif
+        // empty the token queue
+        this->_token_queue->reset();
+
         set_mode_brutally(LEX_ID_ONE_AND_ONLY);
 
         __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside

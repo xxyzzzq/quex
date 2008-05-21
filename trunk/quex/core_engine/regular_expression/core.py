@@ -142,7 +142,6 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
     # -- set begin of line/end of line conditions
     if begin_of_line_f or end_of_line_f: 
         sm = setup_border_conditions.do(sm, begin_of_line_f, end_of_line_f,
-                                        BeginOfFile_Code, EndOfFile_Code, 
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
 

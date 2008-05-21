@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.04" date="Tue May 20 06:41:25 2008">
+<test-database execution-time-sec="0.04" date="Wed May 21 06:41:23 2008">
     <last-used-diff-display-program name=""/>
     <test title="Backwards Iteration" make-required="True" time-sum-sec="0.01"> 
-        <application file-name="test-backward-get" info-request-time="1211258485L"/>
+        <application file-name="test-backward-get" info-request-time="1211344883L"/>
         <make-procedure success="True" />
         <choice-list number="3">
            <choice name="BLC=0" result="OK" time-sec="0.00" crc="1370458562"/>
-           <choice name="BLC=1" result="OK" time-sec="0.00" crc="1370458562"/>
-           <choice name="BLC=0xFF" result="OK" time-sec="0.01" crc="1370458562"/>
+           <choice name="BLC=1" result="OK" time-sec="0.01" crc="1370458562"/>
+           <choice name="BLC=0xFF" result="OK" time-sec="0.00" crc="1370458562"/>
         </choice-list>
     </test>
     <group name="Forward Iteration">
         <test title="EOF at first load." make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-forward-get-2" info-request-time="1211258481L"/>
+            <application file-name="test-forward-get-2" info-request-time="1211344875L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-269791112"/>
             </choice-list>
         </test>
         <test title="Multiple Loads." make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-forward-get" info-request-time="1211258480L"/>
+            <application file-name="test-forward-get" info-request-time="1211344874L"/>
             <make-procedure success="True" />
             <choice-list number="3">
                <choice name="BLC=0" result="OK" time-sec="0.00" crc="272519265"/>
@@ -29,7 +29,7 @@
     </group>
     <group name="Miscenllaneous Scenarios">
         <test title="Content Size = 11, Fallback Size = 10" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-misc-I" info-request-time="1211258482L"/>
+            <application file-name="test-misc-I" info-request-time="1211344879L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="OK" time-sec="0.00" crc="1168455883"/>
@@ -37,7 +37,7 @@
             </choice-list>
         </test>
         <test title="Content Size = 11, Fallback Size = 0" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-misc-III" info-request-time="1211258484L"/>
+            <application file-name="test-misc-III" info-request-time="1211344882L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="OK" time-sec="0.00" crc="-1682822371"/>
@@ -45,7 +45,7 @@
             </choice-list>
         </test>
         <test title="Content Size = 11, Fallback Size = 1" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="test-misc-II" info-request-time="1211258483L"/>
+            <application file-name="test-misc-II" info-request-time="1211344881L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="istream" result="OK" time-sec="0.00" crc="686768887"/>

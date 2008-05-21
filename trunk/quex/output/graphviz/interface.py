@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import tempfile
 
@@ -8,6 +9,7 @@ from quex.core_engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):
     def __init__(self, PatternActionPairList, StateMachineName, GraphicFormat):
+        assert_graphviz_installed()
 
         GeneratorBase.__init__(self, PatternActionPairList, StateMachineName)
 
@@ -42,7 +44,7 @@ class Generator(GeneratorBase):
         _call_dot(dot_code, self.graphic_format, name)
     
 def get_supported_graphic_formats():
-    reply_str = _call_dot(TestCode, "?", "", GetStdErrF=True)
+    reply_str = _call_dot("", "?", "", GetStdErrF=True)
 
     list_start_i = reply_str.rfind(":")
     if list_start_i == -1 or list_start_i == len(reply_str)-1:
@@ -101,38 +103,47 @@ def _call_dot(Code, OutputFormat, OutputFile, GetStdErrF=False):
 
     return result
 
-TestCode = \
-"""
-digraph Kraichgau {
-	rankdir=LR;
-	size="10,5"
-	node [shape = doublecircle]; Pforzheim;
-	node [shape = circle];
-	Ispringen -> Pforzheim [ label = "5 km" ];
-	Ispringen -> Ersingen [ label = "1 km" ];
-}
-"""
-
 def assert_graphviz_installed():
     """This function checks whether the graphviz utility has been installed."""
 
-    # (*) initiate call to the graphviz utility ('dot') and use a sample file
-    #     for reference.
-    test_filename = QUEX_INSTALLATION_DIR + "/output/graphviz/files/test.dot"
-    _call_dot(TestCode, "fig", test_filename + ".fig")
+    # A 'break' out of this loops ends up in an error message (see below).
+    while 1 + 1 == 2:
 
-    try:    fh = open(test_filename + ".fig")
-    except: return False
+        # -- create temporary files (maybe the output comes on 'stderr')
+        try:    
+            fd_out, out_file = tempfile.mkstemp(".quex.out", "TMP")
+            fh_out = os.fdopen(fd_out, "w")
+            fd_err, err_file = tempfile.mkstemp(".quex.err", "TMP")
+            fh_err = os.fdopen(fd_err, "w")
+        except:
+            error_msg("Could not create temporary files on system '%s'." % sys.platform)
+        
+        # -- try to call 'dot' in order to get version information
+        try:
+            subprocess.call(["dot", "-V"], stdout=fh_out, stderr=fh_err)
+            fh_out.close()
+        except: 
+            error_msg("Graphviz not installed or not in PATH of system '%s'." % sys.platform)
 
-    # (*) read in the result check for consistency, i.e. some
-    #     things that need to appead whatsoever version we use.
-    content = fh.read()
-    if content.find("Pforzheim") == -1: return False
-    if content.find("Ispringen") == -1: return False
-    if content.find("5 km")      == -1: return False
-    if content.find("Ersingen")  == -1: return False
-    if content.find("1 km")      == -1: return False
+        # -- read the written content
+        try: 
+            fh = open(out_file); content  = fh.read(); fh.close(); os.remove(out_file)
+            fh = open(err_file); content += fh.read(); fh.close(); os.remove(err_file)
+        except:
+            error_msg("Could not read temporary file on system '%s'." % sys.platform)
 
-    return True
+        # -- check wether all expected strings appear propperly
+        def nf(Str): # nf -- not found
+            return content.find(Str) == -1
+
+        if    nf("dot")      and nf("Dot")      and nf("DOT") \
+           or nf("Graphviz") and nf("GRAPHVIZ") and nf("GraphViz") and nf("graphviz") \
+           or nf("version")  and nf("Version")  and nf(" V"):
+               break
+
+        return # Oll Korrekt
+
+    error_msg("Graphviz is not installed or does not work propperly.\n" + \
+              "Please, visit http://www.graphviz.org to download the software.")
 
    

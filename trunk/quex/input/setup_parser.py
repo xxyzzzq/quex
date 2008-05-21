@@ -161,6 +161,14 @@ def validate(setup, command_line, argv):
         __check_identifier(setup, "input_derived_class_name", "Derived class name")
     if setup.input_token_class_name != "": 
         __check_identifier(setup, "input_token_class_name",   "Token class name")
+        if not command_line.search("--token-class-file"):
+            error_msg("Specifying a user-defined token class via '--token-class' requires\n" + \
+                      "that the token class file, also, needs to be specified via '--token-class-file'.")
+    if command_line.search("--token-class-file"):
+        if not command_line.search("--token-class"):
+            error_msg("Specifying a user-defined token class file via '--token-class-file' requires\n" + \
+                      "that the token class, also, needs to be specified via '--token-class'.")
+
     # __check_identifier("token_id_termination",     "Token id for termination")
     # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
         
