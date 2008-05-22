@@ -25,7 +25,7 @@ result =  init-state = 0L
       == '1' ==> 00001
       <no epsilon>
 00001(S, P12) <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A, P12) <~ 
       <no epsilon>
@@ -58,7 +58,7 @@ result =  init-state = 0L
       == '1' ==> 00001
       <no epsilon>
 00001(S, P21) <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A, P21, bol) <~ 
       <no epsilon>
@@ -97,7 +97,7 @@ result =  init-state = 0L
       == '2' ==> 00002
       <no epsilon>
 00002() <~ 
-      == \0, '\n' ==> 00003
+      == '\n' ==> 00003
       <no epsilon>
 00003(A, P5) <~ 
       <no epsilon>
@@ -136,7 +136,7 @@ result =  init-state = 0L
       == '2' ==> 00002
       <no epsilon>
 00002() <~ 
-      == \0, '\n' ==> 00003
+      == '\n' ==> 00003
       <no epsilon>
 00003(A, P5, bol) <~ 
       <no epsilon>
@@ -177,7 +177,7 @@ result =  init-state = 0L
       == '1' ==> 00001
       <no epsilon>
 00001(S, P58) <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A, P58, pre=56) <~ 
       <no epsilon>
@@ -208,7 +208,7 @@ pre-condition inverted = init-state = 0L
       == '0' ==> 00001
       <no epsilon>
 00001() <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A) <~ 
       <no epsilon>
@@ -227,7 +227,7 @@ result =  init-state = 0L
       == '1' ==> 00001
       <no epsilon>
 00001(S, P75) <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A, P75, pre=73) <~ 
       <no epsilon>
@@ -236,7 +236,7 @@ pre-condition inverted = init-state = 0L
       == '0' ==> 00001
       <no epsilon>
 00001() <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A) <~ 
       <no epsilon>
@@ -283,7 +283,7 @@ result =  init-state = 0L
       == '2' ==> 00002
       <no epsilon>
 00002(pre=94) <~ 
-      == \0, '\n' ==> 00003
+      == '\n' ==> 00003
       <no epsilon>
 00003(A, P5) <~ 
       <no epsilon>
@@ -317,7 +317,7 @@ pre-condition inverted = init-state = 0L
       == '0' ==> 00001
       <no epsilon>
 00001() <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A) <~ 
       <no epsilon>
@@ -339,7 +339,7 @@ result =  init-state = 0L
       == '2' ==> 00002
       <no epsilon>
 00002(pre=110) <~ 
-      == \0, '\n' ==> 00003
+      == '\n' ==> 00003
       <no epsilon>
 00003(A, P5) <~ 
       <no epsilon>
@@ -348,7 +348,7 @@ pre-condition inverted = init-state = 0L
       == '0' ==> 00001
       <no epsilon>
 00001() <~ 
-      == \0, '\n' ==> 00002
+      == '\n' ==> 00002
       <no epsilon>
 00002(A) <~ 
       <no epsilon>
