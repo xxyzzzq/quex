@@ -1,0 +1,7 @@
+warning: no initial mode defined via 'start'
+warning: using mode 'MODE' as initial mode
+
+Output from constructed header:_______________________________________
+
+(standard input):191:#line 5 "error.qx"
+(standard input):193:#line 193 "Simple"

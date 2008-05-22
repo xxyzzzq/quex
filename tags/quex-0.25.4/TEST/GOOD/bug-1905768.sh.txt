@@ -1,0 +1,2 @@
+quex::Simple_MODULE_analyser_function(QUEX_LEXER_CLASS* me) 
+quex::Simple_U1_STRING_analyser_function(QUEX_LEXER_CLASS* me) 
