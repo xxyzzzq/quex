@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+using namespace std;
 
 float  benchmark(std::FILE*, const size_t FileSize, float* repetition_n);
 
@@ -23,7 +24,6 @@ float  report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t Char
 int 
 main(int argc, char** argv) 
 {        
-    using namespace std;
     std::FILE*  fh = 0x0;
 
     if( argc != 2 ) { return -1; }
@@ -49,6 +49,29 @@ main(int argc, char** argv)
     return 0;
 } 
 
+#ifndef QUEX_BENCHMARK_SERIOUS
+void __PRINT_START()
+{
+        cout << ",------------------------------------------------------------------------------------\n";
+        cout << "| [START]\n";
+        int number_of_tokens = 0;
+}
+void __PRINT_END(int TokenN)
+{
+    cout << "| [END] number of token = " << number_of_tokens << "\n";
+    cout << "`------------------------------------------------------------------------------------\n";
+}
+void __PRINT_TOKEN(const char* TokenName)
+{
+    cout << TokenP->type_id_name() << endl;
+    ++(*number_of_tokens);
+}
+#else 
+void __PRINT_START() { }
+void __PRINT_END(int TokenN) { }
+void __PRINT_TOKEN(const char* TokenName, int* number_of_tokens) { }
+#endif
+
 float
 benchmark(std::FILE* fh, const size_t FileSize, float* repetition_n)
 {
@@ -64,34 +87,20 @@ benchmark(std::FILE* fh, const size_t FileSize, float* repetition_n)
     quex::tiny_lexer* qlex = new quex::tiny_lexer(fh);
 
     while( clock() < MinExperimentTime ) { 
-        checksum       = 0;
+        checksum       = 777;
         *repetition_n += 1.0f;
-#       ifndef QUEX_BENCHMARK_SERIOUS
-        cout << ",------------------------------------------------------------------------------------\n";
-        cout << "| [START]\n";
-        int number_of_tokens = 0;
-#       endif
+        __PRINT_START(); /* No Operation if QUEX_BENCHMARK_SERIOUS is defined */
         
-        // (*) loop until the 'termination' token arrives
-        do {
-            // (*) get next token from the token stream
+        do {  
             qlex->get_token(&TokenP);
 
-            checksum = checksum + TokenP->type_id(); 
+            checksum = (checksum + TokenP->type_id()) % 0xFF; 
 
-            // (*) print out token information
-            //     -- name of the token
-#           ifndef QUEX_BENCHMARK_SERIOUS
-            cout << TokenP->type_id_name() << endl;
-            ++number_of_tokens;
-#           endif
-            // (*) check against 'termination'
+            __PRINT_TOKEN(TokenP->type_id());  /* No Operation, see above */
+
         } while( TokenP->type_id() != quex::TKN_TERMINATION );
 
-#       ifndef QUEX_BENCHMARK_SERIOUS
-        cout << "| [END] number of token = " << number_of_tokens << "\n";
-        cout << "`------------------------------------------------------------------------------------\n";
-#       endif
+        __PRINT_END(number_of_tokens);
         if( checksum_ref == -1 ) { 
             checksum_ref = checksum; 
         }
