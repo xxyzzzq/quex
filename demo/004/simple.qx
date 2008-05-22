@@ -26,6 +26,7 @@ token {
     CATCH
     CLASS
     COLON
+    COMMENT
     CONST
     CONTINUE
     CORNER_BRACKET_C
@@ -34,6 +35,7 @@ token {
     CURLY_BRACKET_O
     DIV
     DO
+    DOT
     DOUBLE_COLON
     ELSE
     EQ
