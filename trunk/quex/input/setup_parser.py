@@ -65,6 +65,10 @@ def do(argv):
 
     validate(setup, command_line, argv)
 
+    # Please, do not change this, otherwise no 'empty' options can be detected.
+    if setup.input_token_class_file == "": setup.input_token_class_file = "quex/code_base/token"
+    if setup.input_token_class_name == "": setup.input_token_class_name = "token"
+
     # (*) return setup ___________________________________________________________________
     return
 
@@ -163,10 +167,10 @@ def validate(setup, command_line, argv):
         __check_identifier(setup, "input_token_class_name",   "Token class name")
     
     # '--token-class' and '--token-class-file' needs to appear together
-    if command_line.search("--token-class") and not command_line.search("--token-class-file"):
+    if setup.input_token_class_name != "" and not setup.input_token_class_file == "":
         error_msg("Specifying a user-defined token class via '--token-class' requires\n" + \
                   "that the token class file, also, needs to be specified via '--token-class-file'.")
-    if command_line.search("--token-class-file") and not command_line.search("--token-class"):
+    if setup.input_token_class_file != "" and not setup.input_token_class_name == "":
         error_msg("Specifying a user-defined token class file via '--token-class-file' requires\n" + \
                   "that the token class, also, needs to be specified via '--token-class'.")
 
