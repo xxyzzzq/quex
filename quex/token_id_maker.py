@@ -142,13 +142,15 @@ def output(global_setup):
     #     plus the suffix "--token-ids". Note, that the token id file is a
     #     header file.
     #
+    setup = Setup(global_setup)
     if len(lexer_mode.token_id_db.keys()) == 2:
         # TERMINATION + UNINITIALIZED = 2 token ids. If they are the only ones nothing can be done.
-        print "error: empty token-id list. quex cannot proceed."
-        print "error: use the 'token { ... }' section to specify at least one token id."
+        print "error: No token id other than %sTERMINATION and %sUNINITIALIZED are defined. " % \
+              (setup.token_prefix, setup.token_prefix)
+        print "error: Quex refuses to proceed. Please, use the 'token { ... }' section to "
+        print "error: specify at least one other token id."
         sys.exit(-1)
 
-    setup = Setup(global_setup)
     if global_setup.input_user_token_id_file != "":
         ## print "(0) token ids provided by user"
         ## print "   '%s'" % global_setup.input_user_token_id_file
