@@ -1,4 +1,4 @@
-<history date="Fri May 23 06:23:13 2008" element-n="69">
+<history date="Fri May 23 20:37:14 2008" element-n="69">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -182,6 +182,6 @@
         <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:51:42"/>
     </day>
     <day year="2008" month="05" day="23">
-        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="04:23:13"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:37:14"/>
     </day>
 </history>
