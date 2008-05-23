@@ -26,8 +26,14 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #ifndef QUEX_OPTION_LINE_NUMBER_COUNTING            
 #define    QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
+#ifdef QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
+#   undef QUEX_OPTION_LINE_NUMBER_COUNTING
+#endif
 #ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING          
 #define    QUEX_OPTION_COLUMN_NUMBER_COUNTING       
+#endif
+#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
+#   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #endif
 
 // -- Mode Transitions:
@@ -37,6 +43,9 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #define    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #endif
+#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
+#   undef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#endif
 
 // -- Debugging: 
 //    If the engine was created with the '--debug' flag then it contains 
@@ -45,11 +54,20 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
 // #define QUEX_OPTION_DEBUG_TOKEN_SENDING
 #endif
+#ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING_DISABLED
+#   undef QUEX_OPTION_DEBUG_TOKEN_SENDING
+#endif
 #ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 // #define QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #endif
+#ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS_DISABLED
+#   undef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#endif
 #ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 // #define QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+#endif
+#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES_DISABLED
+#   undef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #endif
 
 // -- Include Stack Support:
@@ -58,6 +76,9 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //    you want to save some bytes.
 #ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #define    QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#endif
+#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
+#   undef QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
 
 #ifndef     QUEX_SETTING_BUFFER_SIZE
@@ -72,17 +93,32 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 
 // #define __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
 //
+#ifdef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED_DISABLED
+#   undef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+#endif
 //   If one mode requires indentation support, then the lexical analyser
 //   class must be setup for indentation counting. The following flag is
 //   defined or undefined by the lexical analyser generator quex.
 // #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 //
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DISABLED
+#   undef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#endif
 //   Quex can determine whether certain handlers are not used at all.
 //   If so, computation time can be spared and quex comments the following
 //   options out.
 // #define __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+#ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
+#   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+#endif
 // #define __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+#ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
+#   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+#endif
 // #define __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
+#   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#endif
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #    ifndef     QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE ((size_t)65536)
@@ -94,6 +130,9 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //   structure. Only out-comment this in case of tough memory restrictions,
 //   if no begin of line pre-condition is required.
 #define    __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
+#   undef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#endif
 
 namespace quex {
     class Simple;
@@ -943,7 +982,6 @@ Simple::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
                                        LexemeLength,
                                        /* LicenseToIncrementLineCountF = */ false);
 #   endif
-
     __count_assert_consistency();
 }
 
@@ -986,7 +1024,7 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 {
 #if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
-    return;
+    return 0x0;
 #else
     __quex_assert(Begin >= __buffer->content_front());
     __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1
@@ -1016,8 +1054,8 @@ Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     if( LicenseToIncrementLineCountF ) ++_line_number_at_end;
 #   endif
-# endif
     return it;
+# endif
 }
 
 

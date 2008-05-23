@@ -93,7 +93,6 @@ $$LEXER_CLASS_NAME$$::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
                                        LexemeLength,
                                        /* LicenseToIncrementLineCountF = */ false);
 #   endif
-
     __count_assert_consistency();
 }
 
@@ -166,6 +165,6 @@ $$LEXER_CLASS_NAME$$::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Be
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     if( LicenseToIncrementLineCountF ) ++_line_number_at_end;
 #   endif
-# endif
     return it;
+# endif
 }
