@@ -136,7 +136,7 @@ $$LEXER_CLASS_NAME$$::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Be
 {
 #if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
-    return;
+    return 0x0;
 #else
     __quex_assert(Begin >= __buffer->content_front());
     __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1

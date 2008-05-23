@@ -57,7 +57,6 @@
     ActionInfo objects can be immediately created at parsing time. 
     Please, do so.
 
-
 (*) 08y2m6d:
 
     In the epsilon transition print the remaining triggers are printed.
@@ -131,16 +130,6 @@
     inverse state machine, but consider simply the last character
     that was passed.
 
-(*) 07y5m15d:
-
-    The '.' introduced triggers of the inverse of BeginOfFile and EndOfFile.
-    For fine-tuning it may be advantegous to check wether these triggers
-    can actually occur inside a pattern, i.e. in a pre-condition BeginOfFile
-    may occur, in a forward lexing state machine not.
-
-    Hint: defining EndOfFile and BeginOfFile as the same code, may make this
-          discussion pointless. Then no efficiency can be gained. 
-
 (*) 07y4m30d
     Rethink: Efficiency of quex::get_token(token&)
 
@@ -189,5 +178,5 @@ ENTRY_INTO_MACHINE:
 
 (*) 07y8m4d:
 
-   Unit tests for move_forward, move_backward in buffer handling.
+    Unit tests for move_forward, move_backward in buffer handling.
 

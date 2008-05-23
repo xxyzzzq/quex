@@ -49,12 +49,8 @@ def do(argv):
     setup.output_header_file   = setup.output_engine_name + "-internal.h"
     setup.output_code_file     = setup.output_engine_name + ".cpp"
 
-    setup.buffer_limit_code    = __get_integer(setup.buffer_limit_code,    "--buffer-limit")
-    setup.begin_of_stream_code = __get_integer(setup.begin_of_stream_code, "--begin-of-stream")
-    setup.end_of_stream_code   = __get_integer(setup.end_of_stream_code,   "--end-of-stream")
-    setup.control_character_code_list = [setup.buffer_limit_code,
-                                         setup.begin_of_stream_code,
-                                         setup.end_of_stream_code]
+    setup.buffer_limit_code    = __get_integer(setup.buffer_limit_code, "--buffer-limit")
+    setup.control_character_code_list = [setup.buffer_limit_code]
 
     setup.input_token_counter_offset = __get_integer(setup.input_token_counter_offset,
                                                      "--token-offset")
@@ -65,9 +61,12 @@ def do(argv):
 
     validate(setup, command_line, argv)
 
-    # Please, do not change this, otherwise no 'empty' options can be detected.
-    if setup.input_token_class_file == "": setup.input_token_class_file = "quex/code_base/token"
-    if setup.input_token_class_name == "": setup.input_token_class_name = "token"
+    # (*) Default values
+    #     (Please, do not change this, otherwise no 'empty' options can be detected.)
+    if setup.input_token_class_file == "": 
+        setup.input_token_class_file = SETUP_INFO["input_token_class_file"][2]
+    if setup.input_token_class_name == "": 
+        setup.input_token_class_name = SETUP_INFO["input_token_class_name"][2]
 
     # (*) return setup ___________________________________________________________________
     return
@@ -122,9 +121,6 @@ def validate(setup, command_line, argv):
                       "specified which file contains the definition of it.\n" + \
                       "use command line option '--derived-class-file'.\n")
 
-    # check whether the limit codes make sense (end of file, begin of file, buffer limit)
-    __check_stream_limit_codes(setup)
-
     # check validity
     bpc = setup.bytes_per_ucs_code_point
     if bpc != "wchar_t":
@@ -134,7 +130,6 @@ def validate(setup, command_line, argv):
             sys.exit(-1)
         else:
             setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
-
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 
@@ -167,16 +162,41 @@ def validate(setup, command_line, argv):
         __check_identifier(setup, "input_token_class_name",   "Token class name")
     
     # '--token-class' and '--token-class-file' needs to appear together
-    if setup.input_token_class_name != "" and not setup.input_token_class_file == "":
-        error_msg("Specifying a user-defined token class via '--token-class' requires\n" + \
+    if setup.input_token_class_name != "" and setup.input_token_class_file == "":
+        error_msg("User defined token class '%s':\n" % setup.input_token_class_name + \
+                  "Specifying a user-defined token class via '--token-class' requires\n" + \
                   "that the token class file, also, needs to be specified via '--token-class-file'.")
-    if setup.input_token_class_file != "" and not setup.input_token_class_name == "":
-        error_msg("Specifying a user-defined token class file via '--token-class-file' requires\n" + \
+    if setup.input_token_class_file != "" and setup.input_token_class_name == "":
+        error_msg("User defined token class file '%s':\n" % setup.input_token_class_file + \
+                  "Specifying a user-defined token class file via '--token-class-file' requires\n" + \
                   "that the token class, also, needs to be specified via '--token-class'.")
 
     # __check_identifier("token_id_termination",     "Token id for termination")
     # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
-        
+    __check_file_name(setup, "input_token_class_file", "file containing user defined token class")
+    __check_file_name(setup, "input_derived_class_file", "file containing user derived lexer class")
+
+    __check_file_name(setup, "input_foreign_token_id_file", "file containing user token ids")
+    __check_file_name(setup, "input_user_token_id_file",    "file containing user token ids")
+
+    __check_file_name(setup, "input_mode_files", "quex source file")
+
+
+def __check_file_name(setup, Candidate, Name):
+    value = setup.__dict__[Candidate]
+    CommandLineOption = SETUP_INFO[Candidate][0]
+
+    if type(value) == list:
+        for name in value:
+            if value != "" and value[0] == "-": 
+                error_msg("Quex refuses to work with file names that start with '-' (minus).\n"  + \
+                          "Received '%s' for %s (%s)" % (value, Name, repr(CommandLineOption)[1:-1]))
+    else:
+        if value == "" or value[0] == "-": return
+
+
+    
+
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     if is_identifier(value): return
@@ -205,13 +225,15 @@ def __get_supported_command_line_option_description(NormalModeOptions):
     txt += query.get_supported_command_line_option_description()
     return txt
 
-def __check_stream_limit_codes(setup):
-    # NOTE: BeginOfStream and EndOfStream might be the same. At least, the 
-    #       author of this software is not aware of a use case that prohibits
-    #       it. However, for the sake of generality it is left as two different
-    #       variables. Maybe, in future one might consider to delete them.
-    if setup.begin_of_stream_code == setup.buffer_limit_code:
-        error_msg("code for begin of stream and buffer limit cannot be equal!")
-    if setup.buffer_limit_code == setup.end_of_stream_code:
-        error_msg("code for end of stream and buffer limit cannot be equal!")
+## OUTDATED: Not necessary, since there are no end of stream codes anymore.
+##
+## def __check_stream_limit_codes(setup):
+##    # NOTE: BeginOfStream and EndOfStream might be the same. At least, the 
+##    #       author of this software is not aware of a use case that prohibits
+##    #       it. However, for the sake of generality it is left as two different
+##    #       variables. Maybe, in future one might consider to delete them.
+##    if setup.begin_of_stream_code == setup.buffer_limit_code:
+##        error_msg("code for begin of stream and buffer limit cannot be equal!")
+##    if setup.buffer_limit_code == setup.end_of_stream_code:
+##        error_msg("code for end of stream and buffer limit cannot be equal!")
 

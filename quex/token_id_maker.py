@@ -154,7 +154,6 @@ def output(global_setup):
     if global_setup.input_user_token_id_file != "":
         ## print "(0) token ids provided by user"
         ## print "   '%s'" % global_setup.input_user_token_id_file
-
         global_setup.output_token_id_file = global_setup.input_user_token_id_file
         return
     
