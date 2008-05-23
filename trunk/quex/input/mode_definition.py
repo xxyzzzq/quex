@@ -181,7 +181,9 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
             new_mode.add_match(pattern, code_obj, pattern_state_machine, PatternIdx)
             return
 
-        elif word == "PRIORITY-MARK":
+        fh.seek(position)
+        word = read_until_whitespace(fh)
+        if word == "PRIORITY-MARK":
             # This mark 'lowers' the priority of a pattern to the priority of the current
             # pattern index (important for inherited patterns, that have higher precedence).
             new_mode.add_match_priority(pattern, pattern_state_machine, PatternIdx, fh)

@@ -149,8 +149,6 @@ def write_engine_header(Modes, Setup):
     txt = blue_print(txt,
             [
                 ["$$BUFFER_LIMIT_CODE$$",            "0x%X" % Setup.buffer_limit_code],
-                ["$$BEGIN_OF_STREAM_CODE$$",         "0x%X" % Setup.begin_of_stream_code],
-                ["$$END_OF_STREAM_CODE$$",           "0x%X" % Setup.end_of_stream_code],
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  class_constructor_extension_str],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],

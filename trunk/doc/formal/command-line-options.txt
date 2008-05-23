@@ -94,8 +94,6 @@ following command line options can be used.
 Additionally, there are options for specialists who want to provide their own
 token-class:
 
-\begin{description}
-
 `--token-class` _name_::
         
 	    _name_ = Name of the token class that the user defined. Note that the 
@@ -118,16 +116,16 @@ following option to disable it:
 	    `std::string` objects, i.e. human readable names. DEFAULT = `<disabled>`
 
 There may be cases where the characters used to indicate buffer limit,
-      end-of-stream and begin-of-stream need to be redefined, because the
-      default code points appear in a pattern footnote:[As for 'normal' ASCII
-      or Unicode based lexical analyzers, this would most probably not be a
-      good design decision. But, when other, alien, non-unicode codings are to
-      be used, this case is conceivable.].  Also, note that the '.' regular
-      expression (meaning 'nothing but newline or end of file') needs check for
-      begin-of-buffer and end-of-buffer in the general case. Giving both the
-      same value may come with some speedup, and does not hurt. None of these
-      values should be equal to the buffer limit delimiter. The following
-      options allow to modify the values discussed above.  
+end-of-stream and begin-of-stream need to be redefined, because the
+default code points appear in a pattern footnote:[As for 'normal' ASCII
+or Unicode based lexical analyzers, this would most probably not be a
+good design decision. But, when other, alien, non-unicode codings are to
+be used, this case is conceivable.].  Also, note that the '.' regular
+expression (meaning 'nothing but newline or end of file') needs check for
+begin-of-buffer and end-of-buffer in the general case. Giving both the
+same value may come with some speedup, and does not hurt. None of these
+values should be equal to the buffer limit delimiter. The following
+options allow to modify the values discussed above.  
       
 
 `--buffer-limit` _number_:: DEFAULT = `"0x0"`
@@ -173,7 +171,7 @@ options:
 	    For creating a lexical analyzer engine on the same CPU type as quex runs
 	    then this option is not required, since quex finds this out by its own.
 	    If you create an engine for a different plattform, you must know its byte ordering
-	    scheme, i.e. little endian or big endian, and specify it after `--endian`'. DEFAULT=i`"<system>"`
+	    scheme, i.e. little endian or big endian, and specify it after `--endian`'. DEFAULT=`"<system>"`
 
 For version information pass option `--version`' or `-v`'. The
 options `--help` and `-h`' are reserved for requesting a help text. Those

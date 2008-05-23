@@ -1,3 +1,24 @@
+(*) 07y5m15d/08y5m23d:
+
+    The '.' introduced triggers of the inverse of BeginOfFile and EndOfFile.
+    For fine-tuning it may be advantegous to check wether these triggers
+    can actually occur inside a pattern, i.e. in a pre-condition BeginOfFile
+    may occur, in a forward lexing state machine not.
+
+    Hint: defining EndOfFile and BeginOfFile as the same code, may make this
+          discussion pointless. Then no efficiency can be gained. 
+
+    COMMENT: The EndOfFile and BeginOfFile have been deleted from the design.
+             They do not appear anymore.
+
+(*) 08y5m22d/08y5m22d:
+
+    Clarify the two variables: 
+    
+           setup.input_user_token_id_file    --> disable token -id file creation
+           setup.input_foreign_token_id_file --> provides foreign token ids
+
+
 (*) 07y9m23d:
 
     In the 'history' computation the 'union' member function is used. 
