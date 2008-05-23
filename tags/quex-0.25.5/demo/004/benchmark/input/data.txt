@@ -1,0 +1,66 @@
+#    pragma
+#    error
+#  include
+#    define
+#    ifdef
+#    ifndef
+#    endif
+#    else
+unsigned
+int
+long
+float
+double
+char
+(           
+)           
+[           
+]           
+{           
+}           
+=           
++           
+-           
+*           
+/           
++=          
+-=          
+*=          
+/=          
+==          
+!=          
+>           
+>=          
+<           
+<=          
+!           
+&           
+::          
+:           
+struct        
+const         
+if            
+else          
+switch        
+for           
+do            
+while         
+break         
+continue      
+;           
+.           
+
+otto von bismarck
+31.245
+"A String"
+/* A nice comment that is a little longer so that is spans
+ * over multiple lines. This is to see how the lexer can deal
+ * with that */
+// A one line comment
+/* And now some tokens to fill the file so that it has the size of 1024 bytes */
+		case PR_SET_NAME: {
+			struct task_struct *me = current;
+			unsigned char ncomm[sizeof(me->comm)];
+
+unsigned floated
+

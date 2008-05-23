@@ -1,0 +1,9 @@
+token {
+A
+}
+header {
+#include "foo"
+}
+mode MODE {
+"a" => TKN_A;
+}
