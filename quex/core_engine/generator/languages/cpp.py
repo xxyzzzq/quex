@@ -569,13 +569,11 @@ $$DEFAULT_ACTION$$
         goto __REENTRY_PREPARATION;
 
 TERMINAL_GENERAL: {
-        int tmp = last_acceptance;
-        //
         //  if last_acceptance => goto correspondent acceptance terminal state
         //  else               => execute defaul action
         //
         __QUEX_DEBUG_INFO_TERMINAL(General);
-        switch( tmp ) {
+        switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: goto TERMINAL_DEFAULT; /* nothing matched */
         }

@@ -9,6 +9,14 @@ ifndef QUEX_PATH
 endif
 
 # (*) SETUP ____________________________________________________________________
+SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
+      -D'CPU_FREQUENCY_MHZ=((float)(1866.760))' \
+      -D'CHARACTER_SIZE=((unsigned)(1))' \
+      -D'CPU_NAME="PentiumDuoCore"' \
+	  -D'OS="linux-2"' \
+	  -D'COMPILER="g++-4.2.1"' \
+	  -D'QUEX_VERSION="0.25.5"'
+
 # -- INPUT
 MODE_FILES       = simple.qx
 # -- FILES PRODUCED BY QUEX
@@ -17,19 +25,18 @@ ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
 		           $(ENGINE_NAME)-core-engine.cpp
-# -- OUTPUT
-APPLICATION      = lexer
+APPLICATION  = lexer
+SOURCE_FILES = lexer.cpp $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++
-CC = $(COMPILER) -c -O3 -Wno-deprecated -Wall \
+CC = $(COMPILER) -O3 -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
+	 $(SETUP) \
 	 -DNDEBUG \
 	 -DQUEX_BENCHMARK_SERIOUS \
-     -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
-     -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
      #-DQUEX_OPTION_ACTIVATE_ASSERTS	\
      #-DQUEX_SETTING_BUFFER_SIZE=64 \
 	 # -D__QUEX_OPTION_UNIT_TEST \
@@ -39,23 +46,37 @@ CC = $(COMPILER) -c -O3 -Wno-deprecated -Wall \
 LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
-all: $(APPLICATION)
+#    lexer    --> application w/o line or column counting
+#    lexer-l  --> application w/ line counting
+#    lexer-lc --> application w/ line and column counting
+all: lexer lexer-l lexer-lc
 
 # -- application
-$(APPLICATION): $(APPLICATION).o \
-	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
-	$(LD) ./$(APPLICATION).o $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o \
-          -o $(APPLICATION) 
+lexer-lc: $(SOURCE_FILES)
+	$(CC) \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
+		$(SOURCE_FILES) -o $@
 
-# -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
-	$(CC) $< -o $@
+lexer-l: $(SOURCE_FILES)
+	$(CC) \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING            \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
+		$(SOURCE_FILES) -o $@
+
+lexer: $(SOURCE_FILES)
+	$(CC) \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
+		$(SOURCE_FILES) -o $@
+
 
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
+	rm -f lexer lexer-l lexer-lc
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o

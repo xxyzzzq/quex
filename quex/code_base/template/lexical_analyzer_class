@@ -1019,7 +1019,7 @@ $$COUNT_LINE_COLUMN_IMPLEMENTATION$$
 #       if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
            defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
         if( _accumulated_text.length() == 0 ) {
-#           ifndef  QUEX_OPTION_NO_COLUMN_NUMBER_COUNTING
+#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
             _begin_column = _the_lexer->column_number_at_begin();
 #           endif
 #           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
