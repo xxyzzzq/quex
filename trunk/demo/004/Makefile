@@ -15,7 +15,6 @@ SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="PentiumDuoCore"' \
 	  -D'OS="linux-2"' \
 	  -D'COMPILER="g++-4.2.1"' \
-	  -D'QUEX_VERSION="0.25.5"'
 
 # -- INPUT
 MODE_FILES       = simple.qx
