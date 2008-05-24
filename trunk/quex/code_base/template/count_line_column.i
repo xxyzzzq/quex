@@ -155,16 +155,20 @@ $$LEXER_CLASS_NAME$$::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Be
             // -- in case NO newline occurs, the column index is to be INCREASED 
             //    by the length of the string -1, since counting starts at zero
             // -- _column_number_at_begin = _column_number_at_end - LexemeLength (just take the old one)
+#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
             _column_number_at_end += LexemeLength;
+#           endif
             return it;
         }
     }
+#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     // -- in case that newline occurs, the column index is equal to
     //    the number of letters from newline to end of string
     _column_number_at_end = End - it;
+#   endif
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     if( LicenseToIncrementLineCountF ) ++_line_number_at_end;
 #   endif
     return it;
-# endif
+#endif
 }

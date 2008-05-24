@@ -11,11 +11,6 @@
 
 using namespace std;
 
-#ifndef CPU_FREQUENCY_MHZ   
-#   define CPU_FREQUENCY_MHZ   ((float)(1866.760))
-#   define CHARACTER_SIZE      ((unsigned)(1))
-#endif
-
 float  benchmark(std::FILE*, const size_t FileSize, float* repetition_n);
 
 float  overhead(std::FILE*, 
