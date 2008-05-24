@@ -11,6 +11,7 @@
 #include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
+#define QUEX_VERSION  $$QUEX_VERSION$$
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
