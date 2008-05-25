@@ -2,35 +2,42 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
+COMPILER    = g++
+BUFFER_SIZE = 65536
+
+# (*) SETUP ____________________________________________________________________
+SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
+      -D'CPU_NAME="IntelCoreDuo T2350"' \
+      -D'CPU_FREQ_MHZ=((float)(1866.760))' \
+	  -D'CC_OPTIMIZATION_FLAGS="-O3"' \
+      -D'CHARACTER_SIZE=((unsigned)(1))' \
+	  -D'OS_NAME="linux-2"' \
+	  -D'CC_NAME="$(COMPILER)"' \
+	  -D'CC_VERSION="4.2.1"' \
+      -D'QUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE)' \
+	  -D'NOTE=""'
+
 .PHONY: clean
 
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
 
-# (*) SETUP ____________________________________________________________________
-SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
-      -D'CPU_FREQUENCY_MHZ=((float)(1866.760))' \
-      -D'CHARACTER_SIZE=((unsigned)(1))' \
-      -D'CPU_NAME="PentiumDuoCore"' \
-	  -D'OS="linux-2"' \
-	  -D'COMPILER="g++-4.2.1"' \
-
 # -- INPUT
-MODE_FILES       = simple.qx
+MODE_FILES       = c.qx
 # -- FILES PRODUCED BY QUEX
-ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
+ENGINE_NAME      = c_lexer# NOTE: a whitespace after this name creates chaos!
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
 		           $(ENGINE_NAME)-core-engine.cpp
 APPLICATION  = lexer
-SOURCE_FILES = lexer.cpp $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
+SOURCE_FILES = lexer.cpp report.cpp \
+			   $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++
 CC = $(COMPILER) -O3 -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
 	 $(SETUP) \
@@ -81,8 +88,8 @@ clean:
 	rm -f $(ENGINE_NAME).o
 	rm -f $(ENGINE_NAME)-core-engine.o
 	rm -f lexer.o
+	rm -f report.o
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.bak
-	rm -f extensive-example.txt
 
