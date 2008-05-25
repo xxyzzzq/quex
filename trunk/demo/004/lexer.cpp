@@ -2,24 +2,22 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include "tiny_lexer"
-#include <ctime>
-#include <cstdlib>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "c_lexer"
 
 using namespace std;
 
-float  benchmark(std::FILE*, const size_t FileSize, float* repetition_n);
+float     benchmark(std::FILE*, const size_t FileSize, float* repetition_n);
 
-float  overhead(std::FILE*, 
-                const int SimulatedFileSize, const size_t SimulatedTokenN, 
-                const float RepetitionN);
+float     overhead(std::FILE*, 
+                   const int SimulatedFileSize, const size_t SimulatedTokenN, 
+                   const float RepetitionN);
 
-size_t get_file_size(const char*);
-size_t count_token_n(std::FILE*);
-float  report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t CharacterSize);
+// report.c:
+size_t    get_file_size(const char*);
+void      print_date_string();
+size_t    count_token_n(std::FILE*);
+float     report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t CharacterSize);
+void      final_report(float TimePerRun, float RefTimePerRun, const char* Filename, size_t FileSize, size_t TokenN, float RepetitionN);
 
 int 
 main(int argc, char** argv) 
@@ -38,48 +36,36 @@ main(int argc, char** argv)
     const size_t TokenN = count_token_n(fh); 
     fseek(fh, 0, SEEK_SET);
     const size_t FileSize = get_file_size(argv[1]);
-    const float  CharN    = (float)(FileSize) / (CHARACTER_SIZE);
     fseek(fh, 0, SEEK_SET);
     float        repetition_n;
     const float  TimePerRun = benchmark(fh, FileSize, &repetition_n);
     fseek(fh, 0, SEEK_SET);
     /* Measure the overhead of the measurement */
     const float  RefTimePerRun = overhead(fh, FileSize, TokenN, repetition_n);
-    {
-        const float  CycleTime      = 1.0 / (CPU_FREQUENCY_MHZ * 1e6);
-        const float  TimePerChar    = TimePerRun  / CharN;
-        const float  CCC            = TimePerChar / CycleTime;
-        const float  RefTimePerChar = RefTimePerRun  / CharN;
-        const float  RefCCC         = RefTimePerChar / CycleTime;
 
-        cout << "Result:\n";
-        cout << "   Time / Run:          " << (TimePerRun - RefTimePerRun)   << endl;
-        cout << "   Time / Char:         " << (TimePerChar - RefTimePerChar) << endl;
-        cout << "   Clock Cycles / Char: " << (CCC - RefCCC)                 << endl;
-    }
-
+    final_report(TimePerRun, RefTimePerRun, argv[1], FileSize, TokenN, repetition_n);
     return 0;
 } 
 
 #ifndef QUEX_BENCHMARK_SERIOUS
 void __PRINT_START()
 {
-        cout << ",------------------------------------------------------------------------------------\n";
-        cout << "| [START]\n";
+    cout << ",------------------------------------------------------------------------------------\n";
+    cout << "| [START]\n";
 }
 void __PRINT_END()
 {
     cout << "| [END] \n";
     cout << "`------------------------------------------------------------------------------------\n";
 }
-void __PRINT_TOKEN(const char* TokenName, quex::tiny_lexer* qlex) 
+void __PRINT_TOKEN(const char* TokenName, quex::c_lexer* qlex) 
 {
     cout << qlex->line_number() << ": " << TokenName << endl;
 }
 #else 
 void __PRINT_START() { }
 void __PRINT_END() { }
-void __PRINT_TOKEN(const char* TokenName, quex::tiny_lexer*) { }
+void __PRINT_TOKEN(const char* TokenName, quex::c_lexer*) { }
 #endif
 
 float
@@ -99,7 +85,7 @@ benchmark(std::FILE* fh, const size_t FileSize, float* repetition_n)
     size_t         token_n = 0;
     int            checksum_ref = -1;
     //
-    quex::tiny_lexer* qlex = new quex::tiny_lexer(fh);
+    quex::c_lexer* qlex = new quex::c_lexer(fh);
 
     do { 
         checksum       = 777;
@@ -133,8 +119,8 @@ benchmark(std::FILE* fh, const size_t FileSize, float* repetition_n)
     //           + (assignment, increment by one, comparision * 2, _reset(),
     //              clock(), comparision) * RepetitionN
     
-    cout << "Benchmark (including overhead)\n";
-    cout << "    TokenN: " << (token_n-1) / *repetition_n << endl;
+    cout << "//Benchmark (including overhead)\n";
+    cout << "//    TokenN: " << (token_n-1) / *repetition_n << endl;
     return report(StartTime, *repetition_n, FileSize, /* CharacterSize = 1 */ 1);
 }
 
@@ -148,7 +134,7 @@ overhead(std::FILE* fh,
     float         repetition_n = 0.0;
     int           checksum = 0;
     //
-    quex::tiny_lexer* qlex = new quex::tiny_lexer(fh);
+    quex::c_lexer* qlex = new quex::c_lexer(fh);
 
     checksum = 0; // here: prevent optimizing away of token_n --> out of loop
     while( repetition_n < RepetitionN ) { 
@@ -173,60 +159,8 @@ overhead(std::FILE* fh,
     // The 'Checksum' is printed for the sole purpose to prevent that the 
     // checksum computation is not optimized away. When the checksum computation is not
     // optimized away, then the token id reception cannot be optimized away.
-    cout << "Overhead:\n";
-    std::cout << "    Checksum (meaningless): " << checksum << " [1]" << std::endl;
+    cout << "// Overhead:\n";
+    cout << "//     Checksum (meaningless): " << checksum << " [1]" << std::endl;
     return report(StartTime, RepetitionN, SimulatedFileSize, /* CharacterSize [byte] */ 1);
 }
 
-float
-report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t CharacterSize)
-{ 
-    using namespace std;
-
-    const clock_t EndTime    = clock();
-    const float   TimeDiff   = (float)(EndTime - StartTime) / (float)CLOCKS_PER_SEC;
-    const float   TimePerRun = TimeDiff / RepetitionN;
-
-    cout << "    Total Time:  " << TimeDiff          << " [sec]" << endl;
-    cout << "    Runs:        " << (long)RepetitionN << " [1]"   << endl;
-    cout << "    TimePerRun:  " << TimePerRun        << " [sec]" << endl;
-
-    const float  CharN          = FileSize / CHARACTER_SIZE;
-    const float  CycleTime      = 1.0 / (CPU_FREQUENCY_MHZ * 1e6);
-    const float  TimePerChar    = TimePerRun  / CharN;
-    const float  CCC            = TimePerChar / CycleTime;
-
-    cout << "    Time / Char:         " << TimePerChar << endl;
-    cout << "    Clock Cycles / Char: " << CCC         << endl;
-
-    return TimePerRun;
-}
-
-size_t
-count_token_n(std::FILE* fh)
-{
-    using namespace std;
-    quex::tiny_lexer*  qlex = new quex::tiny_lexer(fh);
-    quex::token*       TokenP;
-    int token_n = 0;
-
-    // (*) loop until the 'termination' token arrives
-    for(token_n=0; ; ++token_n) {
-        qlex->get_token(&TokenP);
-        if( TokenP->type_id() == quex::TKN_TERMINATION ) break;
-    } 
-    cout << "TokenN: " << token_n << " [1]"   << endl;
-    return token_n;
-}
-
-size_t
-get_file_size(const char* Filename)
-{
-    using namespace std;
-    struct stat s;
-    stat(Filename, &s);
-    cout << "FileSize: " << s.st_size << " [Byte] = "; 
-    cout << float(s.st_size) / float(1024) << " [kB] = ";
-    cout << float(s.st_size) / float(1024*1024) << " [MB]." << endl;
-    return s.st_size;
-}
