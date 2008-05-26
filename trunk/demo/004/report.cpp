@@ -21,8 +21,12 @@ final_report(float TimePerRun, float RefTimePerRun, const char* FileName, size_t
     const float  CycleTime      = 1.0 / (CPU_FREQ_MHZ * 1e6);
     const float  TimePerChar    = TimePerRun  / CharN;
     const float  CCC            = TimePerChar / CycleTime;
-    const float  RefTimePerChar = RefTimePerRun  / CharN;
-    const float  RefCCC         = RefTimePerChar / CycleTime;
+    const float  TimePerToken   = TimePerRun  / float(TokenN);
+    const float  CCT            = TimePerToken / CycleTime;
+    const float  RefTimePerChar  = RefTimePerRun  / CharN;
+    const float  RefCCC          = RefTimePerChar / CycleTime;
+    const float  RefTimePerToken = RefTimePerRun  / float(TokenN);
+    const float  RefCCT          = RefTimePerToken / CycleTime;
 
     cout << "//Result:\n";
     cout << "//   Time / Run:          " << (TimePerRun - RefTimePerRun)   << endl;
@@ -31,18 +35,17 @@ final_report(float TimePerRun, float RefTimePerRun, const char* FileName, size_t
     cout << "{" << endl;
     cout << "   quex_version = {" << QUEX_VERSION << "}, " << endl;
     cout << "   cpu_name     = {" << CPU_NAME << "}, " << endl;
+    cout << "   cpu_code     = {" << CPU_CODE << "}, " << endl;
     cout << "   cpu_freq_mhz = {" << CPU_FREQ_MHZ << "}, " << endl;
     cout << "   cc_name      = {" << CC_NAME << "}, " << endl;
     cout << "   cc_version   = {" << CC_VERSION << "}, " << endl;
     cout << "   cc_opt_flags = {" << CC_OPTIMIZATION_FLAGS << "}, " << endl;
     cout << "   os_name      = {" << OS_NAME << "}, " << endl;
     cout << "   email        = {" << EMAIL << "}, " << endl;
-    cout << "   date         = "; print_date_string();
+    print_date_string();
     cout << "   file_name    = {" << FileName << "}, " << endl;
     cout << "   file_size    = {" << FileSize << "}, " << endl;
     cout << "   char_size    = {" << CHARACTER_SIZE << "}, " << endl;
-    cout << "   token_n      = {" << TokenN << "}, " << endl;
-    cout << "   repetition_n = {" << (unsigned int)(RepetitionN) << "}, " << endl;
     cout << "   buffer_size  = {" << QUEX_SETTING_BUFFER_SIZE << "}, " << endl;
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     cout << "   line_count   = {true}," << endl;
@@ -56,7 +59,11 @@ final_report(float TimePerRun, float RefTimePerRun, const char* FileName, size_t
 #       endif
     cout << "   note         = {" << NOTE << "}, " << endl;
     // Result
+    cout << "   repetition_n               = {" << (unsigned int)(RepetitionN) << "}, " << endl;
+    cout << "   time_per_repetition        = {" << (TimePerRun - RefTimePerRun) << "}," << endl;
+    cout << "   token_n                    = {" << TokenN << "}, " << endl;
     cout << "   clock_cycles_per_character = {" << (CCC - RefCCC) << "}, " << endl;
+    cout << "   clock_cycles_per_token     = {" << (CCT - RefCCT) << "}, " << endl;
     cout << "}\n" << endl;
 }
 
@@ -121,9 +128,7 @@ print_date_string()
     std::time_t  current_time     = time(NULL); 
     struct tm*   broken_down_time = std::gmtime(&current_time);
     
-    std::cout << "{";
-    std::cout << broken_down_time->tm_year + 1900 << "y";
-    std::cout << broken_down_time->tm_mon  + 1    << "m";
-    std::cout << broken_down_time->tm_mday        << "d";
-    std::cout << "}" << std::endl;
+    std::cout << "   year         = {" << broken_down_time->tm_year + 1900   << "}," << endl;
+    std::cout << "   month        = {" << broken_down_time->tm_mon  + 1    << "}," << endl;
+    std::cout << "   day          = {" << broken_down_time->tm_mday        << "}," << endl;
 }
