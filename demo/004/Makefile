@@ -7,7 +7,8 @@ BUFFER_SIZE = 65536
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
-      -D'CPU_NAME="IntelCoreDuo T2350"' \
+      -D'CPU_NAME="IntelCoreDuo"' \
+      -D'CPU_CODE="T2350"' \
       -D'CPU_FREQ_MHZ=((float)(1866.760))' \
 	  -D'CC_OPTIMIZATION_FLAGS="-O3"' \
       -D'CHARACTER_SIZE=((unsigned)(1))' \
