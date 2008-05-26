@@ -16,12 +16,16 @@
 # (C) 2007 Frank-Rene Schaefer
 #
 ################################################################################
+
+# (*) Check if everything is correctly installed
+import quex.DEFINITIONS
+quex.DEFINITIONS.check()
+
 import sys
 import tempfile
 
 # This script needs to be located one directory above 'quex.'
 # so that it ca get the imports straight.
-import quex.DEFINITIONS
 from   quex.input.setup        import setup as Setup
 import quex.input.setup_parser as setup_parser
 import quex.input.query        as query_parser
@@ -31,9 +35,6 @@ from quex.frs_py.file_in  import error_msg
 
 if __name__ == "__main__":
     try:
-        # (*) Check if everything is correctly installed
-        quex.DEFINITIONS.check()
-
         # (*) Call only for query? ___________________________________________________________
         if query_parser.do(sys.argv):   # if quex has been called for UCS property
             sys.exit(0)                 # query, then no further processing is performed

@@ -2,15 +2,16 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-COMPILER    = g++
-BUFFER_SIZE = 65536
+COMPILER     = g++
+BUFFER_SIZE  = 65536
+OPTIMIZATION = -O2
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="IntelCoreDuo"' \
       -D'CPU_CODE="T2350"' \
       -D'CPU_FREQ_MHZ=((float)(1866.760))' \
-	  -D'CC_OPTIMIZATION_FLAGS="-O3"' \
+	  -D'CC_OPTIMIZATION_FLAGS="$(OPTIMIZATION)"' \
       -D'CHARACTER_SIZE=((unsigned)(1))' \
 	  -D'OS_NAME="linux-2"' \
 	  -D'CC_NAME="$(COMPILER)"' \
@@ -39,7 +40,7 @@ SOURCE_FILES = lexer.cpp report.cpp \
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-CC = $(COMPILER) -O3 -Wno-deprecated -Wall \
+CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
 	 $(SETUP) \
 	 -DNDEBUG \

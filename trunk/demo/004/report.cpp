@@ -10,23 +10,35 @@ using namespace std;
 size_t    get_file_size(const char*);
 void      print_date_string();
 size_t    count_token_n(std::FILE*);
-float     report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t CharacterSize);
-void      final_report(float TimePerRun, float RefTimePerRun, const char* Filename, 
-                       size_t FileSize, size_t TokenN, float RepetitionN);
+double     report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
+void      final_report(double TimePerRun, double RefTimePerRun, const char* Filename, 
+                       size_t FileSize, size_t TokenN, double RepetitionN);
 
 void 
-final_report(float TimePerRun, float RefTimePerRun, const char* FileName, size_t FileSize, size_t TokenN, float RepetitionN)
+final_report(double TimePerRun, double RefTimePerRun, const char* FileName, size_t FileSize, size_t TokenN, double RepetitionN)
 {
-    const float  CharN          = (float)(FileSize) / (CHARACTER_SIZE);
-    const float  CycleTime      = 1.0 / (CPU_FREQ_MHZ * 1e6);
-    const float  TimePerChar    = TimePerRun  / CharN;
-    const float  CCC            = TimePerChar / CycleTime;
-    const float  TimePerToken   = TimePerRun  / float(TokenN);
-    const float  CCT            = TimePerToken / CycleTime;
-    const float  RefTimePerChar  = RefTimePerRun  / CharN;
-    const float  RefCCC          = RefTimePerChar / CycleTime;
-    const float  RefTimePerToken = RefTimePerRun  / float(TokenN);
-    const float  RefCCT          = RefTimePerToken / CycleTime;
+    const double  CharN          = (double)(FileSize) / (CHARACTER_SIZE);
+    const double  CycleTime      = 1.0 / double(CPU_FREQ_MHZ) * 1e-6;
+    //
+    const double  TimePerChar    = TimePerRun  / CharN;
+    const double  CCC            = TimePerChar / CycleTime;
+    const double  RefTimePerChar  = RefTimePerRun  / CharN;
+    const double  RefCCC          = RefTimePerChar / CycleTime;
+
+    double  TimePerToken = 0;
+    double  CCT          = 0;
+    double  RefTimePerToken = 0;
+    double  RefCCT          = 0;
+
+    if( TokenN == 1 ) { 
+        TimePerToken    = TimePerRun;
+        RefTimePerToken = RefTimePerRun;
+    } else { 
+        TimePerToken    = TimePerRun     / double(TokenN);
+        RefTimePerToken = RefTimePerRun  / double(TokenN);
+    }
+    CCT    = TimePerToken / CycleTime;
+    RefCCT = RefTimePerToken / CycleTime;
 
     cout << "//Result:\n";
     cout << "//   Time / Run:          " << (TimePerRun - RefTimePerRun)   << endl;
@@ -68,23 +80,23 @@ final_report(float TimePerRun, float RefTimePerRun, const char* FileName, size_t
 }
 
 
-float
-report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t CharacterSize)
+double
+report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize)
 { 
     using namespace std;
 
     const clock_t EndTime    = clock();
-    const float   TimeDiff   = (float)(EndTime - StartTime) / (float)CLOCKS_PER_SEC;
-    const float   TimePerRun = TimeDiff / RepetitionN;
+    const double   TimeDiff   = (double)(EndTime - StartTime) / (double)CLOCKS_PER_SEC;
+    const double   TimePerRun = TimeDiff / RepetitionN;
 
     cout << "//    Total Time:  " << TimeDiff          << " [sec]" << endl;
     cout << "//    Runs:        " << (long)RepetitionN << " [1]"   << endl;
     cout << "//    TimePerRun:  " << TimePerRun        << " [sec]" << endl;
 
-    const float  CharN          = FileSize / CHARACTER_SIZE;
-    const float  CycleTime      = 1.0 / (CPU_FREQ_MHZ * 1e6);
-    const float  TimePerChar    = TimePerRun  / CharN;
-    const float  CCC            = TimePerChar / CycleTime;
+    const double  CharN          = FileSize / CHARACTER_SIZE;
+    const double  CycleTime      = 1.0 / (CPU_FREQ_MHZ * 1e6);
+    const double  TimePerChar    = TimePerRun  / CharN;
+    const double  CCC            = TimePerChar / CycleTime;
 
     cout << "//    Time / Char:         " << TimePerChar << endl;
     cout << "//    Clock Cycles / Char: " << CCC         << endl;
@@ -116,8 +128,8 @@ get_file_size(const char* Filename)
     struct stat s;
     stat(Filename, &s);
     cout << "//FileSize: " << s.st_size << " [Byte] = "; 
-    cout << float(s.st_size) / float(1024) << " [kB] = ";
-    cout << float(s.st_size) / float(1024*1024) << " [MB]." << endl;
+    cout << double(s.st_size) / double(1024.0) << " [kB] = ";
+    cout << double(s.st_size) / double(1024.0*1024.0) << " [MB]." << endl;
     return s.st_size;
 }
 
