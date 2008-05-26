@@ -1,0 +1,1180 @@
+// -*- C++ -*-   vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
+#define __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
+
+// STL (Std C++ Lib)
+#include<vector> 
+#include<map>
+#include<fstream>
+#include<cassert>
+#include<quex/code_base/compatibility/inttypes.h>
+#include<quex/code_base/asserts>
+#include<cstdio>    // provides: FILE*
+
+#define QUEX_VERSION  "$$QUEX_VERSION$$"
+// OPTIONS: ____________________________________________________________________
+//
+// Activate/Deactivate Options via comment/uncomment. Options without a 
+// double underline '__' at the beginning can be turned off in the created 
+// engine. Options that do start with '__' configure the machine for the
+// specified behavior. Such options are better not touched.
+//
+//
+// -- Line Number / Column Number Counting:
+//    Turning counting off may result in engine speed-up.
+#ifndef QUEX_OPTION_LINE_NUMBER_COUNTING            
+$$SWITCH$$ QUEX_OPTION_LINE_NUMBER_COUNTING         
+#endif
+#ifdef QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
+#   undef QUEX_OPTION_LINE_NUMBER_COUNTING
+#endif
+#ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING          
+$$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING       
+#endif
+#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
+#   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#endif
+
+// -- Mode Transitions:
+//    If the engine was created without the flag '--no-mode-transition-check'
+//    then code for mode transition control is inserted. It can be deactivated
+//    by commenting the following option out.
+#ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+$$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#endif
+#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
+#   undef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#endif
+
+// -- Debugging: 
+//    If the engine was created with the '--debug' flag then it contains 
+//    debugging code. The effect of this code fragments can be turned off
+//    by commenting the following options out.
+#ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
+$$SWITCH$$ QUEX_OPTION_DEBUG_TOKEN_SENDING
+#endif
+#ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING_DISABLED
+#   undef QUEX_OPTION_DEBUG_TOKEN_SENDING
+#endif
+#ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+$$SWITCH$$ QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#endif
+#ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS_DISABLED
+#   undef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#endif
+#ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+$$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+#endif
+#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES_DISABLED
+#   undef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
+#endif
+
+// -- Include Stack Support:
+//    Easy handling of include files/streams via 'push' and 'pop'
+//    Turn this off, if you do not use 'inclusion' in your files and
+//    you want to save some bytes.
+#ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+$$SWITCH$$ QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#endif
+#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
+#   undef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#endif
+
+#ifndef     QUEX_SETTING_BUFFER_SIZE
+#    define QUEX_SETTING_BUFFER_SIZE  ((size_t)65536)
+#endif
+#ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
+#    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
+#endif
+#ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
+#    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#endif
+
+$$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+//
+#ifdef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED_DISABLED
+#   undef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+#endif
+//   If one mode requires indentation support, then the lexical analyser
+//   class must be setup for indentation counting. The following flag is
+//   defined or undefined by the lexical analyser generator quex.
+$$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+//
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DISABLED
+#   undef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#endif
+//   Quex can determine whether certain handlers are not used at all.
+//   If so, computation time can be spared and quex comments the following
+//   options out.
+$$SWITCH$$ __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+#ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
+#   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+#endif
+$$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+#ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
+#   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+#endif
+$$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
+#   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#endif
+#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#    ifndef     QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE
+#        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE ((size_t)65536)
+#    endif
+#endif
+
+// 
+//   Begin of line pre-condition introduces an extra flag in the buffer
+//   structure. Only out-comment this in case of tough memory restrictions,
+//   if no begin of line pre-condition is required.
+$$SWITCH$$ __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
+#   undef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#endif
+
+namespace quex {
+    class $$LEXER_CLASS_NAME$$;
+
+$$LEX_ID_DEFINITIONS$$
+}    
+
+typedef int QUEX_ANALYSER_RETURN_TYPE;
+// CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
+//                 a character. This is independent of the coding (ASCII, WinArabic, ...)
+// LEXEME_CHARACTER_TYPE: Type that results in an appropriate type for string handling
+//                        functions such as 'strlen', 'ststr', 'atoi', etc.
+//
+// Both character types are clearly related, because they are supposed to relate to the 
+// same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
+// belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
+// accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
+//
+// NOTE: If in parallel another engine is built with other bytes per character settings,
+//       then the engines will also include their own header with their own definition
+//       of QUEX_CHARACTER_TYPE, and QUEX_LEXEME_TYPE. Thus there is no danger at all. 
+//       Templatifying the lexer would be possible, but the author has in mind to bring out
+//       a 'pure C' version of the quex generated engine. Thus templating would make this 
+//       goal harder achievable.
+typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;        
+typedef $$QUEX_LEXEME_TYPE$$     QUEX_LEXEME_CHARACTER_TYPE;        
+// IConv Coding Name for the internally used character coding. 
+//   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
+//   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
+//      e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
+const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "$$CORE_ENGINE_CHARACTER_CODING$$";
+
+// NOTE: The original design of the core engine was independent of quex's global
+//       mode oriented design. The author thinks this is a good idea, because then
+//       the analyzer functions can still used easily in isolation from the rest
+//       of the engine. They can be a starting point for an even more improved
+//       post-hand coded lexical analyzer or for embedded systems where memory
+//       resrictions are tough. THUS: We communicate the class name to the analyzer
+//       functions via a macro and NOT via traits or anything like that.
+typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
+#define __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
+
+#ifdef  __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
+#   include<quex/code_base/core_engine/definitions-plain-memory.h>
+#else
+#   ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#       include<quex/code_base/buffer/iconv/fixed_size_character_stream>
+#   endif
+#   include<quex/code_base/buffer/plain/fixed_size_character_stream>
+#   include<quex/code_base/buffer/buffer>
+#   include<quex/code_base/core_engine/definitions-quex-buffer.h>
+#endif
+
+#include <quex/code_base/token_queue>
+// Quex/User
+#include "$$TOKEN_ID_DEFINITION_FILE$$"
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
+
+
+// RETURN: _____________________________________________________________________
+//
+//  -- Return from pattern action to the function that called the
+//     lexer - but only in case that the token stack was filled.
+//
+//     QUEX core: If not, the analyser function automatically jumps to the 
+//                initial state. This happens through a little trick,
+//                were 'break' jumps to the goto statement that guides
+//                to the entry point of the state machine that is
+//                currently active.
+//
+//     This is very handy, when dealing with functions that not
+//     necessarily fill the token queue, such as push_pure_text_token().
+//     If no pure text appeared, the stack is empty after this function
+//     call. Similar things happen with table patterns.
+//
+//  -- Note, that at some point in time End of File <<EOF>> will
+//     hit the token stack, so the lexing won't continue infinitly.
+//     
+//
+#define RETURN                                                                   \
+   if( self._token_queue->is_empty() ) { CONTINUE; }                             \
+   else {                                                                        \
+        /* since return happens voluntarily, no check for mode change will be */ \
+        /* necessary.                                                         */ \
+        self.__previous_mode_p = self.__current_mode_p;                          \
+        return self._token_queue->top()->type_id();                              \
+   }
+
+
+$$LEXER_DERIVED_CLASS_DECL$$
+
+// User defined header content. _________________________________________________
+//
+// This is pasted after the definitions, such that the user can make use of them.
+$$USER_DEFINED_HEADER$$
+
+namespace quex {
+
+    struct quex_mode {  
+        int          id;
+        const char*  name;
+        $$LEXER_CLASS_NAME$$* the_lexer;
+
+        QUEX_ANALYSER_RETURN_TYPE (*analyser_function)($$LEXER_CLASS_NAME$$*);
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        void (*on_indentation)($$LEXER_CLASS_NAME$$*, const int Indentation);
+#endif
+        void (*on_entry)($$LEXER_CLASS_NAME$$*, const quex_mode* FromMode);
+        void (*on_exit)($$LEXER_CLASS_NAME$$*, const quex_mode* ToMode);
+#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
+        bool (*has_base)(const quex_mode* Mode);
+        bool (*has_entry_from)(const quex_mode* Mode);
+        bool (*has_exit_to)(const quex_mode* Mode);
+#endif
+    };
+    
+    extern QUEX_ANALYSER_RETURN_TYPE
+    $$LEXER_CLASS_NAME$$_uncallable_analyser_function($$LEXER_CLASS_NAME$$*);
+    extern void
+    $$LEXER_CLASS_NAME$$_on_indentation_null_function($$LEXER_CLASS_NAME$$*, const int);
+    extern void
+    $$LEXER_CLASS_NAME$$_on_entry_exit_null_function($$LEXER_CLASS_NAME$$*, const quex_mode*);
+
+$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
+
+    class $$LEXER_CLASS_NAME$$ :
+        protected QUEX_CORE_ANALYSER_STRUCT {
+
+        /* DISABLED */ $$LEXER_CLASS_NAME$$();
+        /* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);
+
+    public:
+        $$LEXER_CLASS_NAME$$(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
+        $$LEXER_CLASS_NAME$$(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
+        $$LEXER_CLASS_NAME$$(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0);
+
+        virtual ~$$LEXER_CLASS_NAME$$();
+        //
+        // -- token stream: read next token
+        $$TOKEN_CLASS$$::id_type   get_token();
+        $$TOKEN_CLASS$$::id_type   get_token($$TOKEN_CLASS$$*  result_p);
+        void                       get_token($$TOKEN_CLASS$$** result_pp);
+        
+        //
+        // (*) Mode handling
+        //
+        //     -- modes: read access
+        quex_mode&    mode();
+        const int     mode_id() const;
+        const char*   mode_name() const;
+        //
+        //     -- modes: changing lexical analysis mode
+        void        set_mode_brutally(const int        LexerMode);
+        void        set_mode_brutally(const quex_mode& Mode);
+        //
+        void        operator<<(const int MODE_ID);               // not to be used in concatination
+        void        operator<<(/* NOT const*/ quex_mode& Mode);  // not to be used in concatination
+        //
+        void        pop_mode();
+        void        pop_drop_mode();
+        void        push_mode(quex_mode& new_mode);
+        //
+        void        enter_mode(/* NOT const*/ quex_mode& TargetMode);
+        //
+        //     -- map: mode id to mode and vice versa
+        quex_mode&  map_mode_id_to_mode(const int        ModeID);       
+        const int   map_mode_to_mode_id(const quex_mode& Mode) const;
+
+        // (*) buffers
+        template <class InputHandle> 
+        quex::buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
+                                                         const char*  IConvInputCodingName = 0x0);
+        //
+        // (*) Token sending
+        void        send(const $$TOKEN_CLASS$$& That);
+        void        send(const $$TOKEN_CLASS$$::id_type TokenID);
+        void        send_n(const int N, const $$TOKEN_CLASS$$::id_type TokenID);
+        template <typename ContentT> 
+        void        send(const $$TOKEN_CLASS$$::id_type TokenID, ContentT Content);
+        //
+        // (*) Version information
+        const char* version() const; // created by quex for version/date information
+
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+        struct memento {
+            quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
+            QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
+            QUEX_MODE_FUNCTION_P     current_mode_analyser_function_p;
+            bool                     continue_analysis_after_adapting_mode_function_p_f;
+#           ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+            int                      begin_of_line_f; 
+#           endif
+#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+            int     indentation;
+            bool    indentation_count_enabled_f;
+            bool    indentation_event_enabled_f;
+#           endif
+#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            int     column_number_at_end;           // column after current pattern
+#           endif
+#           ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+            int     line_number_at_end;             // line after current pattern
+#           endif
+        };
+        std::vector<memento>  _include_stack;
+
+        template <class InputHandle> 
+        void   include_stack_push(InputHandle*, const int MODE_ID = -1, 
+                                  const char* IConvInputCodingName = 0x0);
+        template <class InputHandle> 
+        void   include_stack_push(InputHandle*, const quex_mode&,
+                                  const char* IConvInputCodingName = 0x0);
+        bool   include_stack_pop();
+
+        // handle with extreme care:
+        void   _reset();
+
+     private:
+        template <class InputHandle> 
+        void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+                                    const char* IConvInputCodingName);
+#   endif   
+
+#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+    private: 
+        int  _line_number_at_begin;   // line where current pattern starts
+        int  _line_number_at_end;     // line after current pattern
+    public:  
+        int  line_number() const          { return line_number_at_begin(); }
+        int  line_number_at_begin() const { return _line_number_at_begin; }
+        int  line_number_at_end() const   { return _line_number_at_end; }
+#   endif
+
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    private: 
+        int  _column_number_at_begin;  // column where current pattern starts
+        int  _column_number_at_end;   // column after current pattern
+    public:  
+        int  column_number() const          { return column_number_at_begin(); }
+        int  column_number_at_begin() const { return _column_number_at_begin; }
+        int  column_number_at_end() const   { return _column_number_at_end; }
+#   endif
+
+        //________________________________________________________________________________
+        // Post Categorization of Lexemes:
+        //
+        // Particular patterns may trigger a particular token type which is defined
+        // during the parsing process: example 'units' in safertex. imagine the
+        // user defined a new unit 'mB' for milli Bernoulli or whatsoever. the token
+        // action 'identifier' can compare the content against the tokens and find, that
+        // it has to send a TOKEN_UNIT_IDENTIFIER instead of a normal TOKEN_IDENTIFIER
+        //
+        // NOTE: This map has to be used inside an action, such as for {IDENTIFIER}.
+        //       The lexer itself will **not** react to any tokens entered here.
+        //
+        //       Inside the actions use:
+        //
+        //              int token_id = map_post_defined_lexeme_to_token_id(yytext);
+        //              if( token_id == -1 ) ... no known lexeme to be post-categorized.
+        //
+        //       in order to find out, if the identifier belongs to a certain type.
+        //       the return value is the token id of this identifier type. if it is
+        //       equal to '-1' then no post defined lexeme exists.
+        //________________________________________________________________________________
+        struct post_categorizer_tag {
+            void             enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
+            $$TOKEN_CLASS$$::id_type  get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
+        private:
+            std::map<std::string, int>  lexeme_to_token_id_map;
+        } post_categorizer;
+
+        // (*) pure text accumulation and flushing
+        struct ACCUMULATOR_tag {
+            // text buffer that eats **non-alien letters** until something 
+            // occurs that makes a pure text token out of it.
+            // (this can be a paragraph delimiter, or a command)
+            ACCUMULATOR_tag($$LEXER_CLASS_NAME$$* lex) 
+                : _the_lexer(lex) { _accumulated_text.reserve(1024); }
+            void  flush(const $$TOKEN_CLASS$$::id_type TokenID);
+            void  clear();
+            void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
+            void  add(const QUEX_LEXEME_CHARACTER_TYPE);
+
+        private:
+#    ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+            int  _begin_line;
+#    endif
+#    ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            int  _begin_column;
+#    endif
+            std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>  _accumulated_text;
+            $$LEXER_CLASS_NAME$$*                          _the_lexer;     
+        };
+
+    private:
+        // (*) Helper
+        //      -- put whole pattern back into the 'stream to be lexed'
+        void  move_forward(const size_t);
+        void  move_backward(const size_t);
+
+        //      -- functions computing the current line and column number
+        void  count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+        void  count_NoNewline(const int LexemeLength);
+        void  count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
+                                const int        LineNIncrement);
+
+#    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
+        void  count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
+        void  count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+        void  count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement);
+        void  count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement);
+
+        void  __count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
+                                      QUEX_CHARACTER_TYPE* Begin,
+                                      QUEX_CHARACTER_TYPE* End, 
+                                      const bool       LicenseToCountF);
+
+        void  __count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration, 
+                                                         QUEX_CHARACTER_TYPE* Begin,
+                                                         QUEX_CHARACTER_TYPE* End,
+                                                         const bool       LicenseToCountF);
+#    endif 
+        void  __count_assert_consistency();
+
+        void  __count_shift_end_values_to_start_values();
+
+        void  __count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
+                                          QUEX_CHARACTER_TYPE* Begin);
+
+        QUEX_CHARACTER_TYPE* __count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
+                                                                QUEX_CHARACTER_TYPE* End,
+                                                                const int    LexemeLength,
+                                                                const bool   LicenseToIncrementLineCountF=false);
+
+        //      -- include events (a file is included)
+        void virtual on_include(const char* Filename) {}
+        void virtual on_include_exit() {}
+
+        // (*) Mode database: allows to match from 'lex mode id' to a real mode object.
+        //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
+        //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
+        //      to quex's start mode.)
+        quex_mode*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
+    public:
+$$MODE_OBJECT_MEMBERS$$
+    private:
+        // -- keeping track of the currently active mode
+        //    Inside analyzer function of a mode, it is possible that the analyzer
+        //    does not return immediately after a mode has been set. I.e. it calls
+        //    CONTINUE. In this case, it needs to be checked wether the return has
+        //    to be forced. The caller, can then call the newly setup analyzer function
+        //    from where the current one has been called --- see get_token().
+        quex_mode*   __current_mode_p;
+        quex_mode*   __previous_mode_p;
+        // -- with the quex core engine(s) each mode has a dedicated analyser function.
+        //    (with the flex core engine, modes were modelled as start conditions
+        //     of a single engine)
+        //    The function pointer to the currently active mode's function is located in 
+        //    the base class QUEX_CORE_ANALYSER_STRUCT
+        //
+    private:
+        // (*) mode stack allows for pushing and popping of lexical analysis modes
+        std::vector<quex_mode*>   _mode_stack;
+
+        // (*) The Token Queue ___________________________________________________________
+        //
+        // Any time a token is created, it is pushed on the token queue. Lexical analysis
+        // only happens if stack is empty, so that it is filled up again.
+    //
+    // NOTE: A token stack is necessary whenever tokens are created that do not
+    //       relate directly to patterns. A token stack gives the great possibility
+    //       to 'send' tokens from anywhere inside an action or a state transition.
+    // 
+    //       Otherwise, one would be restricted to sending one token by pattern.        
+        //
+        token_queue<$$TOKEN_CLASS$$>*   _token_queue;
+        // (*) All Modes are Friends _____________________________________________________
+$$MODE_CLASS_FRIENDS$$  
+    // (*) User defined Friends ______________________________________________________
+$$LEXER_CLASS_FRIENDS$$
+    // (*) User's Lexer Class Body Extenstion ________________________________________
+$$CLASS_BODY_EXTENSION$$
+
+    public:
+    // (*) Who and what am I ? _______________________________________________________
+        $$LEXER_DERIVED_CLASS_NAME$$&  self;
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        // (*) Python-like indentation support ___________________________________________
+    private:    
+        int     _indentation;                 // number of columns to first non-whitespace
+        //                                    // in the current line.
+        bool    _indentation_count_enabled_f; // count whitespace for indentation?
+        bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
+    public:
+        void    disable_next_indentation_event() { _indentation_event_enabled_f = false; }
+#endif 
+
+    protected:
+        // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
+        ACCUMULATOR_tag     accumulator;
+
+    private:
+        void __debug_print_transition(quex_mode* Source, quex_mode* Target);
+
+        // (*) Common core of all constructors ___________________________________________
+        template <class InputHandleP> 
+        void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
+
+#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+        // (*) Translation buffer ________________________________________________________
+        // Iconv requires an intermediate buffer to read data into, before it can trans-
+        // late it into a target character coding format. However, if there are more than
+        // one input buffer, they could all use the same iconv translation buffer, since
+        // they do not translate at the same time.
+        uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
+#endif
+    };
+
+#   define CLASS $$LEXER_CLASS_NAME$$
+
+    inline
+    CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 0x0 */)
+    : 
+        // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+        // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+        self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
+        accumulator(this)
+    {
+        // Buffer: Size = (see macro def.), Fallback = 10 Characters
+        // prefer FILE* based buffers, because we can turn low-level buffering off.
+        // ownership of FILE* id passed to the input strategy of the buffer
+        std::FILE* fh = std::fopen(Filename.c_str(), "r");
+        if( fh == NULL ) throw std::runtime_error("Error on attempt to open specified file.");
+        setbuf(fh, 0);   // turn off system based buffering!
+        //               // this is essential to profit from the quex buffer!
+        __constructor_core(fh, IConvInputCodingName);
+    }
+
+    inline
+    CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* = 0x0 */)
+    :
+        // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+        // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+        self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
+        accumulator(this)
+    {
+        if( p_input_stream == NULL ) throw std::runtime_error("Error: received NULL as pointer to input stream.");
+        __constructor_core(p_input_stream, IConvInputCodingName);
+    }
+
+    inline
+    CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
+    : 
+        self(*(($$LEXER_DERIVED_CLASS_NAME$$*)this)),
+        accumulator(this)
+    {
+        if( fh == NULL ) throw std::runtime_error("Error: received NULL as a file handle.");
+        setbuf(fh, 0);   // turn off system based buffering!
+        //               // this is essential to profit from the quex buffer!
+        __constructor_core(fh, IConvInputCodingName);
+    }
+ 
+    template <class InputHandle> inline
+    quex::buffer<QUEX_CHARACTER_TYPE>*
+    CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName /* = 0x0 */)
+    {
+        fixed_size_character_stream<QUEX_CHARACTER_TYPE>*  is = 0x0;
+
+        if( IConvInputCodingName != 0x0 ) {
+#           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+            is = new  fixed_size_character_stream_iconv<InputHandle, QUEX_CHARACTER_TYPE>
+                           (input_handle, 
+                            iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
+                            IConvInputCodingName,     QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
+
+#           else
+            return 0x0;
+#           endif
+        }
+        else {
+            is = new fixed_size_character_stream_plain<InputHandle, QUEX_CHARACTER_TYPE>(input_handle);
+        }
+        return new buffer<QUEX_CHARACTER_TYPE>(is, QUEX_SETTING_BUFFER_SIZE, QUEX_SETTING_BUFFER_FALLBACK_SIZE,
+                                               /* buffer limit code = */ (QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$);
+    }
+
+    template <class InputHandleP> inline void
+    CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
+    {
+        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        _indentation = 0;
+        _indentation_count_enabled_f = false;
+        _indentation_event_enabled_f = true;
+#endif
+
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        _line_number_at_begin = 0;
+        _line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        _column_number_at_begin = 0;
+        _column_number_at_end   = 1; 
+#endif
+        _token_queue = new token_queue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+
+        mode_db[0] = 0x0;
+        // LexModeID = 0 is not used, mode indices from 1 to ModeN
+$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
+
+        set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
+
+        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
+        //                                     // pattern actions
+        __continue_analysis_after_adapting_mode_function_p_f = false;
+
+$$CONSTRUCTOR_EXTENSTION$$
+    }   
+
+    inline
+    CLASS::~CLASS() 
+    {
+        QUEX_CORE_ANALYSER_STRUCT::__buffer->close_input();
+        delete QUEX_CORE_ANALYSER_STRUCT::__buffer;
+        delete _token_queue;
+    }
+
+    inline void
+    CLASS::get_token($$TOKEN_CLASS$$** result_pp) 
+        // NOTE: As long as the 'get_token()' function is not called there is nothing
+        //       happening to the token in the queue. But, a parser very probably
+        //       does a couple af calls to 'get_token()' before a rule triggers 
+        //       and data structures can be stored.
+        //
+        // ARGUMENTS:
+        //     result_p  points to memory where token information has to be stored.
+        // TIP:
+        //     result_p could point into the token queue directly (TODO), if a limit 
+        //     number can be defined so that the token queue does not overwrite it, as
+        //     long as the parser is chewing on it.
+        //
+        // RETURNS:
+        //    Token-ID of the currently read token.
+        //    Token-ID = '$$TOKEN_CLASS$$::ID_UNITIALIZED' is returned in 
+        //               case that no  token could be read.
+    {
+        // The framework / constructor **should** ensure that at this point the two
+        // pointers are identical. Since this function is called very often the
+        // assignment of safety (prev=current) is not done. Instead, we only check
+        // (as long as NDEBUG is not defined) that the framework assigns the variables
+        // propperly.
+        __quex_assert( self.__previous_mode_p == self.__current_mode_p );
+        
+        // (i) tokens are in queue --> take next token from stack
+        if( _token_queue->is_empty() == false ) {
+            // DEBUG    
+            *result_pp = _token_queue->quick_pop();
+            return;
+        }
+    
+        // token queue is empty 
+        //    --> enter yylex() (if engine is produced by flex) or
+        //        mode specific engine (if engine was produced by quex)
+        //        to get the next token on the stack.
+        do {
+            __current_mode_analyser_function_p(this);
+
+            // In case a mode change happend inside the pattern actions, the function is forced
+            // to return (see end of analyzer function at REENTRY label). If the tokenstack is
+            // non-empty, we return to the caller (spare one check). If its empty the analyzer
+            // function (which has recently been setup) is called again.
+            //
+            if( __continue_analysis_after_adapting_mode_function_p_f ) {
+                __continue_analysis_after_adapting_mode_function_p_f = false;
+                continue;
+            }
+            else if( _token_queue->is_empty() ) {
+                throw std::runtime_error("Empty token stack after CONTINUE.");
+            }
+            break;
+            
+        } while( 1 + 1 == 2 );
+
+        *result_pp = _token_queue->quick_pop();
+        return;
+    }
+
+    inline $$TOKEN_CLASS$$::id_type
+    CLASS::get_token($$TOKEN_CLASS$$* result_p) 
+    {
+        $$TOKEN_CLASS$$* tmp = 0x0;
+        get_token(&tmp);
+        *result_p = *tmp;
+        return result_p->type_id();
+    }
+
+    inline quex_mode&
+    CLASS::mode() 
+    { return *__current_mode_p; }
+    
+    inline const int
+    CLASS::mode_id() const
+    { return __current_mode_p->id; }
+    
+    inline const char*
+    CLASS::mode_name() const
+    { return __current_mode_p->name; }
+
+    inline void
+    CLASS::set_mode_brutally(const int ModeID)
+    { set_mode_brutally(*(mode_db[ModeID])); }
+
+    inline void 
+    CLASS::set_mode_brutally(const quex_mode& Mode) 
+    { 
+        __current_mode_p                   = (quex_mode*)&Mode;
+        __current_mode_analyser_function_p = Mode.analyser_function; 
+    }
+
+    inline void
+    CLASS::__debug_print_transition(quex_mode* Source,
+                                                   quex_mode* Target)
+    {
+#   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        std::cerr << "line = " << line_number_at_begin() << std::endl;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        std::cerr << "column = " << column_number_at_begin() << std::endl;
+#       endif
+        std::cerr << "FromMode: " << Source->name << " ToMode: " << Target.Name << std::endl;
+#   endif
+    }
+    
+    inline void    
+    CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) {
+                                     /* NOT const */ quex_mode& SourceMode = mode();
+  
+        /* To be optimized aways if its function body is empty (see above) */
+        __debug_print_transition(&SourceMode, &TargetMode);  
+
+#   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
+        SourceMode.on_exit(this, &TargetMode);
+#   endif
+        set_mode_brutally(TargetMode.id);
+
+#   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
+        TargetMode.on_entry(this, &SourceMode);         
+#   endif
+    }
+
+    inline void 
+    CLASS::operator<<(const int ModeID) 
+    { enter_mode(map_mode_id_to_mode(ModeID)); }
+
+    inline void 
+    CLASS::operator<<(/* NOT const*/ quex_mode& Mode) 
+    { enter_mode(Mode); }
+
+
+    inline void 
+    CLASS::pop_mode() 
+    { 
+        __quex_assert(_mode_stack.size() != 0);
+        quex_mode* tmp; 
+        tmp = _mode_stack.back(); 
+        _mode_stack.pop_back(); 
+        enter_mode(*tmp); 
+    }
+
+    inline void
+    CLASS::pop_drop_mode() 
+    { 
+        __quex_assert(_mode_stack.size() != 0);
+        _mode_stack.pop_back(); // do not care about what was popped
+    }
+        
+    inline void       
+    CLASS::push_mode(quex_mode& new_mode) 
+    { 
+        _mode_stack.push_back(&(mode())); 
+        enter_mode(new_mode); 
+    }
+
+
+    inline quex_mode&
+    CLASS::map_mode_id_to_mode(const int ModeID)
+    { 
+        __quex_assert(ModeID >= 0);
+        __quex_assert(ModeID < $$MAX_MODE_CLASS_N$$ + 1); // first mode is unused by quex
+        return *(mode_db[ModeID]); 
+    }
+
+    inline const int  
+    CLASS::map_mode_to_mode_id(const quex_mode& Mode) const
+    { return Mode.id; }
+
+    inline const char* 
+    CLASS::version() const
+    { 
+        return "$$LEXER_CLASS_NAME$$: Version $$LEXER_BUILD_VERSION$$. Date $$LEXER_BUILD_DATE$$\n"
+               "Generated by Quex $$QUEX_VERSION$$";
+    }
+
+    inline void    
+    CLASS::move_forward(const size_t Distance)
+    {
+        this->__buffer->move_forward(Distance);
+    }
+
+    inline void    
+    CLASS::move_backward(const size_t Distance)
+    {
+        this->__buffer->move_backward(Distance);
+    }
+
+// NOTE: Member function count_line_column(...) functions exist in two
+//       versions: 
+//           -- lexical analysis with python indentation support
+//           -- lexical analysis without python indentation support
+//                
+$$COUNT_LINE_COLUMN_IMPLEMENTATION$$
+
+#ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING
+#   define __QUEX_DEBUG_TOKEN_SENDING \
+        std::cerr << "$$LEXER_CLASS_NAME$$::send " << *(_token_queue->top()) << std::endl;
+#else
+#   define __QUEX_DEBUG_TOKEN_SENDING /* nothing */
+#endif
+
+    inline void   
+    CLASS::send(const $$TOKEN_CLASS$$& That) {
+        _token_queue->push(That);
+        __QUEX_DEBUG_TOKEN_SENDING;
+    }
+    inline void   
+    CLASS::send(const $$TOKEN_CLASS$$::id_type ID) {
+        _token_queue->push(ID);
+        __QUEX_DEBUG_TOKEN_SENDING;
+    }
+    inline void   
+    CLASS::send_n(const int N, $$TOKEN_CLASS$$::id_type ID) {
+        __quex_assert(N > 0);
+        for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
+    }
+
+    template <typename ContentT>
+    inline void   
+    CLASS::send(const $$TOKEN_CLASS$$::id_type ID, ContentT Content) {
+        _token_queue->push(ID, Content);
+        __QUEX_DEBUG_TOKEN_SENDING;
+    }
+
+#undef __QUEX_DEBUG_TOKEN_SENDING
+
+
+
+/*
+    // (*) utilities for string triming
+    //
+    //     NOTE: Any better linker should be able to inline the 
+    //           condition functions, so do not worry about the 
+    //           function pointers.
+    inline void
+    trim_rear(QUEX_LEXEME_CHARACTER_TYPE*     text, 
+              const int Length,
+              int       (*condition)(const QUEX_CHARACTER_TYPE))
+        // PURPOSE:
+        //    Inserts a terminating zero after the first letter where a
+        //    condition hold. This is useful, for example, if strings have 
+        //    to be created and whitespace at borders shall not take space.
+        //
+        //    The length of the text may already been determined. Pass Length,
+        //    so no call to strlen is necessary here.
+        //
+        // text       = text to be parsed for condition
+        // Length     = Length of the string
+        // condition  = pointer to function that checks for condition
+        //              return 1 = condition holds
+        //              return 0 = condition does not hold
+        //              (examples: the functions isspace(..), islower(..)
+        //                         from standard <ctype.h> header)
+    {
+        QUEX_LEXEME_CHARACTER_TYPE* p = text + Length - 1;
+        for(; p > text && (*condition)(*p); --p);
+        *(++p) = '\0'; // terminating zero
+    }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim_front(QUEX_LEXEME_CHARACTER_TYPE* text, 
+               int   (*condition)(const QUEX_CHARACTER_TYPE))
+        // PURPOSE:
+        //    Like insert_term_zero_after_condition(...) treating the string
+        //    from front to back (i.e. vice versa). Does not insert terminating
+        //    zero, but returns the pointer to the first non-whitespace.
+        //
+        // RETURNS:
+        //    pointer to first character that is not whitespace.
+        //
+    {       
+        QUEX_LEXEME_CHARACTER_TYPE* p = text; 
+        for(; *p && (*condition)(*p); ++p);
+        return p;
+    }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim(QUEX_LEXEME_CHARACTER_TYPE*     text, 
+         const int Length,
+         int       (*condition)(const QUEX_CHARACTER_TYPE))
+        // PURPOSE:
+        //    Delivers a string that has no whitespace at front and none at end.
+        //    For example, the string "  hello world!    " becomes "hello world!".
+        //
+        //    The length of the text may already been determined, so no call
+        //    to strlen is necessary here.
+        //
+        // ARGUMENTS:
+        //    text      = text to be trimmed. 
+        //    Length    = length of the original string.
+        //    condition = condition function
+        //
+        // ATTENTION: The same memory of text is used for the return value. 
+        //            But, it is modified! The content of 'text' may not
+        //            be the same after this function call, since a terminating
+        //            zero is forced after the last non-whitespace character.
+        //
+        // RETURNS:
+        //    Pointer to the first non-whitespace character of text. At the
+        //    end of the last non-whitespace character, there is going to be
+        //    a '\0' determining the string border.
+        //
+    { trim_rear(text, Length, condition); return trim_front(text, condition); }
+
+    inline void
+    trim_rear(QUEX_LEXEME_CHARACTER_TYPE* text, const int Length)
+    { trim_rear(text, Length, &isspace); }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim_front(QUEX_LEXEME_CHARACTER_TYPE* text)
+    { trim_front(text, &isspace); }
+
+    inline const QUEX_LEXEME_CHARACTER_TYPE*
+    trim(QUEX_LEXEME_CHARACTER_TYPE* text, const int Length)
+    { return trim(text, Length, &isspace); }
+*/
+
+    inline void
+    CLASS::ACCUMULATOR_tag::flush(const $$TOKEN_CLASS$$::id_type TokenID)
+    {
+        if( _accumulated_text.length() == 0 ) return;
+
+        _the_lexer->send(TokenID, _accumulated_text.c_str());
+        _accumulated_text = std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>();
+    }
+
+
+    inline void
+    CLASS::ACCUMULATOR_tag::clear()
+    {
+        if( _accumulated_text.length() == 0 ) return;
+        _accumulated_text = std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>();
+    }
+
+    inline void 
+    CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE* ToBeAppended)
+    { 
+        if( _accumulated_text.length() == 0 ) {
+#     ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            _begin_column = _the_lexer->column_number_at_begin();
+#     endif
+#     ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+            _begin_line   = _the_lexer->line_number_at_begin();
+#     endif
+        }
+        _accumulated_text += ToBeAppended; 
+    }
+
+
+    inline void 
+    CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE ToBeAppended)
+    { 
+
+#       if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
+           defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
+        if( _accumulated_text.length() == 0 ) {
+#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            _begin_column = _the_lexer->column_number_at_begin();
+#           endif
+#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+            _begin_line   = _the_lexer->line_number_at_begin();
+#           endif
+        }
+#       endif
+
+        _accumulated_text += ToBeAppended; 
+    }
+
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    template <class InputHandle> inline void    
+    CLASS::include_stack_push(InputHandle*      new_input_handle_p, 
+                              const quex_mode&  mode, 
+                              const char*       IConvInputCodingName /* = 0x0 */)
+    {
+        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+        __include_stack_push(new_input_handle_p, mode.analyser_function, IConvInputCodingName);
+    }
+    template <class InputHandle> inline void    
+    CLASS::include_stack_push(InputHandle*   new_input_handle_p, 
+                              const int      MODE_ID /* = -1 */, 
+                              const char*    IConvInputCodingName /* = 0x0 */)
+    {
+        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+        __quex_assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < $$MAX_MODE_CLASS_N$$ + 1));
+        if( MODE_ID == -1 ) 
+            __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName); 
+        else
+            __include_stack_push(new_input_handle_p, mode_db[MODE_ID]->analyser_function, IConvInputCodingName);
+    }
+    template <class InputHandle> inline void    
+    CLASS::__include_stack_push(InputHandle*         new_input_handle_p, 
+                              QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
+                              const char*          IConvInputCodingName)
+    {
+        __quex_assert(StartModeAnalyzerFunction != 0x0);
+        __quex_assert(new_input_handle_p != 0x0);
+        // IConvInputCodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
+
+        _include_stack.push_back(CLASS::memento());
+        CLASS::memento&  current = _include_stack.back();
+        
+        // (1) saving the current state of the lexical analyzer (memento pattern)
+        current.buffer_p = this->__buffer;
+        current.char_covered_by_terminating_zero = this->char_covered_by_terminating_zero;
+        current.current_mode_analyser_function_p = this->__current_mode_analyser_function_p ;
+        current.continue_analysis_after_adapting_mode_function_p_f = \
+                                  this->__continue_analysis_after_adapting_mode_function_p_f;
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        current.begin_of_line_f = this->begin_of_line_f; 
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        current.indentation                 = this->_indentation;
+        current.indentation_count_enabled_f = this->_indentation_count_enabled_f;
+        current.indentation_event_enabled_f = this->_indentation_event_enabled_f;
+#       endif
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        current.line_number_at_end   = this->_line_number_at_end;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        current.column_number_at_end = this->_column_number_at_end;
+#       endif
+
+        // (2) initializing the new state of the lexer for reading the new input file/stream
+        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(new_input_handle_p, IConvInputCodingName);
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        _indentation                 = 0;
+        _indentation_count_enabled_f = false;
+        _indentation_event_enabled_f = true;
+#endif
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        _line_number_at_begin = 0;
+        _line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        _column_number_at_begin = 0;
+        _column_number_at_end   = 1; 
+#endif
+    }   
+
+    inline bool
+    CLASS::include_stack_pop() 
+    {
+        if( _include_stack.empty() ) return false;
+
+        CLASS::memento&  previous = _include_stack.back();
+
+        delete this->__buffer;
+        this->__buffer = previous.buffer_p;
+
+        this->char_covered_by_terminating_zero    = previous.char_covered_by_terminating_zero;
+        this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;
+        this->__continue_analysis_after_adapting_mode_function_p_f = \
+                                previous.continue_analysis_after_adapting_mode_function_p_f;
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        this->begin_of_line_f = previous.begin_of_line_f; 
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        this->_indentation                 = previous.indentation;
+        this->_indentation_count_enabled_f = previous.indentation_count_enabled_f;
+        this->_indentation_event_enabled_f = previous.indentation_event_enabled_f;
+#       endif
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        this->_line_number_at_end   = previous.line_number_at_end;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        this->_column_number_at_end = previous.column_number_at_end;
+#       endif
+
+        _include_stack.pop_back();
+
+        return true;
+    }
+#   endif
+
+    inline void
+    CLASS::_reset()
+    {
+        // NOTE: We do not create a new buffer here, since we assume that it has been created
+        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, /* use same current buffer */0x0, 
+                                       mode_db[$$INITIAL_LEXER_MODE_ID$$]->analyser_function);
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        _indentation = 0;
+        _indentation_count_enabled_f = false;
+        _indentation_event_enabled_f = true;
+#endif
+#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        _line_number_at_begin = 0;
+        _line_number_at_end   = 1;
+#endif
+#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        _column_number_at_begin = 0;
+        _column_number_at_end   = 1; 
+#endif
+        // empty the token queue
+        this->_token_queue->reset();
+
+        set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
+
+        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
+        //                                     // pattern actions
+        __continue_analysis_after_adapting_mode_function_p_f = false;
+
+        // Reset the buffer
+        this->__buffer->_reset();
+    }
+
+#undef CLASS
+
+}
+
+#endif // __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
