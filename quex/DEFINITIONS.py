@@ -20,7 +20,7 @@
 import os
 import sys
 
-QUEX_VERSION = '0.25.5'
+QUEX_VERSION = '0.25.6'
 
 try:
     QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
@@ -56,7 +56,8 @@ def check():
         sys.exit(-1)
 
     # -- Check for version 2.4 or higher
-    if sys.version_info[0] < 2 or sys.version_info[1] < 4:
+    if sys.version_info[0] < 2 or \
+       (sys.version_info[0] == 2 and sys.version_info[1] < 4):
         print "error: Quex requires Python version 2.4 or higher. Detected version '%i.%i'." % \
               (sys.version_info[0], sys.version_info[1])
         print "error: Please, visit http://www.python.org and download an appropriate release."
