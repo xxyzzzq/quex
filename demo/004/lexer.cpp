@@ -6,18 +6,18 @@
 
 using namespace std;
 
-float     benchmark(std::FILE*, const size_t FileSize, float* repetition_n);
+double     benchmark(std::FILE*, const size_t FileSize, double* repetition_n);
 
-float     overhead(std::FILE*, 
+double     overhead(std::FILE*, 
                    const int SimulatedFileSize, const size_t SimulatedTokenN, 
-                   const float RepetitionN);
+                   const double RepetitionN);
 
 // report.c:
 size_t    get_file_size(const char*);
 void      print_date_string();
 size_t    count_token_n(std::FILE*);
-float     report(clock_t StartTime, float RepetitionN, size_t FileSize, size_t CharacterSize);
-void      final_report(float TimePerRun, float RefTimePerRun, const char* Filename, size_t FileSize, size_t TokenN, float RepetitionN);
+double     report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
+void      final_report(double TimePerRun, double RefTimePerRun, const char* Filename, size_t FileSize, size_t TokenN, double RepetitionN);
 
 int 
 main(int argc, char** argv) 
@@ -37,11 +37,11 @@ main(int argc, char** argv)
     fseek(fh, 0, SEEK_SET);
     const size_t FileSize = get_file_size(argv[1]);
     fseek(fh, 0, SEEK_SET);
-    float        repetition_n;
-    const float  TimePerRun = benchmark(fh, FileSize, &repetition_n);
+    double        repetition_n;
+    const double  TimePerRun = benchmark(fh, FileSize, &repetition_n);
     fseek(fh, 0, SEEK_SET);
     /* Measure the overhead of the measurement */
-    const float  RefTimePerRun = overhead(fh, FileSize, TokenN, repetition_n);
+    const double  RefTimePerRun = overhead(fh, FileSize, TokenN, repetition_n);
 
     final_report(TimePerRun, RefTimePerRun, argv[1], FileSize, TokenN, repetition_n);
     return 0;
@@ -68,8 +68,8 @@ void __PRINT_END() { }
 void __PRINT_TOKEN(const char* TokenName, quex::c_lexer*) { }
 #endif
 
-float
-benchmark(std::FILE* fh, const size_t FileSize, float* repetition_n)
+double
+benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 {
     using namespace std;
     quex::token*   TokenP;
@@ -124,14 +124,14 @@ benchmark(std::FILE* fh, const size_t FileSize, float* repetition_n)
     return report(StartTime, *repetition_n, FileSize, /* CharacterSize = 1 */ 1);
 }
 
-float 
+double 
 overhead(std::FILE* fh,
-         const int SimulatedFileSize, const size_t SimulatedTokenN, const float RepetitionN)
+         const int SimulatedFileSize, const size_t SimulatedTokenN, const double RepetitionN)
 {
     // This function is supposed to perform all 'frame' operations, but not the
     // analyzer function. This is to estimate the overhead implied by the test program.
     const clock_t StartTime = clock();
-    float         repetition_n = 0.0;
+    double        repetition_n = 0.0;
     int           checksum = 0;
     //
     quex::c_lexer* qlex = new quex::c_lexer(fh);
