@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O2
+OPTIMIZATION = -O3
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -55,21 +55,14 @@ LD = $(COMPILER)
 
 # (*) RULES ____________________________________________________________________
 #    lexer    --> application w/o line or column counting
-#    lexer-l  --> application w/ line counting
 #    lexer-lc --> application w/ line and column counting
-all: lexer lexer-l lexer-lc
+all: lexer lexer-lc
 
 # -- application
 lexer-lc: $(SOURCE_FILES)
 	$(CC) \
         -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
         -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
-		$(SOURCE_FILES) -o $@
-
-lexer-l: $(SOURCE_FILES)
-	$(CC) \
-        -DQUEX_OPTION_LINE_NUMBER_COUNTING            \
-        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
 		$(SOURCE_FILES) -o $@
 
 lexer: $(SOURCE_FILES)
