@@ -74,10 +74,10 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
     using namespace std;
     quex::token*   TokenP;
     //
-    // -- repeat the experiment, so that it takes at least 5 seconds
+    // -- repeat the experiment, so that it takes at least 20 seconds
     const clock_t  StartTime = clock();
 #   ifdef QUEX_BENCHMARK_SERIOUS
-    const clock_t  MinExperimentTime = 10 * CLOCKS_PER_SEC + StartTime;
+    const clock_t  MinExperimentTime = 20 * CLOCKS_PER_SEC + StartTime;
 #   else
     const clock_t  MinExperimentTime = StartTime;
 #   endif
