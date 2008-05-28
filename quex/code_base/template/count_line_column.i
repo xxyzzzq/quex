@@ -12,15 +12,18 @@
 //       last end, such as _line_number_at_begin = _line_number_at_end.
 //       This has to happen outside these functions.
 
-inline void 
-CLASS::__count_assert_consistency()
-{
-    __quex_assert(_line_number_at_begin   <= _line_number_at_end);
-    // if line number remained the same, then the column number **must** have increased.
-    // there is not pattern of a length less than 1
-    __quex_assert(_line_number_at_begin != _line_number_at_end || 
-                  _column_number_at_begin <  _column_number_at_end);
-}
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()
+    {
+        __quex_assert(_line_number_at_begin   <= _line_number_at_end);
+        // if line number remained the same, then the column number **must** have increased.
+        // there is not pattern of a length less than 1
+        __quex_assert(_line_number_at_begin != _line_number_at_end || 
+                      _column_number_at_begin <  _column_number_at_end);
+    }
+#else
+#   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()
+#endif
 
 inline void             
 CLASS::__count_shift_end_values_to_start_values() 
@@ -61,7 +64,7 @@ CLASS::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     __count_newline_n_backwards(it, Begin);
 #   endif
 
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 #endif
 }
 
@@ -74,7 +77,7 @@ CLASS::count_NoNewline(const int LexemeLength)
     _column_number_at_end += LexemeLength;
 #   endif
 
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 inline void  
@@ -93,7 +96,7 @@ CLASS::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
                                        LexemeLength,
                                        /* LicenseToIncrementLineCountF = */ false);
 #   endif
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 

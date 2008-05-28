@@ -71,6 +71,8 @@ CLASS::~CLASS()
 {
     QUEX_CORE_ANALYSER_STRUCT::__buffer->close_input();
     delete QUEX_CORE_ANALYSER_STRUCT::__buffer;
+#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     delete _token_queue;
+#   endif
 }
 

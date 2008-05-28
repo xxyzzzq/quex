@@ -140,7 +140,7 @@ CLASS::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, End, 
                                                /* LicenseToIncrementLineCountF = */ true);
 
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 
@@ -181,7 +181,7 @@ CLASS::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     // whitespace at the beginning of this pattern to the _indentation.
     __count_whitespace_to_first_non_whitespace(Begin, Begin, End, /* LicenseToIncrementLineCountF = */ false);
 
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 inline void  
@@ -195,7 +195,7 @@ CLASS::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncre
         _indentation_count_enabled_f = false; 
         mode().on_indentation(this, _indentation);
     }
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 inline void  
@@ -207,7 +207,7 @@ CLASS::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement)
 #   endif
     if( _indentation_count_enabled_f ) _indentation += ColumnNIncrement;
 
-    __count_assert_consistency();
+    __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 inline void

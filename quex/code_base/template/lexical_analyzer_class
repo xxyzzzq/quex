@@ -86,8 +86,13 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
 #    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
 #endif
-#ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
-#    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+$$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#endif
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
+#       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#   endif
 #endif
 
 $$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
@@ -182,7 +187,10 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #   include<quex/code_base/core_engine/definitions-quex-buffer.h>
 #endif
 
-#include <quex/code_base/token_queue>
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   include <quex/code_base/token_queue>
+#endif
+
 // Quex/User
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
@@ -208,14 +216,18 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 //     hit the token stack, so the lexing won't continue infinitly.
 //     
 //
-#define RETURN                                                                   \
-   if( self._token_queue->is_empty() ) { CONTINUE; }                             \
-   else {                                                                        \
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#   define RETURN                                                                \
+    if( self._token_queue->is_empty() ) { CONTINUE; }                            \
+    else {                                                                       \
         /* since return happens voluntarily, no check for mode change will be */ \
         /* necessary.                                                         */ \
         self.__previous_mode_p = self.__current_mode_p;                          \
         return self._token_queue->top()->type_id();                              \
    }
+#else
+#   define RETURN  return
+#endif
 
 
 $$LEXER_DERIVED_CLASS_DECL$$
@@ -268,10 +280,12 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         virtual ~$$LEXER_CLASS_NAME$$();
         //
         // -- token stream: read next token
+#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         $$TOKEN_CLASS$$::id_type   get_token();
+#else
         $$TOKEN_CLASS$$::id_type   get_token($$TOKEN_CLASS$$*  result_p);
         void                       get_token($$TOKEN_CLASS$$** result_pp);
-        
+#endif   
         //
         // (*) Mode handling
         //
@@ -505,7 +519,11 @@ $$MODE_OBJECT_MEMBERS$$
         // 
         //       Otherwise, one would be restricted to sending one token by pattern.        
         //
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         token_queue<$$TOKEN_CLASS$$>*   _token_queue;
+#else
+#       $$TOKEN_CLASS$$                 _token;
+#endif
 
         // (*) All Modes are Friends _____________________________________________________
 $$MODE_CLASS_FRIENDS$$  
@@ -572,7 +590,9 @@ $$CLASS_BODY_EXTENSION$$
         _column_number_at_begin = 0;
         _column_number_at_end   = 1; 
 #endif
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new token_queue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+#endif
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -601,13 +621,18 @@ $$CONSTRUCTOR_EXTENSTION$$
 #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID $$INITIAL_LEXER_MODE_ID$$
 
 #   include <quex/code_base/template/constructor.i>
+#   include <quex/code_base/template/count_line_column.i>
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #      include <quex/code_base/template/count_line_column-with-indentation.i>
 #   endif
-#   include <quex/code_base/template/count_line_column.i>
 #
-#   include <quex/code_base/template/token_receiving_via_queue.i>
-#   include <quex/code_base/template/token_sending_via_queue.i>
+#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#      include <quex/code_base/template/token_receiving_via_queue.i>
+#      include <quex/code_base/template/token_sending_via_queue.i>
+#   else
+#      include <quex/code_base/template/token_receiving_via_singleton.i>
+#      include <quex/code_base/template/token_sending_via_singleton.i>
+#   endif
 #   include <quex/code_base/template/mode_handling.i>
 #   include <quex/code_base/template/accumulator.i>
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT

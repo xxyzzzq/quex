@@ -22,6 +22,12 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 	    _number_ = Number where the numeric values for the token-ids start
 	    to count. DEFAULT = `"10000"`
 
+`--token-queue`::
+
+        Enables the sending of tokens via a queue. Note, this can be a little
+        slower than commicating tokens via a single global token structure. 
+        However, it may allow more elegant solutions in particular cases.
+
 `--token-id-termination` _number_::
         
 	    _number_ = Token identifier for the event of 'end of token stream'.

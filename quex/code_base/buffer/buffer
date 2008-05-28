@@ -157,18 +157,6 @@ namespace quex {
             character_type*  end_of_file_p() { return _end_of_file_p; }
             void             show_brief_content(); 
             void             x_show_content(); 
-#    ifdef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS
-            void             SHOW_BUFFER_LOAD(const char*);
-#    else
-            void             SHOW_BUFFER_LOAD(const char*) { }
-#    endif
-#else
-            void             SHOW_BUFFER_LOAD(const char*) { }
-#endif
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-            void             ASSERT_CONSISTENCY();
-#else
-            void             ASSERT_CONSISTENCY() { }
 #endif
         };    
 

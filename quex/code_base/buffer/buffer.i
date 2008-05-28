@@ -8,6 +8,46 @@
 #include <quex/code_base/buffer/fixed_size_character_stream>
 
 namespace quex {
+#   ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#       define  QUEX_BUFFER_ASSERT_CONSISTENCY()                                             \
+        {                                                                                    \
+            /* NOTE: No assumptions can be made in general on the relation between    */     \
+            /*       _current_p and _lexeme_start_p, since for forwards lexing        */     \
+            /*       _current_p comes before _lexeme_start_p, wherelse for back-      */     \
+            /*       ward lexing this is vice versa.                                  */     \
+            /*       See "code_base/core_engine/definitions-quex-buffer.h"            */     \
+            __quex_assert(_buffer.front()    <  _buffer.back());                             \
+            __quex_assert(_current_p         >= _buffer.front());                            \
+            __quex_assert(_lexeme_start_p    >= _buffer.front());                            \
+            __quex_assert(*(_buffer.front()) == CLASS::BLC );                                \
+            __quex_assert(*(_buffer.back())  == CLASS::BLC );                                \
+            if( _end_of_file_p == 0x0 ) {                                                    \
+                __quex_assert(_current_p      <= _buffer.back());                            \
+                __quex_assert(_lexeme_start_p <= _buffer.back());                            \
+            } else {                                                                         \
+                __quex_assert(_current_p      <= _end_of_file_p);                            \
+                __quex_assert(_lexeme_start_p <= _end_of_file_p);                            \
+                /**/                                                                         \
+                __quex_assert(_end_of_file_p  >= content_front());                           \
+                __quex_assert(_end_of_file_p  <= _buffer.back());                            \
+                /**/                                                                         \
+                __quex_assert(*_end_of_file_p == CLASS::BLC);                                \
+            }                                                                                \
+        }
+#   else
+#      define  QUEX_BUFFER_ASSERT_CONSISTENCY()  /* empty */
+#   endif
+
+#   if defined(__QUEX_OPTION_UNIT_TEST) && defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS)
+#      define QUEX_BUFFER_SHOW_BUFFER_LOAD(InfoStr)   \
+        {                                 \
+            std::cout << InfoStr << "\n"; \
+            show_content();               \
+        }
+#   else
+#      define QUEX_BUFFER_SHOW_BUFFER_LOAD(InfoStr) /* empty */
+#   endif
+
 #   define TEMPLATE_IN  template<class CharacterCarrierType> inline
 #   define CLASS        buffer<CharacterCarrierType>   
 
@@ -83,7 +123,7 @@ namespace quex {
         on_overflow = 0x0;
         // TODO: on_overflow = default_buffer_on_overflow_handler<CharacterCarrierType>;
 
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
     TEMPLATE_IN CLASS::~buffer() 
@@ -107,15 +147,15 @@ namespace quex {
     //       check for end of buffer is necessary => speed up.
     TEMPLATE_IN  int CLASS::get_forward()  
     { 
-        ASSERT_CONSISTENCY(); 
+        QUEX_BUFFER_ASSERT_CONSISTENCY(); 
         __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.front());
         __quex_assert(_current_p >= _lexeme_start_p - 1);
-        // '*_end_of_file_p == BLC' is checked in ASSERT_CONSISTENCY()
+        // '*_end_of_file_p == BLC' is checked in QUEX_BUFFER_ASSERT_CONSISTENCY()
         return *(++_current_p); 
     }
     TEMPLATE_IN  int CLASS::get_backward() 
     { 
-        ASSERT_CONSISTENCY(); 
+        QUEX_BUFFER_ASSERT_CONSISTENCY(); 
         __quex_assert(*_current_p != CLASS::BLC || _current_p == _buffer.back() || _current_p == _end_of_file_p);
         // NOTE: __quex_assert(me->__buffer->current_p() < me->__buffer->get_lexeme_start_p());
         //       Does not make sense here, since the macro may be used for backward input
@@ -146,7 +186,7 @@ namespace quex {
         //
         // RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
         //          '-1'     if forward loading was not possible (end of file)
-        SHOW_BUFFER_LOAD("LOAD FORWARD(entry)");
+        QUEX_BUFFER_SHOW_BUFFER_LOAD("LOAD FORWARD(entry)");
 
         // (*) Check for the three possibilities mentioned above
         if     ( _current_p == _buffer.front() ) { return 0; }       // (1)
@@ -166,7 +206,7 @@ namespace quex {
         //        Since we know from above, that we did not reach end of file, it can be assumed
         //        that the _end_of_file_p == 0x0 (buffer does not contain EOF).
         __quex_assert(_end_of_file_p == 0x0);
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
 
         //___________________________________________________________________________________
         // (1) Fallback: A certain region of the current buffer is copied in front such that
@@ -248,8 +288,8 @@ namespace quex {
         //           reads the _current_p.
         _lexeme_start_p = (_current_p + 1) - MinFallbackN; 
 
-        SHOW_BUFFER_LOAD("LOAD FORWARD(exit)");
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_SHOW_BUFFER_LOAD("LOAD FORWARD(exit)");
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         // NOTE: Return value used for adaptions of memory addresses. The same rule as for
         //       _lexeme_start_p holds for those addresses.
         return LoadN;
@@ -293,8 +333,8 @@ namespace quex {
         // greater than normal (64 Bytes). After all, lexical analysis means
         // to go **mainly forward** and not backwards.
         //
-        SHOW_BUFFER_LOAD("LOAD BACKWARD(entry)");
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_SHOW_BUFFER_LOAD("LOAD BACKWARD(entry)");
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
 
         // (*) Check for the three possibilities mentioned above
         if     ( _current_p == _buffer.back() )  { return 0; }   // (1)
@@ -393,14 +433,14 @@ namespace quex {
         _current_p      += BackwardDistance + 1; 
         _lexeme_start_p += BackwardDistance;
 
-        SHOW_BUFFER_LOAD("LOAD BACKWARD(exit)");
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_SHOW_BUFFER_LOAD("LOAD BACKWARD(exit)");
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         return BackwardDistance;
     }
 
     TEMPLATE_IN  bool  CLASS::is_end_of_file() 
     {
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         // if the end of file pointer is not set, then there is no EOF inside the buffer
         if( _end_of_file_p == 0x0 )        { return false; }
 
@@ -412,7 +452,7 @@ namespace quex {
 
     TEMPLATE_IN  bool  CLASS::is_begin_of_file() 
     {
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         // if buffer does not start at 'begin of file', then there is no way that we're there
         if( _character_index_at_front != 0 ) { return false; }
 
@@ -424,31 +464,31 @@ namespace quex {
 
     TEMPLATE_IN  bool  CLASS::is_begin_of_buffer()
     {
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         return _current_p == _buffer.front();
     }
 
     TEMPLATE_IN  bool  CLASS::is_end_of_buffer()
     {
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         return _current_p == _buffer.back();
     }
 
-    TEMPLATE_IN  void CLASS::set_subsequent_character(const int Value) { ASSERT_CONSISTENCY(); *(_current_p + 1) = Value; }
-    TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)        { _current_p = Adr; ASSERT_CONSISTENCY(); }
+    TEMPLATE_IN  void CLASS::set_subsequent_character(const int Value) { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p + 1) = Value; }
+    TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)        { _current_p = Adr; QUEX_BUFFER_ASSERT_CONSISTENCY(); }
 
     TEMPLATE_IN  typename CLASS::character_type    
         CLASS::get_subsequent_character() 
-        { ASSERT_CONSISTENCY(); return *(_current_p + 1); }
+        { QUEX_BUFFER_ASSERT_CONSISTENCY(); return *(_current_p + 1); }
 
     TEMPLATE_IN  typename CLASS::character_type    
         CLASS::get_current_character() 
-        { ASSERT_CONSISTENCY(); return *_current_p; }
+        { QUEX_BUFFER_ASSERT_CONSISTENCY(); return *_current_p; }
 
     TEMPLATE_IN void CLASS::mark_lexeme_start() 
     { 
         _lexeme_start_p = _current_p + 1;  // pointing to the next character to be read   
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
 
@@ -456,7 +496,7 @@ namespace quex {
     {
         _end_of_file_p  = EOF_p; 
         *_end_of_file_p = CLASS::BLC; 
-        // NOT YET: ASSERT_CONSISTENCY();
+        // NOT YET: QUEX_BUFFER_ASSERT_CONSISTENCY();
         __quex_assert(_end_of_file_p >  _buffer.front());
         __quex_assert(_end_of_file_p <= _buffer.back());
     }
@@ -464,19 +504,19 @@ namespace quex {
     TEMPLATE_IN  void CLASS::__end_of_file_unset()
     {
         _end_of_file_p   = 0x0; 
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
 
     TEMPLATE_IN  typename CLASS::character_type* CLASS::get_lexeme_start_p()
     {
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
         return _lexeme_start_p;
     }
 
     TEMPLATE_IN  typename CLASS::memory_position CLASS::tell_adr()
     {
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
 #       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
         return memory_position_mimiker<CharacterCarrierType>(_current_p, _character_index_at_front);
 #       else
@@ -495,14 +535,14 @@ namespace quex {
 #       else
         _current_p = Adr;
 #       endif
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
     TEMPLATE_IN  void CLASS::seek_offset(const int Offset)
     {
         _current_p += Offset;
 
-        ASSERT_CONSISTENCY();
+        QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
     TEMPLATE_IN  void CLASS::move_forward(const size_t Distance)
@@ -517,19 +557,19 @@ namespace quex {
         // 
         size_t remaining_distance_to_target = Distance;
         while( 1 + 1 == 2 ) {
-            ASSERT_CONSISTENCY();
+            QUEX_BUFFER_ASSERT_CONSISTENCY();
             if( _end_of_file_p != 0x0 ) {
                 if( _current_p + remaining_distance_to_target >= _end_of_file_p ) {
                     _current_p      = _end_of_file_p;
                     _lexeme_start_p = _current_p;
-                    ASSERT_CONSISTENCY();
+                    QUEX_BUFFER_ASSERT_CONSISTENCY();
                     return;
                 } 
             } else {
                 if( _current_p + remaining_distance_to_target < _buffer.back() ) {
                     _current_p      += remaining_distance_to_target;
                     _lexeme_start_p  = _current_p + 1;
-                    ASSERT_CONSISTENCY();
+                    QUEX_BUFFER_ASSERT_CONSISTENCY();
                     return;
                 }
             }
@@ -541,7 +581,7 @@ namespace quex {
 
             // load subsequent segment into buffer
             load_forward();
-            ASSERT_CONSISTENCY();
+            QUEX_BUFFER_ASSERT_CONSISTENCY();
         }
     }
 
@@ -556,12 +596,12 @@ namespace quex {
         // that different input strategies might rely on dynamic character length codings.
         size_t remaining_distance_to_target = Distance;
         while( 1 + 1 == 2 ) {
-            ASSERT_CONSISTENCY();
+            QUEX_BUFFER_ASSERT_CONSISTENCY();
             if( _current_p - remaining_distance_to_target <= content_front() ) {
                 if( *(_buffer.front()) == CLASS::BLC ) {
                     _current_p      = content_front();
                     _lexeme_start_p = content_front() + 1; 
-                    ASSERT_CONSISTENCY();
+                    QUEX_BUFFER_ASSERT_CONSISTENCY();
                     return;
                 }
             }
