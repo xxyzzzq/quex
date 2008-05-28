@@ -3,5 +3,5 @@ warning: using mode 'MODE' as initial mode
 
 Output from constructed header:_______________________________________
 
-(standard input):231:#line 5 "error.qx"
-(standard input):233:#line 233 "Simple"
+(standard input):228:#line 5 "error.qx"
+(standard input):230:#line 230 "Simple"

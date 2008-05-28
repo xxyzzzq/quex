@@ -100,9 +100,6 @@ $$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
 //   defined or undefined by the lexical analyser generator quex.
 $$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 //
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DISABLED
-#   undef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#endif
 //   Quex can determine whether certain handlers are not used at all.
 //   If so, computation time can be spared and quex comments the following
 //   options out.
@@ -606,9 +603,9 @@ $$CONSTRUCTOR_EXTENSTION$$
 #   include <quex/code_base/template/constructor.i>
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #      include <quex/code_base/template/count_line_column-with-indentation.i>
-#   else
-#      include <quex/code_base/template/count_line_column.i>
 #   endif
+#   include <quex/code_base/template/count_line_column.i>
+#
 #   include <quex/code_base/template/token_receiving_via_queue.i>
 #   include <quex/code_base/template/token_sending_via_queue.i>
 #   include <quex/code_base/template/mode_handling.i>

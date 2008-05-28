@@ -54,23 +54,6 @@ def write_engine_header(Modes, Setup):
             indentation_support_f = True
             break
 
-    count_line_column_implementation_file = (Setup.QUEX_TEMPLATE_DB_DIR 
-                                             + "/template/count_line_column.i").replace("//","/")
-    fh_clc = open_file_or_die(count_line_column_implementation_file, Env="QUEX_PATH")
-    count_line_column_implementation_str = fh_clc.read()
-    fh_clc.close()
-
-    if indentation_support_f:  
-        count_line_column_implementation_file = (Setup.QUEX_TEMPLATE_DB_DIR 
-                                                 + "/template/count_line_column-with-indentation.i").replace("//","/")
-
-        fh_clc = open_file_or_die(count_line_column_implementation_file, Env="QUEX_PATH")
-        count_line_column_implementation_str += fh_clc.read()
-        fh_clc.close()
-
-    count_line_column_implementation_str = \
-            count_line_column_implementation_str.replace("$$LEXER_CLASS_NAME$$", LexerClassName)
-
     lex_id_definitions_str = "" 
     # NOTE: First mode-id needs to be '1' for compatibility with flex generated engines
     i = 0
@@ -176,7 +159,6 @@ def write_engine_header(Modes, Setup):
                 ["$$QUEX_CHARACTER_TYPE$$",              quex_character_type_str],
                 ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
-                ["$$COUNT_LINE_COLUMN_IMPLEMENTATION$$", count_line_column_implementation_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get() + "\n"],
              ])
 

@@ -13,11 +13,11 @@ double     overhead(std::FILE*,
                    const double RepetitionN);
 
 // report.c:
-size_t    get_file_size(const char*);
+size_t    get_file_size(const char*, bool SilentF=false);
 void      print_date_string();
 size_t    count_token_n(std::FILE*);
-double     report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
-void      final_report(double TimePerRun, double RefTimePerRun, const char* Filename, size_t FileSize, size_t TokenN, double RepetitionN);
+double    report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
+void      final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* Filename, size_t FileSize, size_t TokenN, double RepetitionN);
 
 int 
 main(int argc, char** argv) 
@@ -43,7 +43,7 @@ main(int argc, char** argv)
     /* Measure the overhead of the measurement */
     const double  RefTimePerRun = overhead(fh, FileSize, TokenN, repetition_n);
 
-    final_report(TimePerRun, RefTimePerRun, argv[1], FileSize, TokenN, repetition_n);
+    final_report(TimePerRun, RefTimePerRun, argv[0], argv[1], FileSize, TokenN, repetition_n);
     return 0;
 } 
 
@@ -58,14 +58,12 @@ void __PRINT_END()
     cout << "| [END] \n";
     cout << "`------------------------------------------------------------------------------------\n";
 }
-void __PRINT_TOKEN(const char* TokenName, quex::c_lexer* qlex) 
-{
-    cout << qlex->line_number() << ": " << TokenName << endl;
-}
+#define __PRINT_TOKEN(TokenP, qlex) \
+    cout << qlex->line_number() << ": " << ->type_id_name() << endl;
 #else 
 void __PRINT_START() { }
 void __PRINT_END() { }
-void __PRINT_TOKEN(const char* TokenName, quex::c_lexer*) { }
+#define __PRINT_TOKEN(TokenP, qlex) /* empty */
 #endif
 
 double
@@ -97,7 +95,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 
             checksum = (checksum + TokenP->type_id()) % 0xFF; 
 
-            __PRINT_TOKEN(TokenP->type_id_name().c_str(), qlex);  /* No Operation, see above */
+            __PRINT_TOKEN(TokenP, qlex);  /* No Operation, see above */
 
             token_n += 1;
         } while( TokenP->type_id() != quex::TKN_TERMINATION );

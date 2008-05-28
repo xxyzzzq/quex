@@ -13,7 +13,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
-#define QUEX_VERSION  "0.25.5"
+#define QUEX_VERSION  "0.25.6"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -102,9 +102,6 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //   defined or undefined by the lexical analyser generator quex.
 // #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 //
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT_DISABLED
-#   undef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#endif
 //   Quex can determine whether certain handlers are not used at all.
 //   If so, computation time can be spared and quex comments the following
 //   options out.
@@ -488,6 +485,7 @@ namespace quex {
     public:
         quex_mode  ONE_AND_ONLY;
 
+
     private:
         // -- keeping track of the currently active mode
         //    Inside analyzer function of a mode, it is possible that the analyzer
@@ -511,14 +509,15 @@ namespace quex {
         //
         // Any time a token is created, it is pushed on the token queue. Lexical analysis
         // only happens if stack is empty, so that it is filled up again.
-    //
-    // NOTE: A token stack is necessary whenever tokens are created that do not
-    //       relate directly to patterns. A token stack gives the great possibility
-    //       to 'send' tokens from anywhere inside an action or a state transition.
-    // 
-    //       Otherwise, one would be restricted to sending one token by pattern.        
+        //
+        // NOTE: A token stack is necessary whenever tokens are created that do not
+        //       relate directly to patterns. A token stack gives the great possibility
+        //       to 'send' tokens from anywhere inside an action or a state transition.
+        // 
+        //       Otherwise, one would be restricted to sending one token by pattern.        
         //
         token_queue<token>*   _token_queue;
+
         // (*) All Modes are Friends _____________________________________________________
         friend     QUEX_ANALYSER_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(Simple*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
@@ -528,13 +527,13 @@ namespace quex {
 #endif
 
   
-    // (*) User defined Friends ______________________________________________________
+        // (*) User defined Friends ______________________________________________________
 
-    // (*) User's Lexer Class Body Extenstion ________________________________________
+        // (*) User's Lexer Class Body Extenstion ________________________________________
 
 
     public:
-    // (*) Who and what am I ? _______________________________________________________
+        // (*) Who and what am I ? _______________________________________________________
         Simple&  self;
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
@@ -570,72 +569,6 @@ namespace quex {
     };
 
 #   define CLASS Simple
-
-    inline
-    CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 0x0 */)
-    : 
-        // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
-        // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-        self(*((Simple*)this)),
-        accumulator(this)
-    {
-        // Buffer: Size = (see macro def.), Fallback = 10 Characters
-        // prefer FILE* based buffers, because we can turn low-level buffering off.
-        // ownership of FILE* id passed to the input strategy of the buffer
-        std::FILE* fh = std::fopen(Filename.c_str(), "r");
-        if( fh == NULL ) throw std::runtime_error("Error on attempt to open specified file.");
-        setbuf(fh, 0);   // turn off system based buffering!
-        //               // this is essential to profit from the quex buffer!
-        __constructor_core(fh, IConvInputCodingName);
-    }
-
-    inline
-    CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* = 0x0 */)
-    :
-        // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
-        // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-        self(*((Simple*)this)),
-        accumulator(this)
-    {
-        if( p_input_stream == NULL ) throw std::runtime_error("Error: received NULL as pointer to input stream.");
-        __constructor_core(p_input_stream, IConvInputCodingName);
-    }
-
-    inline
-    CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
-    : 
-        self(*((Simple*)this)),
-        accumulator(this)
-    {
-        if( fh == NULL ) throw std::runtime_error("Error: received NULL as a file handle.");
-        setbuf(fh, 0);   // turn off system based buffering!
-        //               // this is essential to profit from the quex buffer!
-        __constructor_core(fh, IConvInputCodingName);
-    }
- 
-    template <class InputHandle> inline
-    quex::buffer<QUEX_CHARACTER_TYPE>*
-    CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName /* = 0x0 */)
-    {
-        fixed_size_character_stream<QUEX_CHARACTER_TYPE>*  is = 0x0;
-
-        if( IConvInputCodingName != 0x0 ) {
-#           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-            is = new  fixed_size_character_stream_iconv<InputHandle, QUEX_CHARACTER_TYPE>
-                           (input_handle, 
-                            iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
-                            IConvInputCodingName,     QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
-
-#           else
-            return 0x0;
-#           endif
-        }
-        else {
-            is = new fixed_size_character_stream_plain<InputHandle, QUEX_CHARACTER_TYPE>(input_handle);
-        }
-        return new buffer<QUEX_CHARACTER_TYPE>(is, QUEX_SETTING_BUFFER_SIZE, QUEX_SETTING_BUFFER_FALLBACK_SIZE,
-                                               /* buffer limit code = */ (QUEX_CHARACTER_TYPE)0x0);
-    }
 
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
@@ -688,698 +621,38 @@ namespace quex {
 
     }   
 
-    inline
-    CLASS::~CLASS() 
-    {
-        QUEX_CORE_ANALYSER_STRUCT::__buffer->close_input();
-        delete QUEX_CORE_ANALYSER_STRUCT::__buffer;
-        delete _token_queue;
-    }
-
-    inline void
-    CLASS::get_token(token** result_pp) 
-        // NOTE: As long as the 'get_token()' function is not called there is nothing
-        //       happening to the token in the queue. But, a parser very probably
-        //       does a couple af calls to 'get_token()' before a rule triggers 
-        //       and data structures can be stored.
-        //
-        // ARGUMENTS:
-        //     result_p  points to memory where token information has to be stored.
-        // TIP:
-        //     result_p could point into the token queue directly (TODO), if a limit 
-        //     number can be defined so that the token queue does not overwrite it, as
-        //     long as the parser is chewing on it.
-        //
-        // RETURNS:
-        //    Token-ID of the currently read token.
-        //    Token-ID = 'token::ID_UNITIALIZED' is returned in 
-        //               case that no  token could be read.
-    {
-        // The framework / constructor **should** ensure that at this point the two
-        // pointers are identical. Since this function is called very often the
-        // assignment of safety (prev=current) is not done. Instead, we only check
-        // (as long as NDEBUG is not defined) that the framework assigns the variables
-        // propperly.
-        __quex_assert( self.__previous_mode_p == self.__current_mode_p );
-        
-        // (i) tokens are in queue --> take next token from stack
-        if( _token_queue->is_empty() == false ) {
-            // DEBUG    
-            *result_pp = _token_queue->quick_pop();
-            return;
-        }
-    
-        // token queue is empty 
-        //    --> enter yylex() (if engine is produced by flex) or
-        //        mode specific engine (if engine was produced by quex)
-        //        to get the next token on the stack.
-        do {
-            __current_mode_analyser_function_p(this);
-
-            // In case a mode change happend inside the pattern actions, the function is forced
-            // to return (see end of analyzer function at REENTRY label). If the tokenstack is
-            // non-empty, we return to the caller (spare one check). If its empty the analyzer
-            // function (which has recently been setup) is called again.
-            //
-            if( __continue_analysis_after_adapting_mode_function_p_f ) {
-                __continue_analysis_after_adapting_mode_function_p_f = false;
-                continue;
-            }
-            else if( _token_queue->is_empty() ) {
-                throw std::runtime_error("Empty token stack after CONTINUE.");
-            }
-            break;
-            
-        } while( 1 + 1 == 2 );
-
-        *result_pp = _token_queue->quick_pop();
-        return;
-    }
-
-    inline token::id_type
-    CLASS::get_token(token* result_p) 
-    {
-        token* tmp = 0x0;
-        get_token(&tmp);
-        *result_p = *tmp;
-        return result_p->type_id();
-    }
-
-    inline quex_mode&
-    CLASS::mode() 
-    { return *__current_mode_p; }
-    
-    inline const int
-    CLASS::mode_id() const
-    { return __current_mode_p->id; }
-    
-    inline const char*
-    CLASS::mode_name() const
-    { return __current_mode_p->name; }
-
-    inline void
-    CLASS::set_mode_brutally(const int ModeID)
-    { set_mode_brutally(*(mode_db[ModeID])); }
-
-    inline void 
-    CLASS::set_mode_brutally(const quex_mode& Mode) 
-    { 
-        __current_mode_p                   = (quex_mode*)&Mode;
-        __current_mode_analyser_function_p = Mode.analyser_function; 
-    }
-
-    inline void
-    CLASS::__debug_print_transition(quex_mode* Source,
-                                                   quex_mode* Target)
-    {
-#   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        std::cerr << "line = " << line_number_at_begin() << std::endl;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        std::cerr << "column = " << column_number_at_begin() << std::endl;
-#       endif
-        std::cerr << "FromMode: " << Source->name << " ToMode: " << Target.Name << std::endl;
-#   endif
-    }
-    
-    inline void    
-    CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) {
-                                     /* NOT const */ quex_mode& SourceMode = mode();
-  
-        /* To be optimized aways if its function body is empty (see above) */
-        __debug_print_transition(&SourceMode, &TargetMode);  
-
-#   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-        SourceMode.on_exit(this, &TargetMode);
-#   endif
-        set_mode_brutally(TargetMode.id);
-
-#   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-        TargetMode.on_entry(this, &SourceMode);         
-#   endif
-    }
-
-    inline void 
-    CLASS::operator<<(const int ModeID) 
-    { enter_mode(map_mode_id_to_mode(ModeID)); }
-
-    inline void 
-    CLASS::operator<<(/* NOT const*/ quex_mode& Mode) 
-    { enter_mode(Mode); }
-
-
-    inline void 
-    CLASS::pop_mode() 
-    { 
-        __quex_assert(_mode_stack.size() != 0);
-        quex_mode* tmp; 
-        tmp = _mode_stack.back(); 
-        _mode_stack.pop_back(); 
-        enter_mode(*tmp); 
-    }
-
-    inline void
-    CLASS::pop_drop_mode() 
-    { 
-        __quex_assert(_mode_stack.size() != 0);
-        _mode_stack.pop_back(); // do not care about what was popped
-    }
-        
-    inline void       
-    CLASS::push_mode(quex_mode& new_mode) 
-    { 
-        _mode_stack.push_back(&(mode())); 
-        enter_mode(new_mode); 
-    }
-
-
-    inline quex_mode&
-    CLASS::map_mode_id_to_mode(const int ModeID)
-    { 
-        __quex_assert(ModeID >= 0);
-        __quex_assert(ModeID < 1 + 1); // first mode is unused by quex
-        return *(mode_db[ModeID]); 
-    }
-
-    inline const int  
-    CLASS::map_mode_to_mode_id(const quex_mode& Mode) const
-    { return Mode.id; }
-
     inline const char* 
     CLASS::version() const
     { 
     }
 
-    inline void    
-    CLASS::move_forward(const size_t Distance)
-    {
-        this->__buffer->move_forward(Distance);
-    }
+#   define __QUEX_SETTING_BUFFER_LIMIT_CODE     0x0
+#   define __QUEX_SETTING_DERIVED_CLASS_NAME    Simple
+#   define __QUEX_SETTING_TOKEN_CLASS_NAME      token
+#   define __QUEX_SETTING_MAX_MODE_CLASS_N      1
+#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID LEX_ID_ONE_AND_ONLY
 
-    inline void    
-    CLASS::move_backward(const size_t Distance)
-    {
-        this->__buffer->move_backward(Distance);
-    }
-
-// NOTE: Member function count_line_column(...) functions exist in two
-//       versions: 
-//           -- lexical analysis with python indentation support
-//           -- lexical analysis without python indentation support
-//                
-// -*- C++ -*-   vim: set syntax=cpp:
-// NOTE: Quex is pretty intelligent in choosing the right function
-//       to count line and column numbers. If, for example, a pattern
-//       does not contain newlines, then it simply adds the LexemeLength
-//       to the column number and does not do anything to the line number.
-//       Before touching anything in this code, first look at the generated
-//       code. The author of these lines considers it rather difficult to
-//       find better implementations of these functions in the framework
-//       of the generated engine.  <fschaef 07y6m30d>
-//
-// NOTE: Those functions are not responsible for setting the begin to the
-//       last end, such as _line_number_at_begin = _line_number_at_end.
-//       This has to happen outside these functions.
-
-inline void 
-Simple::__count_assert_consistency()
-{
-    __quex_assert(_line_number_at_begin   <= _line_number_at_end);
-    // if line number remained the same, then the column number **must** have increased.
-    // there is not pattern of a length less than 1
-    __quex_assert(_line_number_at_begin != _line_number_at_end || 
-                  _column_number_at_begin <  _column_number_at_end);
-}
-
-inline void             
-Simple::__count_shift_end_values_to_start_values() 
-{
-#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    _line_number_at_begin   = _line_number_at_end;
+#   include <quex/code_base/template/constructor.i>
+#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#      include <quex/code_base/template/count_line_column-with-indentation.i>
 #   endif
-#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    _column_number_at_begin = _column_number_at_end;
-#   endif
-}
-
-
-inline void    
-Simple::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-                            const int        LexemeLength)
-// PURPOSE:
-//   Adapts the column number and the line number according to the newlines
-//   and letters of the last line occuring in the lexeme.
-//
-// NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
-//       there is no newline in the lexeme (see below).
-//
-////////////////////////////////////////////////////////////////////////////////
-{
-    __quex_assert( LexemeLength > 0 );
-#if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
-    ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
-    return;
-#else
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
-    QUEX_CHARACTER_TYPE* it = __count_chars_to_newline_backwards(Begin, Begin + LexemeLength, LexemeLength,
-                                                             /* LicenseToIncrementLineCountF = */ true);
-
-#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    // The last function may have digested a newline (*it == '\n'), but then it 
-    // would have increased the _line_number_at_end.
-    __count_newline_n_backwards(it, Begin);
-#   endif
-
-    __count_assert_consistency();
-#endif
-}
-
-inline void  
-Simple::count_NoNewline(const int LexemeLength) 
-{
-    __quex_assert( LexemeLength > 0 );
-
-#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    _column_number_at_end += LexemeLength;
-#   endif
-
-    __count_assert_consistency();
-}
-
-inline void  
-Simple::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-                                        const int           LexemeLength, 
-                                        const int           LineNIncrement) 
-{
-    __quex_assert( LexemeLength > 0 );
-#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    _line_number_at_end += LineNIncrement;
-#   endif
-
-#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    __count_chars_to_newline_backwards((QUEX_CHARACTER_TYPE*)Lexeme, 
-                                       (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength), 
-                                       LexemeLength,
-                                       /* LicenseToIncrementLineCountF = */ false);
-#   endif
-    __count_assert_consistency();
-}
-
-
-inline void
-Simple::__count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
-                                                  QUEX_CHARACTER_TYPE* Begin)
-// NOTE: If *it == '\n' this function does **not** count it. The user must
-//       have increased the _line_number_at_end by hisself. This happens
-//       for performance reasons.
-{
-#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    // investigate remaining part of the lexeme, i.e. before the last newline
-    // (recall the lexeme is traced from the rear)
-    while( it != Begin ) {
-        --it;
-        if( *it == '\n' ) ++_line_number_at_end; 
-    }         
-#   endif
-}
-
-inline QUEX_CHARACTER_TYPE*
-Simple::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
-                                                         QUEX_CHARACTER_TYPE* End,
-                                                         const int        LexemeLength,
-                                                         const bool       LicenseToIncrementLineCountF /*=false*/)
-// RETURNS: Pointer to the first newline or the beginning of the lexeme.
-//
-// This function increases _line_number_at_end if a newline occurs and 
-// LicenseToIncrementLineCountF = true.
-//
-// NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
-//       from the following function or implemented unconditionally, since the decision
-//       is based, then on a condition of a constant (either true or false) -- once the 
-//       function has been inlined.   
-//
-// NOTE: Quex writes a call to this function only, if there **is** a potential
-//       newline in the lexeme. Otherwise, it adds the fixed pattern length
-//       or the LexemeLength directly.
-{
-#if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
-    ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
-    return 0x0;
-#else
-    __quex_assert(Begin >= __buffer->content_front());
-    __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
-    __quex_assert(Begin < End);                       // LexemeLength >= 1
-
-    // loop from [End] to [Begin]:
-    //
-    //        [Begin]xxxxxxxxxxxxxxxxxxxxxxxxxx\n
-    //     \n
-    //     \n xxxxxxxxxxxxxxxxxxxxxxxx[End]
-    //               <---------
-    //
-    QUEX_CHARACTER_TYPE* it = End - 1;
-    for(; *it != '\n' ; --it) {
-        if( it == Begin ) {
-            // -- in case NO newline occurs, the column index is to be INCREASED 
-            //    by the length of the string -1, since counting starts at zero
-            // -- _column_number_at_begin = _column_number_at_end - LexemeLength (just take the old one)
-#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end += LexemeLength;
-#           endif
-            return it;
-        }
-    }
-#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    // -- in case that newline occurs, the column index is equal to
-    //    the number of letters from newline to end of string
-    _column_number_at_end = End - it;
-#   endif
-#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    if( LicenseToIncrementLineCountF ) ++_line_number_at_end;
-#   endif
-    return it;
-#endif
-}
-
-
-#ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING
-#   define __QUEX_DEBUG_TOKEN_SENDING \
-        std::cerr << "Simple::send " << *(_token_queue->top()) << std::endl;
-#else
-#   define __QUEX_DEBUG_TOKEN_SENDING /* nothing */
-#endif
-
-    inline void   
-    CLASS::send(const token& That) {
-        _token_queue->push(That);
-        __QUEX_DEBUG_TOKEN_SENDING;
-    }
-    inline void   
-    CLASS::send(const token::id_type ID) {
-        _token_queue->push(ID);
-        __QUEX_DEBUG_TOKEN_SENDING;
-    }
-    inline void   
-    CLASS::send_n(const int N, token::id_type ID) {
-        __quex_assert(N > 0);
-        for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
-    }
-
-    template <typename ContentT>
-    inline void   
-    CLASS::send(const token::id_type ID, ContentT Content) {
-        _token_queue->push(ID, Content);
-        __QUEX_DEBUG_TOKEN_SENDING;
-    }
-
-#undef __QUEX_DEBUG_TOKEN_SENDING
-
-
-
-/*
-    // (*) utilities for string triming
-    //
-    //     NOTE: Any better linker should be able to inline the 
-    //           condition functions, so do not worry about the 
-    //           function pointers.
-    inline void
-    trim_rear(QUEX_LEXEME_CHARACTER_TYPE*     text, 
-              const int Length,
-              int       (*condition)(const QUEX_CHARACTER_TYPE))
-        // PURPOSE:
-        //    Inserts a terminating zero after the first letter where a
-        //    condition hold. This is useful, for example, if strings have 
-        //    to be created and whitespace at borders shall not take space.
-        //
-        //    The length of the text may already been determined. Pass Length,
-        //    so no call to strlen is necessary here.
-        //
-        // text       = text to be parsed for condition
-        // Length     = Length of the string
-        // condition  = pointer to function that checks for condition
-        //              return 1 = condition holds
-        //              return 0 = condition does not hold
-        //              (examples: the functions isspace(..), islower(..)
-        //                         from standard <ctype.h> header)
-    {
-        QUEX_LEXEME_CHARACTER_TYPE* p = text + Length - 1;
-        for(; p > text && (*condition)(*p); --p);
-        *(++p) = '\0'; // terminating zero
-    }
-
-    inline const QUEX_LEXEME_CHARACTER_TYPE*
-    trim_front(QUEX_LEXEME_CHARACTER_TYPE* text, 
-               int   (*condition)(const QUEX_CHARACTER_TYPE))
-        // PURPOSE:
-        //    Like insert_term_zero_after_condition(...) treating the string
-        //    from front to back (i.e. vice versa). Does not insert terminating
-        //    zero, but returns the pointer to the first non-whitespace.
-        //
-        // RETURNS:
-        //    pointer to first character that is not whitespace.
-        //
-    {       
-        QUEX_LEXEME_CHARACTER_TYPE* p = text; 
-        for(; *p && (*condition)(*p); ++p);
-        return p;
-    }
-
-    inline const QUEX_LEXEME_CHARACTER_TYPE*
-    trim(QUEX_LEXEME_CHARACTER_TYPE*     text, 
-         const int Length,
-         int       (*condition)(const QUEX_CHARACTER_TYPE))
-        // PURPOSE:
-        //    Delivers a string that has no whitespace at front and none at end.
-        //    For example, the string "  hello world!    " becomes "hello world!".
-        //
-        //    The length of the text may already been determined, so no call
-        //    to strlen is necessary here.
-        //
-        // ARGUMENTS:
-        //    text      = text to be trimmed. 
-        //    Length    = length of the original string.
-        //    condition = condition function
-        //
-        // ATTENTION: The same memory of text is used for the return value. 
-        //            But, it is modified! The content of 'text' may not
-        //            be the same after this function call, since a terminating
-        //            zero is forced after the last non-whitespace character.
-        //
-        // RETURNS:
-        //    Pointer to the first non-whitespace character of text. At the
-        //    end of the last non-whitespace character, there is going to be
-        //    a '\0' determining the string border.
-        //
-    { trim_rear(text, Length, condition); return trim_front(text, condition); }
-
-    inline void
-    trim_rear(QUEX_LEXEME_CHARACTER_TYPE* text, const int Length)
-    { trim_rear(text, Length, &isspace); }
-
-    inline const QUEX_LEXEME_CHARACTER_TYPE*
-    trim_front(QUEX_LEXEME_CHARACTER_TYPE* text)
-    { trim_front(text, &isspace); }
-
-    inline const QUEX_LEXEME_CHARACTER_TYPE*
-    trim(QUEX_LEXEME_CHARACTER_TYPE* text, const int Length)
-    { return trim(text, Length, &isspace); }
-*/
-
-    inline void
-    CLASS::ACCUMULATOR_tag::flush(const token::id_type TokenID)
-    {
-        if( _accumulated_text.length() == 0 ) return;
-
-        _the_lexer->send(TokenID, _accumulated_text.c_str());
-        _accumulated_text = std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>();
-    }
-
-
-    inline void
-    CLASS::ACCUMULATOR_tag::clear()
-    {
-        if( _accumulated_text.length() == 0 ) return;
-        _accumulated_text = std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>();
-    }
-
-    inline void 
-    CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE* ToBeAppended)
-    { 
-        if( _accumulated_text.length() == 0 ) {
-#     ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _begin_column = _the_lexer->column_number_at_begin();
-#     endif
-#     ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-            _begin_line   = _the_lexer->line_number_at_begin();
-#     endif
-        }
-        _accumulated_text += ToBeAppended; 
-    }
-
-
-    inline void 
-    CLASS::ACCUMULATOR_tag::add(const QUEX_LEXEME_CHARACTER_TYPE ToBeAppended)
-    { 
-
-#       if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
-           defined(QUEX_OPTION_LINE_NUMBER_COUNTING)
-        if( _accumulated_text.length() == 0 ) {
-#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _begin_column = _the_lexer->column_number_at_begin();
-#           endif
-#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-            _begin_line   = _the_lexer->line_number_at_begin();
-#           endif
-        }
-#       endif
-
-        _accumulated_text += ToBeAppended; 
-    }
-
+#   include <quex/code_base/template/count_line_column.i>
+#
+#   include <quex/code_base/template/token_receiving_via_queue.i>
+#   include <quex/code_base/template/token_sending_via_queue.i>
+#   include <quex/code_base/template/mode_handling.i>
+#   include <quex/code_base/template/accumulator.i>
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-    template <class InputHandle> inline void    
-    CLASS::include_stack_push(InputHandle*      new_input_handle_p, 
-                              const quex_mode&  mode, 
-                              const char*       IConvInputCodingName /* = 0x0 */)
-    {
-        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-        __include_stack_push(new_input_handle_p, mode.analyser_function, IConvInputCodingName);
-    }
-    template <class InputHandle> inline void    
-    CLASS::include_stack_push(InputHandle*   new_input_handle_p, 
-                              const int      MODE_ID /* = -1 */, 
-                              const char*    IConvInputCodingName /* = 0x0 */)
-    {
-        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-        __quex_assert(MODE_ID == -1 || (MODE_ID >= 1 && MODE_ID < 1 + 1));
-        if( MODE_ID == -1 ) 
-            __include_stack_push(new_input_handle_p, __current_mode_analyser_function_p, IConvInputCodingName); 
-        else
-            __include_stack_push(new_input_handle_p, mode_db[MODE_ID]->analyser_function, IConvInputCodingName);
-    }
-    template <class InputHandle> inline void    
-    CLASS::__include_stack_push(InputHandle*         new_input_handle_p, 
-                              QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
-                              const char*          IConvInputCodingName)
-    {
-        __quex_assert(StartModeAnalyzerFunction != 0x0);
-        __quex_assert(new_input_handle_p != 0x0);
-        // IConvInputCodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
-
-        _include_stack.push_back(CLASS::memento());
-        CLASS::memento&  current = _include_stack.back();
-        
-        // (1) saving the current state of the lexical analyzer (memento pattern)
-        current.buffer_p = this->__buffer;
-        current.char_covered_by_terminating_zero = this->char_covered_by_terminating_zero;
-        current.current_mode_analyser_function_p = this->__current_mode_analyser_function_p ;
-        current.continue_analysis_after_adapting_mode_function_p_f = \
-                                  this->__continue_analysis_after_adapting_mode_function_p_f;
-#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        current.begin_of_line_f = this->begin_of_line_f; 
-#       endif
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-        current.indentation                 = this->_indentation;
-        current.indentation_count_enabled_f = this->_indentation_count_enabled_f;
-        current.indentation_event_enabled_f = this->_indentation_event_enabled_f;
-#       endif
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        current.line_number_at_end   = this->_line_number_at_end;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        current.column_number_at_end = this->_column_number_at_end;
-#       endif
-
-        // (2) initializing the new state of the lexer for reading the new input file/stream
-        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(new_input_handle_p, IConvInputCodingName);
-        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
-
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        _indentation                 = 0;
-        _indentation_count_enabled_f = false;
-        _indentation_event_enabled_f = true;
-#endif
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        _line_number_at_begin = 0;
-        _line_number_at_end   = 1;
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_begin = 0;
-        _column_number_at_end   = 1; 
-#endif
-    }   
-
-    inline bool
-    CLASS::include_stack_pop() 
-    {
-        if( _include_stack.empty() ) return false;
-
-        CLASS::memento&  previous = _include_stack.back();
-
-        delete this->__buffer;
-        this->__buffer = previous.buffer_p;
-
-        this->char_covered_by_terminating_zero    = previous.char_covered_by_terminating_zero;
-        this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;
-        this->__continue_analysis_after_adapting_mode_function_p_f = \
-                                previous.continue_analysis_after_adapting_mode_function_p_f;
-#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        this->begin_of_line_f = previous.begin_of_line_f; 
-#       endif
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-        this->_indentation                 = previous.indentation;
-        this->_indentation_count_enabled_f = previous.indentation_count_enabled_f;
-        this->_indentation_event_enabled_f = previous.indentation_event_enabled_f;
-#       endif
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        this->_line_number_at_end   = previous.line_number_at_end;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        this->_column_number_at_end = previous.column_number_at_end;
-#       endif
-
-        _include_stack.pop_back();
-
-        return true;
-    }
+#      include <quex/code_base/template/include_stack.i>
 #   endif
+#   include <quex/code_base/template/misc.i>
 
-    inline void
-    CLASS::_reset()
-    {
-        // NOTE: We do not create a new buffer here, since we assume that it has been created
-        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, /* use same current buffer */0x0, 
-                                       mode_db[LEX_ID_ONE_AND_ONLY]->analyser_function);
-
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        _indentation = 0;
-        _indentation_count_enabled_f = false;
-        _indentation_event_enabled_f = true;
-#endif
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        _line_number_at_begin = 0;
-        _line_number_at_end   = 1;
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_begin = 0;
-        _column_number_at_end   = 1; 
-#endif
-        // empty the token queue
-        this->_token_queue->reset();
-
-        set_mode_brutally(LEX_ID_ONE_AND_ONLY);
-
-        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
-        //                                     // pattern actions
-        __continue_analysis_after_adapting_mode_function_p_f = false;
-
-        // Reset the buffer
-        this->__buffer->_reset();
-    }
-
-#undef CLASS
+#   undef __QUEX_SETTING_BUFFER_LIMIT_CODE
+#   undef __QUEX_SETTING_DERIVED_CLASS_NAME
+#   undef __QUEX_SETTING_TOKEN_CLASS_NAME
+#   undef __QUEX_SETTING_MAX_MODE_CLASS_N
+#   undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#   undef CLASS
 
 }
 

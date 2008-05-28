@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Mon May 26 21:17:55 2008">
+<test-database execution-time-sec="0.00" date="Wed May 28 05:52:55 2008">
     <last-used-diff-display-program name="vimdiff"/>
     <group name="fschaef">
         <test title="1952747 TKN_TERMINATION" time-sum-sec="0.00"> 
@@ -80,7 +80,7 @@
         <test title="1895066" time-sum-sec="0.00"> 
             <application file-name="bug-1895066.sh" info-request-time="1203220067L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-2031933991"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-146732786"/>
             </choice-list>
         </test>
         <test title="1902175 invalid escape in character set expression crashes 0.21.12" time-sum-sec="0.00"> 
@@ -164,7 +164,7 @@
         <test title="1885304 Problems with files with DOS CR/LF line endings" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1202435682L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1969959989"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1938197153"/>
             </choice-list>
         </test>
         <test title="1905768" time-sum-sec="0.00"> 
@@ -174,7 +174,7 @@
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1935701.exe" info-request-time="1211829460L"/>
+            <application file-name="bug-1935701.exe" info-request-time="1211946742L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="FILE" result="OK" time-sec="0.00" crc="-1598919026"/>

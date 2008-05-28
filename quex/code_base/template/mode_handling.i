@@ -37,8 +37,9 @@ CLASS::__debug_print_transition(quex_mode* Source, quex_mode* Target)
 }
 
 inline void    
-CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) {
-                                 /* NOT const */ quex_mode& SourceMode = mode();
+CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) 
+{
+    /* NOT const */ quex_mode& SourceMode = mode();
 
     /* To be optimized aways if its function body is empty (see above) */
     __debug_print_transition(&SourceMode, &TargetMode);  
@@ -91,7 +92,7 @@ inline quex_mode&
 CLASS::map_mode_id_to_mode(const int ModeID)
 { 
     __quex_assert(ModeID >= 0);
-    __quex_assert(ModeID < $$MAX_MODE_CLASS_N$$ + 1); // first mode is unused by quex
+    __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1); // first mode is unused by quex
     return *(mode_db[ModeID]); 
 }
 

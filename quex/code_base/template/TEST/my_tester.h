@@ -104,4 +104,8 @@ mini_mode::on_indentation(my_tester* x, int Indentation)
     std::cout << "indentation = " << Indentation << std::endl;
 }
 
+#define CLASS my_tester
+#include <../count_line_column-with-indentation.i>
+#include <../count_line_column.i>
+
 #endif // __INCLUDE_GUARD_MY_TESTER_H__
