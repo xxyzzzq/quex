@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -pg # -O3 #-Os
+OPTIMIZATION = -O3 #-pg # -O3 #-Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
