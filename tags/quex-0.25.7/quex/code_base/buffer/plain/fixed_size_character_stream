@@ -1,0 +1,78 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+// (C) 2008 Frank-Rene Schaefer
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
+#define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
+//
+
+#include <iostream> 
+#include <cstdio>  
+#include <cerrno>
+#include <stdexcept>
+extern "C" { 
+#include <quex/code_base/compatibility/inttypes.h>
+}
+#include <quex/code_base/asserts>
+#include <quex/code_base/buffer/input_policy>
+#include <quex/code_base/buffer/fixed_size_character_stream>
+
+namespace quex {
+
+    template <class InputHandleType, class CharacterCarrierType>
+        class fixed_size_character_stream_plain
+        : public fixed_size_character_stream<CharacterCarrierType> {
+
+            static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
+            typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
+            typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
+           
+            /* DISABLED */ fixed_size_character_stream_plain();
+        protected:
+            InputHandleType* ih;
+            stream_position  start_position;  // position in stream where analysis started
+
+        public:
+            fixed_size_character_stream_plain(InputHandleType* _ih) 
+                : ih(_ih) 
+            {}
+
+            virtual size_t   tell_character_index() 
+            { 
+                return (InputPolicy<InputHandleType*>::tell(ih) - start_position) / SizeOfCharacter; 
+            }
+
+            virtual void     seek_character_index(const size_t CharacterIndex) 
+            { 
+                long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
+                InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
+            }
+
+            virtual void     close()          
+            { 
+                // InputPolicy<InputHandleType*>::close(ih); 
+            }
+
+            virtual void     destroy_handle() 
+            { 
+                if( ih ) delete ih; ih = 0x0; 
+            }
+
+            virtual size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N)  
+            { 
+                const size_t ByteN = InputPolicy<InputHandleType*>::load_bytes(ih, start_of_buffer, N * SizeOfCharacter);
+                __quex_assert(ByteN % SizeOfCharacter == 0);
+                return ByteN / SizeOfCharacter; 
+            }
+
+            virtual void     register_begin_of_file() 
+            { 
+                start_position = InputPolicy<InputHandleType*>::tell(ih); 
+            }
+
+            virtual void     seek_begin_of_file()
+            {
+                InputPolicy<InputHandleType*>::seek(ih, start_position);
+            }
+
+        };
+}
+#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__

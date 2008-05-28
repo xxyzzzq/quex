@@ -1,0 +1,15 @@
+(1) Run with 'dot' available
+error.qx:6:warning: Token id 'TKN_WS' defined implicitly.
+warning: no initial mode defined via 'start'
+warning: using mode 'X' as initial mode
+
+(2) Run without 'dot' available
+error.qx:6:warning: Token id 'TKN_WS' defined implicitly.
+warning: no initial mode defined via 'start'
+warning: using mode 'X' as initial mode
+command line: Graphviz is not installed or does not work propperly.
+command line: Please, visit http://www.graphviz.org to download the software.
+
+(3) Run with missing command line argument
+command line: Option '--plot' must be followed by a graphic format specifier (bmp, svg, jpg, ...)
+
