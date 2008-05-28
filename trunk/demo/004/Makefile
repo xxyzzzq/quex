@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3
+OPTIMIZATION = -pg # -O3 #-Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -45,6 +45,7 @@ CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
 	 $(SETUP) \
 	 -DNDEBUG \
 	 -DQUEX_BENCHMARK_SERIOUS \
+     -DQUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE=2 \
      #-DQUEX_OPTION_ACTIVATE_ASSERTS	\
      #-DQUEX_SETTING_BUFFER_SIZE=64 \
 	 # -D__QUEX_OPTION_UNIT_TEST \

@@ -7,15 +7,15 @@
 
 using namespace std;
 
-size_t    get_file_size(const char*);
+size_t    get_file_size(const char*, bool SilentF=false);
 void      print_date_string();
 size_t    count_token_n(std::FILE*);
 double     report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
-void      final_report(double TimePerRun, double RefTimePerRun, const char* Filename, 
+void      final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* Filename, 
                        size_t FileSize, size_t TokenN, double RepetitionN);
 
 void 
-final_report(double TimePerRun, double RefTimePerRun, const char* FileName, size_t FileSize, size_t TokenN, double RepetitionN)
+final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* FileName, size_t FileSize, size_t TokenN, double RepetitionN)
 {
     const double  CharN          = (double)(FileSize) / (CHARACTER_SIZE);
     const double  CycleTime      = 1.0 / double(CPU_FREQ_MHZ) * 1e-6;
@@ -45,15 +45,16 @@ final_report(double TimePerRun, double RefTimePerRun, const char* FileName, size
     cout << "//   Time / Char:         " << (TimePerChar - RefTimePerChar) << endl;
     cout << "//   Clock Cycles / Char: " << (CCC - RefCCC)                 << endl;
     cout << "{" << endl;
-    cout << "   quex_version = {" << QUEX_VERSION << "}, " << endl;
-    cout << "   cpu_name     = {" << CPU_NAME << "}, " << endl;
-    cout << "   cpu_code     = {" << CPU_CODE << "}, " << endl;
-    cout << "   cpu_freq_mhz = {" << CPU_FREQ_MHZ << "}, " << endl;
-    cout << "   cc_name      = {" << CC_NAME << "}, " << endl;
-    cout << "   cc_version   = {" << CC_VERSION << "}, " << endl;
-    cout << "   cc_opt_flags = {" << CC_OPTIMIZATION_FLAGS << "}, " << endl;
-    cout << "   os_name      = {" << OS_NAME << "}, " << endl;
-    cout << "   email        = {" << EMAIL << "}, " << endl;
+    cout << "   quex_version    = {" << QUEX_VERSION << "}, " << endl;
+    cout << "   cpu_name        = {" << CPU_NAME << "}, " << endl;
+    cout << "   cpu_code        = {" << CPU_CODE << "}, " << endl;
+    cout << "   cpu_freq_mhz    = {" << CPU_FREQ_MHZ << "}, " << endl;
+    cout << "   cc_name         = {" << CC_NAME << "}, " << endl;
+    cout << "   cc_version      = {" << CC_VERSION << "}, " << endl;
+    cout << "   cc_opt_flags    = {" << CC_OPTIMIZATION_FLAGS << "}, " << endl;
+    cout << "   executable_size = {" << get_file_size(ThisExecutableName, true) << "}, " << endl;
+    cout << "   os_name         = {" << OS_NAME << "}, " << endl;
+    cout << "   tester_email    = {" << EMAIL << "}, " << endl;
     print_date_string();
     cout << "   file_name    = {" << FileName << "}, " << endl;
     cout << "   file_size    = {" << FileSize << "}, " << endl;
@@ -117,19 +118,21 @@ count_token_n(std::FILE* fh)
         qlex->get_token(&TokenP);
         if( TokenP->type_id() == quex::TKN_TERMINATION ) break;
     } 
-    cout << "//TokenN: " << token_n << " [1]"   << endl;
+    cout << "// TokenN: " << token_n << " [1]"   << endl;
     return token_n;
 }
 
 size_t
-get_file_size(const char* Filename)
+get_file_size(const char* Filename, bool SilentF /*=false*/)
 {
     using namespace std;
     struct stat s;
     stat(Filename, &s);
-    cout << "//FileSize: " << s.st_size << " [Byte] = "; 
-    cout << double(s.st_size) / double(1024.0) << " [kB] = ";
-    cout << double(s.st_size) / double(1024.0*1024.0) << " [MB]." << endl;
+    if( ! SilentF ) {
+        cout << "// FileSize: " << s.st_size << " [Byte] = "; 
+        cout << double(s.st_size) / double(1024.0) << " [kB] = ";
+        cout << double(s.st_size) / double(1024.0*1024.0) << " [MB]." << endl;
+    }
     return s.st_size;
 }
 
