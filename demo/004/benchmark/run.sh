@@ -1,7 +1,7 @@
 stamp=`date +%Yy%mm%dd-%Hh%M`
 output="result-$stamp.dat"
 cd ..
-make clean; make
+make clean; make OPTIMIZATION=-O3
 cd benchmark
 ../lexer-lc many-tiny-tokens.c            > $output
 ../lexer-lc single-large-token.c         >> $output
