@@ -32,7 +32,9 @@ CLASS::_reset()
     _column_number_at_end   = 1; 
 #endif
     // empty the token queue
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
     this->_token_queue->reset();
+#endif
 
     set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 

@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 #-pg # -O3 #-Os
+OPTIMIZATION = -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -74,11 +74,11 @@ lexer: $(SOURCE_FILES)
 
 
 $(ENGINE_SOURCES): $(MODE_FILES)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 --token-queue
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	rm -f lexer lexer-l lexer-lc
+	rm -f lexer lexer-lc
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
 	rm -f $(ENGINE_NAME).o

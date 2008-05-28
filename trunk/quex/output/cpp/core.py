@@ -119,6 +119,7 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, Setup.plain_memory_f,    "__QUEX_CORE_OPTION_PLAIN_MEMORY_BASED")     
     txt = set_switch(txt, True,                    "__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
     txt = set_switch(txt, Setup.enable_iconv_f,    "__QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED")
+    txt = set_switch(txt, Setup.input_token_sending_via_queue, "QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE")
     txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      
     txt = set_switch(txt, True,                    "QUEX_OPTION_LINE_NUMBER_COUNTING")      
     txt = set_switch(txt, True,                    "QUEX_OPTION_COLUMN_NUMBER_COUNTING")        
