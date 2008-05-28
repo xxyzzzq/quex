@@ -33,10 +33,7 @@ CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME** result_pp)
         return;
     }
 
-    // token queue is empty 
-    //    --> enter yylex() (if engine is produced by flex) or
-    //        mode specific engine (if engine was produced by quex)
-    //        to get the next token on the stack.
+    // token queue is empty --> enter lexical analysis()
     do {
         __current_mode_analyser_function_p(this);
 
