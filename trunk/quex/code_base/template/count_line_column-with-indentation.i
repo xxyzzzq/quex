@@ -15,8 +15,8 @@
 //       This has to happen outside these functions.
 
 inline void    
-$$LEXER_CLASS_NAME$$::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-                                        const int            LexemeLength)
+CLASS::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+                         const int            LexemeLength)
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
 //   and letters of the last line occuring in the lexeme.
@@ -145,8 +145,8 @@ $$LEXER_CLASS_NAME$$::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 
 
 inline void    
-$$LEXER_CLASS_NAME$$::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-                                                  const int           LexemeLength)
+CLASS::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+                                   const int           LexemeLength)
 {
     // NOTE: For an explanation of the algorithm, see the function:
     //       count_line_column_n_increment_w_indent(...)
@@ -185,7 +185,7 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Le
 }
 
 inline void  
-$$LEXER_CLASS_NAME$$::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
+CLASS::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
 {
     __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -199,7 +199,7 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline_NeverStartOnWhitespace(const i
 }
 
 inline void  
-$$LEXER_CLASS_NAME$$::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
+CLASS::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
 {
     __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -211,10 +211,10 @@ $$LEXER_CLASS_NAME$$::count_indentation_NoNewline_ContainsOnlySpace(const int Co
 }
 
 inline void
-$$LEXER_CLASS_NAME$$::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration_it, 
-                                                                 QUEX_CHARACTER_TYPE* Begin,
-                                                                 QUEX_CHARACTER_TYPE* End,
-                                                                 const bool              LicenseToCountF)
+CLASS::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration_it, 
+                                                  QUEX_CHARACTER_TYPE* Begin,
+                                                  QUEX_CHARACTER_TYPE* End,
+                                                  const bool              LicenseToCountF)
 // NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
 //       from the following function or implement it unconditionally, since the decision
 //       is based on a constant (either true or false) -- once the function has been inlined.   
@@ -252,10 +252,10 @@ $$LEXER_CLASS_NAME$$::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_
 }
 
 inline void
-$$LEXER_CLASS_NAME$$::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
-                                              QUEX_CHARACTER_TYPE* Begin,
-                                              QUEX_CHARACTER_TYPE* End, 
-                                              const bool          LicenseToCountF)
+CLASS::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
+                               QUEX_CHARACTER_TYPE* Begin,
+                               QUEX_CHARACTER_TYPE* End, 
+                               const bool          LicenseToCountF)
 {
     // when inlined, this is a condition on a constant => deleted by compiler.
     if( LicenseToCountF == false ) return;
