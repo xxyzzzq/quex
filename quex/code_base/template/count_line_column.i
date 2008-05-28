@@ -13,7 +13,7 @@
 //       This has to happen outside these functions.
 
 inline void 
-$$LEXER_CLASS_NAME$$::__count_assert_consistency()
+CLASS::__count_assert_consistency()
 {
     __quex_assert(_line_number_at_begin   <= _line_number_at_end);
     // if line number remained the same, then the column number **must** have increased.
@@ -23,7 +23,7 @@ $$LEXER_CLASS_NAME$$::__count_assert_consistency()
 }
 
 inline void             
-$$LEXER_CLASS_NAME$$::__count_shift_end_values_to_start_values() 
+CLASS::__count_shift_end_values_to_start_values() 
 {
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     _line_number_at_begin   = _line_number_at_end;
@@ -35,8 +35,8 @@ $$LEXER_CLASS_NAME$$::__count_shift_end_values_to_start_values()
 
 
 inline void    
-$$LEXER_CLASS_NAME$$::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-                            const int        LexemeLength)
+CLASS::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+             const int        LexemeLength)
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
 //   and letters of the last line occuring in the lexeme.
@@ -66,7 +66,7 @@ $$LEXER_CLASS_NAME$$::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 }
 
 inline void  
-$$LEXER_CLASS_NAME$$::count_NoNewline(const int LexemeLength) 
+CLASS::count_NoNewline(const int LexemeLength) 
 {
     __quex_assert( LexemeLength > 0 );
 
@@ -78,9 +78,9 @@ $$LEXER_CLASS_NAME$$::count_NoNewline(const int LexemeLength)
 }
 
 inline void  
-$$LEXER_CLASS_NAME$$::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-                                        const int           LexemeLength, 
-                                        const int           LineNIncrement) 
+CLASS::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+                         const int           LexemeLength, 
+                         const int           LineNIncrement) 
 {
     __quex_assert( LexemeLength > 0 );
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -98,8 +98,8 @@ $$LEXER_CLASS_NAME$$::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 
 
 inline void
-$$LEXER_CLASS_NAME$$::__count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
-                                                  QUEX_CHARACTER_TYPE* Begin)
+CLASS::__count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
+                                   QUEX_CHARACTER_TYPE* Begin)
 // NOTE: If *it == '\n' this function does **not** count it. The user must
 //       have increased the _line_number_at_end by hisself. This happens
 //       for performance reasons.
@@ -115,10 +115,10 @@ $$LEXER_CLASS_NAME$$::__count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
 }
 
 inline QUEX_CHARACTER_TYPE*
-$$LEXER_CLASS_NAME$$::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
-                                                         QUEX_CHARACTER_TYPE* End,
-                                                         const int        LexemeLength,
-                                                         const bool       LicenseToIncrementLineCountF /*=false*/)
+CLASS::__count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
+                                          QUEX_CHARACTER_TYPE* End,
+                                          const int        LexemeLength,
+                                          const bool       LicenseToIncrementLineCountF /*=false*/)
 // RETURNS: Pointer to the first newline or the beginning of the lexeme.
 //
 // This function increases _line_number_at_end if a newline occurs and 
