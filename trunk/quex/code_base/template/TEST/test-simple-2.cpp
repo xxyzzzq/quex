@@ -8,7 +8,7 @@ using namespace std;
 string total_string;
 int    indentation[64];
 
-void test(char* TestString, my_tester& x)
+void test(const char* TestString, my_tester& x)
 {
     x._line_number_at_begin   = x._line_number_at_end;
     x._column_number_at_begin = x._column_number_at_end;
@@ -17,11 +17,11 @@ void test(char* TestString, my_tester& x)
 
     // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
     cout << "  lexeme: '";
-    for(char* p = TestString; *p ; ++p) 
+    for(char* p = (char*)TestString; *p ; ++p) 
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    x.count_indentation(TestString, strlen(TestString));
+    x.count_indentation((QUEX_LEXEME_CHARACTER_TYPE*)TestString, strlen(TestString));
     cout << "  end:    " << x.line_number_at_end()    << ", " << x.column_number_at_end() << endl;
 
     total_string += TestString;

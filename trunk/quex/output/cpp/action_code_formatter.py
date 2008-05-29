@@ -19,6 +19,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
         txt += code_info.get("C")
 
     # -- line number counting code
+    #    (if mode requires indentation events, than a different counting scheme is used)
     if Mode.on_indentation.line_n != -1:
         txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
     else:
@@ -85,9 +86,8 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
 
 def __get_line_and_column_counting(PatternStateMachine):
 
-    txt  = "self.__count_shift_end_values_to_start_values();\n"
     if PatternStateMachine == None:
-        return txt + "self.count(Lexeme, LexemeL);\n"
+        return "__QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL);\n"
 
     newline_n   = counter.get_newline_n(PatternStateMachine)
     character_n = counter.get_character_n(PatternStateMachine)
@@ -95,16 +95,17 @@ def __get_line_and_column_counting(PatternStateMachine):
     if   newline_n == -1:
         # run the general algorithm, since not even the number of newlines in the 
         # pattern can be determined directly from the pattern
-        func = "self.count(Lexeme, LexemeL);"       
+        return "__QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL);\n"
 
     elif newline_n != 0:
-        # IDEA: Try to determine number of characters backwards to newline directly
+        # TODO: Try to determine number of characters backwards to newline directly
         #       from the pattern state machine.
-        func = "self.count_FixNewlineN(Lexeme, LexemeL, %i);" % newline_n
+        return "__QUEX_COUNT_LINE_COLUMN_SCENARIO_FIXED_NEWLINE_N(Lexeme, LexemeL, %i);\n" % \
+               newline_n
 
     else:
-        if character_n == -1: func = "self.count_NoNewline(LexemeL);"
-        else:                 func = "self.count_NoNewline(%i);" % character_n
-            
-    return txt + func + "\n"
+        if character_n == -1: incr_str = "LexemeL"
+        else:                 incr_str = repr(character_n) 
+
+        return "__QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(%s);\n" % incr_str
 

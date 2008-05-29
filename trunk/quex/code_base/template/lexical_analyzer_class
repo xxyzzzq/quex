@@ -364,7 +364,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         template <class InputHandle> 
         void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
                                     const char* IConvInputCodingName);
-#   endif   
+#   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     private: 
@@ -414,28 +414,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
             std::map<std::string, int>  lexeme_to_token_id_map;
         } post_categorizer;
 
-        // (*) pure text accumulation and flushing
-        struct ACCUMULATOR_tag {
-            // text buffer that eats **non-alien letters** until something 
-            // occurs that makes a pure text token out of it.
-            // (this can be a paragraph delimiter, or a command)
-            ACCUMULATOR_tag($$LEXER_CLASS_NAME$$* lex) 
-                : _the_lexer(lex) { _accumulated_text.reserve(1024); }
-            void  flush(const $$TOKEN_CLASS$$::id_type TokenID);
-            void  clear();
-            void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
-            void  add(const QUEX_LEXEME_CHARACTER_TYPE);
-
-        private:
-#    ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            int  _begin_line;
-#    endif
-#    ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            int  _begin_column;
-#    endif
-            std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>  _accumulated_text;
-            $$LEXER_CLASS_NAME$$*                          _the_lexer;     
-        };
 
     private:
         // (*) Helper
@@ -465,8 +443,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
                                                          QUEX_CHARACTER_TYPE* End,
                                                          const bool       LicenseToCountF);
 #    endif 
-        void  __count_assert_consistency();
-
         void  __count_shift_end_values_to_start_values();
 
         void  __count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,

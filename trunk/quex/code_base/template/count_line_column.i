@@ -11,18 +11,40 @@
 // NOTE: Those functions are not responsible for setting the begin to the
 //       last end, such as _line_number_at_begin = _line_number_at_end.
 //       This has to happen outside these functions.
+#include <quex/code_base/template/count_common>
 
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-#   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()
-    {
-        __quex_assert(_line_number_at_begin   <= _line_number_at_end);
-        // if line number remained the same, then the column number **must** have increased.
-        // there is not pattern of a length less than 1
-        __quex_assert(_line_number_at_begin != _line_number_at_end || 
-                      _column_number_at_begin <  _column_number_at_end);
-    }
+#if   ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING) && ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL)             /* empty */
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_FIXED_NEWLINE_N(Lexeme, LexememL, N) /* empty */
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(N)                      /* empty */
+
+#elif   defined(QUEX_OPTION_LINE_NUMBER_COUNTING) && ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL) \
+           self.__count_shift_end_values_to_start_values();           \
+           self.count(Lexeme, LexemeL)
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_FIXED_NEWLINE_N(Lexeme, LexememL, N) \
+           self.__count_shift_end_values_to_start_values();                       \
+           self.count_FixNewlineN(Lexeme, LexemeL, N) 
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(N) /* empty */
+
 #else
-#   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL) \
+           self.__count_shift_end_values_to_start_values();           \
+           self.count(Lexeme, LexemeL)
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_FIXED_NEWLINE_N(Lexeme, LexememL, N) \
+           self.__count_shift_end_values_to_start_values();                       \
+           self.count_FixNewlineN(Lexeme, LexemeL, N) 
+
+#   define __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(N) \
+           self.__count_shift_end_values_to_start_values();  \
+           self.count_NoNewline(N) 
+
 #endif
 
 inline void             
@@ -39,7 +61,7 @@ CLASS::__count_shift_end_values_to_start_values()
 
 inline void    
 CLASS::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
-             const int        LexemeLength)
+             const int                   LexemeLength)
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
 //   and letters of the last line occuring in the lexeme.
@@ -49,14 +71,15 @@ CLASS::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 //
 ////////////////////////////////////////////////////////////////////////////////
 {
-    __quex_assert( LexemeLength > 0 );
 #if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
+    __quex_assert( LexemeLength > 0 );
+
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* it = __count_chars_to_newline_backwards(Begin, Begin + LexemeLength, LexemeLength,
-                                                             /* LicenseToIncrementLineCountF = */ true);
+                                                                 /* LicenseToIncrementLineCountF = */ true);
 
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     // The last function may have digested a newline (*it == '\n'), but then it 

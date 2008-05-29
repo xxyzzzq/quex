@@ -33,8 +33,7 @@ ActionInfo:
       
    action = 
       {
-      self.__count_shift_end_values_to_start_values();
-      self.count_NoNewline(LexemeL);
+      __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(LexemeL);
       
       #line -1 ""
       std::cout << "IDENTIFIER" << std::endl;
@@ -53,8 +52,7 @@ ActionInfo:
       
    action = 
       {
-      self.__count_shift_end_values_to_start_values();
-      self.count(Lexeme, LexemeL);
+      __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL);
       
       #line -1 ""
       std::cout << "WHITESPACE" << std::endl;
