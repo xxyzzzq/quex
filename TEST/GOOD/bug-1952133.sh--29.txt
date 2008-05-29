@@ -7,7 +7,7 @@ rm -f lexer
 rm -f token_ids
 rm -f *.bak
 rm -f extensive-example.txt
-quex -i simple.qx --engine tiny_lexer 
+quex -i simple.qx --engine tiny_lexer --token-queue
 simple.qx:130:warning: Token id 'TKN_DOT' defined implicitly.
 simple.qx:131:warning: Token id 'TKN_COMMENT' defined implicitly.
 g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=29 -DQUEX_OPTION_ACTIVATE_ASSERTS  lexer.cpp -o lexer.o

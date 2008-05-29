@@ -138,6 +138,12 @@ def validate(setup, command_line, argv):
                   "Note, that this option is only interesting for cross plattform development.\n" + \
                   "By default, quex automatically chooses the endian type of your system.")
 
+    # warn about token queue not specified
+    if setup.input_token_sending_via_queue == False:
+        error_msg("Since version 0.25.9, the token queue is by default turned off. If you want to\n" + \
+                  "use this feature further, please specify the '--token-queue' command line flag.",
+                  DontExitF=True)
+
     # token offset and several ids
     if setup.input_token_counter_offset == setup.token_id_termination:
         error_msg("Token id offset (--token-offset) == token id for termination (--token-id-termination)\n")

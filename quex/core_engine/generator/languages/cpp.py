@@ -402,7 +402,6 @@ def __local_variable_definitions(VariableInfoList):
         txt += "    %s %s = %s;\n" % (type, name, value)
     return txt
          
-
 __function_header_common = """
 #ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 #    define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)   \\

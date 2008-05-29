@@ -1,6 +1,8 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+#include <quex/code_base/template/count_common>
+
 // NOTE: Quex is pretty intelligent in choosing the right function
 //       to count line and column numbers. If, for example, a pattern
 //       does not contain newlines, then it simply adds the LexemeLength
