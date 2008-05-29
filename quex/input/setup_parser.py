@@ -139,9 +139,13 @@ def validate(setup, command_line, argv):
                   "By default, quex automatically chooses the endian type of your system.")
 
     # warn about token queue not specified
-    if setup.input_token_sending_via_queue == False:
+    if setup.input_token_sending_via_queue_f == False:
         error_msg("Since version 0.25.9, the token queue is by default turned off. If you want to\n" + \
                   "use this feature further, please specify the '--token-queue' command line flag.",
+                  DontExitF=True)
+    if setup.string_accumulator_f == False:
+        error_msg("Since version 0.25.9, the accumulator is by default turned off. If you want to\n" + \
+                  "use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.",
                   DontExitF=True)
 
     # token offset and several ids

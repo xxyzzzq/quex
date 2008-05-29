@@ -1,0 +1,31 @@
+// -*- C++ -*- vim:set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR
+#define __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR
+
+namespace quex { 
+
+    // (*) pure text accumulation and flushing
+    struct Accumulator {
+        // text buffer that eats **non-alien letters** until something 
+        // occurs that makes a pure text token out of it.
+        // (this can be a paragraph delimiter, or a command)
+        Accumulator(CLASS* lex) : _the_lexer(lex) { _accumulated_text.reserve(1024); }
+
+        void  flush(const $$TOKEN_CLASS$$::id_type TokenID);
+        void  clear();
+        void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
+        void  add(const QUEX_LEXEME_CHARACTER_TYPE);
+
+    private:
+#    ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        int  _begin_line;
+#    endif
+#    ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        int  _begin_column;
+#    endif
+        std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>  _accumulated_text;
+        CLASS*                                         _the_lexer;     
+    };
+
+}
+#endif // __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR
