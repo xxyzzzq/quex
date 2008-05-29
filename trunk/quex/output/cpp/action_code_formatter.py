@@ -41,7 +41,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
                 txt += code_info.get("C")
         else:
             txt += "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
-            txt += "return %sTERMINATION;\n"     % Setup.input_token_id_prefix 
+            txt += "return /*%sTERMINATION*/;\n"     % Setup.input_token_id_prefix 
 
     txt += "\n}"
 
