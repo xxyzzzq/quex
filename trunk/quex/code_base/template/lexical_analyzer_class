@@ -94,6 +94,9 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
 #   endif
 #endif
+#ifndef  QUEX_OPTION_STRING_ACCUMULATOR
+$$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
+#endif 
 
 $$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
 //
@@ -187,13 +190,21 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #   include<quex/code_base/core_engine/definitions-quex-buffer.h>
 #endif
 
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   include <quex/code_base/token_queue>
-#endif
-
 // Quex/User
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
+
+#define CLASS $$LEXER_CLASS_NAME$$
+
+#ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/template/accumulator>
+#endif
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   include <quex/code_base/token_queue>
+#endif
+#ifdef QUEX_OPTION_POST_CATEGORIZER
+#   include <quex/code_base/template/post_categorizer>
+#endif
 
 
 // RETURN: _____________________________________________________________________
@@ -386,34 +397,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         int  column_number_at_end() const   { return _column_number_at_end; }
 #   endif
 
-        //________________________________________________________________________________
-        // Post Categorization of Lexemes:
-        //
-        // Particular patterns may trigger a particular token type which is defined
-        // during the parsing process: example 'units' in safertex. imagine the
-        // user defined a new unit 'mB' for milli Bernoulli or whatsoever. the token
-        // action 'identifier' can compare the content against the tokens and find, that
-        // it has to send a TOKEN_UNIT_IDENTIFIER instead of a normal TOKEN_IDENTIFIER
-        //
-        // NOTE: This map has to be used inside an action, such as for {IDENTIFIER}.
-        //       The lexer itself will **not** react to any tokens entered here.
-        //
-        //       Inside the actions use:
-        //
-        //              int token_id = map_post_defined_lexeme_to_token_id(yytext);
-        //              if( token_id == -1 ) ... no known lexeme to be post-categorized.
-        //
-        //       in order to find out, if the identifier belongs to a certain type.
-        //       the return value is the token id of this identifier type. if it is
-        //       equal to '-1' then no post defined lexeme exists.
-        //________________________________________________________________________________
-        struct post_categorizer_tag {
-            void             enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
-            $$TOKEN_CLASS$$::id_type  get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
-        private:
-            std::map<std::string, int>  lexeme_to_token_id_map;
-        } post_categorizer;
-
 
     private:
         // (*) Helper
@@ -495,11 +478,22 @@ $$MODE_OBJECT_MEMBERS$$
         // 
         //       Otherwise, one would be restricted to sending one token by pattern.        
         //
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         token_queue<$$TOKEN_CLASS$$>*   _token_queue;
-#else
-#       $$TOKEN_CLASS$$                 _token;
-#endif
+#       else
+        $$TOKEN_CLASS$$                 _token;
+#       endif
+    protected:
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
+        Accumulator        accumulator;
+#       endif
+    public:
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        PostCategorizer    post_categorizer;
+#       endif
+
+
 
         // (*) All Modes are Friends _____________________________________________________
 $$MODE_CLASS_FRIENDS$$  
@@ -522,10 +516,6 @@ $$CLASS_BODY_EXTENSION$$
     public:
         void    disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 #endif 
-
-    protected:
-        // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
-        ACCUMULATOR_tag     accumulator;
 
     private:
         void __debug_print_transition(quex_mode* Source, quex_mode* Target);
@@ -552,23 +542,23 @@ $$CLASS_BODY_EXTENSION$$
         QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
         QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         _indentation = 0;
         _indentation_count_enabled_f = false;
         _indentation_event_enabled_f = true;
-#endif
+#       endif
 
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         _line_number_at_begin = 0;
         _line_number_at_end   = 1;
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
         _column_number_at_begin = 0;
         _column_number_at_end   = 1; 
-#endif
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#       endif
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new token_queue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
-#endif
+#       endif
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -601,7 +591,10 @@ $$CONSTRUCTOR_EXTENSTION$$
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #      include <quex/code_base/template/count_line_column-with-indentation.i>
 #   endif
-#
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#       include <quex/code_base/template/accumulator.i>
+#   endif
+
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #      include <quex/code_base/template/token_receiving_via_queue.i>
 #      include <quex/code_base/template/token_sending_via_queue.i>
@@ -610,7 +603,6 @@ $$CONSTRUCTOR_EXTENSTION$$
 #      include <quex/code_base/template/token_sending_via_singleton.i>
 #   endif
 #   include <quex/code_base/template/mode_handling.i>
-#   include <quex/code_base/template/accumulator.i>
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #      include <quex/code_base/template/include_stack.i>
 #   endif

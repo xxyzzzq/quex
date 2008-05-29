@@ -74,6 +74,17 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 	    analyzer should be created with this option set. DEFAULT = `<disabled>`, which means
         that mode transition check is enabled.
 
+`--string-accumulator`, `--sacc`::
+
+        Turns the string accumulator option on. This allows to use the string 
+        accumulator to accumulate lexemes. See class 'quex::Accumulator'.
+
+`--post-categorizer`::
+
+        Turns the post categorizer option on. This allows to have a 'secondary'
+        mapping from lexemes to token ids based on their name. See class
+        'quex::PostCategorizer'.
+
 For the support of derivation from the generated lexical analyzer class the
 following command line options can be used.
 
