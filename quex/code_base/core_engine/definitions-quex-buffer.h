@@ -6,8 +6,8 @@
 struct QUEX_CORE_ANALYSER_STRUCT;
 
 #ifdef __QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION
-    typedef int                                    QUEX_ANALYSER_RETURN_TYPE;
-    typedef QUEX_CORE_ANALYSER_STRUCT              QUEX_LEXER_CLASS;   
+    typedef int                                     QUEX_ANALYSER_RETURN_TYPE;
+    typedef QUEX_CORE_ANALYSER_STRUCT               QUEX_LEXER_CLASS;   
     typedef quex::buffer<uint8_t>::character_type    QUEX_CHARACTER_TYPE;
     typedef quex::buffer<uint8_t>::character_type    QUEX_LEXEME_CHARACTER_TYPE;
 #endif
@@ -181,7 +181,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
            if( self.__previous_mode_p != self.__current_mode_p) {                \
                self.__previous_mode_p = self.__current_mode_p;                   \
                self.__continue_analysis_after_adapting_mode_function_p_f = true; \
-               return 1;                                                         \
+               return /*1*/;                                                         \
            }
 
 #else

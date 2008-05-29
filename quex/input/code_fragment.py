@@ -108,7 +108,7 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
             lexer_mode.token_id_db[prefix_less_token_name] = \
                     TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
 
-        result.code = "self.send(%s%s); RETURN;" % (token_name, token_constructor_args)
+        result.code = "self.send(%s%s); return;" % (token_name, token_constructor_args)
 
         return result
 

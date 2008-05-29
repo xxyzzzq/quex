@@ -6,12 +6,9 @@ namespace quex {
 
     // (*) pure text accumulation and flushing
     struct Accumulator {
-        // text buffer that eats **non-alien letters** until something 
-        // occurs that makes a pure text token out of it.
-        // (this can be a paragraph delimiter, or a command)
         Accumulator(CLASS* lex) : _the_lexer(lex) { _accumulated_text.reserve(1024); }
 
-        void  flush(const $$TOKEN_CLASS$$::id_type TokenID);
+        void  flush(const __QUEX_SETTING_TOKEN_CLASS_NAME::id_type TokenID);
         void  clear();
         void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
         void  add(const QUEX_LEXEME_CHARACTER_TYPE);
