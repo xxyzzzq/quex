@@ -77,7 +77,8 @@ $(ENGINE_NAME).o: $(ENGINE_SOURCES)
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex --mode-files $(MODE_FILES)    \
 	     --engine     $(ENGINE_NAME)   \
-		 --token-queue
+		 --token-queue \
+		 --string-accumulator
 
 
 # (*) HELPERS __________________________________________________________________

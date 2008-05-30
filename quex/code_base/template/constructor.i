@@ -54,15 +54,15 @@ CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName
     fixed_size_character_stream<QUEX_CHARACTER_TYPE>*  is = 0x0;
 
     if( IConvInputCodingName != 0x0 ) {
-#           ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#       ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
         is = new  fixed_size_character_stream_iconv<InputHandle, QUEX_CHARACTER_TYPE>
                        (input_handle, 
                         iconv_translation_buffer, QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE,
                         IConvInputCodingName,     QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING); 
 
-#           else
+#       else
         return 0x0;
-#           endif
+#       endif
     }
     else {
         is = new fixed_size_character_stream_plain<InputHandle, QUEX_CHARACTER_TYPE>(input_handle);

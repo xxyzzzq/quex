@@ -1,15 +1,4 @@
-touch simple.qx
-rm -f tiny_lexer tiny_lexer.cpp tiny_lexer-token_ids tiny_lexer-core-engine.cpp
-rm -f tiny_lexer.o
-rm -f tiny_lexer-core-engine.o
-rm -f lexer.o
-rm -f lexer
-rm -f token_ids
-rm -f *.bak
-rm -f extensive-example.txt
-quex -i simple.qx --engine tiny_lexer --token-queue
-simple.qx:130:warning: Token id 'TKN_DOT' defined implicitly.
-simple.qx:131:warning: Token id 'TKN_COMMENT' defined implicitly.
+clean
 g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=30 -DQUEX_OPTION_ACTIVATE_ASSERTS  lexer.cpp -o lexer.o
 g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=30 -DQUEX_OPTION_ACTIVATE_ASSERTS  tiny_lexer.cpp -o tiny_lexer.o
 g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=30 -DQUEX_OPTION_ACTIVATE_ASSERTS  tiny_lexer-core-engine.cpp -o tiny_lexer-core-engine.o
@@ -494,12 +483,4 @@ This is the end and looks good. Buffer Size = 30
 | [END] number of token = 473
 `------------------------------------------------------------------------------------
 buffer size = 30
-touch simple.qx
-rm -f tiny_lexer tiny_lexer.cpp tiny_lexer-token_ids tiny_lexer-core-engine.cpp
-rm -f tiny_lexer.o
-rm -f tiny_lexer-core-engine.o
-rm -f lexer.o
-rm -f lexer
-rm -f token_ids
-rm -f *.bak
-rm -f extensive-example.txt
+clean

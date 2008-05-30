@@ -110,13 +110,16 @@ count_token_n(std::FILE* fh)
 {
     using namespace std;
     quex::c_lexer*  qlex = new quex::c_lexer(fh);
-    quex::token*    TokenP;
+    //quex::token*    TokenP;
+    int token_id = quex::TKN_TERMINATION;
     int token_n = 0;
 
     // (*) loop until the 'termination' token arrives
     for(token_n=0; ; ++token_n) {
-        qlex->get_token(&TokenP);
-        if( TokenP->type_id() == quex::TKN_TERMINATION ) break;
+        // qlex->get_token(&TokenP);
+        token_id = qlex->get_token();
+        // if( TokenP->type_id() == quex::TKN_TERMINATION ) break;
+        if( token_id == quex::TKN_TERMINATION ) break;
     } 
     cout << "// TokenN: " << token_n << " [1]"   << endl;
     return token_n;

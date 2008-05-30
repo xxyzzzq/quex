@@ -1,4 +1,6 @@
-quex -i indigo.qx -o IndigoLexer -b 4 --iconv
+quex -i indigo.qx -o IndigoLexer -b 4 --iconv --token-queue
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
 g++ -I./ -I/home/fschaef/prj/quex/trunk \
 		IndigoLexer-core-engine.cpp          \
 		IndigoLexer.cpp                      \
