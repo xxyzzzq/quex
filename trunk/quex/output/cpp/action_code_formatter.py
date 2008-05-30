@@ -41,7 +41,11 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
                 txt += code_info.get("C")
         else:
             txt += "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
-            txt += "return /*%sTERMINATION*/;\n"     % Setup.input_token_id_prefix 
+            txt += "#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID\n"
+            txt += "    return /*%sTKN_TERMINATION*/;\n" % Setup.input_token_id_prefix
+            txt += "#else\n"
+            txt += "    return %sTERMINATION;\n" % Setup.input_token_id_prefix
+            txt += "#endif\n"
 
     txt += "\n}"
 

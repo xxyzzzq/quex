@@ -1,3 +1,7 @@
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
 warning: no initial mode defined via 'start'
 warning: using mode 'ONE_AND_ONLY' as initial mode
 // -*- C++ -*-   vim: set syntax=cpp:
@@ -13,7 +17,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
-#define QUEX_VERSION  "0.25.8"
+#define QUEX_VERSION  "0.25.9"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -88,9 +92,17 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
 #    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
 #endif
-#ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
-#    define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+// #define QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #endif
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
+#       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#   endif
+#endif
+#ifndef  QUEX_OPTION_STRING_ACCUMULATOR
+// #define QUEX_OPTION_STRING_ACCUMULATOR
+#endif 
 
 // #define __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
 //
@@ -139,7 +151,9 @@ const int LEX_ID_ONE_AND_ONLY = 1;
 
 }    
 
-typedef int QUEX_ANALYSER_RETURN_TYPE;
+typedef void QUEX_ANALYSER_RETURN_TYPE;
+#define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+
 // CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
 //                 a character. This is independent of the coding (ASCII, WinArabic, ...)
 // LEXEME_CHARACTER_TYPE: Type that results in an appropriate type for string handling
@@ -185,10 +199,22 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
 #   include<quex/code_base/core_engine/definitions-quex-buffer.h>
 #endif
 
-#include <quex/code_base/token_queue>
 // Quex/User
 #include "Simple-token_ids"
 #include "quex/code_base/token"
+
+#define CLASS                            Simple
+#define __QUEX_SETTING_TOKEN_CLASS_NAME  token
+
+#ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/template/accumulator>
+#endif
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   include <quex/code_base/token_queue>
+#endif
+#ifdef QUEX_OPTION_POST_CATEGORIZER
+#   include <quex/code_base/template/post_categorizer>
+#endif
 
 
 // RETURN: _____________________________________________________________________
@@ -211,14 +237,18 @@ typedef quex::Simple  QUEX_LEXER_CLASS;
 //     hit the token stack, so the lexing won't continue infinitly.
 //     
 //
-#define RETURN                                                                   \
-   if( self._token_queue->is_empty() ) { CONTINUE; }                             \
-   else {                                                                        \
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#   define RETURN                                                                \
+    if( self._token_queue->is_empty() ) { CONTINUE; }                            \
+    else {                                                                       \
         /* since return happens voluntarily, no check for mode change will be */ \
         /* necessary.                                                         */ \
         self.__previous_mode_p = self.__current_mode_p;                          \
-        return self._token_queue->top()->type_id();                              \
+        return /* self._token_queue->top()->type_id() */;                        \
    }
+#else
+#   define RETURN  return
+#endif
 
 
 
@@ -279,10 +309,12 @@ namespace quex {
         virtual ~Simple();
         //
         // -- token stream: read next token
+#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         token::id_type   get_token();
+#else
         token::id_type   get_token(token*  result_p);
         void                       get_token(token** result_pp);
-        
+#endif   
         //
         // (*) Mode handling
         //
@@ -322,7 +354,7 @@ namespace quex {
         //
         // (*) Version information
 
-#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#    ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         struct memento {
             quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
             QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
@@ -360,7 +392,7 @@ namespace quex {
         template <class InputHandle> 
         void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
                                     const char* IConvInputCodingName);
-#   endif   
+#   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
 
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     private: 
@@ -382,56 +414,6 @@ namespace quex {
         int  column_number_at_end() const   { return _column_number_at_end; }
 #   endif
 
-        //________________________________________________________________________________
-        // Post Categorization of Lexemes:
-        //
-        // Particular patterns may trigger a particular token type which is defined
-        // during the parsing process: example 'units' in safertex. imagine the
-        // user defined a new unit 'mB' for milli Bernoulli or whatsoever. the token
-        // action 'identifier' can compare the content against the tokens and find, that
-        // it has to send a TOKEN_UNIT_IDENTIFIER instead of a normal TOKEN_IDENTIFIER
-        //
-        // NOTE: This map has to be used inside an action, such as for {IDENTIFIER}.
-        //       The lexer itself will **not** react to any tokens entered here.
-        //
-        //       Inside the actions use:
-        //
-        //              int token_id = map_post_defined_lexeme_to_token_id(yytext);
-        //              if( token_id == -1 ) ... no known lexeme to be post-categorized.
-        //
-        //       in order to find out, if the identifier belongs to a certain type.
-        //       the return value is the token id of this identifier type. if it is
-        //       equal to '-1' then no post defined lexeme exists.
-        //________________________________________________________________________________
-        struct post_categorizer_tag {
-            void             enter(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int TokenID);
-            token::id_type  get_token_id(const QUEX_LEXEME_CHARACTER_TYPE* Lexeme) const;
-        private:
-            std::map<std::string, int>  lexeme_to_token_id_map;
-        } post_categorizer;
-
-        // (*) pure text accumulation and flushing
-        struct ACCUMULATOR_tag {
-            // text buffer that eats **non-alien letters** until something 
-            // occurs that makes a pure text token out of it.
-            // (this can be a paragraph delimiter, or a command)
-            ACCUMULATOR_tag(Simple* lex) 
-                : _the_lexer(lex) { _accumulated_text.reserve(1024); }
-            void  flush(const token::id_type TokenID);
-            void  clear();
-            void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
-            void  add(const QUEX_LEXEME_CHARACTER_TYPE);
-
-        private:
-#    ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            int  _begin_line;
-#    endif
-#    ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            int  _begin_column;
-#    endif
-            std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>  _accumulated_text;
-            Simple*                          _the_lexer;     
-        };
 
     private:
         // (*) Helper
@@ -461,8 +443,6 @@ namespace quex {
                                                          QUEX_CHARACTER_TYPE* End,
                                                          const bool       LicenseToCountF);
 #    endif 
-        void  __count_assert_consistency();
-
         void  __count_shift_end_values_to_start_values();
 
         void  __count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
@@ -516,7 +496,26 @@ namespace quex {
         // 
         //       Otherwise, one would be restricted to sending one token by pattern.        
         //
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         token_queue<token>*   _token_queue;
+#       else
+        token                 _token;
+#       endif
+    public:
+        // (*) Who and what am I ? _______________________________________________________
+        Simple&  self;
+
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    protected:
+        // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
+        Accumulator        accumulator;
+#       endif
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+    public:
+        PostCategorizer    post_categorizer;
+#       endif
+
+
 
         // (*) All Modes are Friends _____________________________________________________
         friend     QUEX_ANALYSER_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(Simple*);
@@ -532,10 +531,6 @@ namespace quex {
         // (*) User's Lexer Class Body Extenstion ________________________________________
 
 
-    public:
-        // (*) Who and what am I ? _______________________________________________________
-        Simple&  self;
-
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         // (*) Python-like indentation support ___________________________________________
     private:    
@@ -546,10 +541,6 @@ namespace quex {
     public:
         void    disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 #endif 
-
-    protected:
-        // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
-        ACCUMULATOR_tag     accumulator;
 
     private:
         void __debug_print_transition(quex_mode* Source, quex_mode* Target);
@@ -576,21 +567,23 @@ namespace quex {
         QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
         QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         _indentation = 0;
         _indentation_count_enabled_f = false;
         _indentation_event_enabled_f = true;
-#endif
+#       endif
 
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         _line_number_at_begin = 0;
         _line_number_at_end   = 1;
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
         _column_number_at_begin = 0;
         _column_number_at_end   = 1; 
-#endif
+#       endif
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new token_queue<token>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+#       endif
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -628,20 +621,26 @@ namespace quex {
 
 #   define __QUEX_SETTING_BUFFER_LIMIT_CODE     0x0
 #   define __QUEX_SETTING_DERIVED_CLASS_NAME    Simple
-#   define __QUEX_SETTING_TOKEN_CLASS_NAME      token
 #   define __QUEX_SETTING_MAX_MODE_CLASS_N      1
 #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID LEX_ID_ONE_AND_ONLY
 
 #   include <quex/code_base/template/constructor.i>
+#   include <quex/code_base/template/count_line_column.i>
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #      include <quex/code_base/template/count_line_column-with-indentation.i>
 #   endif
-#   include <quex/code_base/template/count_line_column.i>
-#
-#   include <quex/code_base/template/token_receiving_via_queue.i>
-#   include <quex/code_base/template/token_sending_via_queue.i>
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#       include <quex/code_base/template/accumulator.i>
+#   endif
+
+#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#      include <quex/code_base/template/token_receiving_via_queue.i>
+#      include <quex/code_base/template/token_sending_via_queue.i>
+#   else
+#      include <quex/code_base/template/token_receiving_via_singleton.i>
+#      include <quex/code_base/template/token_sending_via_singleton.i>
+#   endif
 #   include <quex/code_base/template/mode_handling.i>
-#   include <quex/code_base/template/accumulator.i>
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #      include <quex/code_base/template/include_stack.i>
 #   endif
@@ -649,9 +648,9 @@ namespace quex {
 
 #   undef __QUEX_SETTING_BUFFER_LIMIT_CODE
 #   undef __QUEX_SETTING_DERIVED_CLASS_NAME
-#   undef __QUEX_SETTING_TOKEN_CLASS_NAME
 #   undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #   undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#   undef __QUEX_SETTING_TOKEN_CLASS_NAME
 #   undef CLASS
 
 }
@@ -2596,12 +2595,11 @@ STATE_255_DROP_OUT:
     QUEX_PREPARE_LEXEME_LENGTH
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(LexemeL);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(LexemeL);
         
         #line 27 "dos_lf_2.qx"
-        self.send(TKN_NUMBER, atoi((char*)Lexeme)); RETURN;
-#line 1945 "Simple-core-engine.cpp"
+        self.send(TKN_NUMBER, atoi((char*)Lexeme)); return;
+#line 1944 "Simple-core-engine.cpp"
         
         }
     }
@@ -2615,8 +2613,7 @@ STATE_255_DROP_OUT:
     QUEX_PREPARE_LEXEME_LENGTH
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count(Lexeme, LexemeL);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL);
         
         }
     }
@@ -2629,12 +2626,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(6);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(6);
         
         #line 19 "dos_lf_2.qx"
-        self.send(TKN_STRUCT); RETURN;
-#line 1978 "Simple-core-engine.cpp"
+        self.send(TKN_STRUCT); return;
+#line 1975 "Simple-core-engine.cpp"
         
         }
     }
@@ -2648,12 +2644,11 @@ STATE_255_DROP_OUT:
     QUEX_PREPARE_LEXEME_LENGTH
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(LexemeL);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(LexemeL);
         
         #line 28 "dos_lf_2.qx"
         self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1997 "Simple-core-engine.cpp"
+#line 1993 "Simple-core-engine.cpp"
         
         }
     }
@@ -2666,12 +2661,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(3);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(3);
         
         #line 20 "dos_lf_2.qx"
-        self.send(TKN_TYPE_INT); RETURN;
-#line 2015 "Simple-core-engine.cpp"
+        self.send(TKN_TYPE_INT); return;
+#line 2010 "Simple-core-engine.cpp"
         
         }
     }
@@ -2684,12 +2678,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(6);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(6);
         
         #line 21 "dos_lf_2.qx"
-        self.send(TKN_TYPE_DOUBLE); RETURN;
-#line 2033 "Simple-core-engine.cpp"
+        self.send(TKN_TYPE_DOUBLE); return;
+#line 2027 "Simple-core-engine.cpp"
         
         }
     }
@@ -2702,12 +2695,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(4);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(4);
         
         #line 22 "dos_lf_2.qx"
-        self.send(TKN_SEND); RETURN;
-#line 2051 "Simple-core-engine.cpp"
+        self.send(TKN_SEND); return;
+#line 2044 "Simple-core-engine.cpp"
         
         }
     }
@@ -2720,12 +2712,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(6);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(6);
         
         #line 23 "dos_lf_2.qx"
-        self.send(TKN_EXPECT); RETURN;
-#line 2069 "Simple-core-engine.cpp"
+        self.send(TKN_EXPECT); return;
+#line 2061 "Simple-core-engine.cpp"
         
         }
     }
@@ -2738,12 +2729,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(1);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(1);
         
         #line 24 "dos_lf_2.qx"
-        self.send(TKN_SEMICOLON); RETURN;
-#line 2087 "Simple-core-engine.cpp"
+        self.send(TKN_SEMICOLON); return;
+#line 2078 "Simple-core-engine.cpp"
         
         }
     }
@@ -2756,12 +2746,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(1);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(1);
         
         #line 25 "dos_lf_2.qx"
-        self.send(TKN_BRACKET_OPEN); RETURN;
-#line 2105 "Simple-core-engine.cpp"
+        self.send(TKN_BRACKET_OPEN); return;
+#line 2095 "Simple-core-engine.cpp"
         
         }
     }
@@ -2774,12 +2763,11 @@ STATE_255_DROP_OUT:
     QUEX_DO_NOT_PREPARE_LEXEME_OBJECT
     {
         {
-        self.__count_shift_end_values_to_start_values();
-        self.count_NoNewline(1);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_NO_NEWLINE_N(1);
         
         #line 26 "dos_lf_2.qx"
-        self.send(TKN_BRACKET_CLOSE); RETURN;
-#line 2123 "Simple-core-engine.cpp"
+        self.send(TKN_BRACKET_CLOSE); return;
+#line 2112 "Simple-core-engine.cpp"
         
         }
     }
@@ -2793,17 +2781,20 @@ TERMINAL_END_OF_STREAM:
                 QUEX_PREPARE_LEXEME_LENGTH
                 {
                     {
-        self.__count_shift_end_values_to_start_values();
-        self.count(Lexeme, LexemeL);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL);
         
         #line 16 "dos_lf_2.qx"
-        self.send(TKN_TERMINATION); RETURN;
-#line 2142 "Simple-core-engine.cpp"
+        self.send(TKN_TERMINATION); return;
+#line 2130 "Simple-core-engine.cpp"
         
         }
                 }
 
+#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+        return /*TKN_TERMINATION*/;
+#else
         return TKN_TERMINATION;
+#endif
 
 TERMINAL_DEFAULT:
 if( QUEX_END_OF_FILE() ) {
@@ -2813,10 +2804,13 @@ if( QUEX_END_OF_FILE() ) {
                 QUEX_PREPARE_LEXEME_LENGTH
                 {
                     {
-        self.__count_shift_end_values_to_start_values();
-        self.count(Lexeme, LexemeL);
+        __QUEX_COUNT_LINE_COLUMN_SCENARIO_GENERAL(Lexeme, LexemeL);
         self.send(TKN_TERMINATION);
-        return TKN_TERMINATION;
+        #ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+            return /*TKN_TKN_TERMINATION*/;
+        #else
+            return TKN_TERMINATION;
+        #endif
         
         }
                 }

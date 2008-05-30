@@ -52,18 +52,19 @@ $(APPLICATION): $(APPLICATION).o \
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-queue
+	@quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-queue >& tmp.txt
 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	touch $(MODE_FILES)
-	rm -f $(ENGINE_SOURCES)
-	rm -f $(ENGINE_NAME).o
-	rm -f $(ENGINE_NAME)-core-engine.o
-	rm -f lexer.o
-	rm -f lexer
-	rm -f token_ids
-	rm -f *.bak
-	rm -f extensive-example.txt
+	@touch $(MODE_FILES)
+	@rm -f $(ENGINE_SOURCES)
+	@rm -f $(ENGINE_NAME).o
+	@rm -f $(ENGINE_NAME)-core-engine.o
+	@rm -f lexer.o
+	@rm -f lexer
+	@rm -f token_ids
+	@rm -f *.bak
+	@rm -f tmp.txt
+	@echo "clean"
 

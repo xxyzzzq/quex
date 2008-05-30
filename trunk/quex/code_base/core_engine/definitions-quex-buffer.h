@@ -6,8 +6,11 @@
 struct QUEX_CORE_ANALYSER_STRUCT;
 
 #ifdef __QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION
-    typedef int                                     QUEX_ANALYSER_RETURN_TYPE;
-    typedef QUEX_CORE_ANALYSER_STRUCT               QUEX_LEXER_CLASS;   
+    typedef int                                      QUEX_ANALYSER_RETURN_TYPE;
+#   ifdef    __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+#      undef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+#   endif
+    typedef QUEX_CORE_ANALYSER_STRUCT                QUEX_LEXER_CLASS;   
     typedef quex::buffer<uint8_t>::character_type    QUEX_CHARACTER_TYPE;
     typedef quex::buffer<uint8_t>::character_type    QUEX_LEXEME_CHARACTER_TYPE;
 #endif

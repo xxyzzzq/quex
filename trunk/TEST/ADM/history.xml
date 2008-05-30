@@ -1,4 +1,4 @@
-<history date="Thu May 29 21:58:32 2008" element-n="191">
+<history date="Fri May 30 05:34:23 2008" element-n="234">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -315,5 +315,50 @@
         <accept    time="03:10:41" application="bug-1952133.sh" choice="2501" crc="-1413759631" />
         <accept    time="03:10:47" application="bug-1952133.sh" choice="2502" crc="1387109295" />
         <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="19:58:32"/>
+    </day>
+    <day year="2008" month="05" day="30">
+        <accept    time="03:20:27" application="bug-1952133.sh" choice="29" crc="-1965207736" />
+        <accept    time="03:20:37" application="bug-1952133.sh" choice="30" crc="-2107699820" />
+        <accept    time="03:20:43" application="bug-1952133.sh" choice="127" crc="639794907" />
+        <accept    time="03:20:51" application="bug-1952133.sh" choice="128" crc="-273816244" />
+        <accept    time="03:20:57" application="bug-1952133.sh" choice="129" crc="79299260" />
+        <accept    time="03:21:03" application="bug-1952133.sh" choice="2499" crc="-883374869" />
+        <accept    time="03:21:09" application="bug-1952133.sh" choice="2500" crc="396308692" />
+        <accept    time="03:21:17" application="bug-1952133.sh" choice="2501" crc="2007951774" />
+        <accept    time="03:21:23" application="bug-1952133.sh" choice="2502" crc="-671317440" />
+        <accept    time="03:25:28" application="bug-1952747.sh" choice="" crc="-2076561580" />
+        <accept    time="03:25:33" application="bug-1893880.sh" choice="" crc="-1830775414" />
+        <accept    time="03:25:42" application="bug-1889086.sh" choice="" crc="-1486450036" />
+        <accept    time="03:25:45" application="bug-1890828.sh" choice="" crc="-1379047760" />
+        <accept    time="03:25:56" application="bug-1908092.sh" choice="" crc="1110966914" />
+        <accept    time="03:26:00" application="bug-1889871.sh" choice="" crc="-1246523500" />
+        <accept    time="03:26:16" application="bug-1889692.sh" choice="" crc="-122831979" />
+        <accept    time="03:26:20" application="bug-1936707.sh" choice="" crc="-673084129" />
+        <accept    time="03:26:24" application="bug-1908436.sh" choice="" crc="274803384" />
+        <accept    time="03:26:29" application="bug-1894578.sh" choice="" crc="1874267893" />
+        <accept    time="03:26:37" application="bug-1885855.sh" choice="" crc="1600902326" />
+        <accept    time="03:26:48" application="bug-1895066.sh" choice="" crc="1760998401" />
+        <accept    time="03:26:51" application="bug-1889089.sh" choice="" crc="-1981542010" />
+        <accept    time="03:27:13" application="bug-1898125.sh" choice="" crc="1088260997" />
+        <accept    time="03:27:17" application="bug-1885846.sh" choice="" crc="1493545985" />
+        <accept    time="03:27:24" application="bug-1890876.sh" choice="" crc="250888149" />
+        <accept    time="03:27:28" application="bug-1889892.sh" choice="" crc="-1439273065" />
+        <accept    time="03:27:32" application="bug-1889702.sh" choice="" crc="495965400" />
+        <accept    time="03:27:43" application="bug-1893849.sh" choice="" crc="-1921867414" />
+        <accept    time="03:27:47" application="bug-1889321.sh" choice="" crc="-1794323936" />
+        <accept    time="03:27:50" application="bug-1894130.sh" choice="" crc="-439618702" />
+        <accept    time="03:27:53" application="bug-1902175.sh" choice="" crc="-883469764" />
+        <accept    time="03:27:56" application="bug-1892227.sh" choice="" crc="-911274598" />
+        <accept    time="03:27:59" application="bug-1969629.sh" choice="" crc="-689215474" />
+        <accept    time="03:28:04" application="bug-1887163.sh" choice="" crc="312783870" />
+        <accept    time="03:28:07" application="bug-1905768.sh" choice="" crc="1191787275" />
+        <accept    time="03:28:10" application="bug-1889877.sh" choice="" crc="1595045568" />
+        <accept    time="03:28:13" application="bug-1893874.sh" choice="" crc="-47022051" />
+        <crc-error time="03:33:13" application="bug-1891254.sh" choice="" database-crc="1488678156" real-crc="-872092837"/>
+        <crc-error time="03:33:14" application="bug-1885304.sh" choice="" database-crc="724269942" real-crc="1164338596"/>
+        <crc-error time="03:33:16" application="bug-1892809.sh" choice="" database-crc="-1535149083" real-crc="1202907301"/>
+        <crc-error time="03:33:16" application="bug-1894185.sh" choice="" database-crc="781076954" real-crc="-1782156034"/>
+        <accept    time="03:33:26" application="bug-1895500.sh" choice="" crc="-42648966" />
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="03:34:23"/>
     </day>
 </history>

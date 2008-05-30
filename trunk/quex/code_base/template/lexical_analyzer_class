@@ -145,6 +145,8 @@ $$LEX_ID_DEFINITIONS$$
 }    
 
 typedef void QUEX_ANALYSER_RETURN_TYPE;
+#define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+
 // CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
 //                 a character. This is independent of the coding (ASCII, WinArabic, ...)
 // LEXEME_CHARACTER_TYPE: Type that results in an appropriate type for string handling
@@ -338,7 +340,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) Version information
         const char* version() const; // created by quex for version/date information
 
-#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#    ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         struct memento {
             quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
             QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
@@ -610,9 +612,9 @@ $$CONSTRUCTOR_EXTENSTION$$
 
 #   undef __QUEX_SETTING_BUFFER_LIMIT_CODE
 #   undef __QUEX_SETTING_DERIVED_CLASS_NAME
-#   undef __QUEX_SETTING_TOKEN_CLASS_NAME
 #   undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #   undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#   undef __QUEX_SETTING_TOKEN_CLASS_NAME
 #   undef CLASS
 
 }
