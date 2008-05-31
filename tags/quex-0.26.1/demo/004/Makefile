@@ -1,0 +1,91 @@
+# PURPOSE: Makefile Demo Application of Quex
+#
+# ABSOLUTELY NO WARRANTY
+#_______________________________________________________________________________
+COMPILER     = g++ # -S # -E
+BUFFER_SIZE  = 65536
+OPTIMIZATION = -O3 #-pg # -O3# -pg -Os
+
+# (*) SETUP ____________________________________________________________________
+SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
+      -D'CPU_NAME="IntelCoreDuo"' \
+      -D'CPU_CODE="T2350"' \
+      -D'CPU_FREQ_MHZ=((float)(1866.760))' \
+	  -D'CC_OPTIMIZATION_FLAGS="$(OPTIMIZATION)"' \
+      -D'CHARACTER_SIZE=((unsigned)(1))' \
+	  -D'OS_NAME="linux-2"' \
+	  -D'CC_NAME="$(COMPILER)"' \
+	  -D'CC_VERSION="4.2.1"' \
+      -D'QUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE)' \
+	  -D'NOTE=""'
+
+.PHONY: clean
+
+ifndef QUEX_PATH
+    $(error The environment variable QUEX_PATH is not defined!)
+endif
+
+# -- INPUT
+MODE_FILES       = c.qx
+# -- FILES PRODUCED BY QUEX
+ENGINE_NAME      = c_lexer# NOTE: a whitespace after this name creates chaos!
+ENGINE_SOURCES   = $(ENGINE_NAME)                     \
+                   $(ENGINE_NAME).cpp                 \
+                   $(ENGINE_NAME)-token_ids           \
+		           $(ENGINE_NAME)-core-engine.cpp
+APPLICATION  = lexer
+SOURCE_FILES = lexer.cpp report.cpp \
+			   $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
+
+# (*) COMPILER SETTINGS ________________________________________________________
+#     (change COMPILER to whatever you use as compiler on the command line,
+#     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
+	 -I./ -I$(QUEX_PATH)  \
+	 $(SETUP) \
+	 -DNDEBUG \
+	 -DQUEX_BENCHMARK_SERIOUS \
+     -DQUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE=2 \
+     #-DQUEX_OPTION_ACTIVATE_ASSERTS	\
+     #-DQUEX_SETTING_BUFFER_SIZE=64 \
+	 # -D__QUEX_OPTION_UNIT_TEST \
+     # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+     # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
+
+LD = $(COMPILER)
+
+# (*) RULES ____________________________________________________________________
+#    lexer    --> application w/o line or column counting
+#    lexer-lc --> application w/ line and column counting
+all: lexer lexer-lc
+
+# -- application
+lexer-lc: $(SOURCE_FILES)
+	$(CC) \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
+		$(SOURCE_FILES) -o $@
+
+lexer: $(SOURCE_FILES)
+	$(CC) \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
+		$(SOURCE_FILES) -o $@
+
+
+$(ENGINE_SOURCES): $(MODE_FILES)
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
+
+# (*) HELPERS __________________________________________________________________
+clean:	
+	rm -f lexer lexer-lc
+	touch $(MODE_FILES)
+	rm -f $(ENGINE_SOURCES)
+	rm -f $(ENGINE_NAME).o
+	rm -f $(ENGINE_NAME)-core-engine.o
+	rm -f lexer.o
+	rm -f report.o
+	rm -f lexer
+	rm -f token_ids
+	rm -f *.bak
+
