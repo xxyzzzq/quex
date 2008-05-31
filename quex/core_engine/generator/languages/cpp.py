@@ -223,20 +223,12 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
     txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += "    " + LanguageDB["$drop-out-backward"](label.get_input(CurrentStateIdx)).replace("\n", "\n    ")
+        txt += "    " + LanguageDB["$drop-out-backward"](CurrentStateIdx).replace("\n", "\n    ")
         ## txt += "\n#   else\n"
         ## txt += "        " + LanguageDB["$input/get"] + "\n"
         ## txt += "        goto %s;\n" % label.get_input(CurrentStateIdx)
-        txt += "\n#   endif\n"
-
-    if DropOutTargetStateID != -1L:
-        # A 'match all' is implemented as 'drop out to target'. This happens
-        # in order to ensure that the buffer limits are checked.
-        txt += "    goto %s;\n" % label.get(StateMachineName, DropOutTargetStateID)
-        return txt
-    
-    #  -- general drop out: goto general terminal state
-    txt += "    goto %s;\n" % label.get_terminal(BackwardLexingF=True) 
+        txt += "#   endif\n"
+    txt += "    goto TERMINAL_GENERAL_PRE_CONTEXT;\n"
 
     return txt
 
@@ -248,9 +240,10 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += "    "
-        txt += LanguageDB["$drop-out-forward"](
-                OnReloadGotoLabel=label.get_input(CurrentStateIdx)).replace("\n", "\n    ")
-        txt += "\n#   endif /* __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING */\n"
+        txt += LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
+        txt += "\n#   endif\n"
+    txt += "    goto TERMINAL_GENERAL;\n"
+    return txt
 
     # From here on: input is not a 'buffer limit code' 
     #               (i.e. input does **not** mean: 'load buffer')
@@ -297,7 +290,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
 
     txt = ""
-    if_statement = LanguageDB["$if"]
+    first_if_statement_f = True
     OriginList.sort()
     for origin in OriginList:
         if not origin.is_acceptance(): continue
@@ -305,17 +298,19 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
         info = get_on_detection_code_fragment(StateMachineName, origin)
 
         if origin.pre_context_id() != -1L:
-            txt += LanguageDB["$if pre-context"](origin.pre_context_id())
+            if first_if_statement_f: txt += LanguageDB["$if pre-context"](origin.pre_context_id())
+            else:                    txt += LanguageDB["$elseif pre-context"](origin.pre_context_id())
             txt += indent_this(info)
             txt += LanguageDB["$endif"]
         
         elif origin.pre_context_begin_of_line_f():
-            txt += LanguageDB["$if begin-of-line"]
+            if first_if_statement_f: txt += LanguageDB["$if begin-of-line"]
+            else:                    txt += LanguageDB["$elseif begin-of-line"]
             txt += indent_this(info)
             txt += LanguageDB["$endif"] 
         
         else:
-            if if_statement == LanguageDB["$if"]: 
+            if first_if_statement_f: 
                 txt += info
             else:
                 # if an 'if' statements preceeded, the acceptance needs to appear in an else block
@@ -325,7 +320,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
 
             break  # no need for further pre-condition consideration
 
-        if_statement = LanguageDB["$elseif"]
+        first_if_statement_f = False
 
     # (*) write code for the unconditional acceptance states
     if txt == "": return ""
@@ -339,41 +334,47 @@ def __tell_position(StateMachineID=None):
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
+#   if    defined(__GNUC__) \
+       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
+#       if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+#           define __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#       endif
+#   endif
 #   include "$$INCLUDE$$"
 #   define __QUEX_ENGINE_HEADER_DEFINITIONS
 
 #   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 #      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-   std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
-//        std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p - (me->buffer_begin -1)));            
-// std::fprintf(stdout, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr() - (me->__buffer->content_front() - 1) ));            
+   std::fprintf(stderr, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
+//        std::fprintf(stderr, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p - (me->buffer_begin -1)));            
+// std::fprintf(stderr, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr() - (me->__buffer->content_front() - 1) ));            
 
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stdout, "START:    %s\\n", #Name)
+              std::fprintf(stderr, "START:    %s\\n", #Name)
 
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stdout, "enter:    %i\\n", (int)StateIdx)
+              std::fprintf(stderr, "enter:    %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stdout, "drop:     %i\\n", (int)StateIdx)
+              std::fprintf(stderr, "drop:     %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \\
               __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stdout, "accept:   %i\\n", (int)StateIdx)
+              std::fprintf(stderr, "accept:   %i\\n", (int)StateIdx)
 
 #      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \\
               __QUEX_PRINT_SOURCE_POSITION()                   \\
-              std::fprintf(stdout, "terminal: %s\\n", #Terminal)
+              std::fprintf(stderr, "terminal: %s\\n", #Terminal)
 
 #      define __QUEX_DEBUG_INFO_INPUT(Character)                             \\
               __QUEX_PRINT_SOURCE_POSITION()                                 \\
-                Character == '\\n' ? std::fprintf(stdout, "input:    '\\\\n'\\n") \\
-              : Character == '\\t' ? std::fprintf(stdout, "input:    '\\\\t'\\n") \\
-              :                      std::fprintf(stdout, "input:    (%x) '%c'\\n", (char)Character, (int)Character) 
+                Character == '\\n' ? std::fprintf(stderr, "input:    '\\\\n'\\n") \\
+              : Character == '\\t' ? std::fprintf(stderr, "input:    '\\\\t'\\n") \\
+              :                      std::fprintf(stderr, "input:    (%x) '%c'\\n", (char)Character, (int)Character) 
 #   else
 #      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
 #      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
@@ -445,6 +446,11 @@ quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUE
 """
 
 __analyzer_function_start = """
+#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+    static void* drop_out_state_label = 0x0;
+#   else
+    static int   drop_out_state_index = -1;
+#   endif
 #   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
     int loaded_byte_n = 0; /* At transition Drop-Out: 
                            **    > 0  number of loaded bytes. 
@@ -603,6 +609,48 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //
     __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
     goto __REENTRY_POINT;
+
+#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+__FORWARD_DROP_OUT_HANDLING:
+    // Since all drop out states work the same, we introduce here a 'router' that
+    // jumps to a particular state based on the setting of a variable: drop_out_state_index.
+    if( input == me->__buffer->BLC ) {
+        loaded_byte_n = me->__buffer->load_forward();
+        if( loaded_byte_n != -1 ) {
+            $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
+#           if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+                goto *drop_out_state_label;
+#           else
+                goto __DROP_OUT_ROUTING;
+#           endif
+        }
+        // no load possible (EOF) => (i) goto general terminal
+        //                           (ii) init state triggers EOF action
+    }
+    goto TERMINAL_GENERAL;
+
+#if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
+__BACKWARD_DROP_OUT_HANDLING:
+    if( input == me->__buffer->BLC ) {
+        me->__buffer->load_backward();
+        if( ! (me->__buffer->is_begin_of_file()) ) { 
+#           if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+                goto *drop_out_state_label;
+#           else
+                goto __DROP_OUT_ROUTING;
+#           endif
+        }
+    }
+    goto TERMINAL_GENERAL_PRE_CONTEXT;
+#endif
+#endif // __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
+
+#if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+__DROP_OUT_ROUTING:
+    switch( drop_out_state_index ) {
+$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$
+    }
+#endif
 """
 
 def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStreamAction, 
@@ -702,6 +750,22 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     default_action_str += __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
                                               IndentationOffset=16)
 
+    # -- routing to states via switch statement
+    #    (note, the gcc computed goto is implement, too)
+    txt = ""
+    for state_index, state in sm.states.items():
+        if state.transitions().is_empty(): continue
+        txt += "            case %i: goto STATE_%i_INPUT;\n" % (int(state_index), int(state_index)) 
+    if sm.core().pre_context_sm() != None:
+        for state_index, state in sm.core().pre_context_sm().states.items():
+            if state.transitions().is_empty(): continue
+            txt += "            case %i: goto STATE_%i_INPUT;\n" % (int(state_index), int(state_index)) 
+
+    switch_cases_drop_out_back_router_str = txt
+
+    if PreConditionIDList == []: precondition_involved_f = "0"
+    else:                        precondition_involved_f = "1"
+
     txt = blue_print(__terminal_state_str, 
                      [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
@@ -709,6 +773,8 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
                       ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index)],
+                      ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
+                      ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",  precondition_involved_f],
                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
 
     return txt

@@ -43,8 +43,10 @@ db["C++"] = {
     "$if ==":             lambda value: "if( input == " + value + ") {\n",
     "$if !=":             lambda value: "if( input != " + value + ") {\n",
     "$if >=":             lambda value: "if( input >= " + value + ") {\n",
-    "$if pre-context":    lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
-    "$if begin-of-line":  "if( me->begin_of_line_f ) {\n",
+    "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
+    "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
+    "$if begin-of-line":      "if( me->begin_of_line_f ) {\n",
+    "$elseif begin-of-line":  "else if( me->begin_of_line_f ) {\n",
     "$<":                 lambda left, right: left + " < " + right,
     "$==":                lambda left, right: left + " == " + right,
     "$!=":                lambda left, right: left + " != " + right,
@@ -73,23 +75,20 @@ db["C++"] = {
     "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
                                                (repr(id).replace("L", ""), value),
     "$drop-out":          cpp.__state_drop_out_code,
-    "$drop-out-forward":  lambda OnReloadGotoLabel: \
-                          "if( input == me->__buffer->BLC ) {\n"                                     + \
-                          "    loaded_byte_n = me->__buffer->load_forward();\n"                      + \
-                          "    if( loaded_byte_n != -1 ) {\n"                                        + \
-                          "        $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);\n" + \
-                          "        goto %s;\n" %  OnReloadGotoLabel                                  + \
-                          "    }\n"                                                                  + \
-                          "    // no load possible (EOF) => (i) goto general terminal\n"             + \
-                          "    //                           (ii) init state triggers EOF action\n"   + \
-                          "    goto TERMINAL_GENERAL;\n"                                             + \
-                          "}",
-    "$drop-out-backward": lambda OnReloadGotoLabel:
-                          "if( input == me->__buffer->BLC ) {\n"             + \
-                          "    me->__buffer->load_backward();\n"             + \
-                          "    if( ! (me->__buffer->is_begin_of_file()) )\n" + \
-                          "        goto %s; /* no adr. adaptions necessary */\n" % OnReloadGotoLabel + \
-                          "}",                                                                         
+    "$drop-out-forward":  lambda StateIndex: 
+                          "#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)\n"           + \
+                          "    drop_out_state_label = &&STATE_%i_INPUT;\n" % int(StateIndex)  + \
+                          "#else\n"                                                           + \
+                          "    drop_out_state_index = %i;\n" % int(StateIndex)                + \
+                          "#endif\n"                                                          + \
+                          "goto __FORWARD_DROP_OUT_HANDLING;\n",
+    "$drop-out-backward": lambda StateIndex:              
+                          "#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)\n"           + \
+                          "    drop_out_state_label = &&STATE_%i_INPUT;\n" % int(StateIndex)  + \
+                          "#else\n"                                                           + \
+                          "    drop_out_state_index = %i;\n" % int(StateIndex)                + \
+                          "#endif\n"                                                          + \
+                          "goto __BACKWARD_DROP_OUT_HANDLING;\n",
     "$compile-option":           lambda option: "#define %s\n" % option,
     "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",

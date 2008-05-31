@@ -194,10 +194,10 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
                   "-ggdb "# + \
-                  #"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  #"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
-    ## print compile_str # DEBUG
+    print compile_str + "##" # DEBUG
     os.system(compile_str)
 
     print "## (3) running the test"

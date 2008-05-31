@@ -2,9 +2,9 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-COMPILER     = g++
+COMPILER     = g++ # -S # -E
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3# -pg -Os
+OPTIMIZATION = -O3 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
