@@ -1,3 +1,5 @@
+import sys
+
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, StateMachineName):
@@ -14,13 +16,17 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, Sta
                              StateMachineName, StateIdx, 
                              BackwardLexingF = BackwardLexingF)
         else:
-            # We cannot transit to any subsequent state without checking wether
-            # the received character was a buffer limit code. To prevent an 
-            # unconditional goto, rewrite the drop out in such a way that by
-            # default it moves to the given target state. In case of buffer limit
-            # code it returns in order to read the next character.
-            # NOTE: I do not understand what I wrote here <fschaef 08y5m10d>
-            txt = ""
+            # We can actually be sure, that the Buffer Limit Code is filtered
+            # out, since this is the task of the regular expression parser.
+            # In case of backward lexing in pseudo-ambiguous post conditions,
+            # it makes absolutely sense that there is only one interval that
+            # covers all characters (see the discussion there).
+            assert TriggerMap[0][0].begin == -sys.maxint
+            assert TriggerMap[0][0].end   == sys.maxint
+            txt =  "    " + LanguageDB["$transition"](StateMachineName, 
+                                                      StateIdx, 
+                                                      TriggerMap[0][1], 
+                                                      BackwardLexingF) 
 
     else:
         # Empty State (no transitions, but the empty epsilon transition)
@@ -35,8 +41,6 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, Sta
         txt  = txt.replace("\n", "\n    ")
 
     return txt + "\n"
-
-
 
 def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, BackwardLexingF):
     """Creates code for state transitions from this state. This function is very

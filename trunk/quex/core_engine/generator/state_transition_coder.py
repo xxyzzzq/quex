@@ -29,7 +29,9 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                                InitStateF, BackwardLexingF, StateMachineName)
 
     txt += drop_out_block(state, StateIdx, TriggerMap, 
-                          InitStateF, BackwardLexingF, StateMachineName, LanguageDB)
+                          InitStateF, 
+                          BackwardLexingF, BackwardInputPositionDetectionF,
+                          StateMachineName, LanguageDB)
     
     return txt # .replace("\n", "\n    ") + "\n"
 
@@ -85,7 +87,7 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
 
     return txt
 
-def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, StateMachineName, LanguageDB):
+def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  BackwardInputPositionDetectionF, StateMachineName, LanguageDB):
     # -- drop out code (transition to no target state)
     drop_out_label = languages_label.get_drop_out(StateIdx)
     txt  = LanguageDB["$label-definition"](drop_out_label) + "\n"
@@ -110,8 +112,9 @@ def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, Sta
                                                   BackwardLexingF=False) + "\n"
         txt += "    " + LanguageDB["$endif"]
 
+    BRRODO_f = TriggerMap != [] and not BackwardInputPositionDetectionF
     txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
-                                   BufferReloadRequiredOnDropOutF = TriggerMap != [],
+                                   BufferReloadRequiredOnDropOutF = BRRODO_f,
                                    CurrentStateIsAcceptanceF      = state.is_acceptance(),
                                    OriginList                     = state.origins().get_list(),
                                    LanguageDB                     = LanguageDB,
