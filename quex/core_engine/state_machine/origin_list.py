@@ -79,6 +79,17 @@ class StateOriginList:
             if origin.store_input_position_f() == True: return True
         return False
 
+    def contains_any_pre_context_dependency(self):
+        for origin in self.__list:
+            if origin.pre_context_id() != -1L:       return True
+            if origin.pre_context_begin_of_line_f(): return True
+        return False    
+
+    def contains_pre_context_id(self):
+        for origin in self.__list:
+            if origin.pre_context_id() != -1L: return True
+        return False    
+
     def contains_pre_context_begin_of_line(self):
         for origin in self.__list:
             if origin.pre_context_begin_of_line_f(): return True

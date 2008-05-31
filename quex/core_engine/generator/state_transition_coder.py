@@ -5,7 +5,8 @@ from copy import deepcopy
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF, 
-       BackwardInputPositionDetectionF=False, InitStateF=False):
+       BackwardInputPositionDetectionF=False, InitStateF=False,
+       DeadEndStateDB={}):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
@@ -14,8 +15,13 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
         assert state.transitions().get_epsilon_target_state_index_list() == [], \
                "epsilon transition contained target states: state machine was not made a DFA!\n" + \
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
+
+    if DeadEndStateDB.has_key(StateIdx):
+        return dead_end_state_code(state, DeadEndStateDB[StateIdx], StateMachineName, LanguageDB)
        
     TriggerMap = state.transitions().get_trigger_map()
+    assert TriggerMap != []  # Only dead end states have empty trigger maps.
+    #                        # ==> here, the trigger map cannot be empty.
     #_________________________________________________________________________________________    
     
     txt = ""
@@ -26,7 +32,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     txt += input_block(StateIdx, TriggerMap == [], InitStateF, BackwardLexingF, LanguageDB)
 
     txt += transition_block.do(state, StateIdx, TriggerMap, LanguageDB, 
-                               InitStateF, BackwardLexingF, StateMachineName)
+                               InitStateF, BackwardLexingF, StateMachineName, DeadEndStateDB)
 
     txt += drop_out_block(state, StateIdx, TriggerMap, 
                           InitStateF, 
@@ -109,7 +115,7 @@ def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  Ba
                 "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"
         txt += "        " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
-                                                  BackwardLexingF=False) + "\n"
+                                                      BackwardLexingF=False) + "\n"
         txt += "    " + LanguageDB["$endif"]
 
     BRRODO_f = TriggerMap != [] and not BackwardInputPositionDetectionF
@@ -122,4 +128,37 @@ def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  Ba
         
 
     return txt + "\n"
+
+def dead_end_state_code(State, DeadEndType, StateMachineName, LanguageDB):
+    # DeadEndType == -1:
+    #    States, that do not contain any acceptance transit to the 'General Terminal'
+    #    The do not have to be coded. Instead the 'jump' must be redirected immediately
+    #    to the general terminal.
+    # DeadEndType == some integer:
+    #    States, where the acceptance is clear must be redirected to the correspondent
+    #    terminal given by the integer.
+    # DeadEndType == None:
+    #    States, where the acceptance depends on the run-time pre-conditions being fulfilled
+    #    or not. They are the only once, that are 'implemented' as routers, that map to
+    #    a terminal correspondent the pre-conditions.
+    print "## des:", State.origins(), DeadEndType
+
+    if DeadEndType != None: return ""
+
+    def __on_detection_code(StateMachineName, Origin):
+        txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
+        terminal_label = label.get_terminal(Origin.state_machine_id)
+        return txt + "goto %s;\n" % terminal_label
+
+    t_txt = get_acceptance_detector(State.origins().get_list(), 
+                                    __on_detection_code,
+                                    LanguageDB, StateMachineName)
+            
+    # -- double check for consistency
+    assert t_txt != "", "Acceptance state without acceptance origins!"        
+
+    return txt + t_txt
+
+
+
 
