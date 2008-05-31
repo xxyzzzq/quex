@@ -12,7 +12,7 @@ from quex.core_engine.generator.action_info import ActionInfo
 # C++
 #
 def __transition(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-                 BackwardLexingF, BufferReloadRequiredOnDropOutF=True):
+                 BackwardLexingF, BufferReloadRequiredOnDropOutF=True, DeadEndStateDB={}):
     """
         StateMachineName: Name of the state machine.
 
@@ -27,12 +27,17 @@ def __transition(StateMachineName, CurrentStateIdx, TargetStateIdx,
                          from the input stream. Therefore, at this point, the buffer reload
                          is also nonsense. This flag tells, if code for buffer reload is required
                          or not in the case of a drop out.
+
+        DeadEndStateDB: Contains information about states that have no further transitions. 
+                        If a transition to such a state has to happen, on can directly
+                        go to a correspondent terminal.
+                        
     """
     if BackwardLexingF: 
         return __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-                                            BufferReloadRequiredOnDropOutF)
+                                            BufferReloadRequiredOnDropOutF, DeadEndStateDB)
     else:
-        return __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx)
+        return __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB)
     
 def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, BufferReloadRequiredOnDropOutF):
     """Backward lexiging state transitions are simple, there are only two cases:
@@ -57,11 +62,11 @@ def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateI
     
     # (*) Target State Defined: go there
     if TargetStateIdx >= 0:
-        return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
+        return "goto %s;" % label.get(StateMachineName, TargetStateIdx, DeadEndStateDB, BackwardLexingF=True)
     else:
         return "goto %s;" % label.get_drop_out(CurrentStateIdx)
 
-def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx):
+def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB):
     """
        (1) If event triggers to subsequent state, one has to go there independent wether 
            the current state is an acceptance state or not.
@@ -84,7 +89,7 @@ def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateId
     elif TargetStateIdx == "END_OF_FILE":
         return "goto TERMINAL_END_OF_STREAM;" 
     else:
-        return "goto %s;" % label.get(StateMachineName, TargetStateIdx)
+        return "goto %s;" % label.get(StateMachineName, TargetStateIdx, DeadEndStateDB, BackwardLexingF=False)
 
 def __acceptance_info(OriginList, LanguageDB, BackwardLexingF, 
                       BackwardInputPositionDetectionF=False):
@@ -250,7 +255,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     if DropOutTargetStateID != -1L:
         # -- A 'match all' is implemented as 'drop out to target'. This happens
         #    in order to ensure that the buffer limits are checked.
-        txt += "    goto %s;" % label.get(StateMachineName, DropOutTargetStateID)
+        txt += "    goto %s;" % label.get(StateMachineName, DropOutTargetStateID, {}, None)
         return txt
     
     #     -- 'drop out' in non-acceptance --> goto general terminal
@@ -772,7 +777,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$DEFAULT_ACTION$$",               default_action_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
-                      ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index)],
+                      ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index, {}, None)],
                       ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",  precondition_involved_f],
                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])

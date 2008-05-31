@@ -2,47 +2,50 @@ import sys
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
-def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, StateMachineName):
+class __info:
+    def __init__(self, StateMachineName, State, StateIdx, IsInitStateF, 
+                 LanguageDB, BackwardLexingF, DeadEndStateDB):
+        self.state_machine_name = StateMachineName
+        self.state              = State
+        self.state_index        = StateIdx
+        self.is_init_state_f    = IsInitStateF
+
+        self.language_db       = LanguageDB
+        self.backward_f        = BackwardLexingF
+        self.dead_end_state_db = DeadEndStateDB
+
+def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, StateMachineName, DeadEndStateDB):
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
-    #       i.e states with no transition trigger map. If those can be avoided, then
-    #       this variable can be replaced by 'True'
+    #       AND states during backward input position detection!
+    #       Empty states do not exist any longer, the backward input position is
+    #       essential though for pseudo ambiguous post contexts.
     txt = ""
-    if TriggerMap != []:
+    assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
+    #                       # are not to be coded at this place.
 
-        if len(TriggerMap) > 1:
-            txt = __get_code(state, TriggerMap, LanguageDB, 
-                             StateMachineName, StateIdx, 
-                             BackwardLexingF = BackwardLexingF)
-        else:
-            # We can actually be sure, that the Buffer Limit Code is filtered
-            # out, since this is the task of the regular expression parser.
-            # In case of backward lexing in pseudo-ambiguous post conditions,
-            # it makes absolutely sense that there is only one interval that
-            # covers all characters (see the discussion there).
-            assert TriggerMap[0][0].begin == -sys.maxint
-            assert TriggerMap[0][0].end   == sys.maxint
-            txt =  "    " + LanguageDB["$transition"](StateMachineName, 
-                                                      StateIdx, 
-                                                      TriggerMap[0][1], 
-                                                      BackwardLexingF) 
+    info = __info(StateMachineName=StateMachineName, State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, 
+                  LanguageDB=LanguageDB, BackwardLexingF=BackwardLexingF, DeadEndStateDB=DeadEndStateDB)
 
+    if len(TriggerMap) > 1:
+        txt = __get_code(TriggerMap, info)
     else:
-        # Empty State (no transitions, but the empty epsilon transition)
-        txt  = "    "
-        txt += LanguageDB["$comment"]("no trigger set, no 'get character'") + "\n"
-
-        # trigger outside the trigger intervals
-        txt += LanguageDB["$transition"](StateMachineName, StateIdx, None,
-                                         BackwardLexingF                = BackwardLexingF, 
-                                         BufferReloadRequiredOnDropOutF = False)
-        txt += "\n"
-        txt  = txt.replace("\n", "\n    ")
+        # We can actually be sure, that the Buffer Limit Code is filtered
+        # out, since this is the task of the regular expression parser.
+        # In case of backward lexing in pseudo-ambiguous post conditions,
+        # it makes absolutely sense that there is only one interval that
+        # covers all characters (see the discussion there).
+        assert TriggerMap[0][0].begin == -sys.maxint
+        assert TriggerMap[0][0].end   == sys.maxint
+        txt =  "    " + info.language_db["$transition"](StateMachineName, 
+                                                  StateIdx, 
+                                                  TriggerMap[0][1], 
+                                                  BackwardLexingF) 
 
     return txt + "\n"
 
-def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, BackwardLexingF):
+def __get_code(TriggerMap, info):
     """Creates code for state transitions from this state. This function is very
        similar to the function creating code for a 'NumberSet' condition 
        (see 'interval_handling').
@@ -73,30 +76,18 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
         # (*) Only one interval 
         #     (all boundaring cases must have been dealt with already => case is clear)
         #     If the input falls into this interval the target trigger is identified!
-        txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
-                                        LanguageDB, BackwardLexingF)
+        txt += __create_transition_code(TriggerMap[0], info)
         
     else:    
         # two or more intervals => cut in the middle
         MiddleTrigger_Idx = int(TriggerSetN / 2)
         middle = TriggerMap[MiddleTrigger_Idx]
 
-        if middle[0].begin == 0:
-             # input < 0 is impossible, since unicode codepoints start at 0!
-             txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
-                               StateMachineName, StateIdx, BackwardLexingF=BackwardLexingF)
-
-        elif TriggerSetN == 2:
-             txt += __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
-                                            LanguageDB, BackwardLexingF)
-
-        elif TriggerSetN == 3:
-             txt += __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
-                                              LanguageDB, BackwardLexingF)
-
-        else:
-            txt += __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, 
-                                      StateMachineName, StateIdx, state, BackwardLexingF)
+        # input < 0 is impossible, since unicode codepoints start at 0!
+        if middle[0].begin == 0: txt += __get_code(TriggerMap[MiddleTrigger_Idx:], info) 
+        elif TriggerSetN == 2:   txt += __bracket_two_intervals(TriggerMap, info) 
+        elif TriggerSetN == 3:   txt += __bracket_three_intervals(TriggerMap, info)
+        else:                    txt += __bracket_normally(MiddleTrigger_Idx, TriggerMap, info)
         
 
     # (*) indent by four spaces (nested blocks are correctly indented)
@@ -105,8 +96,7 @@ def __get_code(state, TriggerMap, LanguageDB, StateMachineName, StateIdx, Backwa
     txt = txt.replace("\n", "\n    ") + "\n"
     return txt 
 
-def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry, 
-                             LanguageDB, BackwardLexingF, IndentF=False):
+def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     """Creates the transition code to a given target based on the information in
        the trigger map entry.
     """
@@ -120,16 +110,18 @@ def __create_transition_code(StateMachineName, StateIdx, state, TriggerMapEntry,
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt =  "    " + LanguageDB["$transition"](StateMachineName, StateIdx, target_state_index, 
-                                              BackwardLexingF) 
-    txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
+    txt =  "    " + info.language_db["$transition"](info.state_machine_name, 
+                                              info.state_index, 
+                                              target_state_index, 
+                                              info.backward_f, 
+                                              info.dead_end_state_db) 
+    txt += "    " + info.language_db["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 
         txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
     return txt
         
-def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
-                            LanguageDB, BackwardLexingF):
+def __bracket_two_intervals(TriggerMap, info):
     assert len(TriggerMap) == 2
 
     first  = TriggerMap[0]
@@ -145,24 +137,18 @@ def __bracket_two_intervals(TriggerMap, StateMachineName, StateIdx, state,
     first_interval  = first[0]
     second_interval = second[0]
 
-    if   first_interval.size() == 1: 
-        txt = LanguageDB["$if =="](repr(first_interval.begin))
-    elif second_interval.size() == 1: 
-        txt = LanguageDB["$if !="](repr(second_interval.begin))
-    else:                   
-        txt = LanguageDB["$if <"](repr(second_interval.begin))
+    if   first_interval.size() == 1:  txt = info.language_db["$if =="](repr(first_interval.begin))
+    elif second_interval.size() == 1: txt = info.language_db["$if !="](repr(second_interval.begin))
+    else:                             txt = info.language_db["$if <"](repr(second_interval.begin))
 
-    txt += __create_transition_code(StateMachineName, StateIdx, state, first, 
-                                    LanguageDB, BackwardLexingF, IndentF=True)
-    txt += LanguageDB["$endif-else"]
-    txt += __create_transition_code(StateMachineName, StateIdx, state, second, 
-                                    LanguageDB, BackwardLexingF, IndentF=True)
-    txt += LanguageDB["$end-else"]
+    txt += __create_transition_code(first, info, IndentF=True) 
+    txt += info.language_db["$endif-else"]
+    txt += __create_transition_code(second, info, IndentF=True)
+    txt += info.language_db["$end-else"]
 
     return txt
 
-def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
-                              LanguageDB, BackwardLexingF):
+def __bracket_three_intervals(TriggerMap, info):
     assert len(TriggerMap) == 3
 
     # does one interval have the size '1'?
@@ -178,35 +164,30 @@ def __bracket_three_intervals(TriggerMap, StateMachineName, StateIdx, state,
     target_state_2 = TriggerMap[2][1]
     #     -- if the special trick cannot be applied than bracket normally
     if size_one_map != [False, True, False] or target_state_0 != target_state_2:
-        return __bracket_normally(1, TriggerMap, LanguageDB, 
-                                  StateMachineName, StateIdx, state, BackwardLexingF)
+        return __bracket_normally(1, TriggerMap, info)
 
     # (*) test: inner character is matched => goto its target
     #           else:                      => goto alternative target
-    txt = LanguageDB["$if =="](repr(TriggerMap[1][0].begin))
-    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[1], 
-                                    LanguageDB, BackwardLexingF, IndentF=True)
-    txt += LanguageDB["$endif-else"]
+    txt = info.language_db["$if =="](repr(TriggerMap[1][0].begin))
+    txt += __create_transition_code(TriggerMap[1], info, IndentF=True) 
+    txt += info.language_db["$endif-else"]
     # TODO: Add somehow a mechanism to report that here the intervals 0 **and** 1 are triggered
     #       (only for the comments in the generated code)
-    txt += __create_transition_code(StateMachineName, StateIdx, state, TriggerMap[0], 
-                                    LanguageDB, BackwardLexingF, IndentF=True)
-    txt += LanguageDB["$end-else"]
+    txt += __create_transition_code(TriggerMap[0], info, IndentF=True)
+    txt += info.language_db["$end-else"]
     return txt
 
-def __bracket_normally(MiddleTrigger_Idx, TriggerMap, LanguageDB, StateMachineName, StateIdx, state, BackwardLexingF):
+def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
 
     middle = TriggerMap[MiddleTrigger_Idx]
     assert middle[0].begin >= 0, \
            "code generation: error cannot split intervals at negative code points."
 
-    txt =  LanguageDB["$if <"](repr(middle[0].begin))
-    txt += __get_code(state,TriggerMap[:MiddleTrigger_Idx], LanguageDB, 
-                      StateMachineName, StateIdx, BackwardLexingF)
-    txt += LanguageDB["$endif-else"]
-    txt += __get_code(state,TriggerMap[MiddleTrigger_Idx:], LanguageDB, 
-                      StateMachineName, StateIdx, BackwardLexingF)
-    txt += LanguageDB["$end-else"]
+    txt =  info.language_db["$if <"](repr(middle[0].begin))
+    txt += __get_code(TriggerMap[:MiddleTrigger_Idx], info)
+    txt += info.language_db["$endif-else"]
+    txt += __get_code(TriggerMap[MiddleTrigger_Idx:], info)
+    txt += info.language_db["$end-else"]
 
     return txt
 
