@@ -23,6 +23,7 @@ db = {}
 # C++
 #    
 db["C++"] = {
+    "$MODUL$":        cpp,
     "$function_def":  "bool\n$$function_name$$(const int input)\n{\n", # still needed ?? fschaef 07y3m20d
     "$function_end":  "}\n",                                           # still needed ??
     "$if":            "if(",

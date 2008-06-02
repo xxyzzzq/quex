@@ -12,7 +12,7 @@ from quex.core_engine.generator.action_info import ActionInfo
 # C++
 #
 def __transition(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-                 BackwardLexingF, BufferReloadRequiredOnDropOutF=True, DeadEndStateDB={}):
+                 BackwardLexingF, DeadEndStateDB):
     """
         StateMachineName: Name of the state machine.
 
@@ -23,23 +23,20 @@ def __transition(StateMachineName, CurrentStateIdx, TargetStateIdx,
                          normal forward lexing, or for the implementation of a 
                          backwards state machine (complex pre-conditions).
 
-        BufferReloadRequiredOnDropOutF: If a state has no transitions, no input is taken 
-                         from the input stream. Therefore, at this point, the buffer reload
-                         is also nonsense. This flag tells, if code for buffer reload is required
-                         or not in the case of a drop out.
-
         DeadEndStateDB: Contains information about states that have no further transitions. 
                         If a transition to such a state has to happen, on can directly
                         go to a correspondent terminal.
                         
     """
+    assert type(DeadEndStateDB) == dict
+
     if BackwardLexingF: 
         return __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-                                            BufferReloadRequiredOnDropOutF, DeadEndStateDB)
+                                            DeadEndStateDB)
     else:
         return __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB)
     
-def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, BufferReloadRequiredOnDropOutF):
+def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB):
     """Backward lexiging state transitions are simple, there are only two cases:
 
        (1) A particular subsequent state is specified for the trigger. 
@@ -252,16 +249,16 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
 
     # From here on: input is not a 'buffer limit code' 
     #               (i.e. input does **not** mean: 'load buffer')
-    if DropOutTargetStateID != -1L:
+    # if DropOutTargetStateID != -1L:
         # -- A 'match all' is implemented as 'drop out to target'. This happens
         #    in order to ensure that the buffer limits are checked.
-        txt += "    goto %s;" % label.get(StateMachineName, DropOutTargetStateID, {}, None)
-        return txt
+    #    txt += "    goto %s;" % label.get(StateMachineName, DropOutTargetStateID, {}, None)
+    #    return txt
     
     #     -- 'drop out' in non-acceptance --> goto general terminal
-    if CurrentStateIsAcceptanceF == False:  
-        txt += "    goto %s;\n" % label.get_terminal()
-        return txt
+    #if CurrentStateIsAcceptanceF == False:  
+    #    txt += "    goto %s;\n" % label.get_terminal()
+    #    return txt
      
     #    -- 'drop out' in acceptance state --> check pre-conditions (if there are some)
     #                                      --> goto first specific terminal that either
@@ -274,18 +271,18 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
     #        The effect is probably minimal and only makes sense if there are many, many
     #        post conditions.
     #
-    def __on_detection_code(StateMachineName, Origin):
-        txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-        terminal_label = label.get_terminal(Origin.state_machine_id)
-        return txt + "goto %s;\n" % terminal_label
+    #def __on_detection_code(StateMachineName, Origin):
+    #    txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
+    #    terminal_label = label.get_terminal(Origin.state_machine_id)
+    #    return txt + "goto %s;\n" % terminal_label
 
-    t_txt = get_acceptance_detector(OriginList, __on_detection_code,
-                                    LanguageDB, StateMachineName)
+    #t_txt = get_acceptance_detector(OriginList, __on_detection_code,
+    #                                LanguageDB, StateMachineName)
             
     # -- double check for consistency
-    assert t_txt != "", "Acceptance state without acceptance origins!"        
+    #assert t_txt != "", "Acceptance state without acceptance origins!"        
 
-    return txt + t_txt
+    #return txt + t_txt
 
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment, 
                             LanguageDB, StateMachineName=""):
@@ -659,7 +656,8 @@ $$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$
 """
 
 def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList, LanguageDB):
+                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, 
+                      DirectlyReachedTerminalID_List):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
@@ -705,7 +703,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         if state_machine.core().post_context_id() != -1L: 
             post_context_number_str = state_machine_id_str + "_"
         #
-        txt += "  %s:\n" % label.get_terminal(state_machine_id)
+        txt += label.get_terminal(state_machine_id) + ":\n"
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
@@ -719,6 +717,10 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
             txt += "    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);\n"
             txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
                    __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
+
+        if state_machine_id in DirectlyReachedTerminalID_List:
+            txt += label.get_terminal(state_machine_id, WithoutSeekAdrF=True) + ":\n"
+
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
         txt += "    goto __REENTRY_PREPARATION;\n" # % StateMachineName
