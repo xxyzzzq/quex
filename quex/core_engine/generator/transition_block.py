@@ -39,9 +39,9 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, Sta
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
         txt =  "    " + info.language_db["$transition"](StateMachineName, 
-                                                  StateIdx, 
-                                                  TriggerMap[0][1], 
-                                                  BackwardLexingF) 
+                                                        StateIdx, 
+                                                        TriggerMap[0][1], 
+                                                        BackwardLexingF, DeadEndStateDB=DeadEndStateDB) 
 
     return txt + "\n"
 
@@ -111,10 +111,10 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #  respective language module.
     #
     txt =  "    " + info.language_db["$transition"](info.state_machine_name, 
-                                              info.state_index, 
-                                              target_state_index, 
-                                              info.backward_f, 
-                                              info.dead_end_state_db) 
+                                                    info.state_index, 
+                                                    target_state_index, 
+                                                    info.backward_f, 
+                                                    DeadEndStateDB=info.dead_end_state_db) 
     txt += "    " + info.language_db["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 

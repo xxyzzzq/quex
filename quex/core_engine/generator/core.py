@@ -46,11 +46,13 @@ class Generator(GeneratorBase):
         if self.print_state_machine_f: 
             txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
 
-        txt += state_machine_coder.do(self.sm, 
-                                      LanguageDB                  = LanguageDB, 
-                                      UserDefinedStateMachineName = self.state_machine_name, 
-                                      BackwardLexingF             = False,
-                                      EndOfFile_Code              = self.end_of_file_code)
+        msg, directly_reached_terminal_id_list = \
+                state_machine_coder.do(self.sm, 
+                                       LanguageDB                  = LanguageDB, 
+                                       UserDefinedStateMachineName = self.state_machine_name, 
+                                       BackwardLexingF             = False,
+                                       EndOfFile_Code              = self.end_of_file_code)
+        txt += msg
 
         
         #  -- terminal states: execution of pattern actions  
@@ -61,7 +63,8 @@ class Generator(GeneratorBase):
                                             self.end_of_stream_action, 
                                             self.begin_of_line_condition_f, 
                                             self.pre_context_sm_id_list,
-                                            self.language_db) 
+                                            self.language_db,
+                                            directly_reached_terminal_id_list) 
 
         return txt
 
@@ -74,10 +77,11 @@ class Generator(GeneratorBase):
         if self.print_state_machine_f: 
             txt += LanguageDB["$ml-comment"](self.pre_context_sm.get_string(NormalizeF=False)) + "\n"
 
-        txt += state_machine_coder.do(self.pre_context_sm, 
-                                      LanguageDB                  = LanguageDB, 
-                                      UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONTEXT",
-                                      BackwardLexingF             = True)
+        msg, dummy = state_machine_coder.do(self.pre_context_sm, 
+                                            LanguageDB                  = LanguageDB, 
+                                            UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONTEXT",
+                                            BackwardLexingF             = True)
+        txt += msg
 
         LabelName = languages_label.get_terminal(BackwardLexingF=True)      
         txt += LanguageDB["$label-definition"](LabelName) + "\n"

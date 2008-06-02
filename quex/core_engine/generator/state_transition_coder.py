@@ -32,12 +32,13 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     txt += input_block(StateIdx, TriggerMap == [], InitStateF, BackwardLexingF, LanguageDB)
 
     txt += transition_block.do(state, StateIdx, TriggerMap, LanguageDB, 
-                               InitStateF, BackwardLexingF, StateMachineName, DeadEndStateDB)
+                               InitStateF, BackwardLexingF, StateMachineName, 
+                               DeadEndStateDB)
 
     txt += drop_out_block(state, StateIdx, TriggerMap, 
                           InitStateF, 
                           BackwardLexingF, BackwardInputPositionDetectionF,
-                          StateMachineName, LanguageDB)
+                          StateMachineName, LanguageDB, DeadEndStateDB)
     
     return txt # .replace("\n", "\n    ") + "\n"
 
@@ -93,7 +94,7 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
 
     return txt
 
-def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  BackwardInputPositionDetectionF, StateMachineName, LanguageDB):
+def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  BackwardInputPositionDetectionF, StateMachineName, LanguageDB, DeadEndStateDB):
     # -- drop out code (transition to no target state)
     drop_out_label = languages_label.get_drop_out(StateIdx)
     txt  = LanguageDB["$label-definition"](drop_out_label) + "\n"
@@ -115,7 +116,7 @@ def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  Ba
                 "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"
         txt += "        " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
-                                                      BackwardLexingF=False) + "\n"
+                                                      BackwardLexingF=False, DeadEndStateDB=DeadEndStateDB) + "\n"
         txt += "    " + LanguageDB["$endif"]
 
     BRRODO_f = TriggerMap != [] and not BackwardInputPositionDetectionF
@@ -141,23 +142,21 @@ def dead_end_state_code(State, DeadEndType, StateMachineName, LanguageDB):
     #    States, where the acceptance depends on the run-time pre-conditions being fulfilled
     #    or not. They are the only once, that are 'implemented' as routers, that map to
     #    a terminal correspondent the pre-conditions.
-    print "## des:", State.origins(), DeadEndType
-
     if DeadEndType != None: return ""
 
     def __on_detection_code(StateMachineName, Origin):
         txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-        terminal_label = label.get_terminal(Origin.state_machine_id)
+        terminal_label = languages_label.get_terminal(Origin.state_machine_id, WithoutSeekAdrF=True)
         return txt + "goto %s;\n" % terminal_label
 
-    t_txt = get_acceptance_detector(State.origins().get_list(), 
-                                    __on_detection_code,
-                                    LanguageDB, StateMachineName)
+    txt = LanguageDB["$MODUL$"].get_acceptance_detector(State.origins().get_list(), 
+                                                        __on_detection_code,
+                                                        LanguageDB, StateMachineName)
             
     # -- double check for consistency
-    assert t_txt != "", "Acceptance state without acceptance origins!"        
+    assert txt != "", "Acceptance state without acceptance origins!"        
 
-    return txt + t_txt
+    return txt
 
 
 

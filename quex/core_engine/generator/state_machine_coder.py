@@ -26,13 +26,16 @@ def do(state_machine, LanguageDB,
 
     # -- collect the 'dead end states' (states without further transitions)
     #    create a map from the 'dead end state
-    dead_end_state_db = get_dead_end_state_list(state_machine)
+    if not BackwardLexingF:
+        dead_end_state_db, directly_reached_terminal_id_list = get_dead_end_state_list(state_machine)
 
     txt = ""
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
         # (only define the init state label, if it is really needed)
-        LabelName = languages_label.get(UserDefinedStateMachineName, state_machine.init_state_index)
+        LabelName = languages_label.get(UserDefinedStateMachineName, 
+                                        state_machine.init_state_index, 
+                                        {}, None)
         txt += "%s\n"  % LanguageDB["$label-definition"](LabelName)
 
     init_state = state_machine.states[state_machine.init_state_index]
@@ -47,7 +50,8 @@ def do(state_machine, LanguageDB,
                                      state_machine.init_state_index,
                                      BackwardLexingF                 = BackwardLexingF,
                                      BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                     InitStateF                      = True)
+                                     InitStateF                      = True,
+                                     DeadEndStateDB                  = dead_end_state_db)
 
     # -- all other states
     for state_index, state in state_machine.states.items():
@@ -68,7 +72,7 @@ def do(state_machine, LanguageDB,
         txt += state_code
         txt += "\n"
     
-    return txt
+    return txt, directly_reached_terminal_id_list
 
 def get_dead_end_state_list(state_machine):
     """Collect all states that have no further transitions, i.e. dead end states.
@@ -89,24 +93,31 @@ def get_dead_end_state_list(state_machine):
                                                      general terminal
     """
     db = {}
+    directly_reached_terminal_id_list = []
     for state_index, state in state_machine.states.items():
         if not state.transitions().is_empty(): continue
 
         if state.origins().contains_any_pre_context_dependency():
            # (1) state require run time investigation since pre-conditions have to be checked
            db[state_index] = None
+           #     Terminals are reached via a 'router'. nevertheless, they are reached 
+           #     without a seek.
+           for origin in state.origins().get_list():
+               if not origin.is_acceptance(): continue
+               directly_reached_terminal_id_list.append(origin.state_machine_id)
         else:
             # find the first acceptance origin (origins are sorted already)
             for origin in state.origins().get_list():
                 if origin.is_acceptance():
                     # (2) state transits automatically to terminal given below
                     db[state_index] = origin.state_machine_id
+                    directly_reached_terminal_id_list.append(origin.state_machine_id)
                     break
             else:
                 # (3) no acceptance origin => terminal general
                 db[state_index] = -1  
 
-    return db
+    return db, directly_reached_terminal_id_list
 
 
 
