@@ -117,6 +117,7 @@ def get_dead_end_state_list(state_machine):
                 # (3) no acceptance origin => terminal general
                 db[state_index] = -1  
 
+
     return db, directly_reached_terminal_id_list
 
 

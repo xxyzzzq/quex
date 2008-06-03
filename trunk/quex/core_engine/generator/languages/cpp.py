@@ -11,82 +11,6 @@ from quex.core_engine.generator.action_info import ActionInfo
 #________________________________________________________________________________
 # C++
 #
-def __transition(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-                 BackwardLexingF, DeadEndStateDB):
-    """
-        StateMachineName: Name of the state machine.
-
-        TargetStateIdx: != None: Index of the state to which 'goto' has to go.
-                        == None: Drop Out. Goto a terminal state.
-
-        BackwardLexingF: Flag indicating wether this function is called during 
-                         normal forward lexing, or for the implementation of a 
-                         backwards state machine (complex pre-conditions).
-
-        DeadEndStateDB: Contains information about states that have no further transitions. 
-                        If a transition to such a state has to happen, on can directly
-                        go to a correspondent terminal.
-                        
-    """
-    assert type(DeadEndStateDB) == dict
-
-    if BackwardLexingF: 
-        return __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, 
-                                            DeadEndStateDB)
-    else:
-        return __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB)
-    
-def __transition_backward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB):
-    """Backward lexiging state transitions are simple, there are only two cases:
-
-       (1) A particular subsequent state is specified for the trigger. 
-           In this case, goto this particular state (which is not a terminal state).
-       (2) No particular subsequent state is specified. This signals a 'drop out'
-           situation. 
-
-       Normally, on 'drop out' one either:
-
-           -- goes to a specific terminal state of the winning pattern, or
-           -- goes to the general terminal state that determines the last pattern that won.
-
-       During backward lexing, though, there are **no winning patterns**. All patterns that ever
-       matched are indicated through there 'pre-condition-fulfilled flag'. This flag is set at 
-       the entry of an acceptance state. Further, no pattern actions are performed on when pre-
-       conditions are determined. So, no specific terminal states are necessary, all transitions
-       can directly enter the general terminal state. Absolutely nothing is left to be done at the
-       general terminal state. Thus, the last two cases are combined into one, see above.
-    """
-    
-    # (*) Target State Defined: go there
-    if TargetStateIdx >= 0:
-        return "goto %s;" % label.get(StateMachineName, TargetStateIdx, DeadEndStateDB, BackwardLexingF=True)
-    else:
-        return "goto %s;" % label.get_drop_out(CurrentStateIdx)
-
-def __transition_forward_lexing(StateMachineName, CurrentStateIdx, TargetStateIdx, DeadEndStateDB):
-    """
-       (1) If event triggers to subsequent state, one has to go there independent wether 
-           the current state is an acceptance state or not.
-
-       (2) If a 'drop out' occured in a non-acceptance state, then:
-       
-            -- TargetStateIdx == None (Normal Drop Out) 
-               Goto the general terminal.
-               There one determines the last pattern that won (if there is one).
-
-       (3) If a 'drop out' in an acceptance state occured, the pre-conditions (if there are some
-           determine which pattern has won, i.e. to what specific terminal state is to be gone.
-           This will happen inside the drop out region.
-           
-    """
-    
-    # (*) Target State Defined (not a 'drop out') --> go there
-    if TargetStateIdx == None:   
-        return "goto %s;" % label.get_drop_out(CurrentStateIdx)
-    elif TargetStateIdx == "END_OF_FILE":
-        return "goto TERMINAL_END_OF_STREAM;" 
-    else:
-        return "goto %s;" % label.get(StateMachineName, TargetStateIdx, DeadEndStateDB, BackwardLexingF=False)
 
 def __acceptance_info(OriginList, LanguageDB, BackwardLexingF, 
                       BackwardInputPositionDetectionF=False):
@@ -332,7 +256,7 @@ def __tell_position(StateMachineID=None):
     if StateMachineID == None: msg = ""   
     else:                      msg = __nice(StateMachineID) + "_"
     
-    return "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg 
+    return 
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS

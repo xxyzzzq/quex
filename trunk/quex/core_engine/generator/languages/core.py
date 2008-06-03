@@ -59,14 +59,14 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
-    "$input/get":           "QUEX_BUFFER_INCREMENT_AND_GET(input);",
-    "$input/get-backwards": "QUEX_BUFFER_DECREMENT_AND_GET(input);",
-    "$input/tell_position": cpp.__tell_position, 
+    "$input/$increment":    "QUEX_BUFFER_INCREMENT();",
+    "$input/$decrement":    "QUEX_BUFFER_DECREMENT();",
+    "$input/$get":          "QUEX_BUFFER_GET(input);",
+    "$input/tell_position": lambda msg: "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg, 
     "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
-    "$transition":           cpp.__transition,
     "$label-definition":     lambda LabelName: LabelName + ":",
     "$acceptance-info-fw":   cpp.__acceptance_info_forward_lexing,      
     "$acceptance-info-bw":   cpp.__acceptance_info_backward_lexing,      
@@ -97,7 +97,7 @@ db["C++"] = {
     "$debug-info-input":         "__QUEX_DEBUG_INFO_INPUT(input);",
     #
     "$header-definitions":       cpp.__header_definitions,
-    "$goto-start":               "goto __REENTRY_PREPARATION;\n",
+    "$goto":                     lambda Label: "goto %s;" % Label,
     }
 
 #________________________________________________________________________________
@@ -147,7 +147,6 @@ db["Python"] = {
     "$input/get":     "# TODO: getting input into parser",
     "$return_true":   "return True",
     "$return_false":  "return False",
-    "$transition":        python.__transition, 
     "$label-definition":  python.__label_definition,
     "$goto-terminate":    python.__goto_terminal_state, 
     "$acceptance-info-fw":   lambda x, y: "",

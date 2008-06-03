@@ -117,10 +117,11 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 #define QUEX_END_OF_FILE()   me->__buffer->is_end_of_file()
 #define QUEX_BEGIN_OF_FILE() me->__buffer->is_begin_of_file()
 
-#define QUEX_BUFFER_INCREMENT_AND_GET(character)  (character) = me->__buffer->get_forward(); 
-#define QUEX_BUFFER_DECREMENT_AND_GET(character)  (character) = me->__buffer->get_backward(); 
-#define QUEX_BUFFER_TELL_ADR(position)            (position)  = me->__buffer->tell_adr();
-#define QUEX_BUFFER_SEEK_ADR(position)            me->__buffer->seek_adr(position);    
+#define QUEX_BUFFER_INCREMENT()           me->__buffer->increment(); 
+#define QUEX_BUFFER_DECREMENT()           me->__buffer->decrement(); 
+#define QUEX_BUFFER_GET(character)        (character) = me->__buffer->dereference_character(); 
+#define QUEX_BUFFER_TELL_ADR(position)    (position)  = me->__buffer->tell_adr();
+#define QUEX_BUFFER_SEEK_ADR(position)    me->__buffer->seek_adr(position);    
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
