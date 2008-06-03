@@ -24,17 +24,17 @@ db = {}
 
 label_db = \
 {
-    "$terminal":              lambda TerminalIdx: "TERMINAL_%i"              % __nice(TerminalIdx),
+    "$terminal":              lambda TerminalIdx: "TERMINAL_%s"              % __nice(TerminalIdx),
     "$terminal-EOF":          "TERMINAL_END_OF_STREAM",
     "$terminal-DEFAULT":      "TERMINAL_DEFAULT",
-    "$terminal-without-seek": lambda TerminalIdx: "TERMINAL_%i_WITHOUT_SEEK" % __nice(TerminalIdx),
+    "$terminal-without-seek": lambda TerminalIdx: "TERMINAL_%s_WITHOUT_SEEK" % __nice(TerminalIdx),
     "$terminal-general":      lambda BackWardLexingF: { 
                                         False: "TERMINAL_GENERAL",    
                                         True:  "TERMINAL_GENERAL_BACKWARD",
                                      }[BackWardLexingF],
-    "$entry":                 lambda StateIdx:    "STATE_%i"          % __nice(StateIdx),
-    "$drop-out":              lambda StateIdx:    "STATE_%i_DROP_OUT" % __nice(StateIdx),
-    "$input":                 lambda StateIdx:    "STATE_%i_INPUT"    % __nice(StateIdx),
+    "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
+    "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
+    "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),
     "$re-start":              "__REENTRY_PREPARATION",
 }
 #________________________________________________________________________________
@@ -77,10 +77,10 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
-    "$input/$increment":    "QUEX_BUFFER_INCREMENT();",
-    "$input/$decrement":    "QUEX_BUFFER_DECREMENT();",
-    "$input/$get":          "QUEX_BUFFER_GET(input);",
-    "$input/tell_position": lambda msg: "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg, 
+    "$input/increment":     "QUEX_BUFFER_INCREMENT();",
+    "$input/decrement":     "QUEX_BUFFER_DECREMENT();",
+    "$input/get":           "QUEX_BUFFER_GET(input);",
+    "$input/tell_position": lambda msg="": "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg, 
     "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
     "$return":              "return;",
     "$return_true":         "return true;",
@@ -92,8 +92,9 @@ db["C++"] = {
         "$terminal-DEFAULT":      "goto %s;" % label_db["$terminal-DEFAULT"], 
         "$terminal-without-seek": lambda X: "goto %s;" % label_db["$terminal-without-seek"](X), 
         "$terminal-general":      lambda X: "goto %s;" % label_db["$terminal-general"](X), 
-        "$drop-out":              lambda X: "goto %s;" % label_db["$drop-out"](X), 
+        "$entry":                 lambda X: "goto %s;" % label_db["$entry"](X), 
         "$input":                 lambda X: "goto %s;" % label_db["$input"](X), 
+        "$drop-out":              lambda X: "goto %s;" % label_db["$drop-out"](X), 
         "$re-start":              "goto %s;" % label_db["$re-start"], 
     },
             
@@ -104,8 +105,9 @@ db["C++"] = {
         "$terminal-DEFAULT":      "%s:" % label_db["$terminal-DEFAULT"], 
         "$terminal-without-seek": lambda X: "%s:" % label_db["$terminal-without-seek"](X), 
         "$terminal-general":      lambda X: "%s:" % label_db["$terminal-general"](X), 
-        "$drop-out":              lambda X: "%s:" % label_db["$drop-out"](X), 
+        "$entry":                 lambda X: "goto %s;" % label_db["$entry"](X), 
         "$input":                 lambda X: "%s:" % label_db["$input"](X), 
+        "$drop-out":              lambda X: "%s:" % label_db["$drop-out"](X), 
         "$re-start":              "%s:" % label_db["$re-start"], 
     },
     "$analyser-func":        cpp.__analyser_function,
@@ -134,7 +136,6 @@ db["C++"] = {
     "$debug-info-input":         "__QUEX_DEBUG_INFO_INPUT(input);",
     #
     "$header-definitions":       cpp.__header_definitions,
-    "$goto":                     lambda Label: "goto %s;" % Label,
     }
 
 #________________________________________________________________________________

@@ -1,11 +1,12 @@
 from copy import copy
 from quex.frs_py.string_handling import blue_print
 
-import quex.core_engine.state_machine.index       as index
-from   quex.core_engine.generator.languages.core import __nice
+import quex.core_engine.state_machine.index as index
 #
 from quex.core_engine.generator.action_info import ActionInfo
 
+def __nice(SM_ID): 
+    return repr(SM_ID).replace("L", "")
 
 #________________________________________________________________________________
 # C++
@@ -547,7 +548,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                       ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]["$terminal-EOF"]],
                       ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]["$terminal-DEFAULT"]],
-                      ["$$$$TERMINAL_GENERAL-DEF$$",       LanguageDB["$label-def"]["$termina-general"](False)],
+                      ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]["$terminal-general"](False)],
                       ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]["$terminal-DEFAULT"]],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
                       ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],

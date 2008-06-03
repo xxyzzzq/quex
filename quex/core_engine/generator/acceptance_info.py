@@ -1,3 +1,5 @@
+from quex.core_engine.generator.languages.core import __nice
+
 def do(state, LanguageDB, BackwardLexingF, BackwardInputPositionDetectionF=False):
     """Two cases:
        -- an origin marks an acceptance state without any post-condition:
@@ -92,7 +94,7 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
             final_acceptance_origin_list.append(origin)
    
     def __on_detection_code(StateMachineName, Origin):
-        info += LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
+        info = LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
         # NOTE: When post conditioned patterns end they do not store the input position.
         #       Rather, the acceptance position of the core pattern is considered.
         if Origin.store_input_position_f():

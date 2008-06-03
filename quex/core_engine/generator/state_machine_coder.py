@@ -1,4 +1,5 @@
-import quex.core_engine.generator.languages.core  as languages, __nice
+import quex.core_engine.generator.languages.core  as languages
+from   quex.core_engine.generator.languages.core  import __nice
 import quex.core_engine.generator.state_transition_coder as state_transition_coder
 
 def do(state_machine, LanguageDB, 
@@ -60,7 +61,7 @@ def do(state_machine, LanguageDB,
         # some states are not coded (some dead end states)
         if state_code == "": continue
 
-        txt += "%s\n" % LanguageDB["$label-definition"]["$entry"](state_index) 
+        txt += LanguageDB["$label-def"]["$entry"](state_index) + "\n"
         txt += "    __QUEX_DEBUG_INFO_ENTER(%s);\n" % __nice(state_index)
         txt += state_code
         txt += "\n"
