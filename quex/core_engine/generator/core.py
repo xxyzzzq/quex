@@ -1,5 +1,4 @@
 import quex.core_engine.generator.languages.core      as languages
-import quex.core_engine.generator.languages.label     as languages_label
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
 import quex.core_engine.generator.input_position_backward_detector   as backward_detector
 #
@@ -83,8 +82,7 @@ class Generator(GeneratorBase):
                                             BackwardLexingF             = True)
         txt += msg
 
-        LabelName = languages_label.get_terminal(BackwardLexingF=True)      
-        txt += LanguageDB["$label-definition"](LabelName) + "\n"
+        txt += LanguageDB["$label-def"]["$terminal-general"](BackwardLexingF=True) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyser went backwards, so it needs to be reset.
         txt += "    QUEX_BUFFER_SEEK_START_POSITION();\n"

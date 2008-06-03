@@ -2,8 +2,7 @@ from copy import copy
 from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index       as index
-import quex.core_engine.generator.languages.label as label
-from   quex.core_engine.generator.languages.label import __nice
+from   quex.core_engine.generator.languages.core import __nice
 #
 from quex.core_engine.generator.action_info import ActionInfo
 
@@ -468,7 +467,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         if state_machine.core().post_context_id() != -1L: 
             post_context_number_str = state_machine_id_str + "_"
         #
-        txt += label.get_terminal(state_machine_id) + ":\n"
+        txt += LanguageDB["$label-def"]["$terminal"](state_machine_id) + "\n"
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
@@ -484,7 +483,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                    __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
         if state_machine_id in DirectlyReachedTerminalID_List:
-            txt += label.get_terminal(state_machine_id, WithoutSeekAdrF=True) + ":\n"
+            txt += LanguageDB["$label-def"]["$terminal-without-seek"](state_machine_id) + "\n"
 
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
@@ -551,7 +550,6 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$$$TERMINAL_GENERAL-DEF$$",       LanguageDB["$label-def"]["$termina-general"](False)],
                       ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]["$terminal-DEFAULT"]],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
-                      ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index, {}, None)],
                       ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",  precondition_involved_f],
                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
