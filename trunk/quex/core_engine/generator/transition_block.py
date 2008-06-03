@@ -1,5 +1,5 @@
 import sys
-import quex.core_engine_generator.transition as transition
+import quex.core_engine.generator.transition as transition
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 

@@ -9,7 +9,6 @@
 #
 ################################################################################
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
-import quex.core_engine.generator.languages.label     as languages_label
 from quex.frs_py.string_handling import blue_print
 
 function_str = """
@@ -33,8 +32,7 @@ def do(sm, LanguageDB, PrintStateMachineF):
         sm_str += LanguageDB["$ml-comment"](sm.get_string(NormalizeF=False)) + "\n"
 
     # -- input position detectors simply the next 'catch' and return
-    LabelName = languages_label.get_terminal(BackwardLexingF=True)
-    function_body += LanguageDB["$label-definition"](LabelName) + "\n"
+    function_body += LanguageDB["$label-def"]["$terminal-general"](BackwardLexingF=True) + "\n"
     ## function_body += "    $/* ... rely on the compiler to delete the unnecessary assignment ... $*/\n"
     ## function_body += "    QUEX_STREAM_GET_BACKWARDS($input);\n"
     ## function_body += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
