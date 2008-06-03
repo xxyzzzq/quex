@@ -17,7 +17,8 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
     if DeadEndStateDB.has_key(StateIdx):
-        return dead_end_state_code(state, DeadEndStateDB[StateIdx], StateMachineName, LanguageDB)
+        return transition.do_dead_end_router(state, StateIdx, DeadEndStateDB[StateIdx], 
+                                             StateMachineName, LanguageDB)
        
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -35,10 +36,10 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                                InitStateF, BackwardLexingF, StateMachineName, 
                                DeadEndStateDB)
 
-    txt += drop_out_block(state, StateIdx, TriggerMap, 
-                          InitStateF, 
-                          BackwardLexingF, BackwardInputPositionDetectionF,
-                          StateMachineName, LanguageDB, DeadEndStateDB)
+    txt += transition.do_drop_out_router(state, StateIdx, TriggerMap, 
+                                         InitStateF, 
+                                         BackwardLexingF, BackwardInputPositionDetectionF,
+                                         StateMachineName, LanguageDB, DeadEndStateDB)
     
     return txt # .replace("\n", "\n    ") + "\n"
 
@@ -63,7 +64,6 @@ def acceptance_info(state, LanguageDB,
             return LanguageDB["$acceptance-info-bw"](OriginList, LanguageDB)
         else:
             return LanguageDB["$acceptance-info-bwfc"](OriginList, LanguageDB)
-
     else:
         # (*) Forward Lexing 
         return LanguageDB["$acceptance-info-fw"](OriginList, LanguageDB)
@@ -73,90 +73,20 @@ def input_block(StateIdx, TriggerMapEmptyF, InitStateF, BackwardLexingF, Languag
     if TriggerMapEmptyF: return ""
 
     input_label = languages_label.get_input(StateIdx)
-    txt = LanguageDB["$label-definition"](input_label) + "\n"
+    txt         = LanguageDB["$label-definition"](input_label) + "\n"
 
-    if not BackwardLexingF:
-        txt += "    %s\n" % LanguageDB["$input/get"] 
-    else:
-        # At the init state, the lexial analyzer stands **before** the next character
-        # to be read in forward direction. When backward lexing is involved the input
-        # position needs to be put one ahead.
-        #                               LE
-        #                                *
-        #         | | | | | | |p|r|i|n|t|f|(| | | | | | | | | | | | |
-        #                                  *
-        #                                  NC
-        # current_p = LE (lexeme end), so that "input = *(++current_p)" is '('.
-        # NOW: current_p = NC, so that         "input = *(--current_p)" is 'f'.
-        if InitStateF: txt += "    " + LanguageDB["$input/get"] + "\n"
-        txt += "    " + LanguageDB["$input/get-backwards"] + "\n"
-    txt += "    " + LanguageDB["$debug-info-input"] + "\n"
+    # The initial state starts from the character to be read and is an exception.
+    # Any other state starts with an increment (forward) or decrement (backward).
+    # This is so, since the beginning of the state is considered to be the 
+    # transition action (setting the pointer to the next position to be read).
+    if not InitStateF:
+        if BackwardLexingF: txt += "    " + LanguageDB["$intput/decrement"] + "\n"
+        else:               txt += "    " + LanguageDB["$intput/increment"] + "\n"
+    txt += "    " + LanguageDB["$intput/get"] + "\n"
 
     return txt
 
-def drop_out_block(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,  BackwardInputPositionDetectionF, StateMachineName, LanguageDB, DeadEndStateDB):
-    # -- drop out code (transition to no target state)
-    drop_out_label = languages_label.get_drop_out(StateIdx)
-    txt  = LanguageDB["$label-definition"](drop_out_label) + "\n"
 
-    drop_out_target_state_id = -1L
-    if len(TriggerMap) == 1:
-        # We cannot transit to any subsequent state without checking wether
-        # the received character was a buffer limit code. To prevent an 
-        # unconditional goto, rewrite the drop out in such a way that by
-        # default it moves to the given target state. In case of buffer limit
-        # code it returns in order to read the next character.
-        drop_out_target_state_id = TriggerMap[0][1]
-
-    # -- in case of the init state, the end of file has to be checked.
-    #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
-    if InitStateF and BackwardLexingF == False:
-        txt += "    " + LanguageDB["$if EOF"]
-        txt += "        " + LanguageDB["$comment"](
-                "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
-        txt += "\n"
-        txt += "        " + LanguageDB["$transition"](StateMachineName, StateIdx, "END_OF_FILE", 
-                                                      BackwardLexingF=False, DeadEndStateDB=DeadEndStateDB) + "\n"
-        txt += "    " + LanguageDB["$endif"]
-
-    BRRODO_f = TriggerMap != [] and not BackwardInputPositionDetectionF
-    txt += LanguageDB["$drop-out"](StateMachineName, StateIdx, BackwardLexingF,
-                                   BufferReloadRequiredOnDropOutF = BRRODO_f,
-                                   CurrentStateIsAcceptanceF      = state.is_acceptance(),
-                                   OriginList                     = state.origins().get_list(),
-                                   LanguageDB                     = LanguageDB,
-                                   DropOutTargetStateID           = drop_out_target_state_id)
-        
-
-    return txt + "\n"
-
-def dead_end_state_code(State, DeadEndType, StateMachineName, LanguageDB):
-    # DeadEndType == -1:
-    #    States, that do not contain any acceptance transit to the 'General Terminal'
-    #    The do not have to be coded. Instead the 'jump' must be redirected immediately
-    #    to the general terminal.
-    # DeadEndType == some integer:
-    #    States, where the acceptance is clear must be redirected to the correspondent
-    #    terminal given by the integer.
-    # DeadEndType == None:
-    #    States, where the acceptance depends on the run-time pre-conditions being fulfilled
-    #    or not. They are the only once, that are 'implemented' as routers, that map to
-    #    a terminal correspondent the pre-conditions.
-    if DeadEndType != None: return ""
-
-    def __on_detection_code(StateMachineName, Origin):
-        txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-        terminal_label = languages_label.get_terminal(Origin.state_machine_id, WithoutSeekAdrF=True)
-        return txt + "goto %s;\n" % terminal_label
-
-    txt = LanguageDB["$MODUL$"].get_acceptance_detector(State.origins().get_list(), 
-                                                        __on_detection_code,
-                                                        LanguageDB, StateMachineName)
-            
-    # -- double check for consistency
-    assert txt != "", "Acceptance state without acceptance origins!"        
-
-    return txt
 
 
 

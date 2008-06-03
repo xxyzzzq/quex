@@ -1,4 +1,5 @@
 import sys
+import quex.core_engine_generator.transition as transition
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
@@ -38,10 +39,10 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, Sta
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        txt =  "    " + info.language_db["$transition"](StateMachineName, 
-                                                        StateIdx, 
-                                                        TriggerMap[0][1], 
-                                                        BackwardLexingF, DeadEndStateDB=DeadEndStateDB) 
+        txt =  "    " + transition.do(StateMachineName, 
+                                      StateIdx, 
+                                      TriggerMap[0][1], 
+                                      BackwardLexingF, DeadEndStateDB=DeadEndStateDB) 
 
     return txt + "\n"
 
@@ -110,11 +111,11 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt =  "    " + info.language_db["$transition"](info.state_machine_name, 
-                                                    info.state_index, 
-                                                    target_state_index, 
-                                                    info.backward_f, 
-                                                    DeadEndStateDB=info.dead_end_state_db) 
+    txt =  "    " + transition.do(info.state_machine_name, 
+                                  info.state_index, 
+                                  target_state_index, 
+                                  info.backward_f, 
+                                  DeadEndStateDB=info.dead_end_state_db) 
     txt += "    " + info.language_db["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 

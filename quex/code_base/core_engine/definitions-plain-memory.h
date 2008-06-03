@@ -51,10 +51,11 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_END_OF_FILE()   0
 #define QUEX_BEGIN_OF_FILE() (me->input_p == me->buffer_begin - 1)
 
-#define QUEX_BUFFER_INCREMENT_AND_GET(character)  character   = *(++(me->input_p));
-#define QUEX_BUFFER_DECREMENT_AND_GET(character)  character   = *(--(me->input_p)); 
-#define QUEX_BUFFER_TELL_ADR(position)            position    = me->input_p;
-#define QUEX_BUFFER_SEEK_ADR(position)            me->input_p = position;
+#define QUEX_BUFFER_INCREMENT()           (++(me->input_p));
+#define QUEX_BUFFER_DECREMENT()           (--(me->input_p)); 
+#define QUEX_BUFFER_GET(character)        character   = *(me->input_p); 
+#define QUEX_BUFFER_TELL_ADR(position)    position    = me->input_p;
+#define QUEX_BUFFER_SEEK_ADR(position)    me->input_p = position;
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
