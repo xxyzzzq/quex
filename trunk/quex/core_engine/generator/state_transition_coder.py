@@ -1,6 +1,7 @@
-import quex.core_engine.generator.languages.core  as languages
+import quex.core_engine.generator.languages.core   as languages
 import quex.core_engine.generator.transition_block as transition_block
-import quex.core_engine.generator.acceptance_info as acceptance_info
+import quex.core_engine.generator.transition       as transition
+import quex.core_engine.generator.acceptance_info  as acceptance_info
 from copy import deepcopy
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
@@ -54,8 +55,8 @@ def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
     # This is so, since the beginning of the state is considered to be the 
     # transition action (setting the pointer to the next position to be read).
     if not InitStateF:
-        if BackwardLexingF: txt += "    " + LanguageDB["$intput/decrement"] + "\n"
-        else:               txt += "    " + LanguageDB["$intput/increment"] + "\n"
+        if BackwardLexingF: txt += "    " + LanguageDB["$input/decrement"] + "\n"
+        else:               txt += "    " + LanguageDB["$input/increment"] + "\n"
     txt += "    " + LanguageDB["$input/get"] + "\n"
 
     return txt

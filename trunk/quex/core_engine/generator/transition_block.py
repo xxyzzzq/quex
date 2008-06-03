@@ -115,7 +115,8 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
                                   info.state_index, 
                                   target_state_index, 
                                   info.backward_f, 
-                                  DeadEndStateDB=info.dead_end_state_db) 
+                                  DeadEndStateDB = info.dead_end_state_db, 
+                                  LanguageDB     = info.language_db) 
     txt += "    " + info.language_db["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 
