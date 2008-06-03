@@ -11,116 +11,6 @@ from quex.core_engine.generator.action_info import ActionInfo
 #________________________________________________________________________________
 # C++
 #
-
-def __acceptance_info(OriginList, LanguageDB, BackwardLexingF, 
-                      BackwardInputPositionDetectionF=False):
-    """Two cases:
-       -- an origin marks an acceptance state without any post-condition:
-          store input position and mark last acceptance state as the state machine of 
-          the origin (note: this origin may result through a priorization)
-       -- an origin marks an acceptance of an expression that has a post-condition.
-          store the input position in a dedicated input position holder for the 
-          origins state machine.
-    """
-    if BackwardInputPositionDetectionF: assert BackwardLexingF
-
-    if BackwardLexingF:
-        # (*) Backward Lexing 
-        if not BackwardInputPositionDetectionF:
-            return __acceptance_info_backward_lexing(OriginList, LanguageDB)
-        else:
-            return __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB)
-
-    else:
-        # (*) Forward Lexing 
-        return __acceptance_info_forward_lexing(OriginList, LanguageDB)
-
-def __acceptance_info_backward_lexing(OriginList, LanguageDB):
-    """Backward Lexing:
-       -- Using an inverse state machine from 'real' current start position backwards
-          until a drop out occurs.
-       -- During backward lexing, there is no 'winner' so all origins that indicate
-          acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
-    """
-    # There should be nothing, but unconditional acceptances or no-acceptance 
-    # origins in the list of origins.
-    inadmissible_origin_list = filter(lambda origin:
-                                      origin.pre_context_begin_of_line_f() or
-                                      origin.pre_context_id() != -1L or
-                                      origin.post_context_id() != -1L,
-                                      OriginList)
-    assert inadmissible_origin_list == [], \
-           "Inadmissible origins for inverse state machine."
-    #___________________________________________________________________________________________
-
-    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
-    #
-    txt = ""
-    for origin in OriginList:
-        if origin.store_input_position_f():
-            txt += "    " + LanguageDB["$set-pre-context-flag"](origin.state_machine_id, 1)
-    txt += "\n"    
-
-    return txt
-
-def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
-    """Backward Lexing:
-       -- (see above)
-       -- for the search of the end of the core pattern, the acceptance position
-          backwards must be stored. 
-       -- There is only one pattern involved, so no determination of 'who won'
-          is important.
-    """
-    # There should be nothing, but unconditional acceptances or no-acceptance 
-    # origins in the list of origins.
-    inadmissible_origin_list = filter(lambda origin:
-                                      origin.pre_context_begin_of_line_f() or
-                                      origin.pre_context_id() != -1L or
-                                      origin.post_context_id() != -1L,
-                                      OriginList)
-    assert inadmissible_origin_list == [], \
-           "Inadmissible origins for inverse state machine."
-    #___________________________________________________________________________________________
-
-    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
-    #
-    txt = ""
-    for origin in OriginList:
-        if origin.store_input_position_f():
-            txt += "    QUEX_BUFFER_TELL_ADR(end_of_core_pattern_position);\n"
-
-    return txt
-
-def __acceptance_info_forward_lexing(OriginList, LanguageDB):
-
-    ## txt = LanguageDB["$comment"](" origins = %s" % repr(OriginList)) + "\n"
-    txt = ""
-    #
-    # -- get the pattern ids that indicate the start of a post-condition
-    #    (i.e. the end of a core pattern where a post condition is to follow).
-    # -- collect patterns that reach acceptance at this state.
-    final_acceptance_origin_list     = []
-    for origin in OriginList: 
-        if origin.is_end_of_post_contexted_core_pattern():
-            # store current input position, to be restored when post condition really matches
-            txt += "    " + LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
-        elif origin.is_acceptance():
-            final_acceptance_origin_list.append(origin)
-   
-    def __on_detection_code(StateMachineName, Origin):
-        info  = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-        info += LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
-        # NOTE: When post conditioned patterns end they do not store the input position.
-        #       Rather, the acceptance position of the core pattern is considered.
-        if Origin.store_input_position_f():
-            info += LanguageDB["$input/tell_position"]() + "\n"
-        return info
-
-    txt += get_acceptance_detector(final_acceptance_origin_list, __on_detection_code,
-                                   LanguageDB)
-
-    return txt
-
 def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           BufferReloadRequiredOnDropOutF,
                           CurrentStateIsAcceptanceF = None,
@@ -208,55 +98,6 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
 
     #return txt + t_txt
 
-def get_acceptance_detector(OriginList, get_on_detection_code_fragment, 
-                            LanguageDB, StateMachineName=""):
-        
-    def indent_this(Fragment):
-        # do not replace the last '\n' with '\n    '
-        return "    " + Fragment[:-1].replace("\n", "\n    ") + Fragment[-1]
-
-    txt = ""
-    first_if_statement_f = True
-    OriginList.sort()
-    for origin in OriginList:
-        if not origin.is_acceptance(): continue
-
-        info = get_on_detection_code_fragment(StateMachineName, origin)
-
-        if origin.pre_context_id() != -1L:
-            if first_if_statement_f: txt += LanguageDB["$if pre-context"](origin.pre_context_id())
-            else:                    txt += LanguageDB["$elseif pre-context"](origin.pre_context_id())
-            txt += indent_this(info)
-            txt += LanguageDB["$endif"]
-        
-        elif origin.pre_context_begin_of_line_f():
-            if first_if_statement_f: txt += LanguageDB["$if begin-of-line"]
-            else:                    txt += LanguageDB["$elseif begin-of-line"]
-            txt += indent_this(info)
-            txt += LanguageDB["$endif"] 
-        
-        else:
-            if first_if_statement_f: 
-                txt += info
-            else:
-                # if an 'if' statements preceeded, the acceptance needs to appear in an else block
-                txt += LanguageDB["$else"] + "\n"; 
-                txt += indent_this(info)
-                txt += LanguageDB["$endif"]
-
-            break  # no need for further pre-condition consideration
-
-        first_if_statement_f = False
-
-    # (*) write code for the unconditional acceptance states
-    if txt == "": return ""
-    else:         return "    " + txt[:-1].replace("\n", "\n    ") + txt[-1]
-
-def __tell_position(StateMachineID=None):
-    if StateMachineID == None: msg = ""   
-    else:                      msg = __nice(StateMachineID) + "_"
-    
-    return 
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
@@ -491,7 +332,7 @@ __terminal_state_str  = """
   //
 $$SPECIFIC_TERMINAL_STATES$$
 
-TERMINAL_END_OF_STREAM:
+$$TERMINAL_END_OF_STREAM-DEF$$
 $$END_OF_STREAM_ACTION$$
 #ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
         return /*TKN_TERMINATION*/;
@@ -499,18 +340,18 @@ $$END_OF_STREAM_ACTION$$
         return TKN_TERMINATION;
 #endif
 
-TERMINAL_DEFAULT:
+$$TERMINAL_DEFAULT-DEF$$
 $$DEFAULT_ACTION$$
         goto __REENTRY_PREPARATION;
 
-TERMINAL_GENERAL: {
+$$TERMINAL_GENERAL-DEF$$ {
         //  if last_acceptance => goto correspondent acceptance terminal state
         //  else               => execute defaul action
         //
         __QUEX_DEBUG_INFO_TERMINAL(General);
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
-            default: goto TERMINAL_DEFAULT; /* nothing matched */
+            default: $$TERMINAL_DEFAULT-GOTO$$; /* nothing matched */
         }
     }
 
@@ -647,7 +488,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
 
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
-        txt += "    goto __REENTRY_PREPARATION;\n" # % StateMachineName
+        txt += "    " + LanguageDB["$goto"]["$re-start"] + "\n" 
         txt += "\n"
         
     specific_terminal_states_str = txt
@@ -655,8 +496,8 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     # (*) general terminal state (entered from non-acceptance state)    
     txt = ""    
     for state_machine_id in action_db.keys():
-        txt += "            case %s: goto %s;\n" % \
-                (repr(state_machine_id), label.get_terminal(state_machine_id))
+        txt += "            case %s: " % repr(state_machine_id).replace("L", "")
+        txt += LanguageDB["$goto"]["$terminal"](state_machine_id)
 
     jumps_to_acceptance_states_str = txt
 
@@ -686,11 +527,14 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     txt = ""
     for state_index, state in sm.states.items():
         if state.transitions().is_empty(): continue
-        txt += "            case %i: goto STATE_%i_INPUT;\n" % (int(state_index), int(state_index)) 
+        txt += "            "
+        txt += "case %i: " % int(state_index) + LanguageDB["$goto"]["$input"](state_index) + "\n"
+
     if sm.core().pre_context_sm() != None:
         for state_index, state in sm.core().pre_context_sm().states.items():
             if state.transitions().is_empty(): continue
-            txt += "            case %i: goto STATE_%i_INPUT;\n" % (int(state_index), int(state_index)) 
+            txt += "            "
+            txt += "case %i: " % int(state_index) + LanguageDB["$goto"]["$input"](state_index) + "\n"
 
     switch_cases_drop_out_back_router_str = txt
 
@@ -702,6 +546,10 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
                       ["$$DEFAULT_ACTION$$",               default_action_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
+                      ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]["$terminal-EOF"]],
+                      ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]["$terminal-DEFAULT"]],
+                      ["$$$$TERMINAL_GENERAL-DEF$$",       LanguageDB["$label-def"]["$termina-general"](False)],
+                      ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]["$terminal-DEFAULT"]],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
                       ["$$INITIAL_STATE_INDEX_LABEL$$",    label.get(StateMachineName, sm.init_state_index, {}, None)],
                       ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],

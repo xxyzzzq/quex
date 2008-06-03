@@ -1,7 +1,4 @@
 
-def __nice(SM_ID): 
-    return repr(SM_ID).replace("L", "")
-    
 
 def get(StateMachineName, StateIdx, DeadEndStateDB, BackwardLexingF):
     # For transitions jumps may need to be redirected to terminal states.

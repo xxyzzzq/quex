@@ -17,8 +17,26 @@ import quex.core_engine.generator.languages.cpp    as cpp
 import quex.core_engine.generator.languages.python as python
 from quex.frs_py.string_handling import blue_print
 
+def __nice(SM_ID): 
+    return repr(SM_ID).replace("L", "")
+    
 db = {}
 
+label_db = \
+{
+    "$terminal":              lambda TerminalIdx: "TERMINAL_%i"              % __nice(TerminalIdx),
+    "$terminal-EOF":          "TERMINAL_END_OF_STREAM",
+    "$terminal-DEFAULT":      "TERMINAL_DEFAULT",
+    "$terminal-without-seek": lambda TerminalIdx: "TERMINAL_%i_WITHOUT_SEEK" % __nice(TerminalIdx),
+    "$terminal-general":      lambda BackWardLexingF: { 
+                                        False: "TERMINAL_GENERAL",    
+                                        True:  "TERMINAL_GENERAL_BACKWARD",
+                                     }[BackWardLexingF],
+    "$entry":                 lambda StateIdx:    "STATE_%i"          % __nice(StateIdx),
+    "$drop-out":              lambda StateIdx:    "STATE_%i_DROP_OUT" % __nice(StateIdx),
+    "$input":                 lambda StateIdx:    "STATE_%i_INPUT"    % __nice(StateIdx),
+    "$re-start":              "__REENTRY_PREPARATION",
+}
 #________________________________________________________________________________
 # C++
 #    
@@ -67,10 +85,29 @@ db["C++"] = {
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
-    "$label-definition":     lambda LabelName: LabelName + ":",
-    "$acceptance-info-fw":   cpp.__acceptance_info_forward_lexing,      
-    "$acceptance-info-bw":   cpp.__acceptance_info_backward_lexing,      
-    "$acceptance-info-bwfc": cpp.__acceptance_info_backward_lexing_find_core_pattern,      
+    "$goto": 
+    {
+        "$terminal":              lambda X: "goto %s;" % label_db["$terminal"](X), 
+        "$terminal-EOF":          "goto %s;" % label_db["$terminal-EOF"], 
+        "$terminal-DEFAULT":      "goto %s;" % label_db["$terminal-DEFAULT"], 
+        "$terminal-without-seek": lambda X: "goto %s;" % label_db["$terminal-without-seek"](X), 
+        "$terminal-general":      lambda X: "goto %s;" % label_db["$terminal-general"](X), 
+        "$drop-out":              lambda X: "goto %s;" % label_db["$drop-out"](X), 
+        "$input":                 lambda X: "goto %s;" % label_db["$input"](X), 
+        "$re-start":              "goto %s;" % label_db["$re-start"], 
+    },
+            
+    "$label-def":
+    {
+        "$terminal":              lambda X: "%s:" % label_db["$terminal"](X), 
+        "$terminal-EOF":          "%s:" % label_db["$terminal-EOF"], 
+        "$terminal-DEFAULT":      "%s:" % label_db["$terminal-DEFAULT"], 
+        "$terminal-without-seek": lambda X: "%s:" % label_db["$terminal-without-seek"](X), 
+        "$terminal-general":      lambda X: "%s:" % label_db["$terminal-general"](X), 
+        "$drop-out":              lambda X: "%s:" % label_db["$drop-out"](X), 
+        "$input":                 lambda X: "%s:" % label_db["$input"](X), 
+        "$re-start":              "%s:" % label_db["$re-start"], 
+    },
     "$analyser-func":        cpp.__analyser_function,
     "$terminal-code":        cpp.__terminal_states,      
     "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
