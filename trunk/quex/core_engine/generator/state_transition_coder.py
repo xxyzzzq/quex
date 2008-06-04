@@ -48,7 +48,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
 
 def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
 
-    txt = LanguageDB["$label-def"]["$input"](StateIdx) + "\n"
+    txt = LanguageDB["$label-def"]("$input", StateIdx) + "\n"
 
     # The initial state starts from the character to be read and is an exception.
     # Any other state starts with an increment (forward) or decrement (backward).
@@ -64,7 +64,7 @@ def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
 def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, 
                      BackwardInputPositionDetectionF, StateMachineName, LanguageDB, DeadEndStateDB):
     # -- drop out code (transition to no target state)
-    txt = LanguageDB["$label-def"]["$drop-out"](StateIdx) + "\n"
+    txt = LanguageDB["$label-def"]("$drop-out", StateIdx) + "\n"
 
     drop_out_target_state_id = -1L
     if len(TriggerMap) == 1:
@@ -82,7 +82,7 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
         txt += "        " + LanguageDB["$comment"](
                "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"
-        txt += "        " + LanguageDB["$goto"]["$terminal-EOF"]
+        txt += "        " + LanguageDB["$goto"]("$terminal-EOF")
         txt += "    " + LanguageDB["$endif"]
 
     BRRODO_f = TriggerMap != [] and not BackwardInputPositionDetectionF

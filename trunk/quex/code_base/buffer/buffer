@@ -88,6 +88,15 @@ namespace quex {
             void   close_input() { _input->close(); }
 
             //     -- miscaleneous
+            void              decrement() { --_current_p; }
+            void              increment() { ++_current_p; }
+            character_type    dereference_character() { return *_current_p; }
+            character_type*   current_p() { return _current_p; }
+
+            memory_position   tell_adr();
+            void              seek_adr(memory_position Adr);
+            void              seek_offset(const int Offset);
+
             void              set_subsequent_character(const int Value);
             character_type    get_subsequent_character();
             character_type    get_current_character();
@@ -96,11 +105,6 @@ namespace quex {
             void              move_forward(const size_t);   // load buffer if nec. /influences lexeme start
             void              move_backward(const size_t);  // 
             void              set_current_p(character_type* Adr);       
-            character_type*   current_p() { return _current_p; }
-
-            memory_position   tell_adr();
-            void              seek_adr(memory_position Adr);
-            void              seek_offset(const int Offset);
 
             // handle with extreme care
             void              _reset();

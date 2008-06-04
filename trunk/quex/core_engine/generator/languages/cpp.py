@@ -468,7 +468,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         if state_machine.core().post_context_id() != -1L: 
             post_context_number_str = state_machine_id_str + "_"
         #
-        txt += LanguageDB["$label-def"]["$terminal"](state_machine_id) + "\n"
+        txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
         txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
@@ -484,11 +484,11 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                    __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
         if state_machine_id in DirectlyReachedTerminalID_List:
-            txt += LanguageDB["$label-def"]["$terminal-without-seek"](state_machine_id) + "\n"
+            txt += LanguageDB["$label-def"]("$terminal-without-seek", state_machine_id) + "\n"
 
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    
-        txt += "    " + LanguageDB["$goto"]["$re-start"] + "\n" 
+        txt += "    " + LanguageDB["$goto"]("$re-start") + "\n" 
         txt += "\n"
         
     specific_terminal_states_str = txt
@@ -497,7 +497,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     txt = ""    
     for state_machine_id in action_db.keys():
         txt += "            case %s: " % repr(state_machine_id).replace("L", "")
-        txt += LanguageDB["$goto"]["$terminal"](state_machine_id)
+        txt += LanguageDB["$goto"]("$terminal", state_machine_id)
 
     jumps_to_acceptance_states_str = txt
 
@@ -517,7 +517,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     #                    be reset so that the initial state can drop out on the buffer limit code
     #                    and then transit to the end of file action.
     default_action_str  = "if( QUEX_END_OF_FILE() ) {\n"
-    default_action_str += "    QUEX_BUFFER_DECREMENT_AND_GET(/* dummy (important is that we go backwards */input);\n"
+    default_action_str += "    " + LanguageDB["$input/decrement"] + "\n"
     default_action_str += "}\n"
     default_action_str += __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
                                               IndentationOffset=16)
@@ -528,13 +528,13 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     for state_index, state in sm.states.items():
         if state.transitions().is_empty(): continue
         txt += "            "
-        txt += "case %i: " % int(state_index) + LanguageDB["$goto"]["$input"](state_index) + "\n"
+        txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
 
     if sm.core().pre_context_sm() != None:
         for state_index, state in sm.core().pre_context_sm().states.items():
             if state.transitions().is_empty(): continue
             txt += "            "
-            txt += "case %i: " % int(state_index) + LanguageDB["$goto"]["$input"](state_index) + "\n"
+            txt += "case %i: " % int(state_index) + LanguageDB["$goto"]("$input", state_index) + "\n"
 
     switch_cases_drop_out_back_router_str = txt
 
@@ -546,10 +546,10 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
                       ["$$DEFAULT_ACTION$$",               default_action_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
-                      ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]["$terminal-EOF"]],
-                      ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]["$terminal-DEFAULT"]],
-                      ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]["$terminal-general"](False)],
-                      ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]["$terminal-DEFAULT"]],
+                      ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
+                      ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]("$terminal-DEFAULT")],
+                      ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
+                      ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]("$terminal-DEFAULT")],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
                       ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",  precondition_involved_f],

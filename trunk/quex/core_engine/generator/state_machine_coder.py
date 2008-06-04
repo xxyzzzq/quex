@@ -31,7 +31,7 @@ def do(state_machine, LanguageDB,
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
         # (only define the init state label, if it is really needed)
-        txt += LanguageDB["$label-def"]["$entry"](state_machine.init_state_index) + "\n"
+        txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
 
     init_state = state_machine.states[state_machine.init_state_index]
     #
@@ -61,7 +61,7 @@ def do(state_machine, LanguageDB,
         # some states are not coded (some dead end states)
         if state_code == "": continue
 
-        txt += LanguageDB["$label-def"]["$entry"](state_index) + "\n"
+        txt += LanguageDB["$label-def"]("$entry", state_index) + "\n"
         txt += "    __QUEX_DEBUG_INFO_ENTER(%s);\n" % __nice(state_index)
         txt += state_code
         txt += "\n"

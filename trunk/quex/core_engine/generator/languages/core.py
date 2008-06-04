@@ -25,8 +25,8 @@ db = {}
 label_db = \
 {
     "$terminal":              lambda TerminalIdx: "TERMINAL_%s"              % __nice(TerminalIdx),
-    "$terminal-EOF":          "TERMINAL_END_OF_STREAM",
-    "$terminal-DEFAULT":      "TERMINAL_DEFAULT",
+    "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
+    "$terminal-DEFAULT":      lambda NoThing:     "TERMINAL_DEFAULT",
     "$terminal-without-seek": lambda TerminalIdx: "TERMINAL_%s_WITHOUT_SEEK" % __nice(TerminalIdx),
     "$terminal-general":      lambda BackWardLexingF: { 
                                         False: "TERMINAL_GENERAL",    
@@ -35,7 +35,7 @@ label_db = \
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
     "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
     "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),
-    "$re-start":              "__REENTRY_PREPARATION",
+    "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
 }
 #________________________________________________________________________________
 # C++
@@ -85,31 +85,8 @@ db["C++"] = {
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
-    "$goto": 
-    {
-        "$terminal":              lambda X: "goto %s;" % label_db["$terminal"](X), 
-        "$terminal-EOF":          "goto %s;" % label_db["$terminal-EOF"], 
-        "$terminal-DEFAULT":      "goto %s;" % label_db["$terminal-DEFAULT"], 
-        "$terminal-without-seek": lambda X: "goto %s;" % label_db["$terminal-without-seek"](X), 
-        "$terminal-general":      lambda X: "goto %s;" % label_db["$terminal-general"](X), 
-        "$entry":                 lambda X: "goto %s;" % label_db["$entry"](X), 
-        "$input":                 lambda X: "goto %s;" % label_db["$input"](X), 
-        "$drop-out":              lambda X: "goto %s;" % label_db["$drop-out"](X), 
-        "$re-start":              "goto %s;" % label_db["$re-start"], 
-    },
-            
-    "$label-def":
-    {
-        "$terminal":              lambda X: "%s:" % label_db["$terminal"](X), 
-        "$terminal-EOF":          "%s:" % label_db["$terminal-EOF"], 
-        "$terminal-DEFAULT":      "%s:" % label_db["$terminal-DEFAULT"], 
-        "$terminal-without-seek": lambda X: "%s:" % label_db["$terminal-without-seek"](X), 
-        "$terminal-general":      lambda X: "%s:" % label_db["$terminal-general"](X), 
-        "$entry":                 lambda X: "goto %s;" % label_db["$entry"](X), 
-        "$input":                 lambda X: "%s:" % label_db["$input"](X), 
-        "$drop-out":              lambda X: "%s:" % label_db["$drop-out"](X), 
-        "$re-start":              "%s:" % label_db["$re-start"], 
-    },
+    "$goto":                lambda Type, Argument=None:  "goto %s;" % label_db[Type](Argument),
+    "$label-def":           lambda Type, Argument=None:  "%s:"      % label_db[Type](Argument),
     "$analyser-func":        cpp.__analyser_function,
     "$terminal-code":        cpp.__terminal_states,      
     "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \

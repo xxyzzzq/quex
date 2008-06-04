@@ -31,7 +31,7 @@ def get_range_skipper(EndSequence, LanguageDB, BufferEndLimitCode,
 
     action_on_first_character_match = LanguageDB["$break"]
     if len(EndSequence) == 1:
-        action_on_first_character_match = LanguageDB["$goto"]["$re-start"]
+        action_on_first_character_match = LanguageDB["$goto"]("$re-start")
 
     # Use two endless loops in order to avoid gotos
     msg  = LanguageDB["$input/get"] + "\n"
@@ -59,7 +59,7 @@ def get_range_skipper(EndSequence, LanguageDB, BufferEndLimitCode,
             txt += "    " + sgm[:-1].replace("\n", "\n    ") + sgm[-1]
 
         sgm  = LanguageDB["$if =="](repr(EndSequence[-1]))
-        sgm += "    " + LanguageDB["$goto"]["$re-start"]
+        sgm += "    " + LanguageDB["$goto"]("$re-start")
         sgm += LanguageDB["$endif"]
         txt += "    " + sgm[:-1].replace("\n", "\n    ") + sgm[-1]
 

@@ -32,7 +32,7 @@ def do(sm, LanguageDB, PrintStateMachineF):
         sm_str += LanguageDB["$ml-comment"](sm.get_string(NormalizeF=False)) + "\n"
 
     # -- input position detectors simply the next 'catch' and return
-    function_body += LanguageDB["$label-def"]["$terminal-general"](BackwardLexingF=True) + "\n"
+    function_body += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
     ## function_body += "    $/* ... rely on the compiler to delete the unnecessary assignment ... $*/\n"
     ## function_body += "    QUEX_STREAM_GET_BACKWARDS($input);\n"
     ## function_body += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
