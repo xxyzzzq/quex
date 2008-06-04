@@ -82,7 +82,7 @@ class Generator(GeneratorBase):
                                             BackwardLexingF             = True)
         txt += msg
 
-        txt += LanguageDB["$label-def"]["$terminal-general"](BackwardLexingF=True) + "\n"
+        txt += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
         # -- set the input stream back to the real current position.
         #    during backward lexing the analyser went backwards, so it needs to be reset.
         txt += "    QUEX_BUFFER_SEEK_START_POSITION();\n"
