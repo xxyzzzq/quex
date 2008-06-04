@@ -19,10 +19,12 @@ define {
 
 token {
     AMPERSANT
+    AND
     ASSIGN_DIV
     ASSIGN_MINUS
     ASSIGN_MULT
     ASSIGN_PLUS
+    BACKLASHED_NEWLINE
     BRACKET_C
     BRACKET_C
     BRACKET_O
@@ -31,6 +33,7 @@ token {
     CATCH
     CLASS
     COLON
+    COMMA
     COMMENT
     CONST
     CONTINUE
@@ -42,27 +45,53 @@ token {
     DO
     DOT
     DOUBLE_COLON
+    DOUBLE_HASH
     ELSE
     EQ
+    EXCLUSIVE_OR
     FOR
     GREATER
     GR_EQ
+    HASH
     IDENTIFIER
     IF
     LESS
     LE_EQ
+    LOGICAL_OR
     MINUS
+    MODULO
     MULT
     NOT
     NOT_EQ
     NUMBER
     OP_ASSIGNMENT
+    OR
     PLUS
+    PP_DEFINE
+    PP_DEFINED
+    PP_ELSE
+    PP_ENDIF
+    PP_ERROR
+    PP_ELIF
+    PP_IF
+    PP_IFDEF
+    PP_IFNDEF
+    PP_INCLUDE
+    PP_PRAGMA
+    QUESTION_MARK
     QUOTE
+    QUOTED_CHAR
     SEMICOLON
     STRING
     STRUCT
     SWITCH
+    TILDE
+    TYPE_CHAR
+    TYPE_DOUBLE
+    TYPE_FLOAT
+    TYPE_INT
+    TYPE_LONG
+    TYPE_UNSIGNED
     WHILE
 }
 
@@ -74,6 +103,7 @@ mode PROGRAM :
     "#"[ \t]*"include"[ \t]*{P_INCLUDE_FILE1} => TKN_PP_INCLUDE;
     "#"[ \t]*"define"  => TKN_PP_DEFINE;
     "#"[ \t]*"if"      => TKN_PP_IF;
+    "#"[ \t]*"elif"    => TKN_PP_ELIF;
     "#"[ \t]*"ifdef"   => TKN_PP_IFDEF;
     "#"[ \t]*"ifndef"  => TKN_PP_IFNDEF;
     "#"[ \t]*"endif"   => TKN_PP_ENDIF;
