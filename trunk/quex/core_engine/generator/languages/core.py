@@ -110,8 +110,6 @@ db["C++"] = {
     "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",
     #
-    "$debug-info-input":         "__QUEX_DEBUG_INFO_INPUT(input);",
-    #
     "$header-definitions":       cpp.__header_definitions,
     }
 
