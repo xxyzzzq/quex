@@ -36,7 +36,11 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
 def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx, 
                                           BufferReloadRequiredOnDropOutF, 
                                           DropOutTargetStateID, LanguageDB):      
-    txt = ""
+
+    txt  = "if( input != me->__buffer->BLC ) {\n"
+    txt += "    " + LanguageDB["$goto"]("$terminal-general", True) + "\n"
+    txt += LanguageDB["$endif"] + "\n"
+
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += "    " + LanguageDB["$drop-out-backward"](CurrentStateIdx).replace("\n", "\n    ")
@@ -52,7 +56,11 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
                                          BufferReloadRequiredOnDropOutF,
                                          CurrentStateIsAcceptanceF, OriginList, LanguageDB,
                                          DropOutTargetStateID):      
-    txt = ""
+
+    txt  = "if( input != me->__buffer->BLC ) {\n"
+    txt += "    " + LanguageDB["$goto"]("$terminal-general", False) + "\n"
+    txt += LanguageDB["$endif"] + "\n"
+
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += "    "
@@ -110,46 +118,6 @@ __header_definitions_txt = """
 #   include "$$INCLUDE$$"
 #   define __QUEX_ENGINE_HEADER_DEFINITIONS
 
-#   ifdef __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
-
-#      define __QUEX_PRINT_SOURCE_POSITION()                 \\
-   std::fprintf(stderr, "%s:%i: @%08X \\t", __FILE__, __LINE__);            
-//        std::fprintf(stderr, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->input_p - (me->buffer_begin -1)));            
-// std::fprintf(stderr, "%s:%i: @%08X \\t", __FILE__, __LINE__, (int)(me->__buffer->tell_adr() - (me->__buffer->content_front() - 1) ));            
-
-#      define __QUEX_DEBUG_INFO_START_LEXING(Name)              \\
-              __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "START:    %s\\n", #Name)
-
-#      define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \\
-              __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "enter:    %i\\n", (int)StateIdx)
-
-#      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \\
-              __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "drop:     %i\\n", (int)StateIdx)
-
-#      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \\
-              __QUEX_PRINT_SOURCE_POSITION()                    \\
-              std::fprintf(stderr, "accept:   %i\\n", (int)StateIdx)
-
-#      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \\
-              __QUEX_PRINT_SOURCE_POSITION()                   \\
-              std::fprintf(stderr, "terminal: %s\\n", #Terminal)
-
-#      define __QUEX_DEBUG_INFO_INPUT(Character)                             \\
-              __QUEX_PRINT_SOURCE_POSITION()                                 \\
-                Character == '\\n' ? std::fprintf(stderr, "input:    '\\\\n'\\n") \\
-              : Character == '\\t' ? std::fprintf(stderr, "input:    '\\\\t'\\n") \\
-              :                      std::fprintf(stderr, "input:    (%x) '%c'\\n", (char)Character, (int)Character) 
-#   else
-#      define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
-#      define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
-#      define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)   /* empty */
-#      define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx) /* empty */
-#      define __QUEX_DEBUG_INFO_TERMINAL(Terminal)   /* empty */
-#      define __QUEX_DEBUG_INFO_INPUT(Character)     /* empty */
-#   endif
 
 #   ifdef CONTINUE
 #      undef CONTINUE
@@ -319,7 +287,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     # -- the name of the game
     txt = txt.replace("$$QUEX_ANALYZER_STRUCT_NAME$$", EngineClassName)
 
-
     return txt
 
 __terminal_state_str  = """
@@ -356,7 +323,7 @@ $$JUMPS_TO_ACCEPTANCE_STATE$$
     }
 
   
-__REENTRY_PREPARATION:
+$$REENTRY_PREPARATION$$
     // (*) Common point for **restarting** lexical analysis.
     //     at each time when CONTINUE is called at the end of a pattern.
     //
@@ -381,32 +348,28 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 __FORWARD_DROP_OUT_HANDLING:
     // Since all drop out states work the same, we introduce here a 'router' that
     // jumps to a particular state based on the setting of a variable: drop_out_state_index.
-    if( input == me->__buffer->BLC ) {
-        loaded_byte_n = me->__buffer->load_forward();
-        if( loaded_byte_n != -1 ) {
-            $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
-#           if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-                goto *drop_out_state_label;
-#           else
-                goto __DROP_OUT_ROUTING;
-#           endif
-        }
-        // no load possible (EOF) => (i) goto general terminal
-        //                           (ii) init state triggers EOF action
+    loaded_byte_n = me->__buffer->load_forward();
+    if( loaded_byte_n != -1 ) {
+        $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
+#       if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+        goto *drop_out_state_label;
+#       else
+        goto __DROP_OUT_ROUTING;
+#       endif
     }
+    // no load possible (EOF) => (i)  goto general terminal
+    //                           (ii) init state triggers EOF action
     goto TERMINAL_GENERAL;
 
 #if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
 __BACKWARD_DROP_OUT_HANDLING:
-    if( input == me->__buffer->BLC ) {
-        me->__buffer->load_backward();
-        if( ! (me->__buffer->is_begin_of_file()) ) { 
-#           if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-                goto *drop_out_state_label;
-#           else
-                goto __DROP_OUT_ROUTING;
-#           endif
-        }
+    me->__buffer->load_backward();
+    if( ! (me->__buffer->is_begin_of_file()) ) { 
+#       if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
+        goto *drop_out_state_label;
+#       else
+        goto __DROP_OUT_ROUTING;
+#       endif
     }
     goto TERMINAL_GENERAL_PRE_CONTEXT;
 #endif
@@ -546,6 +509,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
                       ["$$DEFAULT_ACTION$$",               default_action_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
+                      ["$$REENTRY_PREPARATION$$",          LanguageDB["$label-def"]("$re-start")],
                       ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
                       ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]("$terminal-DEFAULT")],
                       ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
