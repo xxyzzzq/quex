@@ -22,17 +22,7 @@ def get_label(StateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None)
 #________________________________________________________________________________
 # C++
 #
-def __cpp_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID=None):
-    return "goto %s;" % get_label(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalStateMachineID)
          
-def __cpp_acceptance_info(SuccessfulOriginalStateMachineID, LanguageDB):
-    if SuccessfulOriginalStateMachineID != None:
-        txt =  "last_acceptance = %s;\n" % SuccessfulOriginalStateMachineID
-        txt += LanguageDB["$input/tell_position"] + "\n"
-    else:
-        txt = ""    
-    return txt
-
 __cpp_function_header = \
 """#include<istream>
 #define  QUEX_CHAR_BUFFER_BASED

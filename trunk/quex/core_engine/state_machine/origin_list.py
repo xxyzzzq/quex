@@ -115,7 +115,6 @@ class StateOriginList:
                 return origin
         else:
             return None
-        
 
     def delete_meaningless(self):
         """Deletes origins that are not concerned with one of the three:
