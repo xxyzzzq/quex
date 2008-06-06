@@ -89,7 +89,7 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
     for origin in OriginList: 
         if origin.is_end_of_post_contexted_core_pattern():
             # store current input position, to be restored when post condition really matches
-            txt += "    " + LanguageDB["$input/tell_position"](origin.state_machine_id) + "\n"
+            txt += "    " + LanguageDB["$input/tell_position"](__nice(origin.state_machine_id) + "_") + "\n"
         elif origin.is_acceptance():
             final_acceptance_origin_list.append(origin)
    
@@ -98,7 +98,7 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
         # NOTE: When post conditioned patterns end they do not store the input position.
         #       Rather, the acceptance position of the core pattern is considered.
         if Origin.store_input_position_f():
-            info += LanguageDB["$input/tell_position"]() + "\n"
+            info += LanguageDB["$input/tell_position"]("") + "\n"
         return info
 
     txt += get_acceptance_detector(final_acceptance_origin_list, __on_detection_code,

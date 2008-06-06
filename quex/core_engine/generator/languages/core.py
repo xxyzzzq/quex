@@ -56,7 +56,7 @@ db["C++"] = {
     "$loop-end":            "}\n",
     "$continue":          "continue;\n",
     "$break":             "break;\n",
-    "$if BLC":            "if( input == QUEX_BUFFER_LIMIT_CODE() ) {\n",
+    "$if not BLC":            "if( input != QUEX_BUFFER_LIMIT_CODE() ) {\n",
     "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
     "$if BOF":            "if( QUEX_BEGIN_OF_FILE() ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
@@ -81,7 +81,8 @@ db["C++"] = {
     "$input/increment":     "QUEX_BUFFER_INCREMENT();",
     "$input/decrement":     "QUEX_BUFFER_DECREMENT();",
     "$input/get":           "QUEX_BUFFER_GET(input);",
-    "$input/tell_position": lambda msg="": "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg, 
+    "$input/tell_position": lambda msg="": 
+                            "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg, 
     "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
     "$return":              "return;",
     "$return_true":         "return true;",

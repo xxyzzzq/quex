@@ -19,8 +19,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
     if DeadEndStateDB.has_key(StateIdx):
-        return transition.do_dead_end_router(state, StateIdx, DeadEndStateDB[StateIdx], 
-                                             StateMachineName, LanguageDB)
+        return transition.do_dead_end_router(state, StateIdx, StateMachineName, LanguageDB)
        
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -73,7 +72,8 @@ def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
     return txt
 
 def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, 
-                     BackwardInputPositionDetectionF, StateMachineName, LanguageDB, DeadEndStateDB):
+                     BackwardInputPositionDetectionF, StateMachineName, LanguageDB, 
+                     DeadEndStateDB):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -95,7 +95,7 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
         if type(acc_origin) != type(None): # avoid call to __cmp__(None)
             terminal_id = acc_origin.state_machine_id
 
-    txt += "    " + LanguageDB["$if BLC"]
+    txt += "    " + LanguageDB["$if not BLC"]
     if terminal_id == -1: goto_str = LanguageDB["$goto"]("$terminal-general", BackwardLexingF) 
     else:                 goto_str = LanguageDB["$goto"]("$terminal", terminal_id) 
     txt += "        " + goto_str + "\n" 

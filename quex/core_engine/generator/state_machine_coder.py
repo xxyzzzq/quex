@@ -68,6 +68,12 @@ def do(state_machine, LanguageDB,
     
     return txt, directly_reached_terminal_id_list
 
+class DeadEndInfo:
+    distinct_terminal_id                 = -1
+    acceptance_not_determined_f          = False
+    terminal_depends_on_pre_conditions_f = False
+    terminal_requires_seek_to_position_f = False
+
 def get_dead_end_state_list(state_machine):
     """Collect all states that have no further transitions, i.e. dead end states.
        Some of them need to be investigated, since it depends on pre-conditions
@@ -84,31 +90,38 @@ def get_dead_end_state_list(state_machine):
                                                      where 'n' is the integer.
 
             db[state_index] = -1                ==> state is a 'harmless' drop out. need to jump to
-                                                     general terminal
+                                                    general terminal
     """
     db = {}
     directly_reached_terminal_id_list = []
     for state_index, state in state_machine.states.items():
         if not state.transitions().is_empty(): continue
 
-        if state.origins().contains_any_pre_context_dependency():
+        dead_end_info = DeadEndInfo()
+
+        if   state.is_acceptance() == False:
+            db[state_index] = state
+
+        elif state.origins().contains_any_pre_context_dependency():
            # (1) state require run time investigation since pre-conditions have to be checked
-           db[state_index] = None
+            db[state_index] = state
+
            #     Terminals are reached via a 'router'. nevertheless, they are reached 
            #     without a seek.
            for origin in state.origins().get_list():
                if not origin.is_acceptance(): continue
                directly_reached_terminal_id_list.append(origin.state_machine_id)
+
         else:
-            # find the first acceptance origin (origins are sorted already)
+            # Find the first acceptance origin (origins are sorted already)
             acceptance_origin = state.origins().find_first_acceptance_origin()
-            if type(acceptance_origin) != type(None): # avoid call to __cmp__(None)
-                # (2) state transits automatically to terminal given below
-                db[state_index] = acceptance_origin.state_machine_id
-                directly_reached_terminal_id_list.append(acceptance_origin.state_machine_id)
-            else:
-                # (3) no acceptance origin => terminal general
-                db[state_index] = -1  
+            # There **must** be an acceptance state, see above
+            assert type(acceptance_origin) != type(None): 
+
+            # (2) state transits automatically to terminal given below
+            db[state_index] = state
+
+            directly_reached_terminal_id_list.append(acceptance_origin.state_machine_id)
 
     return db, directly_reached_terminal_id_list
 
