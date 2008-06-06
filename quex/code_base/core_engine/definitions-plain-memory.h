@@ -48,14 +48,17 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #endif
 };
 
-#define QUEX_END_OF_FILE()   0
-#define QUEX_BEGIN_OF_FILE() (me->input_p == me->buffer_begin - 1)
+#define QUEX_BUFFER_LIMIT_CODE()   0
+#define QUEX_END_OF_FILE()         0
+#define QUEX_BEGIN_OF_FILE()       (me->input_p == me->buffer_begin - 1)
 
 #define QUEX_BUFFER_INCREMENT()           (++(me->input_p));
 #define QUEX_BUFFER_DECREMENT()           (--(me->input_p)); 
-#define QUEX_BUFFER_GET(character)        character   = *(me->input_p); 
 #define QUEX_BUFFER_TELL_ADR(position)    position    = me->input_p;
 #define QUEX_BUFFER_SEEK_ADR(position)    me->input_p = position;
+#define QUEX_BUFFER_GET(character)        \
+        character = *(me->input_p);       \
+        QUEX_DEBUG_INFO_INPUT(character); 
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
@@ -63,11 +66,9 @@ struct QUEX_CORE_ANALYSER_STRUCT {
  *    to go to the point where the actual analysis starts. The macro
  *    performs this positioning of the input pointer.
  */
-#define QUEX_BUFFER_SEEK_START_POSITION() (me->input_p) = (me->lexeme_start_p - 1); 
-
+#define QUEX_BUFFER_SEEK_START_POSITION() (me->input_p) = (me->lexeme_start_p); 
 
 #define QUEX_INLINE_KEYWORD static
-
 
 #define QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST \
         QUEX_CORE_ANALYSER_STRUCT*,                  \
@@ -107,7 +108,7 @@ QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 {
-    me->lexeme_start_p = me->input_p + 1;
+    me->lexeme_start_p = me->input_p;
 }
 
 /* Drop Out Procedures: 
@@ -137,8 +138,8 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
         me->begin_of_line_f = (*(me->input_p) == '\n');
         
 #define QUEX_PREPARE_LEXEME_OBJECT                                 \
-        me->char_covered_by_terminating_zero = *(me->input_p + 1); \
-        *(me->input_p + 1)= '\0';                                  \
+        me->char_covered_by_terminating_zero = *(me->input_p); \
+        *(me->input_p)= '\0';                                  \
 	    Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->lexeme_start_p);                              
 
 /* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
@@ -156,7 +157,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 */
 #define QUEX_UNDO_PREPARE_LEXEME_OBJECT                                            \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {  \
-           *(me->input_p + 1) = me->char_covered_by_terminating_zero;              \
+           *(me->input_p) = me->char_covered_by_terminating_zero;              \
         }
 
 /* IMPORTANT: 
@@ -175,38 +176,18 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE    /* nothing happens here (yet) */                         
 
 #if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
-#   define __QUEX_DEBUG_INFO_START_LEXING(Name)   /* empty */
-#   define __QUEX_DEBUG_INFO_ENTER(StateIdx)      /* empty */
-#   define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)   /* empty */
-#   define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx) /* empty */
-#   define __QUEX_DEBUG_INFO_TERMINAL(Terminal)   /* empty */
-#   define __QUEX_DEBUG_INFO_INPUT(Character)     /* empty */
+#   define QUEX_DEBUG_LABEL_PASS(Terminal)   /* empty */
+#   define QUEX_DEBUG_INFO_INPUT(Character)  /* empty */
 #else
 #   define __QUEX_PRINT_SOURCE_POSITION()                             \
           std::fprintf(stderr, "%s:%i: @%08X \t", __FILE__, __LINE__, \
-                       (int)(me->input_p - (me->buffer_begin -1)));            
+                       (int)(me->input_p - me->buffer_begin));            
 
-#   define __QUEX_DEBUG_INFO_START_LEXING(Name)              \
-           __QUEX_PRINT_SOURCE_POSITION()                    \
-           std::fprintf(stderr, "START:    %s\n", #Name)
+#   define QUEX_DEBUG_LABEL_PASS(Label)   \
+           __QUEX_PRINT_SOURCE_POSITION()   \
+           std::fprintf(stderr, Label "\n")
 
-#   define __QUEX_DEBUG_INFO_ENTER(StateIdx)                 \
-           __QUEX_PRINT_SOURCE_POSITION()                    \
-           std::fprintf(stderr, "enter:    %i\n", (int)StateIdx)
-
-#   define __QUEX_DEBUG_INFO_DROP_OUT(StateIdx)              \
-           __QUEX_PRINT_SOURCE_POSITION()                    \
-           std::fprintf(stderr, "drop:     %i\n", (int)StateIdx)
-
-#   define __QUEX_DEBUG_INFO_ACCEPTANCE(StateIdx)            \
-           __QUEX_PRINT_SOURCE_POSITION()                    \
-           std::fprintf(stderr, "accept:   %i\n", (int)StateIdx)
-
-#   define __QUEX_DEBUG_INFO_TERMINAL(Terminal)             \
-           __QUEX_PRINT_SOURCE_POSITION()                   \
-           std::fprintf(stderr, "terminal: %s\n", #Terminal)
-
-#   define __QUEX_DEBUG_INFO_INPUT(Character)                              \
+#   define QUEX_DEBUG_INFO_INPUT(Character)                              \
            __QUEX_PRINT_SOURCE_POSITION()                                  \
              Character == '\n' ? std::fprintf(stderr, "input:    '\\n'\n") \
            : Character == '\t' ? std::fprintf(stderr, "input:    '\\t'\n") \

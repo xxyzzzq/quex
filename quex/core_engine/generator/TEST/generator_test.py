@@ -26,7 +26,6 @@ def action(PatternName):
 
     return txt
     
-
 test_program_common_declarations = """
 struct QUEX_CORE_ANALYSER_STRUCT;
 static int    analyser_do(QUEX_CORE_ANALYSER_STRUCT* me);
@@ -96,7 +95,6 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
 
     return txt, core_engine_definition_file
 
-
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode,
                                   core_engine_definition_file, SecondModeF=False):
@@ -132,7 +130,6 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 
     return txt
-
 
 def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMemory", QuexBufferSize=15,
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
@@ -193,8 +190,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
-                  "-ggdb " + \
-                  "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
+                  "-ggdb "# + \
+                  #"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG

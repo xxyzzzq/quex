@@ -15,97 +15,48 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           BufferReloadRequiredOnDropOutF,
                           CurrentStateIsAcceptanceF = None,
                           OriginList                = None,
-                          LanguageDB                = None,
-                          DropOutTargetStateID      = -1L):
+                          LanguageDB                = None):
 
-    txt = "    __QUEX_DEBUG_INFO_DROP_OUT(%i);\n" % CurrentStateIdx
+    
     if BackwardLexingF: 
-        txt += __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
-                                                     BufferReloadRequiredOnDropOutF,
-                                                     DropOutTargetStateID, LanguageDB)
-    else:
-        txt += __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
+        txt = __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
                                                     BufferReloadRequiredOnDropOutF,
-                                                    CurrentStateIsAcceptanceF = CurrentStateIsAcceptanceF,
-                                                    OriginList           = OriginList,
-                                                    LanguageDB           = LanguageDB,
-                                                    DropOutTargetStateID = DropOutTargetStateID)     
+                                                    LanguageDB)
+    else:
+        txt = __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
+                                                   BufferReloadRequiredOnDropOutF,
+                                                   CurrentStateIsAcceptanceF = CurrentStateIsAcceptanceF,
+                                                   OriginList           = OriginList,
+                                                   LanguageDB           = LanguageDB)
 
     return txt
 
 def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx, 
                                           BufferReloadRequiredOnDropOutF, 
-                                          DropOutTargetStateID, LanguageDB):      
+                                          LanguageDB):      
 
-    txt  = "if( input != me->__buffer->BLC ) {\n"
-    txt += "    " + LanguageDB["$goto"]("$terminal-general", True) + "\n"
-    txt += LanguageDB["$endif"] + "\n"
-
+    txt = ""
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += "    " + LanguageDB["$drop-out-backward"](CurrentStateIdx).replace("\n", "\n    ")
-        ## txt += "\n#   else\n"
-        ## txt += "        " + LanguageDB["$input/get"] + "\n"
-        ## txt += "        goto %s;\n" % label.get_input(CurrentStateIdx)
         txt += "#   endif\n"
-    txt += "    goto TERMINAL_GENERAL_PRE_CONTEXT;\n"
+    txt += "    " + LanguageDB["$goto"]("$terminal-general", True);
 
     return txt
 
 def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx, 
                                          BufferReloadRequiredOnDropOutF,
-                                         CurrentStateIsAcceptanceF, OriginList, LanguageDB,
-                                         DropOutTargetStateID):      
+                                         CurrentStateIsAcceptanceF, OriginList, 
+                                         LanguageDB):
 
-    txt  = "if( input != me->__buffer->BLC ) {\n"
-    txt += "    " + LanguageDB["$goto"]("$terminal-general", False) + "\n"
-    txt += LanguageDB["$endif"] + "\n"
+    txt = ""
 
     if BufferReloadRequiredOnDropOutF:
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += "    "
-        txt += LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
+        txt += "    " + LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
         txt += "\n#   endif\n"
-    txt += "    goto TERMINAL_GENERAL;\n"
+    txt += "    " + LanguageDB["$goto"]("$terminal-general", False);
     return txt
-
-    # From here on: input is not a 'buffer limit code' 
-    #               (i.e. input does **not** mean: 'load buffer')
-    # if DropOutTargetStateID != -1L:
-        # -- A 'match all' is implemented as 'drop out to target'. This happens
-        #    in order to ensure that the buffer limits are checked.
-    #    txt += "    goto %s;" % label.get(StateMachineName, DropOutTargetStateID, {}, None)
-    #    return txt
-    
-    #     -- 'drop out' in non-acceptance --> goto general terminal
-    #if CurrentStateIsAcceptanceF == False:  
-    #    txt += "    goto %s;\n" % label.get_terminal()
-    #    return txt
-     
-    #    -- 'drop out' in acceptance state --> check pre-conditions (if there are some)
-    #                                      --> goto first specific terminal that either
-    #                                          fulfills pre-condition or is unconditional
-    #  NOTE: As soon as an unconditional acceptance occures there is no need
-    #        for checking further pre-conditions, since they are outruled.
-    #  NOTE: Maybe, there is a potential of reducing the code size a little, if 
-    #        only those acceptance positions are adapted that are possibly reached
-    #        at this point. This, though, would require some analysis of the state machine.
-    #        The effect is probably minimal and only makes sense if there are many, many
-    #        post conditions.
-    #
-    #def __on_detection_code(StateMachineName, Origin):
-    #    txt = "__QUEX_DEBUG_INFO_ACCEPTANCE(%i);\n" % Origin.state_machine_id
-    #    terminal_label = label.get_terminal(Origin.state_machine_id)
-    #    return txt + "goto %s;\n" % terminal_label
-
-    #t_txt = get_acceptance_detector(OriginList, __on_detection_code,
-    #                                LanguageDB, StateMachineName)
-            
-    # -- double check for consistency
-    #assert t_txt != "", "Acceptance state without acceptance origins!"        
-
-    #return txt + t_txt
-
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
@@ -192,8 +143,8 @@ __analyzer_function_start = """
                            **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
                            */
 #  endif
-   __QUEX_DEBUG_INFO_START_LEXING($$QUEX_ANALYZER_STRUCT_NAME$$);
 __REENTRY_POINT:
+   QUEX_DEBUG_LABEL_PASS("__REENTRY_POINT");
 """
 
 def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
@@ -315,7 +266,6 @@ $$TERMINAL_GENERAL-DEF$$ {
         //  if last_acceptance => goto correspondent acceptance terminal state
         //  else               => execute defaul action
         //
-        __QUEX_DEBUG_INFO_TERMINAL(General);
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_DEFAULT-GOTO$$; /* nothing matched */
@@ -344,6 +294,9 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
     goto __REENTRY_POINT;
 
+"""
+
+__drop_out_buffer_reload_handler = """
 #   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 __FORWARD_DROP_OUT_HANDLING:
     // Since all drop out states work the same, we introduce here a 'router' that
@@ -432,7 +385,6 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
             post_context_number_str = state_machine_id_str + "_"
         #
         txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
-        txt += "    __QUEX_DEBUG_INFO_TERMINAL(%s);\n" % __nice(state_machine_id)
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
             txt += "    QUEX_BUFFER_SEEK_ADR(last_acceptance_%sinput_position);\n" % \
@@ -460,7 +412,7 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     txt = ""    
     for state_machine_id in action_db.keys():
         txt += "            case %s: " % repr(state_machine_id).replace("L", "")
-        txt += LanguageDB["$goto"]("$terminal", state_machine_id)
+        txt += LanguageDB["$goto"]("$terminal", state_machine_id) + "\n"
 
     jumps_to_acceptance_states_str = txt
 
@@ -515,9 +467,10 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
                       ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]("$terminal-DEFAULT")],
                       ["$$STATE_MACHINE_NAME$$",           StateMachineName],
-                      ["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
-                      ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",  precondition_involved_f],
                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
 
+    txt += blue_print(__drop_out_buffer_reload_handler, 
+                      [["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
+                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",           precondition_involved_f]])
     return txt
     

@@ -104,6 +104,19 @@ class StateOriginList:
             origin.state_machine_id = StateMachineID
             origin.state_index      = StateIndex 
 
+    def find_first_acceptance_origin(self):
+        """Returns first origin which refers to an acceptance state. 
+           Note, that this only makes sense if the list is sorted.
+
+           Returns 'None' if no acceptance origin has been found.
+        """
+        for origin in self.get_list():
+            if origin.is_acceptance():
+                return origin
+        else:
+            return None
+        
+
     def delete_meaningless(self):
         """Deletes origins that are not concerned with one of the three:
            -- post-conditions
