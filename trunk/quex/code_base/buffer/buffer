@@ -97,9 +97,9 @@ namespace quex {
             void              seek_adr(memory_position Adr);
             void              seek_offset(const int Offset);
 
-            void              set_subsequent_character(const int Value);
             character_type    get_subsequent_character();
             character_type    get_current_character();
+            void              set_current_character(const character_type Value);
             character_type*   get_lexeme_start_p();
             void              mark_lexeme_start();
             void              move_forward(const size_t);   // load buffer if nec. /influences lexeme start

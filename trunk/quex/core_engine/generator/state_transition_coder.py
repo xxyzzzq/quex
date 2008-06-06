@@ -26,13 +26,17 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
     #                        # ==> here, the trigger map cannot be empty.
     #_________________________________________________________________________________________    
+    # NOTE: The first entry into the init state is a little different. It does not 
+    #       increment the current pointer before referencing the character to be read. 
+    #       However, when the init state is entered during analysis else, the current 
+    #       pointer needs to be incremented.
     
     txt = ""
     # note down information about success, if state is an acceptance state
+    txt += input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB)
+
     txt += acceptance_info.do(state, LanguageDB, 
                               BackwardLexingF, BackwardInputPositionDetectionF)
-
-    txt += input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB)
 
     txt += transition_block.do(state, StateIdx, TriggerMap, LanguageDB, 
                                InitStateF, BackwardLexingF, StateMachineName, 
@@ -42,19 +46,26 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                             InitStateF, 
                             BackwardLexingF, BackwardInputPositionDetectionF,
                             StateMachineName, LanguageDB, DeadEndStateDB)
+
+    if InitStateF:
+        txt += LanguageDB["$label-def"]("$input", StateIdx)
+        if BackwardLexingF: txt += "    " + LanguageDB["$input/decrement"] + "\n"
+        else:               txt += "    " + LanguageDB["$input/increment"] + "\n"
+        txt += "    " + LanguageDB["$goto"]("$entry", StateIdx) + "\n"
+
     
     return txt # .replace("\n", "\n    ") + "\n"
 
 
 def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
 
-    txt = LanguageDB["$label-def"]("$input", StateIdx) + "\n"
-
     # The initial state starts from the character to be read and is an exception.
     # Any other state starts with an increment (forward) or decrement (backward).
     # This is so, since the beginning of the state is considered to be the 
     # transition action (setting the pointer to the next position to be read).
+    txt = ""
     if not InitStateF:
+        txt = LanguageDB["$label-def"]("$input", StateIdx) + "\n"
         if BackwardLexingF: txt += "    " + LanguageDB["$input/decrement"] + "\n"
         else:               txt += "    " + LanguageDB["$input/increment"] + "\n"
     txt += "    " + LanguageDB["$input/get"] + "\n"
@@ -63,17 +74,32 @@ def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
 
 def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, 
                      BackwardInputPositionDetectionF, StateMachineName, LanguageDB, DeadEndStateDB):
-    # -- drop out code (transition to no target state)
-    txt = LanguageDB["$label-def"]("$drop-out", StateIdx) + "\n"
+    """There are two reasons for drop out:
+       
+          (1) A buffer limit code has been reached.
 
-    drop_out_target_state_id = -1L
-    if len(TriggerMap) == 1:
-        # We cannot transit to any subsequent state without checking wether
-        # the received character was a buffer limit code. To prevent an 
-        # unconditional goto, rewrite the drop out in such a way that by
-        # default it moves to the given target state. In case of buffer limit
-        # code it returns in order to read the next character.
-        drop_out_target_state_id = TriggerMap[0][1]
+          (2) The current character does not fit in the trigger map (regular drop out).
+       
+       Case (1) differs from case (2) in the fact that input == buffer limit code. 
+       If a buffer limit code is reached, a buffer reload needs to be initiated. If
+       the character drops over the edge, then a terminal state needs to be targeted.
+    """
+    # -- drop out code (transition to no target state)
+    txt = LanguageDB["$label-def"]("$drop-out", StateIdx)
+
+    terminal_id = -1
+    if state.origins().contains_any_pre_context_dependency() == False:
+        acc_origin = state.origins().find_first_acceptance_origin()
+        assert not state.is_acceptance() or type(acc_origin) != type(None), \
+               "Every acceptance state requires an acceptance origin."
+        if type(acc_origin) != type(None): # avoid call to __cmp__(None)
+            terminal_id = acc_origin.state_machine_id
+
+    txt += "    " + LanguageDB["$if BLC"]
+    if terminal_id == -1: goto_str = LanguageDB["$goto"]("$terminal-general", BackwardLexingF) 
+    else:                 goto_str = LanguageDB["$goto"]("$terminal", terminal_id) 
+    txt += "        " + goto_str + "\n" 
+    txt += "    " + LanguageDB["$endif"] + "\n"
 
     # -- in case of the init state, the end of file has to be checked.
     #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
@@ -82,7 +108,7 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
         txt += "        " + LanguageDB["$comment"](
                "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state") 
         txt += "\n"
-        txt += "        " + LanguageDB["$goto"]("$terminal-EOF")
+        txt += "        " + LanguageDB["$goto"]("$terminal-EOF") + "\n"
         txt += "    " + LanguageDB["$endif"]
 
     BRRODO_f = TriggerMap != [] and not BackwardInputPositionDetectionF
@@ -90,8 +116,7 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
                                    BufferReloadRequiredOnDropOutF = BRRODO_f,
                                    CurrentStateIsAcceptanceF      = state.is_acceptance(),
                                    OriginList                     = state.origins().get_list(),
-                                   LanguageDB                     = LanguageDB,
-                                   DropOutTargetStateID           = drop_out_target_state_id)
+                                   LanguageDB                     = LanguageDB)
 
     return txt + "\n"
 

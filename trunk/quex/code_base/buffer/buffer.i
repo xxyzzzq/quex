@@ -94,7 +94,8 @@ namespace quex {
 
         // -- current = 1 before content, 
         //    because we always read '_current_p + 1' as next char.
-        _current_p      = _buffer.front();     
+        //    (but: the first state does not advance the input)
+        _current_p      = content_front();     
         // -- initial lexeme start, of course, at the start
         _lexeme_start_p = content_front();
 
@@ -474,8 +475,8 @@ namespace quex {
         return _current_p == _buffer.back();
     }
 
-    TEMPLATE_IN  void CLASS::set_subsequent_character(const int Value) { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p + 1) = Value; }
-    TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)        { _current_p = Adr; QUEX_BUFFER_ASSERT_CONSISTENCY(); }
+    TEMPLATE_IN  void CLASS::set_current_character(const CharacterCarrierType Value) { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p) = Value; }
+    TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)     { _current_p = Adr; QUEX_BUFFER_ASSERT_CONSISTENCY(); }
 
     TEMPLATE_IN  typename CLASS::character_type    
         CLASS::get_subsequent_character() 
@@ -487,7 +488,7 @@ namespace quex {
 
     TEMPLATE_IN void CLASS::mark_lexeme_start() 
     { 
-        _lexeme_start_p = _current_p + 1;  // pointing to the next character to be read   
+        _lexeme_start_p = _current_p;  // pointing to the next character to be read   
         QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 

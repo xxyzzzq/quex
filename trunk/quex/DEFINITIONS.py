@@ -20,7 +20,7 @@
 import os
 import sys
 
-QUEX_VERSION = '0.10.1'
+QUEX_VERSION = '0.27.1'
 
 try:
     QUEX_INSTALLATION_DIR = os.environ["QUEX_PATH"]
@@ -33,7 +33,10 @@ except:
         print "error:"
         print "error: export QUEX_PATH=directory-where-quex-has-been-installed"
     elif os.name == "nt":
-        print "error: Right click on MyComputer->Properties->Tab(Advanced)->EnvironmentVariables"
+        print "error: Right click on [MyComputer]"
+        print "error:                  -> [Properties]"
+        print "error:                       -> Tab[Advanced]"
+        print "error:                            -> [Environment Variables]"
         print "error: and from there it is obvious."
     else:
         print "error: for your system '%s' it is not known how to set environment" % os.name

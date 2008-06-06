@@ -39,6 +39,7 @@ def do(state_machine, LanguageDB,
     #       case, end of file needs to cause a drop out! After the drop out, lexing
     #       starts at furthest right before the EndOfFile and the init state transits
     #       into the TERMINAL_END_OF_FILE.
+    txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
     txt += state_transition_coder.do(LanguageDB, 
                                      UserDefinedStateMachineName, 
                                      init_state, 
@@ -62,7 +63,6 @@ def do(state_machine, LanguageDB,
         if state_code == "": continue
 
         txt += LanguageDB["$label-def"]("$entry", state_index) + "\n"
-        txt += "    __QUEX_DEBUG_INFO_ENTER(%s);\n" % __nice(state_index)
         txt += state_code
         txt += "\n"
     
@@ -101,16 +101,14 @@ def get_dead_end_state_list(state_machine):
                directly_reached_terminal_id_list.append(origin.state_machine_id)
         else:
             # find the first acceptance origin (origins are sorted already)
-            for origin in state.origins().get_list():
-                if origin.is_acceptance():
-                    # (2) state transits automatically to terminal given below
-                    db[state_index] = origin.state_machine_id
-                    directly_reached_terminal_id_list.append(origin.state_machine_id)
-                    break
+            acceptance_origin = state.origins().find_first_acceptance_origin()
+            if type(acceptance_origin) != type(None): # avoid call to __cmp__(None)
+                # (2) state transits automatically to terminal given below
+                db[state_index] = acceptance_origin.state_machine_id
+                directly_reached_terminal_id_list.append(acceptance_origin.state_machine_id)
             else:
                 # (3) no acceptance origin => terminal general
                 db[state_index] = -1  
-
 
     return db, directly_reached_terminal_id_list
 

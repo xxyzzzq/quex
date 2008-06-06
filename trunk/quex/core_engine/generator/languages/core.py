@@ -56,6 +56,7 @@ db["C++"] = {
     "$loop-end":            "}\n",
     "$continue":          "continue;\n",
     "$break":             "break;\n",
+    "$if BLC":            "if( input == QUEX_BUFFER_LIMIT_CODE() ) {\n",
     "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
     "$if BOF":            "if( QUEX_BEGIN_OF_FILE() ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
@@ -86,7 +87,9 @@ db["C++"] = {
     "$return_true":         "return true;",
     "$return_false":        "return false;",
     "$goto":                lambda Type, Argument=None:  "goto %s;" % label_db[Type](Argument),
-    "$label-def":           lambda Type, Argument=None:  "%s:"      % label_db[Type](Argument),
+    "$label-def":           lambda Type, Argument=None:  
+                                "%s:\n"                                % label_db[Type](Argument) + \
+                                "    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
     "$analyser-func":        cpp.__analyser_function,
     "$terminal-code":        cpp.__terminal_states,      
     "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
