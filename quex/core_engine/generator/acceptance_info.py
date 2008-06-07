@@ -16,14 +16,14 @@ def do(state, LanguageDB, BackwardLexingF, BackwardInputPositionDetectionF=False
     if BackwardLexingF:
         # (*) Backward Lexing 
         if not BackwardInputPositionDetectionF:
-            return __acceptance_info_backward_lexing(OriginList, LanguageDB)
+            return backward_lexing(OriginList, LanguageDB)
         else:
-            return __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB)
+            return backward_lexing_find_core_pattern(OriginList, LanguageDB)
     else:
         # (*) Forward Lexing 
-        return __acceptance_info_forward_lexing(OriginList, LanguageDB)
+        return forward_lexing(OriginList, LanguageDB)
 
-def __acceptance_info_backward_lexing(OriginList, LanguageDB):
+def backward_lexing(OriginList, LanguageDB):
     """Backward Lexing:
        -- Using an inverse state machine from 'real' current start position backwards
           until a drop out occurs.
@@ -51,7 +51,7 @@ def __acceptance_info_backward_lexing(OriginList, LanguageDB):
 
     return txt
 
-def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
+def backward_lexing_find_core_pattern(OriginList, LanguageDB):
     """Backward Lexing:
        -- (see above)
        -- for the search of the end of the core pattern, the acceptance position
@@ -79,7 +79,7 @@ def __acceptance_info_backward_lexing_find_core_pattern(OriginList, LanguageDB):
 
     return txt
 
-def __acceptance_info_forward_lexing(OriginList, LanguageDB):
+def forward_lexing(OriginList, LanguageDB):
 
     txt = ""
     # -- get the pattern ids that indicate the start of a post-condition
@@ -94,6 +94,9 @@ def __acceptance_info_forward_lexing(OriginList, LanguageDB):
             final_acceptance_origin_list.append(origin)
    
     def __on_detection_code(StateMachineName, Origin):
+        """Store the name of the winner pattern (last_acceptance) and the position
+           where it has matched (use of $input/tell_position).
+        """
         info = LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
         # NOTE: When post conditioned patterns end they do not store the input position.
         #       Rather, the acceptance position of the core pattern is considered.

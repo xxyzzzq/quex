@@ -215,8 +215,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt = txt.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", load_procedure_txt)                   
 
     # -- entry to the actual function body
-    txt += "    QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(me);\n"
-    txt += "    QUEX_UNDO_PREPARE_LEXEME_OBJECT;\n";
+    txt += "    QUEX_CORE_MARK_LEXEME_START();\n"
+    txt += "    QUEX_UNDO_PREPARE_LEXEME_OBJECT();\n";
     
     txt += function_body
 
@@ -312,7 +312,7 @@ __FORWARD_DROP_OUT_HANDLING:
     }
     // no load possible (EOF) => (i)  goto general terminal
     //                           (ii) init state triggers EOF action
-    goto TERMINAL_GENERAL;
+    $$GOTO-TERMINAL_GENERAL_FORWARD$$
 
 #if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
 __BACKWARD_DROP_OUT_HANDLING:
@@ -324,7 +324,8 @@ __BACKWARD_DROP_OUT_HANDLING:
         goto __DROP_OUT_ROUTING;
 #       endif
     }
-    goto TERMINAL_GENERAL_PRE_CONTEXT;
+    $$GOTO-TERMINAL_GENERAL_BACKWARD$$
+
 #endif
 #endif // __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 
@@ -353,15 +354,15 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         #       newline at the end, and those that do not. Then, there need not
         #       be a conditional question.
         if SupportBeginOfLineF:
-            txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN\n"
+            txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN()\n"
 
         if action_info.contains_Lexeme_object(ignored_code_regions):
-            txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT\n"
+            txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT()\n"
         else:
-            txt += indentation + "QUEX_DO_NOT_PREPARE_LEXEME_OBJECT\n"
+            txt += indentation + "QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()\n"
 
         if action_info.contains_LexemeLength_object(ignored_code_regions):      
-            txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH\n"
+            txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH()\n"
 
         txt += indentation + "{\n"
         txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  
@@ -471,6 +472,9 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
 
     txt += blue_print(__drop_out_buffer_reload_handler, 
                       [["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
-                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",           precondition_involved_f]])
+                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",           precondition_involved_f],
+                       ["$$GOTO-TERMINAL_GENERAL_FORWARD$$",   LanguageDB["$goto"]("$terminal-general", False)],
+                       ["$$GOTO-TERMINAL_GENERAL_BACKWARD$$",  LanguageDB["$goto"]("$terminal-general", True)]
+                       ])
     return txt
     

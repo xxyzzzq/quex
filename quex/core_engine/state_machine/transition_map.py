@@ -129,7 +129,7 @@ class TransitionMap:
         return self.__db
 
     def get_trigger_set_line_up(self):
-        ## WATCH AND SEE THAT WE COULD CACHE HERE AND GAIN A LOT OF SPEED
+        ## WATCH AND SEE THAT WE COULD CACHE HERE AND GAIN A LOT OF SPEED during construction
         ## if self.__dict__.has_key("NONSENSE"): 
         ##    self.NONSENSE += 1
         ##    print "## called", self.NONSENSE
@@ -205,7 +205,13 @@ class TransitionMap:
                       [ interval_N, target_N] ]
 
            The intervals are sorted and non-overlapping (use this function only for DFA).
+
+           A drop out on 'interval_i' is represented by 'target_i' == None.
         """
+        # At this point only DFAs shall be considered. Thus there cannot be any epsilon
+        # target transitions.
+        assert self.__epsilon_target_index_list == [], \
+               "Trigger maps can only be computed on DFAs. Epsilon transition detected."
 
         # NOTE: The response '[]' is a **signal** that there is only an epsilon
         #       transition. The response as such would be incorrect. But the signal
@@ -247,26 +253,28 @@ class TransitionMap:
                 for entry in query_trigger_map(INTERVAL_UNDEFINED_BORDER, item.target_idx):
                     entry[0].end = item.position
             
-        # (*) fill all gaps in the trigger map with target = epsilon_target
-        epsilon_target = None
-        if self.__epsilon_target_index_list != []: 
-            epsilon_target = self.__epsilon_target_index_list[0]   
+        # (*) fill all gaps in the trigger map with 'None' target = Drop Out !
 
+        drop_out_target = None
+        ## NOTE: Trigger maps shall only be computed for DFA, see assert above. 
+        #        Thus, there cannot be an epsilon transition.
+        ## if self.__drop_out_target_index_list != []: 
+        ##    drop_out_target = self.__drop_out_target_index_list[0]   
         gap_filler = [] 
         if len(trigger_map) >= 2:    
             prev_entry = trigger_map[0]    
             for entry in trigger_map[1:]:    
                 if prev_entry[0].end != entry[0].begin: 
-                    gap_filler.append([Interval(prev_entry[0].end, entry[0].begin), epsilon_target])
+                    gap_filler.append([Interval(prev_entry[0].end, entry[0].begin), drop_out_target])
                 prev_entry = entry
     
         # -- append the last interval until 'infinity' (if it is not yet specified   
         #    (do not switch this with the following step, .. or you screw it)           
         if trigger_map[-1][0].end != sys.maxint:    
-            trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), epsilon_target])
+            trigger_map.append([Interval(trigger_map[-1][0].end, sys.maxint), drop_out_target])
         # -- insert a first interval from -'infinity' to the start of the first interval
         if trigger_map[0][0].begin != -sys.maxint:
-            trigger_map.append([Interval(-sys.maxint, trigger_map[0][0].begin), epsilon_target])
+            trigger_map.append([Interval(-sys.maxint, trigger_map[0][0].begin), drop_out_target])
            
         # -- insert the gap fillers and get the trigger map straigtened up again
         trigger_map.extend(gap_filler) 

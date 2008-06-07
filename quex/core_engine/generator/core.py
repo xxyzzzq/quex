@@ -78,7 +78,7 @@ class Generator(GeneratorBase):
 
         msg, dummy = state_machine_coder.do(self.pre_context_sm, 
                                             LanguageDB                  = LanguageDB, 
-                                            UserDefinedStateMachineName = self.state_machine_name + "_PRE_CONTEXT",
+                                            UserDefinedStateMachineName = self.state_machine_name + "_CongoBell",
                                             BackwardLexingF             = True)
         txt += msg
 

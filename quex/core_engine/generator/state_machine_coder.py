@@ -24,8 +24,11 @@ def do(state_machine, LanguageDB,
 
     # -- collect the 'dead end states' (states without further transitions)
     #    create a map from the 'dead end state
-    if not BackwardLexingF:
-        dead_end_state_db, directly_reached_terminal_id_list = get_dead_end_state_list(state_machine)
+    dead_end_state_db, directly_reached_terminal_id_list = get_dead_end_state_list(state_machine)
+    if BackwardLexingF:
+        # During backward lexing (pre-condition, backward input position detection)
+        # there are no dedicated terminal states in the first place.
+        directly_reached_terminal_id_list = []
 
     txt = ""
     # -- treat initial state separately 
@@ -68,12 +71,6 @@ def do(state_machine, LanguageDB,
     
     return txt, directly_reached_terminal_id_list
 
-class DeadEndInfo:
-    distinct_terminal_id                 = -1
-    acceptance_not_determined_f          = False
-    terminal_depends_on_pre_conditions_f = False
-    terminal_requires_seek_to_position_f = False
-
 def get_dead_end_state_list(state_machine):
     """Collect all states that have no further transitions, i.e. dead end states.
        Some of them need to be investigated, since it depends on pre-conditions
@@ -95,32 +92,28 @@ def get_dead_end_state_list(state_machine):
     db = {}
     directly_reached_terminal_id_list = []
     for state_index, state in state_machine.states.items():
+
         if not state.transitions().is_empty(): continue
 
-        dead_end_info = DeadEndInfo()
+        db[state_index] = state
 
-        if   state.is_acceptance() == False:
-            db[state_index] = state
+        if state.is_acceptance() == False: continue
 
         elif state.origins().contains_any_pre_context_dependency():
-           # (1) state require run time investigation since pre-conditions have to be checked
-            db[state_index] = state
-
-           #     Terminals are reached via a 'router'. nevertheless, they are reached 
-           #     without a seek.
-           for origin in state.origins().get_list():
-               if not origin.is_acceptance(): continue
-               directly_reached_terminal_id_list.append(origin.state_machine_id)
+            # (1) state require run time investigation since pre-conditions have to be checked
+            #     Terminals are reached via a 'router'. nevertheless, they are reached 
+            #     without a seek.
+            for origin in state.origins().get_list():
+                if not origin.is_acceptance(): continue
+                directly_reached_terminal_id_list.append(origin.state_machine_id)
 
         else:
             # Find the first acceptance origin (origins are sorted already)
             acceptance_origin = state.origins().find_first_acceptance_origin()
             # There **must** be an acceptance state, see above
-            assert type(acceptance_origin) != type(None): 
+            assert type(acceptance_origin) != type(None)
 
             # (2) state transits automatically to terminal given below
-            db[state_index] = state
-
             directly_reached_terminal_id_list.append(acceptance_origin.state_machine_id)
 
     return db, directly_reached_terminal_id_list
