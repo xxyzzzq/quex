@@ -71,7 +71,7 @@ class StateOriginList:
 
     def contains_post_context_flag(self):
         for origin in self.__list:
-            if origin.post_contexted_acceptance_f(): return True
+            if origin.post_context_id() != -1L: return True
         return False                                
 
     def contains_store_input_position(self):

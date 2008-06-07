@@ -93,12 +93,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 }
 
 
-QUEX_INLINE_KEYWORD
-void
-QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
-{
-    me->__buffer->mark_lexeme_start();
-}
+#define QUEX_CORE_MARK_LEXEME_START() me->__buffer->mark_lexeme_start(); 
 
 /* Drop Out Procedures: 
 **   
@@ -138,8 +133,8 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
     
 /* NOTE: See note at the member definition of '.begin_of_line_f'
 */   
-#define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN \
-        me->begin_of_line_f = me->__buffer->get_current_character() == '\n';
+#define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN() \
+        me->begin_of_line_f = me->__buffer->get_previous_character() == '\n';
         
 /* NOTE: The following macro is posted after QUEX_STREAM_SEEK(last_acceptance_input_position)
 **       Thus, the subsequent character has to be set to zero, not the current. It can
@@ -148,7 +143,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 ** NOTE: The subsequent character is always present, because the buffer hold at the end
 **       a limiting character.
 */
-#define QUEX_PREPARE_LEXEME_OBJECT                                                    \
+#define QUEX_PREPARE_LEXEME_OBJECT()                                                  \
         me->char_covered_by_terminating_zero = me->__buffer->get_current_character(); \
         me->__buffer->set_current_character('\0');                                    \
         Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->__buffer->get_lexeme_start_p());                              
@@ -158,10 +153,10 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 ** to be prepared, but the QUEX_UNDO_PREPARE_LEXEME_OBJECT must
 ** still be a valid operation at the beginning of the next analysis.
 */
-#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT            \
+#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()           \
         me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';
 
-#define QUEX_UNDO_PREPARE_LEXEME_OBJECT                                                \
+#define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                              \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {      \
            me->__buffer->set_current_character(me->char_covered_by_terminating_zero);  \
         }
@@ -176,9 +171,9 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 **    THE DEFAULT ACTION MAY FAIL, BECAUSE THE LAST_ACCEPTANCE_INPUT_POSITION
 **    CAN BE ANYTHING.
 */
-#define QUEX_PREPARE_LEXEME_LENGTH                                                       \
-        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());     \
-        LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p() + 1);       
+#define QUEX_PREPARE_LEXEME_LENGTH()                                                     \
+        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());  \
+        LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p());       
 
 #ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
 

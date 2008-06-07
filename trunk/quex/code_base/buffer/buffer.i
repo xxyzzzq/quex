@@ -475,12 +475,14 @@ namespace quex {
         return _current_p == _buffer.back();
     }
 
-    TEMPLATE_IN  void CLASS::set_current_character(const CharacterCarrierType Value) { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p) = Value; }
-    TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)     { _current_p = Adr; QUEX_BUFFER_ASSERT_CONSISTENCY(); }
+    TEMPLATE_IN  void CLASS::set_current_character(const CharacterCarrierType Value) 
+    { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p) = Value; }
+    TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)     
+    { _current_p = Adr; QUEX_BUFFER_ASSERT_CONSISTENCY(); }
 
     TEMPLATE_IN  typename CLASS::character_type    
-        CLASS::get_subsequent_character() 
-        { QUEX_BUFFER_ASSERT_CONSISTENCY(); return *(_current_p + 1); }
+        CLASS::get_previous_character() 
+        { QUEX_BUFFER_ASSERT_CONSISTENCY(); return *(_current_p - 1); }
 
     TEMPLATE_IN  typename CLASS::character_type    
         CLASS::get_current_character() 

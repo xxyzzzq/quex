@@ -105,12 +105,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 }
 
 
-QUEX_INLINE_KEYWORD
-void
-QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
-{
-    me->lexeme_start_p = me->input_p;
-}
+#define QUEX_CORE_MARK_LEXEME_START() (me->lexeme_start_p = me->input_p)
 
 /* Drop Out Procedures: 
 **   
@@ -135,10 +130,10 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 **       begin-of-line condition, this ensures that the pointer 
 **       'me->input_p - 1' is always welldefined.
 */
-#define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN \
-        me->begin_of_line_f = (*(me->input_p) == '\n');
+#define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN() \
+        me->begin_of_line_f = (*(me->input_p - 1) == '\n');
         
-#define QUEX_PREPARE_LEXEME_OBJECT                                 \
+#define QUEX_PREPARE_LEXEME_OBJECT()                                 \
         me->char_covered_by_terminating_zero = *(me->input_p); \
         *(me->input_p)= '\0';                                  \
 	    Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->lexeme_start_p);                              
@@ -148,7 +143,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 ** to be prepared, but the QUEX_UNDO_PREPARE_LEXEME_OBJECT must
 ** still be a valid operation at the beginning of the next analysis.
 */
-#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT            \
+#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()            \
         me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';
 
 /* At the beginning of the file, the initialization sets the
@@ -156,7 +151,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 ** case, one cannot say that '\n' is a valid condition for 
 ** the 'begin of line' flag.    
 */
-#define QUEX_UNDO_PREPARE_LEXEME_OBJECT                                            \
+#define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                            \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {  \
            *(me->input_p) = me->char_covered_by_terminating_zero;              \
         }
@@ -171,7 +166,7 @@ QUEX_CORE_ANALYSER_STRUCT_mark_lexeme_start(QUEX_CORE_ANALYSER_STRUCT* me)
 **    THE DEFAULT ACTION MAY FAIL, BECAUSE THE LAST_ACCEPTANCE_INPUT_POSITION
 **    CAN BE ANYTHING.
 */
-#define QUEX_PREPARE_LEXEME_LENGTH  \
+#define QUEX_PREPARE_LEXEME_LENGTH()  \
 	    LexemeL = (size_t)(me->input_p - me->lexeme_start_p);       
 
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE    /* nothing happens here (yet) */                         

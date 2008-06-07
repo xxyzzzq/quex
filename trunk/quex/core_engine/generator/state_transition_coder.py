@@ -19,7 +19,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
     if DeadEndStateDB.has_key(StateIdx):
-        return transition.do_dead_end_router(state, StateIdx, StateMachineName, LanguageDB)
+        return transition.do_dead_end_router(state, StateIdx, StateMachineName, BackwardLexingF, LanguageDB)
        
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -46,27 +46,33 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                             BackwardLexingF, BackwardInputPositionDetectionF,
                             StateMachineName, LanguageDB, DeadEndStateDB)
 
-    if InitStateF:
-        txt += LanguageDB["$label-def"]("$input", StateIdx)
-        if BackwardLexingF: txt += "    " + LanguageDB["$input/decrement"] + "\n"
-        else:               txt += "    " + LanguageDB["$input/increment"] + "\n"
-        txt += "    " + LanguageDB["$goto"]("$entry", StateIdx) + "\n"
+    # Define the entry of the init state after the init state itself. This is so,
+    # since the init state does not require an increment on the first beat. Later on,
+    # when other states enter here, they need to increase/decrease the input pointer.
+    if not BackwardLexingF:
+        if InitStateF:
+            txt += LanguageDB["$label-def"]("$input", StateIdx)
+            txt += "    " + LanguageDB["$input/increment"] + "\n"
+            txt += "    " + LanguageDB["$goto"]("$entry", StateIdx) + "\n"
 
     
     return txt # .replace("\n", "\n    ") + "\n"
 
 
 def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
-
     # The initial state starts from the character to be read and is an exception.
     # Any other state starts with an increment (forward) or decrement (backward).
     # This is so, since the beginning of the state is considered to be the 
     # transition action (setting the pointer to the next position to be read).
     txt = ""
-    if not InitStateF:
-        txt = LanguageDB["$label-def"]("$input", StateIdx) + "\n"
-        if BackwardLexingF: txt += "    " + LanguageDB["$input/decrement"] + "\n"
-        else:               txt += "    " + LanguageDB["$input/increment"] + "\n"
+    if not BackwardLexingF:
+        if not InitStateF:
+            txt += LanguageDB["$label-def"]("$input", StateIdx) + "\n"
+            txt += "    " + LanguageDB["$input/increment"] + "\n"
+    else:
+        txt += LanguageDB["$label-def"]("$input", StateIdx) + "\n"
+        txt += "    " + LanguageDB["$input/decrement"] + "\n"
+
     txt += "    " + LanguageDB["$input/get"] + "\n"
 
     return txt
@@ -87,17 +93,24 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
     # -- drop out code (transition to no target state)
     txt = LanguageDB["$label-def"]("$drop-out", StateIdx)
 
-    terminal_id = -1
-    if state.origins().contains_any_pre_context_dependency() == False:
-        acc_origin = state.origins().find_first_acceptance_origin()
-        assert not state.is_acceptance() or type(acc_origin) != type(None), \
-               "Every acceptance state requires an acceptance origin."
-        if type(acc_origin) != type(None): # avoid call to __cmp__(None)
-            terminal_id = acc_origin.state_machine_id
+    if not BackwardLexingF:
+        terminal_id = -1
+        if state.origins().contains_any_pre_context_dependency() == False:
+            acc_origin = state.origins().find_first_acceptance_origin()
+            assert not state.is_acceptance() or type(acc_origin) != type(None), \
+                   "Every acceptance state requires an acceptance origin."
+            if type(acc_origin) != type(None): # avoid call to __cmp__(None)
+                terminal_id = acc_origin.state_machine_id
+
+        if terminal_id == -1: goto_str = LanguageDB["$goto"]("$terminal-general", False) 
+        else:                 goto_str = LanguageDB["$goto"]("$terminal", terminal_id) 
+    else:
+        # During backward lexing, there are no dedicated terminal states. Only the flags
+        # 'pre-condition' fullfilled are set at the acceptance states. On drop out we
+        # transit to the general terminal state (== start of forward lexing).
+        goto_str = LanguageDB["$goto"]("$terminal-general", True) 
 
     txt += "    " + LanguageDB["$if not BLC"]
-    if terminal_id == -1: goto_str = LanguageDB["$goto"]("$terminal-general", BackwardLexingF) 
-    else:                 goto_str = LanguageDB["$goto"]("$terminal", terminal_id) 
     txt += "        " + goto_str + "\n" 
     txt += "    " + LanguageDB["$endif"] + "\n"
 

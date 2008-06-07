@@ -97,7 +97,7 @@ namespace quex {
             void              seek_adr(memory_position Adr);
             void              seek_offset(const int Offset);
 
-            character_type    get_subsequent_character();
+            character_type    get_previous_character();
             character_type    get_current_character();
             void              set_current_character(const character_type Value);
             character_type*   get_lexeme_start_p();
