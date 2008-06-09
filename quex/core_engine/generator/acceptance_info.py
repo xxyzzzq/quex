@@ -30,6 +30,7 @@ def backward_lexing(OriginList, LanguageDB):
        -- During backward lexing, there is no 'winner' so all origins that indicate
           acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
     """
+    assert type(OriginList) == list
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
@@ -46,7 +47,7 @@ def backward_lexing(OriginList, LanguageDB):
     txt = ""
     for origin in OriginList:
         if origin.store_input_position_f():
-            txt += "    " + LanguageDB["$set-pre-context-flag"](origin.state_machine_id, 1)
+            txt += "    " + LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(origin.state_machine_id), 1)
     txt += "\n"    
 
     return txt

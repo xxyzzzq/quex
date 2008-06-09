@@ -38,7 +38,7 @@ def do(LanguageDB, StateMachineName, state, StateIdx, BackwardLexingF,
                               BackwardLexingF, BackwardInputPositionDetectionF)
 
     txt += transition_block.do(state, StateIdx, TriggerMap, LanguageDB, 
-                               InitStateF, BackwardLexingF, StateMachineName, 
+                               InitStateF, BackwardLexingF, BackwardInputPositionDetectionF, StateMachineName, 
                                DeadEndStateDB)
 
     txt += drop_out_handler(state, StateIdx, TriggerMap, 

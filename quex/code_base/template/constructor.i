@@ -69,7 +69,7 @@ CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName
     }
     return new buffer<QUEX_CHARACTER_TYPE>(is, QUEX_SETTING_BUFFER_SIZE, 
                                            QUEX_SETTING_BUFFER_FALLBACK_SIZE,
-                                           (QUEX_CHARACTER_TYPE)__QUEX_SETTING_BUFFER_LIMIT_CODE);
+                                           (QUEX_CHARACTER_TYPE)QUEX_SETTING_BUFFER_LIMIT_CODE);
 }
 
 inline

@@ -56,7 +56,7 @@ db["C++"] = {
     "$loop-end":            "}\n",
     "$continue":          "continue;\n",
     "$break":             "break;\n",
-    "$if not BLC":            "if( input != QUEX_BUFFER_LIMIT_CODE() ) {\n",
+    "$if not BLC":        "if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n",
     "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
     "$if BOF":            "if( QUEX_BEGIN_OF_FILE() ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
@@ -93,8 +93,6 @@ db["C++"] = {
                                 "    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
     "$analyser-func":        cpp.__analyser_function,
     "$terminal-code":        cpp.__terminal_states,      
-    "$set-pre-context-flag": lambda id, value: "pre_context_%s_fulfilled_f = %i;" % \
-                                               (repr(id).replace("L", ""), value),
     "$drop-out":          cpp.__state_drop_out_code,
     "$drop-out-forward":  lambda StateIndex: 
                           "#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)\n"           + \
@@ -110,8 +108,10 @@ db["C++"] = {
                           "    drop_out_state_index = %i;\n" % int(StateIndex)                + \
                           "#endif\n"                                                          + \
                           "goto __BACKWARD_DROP_OUT_HANDLING;\n",
-    "$compile-option":           lambda option: "#define %s\n" % option,
-    "$assignment":               lambda variable, value: "%s = %s;\n" % (variable, value),
+    "$compile-option":    lambda option: "#define %s\n" % option,
+    "$assignment":        lambda variable, value:
+                          "QUEX_DEBUG_ASSIGNMENT(\"%s\", \"%s\");\n" % (variable, value) + \
+                          "%s = %s;\n" % (variable, value),
     "$begin-of-line-flag-true":  "me->begin_of_line_f",
     #
     "$header-definitions":       cpp.__header_definitions,
@@ -142,6 +142,7 @@ db["Python"] = {
     "$if":     "if ",
     "$then":   ":",
     "$if EOF": "if True:\n",
+    "$if not BLC": "if True:\n",
     "$if <":   lambda value: "if input < "  + value + ":\n",
     "$if ==":  lambda value: "if input == " + value + ":\n",
     "$if !=":  lambda value: "if input != " + value + ":\n",
@@ -162,6 +163,7 @@ db["Python"] = {
     #                   # is followed directly by newline.
     "$input":         "input",
     "$input/get":     "# TODO: getting input into parser",
+    "$input/increment":     "# TODO: getting input into parser",
     "$return_true":   "return True",
     "$return_false":  "return False",
     "$label-definition":  python.__label_definition,
@@ -170,6 +172,8 @@ db["Python"] = {
     "$acceptance-info-bw":   lambda x, y: "",
     "$acceptance-info-bwfc": lambda x, y: "",
     "$label":             "",   
+    "$label-def":         lambda x, y: "",   
+    "$goto":              lambda x, y: "return %i" % y,   
     "$drop-out":          python.__state_drop_out_code,
     "$include":           lambda include_file: "#include <%s>" % include_file,
     "$debug-info-input":  "",

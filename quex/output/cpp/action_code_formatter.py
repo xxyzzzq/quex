@@ -2,10 +2,10 @@ import quex.core_engine.state_machine.character_counter as counter
 from quex.core_engine.interval_handling import NumberSet
 
 def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateMachine, 
-       DefaultOrEOF_ActionF=False):
+       Default_ActionF=False, EOF_ActionF=False):
 
     if type(CodeFragment_or_CodeFragments) == list:
-        assert DefaultOrEOF_ActionF != False, \
+        assert Default_ActionF or EOF_ActionF, \
                "Action code formatting: Multipled Code Fragments can only be specified for default or\n" + \
                "end of stream action."
         CodeFragementList = CodeFragment_or_CodeFragments
@@ -20,10 +20,11 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
 
     # -- line number counting code
     #    (if mode requires indentation events, than a different counting scheme is used)
-    if Mode.on_indentation.line_n != -1:
-        txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
-    else:
-        txt += __get_line_and_column_counting(PatternStateMachine)
+    if not EOF_ActionF:
+        if Mode.on_indentation.line_n != -1:
+            txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
+        else:
+            txt += __get_line_and_column_counting(PatternStateMachine)
 
     # -- debug match display code
     if Setup.output_debug_f == True:
@@ -33,7 +34,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
         txt += '#endif\n'
         
     # -- THE action code as specified by the user
-    if DefaultOrEOF_ActionF == False: 
+    if not Default_ActionF and not EOF_ActionF: 
         txt += CodeFragment.get("C")
     else:                       
         if CodeFragementList != []:
@@ -85,7 +86,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
             func = "self.count_indentation_NoNewline_ContainsOnlySpaces(%s);" % column_increment
         else:
             func = "self.count_indentation_NoNewline(Lexeme, LexemeL);"
-            
+
     return txt + func + "\n"
 
 def __get_line_and_column_counting(PatternStateMachine):

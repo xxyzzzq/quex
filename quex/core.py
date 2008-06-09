@@ -68,10 +68,10 @@ def do():
 
         # -- 'end of stream' action
         end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream_code_fragments(), Setup, 
-                                                        "on_end_of_stream", None, DefaultOrEOF_ActionF=True)
+                                                        "on_end_of_stream", None, EOF_ActionF=True)
         # -- 'default' action (nothing matched)
         default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
-                                                  "on_failure", None, DefaultOrEOF_ActionF=True)
+                                                  "on_failure", None, Default_ActionF=True)
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.

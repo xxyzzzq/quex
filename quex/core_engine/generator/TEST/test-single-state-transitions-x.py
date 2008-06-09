@@ -39,6 +39,8 @@ for i in range(4000):
     state.add_transition(Interval(interval_start, interval_end), long(i % 24))
     interval_start = interval_end
 
+languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
+
 function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
 exec(function)
 

@@ -31,6 +31,7 @@ struct QUEX_CORE_ANALYSER_STRUCT;
 static int    analyser_do(QUEX_CORE_ANALYSER_STRUCT* me);
 static int    analyser_do_2(QUEX_CORE_ANALYSER_STRUCT* me);
 const int TKN_TERMINATION = 0;
+#define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
 """
 
 test_program_common = """
@@ -55,7 +56,8 @@ int main(int, char**)
 quex_buffer_based_test_program = """
     istringstream                                           istr("$$TEST_STRING$$");
     quex::fixed_size_character_stream_plain<istringstream, QUEX_CHARACTER_TYPE>  fscs(&istr);
-    quex::buffer< QUEX_CHARACTER_TYPE>   buf(&fscs, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$);
+    quex::buffer< QUEX_CHARACTER_TYPE>   buf(&fscs, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$,
+                                             QUEX_SETTING_BUFFER_LIMIT_CODE);
 
     analyser_init(&lexer_state, 0, &buf, analyser_do);
 """
@@ -178,7 +180,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                              state_machine_code
 
     fd, filename_tmp = mkstemp(".cpp", "tmp-", dir=os.getcwd())
-    os.write(fd, test_program_common_declarations)
+    os.write(fd, test_program_common_declarations.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode)))
     os.write(fd, state_machine_code)
     os.write(fd, test_program)    
     os.close(fd)    
@@ -190,8 +192,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
-                  "-ggdb " # + \
-                  # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
+                  "-ggdb " + \
+                  ""#"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
