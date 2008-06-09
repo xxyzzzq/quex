@@ -5,7 +5,8 @@ __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals ar
 
 class __info:
     def __init__(self, StateMachineName, State, StateIdx, IsInitStateF, 
-                 LanguageDB, BackwardLexingF, DeadEndStateDB):
+                 LanguageDB, BackwardLexingF, BackwardInputPositionDetectionF, 
+                 DeadEndStateDB):
         self.state_machine_name = StateMachineName
         self.state              = State
         self.state_index        = StateIdx
@@ -13,9 +14,12 @@ class __info:
 
         self.language_db       = LanguageDB
         self.backward_f        = BackwardLexingF
+        self.backward_input_position_detection_f = BackwardInputPositionDetectionF
         self.dead_end_state_db = DeadEndStateDB
 
-def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, StateMachineName, DeadEndStateDB):
+def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, 
+       BackwardLexingF, BackwardInputPositionDetectionF, 
+       StateMachineName, DeadEndStateDB):
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
@@ -27,7 +31,10 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, Sta
     #                       # are not to be coded at this place.
 
     info = __info(StateMachineName=StateMachineName, State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, 
-                  LanguageDB=LanguageDB, BackwardLexingF=BackwardLexingF, DeadEndStateDB=DeadEndStateDB)
+                  LanguageDB=LanguageDB, 
+                  BackwardLexingF=BackwardLexingF, 
+                  BackwardInputPositionDetectionF=BackwardInputPositionDetectionF, 
+                  DeadEndStateDB=DeadEndStateDB)
 
     if len(TriggerMap) > 1:
         txt = __get_code(TriggerMap, info)
@@ -39,10 +46,9 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, BackwardLexingF, Sta
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        txt =  "    " + transition.do(StateMachineName, 
-                                      StateIdx, 
-                                      TriggerMap[0][1], 
-                                      BackwardLexingF, DeadEndStateDB=DeadEndStateDB) 
+        txt =  "    " + transition.do(StateMachineName, StateIdx, TriggerMap[0][1], 
+                                      BackwardLexingF, BackwardInputPositionDetectionF, 
+                                      DeadEndStateDB, LanguageDB) 
 
     return txt + "\n"
 
@@ -114,7 +120,7 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     txt =  "    " + transition.do(info.state_machine_name, 
                                   info.state_index, 
                                   target_state_index, 
-                                  info.backward_f, 
+                                  info.backward_f, info.backward_input_position_detection_f,
                                   DeadEndStateDB = info.dead_end_state_db, 
                                   LanguageDB     = info.language_db) 
     txt += "    " + info.language_db["$comment"](interval.get_utf8_string()) + "\n"

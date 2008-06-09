@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "demo/003: Unicode Based Lexical Analyzis"
-    echo "CHOICES:  BPC=2, BPC=2_NDEBUG, BPC=4, BPC=4_NDEBUG, BPC=wchar_t"
+    echo "CHOICES:  BPC=2, BPC=2_NDEBUG, BPC=4, BPC=4_NDEBUG, BPC=wchar_t;"
+    echo "SAME;"
     exit
 fi
 

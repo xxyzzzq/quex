@@ -48,8 +48,10 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #endif
 };
 
-#define QUEX_BUFFER_LIMIT_CODE()   0
-#define QUEX_END_OF_FILE()         0
+#ifndef     QUEX_SETTING_BUFFER_LIMIT_CODE
+#    define QUEX_SETTING_BUFFER_LIMIT_CODE (0)
+#endif
+#define QUEX_END_OF_FILE()         (0)
 #define QUEX_BEGIN_OF_FILE()       (me->input_p == me->buffer_begin - 1)
 
 #define QUEX_BUFFER_INCREMENT()           (++(me->input_p));
@@ -174,6 +176,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 #if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
 #   define QUEX_DEBUG_LABEL_PASS(Terminal)   /* empty */
 #   define QUEX_DEBUG_INFO_INPUT(Character)  /* empty */
+#   define QUEX_DEBUG_ASSIGNMENT(Variable, Value) /* empty */
 #else
 #   define __QUEX_PRINT_SOURCE_POSITION()                             \
           std::fprintf(stderr, "%s:%i: @%08X \t", __FILE__, __LINE__, \
@@ -182,6 +185,10 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 #   define QUEX_DEBUG_LABEL_PASS(Label)   \
            __QUEX_PRINT_SOURCE_POSITION()   \
            std::fprintf(stderr, Label "\n")
+
+#   define QUEX_DEBUG_ASSIGNMENT(Variable, Value)   \
+           __QUEX_PRINT_SOURCE_POSITION() \
+           std::fprintf(stdout, Variable " = " Value "\n")
 
 #   define QUEX_DEBUG_INFO_INPUT(Character)                              \
            __QUEX_PRINT_SOURCE_POSITION()                                  \

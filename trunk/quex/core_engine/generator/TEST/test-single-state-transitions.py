@@ -35,9 +35,11 @@ state.add_transition(NumberSet([Interval(197, 198), Interval(198, 198)]), 6L)
 state.add_transition(NumberSet([Interval(200,230),  Interval(231,240)]),  7L)
 state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71,71)]),  8L)
 
+# Make sure, that the 'goto state' is transformed into 'return index of target state'
+languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
 function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
-# print "#" + function.replace("\n", "\n#")
+##print "#" + function.replace("\n", "\n#")
 exec(function)
 
 differences = []    

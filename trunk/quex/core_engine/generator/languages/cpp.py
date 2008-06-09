@@ -354,15 +354,15 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         #       newline at the end, and those that do not. Then, there need not
         #       be a conditional question.
         if SupportBeginOfLineF:
-            txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN()\n"
+            txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN();\n"
 
         if action_info.contains_Lexeme_object(ignored_code_regions):
-            txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT()\n"
+            txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT();\n"
         else:
-            txt += indentation + "QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()\n"
+            txt += indentation + "QUEX_DO_NOT_PREPARE_LEXEME_OBJECT();\n"
 
         if action_info.contains_LexemeLength_object(ignored_code_regions):      
-            txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH()\n"
+            txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH();\n"
 
         txt += indentation + "{\n"
         txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  
@@ -419,9 +419,10 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
 
     # (*) preparation of the reentry without return:
     #     delete all pre-condition fullfilled flags
-    delete_pre_context_flags_str = ""
+    txt = ""
     for pre_context_sm_id in PreConditionIDList:
-        delete_pre_context_flags_str += "    " + LanguageDB["$set-pre-context-flag"](pre_context_sm_id, 0)
+        txt += "    " + LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0)
+    delete_pre_context_flags_str = txt
 
     #  -- execute default pattern action 
     #  -- goto initial state    
@@ -432,9 +433,13 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     #                    HOWEVER, when end of file has been reached the 'current' pointer has to
     #                    be reset so that the initial state can drop out on the buffer limit code
     #                    and then transit to the end of file action.
-    default_action_str  = "if( QUEX_END_OF_FILE() ) {\n"
+    default_action_str  = LanguageDB["$if EOF"] + "\n"
     default_action_str += "    " + LanguageDB["$input/decrement"] + "\n"
-    default_action_str += "}\n"
+    default_action_str += LanguageDB["$endif"] + "\n"
+    default_action_str += LanguageDB["$else"] + "\n"
+    default_action_str += "    " + LanguageDB["$comment"]("Step over nomatching character")
+    default_action_str += "    " + LanguageDB["$input/increment"] + "\n"
+    default_action_str += LanguageDB["$endif"] + "\n"
     default_action_str += __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
                                               IndentationOffset=16)
 
