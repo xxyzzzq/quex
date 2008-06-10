@@ -14,4 +14,4 @@ case $1 in
 "BPC=wchar_t" )  args="BYTES_PER_CHARACTER=wchar_t" ;;
 esac
 
-source core.sh 003 $args 
+source core.sh 003 $args ## 

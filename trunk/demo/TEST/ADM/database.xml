@@ -1,15 +1,15 @@
-<test-database execution-time-sec="0.00" date="Tue Jun 10 06:28:27 2008">
+<test-database execution-time-sec="0.00" date="Tue Jun 10 22:09:21 2008">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="0.00"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1206824144L"/>
             <choice-list number="6">
                <choice name="000" result="OK" time-sec="0.00" crc="2025286043"/>
-               <choice name="001" result="FAIL" time-sec="0.00" crc="864987294"/>
+               <choice name="001" result="OK" time-sec="0.00" crc="1451965334"/>
                <choice name="002" result="FAIL" time-sec="0.00" crc="-1357231001"/>
                <choice name="003" result="OK" time-sec="0.00" crc="1705555362"/>
                <choice name="005" result="OK" time-sec="0.00" crc="-496718937"/>
-               <choice name="006" result="FAIL" time-sec="0.00" crc="-630116803"/>
+               <choice name="006" result="OK" time-sec="0.00" crc="-630116803"/>
             </choice-list>
         </test>
         <test title="Intel's icpc" make-required="True" time-sum-sec="0.00"> 
@@ -20,7 +20,7 @@
                <choice name="002" result="FAIL" time-sec="0.00" crc="1543801968"/>
                <choice name="003" result="OK" time-sec="0.00" crc="336128586"/>
                <choice name="005" result="OK" time-sec="0.00" crc="112365779"/>
-               <choice name="006" result="FAIL" time-sec="0.00" crc="1937404497"/>
+               <choice name="006" result="OK" time-sec="0.00" crc="1937404497"/>
             </choice-list>
         </test>
     </group>
@@ -53,13 +53,13 @@
     </group>
     <group name="demo/003">
         <test title="Unicode Based Lexical Analyzis" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="003.sh" info-request-time="1212982838L"/>
+            <application file-name="003.sh" info-request-time="1213128431L"/>
             <choice-list number="5">
-               <choice name="BPC=2" result="OK" time-sec="0.00" crc="-1016263970"/>
-               <choice name="BPC=2_NDEBUG" result="FAIL" time-sec="0.00" crc="-1016263970"/>
-               <choice name="BPC=4" result="OK" time-sec="0.00" crc="-1016263970"/>
-               <choice name="BPC=4_NDEBUG" result="FAIL" time-sec="0.00" crc="-1016263970"/>
-               <choice name="BPC=wchar_t" result="OK" time-sec="0.00" crc="-1016263970"/>
+               <choice name="BPC=2" result="OK" time-sec="0.00" crc="1420071129"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time-sec="0.00" crc="1420071129"/>
+               <choice name="BPC=4" result="OK" time-sec="0.00" crc="1420071129"/>
+               <choice name="BPC=4_NDEBUG" result="FAIL" time-sec="0.00" crc="1420071129"/>
+               <choice name="BPC=wchar_t" result="OK" time-sec="0.00" crc="1420071129"/>
             </choice-list>
         </test>
     </group>
@@ -78,8 +78,8 @@
         <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="0.00"> 
             <application file-name="006.sh" info-request-time="1198966571L"/>
             <choice-list number="2">
-               <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="-1872922593"/>
-               <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="1699317644"/>
+               <choice name="NDEBUG" result="OK" time-sec="0.00" crc="-1872922593"/>
+               <choice name="DEBUG" result="OK" time-sec="0.00" crc="1699317644"/>
             </choice-list>
         </test>
     </group>
