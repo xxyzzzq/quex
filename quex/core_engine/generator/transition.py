@@ -63,6 +63,7 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
                 # When searching backwards for the end of the core pattern, and one reaches
                 # a dead end state, then no position needs to be stored extra since it was
                 # stored at the entry of the state.
+                txt += LanguageDB["$input/decrement"] + "\n"
                 txt += acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state.origins().get_list(), 
                                                                          LanguageDB)
 

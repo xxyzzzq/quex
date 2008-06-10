@@ -22,7 +22,7 @@ executing ...
 (7, 16)  	QUOTE
 (7, 16)  	SEMICOLON
 (8, 1)  	CURLY_BRACKET_C
-(9, 1)  	<TERMINATION>
+(8, 2)  	<TERMINATION>
 | [END] number of token = 19
 `------------------------------------------------------------------------------------
 cleaning ...
