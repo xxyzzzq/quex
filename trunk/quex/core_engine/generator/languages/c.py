@@ -28,7 +28,7 @@ def __cpp_goto_state(UserDefinedStateMachineName, StateIdx, SuccessfulOriginalSt
 def __cpp_acceptance_info(SuccessfulOriginalStateMachineID, LanguageDB):
     if SuccessfulOriginalStateMachineID != None:
         txt =  "last_acceptance = %s;\n" % SuccessfulOriginalStateMachineID
-        txt += LanguageDB["$input/tell_position"] + "\n"
+        txt += LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n"
     else:
         txt = ""    
     return txt

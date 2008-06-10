@@ -388,19 +388,21 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
         txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
         #
         if state_machine.core().post_context_backward_input_position_detector_sm() == None:
-            txt += "    QUEX_BUFFER_SEEK_ADR(last_acceptance_%sinput_position);\n" % \
-                   post_context_number_str
+            txt += "    " + LanguageDB["$input/seek_position"](
+                              "last_acceptance_%sinput_position" % post_context_number_str) + "\n"
         else:
             # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
             #       pattern. However, after a match a backward detection of the end
             #       of the core pattern is done. Here, we first need to go to the point
             #       where the 'normal' pattern ended, then we can do a backward detection.
-            txt += "    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);\n"
-            txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
-                   __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
+            txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
 
         if state_machine_id in DirectlyReachedTerminalID_List:
             txt += LanguageDB["$label-def"]("$terminal-without-seek", state_machine_id) + "\n"
+
+        if state_machine.core().post_context_backward_input_position_detector_sm() != None:
+            txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
+                   __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
         # -- paste the action code that correponds to the pattern   
         txt += action_code + "\n"    

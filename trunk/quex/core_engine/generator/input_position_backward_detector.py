@@ -34,9 +34,12 @@ def do(sm, LanguageDB, PrintStateMachineF):
 
     # -- input position detectors simply the next 'catch' and return
     function_body += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
+    function_body += LanguageDB["$input/seek_position"]("end_of_core_pattern_position") + "\n"
+    function_body += LanguageDB["$input/increment"] + "\n"
 
     variables_txt = LanguageDB["$local-variable-defs"](
-        [["QUEX_CHARACTER_TYPE",     "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"]])
+            [["QUEX_CHARACTER_TYPE",     "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
+             ["QUEX_CHARACTER_POSITION", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
 
     return blue_print(function_str, 
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
