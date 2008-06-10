@@ -81,9 +81,8 @@ db["C++"] = {
     "$input/increment":     "QUEX_BUFFER_INCREMENT();",
     "$input/decrement":     "QUEX_BUFFER_DECREMENT();",
     "$input/get":           "QUEX_BUFFER_GET(input);",
-    "$input/tell_position": lambda msg="": 
-                            "QUEX_BUFFER_TELL_ADR(last_acceptance_%sinput_position);" % msg, 
-    "$input/seek_position": "QUEX_STREAM_SEEK(last_acceptance_input_position);",        
+    "$input/tell_position": lambda PositionStr: "QUEX_BUFFER_TELL_ADR(%s);" % PositionStr, 
+    "$input/seek_position": lambda PositionStr: "QUEX_BUFFER_SEEK_ADR(%s);" % PositionStr,        
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
