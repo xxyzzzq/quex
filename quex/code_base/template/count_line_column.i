@@ -130,6 +130,7 @@ CLASS::__count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
 //       have increased the _line_number_at_end by hisself. This happens
 //       for performance reasons.
 {
+    __quex_assert(it >= Begin);
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     // investigate remaining part of the lexeme, i.e. before the last newline
     // (recall the lexeme is traced from the rear)

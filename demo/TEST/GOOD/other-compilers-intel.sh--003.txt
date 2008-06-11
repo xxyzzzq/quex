@@ -1,6 +1,6 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  COMPILER=icpc
+make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  COMPILER=icpc ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]

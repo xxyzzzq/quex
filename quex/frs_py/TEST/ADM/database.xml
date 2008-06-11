@@ -1,18 +1,18 @@
-<test-database execution-time-sec="0.36" date="Tue Jun 10 21:13:04 2008">
+<test-database execution-time-sec="0.05" date="Wed Jun 11 06:05:12 2008">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.17"> 
+        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.03"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.17" crc="1489533151"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.19"> 
+        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.02"> 
             <application file-name="test-trim.py" info-request-time="1205646836L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.19" crc="-964243626"/>
+               <choice name="" result="OK" time-sec="0.02" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

@@ -59,6 +59,13 @@ CLASS::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
+    if( __buffer->is_end_of_file() ) {
+        // In this particular case, a lexeme length of zero is admissible
+        __quex_assert((QUEX_CHARACTER_TYPE*)Lexeme <= __buffer->content_back());     // LexemeLength >= 0
+        if( _indentation_event_enabled_f ) 
+            mode().on_indentation(this, _indentation);
+        return;
+    }
     __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
     QUEX_CHARACTER_TYPE* End   = Begin + LexemeLength;  
