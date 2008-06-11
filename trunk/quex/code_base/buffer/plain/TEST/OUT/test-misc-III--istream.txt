@@ -3,93 +3,13 @@
 (*) read to end of file
 - end of file
 <m Wald steht ein Baum.>
-||S     C    || BLC
-|| Baum.]||||||
-start-pos:  17
-end-pos:    28
+||S     :C   || BLC
+||n Baum.]|||||
+start-pos:  16
+end-pos:    27
 stream-pos: 23
 EOF = 1, BOF = 0
-current_p (offset)    = 6
+current_p (offset)    = 7
 lexeme start (offset) = 0
 
 (*) read to begin of file
-- begin of file
-<.muaB nie thets dlaW mI>
-|C:          || BLC
-|[Im Wald ste||
-start-pos:  0
-end-pos:    11
-stream-pos: 2
-EOF = 0, BOF = 1
-current_p (offset)    = -1
-lexeme start (offset) = -1
-
-(*) read to end of buffer
-end of buffer
-<Im Wald ste>
-|[:      S   C| BLC
-|[Im Wald ste||
-start-pos:  0
-end-pos:    11
-stream-pos: 2
-EOF = 0, BOF = 1
-current_p (offset)    = 11
-lexeme start (offset) = 7
-
-(*) load_forward:
-||S  C       || 'e'
-|| steht ein ||
-start-pos:  7
-end-pos:    18
-stream-pos: 18
-EOF = 0, BOF = 0
-current_p (offset)    = 3
-lexeme start (offset) = 0
-
-(*) read to end of buffer
-end of buffer
-<ht ein >
-||   :      SC| BLC
-|| steht ein ||
-start-pos:  7
-end-pos:    18
-stream-pos: 18
-EOF = 0, BOF = 0
-current_p (offset)    = 11
-lexeme start (offset) = 10
-
-(*) load_forward:
-||S          || ' '
-|| Baum.]||||||
-start-pos:  17
-end-pos:    28
-stream-pos: 23
-EOF = 1, BOF = 0
-current_p (offset)    = 0
-lexeme start (offset) = 0
-
-(*) read to end of file
-- end of file
-<Baum.>
-||S     C    || BLC
-|| Baum.]||||||
-start-pos:  17
-end-pos:    28
-stream-pos: 23
-EOF = 1, BOF = 0
-current_p (offset)    = 6
-lexeme start (offset) = 0
-
-(*) read to begin of buffer
-begin of buffer
-<.muaB >
-|C:          || BLC
-|| Baum.]||||||
-start-pos:  17
-end-pos:    28
-stream-pos: 23
-EOF = 1, BOF = 0
-current_p (offset)    = -1
-lexeme start (offset) = -1
-
-(*) load_backward:

@@ -22,11 +22,11 @@ read_backward_until_begin_of_buffer(Buffer& x) {
         else if( x.is_begin_of_buffer() ) { 
             assert(tmp == x.BLC);
             std::cout << "begin of buffer\n";
-            x.mark_lexeme_start();
+            {x.decrement(); x.mark_lexeme_start(); x.increment(); }
             return result;
         }
         else {
-            if( tmp == ' ' ) x.mark_lexeme_start();
+            if( tmp == ' ' ) {x.decrement(); x.mark_lexeme_start(); x.increment(); }
             result += tmp;
         }
     }
@@ -52,7 +52,7 @@ read_forward_until_end_of_buffer(Buffer& x)
             return result;
         }
         else {
-            if( tmp == ' ' ) x.mark_lexeme_start();
+            if( tmp == ' ' ) {x.decrement(); x.mark_lexeme_start(); x.increment(); }
             result += tmp;
         }
     }
@@ -79,7 +79,7 @@ read_to_end_of_file(Buffer& x) {
             // std::cout << " - success\n";
         }
         else {
-            if( tmp == ' ' ) x.mark_lexeme_start();
+            if( tmp == ' ' ) {x.decrement(); x.mark_lexeme_start(); x.increment(); }
             result += tmp;
         }
     }
@@ -107,12 +107,12 @@ read_to_begin_of_file(Buffer& x) {
             // x.x_show_content();
         }
         else {
-            if( tmp == ' ' ) x.mark_lexeme_start();
+            if( tmp == ' ' ) {x.decrement(); x.mark_lexeme_start(); x.increment(); }
             result += tmp;
         }
     }
     std::cout << "- begin of file\n";
-    x.mark_lexeme_start();
+    {x.decrement(); x.mark_lexeme_start(); x.increment(); }
     return result;
 }
 

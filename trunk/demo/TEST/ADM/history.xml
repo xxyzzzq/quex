@@ -1,4 +1,4 @@
-<history date="Tue Jun 10 22:09:21 2008" element-n="114">
+<history date="Wed Jun 11 06:04:13 2008" element-n="115">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -248,5 +248,8 @@
         <crc-error time="20:08:49" application="003.sh" choice="BPC=4_NDEBUG" database-crc="-1016263970" real-crc="1420071129"/>
         <crc-error time="20:08:54" application="003.sh" choice="BPC=wchar_t" database-crc="-1016263970" real-crc="1420071129"/>
         <crc-error time="20:09:02" application="003.sh" choice="BPC=2" database-crc="-1016263970" real-crc="1420071129"/>
+    </day>
+    <day year="2008" month="06" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="04:04:13"/>
     </day>
 </history>

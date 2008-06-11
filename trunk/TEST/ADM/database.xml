@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.02" date="Tue Jun 10 21:02:39 2008">
+<test-database execution-time-sec="0.02" date="Wed Jun 11 06:02:48 2008">
     <last-used-diff-display-program name=""/>
     <group name="sphericalcow">
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.02"> 
@@ -6,7 +6,7 @@
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="FILE" result="OK" time-sec="0.02" crc="-1598919026"/>
-               <choice name="fstream" result="OK" time-sec="0.01" crc="-1598919026"/>
+               <choice name="fstream" result="OK" time-sec="0.00" crc="-1598919026"/>
             </choice-list>
         </test>
     </group>

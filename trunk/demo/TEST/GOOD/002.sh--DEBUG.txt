@@ -1,6 +1,6 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS  
+make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS   ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
@@ -45,9 +45,9 @@ executing ...
 (14, 7)  	PRINT
 (14, 13)  	IDENTIFIER
 (14, 22)  	STRING
-(17, 1)  	BLOCK_CLOSE
-(17, 1)  	BLOCK_CLOSE
-(17, 1)  	<TERMINATION>
+(16, 1)  	BLOCK_CLOSE
+(16, 1)  	BLOCK_CLOSE
+(16, 1)  	<TERMINATION>
 | [END] number of token = 44
 `------------------------------------------------------------------------------------
 cleaning ...

@@ -20,11 +20,12 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
 
     # -- line number counting code
     #    (if mode requires indentation events, than a different counting scheme is used)
-    if not EOF_ActionF:
-        if Mode.on_indentation.line_n != -1:
-            txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
-        else:
-            txt += __get_line_and_column_counting(PatternStateMachine)
+    if Mode.on_indentation.line_n != -1:
+        txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
+    elif not EOF_ActionF:
+        # When there is no indentation detection involved, then there is no need to 
+        # count anymore, as soon as the EOF comes in.
+        txt += __get_line_and_column_counting(PatternStateMachine)
 
     # -- debug match display code
     if Setup.output_debug_f == True:
@@ -55,7 +56,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
 def __get_line_and_column_counting_with_indentation(PatternStateMachine):
 
     # shift the values for line and column numbering
-    txt  = "self.__count_shift_end_values_to_start_values();\n"
+    txt = "self.__count_shift_end_values_to_start_values();\n"
 
     if PatternStateMachine == None:
         return txt + "self.count_indentation(Lexeme, LexemeL);\n"

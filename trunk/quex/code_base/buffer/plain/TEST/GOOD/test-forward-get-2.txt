@@ -1,40 +1,38 @@
-|CS   :                         || BLC
-|[La vie est belle.]||||||||||||||
 |[S   :                         || 'L'
 |[La vie est belle.]||||||||||||||
 |[SC  :                         || 'a'
 |[La vie est belle.]||||||||||||||
 |[S C :                         || ' '
 |[La vie est belle.]||||||||||||||
-|[   S:                         || 'v'
+|[  SC:                         || 'v'
 |[La vie est belle.]||||||||||||||
-|[   SC                         || 'i'
+|[  S C                         || 'i'
 |[La vie est belle.]||||||||||||||
-|[   S:C                        || 'e'
+|[  S :C                        || 'e'
 |[La vie est belle.]||||||||||||||
-|[   S: C                       || ' '
+|[  S : C                       || ' '
 |[La vie est belle.]||||||||||||||
-|[    :  S                      || 'e'
+|[    : SC                      || 'e'
 |[La vie est belle.]||||||||||||||
-|[    :  SC                     || 's'
+|[    : S C                     || 's'
 |[La vie est belle.]||||||||||||||
-|[    :  S C                    || 't'
+|[    : S  C                    || 't'
 |[La vie est belle.]||||||||||||||
-|[    :  S  C                   || ' '
+|[    : S   C                   || ' '
 |[La vie est belle.]||||||||||||||
-|[    :      S                  || 'b'
+|[    :     SC                  || 'b'
 |[La vie est belle.]||||||||||||||
-|[    :      SC                 || 'e'
+|[    :     S C                 || 'e'
 |[La vie est belle.]||||||||||||||
-|[    :      S C                || 'l'
+|[    :     S  C                || 'l'
 |[La vie est belle.]||||||||||||||
-|[    :      S  C               || 'l'
+|[    :     S   C               || 'l'
 |[La vie est belle.]||||||||||||||
-|[    :      S   C              || 'e'
+|[    :     S    C              || 'e'
 |[La vie est belle.]||||||||||||||
-|[    :      S    C             || '.'
+|[    :     S     C             || '.'
 |[La vie est belle.]||||||||||||||
-|[    :      S     C            || BLC
+|[    :     S      C            || BLC
 |[La vie est belle.]||||||||||||||
 try load
 end of file
