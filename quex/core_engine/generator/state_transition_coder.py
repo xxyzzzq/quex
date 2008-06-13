@@ -102,7 +102,7 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
             if type(acc_origin) != type(None): # avoid call to __cmp__(None)
                 terminal_id = acc_origin.state_machine_id
 
-        if terminal_id == -1: goto_str = LanguageDB["$goto"]("$terminal-general", False) 
+        if terminal_id == -1: goto_str = LanguageDB["$goto-last_acceptance"]
         else:                 goto_str = LanguageDB["$goto"]("$terminal", terminal_id) 
     else:
         # During backward lexing, there are no dedicated terminal states. Only the flags

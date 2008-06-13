@@ -55,7 +55,7 @@ def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
         txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
         txt += "    " + LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
         txt += "\n#   endif\n"
-    txt += "    " + LanguageDB["$goto"]("$terminal-general", False);
+    txt += "    " + LanguageDB["$goto-last_acceptance"]
     return txt
 
 __header_definitions_txt = """
@@ -66,9 +66,26 @@ __header_definitions_txt = """
 #           define __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
 #       endif
 #   endif
+#   ifdef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+
+        typedef  void*    QUEX_GOTO_LABEL_TYPE;
+#       define QUEX_GOTO_LABEL_INIT_VALUE                (0x0)
+#       define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
+#       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
+#       define QUEX_GOTO_drop_out_state_index()          goto *drop_out_state_index;
+#       define QUEX_GOTO_last_acceptance()               goto *last_acceptance;
+
+#   else
+        typedef  uint32_t QUEX_GOTO_LABEL_TYPE;
+#       define QUEX_GOTO_LABEL_INIT_VALUE                (-1)
+#       define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
+#       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
+#       define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
+#       define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
+#   endif
+
 #   include "$$INCLUDE$$"
 #   define __QUEX_ENGINE_HEADER_DEFINITIONS
-
 
 #   ifdef CONTINUE
 #      undef CONTINUE
@@ -185,7 +202,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
 
     local_variable_list.extend(
-            [ ["int",                         "last_acceptance",                "-1"],
+            [ ["QUEX_GOTO_LABEL_TYPE",        "last_acceptance",                "QUEX_GOTO_LABEL_INIT_VALUE"],
+              ["QUEX_GOTO_LABEL_TYPE",        "drop_out_state_index",           "QUEX_GOTO_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
               ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"], 
               ["QUEX_LEXEME_CHARACTER_TYPE*", "Lexeme",                         "0x0"],
@@ -262,22 +280,26 @@ $$TERMINAL_DEFAULT-DEF$$
 $$DEFAULT_ACTION$$
         goto __REENTRY_PREPARATION;
 
+#ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+__TERMINAL_ROUTER:
 $$TERMINAL_GENERAL-DEF$$ {
         //  if last_acceptance => goto correspondent acceptance terminal state
         //  else               => execute defaul action
-        //
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_DEFAULT-GOTO$$; /* nothing matched */
         }
     }
+#endif // __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+"""
 
+__on_continue_reentry_preparation_str = """
   
 $$REENTRY_PREPARATION$$
     // (*) Common point for **restarting** lexical analysis.
     //     at each time when CONTINUE is called at the end of a pattern.
     //
-    last_acceptance = -1;
+    last_acceptance = QUEX_GOTO_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //
     //  If a mode change happened, then the function must first return and
@@ -304,25 +326,18 @@ __FORWARD_DROP_OUT_HANDLING:
     loaded_byte_n = me->__buffer->load_forward();
     if( loaded_byte_n != -1 ) {
         $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
-#       if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-        goto *drop_out_state_label;
-#       else
-        goto __DROP_OUT_ROUTING;
-#       endif
+        QUEX_GOTO_drop_out_state_index();
     }
     // no load possible (EOF) => (i)  goto general terminal
     //                           (ii) init state triggers EOF action
-    $$GOTO-TERMINAL_GENERAL_FORWARD$$
+    QUEX_GOTO_last_acceptance();
 
 #if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
 __BACKWARD_DROP_OUT_HANDLING:
     me->__buffer->load_backward();
     if( ! (me->__buffer->is_begin_of_file()) ) { 
-#       if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-        goto *drop_out_state_label;
-#       else
-        goto __DROP_OUT_ROUTING;
-#       endif
+        // no re-computation required, since we're not in 'normal lexing mode'
+        QUEX_GOTO_drop_out_state_index();
     }
     $$GOTO-TERMINAL_GENERAL_BACKWARD$$
 
@@ -469,13 +484,15 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
                       ["$$DEFAULT_ACTION$$",               default_action_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
-                      ["$$REENTRY_PREPARATION$$",          LanguageDB["$label-def"]("$re-start")],
                       ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
                       ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]("$terminal-DEFAULT")],
                       ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
                       ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]("$terminal-DEFAULT")],
-                      ["$$STATE_MACHINE_NAME$$",           StateMachineName],
-                      ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
+                      ["$$STATE_MACHINE_NAME$$",           StateMachineName]])
+
+    txt += blue_print(__on_continue_reentry_preparation_str,
+                      [["$$REENTRY_PREPARATION$$",                   LanguageDB["$label-def"]("$re-start")],
+                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
 
     txt += blue_print(__drop_out_buffer_reload_handler, 
                       [["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],

@@ -59,17 +59,19 @@ db["C++"] = {
     "$if not BLC":        "if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n",
     "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
     "$if BOF":            "if( QUEX_BEGIN_OF_FILE() ) {\n",
-    "$if <":              lambda value: "if( input < "  + value + ") {\n",
-    "$if ==":             lambda value: "if( input == " + value + ") {\n",
-    "$if !=":             lambda value: "if( input != " + value + ") {\n",
-    "$if >=":             lambda value: "if( input >= " + value + ") {\n",
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$if begin-of-line":      "if( me->begin_of_line_f ) {\n",
     "$elseif begin-of-line":  "else if( me->begin_of_line_f ) {\n",
+    "$if <":              lambda value: "if( input < "  + value + ") {\n",
+    "$if ==":             lambda value: "if( input == " + value + ") {\n",
+    "$if !=":             lambda value: "if( input != " + value + ") {\n",
+    #
+    "$if >=":             lambda value: "if( input >= " + value + ") {\n",
     "$<":                 lambda left, right: left + " < " + right,
     "$==":                lambda left, right: left + " == " + right,
     "$!=":                lambda left, right: left + " != " + right,
+    #
     "$comment":           lambda txt: "/* " + txt + " */",
     "$ml-comment":        lambda txt: "    /* " + txt.replace("\n", "\n     * ") + "\n     */",
     "$/*":     "//",
@@ -90,28 +92,23 @@ db["C++"] = {
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                                % label_db[Type](Argument) + \
                                 "    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
-    "$analyser-func":        cpp.__analyser_function,
-    "$terminal-code":        cpp.__terminal_states,      
+    "$analyser-func":     cpp.__analyser_function,
+    "$terminal-code":     cpp.__terminal_states,      
     "$drop-out":          cpp.__state_drop_out_code,
     "$drop-out-forward":  lambda StateIndex: 
-                          "#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)\n"           + \
-                          "    drop_out_state_label = &&STATE_%i_INPUT;\n" % int(StateIndex)  + \
-                          "#else\n"                                                           + \
-                          "    drop_out_state_index = %i;\n" % int(StateIndex)                + \
-                          "#endif\n"                                                          + \
+                          "QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
                           "goto __FORWARD_DROP_OUT_HANDLING;\n",
     "$drop-out-backward": lambda StateIndex:              
-                          "#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)\n"           + \
-                          "    drop_out_state_label = &&STATE_%i_INPUT;\n" % int(StateIndex)  + \
-                          "#else\n"                                                           + \
-                          "    drop_out_state_index = %i;\n" % int(StateIndex)                + \
-                          "#endif\n"                                                          + \
+                          "QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
                           "goto __BACKWARD_DROP_OUT_HANDLING;\n",
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value:
                           "QUEX_DEBUG_ASSIGNMENT(\"%s\", \"%s\");\n" % (variable, value) + \
                           "%s = %s;\n" % (variable, value),
-    "$begin-of-line-flag-true":  "me->begin_of_line_f",
+    "$set-last_acceptance": lambda value:
+                          "QUEX_DEBUG_ASSIGNMENT(\"ACCEPTANCE\", \"%s\");\n" % value + \
+                          "QUEX_SET_last_acceptance(%s);\n" % value,
+    "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #
     "$header-definitions":       cpp.__header_definitions,
     }
