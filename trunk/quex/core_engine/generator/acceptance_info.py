@@ -95,7 +95,7 @@ def forward_lexing(OriginList, LanguageDB):
         """Store the name of the winner pattern (last_acceptance) and the position
            where it has matched (use of $input/tell_position).
         """
-        info = LanguageDB["$assignment"]("last_acceptance", __nice(Origin.state_machine_id))
+        info = LanguageDB["$set-last_acceptance"](__nice(Origin.state_machine_id))
         # NOTE: When post conditioned patterns end they do not store the input position.
         #       Rather, the acceptance position of the core pattern is considered.
         if Origin.store_input_position_f():
