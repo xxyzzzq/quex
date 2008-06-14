@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++ # -S # -E
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -Os #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -37,6 +37,9 @@ APPLICATION  = lexer
 SOURCE_FILES = lexer.cpp report.cpp \
 			   $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
 
+OBJECT_FILES    = $(SOURCE_FILES:.cpp=.o)    # object file w/o line and column counting
+OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column counting
+
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
@@ -60,20 +63,31 @@ LD = $(COMPILER)
 #    lexer-lc --> application w/ line and column counting
 all: lexer lexer-lc
 
-# -- application
-lexer-lc: $(SOURCE_FILES)
-	$(CC) \
-        -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
-        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
-		$(SOURCE_FILES) -o $@
+lexer: $(OBJECT_FILES)
+	echo $(OBJECT_FILES)
+	$(LD) $(OBJECT_FILES) -o $@
 
-lexer: $(SOURCE_FILES)
-	$(CC) \
+#lexer-lc: $(OBJECT_FILES_LC)
+#	$(LD) $(OBJECT_FILES_LC) -o $@
+
+# -- application
+%.o: %.cpp c_lexer
+	$(CC) -c \
         -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
         -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
-		$(SOURCE_FILES) -o $@
+		$< -o $@
 
+%.asm: %.cpp c_lexer
+	$(CC) -S \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
+		$< -o $@
 
+#%-lc.o: %.cpp
+#	$(CC) \
+#        -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
+#        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
+#		$< -o $@
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
 
@@ -89,4 +103,5 @@ clean:
 	rm -f lexer
 	rm -f token_ids
 	rm -f *.bak
+	rm -f *.asm
 

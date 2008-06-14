@@ -120,6 +120,8 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_BUFFER_GET(character)                           \
         (character) = me->__buffer->dereference_character(); \
         QUEX_DEBUG_INFO_INPUT(character); 
+#define QUEX_BUFFER_LOAD_FORWARD()   (me->__buffer->load_forward())
+#define QUEX_BUFFER_LOAD_BACKWARD()  (me->__buffer->load_backward())
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
@@ -153,12 +155,12 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 ** to be prepared, but the QUEX_UNDO_PREPARE_LEXEME_OBJECT must
 ** still be a valid operation at the beginning of the next analysis.
 */
-#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()           \
-        me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';
+#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()  /* empty */
 
 #define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                              \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {      \
            me->__buffer->set_current_character(me->char_covered_by_terminating_zero);  \
+           me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';           \
         }
 
 /* IMPORTANT: 
@@ -174,6 +176,8 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_PREPARE_LEXEME_LENGTH()                                                     \
         __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());  \
         LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p());       
+
+
 
 #ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
 

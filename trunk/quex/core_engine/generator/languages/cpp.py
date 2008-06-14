@@ -35,28 +35,18 @@ def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
                                           BufferReloadRequiredOnDropOutF, 
                                           LanguageDB):      
 
-    txt = ""
     if BufferReloadRequiredOnDropOutF:
-        txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += "    " + LanguageDB["$drop-out-backward"](CurrentStateIdx).replace("\n", "\n    ")
-        txt += "#   endif\n"
-    txt += "    " + LanguageDB["$goto"]("$terminal-general", True);
-
-    return txt
+        return LanguageDB["$drop-out-backward"](CurrentStateIdx).replace("\n", "\n    ")
+    return ""
 
 def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx, 
                                          BufferReloadRequiredOnDropOutF,
                                          CurrentStateIsAcceptanceF, OriginList, 
                                          LanguageDB):
 
-    txt = ""
-
     if BufferReloadRequiredOnDropOutF:
-        txt += "#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING\n"
-        txt += "    " + LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
-        txt += "\n#   endif\n"
-    txt += "    " + LanguageDB["$goto-last_acceptance"]
-    return txt
+        return LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
+    return ""
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
@@ -149,11 +139,6 @@ quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUE
 """
 
 __analyzer_function_start = """
-#if defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-    static void* drop_out_state_label = 0x0;
-#   else
-    static int   drop_out_state_index = -1;
-#   endif
 #   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
     int loaded_byte_n = 0; /* At transition Drop-Out: 
                            **    > 0  number of loaded bytes. 
@@ -319,11 +304,10 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 """
 
 __drop_out_buffer_reload_handler = """
-#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 __FORWARD_DROP_OUT_HANDLING:
     // Since all drop out states work the same, we introduce here a 'router' that
     // jumps to a particular state based on the setting of a variable: drop_out_state_index.
-    loaded_byte_n = me->__buffer->load_forward();
+    loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
     if( loaded_byte_n != -1 ) {
         $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
         QUEX_GOTO_drop_out_state_index();
@@ -334,15 +318,13 @@ __FORWARD_DROP_OUT_HANDLING:
 
 #if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
 __BACKWARD_DROP_OUT_HANDLING:
-    me->__buffer->load_backward();
-    if( ! (me->__buffer->is_begin_of_file()) ) { 
+    QUEX_BUFFER_LOAD_BACKWARD();
+    if( ! QUEX_BEGIN_OF_FILE() ) { 
         // no re-computation required, since we're not in 'normal lexing mode'
         QUEX_GOTO_drop_out_state_index();
     }
     $$GOTO-TERMINAL_GENERAL_BACKWARD$$
-
 #endif
-#endif // __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 
 #if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
 __DROP_OUT_ROUTING:

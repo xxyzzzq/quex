@@ -61,6 +61,8 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_BUFFER_GET(character)        \
         character = *(me->input_p);       \
         QUEX_DEBUG_INFO_INPUT(character); 
+#define QUEX_BUFFER_LOAD_FORWARD()   (-1 /* reload not successful, no bytes loaded */)
+#define QUEX_BUFFER_LOAD_BACKWARD()  /* empty */
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
@@ -145,17 +147,17 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 ** to be prepared, but the QUEX_UNDO_PREPARE_LEXEME_OBJECT must
 ** still be a valid operation at the beginning of the next analysis.
 */
-#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()            \
-        me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';
+#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()   /* empty */
 
 /* At the beginning of the file, the initialization sets the
 ** character that covers the terminating zero to '\0'. In this
 ** case, one cannot say that '\n' is a valid condition for 
 ** the 'begin of line' flag.    
 */
-#define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                            \
+#define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                          \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {  \
-           *(me->input_p) = me->char_covered_by_terminating_zero;              \
+           *(me->input_p) = me->char_covered_by_terminating_zero;                  \
+            me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';      \
         }
 
 /* IMPORTANT: 
