@@ -334,6 +334,75 @@ $$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$
 #endif
 """
 
+def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4): 
+    indentation = " " * IndentationOffset 
+    ignored_code_regions = [["//", "\n", "\n"],   # c++ comments
+                            ["/*", "*/", ""],     # c comments
+                            ["\"", "\"", ""]]     # strings in quotes
+    txt = ""
+    # TODO: There could be a differenciation between a pattern that contains
+    #       newline at the end, and those that do not. Then, there need not
+    #       be a conditional question.
+    if SupportBeginOfLineF:
+        txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN();\n"
+
+    if action_info.contains_Lexeme_object(ignored_code_regions):
+        txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT();\n"
+
+    if action_info.contains_LexemeLength_object(ignored_code_regions):      
+        txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH();\n"
+
+    txt += indentation + "{\n"
+    txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  
+    txt += indentation + "}\n"
+
+    return txt
+
+
+def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, 
+                      LanguageDB, 
+                      DirectlyReachedTerminalID_List):
+    txt = ""
+    state_machine_id_str = __nice(state_machine_id)
+    state_machine        = pattern_action_info.pattern_state_machine()
+    action_code_orig     = pattern_action_info.action_code()
+    #
+    action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
+        
+    # -- if the pattern is terminated after the post-condition, then the input
+    #    has to be put back to the end of the 'core expression'.    
+    post_context_number_str = ""  
+    if state_machine.core().post_context_id() != -1L: 
+        post_context_number_str = state_machine_id_str + "_"
+    #
+    txt += LanguageDB["$label-def"]("$terminal-with-preparation", state_machine_id) + "\n"
+    #
+    if state_machine.core().post_context_backward_input_position_detector_sm() == None:
+        # we need to position the current_p to the next character to be read
+        # (NOTE: dedicated terminals only exist for forward lexical analysis)
+        txt += LanguageDB["$input/increment"] + "\n"
+
+    if state_machine_id in DirectlyReachedTerminalID_List:
+        txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
+
+    if state_machine.core().post_context_backward_input_position_detector_sm() != None:
+        # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
+        #       pattern. However, after a match a backward detection of the end
+        #       of the core pattern is done. Here, we first need to go to the point
+        #       where the 'normal' pattern ended, then we can do a backward detection.
+        txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
+
+    if state_machine.core().post_context_backward_input_position_detector_sm() != None:
+        txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
+               __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
+
+    # -- paste the action code that correponds to the pattern   
+    txt += action_code + "\n"    
+    txt += "    " + LanguageDB["$goto"]("$re-start") + "\n" 
+    txt += "\n"
+
+    return txt
+
 def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStreamAction, 
                       SupportBeginOfLineF, PreConditionIDList, LanguageDB, 
                       DirectlyReachedTerminalID_List):
@@ -341,71 +410,11 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
 
-    def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4): 
-        indentation = " " * IndentationOffset 
-        ignored_code_regions = [["//", "\n", "\n"],   # c++ comments
-                                ["/*", "*/", ""],     # c comments
-                                ["\"", "\"", ""]]     # strings in quotes
-        txt = ""
-        # TODO: There could be a differenciation between a pattern that contains
-        #       newline at the end, and those that do not. Then, there need not
-        #       be a conditional question.
-        if SupportBeginOfLineF:
-            txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN();\n"
-
-        if action_info.contains_Lexeme_object(ignored_code_regions):
-            txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT();\n"
-        else:
-            txt += indentation + "QUEX_DO_NOT_PREPARE_LEXEME_OBJECT();\n"
-
-        if action_info.contains_LexemeLength_object(ignored_code_regions):      
-            txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH();\n"
-
-        txt += indentation + "{\n"
-        txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  
-        txt += indentation + "}\n"
-
-        return txt
-
     # (*) specific terminal states of patterns (entered from acceptance states)
     txt = ""
     for state_machine_id, pattern_action_info in action_db.items():
-        state_machine_id_str = __nice(state_machine_id)
-        state_machine        = pattern_action_info.pattern_state_machine()
-        action_code_orig     = pattern_action_info.action_code()
-        #
-        action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
-            
-        # -- if the pattern is terminated after the post-condition, then the input
-        #    has to be put back to the end of the 'core expression'.    
-        post_context_number_str = ""  
-        if state_machine.core().post_context_id() != -1L: 
-            post_context_number_str = state_machine_id_str + "_"
-        #
-        txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
-        #
-        if state_machine.core().post_context_backward_input_position_detector_sm() == None:
-            txt += "    " + LanguageDB["$input/seek_position"](
-                              "last_acceptance_%sinput_position" % post_context_number_str) + "\n"
-        else:
-            # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
-            #       pattern. However, after a match a backward detection of the end
-            #       of the core pattern is done. Here, we first need to go to the point
-            #       where the 'normal' pattern ended, then we can do a backward detection.
-            txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
-
-        if state_machine_id in DirectlyReachedTerminalID_List:
-            txt += LanguageDB["$label-def"]("$terminal-without-seek", state_machine_id) + "\n"
-
-        if state_machine.core().post_context_backward_input_position_detector_sm() != None:
-            txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
-                   __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
-
-        # -- paste the action code that correponds to the pattern   
-        txt += action_code + "\n"    
-        txt += "    " + LanguageDB["$goto"]("$re-start") + "\n" 
-        txt += "\n"
-        
+        txt += get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, 
+                                 LanguageDB, DirectlyReachedTerminalID_List)
     specific_terminal_states_str = txt
 
     # (*) general terminal state (entered from non-acceptance state)    
@@ -413,7 +422,6 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     for state_machine_id in action_db.keys():
         txt += "            case %s: " % repr(state_machine_id).replace("L", "")
         txt += LanguageDB["$goto"]("$terminal", state_machine_id) + "\n"
-
     jumps_to_acceptance_states_str = txt
 
     # (*) preparation of the reentry without return:

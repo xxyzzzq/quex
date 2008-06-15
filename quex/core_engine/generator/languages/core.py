@@ -27,7 +27,7 @@ label_db = \
     "$terminal":              lambda TerminalIdx: "TERMINAL_%s"              % __nice(TerminalIdx),
     "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
     "$terminal-DEFAULT":      lambda NoThing:     "TERMINAL_DEFAULT",
-    "$terminal-without-seek": lambda TerminalIdx: "TERMINAL_%s_WITHOUT_SEEK" % __nice(TerminalIdx),
+    "$terminal-with-preparation": lambda TerminalIdx: "TERMINAL_%s_WITH_PREPARATION" % __nice(TerminalIdx),
     "$terminal-general":      lambda BackWardLexingF: { 
                                         False: "TERMINAL_GENERAL",    
                                         True:  "TERMINAL_GENERAL_BACKWARD",

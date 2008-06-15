@@ -113,12 +113,13 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_END_OF_FILE()         me->__buffer->is_end_of_file()
 #define QUEX_BEGIN_OF_FILE()       me->__buffer->is_begin_of_file()
 
-#define QUEX_BUFFER_INCREMENT()           me->__buffer->increment(); 
-#define QUEX_BUFFER_DECREMENT()           me->__buffer->decrement(); 
-#define QUEX_BUFFER_TELL_ADR(position)    (position)  = me->__buffer->tell_adr();
-#define QUEX_BUFFER_SEEK_ADR(position)    me->__buffer->seek_adr(position);    
-#define QUEX_BUFFER_GET(character)                           \
-        (character) = me->__buffer->dereference_character(); \
+#define QUEX_BUFFER_INCREMENT()           me->__buffer->increment(); /*me->__buffer->_current_p++; */ 
+#define QUEX_BUFFER_DECREMENT()           me->__buffer->decrement(); /*me->__buffer->_current_p--; */ 
+#define QUEX_BUFFER_TELL_ADR(position)    me->__buffer->tell_adr();        /*(position)  = me->__buffer->_current_p;*/ 
+#define QUEX_BUFFER_SEEK_ADR(position)    me->__buffer->seek_adr(position);/*me->__buffer->_current_p = position;   */ 
+#define QUEX_BUFFER_GET(character)                                 \
+        /* (character) = *(me->__buffer->_current_p);           */ \
+        (character) = me->__buffer->dereference_character();       \
         QUEX_DEBUG_INFO_INPUT(character); 
 #define QUEX_BUFFER_LOAD_FORWARD()   (me->__buffer->load_forward())
 #define QUEX_BUFFER_LOAD_BACKWARD()  (me->__buffer->load_backward())

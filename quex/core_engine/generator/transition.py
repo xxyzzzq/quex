@@ -1,4 +1,16 @@
 import quex.core_engine.generator.acceptance_info as acceptance_info
+from   quex.input.setup import setup as Setup
+
+
+def __goto_distinct_terminal(Origin):
+    LanguageDB = Setup.language_db
+    if Origin.post_context_id() != -1:
+        # The seek for the end of the core pattern is part of the 'normal' terminal
+        # if the terminal 'is' a post conditioned pattern acceptance.
+        return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
+    else:
+        return LanguageDB["$goto"]("$terminal-with-preparation", Origin.state_machine_id)
+
 
 def do(StateMachineName, CurrentStateIdx, TargetStateIdx, 
        BackwardLexingF, BackwardInputPositionDetectionF, 
@@ -25,15 +37,14 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
         dead_end_target_state = DeadEndStateDB[TargetStateIdx]
         
         if dead_end_target_state.is_acceptance() == False: 
-            return LanguageDB["$goto"]("$terminal-general", BackwardLexingF)   # general terminal
+            return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)   # it's actually a normal drop-out
 
         elif dead_end_target_state.origins().contains_any_pre_context_dependency(): 
             # Backward lexing (pre-condition or backward input position detection) cannot
             # depend on pre-conditions, since it is not part of the 'main' lexical analyser
             # process.
             assert not BackwardLexingF
-            return LanguageDB["$goto"]("$entry", TargetStateIdx)               # router to terminal
-
+            return LanguageDB["$goto"]("$entry", TargetStateIdx)       # router to terminal
 
         if not BackwardLexingF:
             winner_origin = dead_end_target_state.origins().find_first_acceptance_origin()
@@ -42,16 +53,8 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
             terminal_id = winner_origin.state_machine_id
 
             # During forward lexing (main lexer process) there are dedicated terminal states.
-            if winner_origin.post_context_id() != -1:    
-                # post conditions require to seek the last store acceptance position
-                return LanguageDB["$goto"]("$terminal", terminal_id)                # direct terminal
-            else:
-                # 'normal' acceptances can transit directly to the terminal. they no not
-                # seek an input position, because they are immediately at the right place.
-                if BackwardLexingF: txt = LanguageDB["$input/decrement"] + "\n"
-                else:               txt = LanguageDB["$input/increment"] + "\n"
-                txt += LanguageDB["$goto"]("$terminal-without-seek", terminal_id)  # direct terminal
-                return txt
+            return __goto_distinct_terminal(winner_origin)
+
         else:
             txt = ""
             if not BackwardInputPositionDetectionF:
@@ -92,17 +95,8 @@ def do_dead_end_router(State, StateIdx, StateMachineName,  BackwardLexingF, Lang
     if State.origins().contains_any_pre_context_dependency() == False: 
         return ""
 
-    def __on_detection_code(StateMachineName, Origin):
-        if Origin.post_context_id() != -1:
-            return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
-        else:
-            if BackwardLexingF: txt = LanguageDB["$input/decrement"] + "\n"
-            else:               txt = LanguageDB["$input/increment"] + "\n"
-            txt += LanguageDB["$goto"]("$terminal-without-seek", Origin.state_machine_id)
-            return txt
-
     txt = acceptance_info.get_acceptance_detector(State.origins().get_list(), 
-                                                  __on_detection_code,
+                                                  __goto_distinct_terminal,
                                                   LanguageDB, StateMachineName)
             
     # -- double check for consistency
