@@ -67,8 +67,8 @@ lexer: $(OBJECT_FILES)
 	echo $(OBJECT_FILES)
 	$(LD) $(OBJECT_FILES) -o $@
 
-#lexer-lc: $(OBJECT_FILES_LC)
-#	$(LD) $(OBJECT_FILES_LC) -o $@
+lexer-lc: $(OBJECT_FILES_LC)
+	$(LD) $(OBJECT_FILES_LC) -o $@
 
 # -- application
 %.o: %.cpp c_lexer
@@ -77,17 +77,18 @@ lexer: $(OBJECT_FILES)
         -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
 		$< -o $@
 
+%-lc.o: %.cpp c_lexer
+	$(CC) -c \
+        -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
+        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
+		$< -o $@
+
 %.asm: %.cpp c_lexer
 	$(CC) -S \
         -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
         -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
 		$< -o $@
 
-#%-lc.o: %.cpp
-#	$(CC) \
-#        -DQUEX_OPTION_LINE_NUMBER_COUNTING   \
-#        -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
-#		$< -o $@
 $(ENGINE_SOURCES): $(MODE_FILES)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
 
