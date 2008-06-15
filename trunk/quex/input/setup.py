@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+from quex.core_engine.generator.languages.core import db as quex_core_engine_generator_languages_db
 class something:
     pass
 
@@ -88,3 +89,5 @@ for key, entry in SETUP_INFO.items():
     elif entry[1] == FLAG: default_value = False
     else:                  default_value = entry[1]
     setup.__dict__[key] = default_value
+
+setup.language_db = quex_core_engine_generator_languages_db["C++"]

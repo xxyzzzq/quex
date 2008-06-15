@@ -1,4 +1,5 @@
 import quex.core_engine.generator.languages.core   as languages
+from   quex.core_engine.generator.languages.core import __nice
 import quex.core_engine.generator.transition_block as transition_block
 import quex.core_engine.generator.transition       as transition
 import quex.core_engine.generator.acceptance_info  as acceptance_info
@@ -94,16 +95,19 @@ def drop_out_handler(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
     txt = LanguageDB["$label-def"]("$drop-out", StateIdx)
 
     if not BackwardLexingF:
-        terminal_id = -1
         if state.origins().contains_any_pre_context_dependency() == False:
             acc_origin = state.origins().find_first_acceptance_origin()
             assert not state.is_acceptance() or type(acc_origin) != type(None), \
                    "Every acceptance state requires an acceptance origin."
             if type(acc_origin) != type(None): # avoid call to __cmp__(None)
-                terminal_id = acc_origin.state_machine_id
-
-        if terminal_id == -1: goto_str = LanguageDB["$goto-last_acceptance"]
-        else:                 goto_str = LanguageDB["$goto"]("$terminal", terminal_id) 
+                post_context_number_str = __nice(acc_origin.state_machine_id) + "_"
+                txt += "    " + LanguageDB["$input/seek_position"](
+                                  "last_acceptance_%sinput_position" % post_context_number_str) + "\n"
+                goto_str = LanguageDB["$goto"]("$terminal", acc_origin.state_machine_id) 
+            else: 
+                goto_str = LanguageDB["$goto-last_acceptance"]
+        else:   
+            goto_str = LanguageDB["$goto-last_acceptance"]
     else:
         # During backward lexing, there are no dedicated terminal states. Only the flags
         # 'pre-condition' fullfilled are set at the acceptance states. On drop out we

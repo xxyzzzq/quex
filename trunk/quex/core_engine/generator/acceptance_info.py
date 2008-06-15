@@ -91,7 +91,7 @@ def forward_lexing(OriginList, LanguageDB):
         elif origin.is_acceptance():
             final_acceptance_origin_list.append(origin)
    
-    def __on_detection_code(StateMachineName, Origin):
+    def __on_detection_code(Origin):
         """Store the name of the winner pattern (last_acceptance) and the position
            where it has matched (use of $input/tell_position).
         """
@@ -120,7 +120,7 @@ def get_acceptance_detector(OriginList, get_on_detection_code_fragment,
     for origin in OriginList:
         if not origin.is_acceptance(): continue
 
-        info = get_on_detection_code_fragment(StateMachineName, origin)
+        info = get_on_detection_code_fragment(origin)
 
         if origin.pre_context_id() != -1L:
             if first_if_statement_f: txt += LanguageDB["$if pre-context"](origin.pre_context_id())
