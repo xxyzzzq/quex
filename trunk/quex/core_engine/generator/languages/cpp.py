@@ -11,42 +11,6 @@ def __nice(SM_ID):
 #________________________________________________________________________________
 # C++
 #
-def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
-                          BufferReloadRequiredOnDropOutF,
-                          CurrentStateIsAcceptanceF = None,
-                          OriginList                = None,
-                          LanguageDB                = None):
-
-    
-    if BackwardLexingF: 
-        txt = __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx,
-                                                    BufferReloadRequiredOnDropOutF,
-                                                    LanguageDB)
-    else:
-        txt = __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx,
-                                                   BufferReloadRequiredOnDropOutF,
-                                                   CurrentStateIsAcceptanceF = CurrentStateIsAcceptanceF,
-                                                   OriginList           = OriginList,
-                                                   LanguageDB           = LanguageDB)
-
-    return txt
-
-def __state_drop_out_code_backward_lexing(StateMachineName, CurrentStateIdx, 
-                                          BufferReloadRequiredOnDropOutF, 
-                                          LanguageDB):      
-
-    if BufferReloadRequiredOnDropOutF:
-        return LanguageDB["$drop-out-backward"](CurrentStateIdx).replace("\n", "\n    ")
-    return ""
-
-def __state_drop_out_code_forward_lexing(StateMachineName, CurrentStateIdx, 
-                                         BufferReloadRequiredOnDropOutF,
-                                         CurrentStateIsAcceptanceF, OriginList, 
-                                         LanguageDB):
-
-    if BufferReloadRequiredOnDropOutF:
-        return LanguageDB["$drop-out-forward"](CurrentStateIdx).replace("\n", "\n    ")
-    return ""
 
 __header_definitions_txt = """
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
@@ -59,7 +23,8 @@ __header_definitions_txt = """
 #   ifdef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
 
         typedef  void*    QUEX_GOTO_LABEL_TYPE;
-#       define QUEX_GOTO_LABEL_INIT_VALUE                (0x0)
+#       define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       &&TERMINAL_DEFAULT
+#       define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (0x0)
 #       define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
 #       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
 #       define QUEX_GOTO_drop_out_state_index()          goto *drop_out_state_index;
@@ -67,7 +32,8 @@ __header_definitions_txt = """
 
 #   else
         typedef  uint32_t QUEX_GOTO_LABEL_TYPE;
-#       define QUEX_GOTO_LABEL_INIT_VALUE                (-1)
+#       define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (-1)
+#       define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (-1)
 #       define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
 #       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
 #       define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
@@ -97,15 +63,13 @@ def __local_variable_definitions(VariableInfoList):
     return txt
          
 __function_header_common = """
-#ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-#    define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)   \\
+#define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)       \\
         /* Is this condition really necessary? <fschaef 07y7m26d> */      \\
         if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \\
             last_acceptance_input_position -= LoadedByteN;                \\
                                                                           \\
 $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
 
-#endif  
 """
 
 __function_header_stand_alone = __function_header_common + """
@@ -139,12 +103,6 @@ quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUE
 """
 
 __analyzer_function_start = """
-#   ifdef __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
-    int loaded_byte_n = 0; /* At transition Drop-Out: 
-                           **    > 0  number of loaded bytes. 
-                           **   == 0  'input' was not 'buffer limit code', no buffer reload happened.
-                           */
-#  endif
 __REENTRY_POINT:
    QUEX_DEBUG_LABEL_PASS("__REENTRY_POINT");
 """
@@ -187,12 +145,13 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
 
     local_variable_list.extend(
-            [ ["QUEX_GOTO_LABEL_TYPE",        "last_acceptance",                "QUEX_GOTO_LABEL_INIT_VALUE"],
-              ["QUEX_GOTO_LABEL_TYPE",        "drop_out_state_index",           "QUEX_GOTO_LABEL_INIT_VALUE"],
+            [ ["QUEX_GOTO_LABEL_TYPE",        "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
+              ["QUEX_GOTO_LABEL_TYPE",        "drop_out_state_index",           "QUEX_GOTO_STATE_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
               ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"], 
               ["QUEX_LEXEME_CHARACTER_TYPE*", "Lexeme",                         "0x0"],
-              ["size_t",                      "LexemeL",                        "-1"] ])
+              ["size_t",                      "LexemeL",                        "-1"],
+              ["int",                         "loaded_byte_n",                  "-1"]])
               
     # -- post-condition position: store position of original pattern
     for state_machine_id in PostConditionedStateMachineID_List:
@@ -284,7 +243,7 @@ $$REENTRY_PREPARATION$$
     // (*) Common point for **restarting** lexical analysis.
     //     at each time when CONTINUE is called at the end of a pattern.
     //
-    last_acceptance = QUEX_GOTO_LABEL_INIT_VALUE;
+    last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //
     //  If a mode change happened, then the function must first return and
@@ -358,7 +317,6 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
 
     return txt
 
-
 def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, 
                       LanguageDB, 
                       DirectlyReachedTerminalID_List):
@@ -375,15 +333,15 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
     if state_machine.core().post_context_id() != -1L: 
         post_context_number_str = state_machine_id_str + "_"
     #
-    txt += LanguageDB["$label-def"]("$terminal-with-preparation", state_machine_id) + "\n"
-    #
-    if state_machine.core().post_context_backward_input_position_detector_sm() == None:
-        # we need to position the current_p to the next character to be read
-        # (NOTE: dedicated terminals only exist for forward lexical analysis)
-        txt += LanguageDB["$input/increment"] + "\n"
-
     if state_machine_id in DirectlyReachedTerminalID_List:
-        txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
+        txt += LanguageDB["$label-def"]("$terminal-with-preparation", state_machine_id) + "\n"
+        #
+        if state_machine.core().post_context_backward_input_position_detector_sm() == None:
+            # we need to position the current_p to the next character to be read
+            # (NOTE: dedicated terminals only exist for forward lexical analysis)
+            txt += LanguageDB["$input/increment"] + "\n"
+
+    txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
 
     if state_machine.core().post_context_backward_input_position_detector_sm() != None:
         # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'

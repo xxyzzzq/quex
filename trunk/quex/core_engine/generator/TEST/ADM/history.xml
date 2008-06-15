@@ -1,4 +1,4 @@
-<history date="Sat Jun 14 06:20:08 2008" element-n="104">
+<history date="Sun Jun 15 15:41:26 2008" element-n="111">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -268,5 +268,14 @@
     </day>
     <day year="2008" month="06" day="14">
         <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="04:20:08"/>
+    </day>
+    <day year="2008" month="06" day="15">
+        <crc-error time="13:08:40" application="test-backward_loading.py" choice="NDEBUG" database-crc="449398091" real-crc="953107237"/>
+        <crc-error time="13:11:35" application="test-simple.py" choice="PlainMemory" database-crc="-771053764" real-crc="1610974138"/>
+        <test-runs-today n="12" ok-n="0" fail-n="12" else-n="0" last-run="failure" last-time="13:11:36"/>
+        <crc-error time="13:11:36" application="test-simple.py" choice="QuexBuffer" database-crc="-771053764" real-crc="1610974138"/>
+        <crc-error time="13:11:49" application="test-simple.py" choice="QuexBuffer" database-crc="1610974138" real-crc="-771053764"/>
+        <crc-error time="13:11:54" application="test-simple-2.py" choice="PlainMemory" database-crc="-270685933" real-crc="1033906266"/>
+        <crc-error time="13:19:01" application="test-bol-eol.py" choice="PlainMemory" database-crc="-795451360" real-crc="-1565444249"/>
     </day>
 </history>
