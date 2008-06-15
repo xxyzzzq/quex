@@ -1,6 +1,6 @@
 import quex.core_engine.generator.languages.core  as languages
 from   quex.core_engine.generator.languages.core  import __nice
-import quex.core_engine.generator.state_transition_coder as state_transition_coder
+import quex.core_engine.generator.state_coder as state_coder
 
 def do(state_machine, LanguageDB, 
        UserDefinedStateMachineName="", 
@@ -43,24 +43,24 @@ def do(state_machine, LanguageDB,
     #       starts at furthest right before the EndOfFile and the init state transits
     #       into the TERMINAL_END_OF_FILE.
     txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
-    txt += state_transition_coder.do(LanguageDB, 
-                                     UserDefinedStateMachineName, 
-                                     init_state, 
-                                     state_machine.init_state_index,
-                                     BackwardLexingF                 = BackwardLexingF,
-                                     BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                     InitStateF                      = True,
-                                     DeadEndStateDB                  = dead_end_state_db)
+    txt += state_coder.do(LanguageDB, 
+                          UserDefinedStateMachineName, 
+                          init_state, 
+                          state_machine.init_state_index,
+                          BackwardLexingF                 = BackwardLexingF,
+                          BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
+                          InitStateF                      = True,
+                          DeadEndStateDB                  = dead_end_state_db)
 
     # -- all other states
     for state_index, state in state_machine.states.items():
         # the init state has been coded already
         if state_index == state_machine.init_state_index: continue
 
-        state_code = state_transition_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
-                                               BackwardLexingF                 = BackwardLexingF,
-                                               BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                               DeadEndStateDB                  = dead_end_state_db)
+        state_code = state_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
+                                    BackwardLexingF                 = BackwardLexingF,
+                                    BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
+                                    DeadEndStateDB                  = dead_end_state_db)
 
         # some states are not coded (some dead end states)
         if state_code == "": continue

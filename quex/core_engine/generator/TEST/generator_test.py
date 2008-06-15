@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import sys
 import os
+import subprocess
 from StringIO import StringIO
 from tempfile import mkstemp
 sys.path.insert(0, os.environ["QUEX_PATH"])
@@ -14,7 +15,7 @@ import quex.core_engine.generator.core          as generator
 import quex.core_engine.regular_expression.core as regex
 
 def action(PatternName): 
-    # txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
+    ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
     if   "->1" in PatternName: txt += "me->__current_mode_analyser_function_p = analyser_do;\n"
@@ -198,10 +199,15 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
 
     print compile_str + "##" # DEBUG
     os.system(compile_str)
+    sys.stdout.flush()
 
     print "## (3) running the test"
     try:
-        os.system("%s.exe" % filename_tmp)
+        fh_out = open(filename_tmp + ".out", "w")
+        subprocess.call("./%s.exe" % filename_tmp, stdout=fh_out)
+        fh_out.close()
+        fh_out = open(filename_tmp + ".out", "r")
+        print fh_out.read()
         os.remove("%s.exe" % filename_tmp)
     except:
         print "<<compilation failed>>"

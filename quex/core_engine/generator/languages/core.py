@@ -94,7 +94,6 @@ db["C++"] = {
                                 "    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
     "$analyser-func":     cpp.__analyser_function,
     "$terminal-code":     cpp.__terminal_states,      
-    "$drop-out":          cpp.__state_drop_out_code,
     "$drop-out-forward":  lambda StateIndex: 
                           "QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
                           "goto __FORWARD_DROP_OUT_HANDLING;\n",
@@ -170,7 +169,6 @@ db["Python"] = {
     "$label":             "",   
     "$label-def":         lambda x, y: "",   
     "$goto":              lambda x, y: "return %i" % y,   
-    "$drop-out":          python.__state_drop_out_code,
     "$include":           lambda include_file: "#include <%s>" % include_file,
     "$debug-info-input":  "",
     "$header-definitions": "",

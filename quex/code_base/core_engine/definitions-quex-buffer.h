@@ -107,7 +107,6 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 **   return 1 -->  get a new input and handle the state transition again.
 **
 */
-#define  __QUEX_CORE_OPTION_TRANSITION_DROP_OUT_HANDLING
 
 #define QUEX_BUFFER_LIMIT_CODE()   me->__buffer->BLC
 #define QUEX_END_OF_FILE()         me->__buffer->is_end_of_file()

@@ -51,7 +51,7 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #ifndef     QUEX_SETTING_BUFFER_LIMIT_CODE
 #    define QUEX_SETTING_BUFFER_LIMIT_CODE (0)
 #endif
-#define QUEX_END_OF_FILE()         (0)
+#define QUEX_END_OF_FILE()         (1)
 #define QUEX_BEGIN_OF_FILE()       (me->input_p == me->buffer_begin - 1)
 
 #define QUEX_BUFFER_INCREMENT()           (++(me->input_p));

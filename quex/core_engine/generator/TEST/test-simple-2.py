@@ -6,7 +6,8 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Simple: Maximum Length Match"
-    print "CHOICES: PlainMemory, QuexBuffer"
+    print "CHOICES: PlainMemory, QuexBuffer;"
+    print "SAME;"
     sys.exit(0)
 
 if len(sys.argv) < 2:

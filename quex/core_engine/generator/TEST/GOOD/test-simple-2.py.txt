@@ -1,3 +1,34 @@
+(*) Lexical Analyser Patterns:
+                "if" --> IF
+              "else" --> ELSE
+            "struct" --> STRUCT
+               "for" --> FOR
+           "typedef" --> TYPEDEF
+         "typedefun" --> TYPEDEFUN
+              "type" --> TYPE
+               "def" --> DEF
+               "fun" --> FUN
+             "while" --> WHILE
+            "return" --> RETURN
+[_a-zA-Z][_a-zA-Z0-9]* --> IDENTIFIER
+                 "{" --> BRACKET_OPEN
+                 "}" --> BRACKET_CLOSE
+                 "(" --> BRACKET_OPEN
+                 ")" --> BRACKET_CLOSE
+                 ";" --> SEMICOLON
+                 "=" --> OP_ASSIGN
+                "==" --> OP_COMPARISON
+                 "<" --> OP_CMP_LESS
+                 ">" --> OP_CMP_GREATER
+                 "+" --> OP_PLUS
+                 "*" --> OP_MULT
+                "++" --> OP_PLUS_PLUS
+{DIGIT}+("."{DIGIT}*)? --> NUMBER
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION -ggdb ##
+## (3) running the test
 (*) test string: 
 '
 struct MyType<T> {
@@ -155,34 +186,5 @@ struct MyType<T> {
          WHITESPACE  '   
 '
   ''
-(*) Lexical Analyser Patterns:
-                "if" --> IF
-              "else" --> ELSE
-            "struct" --> STRUCT
-               "for" --> FOR
-           "typedef" --> TYPEDEF
-         "typedefun" --> TYPEDEFUN
-              "type" --> TYPE
-               "def" --> DEF
-               "fun" --> FUN
-             "while" --> WHILE
-            "return" --> RETURN
-[_a-zA-Z][_a-zA-Z0-9]* --> IDENTIFIER
-                 "{" --> BRACKET_OPEN
-                 "}" --> BRACKET_CLOSE
-                 "(" --> BRACKET_OPEN
-                 ")" --> BRACKET_CLOSE
-                 ";" --> SEMICOLON
-                 "=" --> OP_ASSIGN
-                "==" --> OP_COMPARISON
-                 "<" --> OP_CMP_LESS
-                 ">" --> OP_CMP_GREATER
-                 "+" --> OP_PLUS
-                 "*" --> OP_MULT
-                "++" --> OP_PLUS_PLUS
-{DIGIT}+("."{DIGIT}*)? --> NUMBER
-            [ \t\n]+ --> WHITESPACE
-## (1) code generation
-## (2) compiling generated engine code and test
-## (3) running the test
+
 ## (4) cleaning up
