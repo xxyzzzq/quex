@@ -10,22 +10,6 @@ CLASS::get_token()
     // propperly.
     __quex_assert( self.__previous_mode_p == self.__current_mode_p );
     
-    do {
-        __current_mode_analyser_function_p(this);
-
-        // In case a mode change happend inside the pattern actions, the function is forced
-        // to return (see end of analyzer function at REENTRY label). If the tokenstack is
-        // non-empty, we return to the caller (spare one check). If its empty the analyzer
-        // function (which has recently been setup) is called again.
-        //
-        if( __continue_analysis_after_adapting_mode_function_p_f ) {
-            __continue_analysis_after_adapting_mode_function_p_f = false;
-            continue;
-        }
-        break;
-        
-    } while( 1 + 1 == 2 );
-
-    return _token.type_id();
+    return __current_mode_analyser_function_p(this);
 }
 

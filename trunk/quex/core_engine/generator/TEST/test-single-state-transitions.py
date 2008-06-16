@@ -15,11 +15,11 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from quex.core_engine.interval_handling import NumberSet, Interval
+from quex.core_engine.interval_handling  import NumberSet, Interval
 from quex.core_engine.state_machine.core import State
 
-import quex.core_engine.generator.languages.core         as languages
-import quex.core_engine.generator.state_transition_coder as state_transition_coder
+import quex.core_engine.generator.languages.core as languages
+import quex.core_engine.generator.state_coder    as state_transition_coder
 
 if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation"
@@ -39,7 +39,11 @@ state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
 function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
-##print "#" + function.replace("\n", "\n#")
+##function = function.replace("_-1_", "_MINUS_1_")
+##line_n = 0
+##for line in function.split("\n"):
+##    print "##%i" % line_n, line
+##    line_n += 1
 exec(function)
 
 differences = []    

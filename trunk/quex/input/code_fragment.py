@@ -80,14 +80,15 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
             error_msg("missing '(' or ';' at end of '=>' token sending statement.", fh)
 
         if bracket_i == 0:
-            token_constructor_args = read_until_closing_bracket(fh, "(", ")")
+            plain_token_constructor_args = read_until_closing_bracket(fh, "(", ")")
             # NOTE: empty brackets do not need a comma ...
-            token_constructor_args = token_constructor_args.strip()
+            plain_token_constructor_args = plain_token_constructor_args.strip()
             if token_constructor_args != "":
-                token_constructor_args = ", " + token_constructor_args
+                token_constructor_args = ", " + plain_token_constructor_args
             verify_next_word(fh, ";")
         else:
             token_constructor_args = ""
+            plain_token_constructor_args = ""
             
         # after 'send' the token queue is filled and one can safely return
         token_name = token_name.strip()
@@ -108,7 +109,11 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
             lexer_mode.token_id_db[prefix_less_token_name] = \
                     TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
 
-        result.code = "self.send(%s%s); return;" % (token_name, token_constructor_args)
+        result.code  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
+        result.code += "self.send(%s%s); return;\n" % (token_name, token_constructor_args)
+        result.code += "#else\n"
+        result.code += "self.send(%s); return %s;\n" % (plain_token_constructor_args, token_name)
+        result.code += "#endif\n"
 
         return result
 

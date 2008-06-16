@@ -85,7 +85,7 @@ def __goto_distinct_terminal(Origin):
     # The seek for the end of the core pattern is part of the 'normal' terminal
     # if the terminal 'is' a post conditioned pattern acceptance.
     if Origin.post_context_id() == -1:
-        return LanguageDB["$input/seek_position"]("last_acceptance_input_position")
+        txt += LanguageDB["$input/seek_position"]("last_acceptance_input_position")
     txt += LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
     return txt
 

@@ -4,7 +4,8 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Pre Conditions: Multiple Identical Pre-Conditions"
-    print "CHOICES: PlainMemory, QuexBuffer"
+    print "CHOICES: PlainMemory, QuexBuffer;"
+    print "SAME;"
     sys.exit(0)
 
 if len(sys.argv) < 2:

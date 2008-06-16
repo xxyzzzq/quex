@@ -8,6 +8,13 @@
 #endif
 
 inline void   
+CLASS::send() 
+{ 
+  /* This function exists only, so that code generation looks uniform. 
+   * It is empty, so it does not harm at all-it's simply optimized away. */
+}
+
+inline void   
 CLASS::send(const __QUEX_SETTING_TOKEN_CLASS_NAME& That) 
 {
     _token = That;
