@@ -6,7 +6,8 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Buffer Reload: No Backward Reload -- Precondition at Border"
-    print "CHOICES: No_NDEBUG, NDEBUG"
+    print "CHOICES: No_NDEBUG, NDEBUG;"
+    print "SAME;"
     sys.exit(0)
 
 if "NDEBUG" in sys.argv:

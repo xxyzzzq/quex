@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++ # -S # -E
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -56,7 +56,7 @@ CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
      # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
 
-LD = $(COMPILER)
+LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
 #    lexer    --> application w/o line or column counting
@@ -65,10 +65,10 @@ all: lexer lexer-lc
 
 lexer: $(OBJECT_FILES)
 	echo $(OBJECT_FILES)
-	$(LD) $(OBJECT_FILES) -o $@
+	$(LD) $(OBJECT_FILES)  -o $@ # -lgcov
 
 lexer-lc: $(OBJECT_FILES_LC)
-	$(LD) $(OBJECT_FILES_LC) -o $@
+	$(LD) $(OBJECT_FILES_LC) -o $@ # -lgcov
 
 # -- application
 %.o: %.cpp c_lexer
@@ -105,4 +105,5 @@ clean:
 	rm -f token_ids
 	rm -f *.bak
 	rm -f *.asm
+	rm -f *.gcov *.gcno *.gcda 
 

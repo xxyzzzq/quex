@@ -137,7 +137,7 @@ db["Python"] = {
     "$if":     "if ",
     "$then":   ":",
     "$if EOF": "if True:\n",
-    "$if not BLC": "if True:\n",
+    "$if not BLC": "#if True:\n",
     "$if <":   lambda value: "if input < "  + value + ":\n",
     "$if ==":  lambda value: "if input == " + value + ":\n",
     "$if !=":  lambda value: "if input != " + value + ":\n",
@@ -167,11 +167,22 @@ db["Python"] = {
     "$acceptance-info-bw":   lambda x, y: "",
     "$acceptance-info-bwfc": lambda x, y: "",
     "$label":             "",   
-    "$label-def":         lambda x, y: "",   
-    "$goto":              lambda x, y: "return %i" % y,   
     "$include":           lambda include_file: "#include <%s>" % include_file,
     "$debug-info-input":  "",
     "$header-definitions": "",
+    "$goto-last_acceptance": "# QUEX_GOTO_last_acceptance();\n",
+    "$drop-out": "# drop out\n",
+    #
+    "$goto":                lambda Type, Argument=None:  "return %s;" % Argument,
+    "$label-def":           lambda Type, Argument=None:  
+                                "#%s:\n"                                % label_db[Type](Argument) + \
+                                "#    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
+    "$drop-out-forward":  lambda StateIndex: 
+                          "# QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
+                          "# goto __FORWARD_DROP_OUT_HANDLING;\n",
+    "$drop-out-backward": lambda StateIndex:              
+                          "# QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
+                          "# goto __BACKWARD_DROP_OUT_HANDLING;\n",
 }
 
 #________________________________________________________________________________

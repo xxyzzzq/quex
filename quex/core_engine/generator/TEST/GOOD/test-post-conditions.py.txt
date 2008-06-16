@@ -1,4 +1,4 @@
-(*) test strings: 
+(*) test string: 
 'x   xxxxx xxx x'
 (*) result:
             X+ / WS  'x'

@@ -1,4 +1,4 @@
-<history date="Sun Jun 15 15:41:26 2008" element-n="111">
+<history date="Mon Jun 16 04:52:33 2008" element-n="120">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -277,5 +277,16 @@
         <crc-error time="13:11:49" application="test-simple.py" choice="QuexBuffer" database-crc="1610974138" real-crc="-771053764"/>
         <crc-error time="13:11:54" application="test-simple-2.py" choice="PlainMemory" database-crc="-270685933" real-crc="1033906266"/>
         <crc-error time="13:19:01" application="test-bol-eol.py" choice="PlainMemory" database-crc="-795451360" real-crc="-1565444249"/>
+    </day>
+    <day year="2008" month="06" day="16">
+        <crc-error time="02:31:52" application="test-pre-conditions.py" choice="QuexBuffer" database-crc="-1785236051" real-crc="-524887799"/>
+        <crc-error time="02:32:12" application="test-continue-without-return-2.py" choice="QuexBuffer" database-crc="-1062255732" real-crc="-759134064"/>
+        <crc-error time="02:38:46" application="test-no-backward-reloading.py" choice="No_NDEBUG" database-crc="-404862054" real-crc="1278059331"/>
+        <crc-error time="02:39:49" application="test-no-backward-reloading.py" choice="NDEBUG" database-crc="-404862054" real-crc="-838664925"/>
+        <crc-error time="02:42:35" application="test-mode-changes.py" choice="QuexBuffer" database-crc="1005719447" real-crc="270103911"/>
+        <crc-error time="02:44:23" application="test-continue-without-return.py" choice="QuexBuffer" database-crc="1124200934" real-crc="-1324080938"/>
+        <crc-error time="02:50:59" application="test-pre-conditions-2.py" choice="QuexBuffer" database-crc="-1192757738" real-crc="-2081003305"/>
+        <crc-error time="02:52:15" application="test-pre-conditions-3.py" choice="QuexBuffer" database-crc="1245844997" real-crc="-1449812084"/>
+        <test-runs-today n="11" ok-n="6" fail-n="5" else-n="0" last-run="failure" last-time="02:52:33"/>
     </day>
 </history>

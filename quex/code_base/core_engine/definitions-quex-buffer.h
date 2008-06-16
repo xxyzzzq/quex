@@ -114,7 +114,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 
 #define QUEX_BUFFER_INCREMENT()           me->__buffer->increment(); /*me->__buffer->_current_p++; */ 
 #define QUEX_BUFFER_DECREMENT()           me->__buffer->decrement(); /*me->__buffer->_current_p--; */ 
-#define QUEX_BUFFER_TELL_ADR(position)    me->__buffer->tell_adr();        /*(position)  = me->__buffer->_current_p;*/ 
+#define QUEX_BUFFER_TELL_ADR(position)    position = me->__buffer->tell_adr(); /* = me->__buffer->_current_p;*/ 
 #define QUEX_BUFFER_SEEK_ADR(position)    me->__buffer->seek_adr(position);/*me->__buffer->_current_p = position;   */ 
 #define QUEX_BUFFER_GET(character)                                 \
         /* (character) = *(me->__buffer->_current_p);           */ \
@@ -183,12 +183,16 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 
 // We equal __previous_mode_p to __current_mode_p here, so that it does not
 // have to happen at each time get_token() is called.
-#   define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE                     \
-           if( self.__previous_mode_p != self.__current_mode_p) {                \
-               self.__previous_mode_p = self.__current_mode_p;                   \
-               self.__continue_analysis_after_adapting_mode_function_p_f = true; \
-               return /*1*/;                                                         \
-           }
+#   ifdef  __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+#      define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE                     \
+              if( self.__previous_mode_p != self.__current_mode_p) {                \
+                  self.__previous_mode_p = self.__current_mode_p;                   \
+                  self.__continue_analysis_after_adapting_mode_function_p_f = true; \
+                  return /*1*/;                                                         \
+              }
+#   else
+#      define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE  /* nothing happens here (yet) */                         
+#   endif
 
 #else
 
@@ -202,22 +206,22 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #   define QUEX_DEBUG_ASSIGNMENT(Variable, Value) /* empty */
 #else
 #   define __QUEX_PRINT_SOURCE_POSITION()                                                 \
-    std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__,                           \
+    std::fprintf(stderr, "%s:%i: @%08X \t", __FILE__, __LINE__,                           \
                  (int)(me->__buffer->tell_adr() - (me->__buffer->content_front()) ));            
 
 #   define QUEX_DEBUG_LABEL_PASS(Label)   \
            __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stdout, Label "\n")
+           std::fprintf(stderr, Label "\n")
 
 #   define QUEX_DEBUG_ASSIGNMENT(Variable, Value)   \
            __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stdout, Variable " = " Value "\n")
+           std::fprintf(stderr, Variable " = " Value "\n")
 
 #   define QUEX_DEBUG_INFO_INPUT(Character)                                \
            __QUEX_PRINT_SOURCE_POSITION()                                  \
-             Character == '\n' ? std::fprintf(stdout, "INPUT:    '\\n'\n") \
-           : Character == '\t' ? std::fprintf(stdout, "INPUT:    '\\t'\n") \
-           :                     std::fprintf(stdout, "INPUT:    (%x) '%c'\n", (char)Character, (int)Character) 
+             Character == '\n' ? std::fprintf(stderr, "INPUT:    '\\n'\n") \
+           : Character == '\t' ? std::fprintf(stderr, "INPUT:    '\\t'\n") \
+           :                     std::fprintf(stderr, "INPUT:    (%x) '%c'\n", (char)Character, (int)Character) 
 #endif
 
 

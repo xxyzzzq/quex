@@ -147,9 +147,6 @@ namespace quex {
 $$LEX_ID_DEFINITIONS$$
 }    
 
-typedef void QUEX_ANALYSER_RETURN_TYPE;
-#define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-
 // CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
 //                 a character. This is independent of the coding (ASCII, WinArabic, ...)
 // LEXEME_CHARACTER_TYPE: Type that results in an appropriate type for string handling
@@ -184,6 +181,16 @@ const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "$$CORE_ENGINE_CHARACTE
 typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #define __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
 
+#include "$$TOKEN_ID_DEFINITION_FILE$$"
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
+
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+    typedef void QUEX_ANALYSER_RETURN_TYPE;
+#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+#else
+    typedef quex::$$TOKEN_CLASS$$::id_type QUEX_ANALYSER_RETURN_TYPE;
+#endif
+
 #ifdef  __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
 #   include<quex/code_base/core_engine/definitions-plain-memory.h>
 #else
@@ -196,9 +203,6 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #endif
 
 // Quex/User
-#include "$$TOKEN_ID_DEFINITION_FILE$$"
-#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
-
 #define CLASS                            $$LEXER_CLASS_NAME$$
 #define __QUEX_SETTING_TOKEN_CLASS_NAME  $$TOKEN_CLASS$$
 
@@ -334,6 +338,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
                                                          const char*  IConvInputCodingName = 0x0);
         //
         // (*) Token sending
+        void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const $$TOKEN_CLASS$$& That);
         void        send(const $$TOKEN_CLASS$$::id_type TokenID);
         void        send_n(const int N, const $$TOKEN_CLASS$$::id_type TokenID);

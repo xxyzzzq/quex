@@ -19,13 +19,12 @@ sys.path.insert(0, os.environ["QUEX_PATH"])
 from quex.core_engine.interval_handling import NumberSet, Interval
 from quex.core_engine.state_machine.core import State
 
-import quex.core_engine.generator.languages.core         as languages
-import quex.core_engine.generator.state_transition_coder as state_transition_coder
+import quex.core_engine.generator.languages.core as languages
+import quex.core_engine.generator.state_coder    as state_transition_coder
 
 if "--hwut-info" in sys.argv:
     print "Single State: Extensive Transition Code Generation"
     sys.exit(0)
-
 
 # Create a large number of intervals with sizes 1 to 4. 
 state = State()
