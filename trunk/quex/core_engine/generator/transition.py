@@ -3,6 +3,7 @@ from   quex.input.setup import setup as Setup
 
 
 def __goto_distinct_terminal(Origin):
+    assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
     if Origin.post_context_id() != -1:
         # The seek for the end of the core pattern is part of the 'normal' terminal

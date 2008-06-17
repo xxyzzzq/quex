@@ -36,6 +36,7 @@ label_db = \
     "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
     "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
+    "$start":                 lambda NoThing:     "__REENTRY",
 }
 #________________________________________________________________________________
 # C++
@@ -83,8 +84,12 @@ db["C++"] = {
     "$input/increment":     "QUEX_BUFFER_INCREMENT();",
     "$input/decrement":     "QUEX_BUFFER_DECREMENT();",
     "$input/get":           "QUEX_BUFFER_GET(input);",
-    "$input/tell_position": lambda PositionStr: "QUEX_BUFFER_TELL_ADR(%s);" % PositionStr, 
-    "$input/seek_position": lambda PositionStr: "QUEX_BUFFER_SEEK_ADR(%s);" % PositionStr,        
+    "$input/tell_position": lambda PositionStr: 
+                            "QUEX_DEBUG_ASSIGNMENT(\"%s\", \"tell position\");\n" % PositionStr + \
+                            "QUEX_BUFFER_TELL_ADR(%s);" % PositionStr, 
+    "$input/seek_position": lambda PositionStr: 
+                            "QUEX_DEBUG_ASSIGNMENT(\"seek position\", \"%s\");\n" % PositionStr + \
+                            "QUEX_BUFFER_SEEK_ADR(%s);" % PositionStr,        
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",

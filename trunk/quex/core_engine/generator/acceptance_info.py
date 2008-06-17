@@ -85,6 +85,7 @@ def forward_lexing(OriginList, LanguageDB):
     final_acceptance_origin_list = []
     for origin in OriginList: 
         if origin.is_end_of_post_contexted_core_pattern():
+            assert origin.is_acceptance() == False
             # store current input position, to be restored when post condition really matches
             txt += "    " + LanguageDB["$input/tell_position"](
                              "last_acceptance_%s_input_position" % __nice(origin.state_machine_id)) + "\n"
@@ -95,14 +96,17 @@ def forward_lexing(OriginList, LanguageDB):
         """Store the name of the winner pattern (last_acceptance) and the position
            where it has matched (use of $input/tell_position).
         """
+        assert Origin.is_acceptance()
         info = LanguageDB["$set-last_acceptance"](__nice(Origin.state_machine_id))
         # NOTE: When post conditioned patterns end they do not store the input position.
         #       Rather, the acceptance position of the core pattern is considered.
-        if Origin.store_input_position_f():
-            info += LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n"
+        if Origin.post_context_id() == -1:
+             info += LanguageDB["$input/tell_position"]("last_acceptance_input_position") + "\n"
+
         return info
 
-    txt += get_acceptance_detector(final_acceptance_origin_list, __on_detection_code,
+    txt += get_acceptance_detector(final_acceptance_origin_list, 
+                                   __on_detection_code,
                                    LanguageDB)
 
     return txt

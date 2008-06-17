@@ -185,16 +185,20 @@ def write_mode_class_implementation(Modes, Setup):
     # -- mode class member function definitions (on_entry, on_exit, has_base, ...)
     mode_class_member_functions_txt = mode_classes.do(Modes.values())
 
-    mode_class_member_functions_txt = \
-         blue_print(mode_class_member_functions_txt,
-                [["$$LEXER_CLASS_NAME$$",         LexerClassName],
-                 ["$$TOKEN_CLASS$$",              TokenClassName],
-                 ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
-    
+    mode_objects_txt = ""    
+    for mode_name in Modes:
+        mode_objects_txt += "        quex_mode  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
+
     txt += "namespace quex {\n"
+    txt += mode_objects_txt
     txt += mode_class_member_functions_txt
     txt += "} // END: namespace quex\n"
 
+    txt = \
+         blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
+                          ["$$TOKEN_CLASS$$",              TokenClassName],
+                          ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
+    
     fh_out = open(ModeClassImplementationFile, "w")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     fh_out.write(txt)
@@ -310,7 +314,7 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
 
     members_txt = ""    
     for mode in Modes:
-        members_txt += "        quex_mode  %s;\n" % mode.name
+        members_txt += "        static quex_mode  %s;\n" % mode.name
 
     # constructor code
     txt = ""

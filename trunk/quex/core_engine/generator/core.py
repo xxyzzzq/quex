@@ -1,6 +1,7 @@
 import quex.core_engine.generator.languages.core      as languages
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
 import quex.core_engine.generator.input_position_backward_detector   as backward_detector
+from   quex.input.setup import setup as Setup
 #
 from quex.core_engine.generator.base import GeneratorBase
 
@@ -24,7 +25,7 @@ class Generator(GeneratorBase):
         self.state_machine_name                  = StateMachineName
         self.analyzer_state_class_name           = AnalyserStateClassName
         self.programming_language                = Language
-        self.language_db                         = languages.db[self.programming_language]
+        self.language_db                         = Setup.language_db
         self.end_of_stream_action                = EndOfStreamAction
         self.default_action                      = DefaultAction
         self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
@@ -123,7 +124,7 @@ class Generator(GeneratorBase):
             option_str = LanguageDB["$compile-option"]("__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
 
         #  -- paste the papc functions (if there are some) in front of the analyzer functions
-        header_str = LanguageDB["$header-definitions"](self.core_engine_header_definitions_file)
+        header_str = LanguageDB["$header-definitions"](self.core_engine_header_definitions_file, LanguageDB)
         txt =   option_str                                     \
               + header_str                                     \
               + papc_input_postion_backward_detector_functions \
