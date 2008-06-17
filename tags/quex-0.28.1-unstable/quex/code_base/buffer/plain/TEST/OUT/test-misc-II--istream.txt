@@ -1,0 +1,15 @@
+-(total size = 11, border = 1)-------------------------------------------
+
+(*) read to end of file
+- end of file
+<m Wald steht ein Baum.>
+||S     :C   || BLC
+||n Baum.]|||||
+start-pos:  16
+end-pos:    27
+stream-pos: 23
+EOF = 1, BOF = 0
+current_p (offset)    = 7
+lexeme start (offset) = 0
+
+(*) read to begin of file
