@@ -1,4 +1,4 @@
-<history date="Mon Jun 16 04:52:33 2008" element-n="120">
+<history date="Tue Jun 17 08:07:51 2008" element-n="125">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -287,6 +287,13 @@
         <crc-error time="02:44:23" application="test-continue-without-return.py" choice="QuexBuffer" database-crc="1124200934" real-crc="-1324080938"/>
         <crc-error time="02:50:59" application="test-pre-conditions-2.py" choice="QuexBuffer" database-crc="-1192757738" real-crc="-2081003305"/>
         <crc-error time="02:52:15" application="test-pre-conditions-3.py" choice="QuexBuffer" database-crc="1245844997" real-crc="-1449812084"/>
-        <test-runs-today n="11" ok-n="6" fail-n="5" else-n="0" last-run="failure" last-time="02:52:33"/>
+        <test-runs-today n="12" ok-n="6" fail-n="6" else-n="0" last-run="failure" last-time="13:50:42"/>
+    </day>
+    <day year="2008" month="06" day="17">
+        <crc-error time="03:51:50" application="test-post-conditions.py" choice="PlainMemory" database-crc="778667223" real-crc="1338437579"/>
+        <crc-error time="03:52:52" application="test-position_adaption.py" choice="NDEBUG" database-crc="1194462991" real-crc="1319922986"/>
+        <crc-error time="03:55:25" application="test-pseudo_ambiguous_post_conditions.py" choice="QuexBuffer" database-crc="46622910" real-crc="252074334"/>
+        <crc-error time="03:57:14" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="885683181" real-crc="1614045300"/>
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="06:07:51"/>
     </day>
 </history>

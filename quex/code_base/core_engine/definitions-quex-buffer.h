@@ -206,22 +206,22 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #   define QUEX_DEBUG_ASSIGNMENT(Variable, Value) /* empty */
 #else
 #   define __QUEX_PRINT_SOURCE_POSITION()                                                 \
-    std::fprintf(stderr, "%s:%i: @%08X \t", __FILE__, __LINE__,                           \
+    std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__,                           \
                  (int)(me->__buffer->tell_adr() - (me->__buffer->content_front()) ));            
 
 #   define QUEX_DEBUG_LABEL_PASS(Label)   \
            __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stderr, Label "\n")
+           std::fprintf(stdout, Label "\n")
 
 #   define QUEX_DEBUG_ASSIGNMENT(Variable, Value)   \
            __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stderr, Variable " = " Value "\n")
+           std::fprintf(stdout, Variable " = " Value "\n")
 
 #   define QUEX_DEBUG_INFO_INPUT(Character)                                \
            __QUEX_PRINT_SOURCE_POSITION()                                  \
-             Character == '\n' ? std::fprintf(stderr, "INPUT:    '\\n'\n") \
-           : Character == '\t' ? std::fprintf(stderr, "INPUT:    '\\t'\n") \
-           :                     std::fprintf(stderr, "INPUT:    (%x) '%c'\n", (char)Character, (int)Character) 
+             Character == '\n' ? std::fprintf(stdout, "INPUT:    '\\n'\n") \
+           : Character == '\t' ? std::fprintf(stdout, "INPUT:    '\\t'\n") \
+           :                     std::fprintf(stdout, "INPUT:    (%x) '%c'\n", (char)Character, (int)Character) 
 #endif
 
 

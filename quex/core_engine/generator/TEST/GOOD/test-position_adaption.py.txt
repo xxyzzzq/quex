@@ -1,3 +1,14 @@
+(*) Lexical Analyser Patterns:
+     "X"/"XXXXXXXXX" --> 1 X / ... X
+     "XX"/"XXXXXXXY" --> 2 X / ... Y
+     "XXX"/"XXXXXXZ" --> 3 X / ... Z
+     "XXXX"/"XXXXXA" --> 4 X / ... A
+[_a-zA-Z][_a-zA-Z0-9]* --> IDENTIFIER
+            [ \t\n]+ --> WHITESPACE
+## (1) code generation
+## (2) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION -ggdb ##
+## (3) running the test
 (*) test string: 
 '
 XXXXXXXXXX
@@ -109,14 +120,5 @@ XXXXXXXXXA
          WHITESPACE  '
 '
   ''
-(*) Lexical Analyser Patterns:
-     "X"/"XXXXXXXXX" --> 1 X / ... X
-     "XX"/"XXXXXXXY" --> 2 X / ... Y
-     "XXX"/"XXXXXXZ" --> 3 X / ... Z
-     "XXXX"/"XXXXXA" --> 4 X / ... A
-[_a-zA-Z][_a-zA-Z0-9]* --> IDENTIFIER
-            [ \t\n]+ --> WHITESPACE
-## (1) code generation
-## (2) compiling generated engine code and test
-## (3) running the test
+
 ## (4) cleaning up

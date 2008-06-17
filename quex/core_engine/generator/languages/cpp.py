@@ -46,20 +46,23 @@ __header_definitions_txt = """
 #   ifdef CONTINUE
 #      undef CONTINUE
 #   endif
-#   define CONTINUE  goto __REENTRY_PREPARATION
+#   define CONTINUE  $$GOTO_START_PREPARATION$$
 
 #endif
 """
-def __header_definitions(IncludeFile):
-    return __header_definitions_txt.replace("$$INCLUDE$$", IncludeFile)
+def __header_definitions(IncludeFile, LanguageDB):
+    txt = __header_definitions_txt.replace("$$INCLUDE$$", IncludeFile)
+    txt = txt.replace("$$GOTO_START_PREPARATION$$", LanguageDB["$goto"]("$re-start"))
+    return txt
 
 def __local_variable_definitions(VariableInfoList):
     txt = ""
+    L = max(map(lambda info: len(info[0]), VariableInfoList))
     for info in VariableInfoList:
         type  = info[0]
         name  = info[1]
         value = info[2]
-        txt += "    %s %s = %s;\n" % (type, name, value)
+        txt += "    %s%s %s = %s;\n" % (type, " " * (L-len(type)), name, value)
     return txt
          
 __function_header_common = """
@@ -99,13 +102,8 @@ quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUE
     //       means, they are something like 'globals'. They receive a pointer to the 
     //       lexical analyser, since static member do not have access to the 'this' pointer.
     QUEX_LEXER_CLASS& self = *me;
-    // static functions cannot access members, thus: create shortcuts
 """
 
-__analyzer_function_start = """
-__REENTRY_POINT:
-   QUEX_DEBUG_LABEL_PASS("__REENTRY_POINT");
-"""
 
 def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                         function_body, PostConditionedStateMachineID_List, PreConditionIDList,
@@ -139,7 +137,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         txt += __function_header_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "self." + name]) 
+            local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "QUEX_LEXER_CLASS::" + name]) 
 
     txt = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
@@ -165,7 +163,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     txt += __local_variable_definitions(local_variable_list)
 
-    txt += __analyzer_function_start
+    txt += LanguageDB["$label-def"]("$start")
 
     # -- smart buffers require a reload procedure to adapt the positions of pointers.
     #    recall, that the pointer point to memory and do not refer to stream positions.
@@ -222,7 +220,7 @@ $$END_OF_STREAM_ACTION$$
 
 $$TERMINAL_DEFAULT-DEF$$
 $$DEFAULT_ACTION$$
-        goto __REENTRY_PREPARATION;
+        $$GOTO_START_PREPARATION$$
 
 #ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
 __TERMINAL_ROUTER:
@@ -258,8 +256,7 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //  occured. If not it can call this function again.
     //
     __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
-    goto __REENTRY_POINT;
-
+    $$GOTO_START$$
 """
 
 __drop_out_buffer_reload_handler = """
@@ -327,11 +324,6 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
     #
     action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
         
-    # -- if the pattern is terminated after the post-condition, then the input
-    #    has to be put back to the end of the 'core expression'.    
-    post_context_number_str = ""  
-    if state_machine.core().post_context_id() != -1L: 
-        post_context_number_str = state_machine_id_str + "_"
     #
     if state_machine_id in DirectlyReachedTerminalID_List:
         txt += LanguageDB["$label-def"]("$terminal-with-preparation", state_machine_id) + "\n"
@@ -342,6 +334,13 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
             txt += LanguageDB["$input/increment"] + "\n"
 
     txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
+
+    # -- if the pattern is terminated after the post-condition, then the input
+    #    has to be put back to the end of the 'core expression' **in any case**    
+    if state_machine.core().post_context_id() != -1L: 
+        post_context_number_str = state_machine_id_str + "_"
+        txt += "    " + LanguageDB["$input/seek_position"](
+                "last_acceptance_%sinput_position" % post_context_number_str) + "\n"
 
     if state_machine.core().post_context_backward_input_position_detector_sm() != None:
         # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
@@ -436,11 +435,15 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]("$terminal-DEFAULT")],
                       ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
                       ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]("$terminal-DEFAULT")],
-                      ["$$STATE_MACHINE_NAME$$",           StateMachineName]])
+                      ["$$STATE_MACHINE_NAME$$",           StateMachineName],
+                      ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],
+                      ])
 
     txt += blue_print(__on_continue_reentry_preparation_str,
                       [["$$REENTRY_PREPARATION$$",                   LanguageDB["$label-def"]("$re-start")],
-                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str]])
+                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str],
+                       ["$$GOTO_START$$",                            LanguageDB["$goto"]("$start")],
+                       ])
 
     txt += blue_print(__drop_out_buffer_reload_handler, 
                       [["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
