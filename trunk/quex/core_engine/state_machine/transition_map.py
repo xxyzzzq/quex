@@ -67,6 +67,14 @@ class TransitionMap:
 
         return TargetStateIdx
 
+    def delete_transitions_to_target(self, TargetIdx):
+        """Returns all triggers that lead to target 'TargetIdx'. If a trigger 'None' is returned
+           it means that the epsilon transition triggers to target state. If the TargetIndex is 
+           omitted the set of all triggers, except the epsilon triggers, are returned.
+        """
+        if not self.__db.has_key(TargetIdx): return
+        del self.__db[TargetIdx]
+
     def delete_epsilon_target_state(self, TargetStateIdx):
 
         if TargetStateIdx in self.__epsilon_target_index_list:

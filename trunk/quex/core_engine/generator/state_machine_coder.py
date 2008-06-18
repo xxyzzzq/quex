@@ -1,6 +1,7 @@
 import quex.core_engine.generator.languages.core  as languages
 from   quex.core_engine.generator.languages.core  import __nice
 import quex.core_engine.generator.state_coder as state_coder
+import quex.core_engine.state_machine.dead_end_analysis as dead_end_analysis
 
 def do(state_machine, LanguageDB, 
        UserDefinedStateMachineName="", 
@@ -24,7 +25,8 @@ def do(state_machine, LanguageDB,
 
     # -- collect the 'dead end states' (states without further transitions)
     #    create a map from the 'dead end state
-    dead_end_state_db, directly_reached_terminal_id_list = get_dead_end_state_list(state_machine)
+    dead_end_state_db, directly_reached_terminal_id_list = dead_end_analysis.do(state_machine)
+
     if BackwardLexingF:
         # During backward lexing (pre-condition, backward input position detection)
         # there are no dedicated terminal states in the first place.
@@ -71,52 +73,6 @@ def do(state_machine, LanguageDB,
     
     return txt, directly_reached_terminal_id_list
 
-def get_dead_end_state_list(state_machine):
-    """Collect all states that have no further transitions, i.e. dead end states.
-       Some of them need to be investigated, since it depends on pre-conditions
-       what terminal state is to be considered. The mapping works as follows:
-
-            db.has_key(state_index) == False    ==>  state is not a dead end at all.
-
-            db[state_index] = None              ==> state is a 'gateway' please, jump as usual to 
-                                                     the state, the state then routes to the correspondent
-                                                     terminal (without input) depending on the 
-                                                     pre-conditions.
-
-            db[state_index] = integer           ==> state transits immediately to TERMINAL_n
-                                                     where 'n' is the integer.
-
-            db[state_index] = -1                ==> state is a 'harmless' drop out. need to jump to
-                                                    general terminal
-    """
-    db = {}
-    directly_reached_terminal_id_list = []
-    for state_index, state in state_machine.states.items():
-
-        if not state.transitions().is_empty(): continue
-
-        db[state_index] = state
-
-        if state.is_acceptance() == False: continue
-
-        elif state.origins().contains_any_pre_context_dependency():
-            # (1) state require run time investigation since pre-conditions have to be checked
-            #     Terminals are reached via a 'router'. nevertheless, they are reached 
-            #     without a seek.
-            for origin in state.origins().get_list():
-                if not origin.is_acceptance(): continue
-                directly_reached_terminal_id_list.append(origin.state_machine_id)
-
-        else:
-            # Find the first acceptance origin (origins are sorted already)
-            acceptance_origin = state.origins().find_first_acceptance_origin()
-            # There **must** be an acceptance state, see above
-            assert type(acceptance_origin) != type(None)
-
-            # (2) state transits automatically to terminal given below
-            directly_reached_terminal_id_list.append(acceptance_origin.state_machine_id)
-
-    return db, directly_reached_terminal_id_list
 
 
 
