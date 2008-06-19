@@ -66,11 +66,13 @@ def __local_variable_definitions(VariableInfoList):
     return txt
          
 __function_header_common = """
-#define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)       \\
-        /* Is this condition really necessary? <fschaef 07y7m26d> */      \\
-        if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) \\
-            last_acceptance_input_position -= LoadedByteN;                \\
-                                                                          \\
+#define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)         \\
+        /* Is this condition really necessary? <fschaef 07y7m26d> */        \\
+        if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) { \\
+            last_acceptance_input_position -= LoadedByteN;                  \\
+            QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", last_acceptance_input_position); \\
+        }                                                                   \\
+                                                                            \\
 $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
 
 """
