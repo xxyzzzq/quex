@@ -37,7 +37,7 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
     if DeadEndStateDB.has_key(TargetStateIdx):
         dead_end_target_state = DeadEndStateDB[TargetStateIdx]
         assert dead_end_target_state.is_acceptance(), \
-               "NON-ACCEPTANCE dead end detected during code generation!\n"
+               "NON-ACCEPTANCE dead end detected during code generation!\n" + \
                "A dead end that is not deleted must be an ACCEPTANCE dead end. See\n" + \
                "state_machine.dead_end_analysis.py and generator.state_machine_coder.py.\n" + \
                "If this is not the case, then something serious went wrong."
