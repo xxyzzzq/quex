@@ -114,8 +114,12 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 
 #define QUEX_BUFFER_INCREMENT()           me->__buffer->increment(); /*me->__buffer->_current_p++; */ 
 #define QUEX_BUFFER_DECREMENT()           me->__buffer->decrement(); /*me->__buffer->_current_p--; */ 
-#define QUEX_BUFFER_TELL_ADR(position)    position = me->__buffer->tell_adr(); /* = me->__buffer->_current_p;*/ 
-#define QUEX_BUFFER_SEEK_ADR(position)    me->__buffer->seek_adr(position);/*me->__buffer->_current_p = position;   */ 
+#define QUEX_BUFFER_TELL_ADR(position)                                        \
+        position = me->__buffer->tell_adr(); /* = me->__buffer->_current_p;*/ \
+        QUEX_DEBUG_ADR_ASSIGNMENT("TELL: " #position, position); 
+#define QUEX_BUFFER_SEEK_ADR(position)                                                \
+        me->__buffer->seek_adr(position);    /*me->__buffer->_current_p = position;*/ \
+        QUEX_DEBUG_ADR_ASSIGNMENT("SEEK: " #position, position); 
 #define QUEX_BUFFER_GET(character)                                 \
         /* (character) = *(me->__buffer->_current_p);           */ \
         (character) = me->__buffer->dereference_character();       \

@@ -56,8 +56,12 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 
 #define QUEX_BUFFER_INCREMENT()           (++(me->input_p));
 #define QUEX_BUFFER_DECREMENT()           (--(me->input_p)); 
-#define QUEX_BUFFER_TELL_ADR(position)    position    = me->input_p;
-#define QUEX_BUFFER_SEEK_ADR(position)    me->input_p = position;
+#define QUEX_BUFFER_TELL_ADR(position)                            \
+        position    = me->input_p;                                \
+        QUEX_DEBUG_ADR_ASSIGNMENT("TELL: " #position, position); 
+#define QUEX_BUFFER_SEEK_ADR(position)                            \
+        me->input_p = position;                                   \
+        QUEX_DEBUG_ADR_ASSIGNMENT("SEEK: " #position, position); 
 #define QUEX_BUFFER_GET(character)        \
         character = *(me->input_p);       \
         QUEX_DEBUG_INFO_INPUT(character); 
