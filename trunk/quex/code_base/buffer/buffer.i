@@ -5,6 +5,7 @@
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_I_
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_I_
 
+#include <cstring>
 #include <quex/code_base/buffer/fixed_size_character_stream>
 
 namespace quex {

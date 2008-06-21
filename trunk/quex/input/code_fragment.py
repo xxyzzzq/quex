@@ -83,7 +83,7 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
             plain_token_constructor_args = read_until_closing_bracket(fh, "(", ")")
             # NOTE: empty brackets do not need a comma ...
             plain_token_constructor_args = plain_token_constructor_args.strip()
-            if token_constructor_args != "":
+            if plain_token_constructor_args != "":
                 token_constructor_args = ", " + plain_token_constructor_args
             verify_next_word(fh, ";")
         else:

@@ -95,6 +95,8 @@ def do_dead_end_router(State, StateIdx, StateMachineName,  BackwardLexingF, Lang
     #    States, where the acceptance depends on the run-time pre-conditions being fulfilled
     #    or not. They are the only once, that are 'implemented' as routers, that map to
     #    a terminal correspondent the pre-conditions.
+    assert State.is_acceptance()
+
     if State.origins().contains_any_pre_context_dependency() == False: 
         return ""
 

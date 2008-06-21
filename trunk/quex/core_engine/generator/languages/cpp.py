@@ -344,7 +344,7 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
         txt += "    " + LanguageDB["$input/seek_position"](
                 "last_acceptance_%sinput_position" % post_context_number_str) + "\n"
 
-    if state_machine.core().post_context_backward_input_position_detector_sm() != None:
+    else:
         # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
         #       pattern. However, after a match a backward detection of the end
         #       of the core pattern is done. Here, we first need to go to the point
