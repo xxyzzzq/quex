@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++ # -S # -E
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = #-O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -43,8 +43,11 @@ OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column count
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
+PROFILE_ACTIVATE = -fprofile-arcs -fprofile-values
+PROFILE_USE      = -fbranch-probabilities
 CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
+     --coverage \
 	 $(SETUP) \
 	 -DNDEBUG \
 	 -DQUEX_BENCHMARK_SERIOUS \
@@ -65,7 +68,7 @@ all: lexer lexer-lc
 
 lexer: $(OBJECT_FILES)
 	echo $(OBJECT_FILES)
-	$(LD) $(OBJECT_FILES)  -o $@ # -lgcov
+	$(LD) $(OBJECT_FILES)  -o $@ -lgcov
 
 lexer-lc: $(OBJECT_FILES_LC)
 	$(LD) $(OBJECT_FILES_LC) -o $@ # -lgcov
@@ -105,5 +108,5 @@ clean:
 	rm -f token_ids
 	rm -f *.bak
 	rm -f *.asm
-	rm -f *.gcov *.gcno *.gcda 
+#DO NEVER DELETE THIS: *.gcno *.gcda we might use it for profiling
 

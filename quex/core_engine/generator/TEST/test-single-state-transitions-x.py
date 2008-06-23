@@ -16,6 +16,10 @@ import os
 import random
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from   quex.input.setup import setup as Setup
+import quex.core_engine.generator.languages.core as languages
+Setup.language_db = languages.db["Python"]
+
 from quex.core_engine.interval_handling import NumberSet, Interval
 from quex.core_engine.state_machine.core import State
 
@@ -40,7 +44,7 @@ for i in range(4000):
 
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
-function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
+function = "def example_func(input):\n" + state_transition_coder.do(state, -1, False)
 exec(function)
 
 differences = []    

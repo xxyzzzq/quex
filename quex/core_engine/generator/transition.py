@@ -5,17 +5,18 @@ from   quex.input.setup import setup as Setup
 def __goto_distinct_terminal(Origin):
     assert Origin.is_acceptance()
     LanguageDB = Setup.language_db
-    if Origin.post_context_id() != -1:
+    txt = ""
+    if Origin.post_context_id() == -1:
         # The seek for the end of the core pattern is part of the 'normal' terminal
         # if the terminal 'is' a post conditioned pattern acceptance.
-        return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
-    else:
-        return LanguageDB["$goto"]("$terminal-with-preparation", Origin.state_machine_id)
+        txt += LanguageDB["$input/increment"] + "\n"
+    txt += LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+    return txt
 
 
-def do(StateMachineName, CurrentStateIdx, TargetStateIdx, 
+def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, 
        BackwardLexingF, BackwardInputPositionDetectionF, 
-       DeadEndStateDB, LanguageDB):
+       DeadEndStateDB):
     """
         StateMachineName: Name of the state machine.
 
@@ -31,6 +32,7 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
                         go to a correspondent terminal.
                         
     """
+    LanguageDB = Setup.language_db
     assert type(DeadEndStateDB) == dict
     assert TargetStateIdx == None or TargetStateIdx >= 0
 
@@ -40,7 +42,8 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
                "NON-ACCEPTANCE dead end detected during code generation!\n" + \
                "A dead end that is not deleted must be an ACCEPTANCE dead end. See\n" + \
                "state_machine.dead_end_analysis.py and generator.state_machine_coder.py.\n" + \
-               "If this is not the case, then something serious went wrong."
+               "If this is not the case, then something serious went wrong. A transition\n" + \
+               "to a non-acceptance dead end is to be translated into a drop-out."
 
         if dead_end_target_state.origins().contains_any_pre_context_dependency(): 
             # Backward lexing (pre-condition or backward input position detection) cannot
@@ -78,12 +81,22 @@ def do(StateMachineName, CurrentStateIdx, TargetStateIdx,
     
     # (*) A very normal transition to another state (maybe also a drop-out)
     if   TargetStateIdx == None:   
-        return LanguageDB["$goto"]("$drop-out", CurrentStateIdx) + "\n"
+        # NOTE: The normal drop out contains a check against the buffer limit code. This
+        #       check can be avoided, if one is sure that the current interval does not contain
+        #       a buffer limit code.
+        blc = Setup.buffer_limit_code
+        if type(blc) != int:
+            if len(blc) > 2 and blc[:2] == "0x": blc = int(blc, 16)
+            else:                                blc = int(blc)
+        if TriggerInterval.contains(blc):
+            return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)
+        else:
+            return LanguageDB["$goto"]("$drop-out-direct", CurrentStateIdx)
     else:
-        return LanguageDB["$goto"]("$entry", TargetStateIdx) + "\n"
+        return LanguageDB["$goto"]("$entry", TargetStateIdx)
     
 
-def do_dead_end_router(State, StateIdx, StateMachineName,  BackwardLexingF, LanguageDB):
+def do_dead_end_router(State, StateIdx, BackwardLexingF):
     # DeadEndType == -1:
     #    States, that do not contain any acceptance transit to the 'General Terminal'
     #    The do not have to be coded. Instead the 'jump' must be redirected immediately
@@ -101,8 +114,7 @@ def do_dead_end_router(State, StateIdx, StateMachineName,  BackwardLexingF, Lang
         return ""
 
     txt = acceptance_info.get_acceptance_detector(State.origins().get_list(), 
-                                                  __goto_distinct_terminal,
-                                                  LanguageDB, StateMachineName)
+                                                  __goto_distinct_terminal)
             
     # -- double check for consistency
     assert txt != "", "Acceptance state without acceptance origins!"        

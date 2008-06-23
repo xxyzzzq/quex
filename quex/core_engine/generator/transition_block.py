@@ -1,25 +1,26 @@
 import sys
 import quex.core_engine.generator.transition as transition
+from   quex.input.setup import setup as Setup
+LanguageDB = Setup.language_db
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 class __info:
-    def __init__(self, StateMachineName, State, StateIdx, IsInitStateF, 
-                 LanguageDB, BackwardLexingF, BackwardInputPositionDetectionF, 
+    def __init__(self, State, StateIdx, IsInitStateF, 
+                 BackwardLexingF, BackwardInputPositionDetectionF, 
                  DeadEndStateDB):
-        self.state_machine_name = StateMachineName
         self.state              = State
         self.state_index        = StateIdx
         self.is_init_state_f    = IsInitStateF
 
-        self.language_db       = LanguageDB
         self.backward_f        = BackwardLexingF
         self.backward_input_position_detection_f = BackwardInputPositionDetectionF
         self.dead_end_state_db = DeadEndStateDB
 
-def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF, 
+def do(state, StateIdx, TriggerMap, InitStateF, 
        BackwardLexingF, BackwardInputPositionDetectionF, 
-       StateMachineName, DeadEndStateDB):
+       DeadEndStateDB):
+
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
@@ -30,8 +31,7 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF,
     assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
     #                       # are not to be coded at this place.
 
-    info = __info(StateMachineName=StateMachineName, State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, 
-                  LanguageDB=LanguageDB, 
+    info = __info(State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, 
                   BackwardLexingF=BackwardLexingF, 
                   BackwardInputPositionDetectionF=BackwardInputPositionDetectionF, 
                   DeadEndStateDB=DeadEndStateDB)
@@ -46,9 +46,9 @@ def do(state, StateIdx, TriggerMap, LanguageDB, InitStateF,
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        txt =  "    " + transition.do(StateMachineName, StateIdx, TriggerMap[0][1], 
+        txt =  "    " + transition.do(StateIdx, TriggerMap[0][1], 
                                       BackwardLexingF, BackwardInputPositionDetectionF, 
-                                      DeadEndStateDB, LanguageDB) 
+                                      DeadEndStateDB) 
 
     return txt + "\n"
 
@@ -117,13 +117,10 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt =  "    " + transition.do(info.state_machine_name, 
-                                  info.state_index, 
-                                  target_state_index, 
+    txt =  "    " + transition.do(info.state_index, interval, target_state_index, 
                                   info.backward_f, info.backward_input_position_detection_f,
-                                  DeadEndStateDB = info.dead_end_state_db, 
-                                  LanguageDB     = info.language_db) 
-    txt += "    " + info.language_db["$comment"](interval.get_utf8_string()) + "\n"
+                                  DeadEndStateDB = info.dead_end_state_db) 
+    txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 
         txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
@@ -145,14 +142,14 @@ def __bracket_two_intervals(TriggerMap, info):
     first_interval  = first[0]
     second_interval = second[0]
 
-    if   first_interval.size() == 1:  txt = info.language_db["$if =="](repr(first_interval.begin))
-    elif second_interval.size() == 1: txt = info.language_db["$if !="](repr(second_interval.begin))
-    else:                             txt = info.language_db["$if <"](repr(second_interval.begin))
+    if   first_interval.size() == 1:  txt = LanguageDB["$if =="](repr(first_interval.begin))
+    elif second_interval.size() == 1: txt = LanguageDB["$if !="](repr(second_interval.begin))
+    else:                             txt = LanguageDB["$if <"](repr(second_interval.begin))
 
     txt += __create_transition_code(first, info, IndentF=True) 
-    txt += info.language_db["$endif-else"]
+    txt += LanguageDB["$endif-else"]
     txt += __create_transition_code(second, info, IndentF=True)
-    txt += info.language_db["$end-else"]
+    txt += LanguageDB["$end-else"]
 
     return txt
 
@@ -176,13 +173,13 @@ def __bracket_three_intervals(TriggerMap, info):
 
     # (*) test: inner character is matched => goto its target
     #           else:                      => goto alternative target
-    txt = info.language_db["$if =="](repr(TriggerMap[1][0].begin))
+    txt = LanguageDB["$if =="](repr(TriggerMap[1][0].begin))
     txt += __create_transition_code(TriggerMap[1], info, IndentF=True) 
-    txt += info.language_db["$endif-else"]
+    txt += LanguageDB["$endif-else"]
     # TODO: Add somehow a mechanism to report that here the intervals 0 **and** 1 are triggered
     #       (only for the comments in the generated code)
     txt += __create_transition_code(TriggerMap[0], info, IndentF=True)
-    txt += info.language_db["$end-else"]
+    txt += LanguageDB["$end-else"]
     return txt
 
 def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
@@ -191,11 +188,11 @@ def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
     assert middle[0].begin >= 0, \
            "code generation: error cannot split intervals at negative code points."
 
-    txt =  info.language_db["$if <"](repr(middle[0].begin))
+    txt =  LanguageDB["$if <"](repr(middle[0].begin))
     txt += __get_code(TriggerMap[:MiddleTrigger_Idx], info)
-    txt += info.language_db["$endif-else"]
+    txt += LanguageDB["$endif-else"]
     txt += __get_code(TriggerMap[MiddleTrigger_Idx:], info)
-    txt += info.language_db["$end-else"]
+    txt += LanguageDB["$end-else"]
 
     return txt
 

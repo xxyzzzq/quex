@@ -120,7 +120,7 @@ class TransitionMap:
         return None
 
     def get_resulting_target_state_index_list(self, Trigger):
-        """This function makes sense for NFA's"""
+        """NOTE: This function makes sense for NFA's"""
         result = []
         for target_index, trigger_set in self.__db.items():
             if trigger_set.contains(Trigger) and target_index not in result:

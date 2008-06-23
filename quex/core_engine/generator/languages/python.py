@@ -4,10 +4,11 @@ from quex.frs_py.string_handling import blue_print
 #________________________________________________________________________________
 # Python
 #    
-def __transition(UserDefinedStateMachineName, CurrentStateIdx, StateIdx, 
+def __transition(CurrentStateIdx, StateIdx, 
                  TargetStateIdx, BackwardLexingF=False, BufferReloadRequiredOnDropOutF=True, DeadEndStateDB={}):
     # NOTE: This is a very rudimental implementation of the __goto_state, see the cpp implementation
     #       for a complete implementation.
+    UserDefinedStateMachineName = "unimportant"
     if StateIdx == None: 
         return __goto_terminal_state(UserDefinedStateMachineName,  
                                      TargetStateIdx)  # specific terminal state

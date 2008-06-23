@@ -181,7 +181,7 @@ namespace quex {
         //              normally.
         //
         //          (2) End of File Pointer: (which may be equal to the end of the buffer) 
-        //              In this case no further content can be loaded. The function returns '-1'.
+        //              In this case no further content can be loaded. The function returns '0'.
         //
         //          (3) End of Buffer (if it is != End of File Pointer): Here a 'normal' load of
         //              new data into the buffer can happen.
@@ -191,8 +191,8 @@ namespace quex {
         QUEX_BUFFER_SHOW_BUFFER_LOAD("LOAD FORWARD(entry)");
 
         // (*) Check for the three possibilities mentioned above
-        if     ( _current_p == _buffer.front() ) { return 0; }       // (1)
-        else if( _current_p == _end_of_file_p )  { return -1; }      // (2)
+        if     ( _current_p == _buffer.front() ) { return 0; }      // (1)
+        else if( _current_p == _end_of_file_p )  { return 0; }      // (2)
         else if( _current_p != _buffer.back() ) {                     
             throw std::range_error("Call to 'load_forward() but '_current_p' not on buffer border.\n" 
                                    "(Check character encoding)");  
@@ -268,7 +268,7 @@ namespace quex {
                                        "(tried to load buffer in forward direction)");
             }
             else if( on_overflow(this, /* ForwardF */true) == false ) {
-                return -1; 
+                return 0; 
             }
         }
 
@@ -345,8 +345,8 @@ namespace quex {
             throw std::range_error("Call to 'load_backward() but '_current_p' not on buffer border.\n" 
                                    "(Check character encoding)");  
         }
-        else if( _character_index_at_front == 0 ) { return -1; } // (2)
-        //                                                       // (3)
+        else if( _character_index_at_front == 0 ) { return 0; } // (2)
+        //                                                      // (3)
         // HERE: current_p == FRONT OF THE BUFFER!
         //
 
@@ -377,7 +377,7 @@ namespace quex {
                                        "(tried to load buffer in backward direction)");
             }
             else if( on_overflow(this, /* ForwardF */false) == false ) {
-                return -1; 
+                return 0; 
             }
         }
         const int    MaxBackwardDistance_pre = content_size() - (int)(_lexeme_start_p - _current_p);
