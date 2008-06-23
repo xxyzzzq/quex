@@ -65,7 +65,7 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_BUFFER_GET(character)        \
         character = *(me->input_p);       \
         QUEX_DEBUG_INFO_INPUT(character); 
-#define QUEX_BUFFER_LOAD_FORWARD()   (-1 /* reload not successful, no bytes loaded */)
+#define QUEX_BUFFER_LOAD_FORWARD()   (0 /* reload not successful, no bytes loaded */)
 #define QUEX_BUFFER_LOAD_BACKWARD()  /* empty */
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
@@ -199,7 +199,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 
 #   define QUEX_DEBUG_ADR_ASSIGNMENT(Variable, Value)   \
            __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stdout, Variable " = @%08X\n", (int)(Value - me->_buffer_begin))
+           std::fprintf(stdout, Variable " = @%08X\n", (int)(Value - me->buffer_begin))
 
 #   define QUEX_DEBUG_INFO_INPUT(Character)                              \
            __QUEX_PRINT_SOURCE_POSITION()                                  \

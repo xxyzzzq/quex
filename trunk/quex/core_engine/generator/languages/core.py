@@ -24,16 +24,14 @@ db = {}
 
 label_db = \
 {
-    "$terminal":              lambda TerminalIdx: "TERMINAL_%s"              % __nice(TerminalIdx),
+    "$terminal":              lambda TerminalIdx: "TERMINAL_%s"        % __nice(TerminalIdx),
+    "$terminal-direct":       lambda TerminalIdx: "TERMINAL_%s_DIRECT" % __nice(TerminalIdx),
+    "$terminal-general":      lambda NoThing:     "TERMINAL_GENERAL_BACKWARD",
     "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
     "$terminal-DEFAULT":      lambda NoThing:     "TERMINAL_DEFAULT",
-    "$terminal-with-preparation": lambda TerminalIdx: "TERMINAL_%s_WITH_PREPARATION" % __nice(TerminalIdx),
-    "$terminal-general":      lambda BackWardLexingF: { 
-                                        False: "TERMINAL_GENERAL",    
-                                        True:  "TERMINAL_GENERAL_BACKWARD",
-                                     }[BackWardLexingF],
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
     "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
+    "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),
     "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
     "$start":                 lambda NoThing:     "__REENTRY",

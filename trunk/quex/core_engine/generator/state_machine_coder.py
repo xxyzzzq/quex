@@ -45,10 +45,9 @@ def do(state_machine, LanguageDB,
     #       starts at furthest right before the EndOfFile and the init state transits
     #       into the TERMINAL_END_OF_FILE.
     txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
-    txt += state_coder.do(LanguageDB, 
-                          UserDefinedStateMachineName, 
-                          init_state, 
+    txt += state_coder.do(init_state, 
                           state_machine.init_state_index,
+                          state_machine,
                           BackwardLexingF                 = BackwardLexingF,
                           BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
                           InitStateF                      = True,
@@ -59,7 +58,7 @@ def do(state_machine, LanguageDB,
         # the init state has been coded already
         if state_index == state_machine.init_state_index: continue
 
-        state_code = state_coder.do(LanguageDB, UserDefinedStateMachineName, state, state_index,
+        state_code = state_coder.do(state, state_index, state_machine,
                                     BackwardLexingF                 = BackwardLexingF,
                                     BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
                                     DeadEndStateDB                  = dead_end_state_db)

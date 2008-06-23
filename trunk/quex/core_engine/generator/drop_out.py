@@ -1,8 +1,8 @@
 from   quex.input.setup import setup as Setup
 import quex.core_engine.generator.acceptance_info  as acceptance_info
 
-def do(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF, 
-       BackwardInputPositionDetectionF, StateMachineName, LanguageDB, 
+def do(state, StateIdx, SM, TriggerMap, InitStateF, BackwardLexingF, 
+       BackwardInputPositionDetectionF, 
        DeadEndStateDB):
     """There are two reasons for drop out:
        
@@ -14,10 +14,14 @@ def do(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
        If a buffer limit code is reached, a buffer reload needs to be initiated. If
        the character drops over the edge, then a terminal state needs to be targeted.
     """
+    LanguageDB = Setup.language_db
+
     # -- drop out code (transition to no target state)
     txt = LanguageDB["$label-def"]("$drop-out", StateIdx)
     txt += "    " + LanguageDB["$if not BLC"]
-    txt += "        " + get_drop_out_goto_string(state, BackwardLexingF) + "\n" 
+    # -- if it's clear that it's not a buffer limit code, then jump directly
+    txt += LanguageDB["$label-def"]("$drop-out-direct", StateIdx)
+    txt += "        " + get_drop_out_goto_string(state, StateIdx, SM, BackwardLexingF) + "\n" 
     txt += "    " + LanguageDB["$endif"] + "\n"
 
     # -- in case of the init state, the end of file has to be checked.
@@ -39,17 +43,16 @@ def do(state, StateIdx, TriggerMap, InitStateF, BackwardLexingF,
     return txt + "\n"
 
 def __goto_distinct_terminal(Origin):
-    """Special for the drop out case"""
     LanguageDB = Setup.language_db
-    txt = ""
-    # The seek for the end of the core pattern is part of the 'normal' terminal
-    # if the terminal 'is' a post conditioned pattern acceptance.
-    if Origin.post_context_id() == -1:
-        txt += LanguageDB["$input/seek_position"]("last_acceptance_input_position")
-    txt += LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
-    return txt
+    return LanguageDB["$goto"]("$terminal", Origin.state_machine_id)
 
-def get_drop_out_goto_string(state, BackwardLexingF):
+def __goto_distinct_terminal_direct(Origin):
+    LanguageDB = Setup.language_db
+    return LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
+
+def get_drop_out_goto_string(state, StateIdx, SM, BackwardLexingF):
+    assert state.__class__.__name__ == "State"
+    assert SM.__class__.__name__ == "StateMachine"
     LanguageDB = Setup.language_db
 
     if not BackwardLexingF:
@@ -59,19 +62,12 @@ def get_drop_out_goto_string(state, BackwardLexingF):
             return LanguageDB["$goto-last_acceptance"]
 
         else:
-            # -- acceptance state drop outs
-            # -- is the acceptance of the state dependent on pre-conditions?
-            #    no  -> directly jump to correspondent terminal
-            #    yes -> implement checks for each pre-condition
-            if not state.origins().contains_any_pre_context_dependency():
-                # 'no' case
-                acc_origin = state.origins().find_first_acceptance_origin()
-                return LanguageDB["$goto"]("$terminal", acc_origin.state_machine_id) 
+            if acceptance_info.do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, state, SM):
+                callback = __goto_distinct_terminal
             else:
-                # 'yes' case: acceptance depends on pre-condition flags
-                return acceptance_info.get_acceptance_detector(state.origins().get_list(), 
-                                                               __goto_distinct_terminal,
-                                                               LanguageDB)
+                callback = __goto_distinct_terminal_direct
+            # -- acceptance state drop outs
+            return acceptance_info.get_acceptance_detector(state.origins().get_list(), callback)
 
     else:
         # (*) backward lexical analysis

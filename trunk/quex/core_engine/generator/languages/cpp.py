@@ -266,7 +266,7 @@ __FORWARD_DROP_OUT_HANDLING:
     // Since all drop out states work the same, we introduce here a 'router' that
     // jumps to a particular state based on the setting of a variable: drop_out_state_index.
     loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
-    if( loaded_byte_n != -1 ) {
+    if( loaded_byte_n != 0 ) {
         $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
         QUEX_GOTO_drop_out_state_index();
     }
@@ -317,8 +317,7 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
     return txt
 
 def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, 
-                      LanguageDB, 
-                      DirectlyReachedTerminalID_List):
+                      LanguageDB, DirectlyReachedTerminalID_List):
     txt = ""
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
@@ -326,34 +325,44 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
     #
     action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
         
-    #
-    if state_machine_id in DirectlyReachedTerminalID_List:
-        txt += LanguageDB["$label-def"]("$terminal-with-preparation", state_machine_id) + "\n"
-        #
-        if state_machine.core().post_context_backward_input_position_detector_sm() == None:
-            # we need to position the current_p to the next character to be read
-            # (NOTE: dedicated terminals only exist for forward lexical analysis)
-            txt += LanguageDB["$input/increment"] + "\n"
-
+    # (*) The 'normal' terminal state can also be reached by the terminal
+    #     router and, thus, **must** restore the acceptance input position. This is so, 
+    #     because when the 'goto last_acceptance' is triggered the 'last_acceptance'
+    #     may lay backwards and needs to be restored.
     txt += LanguageDB["$label-def"]("$terminal", state_machine_id) + "\n"
 
-    # -- if the pattern is terminated after the post-condition, then the input
-    #    has to be put back to the end of the 'core expression' **in any case**    
-    if state_machine.core().post_context_id() != -1L: 
-        post_context_number_str = state_machine_id_str + "_"
-        txt += "    " + LanguageDB["$input/seek_position"](
-                "last_acceptance_%sinput_position" % post_context_number_str) + "\n"
-
-    else:
-        # NOTE: The pseudo-ambiguous post condition is translated into a 'normal'
-        #       pattern. However, after a match a backward detection of the end
-        #       of the core pattern is done. Here, we first need to go to the point
-        #       where the 'normal' pattern ended, then we can do a backward detection.
-        txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
-
+    # (1) Retrieving the input position for the next run
+    #     NOTE: The different scenarios differ in the way they can 'offer' an entry
+    #           to the terminal without restoring the input position. This 'direct'
+    #           entry is useful for direct transitions to a terminal where there
+    #           acceptance position is clear.
     if state_machine.core().post_context_backward_input_position_detector_sm() != None:
+        # Pseudo Ambiguous Post Contexts:
+        # -- require that the end of the core pattern is to be searched! One 
+        #    cannot simply restore some stored input position.
+        # -- The pseudo-ambiguous post condition is translated into a 'normal'
+        #    pattern. However, after a match a backward detection of the end
+        #    of the core pattern is done. Here, we first need to go to the point
+        #    where the 'normal' pattern ended, then we can do a backward detection.
+        txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
+        txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
         txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
                __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
+
+    elif state_machine.core().post_context_id() != -1L: 
+        # Post Contexted Patterns:
+        txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
+        # -- have a dedicated register from where they store the end of the core pattern.
+        variable = "last_acceptance_%s_input_position" % __nice(state_machine_id)
+        txt += "    " + LanguageDB["$input/seek_position"](variable) + "\n"
+
+    else:
+        # Normal Acceptance:
+        # -- only restore the input position
+        txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
+        txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
+
+
 
     # -- paste the action code that correponds to the pattern   
     txt += action_code + "\n"    
@@ -450,7 +459,6 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
     txt += blue_print(__drop_out_buffer_reload_handler, 
                       [["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
                        ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",           precondition_involved_f],
-                       ["$$GOTO-TERMINAL_GENERAL_FORWARD$$",   LanguageDB["$goto"]("$terminal-general", False)],
                        ["$$GOTO-TERMINAL_GENERAL_BACKWARD$$",  LanguageDB["$goto"]("$terminal-general", True)]
                        ])
     return txt

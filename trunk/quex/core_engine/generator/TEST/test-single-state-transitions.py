@@ -14,6 +14,9 @@
 import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
+from   quex.input.setup import setup as Setup
+import quex.core_engine.generator.languages.core as languages
+Setup.language_db = languages.db["Python"]
 
 from quex.core_engine.interval_handling  import NumberSet, Interval
 from quex.core_engine.state_machine.core import State
@@ -38,7 +41,7 @@ state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71
 # Make sure, that the 'goto state' is transformed into 'return index of target state'
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
-function = "def example_func(input):\n" + state_transition_coder.do(languages.db["Python"], "", state, -1, False)
+function = "def example_func(input):\n" + state_transition_coder.do(state, -1, False)
 ##function = function.replace("_-1_", "_MINUS_1_")
 ##line_n = 0
 ##for line in function.split("\n"):
