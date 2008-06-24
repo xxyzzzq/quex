@@ -1,0 +1,25 @@
+
+expression = "\P{White_Space}"
+result     = [[9, 13], [32], [133], [160], [5760], [6158], [8192, 8202], [8232, 8233], [8239], [8287], [12288]]
+
+expression = "\P{Hex_Digit}"
+result     = ['0', '9'], ['A', 'F'], ['a', 'f'], ['０', '９'], ['Ａ', 'Ｆ'], ['ａ', 'ｆ']
+
+expression = "\P{Name=KANGXI RADICAL RICE}"
+result     = 12150
+
+expression = "\P{Block=Arabic}"
+result     = [[1536, 1791]]
+
+expression = "\P{Script=Arabic}"
+result     = [[1547], [1549, 1557], [1566], [1569, 1594], [1601, 1610], [1622, 1630], [1642, 1647], [1649, 1756], [1758, 1791], [1872, 1901], [64336, 64433], [64467, 64829], [64848, 64911], [64914, 64967], [65008, 65020], [65136, 65140], [65142, 65276]]
+
+expression = "\N{KANGXI RADICAL RICE}"
+result     = 12150
+
+expression = "\G{KANGXI RADICAL RICE}"
+Property 'General_Category' cannot have a value or value alias 'KANGXI RADICAL RICE'.
+Possible Values: Close_Punctuation(Pe), Connector_Punctuation(Pc), Currency_Symbol(Sc), Dash_Punctuation(Pd), Decimal_Number(Nd), Final_Punctuation(Pf), Format(Cf), Letter_Number(Nl), Line_Separator(Zl), Lowercase_Letter(Ll), Modifier_Symbol(Sk), Open_Punctuation(Ps), Other_Letter(Lo), Other_Number(No), Other_Symbol(So), Paragraph_Separator(Zp), Private_Use(Co), Spacing_Mark(Mc), Surrogate(Cs), Titlecase_Letter(Lt), ... (9 more)
+
+expression = "\G{Nd}"
+result     = ['0', '9'], ['٠', '٩'], ['۰', '۹'], ['߀', '߉'], ['०', '९'], ['০', '৯'], ['੦', '੯'], ['૦', '૯'], ['୦', '୯'], ['௦', '௯'], ['౦', '౯'], ['೦', '೯'], ['൦', '൯'], ['๐', '๙'], ['໐', '໙'], ['༠', '༩'], ['၀', '၉'], ['០', '៩'], ['᠐', '᠙'], ['᥆', '᥏'], ['᧐', '᧙'], ['᭐', '᭙'], ['０', '９'], ['𐒠', '𐒩'], ['𝟎', '𝟿']

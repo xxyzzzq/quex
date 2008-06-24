@@ -1,0 +1,125 @@
+For a given character stream it might be possible that more than one pattern
+matches. Therefore, rules are needed that describe the resolution of those
+'conflicts'. This section explains the priorities that quex assigns to a
+given set of patterns based on length, position, inheritance relationships,
+and a possible _priority-mark_. Imagine, two patterns:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      "print"    { ... /* print keyword */ }
+      "printer"  { ... /* device name   */ }
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+both patterns '`"print"`' and '`"printer"`' match the first five
+characters of a character stream '`print...`'.  The first pattern could
+match, but what if the stream continuous with '`...er`'?  It would never
+be possible to match an incoming '`printer`' because the first pattern
+eats the first five characters and the remaining `er` is lost in space.
+Thus, the rule, followed by most lexical analysers: _The pattern with the
+  longest match proceeds!_ Still, there might be more than one pattern 
+that matches the same number of characters, e.g. the two patterns
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      "print" { ... /* print keyword */ }
+      [a-z]+  { ... /* identifier    */ }
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+match in a character stream '`print`' exactly five characters. How can be
+decided wether to vote for a keyword or an identifier?  The rule here is:
+_first come, first serve__ -- patterns that are mentioned first in the code
+win!.  If a pattern in a base mode and a pattern in a derived mode match with
+the same number of characters, than _the base mode' pattern proceeds!_. This
+follows the philosophie that the base mode imposes behavior on the derived
+modes. Figure <<fig:pattern-priorities, style=ref>> shows how a pattern is
+matched in case of multiple patterns matching the current character input
+stream.
+
+[[fig:pattern-priorities]]
+.Dispatch of pattern actions in case of concurrent matches.
+image::figures/pattern-priorities.png[]
+
+With respect to pre- and post-conditioned patterns, the rules remain the same.
+However, some things need to be clarified. For a pre-conditioned pattern
+'$$Q/R/$$' the string matching the pre-condition '$$Q$$' does _not_ contribute
+to the length of the pattern match. For a post-conditioned pattern '$$R/S$$'
+the matching characters of the post-condition '$$S$$' _do_ contribute to the
+length of the pattern match. Note, that the last rule is, on the first glance,
+counter-intuitive to the fact that the `Lexeme` variable in a
+post-conditioned pattern match action contains only the length of the
+core pattern and not the length of the post-condition. There is a rational, though,
+     behind this distinction:
+
+- Pattern length of the action dispatcher is based on the _reach_ of a pattern
+  starting from the last input position, i.e. the end of the last match.
+
+- Lexeme length is considered to frame the _information_ of a pattern match.
+  The matching part of the post-condition is not considered to be part of the
+  core information of the pattern, otherwise it should be included in the core
+  pattern. Moreover, since the lexical analyzer restarts from the end of the
+  core pattern, the characters matching the post-condition are to match
+  again and then they will be part of a core pattern and their information is
+  to be considered.
+
+
+For cases of real urgency, a keyword allows to struck the ruleset of
+pattern-action dispatching: `PRIORITY-MARK`. A pattern followed by this keyword
+is _lifted_ into the current mode, thus having the priority according to the
+position in the current mode not of the base mode. This requires, of course,
+for the pattern to be defined before. For example:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode my_base {
+  ...
+  [a-z]+ { ... /* identifier */ }
+  ...
+}
+mode my_derived :
+   my_base 
+{
+  ...
+  {"print"} { ... /* keyword */ }
+  ...
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When the lexical analyser is in the `my\_derived` mode, then '`print`'
+is always recognized as an identifier and never as keyword. However, if the
+`PRIORITY-MARK` is set as in the following code fragment,
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode my_base {
+  ...
+  [a-z]+    { ... /* identifier */ }
+  ...
+}
+mode my_derived :
+  my_base 
+{
+  ...
+  {"print"} { ... /* keyword */ }
+  [a-z]+    PRIORITY-MARK
+  ...
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+then the `$$[a-z]+$$` pattern has a priority of a pattern in the mode
+`my\_derived` _after_ the pattern '`"print"`'. The action related to the
+`$$[a-z]+$$` pattern, though, remains. An incoming `print` character
+stream is now always recognized as keyword. It cannot be overemphasized, that
+using priority marks allow derived modes to act 'against' the concepts of the
+base modes. Thus a mode B may be derived from mode A, i.e. 'is-a' mode A, but
+it behaves different! Priority marks are indecent and a sign of a bad design! 
+
+Priority marks can be avoided by splitting the base mode A into two modes A0 and A1, one
+containing desired patterns and the undesired patterns. Figure
+<<fig:resolve-priority-mark, style=ref>> shows this idea. The original mode can be achieved by
+derivation from A0 and A1. The mode B can derive from the base mode of desired patterns.
+This is the clean way to avoid that undesired base class patterns have to high priority
+--use `PRIORITY-MARK` in case of laziness.
+
+[[fig:resolve-priority-mark]]
+.Avoiding `PRIORITY-MARK` through re-design.
+image::figures/resolve-priority-mark.png[]
