@@ -25,7 +25,7 @@ expression = "[: intersection([0-9], [a-z0-5]) :]"
 result     = ['0', '5']
 
 expression = "[: inverse([0-9]) :]"
-result     = [-oo, \47], [':', oo]
+result     = [-oo, '/'], [':', oo]
 
 And know something completely different ...
 

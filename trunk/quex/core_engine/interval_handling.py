@@ -168,7 +168,7 @@ class Interval:
         elif Code == ord('\n'):      return "'\\n'"
         elif Code == ord('\t'):      return "'\\t'"
         elif Code == ord('\r'):      return "'\\r'"
-        elif Code < ord('0'):        return "\\" + repr(Code) 
+        elif Code < ord(' '):        return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
         else:
             char_str = utf8.map_unicode_to_utf8(Code)
             return "'" + char_str + "'"
