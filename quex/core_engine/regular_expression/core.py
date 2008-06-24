@@ -62,6 +62,7 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF):
 
        BLC == -1: means that there is no buffer limit code.
     """
+
     # (*) The buffer limit code has to appear absolutely nowhere!
     if BufferLimitCode != -1:
         __delete_BLC_except_at_end_of_post_context(sm, BufferLimitCode)

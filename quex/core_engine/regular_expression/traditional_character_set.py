@@ -18,11 +18,7 @@ class Tracker:
                                              "found range '%s-%s' which corresponds to %i-%i as unicode code points." % \
                                              (utf8.map_unicode_to_utf8(Begin), utf8.map_unicode_to_utf8(End), Begin, End))
 
-        if self.negation_f == False:  
-            self.match_set.add_interval(Interval(Begin, End))
-        else: 
-            self.match_set.add_interval(Interval(-sys.maxint, Begin))
-            self.match_set.add_interval(Interval(End, sys.maxint))
+        self.match_set.add_interval(Interval(Begin, End))
 
     def consider_letter(self, CharCode):
         self.consider_interval(CharCode, CharCode+1)
@@ -76,6 +72,7 @@ def do(sh):
             # value denotes 'end', i.e first character outside the interval => add 1
             tracker.consider_interval(char_code, char_code_2 + 1)
 
-    return tracker.match_set
+    if tracker.negation_f: return tracker.match_set.inverse()
+    else:                  return tracker.match_set
 
 

@@ -71,6 +71,7 @@
 #include <cstdio>         // for: fixed_size_character_stream_base<FILE*>
 #include <cerrno>
 #include <stdexcept>
+#include <cstring>
 extern "C" { 
 #include <iconv.h>
 #include <quex/code_base/compatibility/inttypes.h>
