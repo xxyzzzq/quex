@@ -15,7 +15,7 @@ comment_deleter_re   = re.compile("#[^\n]*")
 
 def open_data_base_file(Filename):
     try: 
-        fh = open(unicode_db_directory + "/" + Filename)
+        fh = open(unicode_db_directory + "/" + Filename, "rb")
     except:
         error_msg("Fatal---Unicode Database File '%s' not found!\n" % Filename + \
                   "QUEX_PATH='%s'\n" % os.environ["QUEX_PATH"] + \

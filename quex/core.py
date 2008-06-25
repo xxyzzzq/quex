@@ -93,7 +93,7 @@ def do():
                                       EndOfFile_Code                 = Setup.end_of_stream_code)
         
     # write code to a header file
-    fh = open(LexerClassName + "-core-engine.cpp", "w")
+    fh = open(LexerClassName + "-core-engine.cpp", "wb")
     if os.linesep == "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()

@@ -4,7 +4,7 @@
 #_______________________________________________________________________________
 COMPILER     = g++ # -S # -E
 BUFFER_SIZE  = 65536
-OPTIMIZATION = #-O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -47,7 +47,6 @@ PROFILE_ACTIVATE = -fprofile-arcs -fprofile-values
 PROFILE_USE      = -fbranch-probabilities
 CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
-     --coverage \
 	 $(SETUP) \
 	 -DNDEBUG \
 	 -DQUEX_BENCHMARK_SERIOUS \

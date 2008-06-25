@@ -70,14 +70,6 @@ def write_engine_header(Modes, Setup):
     friend_txt =                 \
          get_mode_class_related_code_fragments(Modes.values(), LexerClassName)
 
-    # -- get the code for the user defined all-match actions
-    try:
-        fh_aux = open(Setup.output.user_match_action)
-        user_match_action_str = fh_aux.read()
-        fh_aux.close()
-    except:
-        user_match_action_str = "/* no extra class content */"
-
     # -- define a pointer that directly has the type of the derived class
     if Setup.input_derived_class_name == "":
         Setup.input_derived_class_name = LexerClassName
@@ -165,7 +157,7 @@ def write_engine_header(Modes, Setup):
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get() + "\n"],
              ])
 
-    fh_out = open(QuexClassHeaderFileOutput, "w")
+    fh_out = open(QuexClassHeaderFileOutput, "wb")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     fh_out.write(txt)
     fh_out.close()
@@ -199,7 +191,7 @@ def write_mode_class_implementation(Modes, Setup):
                           ["$$TOKEN_CLASS$$",              TokenClassName],
                           ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
     
-    fh_out = open(ModeClassImplementationFile, "w")
+    fh_out = open(ModeClassImplementationFile, "wb")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     fh_out.write(txt)
     fh_out.close()

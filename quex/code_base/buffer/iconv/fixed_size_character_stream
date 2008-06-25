@@ -219,12 +219,14 @@ namespace quex {
             // -- has user buffer been filled to the given limit N ?
             if( ! user_buffer.bytes_left_n ) { 
                next_character_to_be_read_i += N;
+               QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(&user_buffer);
                return /* sum converted characters = */ N;
             }
 
             // -- are there still bytes in the stream? 
             if( LoadedByteN != bytes_to_read )  { 
                next_character_to_be_read_i += statistics.sample_n;
+               QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(&user_buffer);
                return statistics.sample_n; // EOF
             }
 
@@ -268,7 +270,8 @@ namespace quex {
                 // the caller will copy the remaining part and restart with more bytes from the stream.
                 return report;
             case E2BIG:
-                throw std::range_error("Output buffer cannot hold number of coded characters.");
+                return report;
+                // throw std::range_error("Output buffer cannot hold number of coded characters.");
             }
         }
         return report;

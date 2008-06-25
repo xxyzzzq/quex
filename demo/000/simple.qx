@@ -1,4 +1,7 @@
 // -*- C++ -*-
+header {
+#include <cstdlib>  // for: atoi()
+}
 
 token {
    IDENTIFIER

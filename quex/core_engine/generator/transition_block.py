@@ -46,7 +46,7 @@ def do(state, StateIdx, TriggerMap, InitStateF,
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        txt =  "    " + transition.do(StateIdx, TriggerMap[0][1], 
+        txt =  "    " + transition.do(StateIdx, TriggerMap[0][0], TriggerMap[0][1], 
                                       BackwardLexingF, BackwardInputPositionDetectionF, 
                                       DeadEndStateDB) 
 

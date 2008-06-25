@@ -225,8 +225,7 @@ $$DEFAULT_ACTION$$
         $$GOTO_START_PREPARATION$$
 
 #ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
-__TERMINAL_ROUTER:
-$$TERMINAL_GENERAL-DEF$$ {
+__TERMINAL_ROUTER: {
         //  if last_acceptance => goto correspondent acceptance terminal state
         //  else               => execute defaul action
         switch( last_acceptance ) {
@@ -263,6 +262,7 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 
 __drop_out_buffer_reload_handler = """
 __FORWARD_DROP_OUT_HANDLING:
+    QUEX_DEBUG_LABEL_PASS("__FORWARD_DROP_OUT_HANDLING");
     // Since all drop out states work the same, we introduce here a 'router' that
     // jumps to a particular state based on the setting of a variable: drop_out_state_index.
     loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
@@ -276,6 +276,7 @@ __FORWARD_DROP_OUT_HANDLING:
 
 #if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
 __BACKWARD_DROP_OUT_HANDLING:
+    QUEX_DEBUG_LABEL_PASS("__BACKWARD_DROP_OUT_HANDLING");
     QUEX_BUFFER_LOAD_BACKWARD();
     if( ! QUEX_BEGIN_OF_FILE() ) { 
         // no re-computation required, since we're not in 'normal lexing mode'
