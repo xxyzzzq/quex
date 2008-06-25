@@ -1,0 +1,17 @@
+start = ONE_AND_ONLY
+
+define {
+    P_URL "http://"[^ \n]+
+}
+
+token {
+   URL
+   NONE
+}
+
+mode ONE_AND_ONLY
+{
+   <<EOF>> => TKN_TERMINATION;
+   {P_URL} => TKN_URL(Lexeme);
+   .       => TKN_NONE(Lexeme);
+}
