@@ -1,0 +1,18 @@
+Use Case 1:
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+warning: no initial mode defined via 'start'
+warning: using mode 'START' as initial mode
+
+Use Case 2:
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error-2.qx:9:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
+error-2.qx:9:warning: <inheritable: only> has been added automatically.
+warning: no initial mode defined via 'start'
+warning: using mode 'A' as initial mode
+
