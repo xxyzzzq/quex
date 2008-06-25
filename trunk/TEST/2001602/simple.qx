@@ -1,17 +1,17 @@
-start = ONE_AND_ONLY
-
 define {
-    P_URL "http://"[^ \n]+
+P_LETTER [: intersection(\G{Ll}, [\X0-\XFFFF]) :]
+P_WORD [a-z]*{P_LETTER}+
 }
 
 token {
-   URL
-   NONE
+WORD
+NONE
 }
 
 mode ONE_AND_ONLY
 {
-   <<EOF>> => TKN_TERMINATION;
-   {P_URL} => TKN_URL(Lexeme);
-   .       => TKN_NONE(Lexeme);
+<<EOF>> => TKN_TERMINATION;
+
+{P_WORD} => TKN_WORD(Lexeme);
+. => TKN_NONE(Lexeme);
 }

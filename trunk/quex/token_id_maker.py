@@ -224,7 +224,7 @@ def output(global_setup):
 
     content = content.replace("$$TOKEN_CLASS$$", setup.token_class)
 
-    fh = open(setup.output_file, "w")
+    fh = open(setup.output_file, "wb")
     if os.linesep == "\n": content = content.replace("\n", os.linesep)
     fh.write(content)
     fh.close()

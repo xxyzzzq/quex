@@ -21,7 +21,7 @@ import quex.core_engine.generator.languages.core as languages
 Setup.language_db = languages.db["Python"]
 
 from quex.core_engine.interval_handling import NumberSet, Interval
-from quex.core_engine.state_machine.core import State
+from quex.core_engine.state_machine.core import State, StateMachine
 
 import quex.core_engine.generator.languages.core as languages
 import quex.core_engine.generator.state_coder    as state_transition_coder
@@ -44,7 +44,7 @@ for i in range(4000):
 
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
-function = "def example_func(input):\n" + state_transition_coder.do(state, -1, False)
+function = "def example_func(input):\n" + state_transition_coder.do(state, -1, StateMachine(), False)
 exec(function)
 
 differences = []    

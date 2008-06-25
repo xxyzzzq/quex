@@ -13,7 +13,7 @@ FLAGS  = #-lefence
 all: $(TEST_FILES) 
 
 hwut-info:
-	@echo $(TEST_FILES)
+	@echo $(TEST_FILES) ::SCRIPTS::
 
 %.exe: %.cpp 
 	g++ $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@

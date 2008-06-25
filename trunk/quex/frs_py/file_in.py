@@ -276,7 +276,7 @@ def clean_up():
     for file in temporary_files:
         os.system("rm %s" % file)
 
-def open_file_or_die(FileName, Mode="r", Env=None, Codec=""):
+def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
     try:
         fh = open(FileName, Mode)
         # if Codec != "": 
@@ -299,7 +299,7 @@ def indented_open(Filename, Indentation = 3):
     IndentString = " " * Indentation
     
     try:
-        fh = open(Filename, "r")
+        fh = open(Filename, "rb")
     except:
         print "%s:error: indented opening of file '%s' " % (this_name, Filename)
         sys.exit(-1)
@@ -313,7 +313,7 @@ def indented_open(Filename, Indentation = 3):
     if tmp_filename not in temporary_files:
         temporary_files.append(copy(tmp_filename))
 
-    fh = open(tmp_filename, "w")
+    fh = open(tmp_filename, "wb")
     fh.write(new_content)
     fh.close()
 

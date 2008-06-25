@@ -65,8 +65,10 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_BUFFER_GET(character)        \
         character = *(me->input_p);       \
         QUEX_DEBUG_INFO_INPUT(character); 
-#define QUEX_BUFFER_LOAD_FORWARD()   (0 /* reload not successful, no bytes loaded */)
-#define QUEX_BUFFER_LOAD_BACKWARD()  /* empty */
+#define QUEX_BUFFER_LOAD_FORWARD()                       \
+        (0 /* reload not successful, no bytes loaded */) 
+#define QUEX_BUFFER_LOAD_BACKWARD()                      \
+        /* empty */
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *

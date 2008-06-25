@@ -73,7 +73,7 @@ def backward_lexing_find_core_pattern(OriginList):
             return "    " + LanguageDB["$input/tell_position"]("end_of_core_pattern_position") + "\n"
     return "\n"
 
-def forward_lexing(State, StateIdx, SM):
+def forward_lexing(State, StateIdx, SM, ForceF=False):
     """Forward Lexing:
 
        (1) If a the end of a core pattern of a post contexted pattern is reached, then
@@ -104,10 +104,11 @@ def forward_lexing(State, StateIdx, SM):
 
     # -- If there is no 'real' acceptance, then we're done
     if not contains_acceptance_f: 
-        return txt
+        return txt 
 
     # -- If the current acceptance does not need to be stored, then do not do it
-    if do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, State, SM) == False: 
+    if not ForceF and \
+       do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, State, SM) == False: 
         return txt
    
     # (2) Create detector for normal and pre-conditioned acceptances

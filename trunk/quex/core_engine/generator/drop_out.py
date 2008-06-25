@@ -38,7 +38,10 @@ def do(state, StateIdx, SM, TriggerMap, InitStateF, BackwardLexingF,
         if BackwardLexingF:
             txt += LanguageDB["$drop-out-backward"](StateIdx).replace("\n", "\n    ")
         else:
-            txt += LanguageDB["$drop-out-forward"](StateIdx).replace("\n", "\n    ")
+            # In case that it cannot load anything, it still needs to know where to
+            # jump to.
+            txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM, ForceF=True)
+            txt += "    " + LanguageDB["$drop-out-forward"](StateIdx).replace("\n", "\n    ")
 
     return txt + "\n"
 
