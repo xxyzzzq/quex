@@ -10,8 +10,8 @@ namespace quex {
 
         void  flush(const __QUEX_SETTING_TOKEN_CLASS_NAME::id_type TokenID);
         void  clear();
-        void  add(const QUEX_LEXEME_CHARACTER_TYPE*);
-        void  add(const QUEX_LEXEME_CHARACTER_TYPE);
+        void  add(const QUEX_CHARACTER_TYPE*);
+        void  add(const QUEX_CHARACTER_TYPE);
 
     private:
 #    ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -20,8 +20,8 @@ namespace quex {
 #    ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
         int  _begin_column;
 #    endif
-        std::basic_string<QUEX_LEXEME_CHARACTER_TYPE>  _accumulated_text;
-        CLASS*                                         _the_lexer;     
+        std::basic_string<QUEX_CHARACTER_TYPE>  _accumulated_text;
+        CLASS*                                  _the_lexer;     
     };
 
 }

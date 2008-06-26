@@ -12,7 +12,6 @@ struct QUEX_CORE_ANALYSER_STRUCT;
 #   endif
     typedef QUEX_CORE_ANALYSER_STRUCT                QUEX_LEXER_CLASS;   
     typedef quex::buffer<uint8_t>::character_type    QUEX_CHARACTER_TYPE;
-    typedef quex::buffer<uint8_t>::character_type    QUEX_LEXEME_CHARACTER_TYPE;
 #endif
 typedef quex::buffer<QUEX_CHARACTER_TYPE>   QUEX_CORE_BUFFER_TYPE;
 typedef quex::buffer<QUEX_CHARACTER_TYPE>::memory_position   QUEX_CHARACTER_POSITION;
@@ -156,7 +155,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_PREPARE_LEXEME_OBJECT()                                                  \
         me->char_covered_by_terminating_zero = me->__buffer->get_current_character(); \
         me->__buffer->set_current_character('\0');                                    \
-        Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->__buffer->get_lexeme_start_p());                              
+        Lexeme = (QUEX_CHARACTER_TYPE*)(me->__buffer->get_lexeme_start_p());                              
 
 /* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
 ** QUEX_PREPARE_LEXEME_OBJECT in case that no Lexeme object is

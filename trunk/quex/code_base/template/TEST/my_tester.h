@@ -4,7 +4,7 @@
 
 typedef uint8_t  QUEX_CHARACTER_TYPE;
 typedef uint8_t* QUEX_CHARACTER_POSITION; 
-typedef char     QUEX_LEXEME_CHARACTER_TYPE;
+typedef char     QUEX_CHARACTER_TYPE;
 
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
 #   include <cassert>
@@ -64,13 +64,13 @@ struct my_tester {
         _indentation_event_enabled_f(true)
     {}
  
-	void  count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+	void  count(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength);
 	void  count_NoNewline(const int LexemeLength);
-	void  count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
+	void  count_FixNewlineN(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
 				const int        LineNIncrement);
 
-	void  count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
-	void  count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+	void  count_indentation(QUEX_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
+	void  count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength);
 	void  count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement);
 	void  count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement);
 

@@ -81,37 +81,37 @@ namespace quex {
             break;
 
         case 2:
-            p[1] = NEXT | byte3 & 0x3f;
+            p[1] = NEXT | (byte3 & 0x3f);
             p[0] = LEN2 | (byte3 >> 6) | ((byte2 & 0x07) << 2);
             break;
 
         case 3:
-            p[2] = NEXT | byte3 & 0x3f;
+            p[2] = NEXT | (byte3 & 0x3f);
             p[1] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
             p[0] = LEN3 | ((byte2 & 0xf0) >> 4);
             break;
 
         case 4:
-            p[3] = NEXT | byte3 & 0x3f;
+            p[3] = NEXT | (byte3 & 0x3f);
             p[2] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
             p[1] = NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4);
             p[0] = LEN4 | ((byte1 & 0x1f) >> 2);
             break;
 
         case 5:
-            p[4] = NEXT | byte3 & 0x3f;
+            p[4] = NEXT | (byte3 & 0x3f);
             p[3] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
             p[2] = NEXT | ((byte2 & 0xf0) >> 4) | ((byte1 & 0x03) << 4);
             p[1] = NEXT | (byte1 >> 2);
-            p[0] = LEN5 | byte0 & 0x03;
+            p[0] = LEN5 | (byte0 & 0x03);
             break;
 
         case 6:
-            p[5] = NEXT | byte3 & 0x3f;
+            p[5] = NEXT | (byte3 & 0x3f);
             p[4] = NEXT | (byte3 >> 6) | ((byte2 & 0x0f) << 2);
             p[3] = NEXT | (byte2 >> 4) | ((byte1 & 0x03) << 4);
             p[2] = NEXT | (byte1 >> 2);
-            p[1] = NEXT | byte0 & 0x3f;
+            p[1] = NEXT | (byte0 & 0x3f);
             p[0] = LEN6 | ((byte0 & 0x40) >> 6);
             break;
         }
@@ -134,7 +134,7 @@ namespace quex {
         //_________________________________________________________________________
 
     private:
-        typedef std::basic_string<QUEX_LEXEME_CHARACTER_TYPE> __string;
+        typedef std::basic_string<QUEX_CHARACTER_TYPE> __string;
 
         token::id_type     _id;
         __string           _text;
@@ -147,7 +147,7 @@ namespace quex {
         // note, that tokens are created in a bunch on the token stack and only
         // set with the .set(..) functions when pushed.
         //
-        token(token::id_type ID, const QUEX_LEXEME_CHARACTER_TYPE* Text) { set(ID, Text); }
+        token(token::id_type ID, const QUEX_CHARACTER_TYPE* Text) { set(ID, Text); }
 
         // (*) convert data to string
         const __string   type_string() const;
@@ -164,7 +164,7 @@ namespace quex {
 
         //     -- write 
         void    set(token::id_type ID);
-        void    set(token::id_type ID, const QUEX_LEXEME_CHARACTER_TYPE* Text);
+        void    set(token::id_type ID, const QUEX_CHARACTER_TYPE* Text);
         void    set(token::id_type ID, const int   Number1);
 
     private:
@@ -180,7 +180,7 @@ namespace quex {
         }
 
     inline void    
-        token::set(token::id_type Type, const QUEX_LEXEME_CHARACTER_TYPE* Text)
+        token::set(token::id_type Type, const QUEX_CHARACTER_TYPE* Text)
         { _id = Type; _text = __string(Text); }
 
     inline void    

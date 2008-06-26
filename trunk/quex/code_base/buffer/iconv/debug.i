@@ -24,7 +24,7 @@ namespace quex {
         {
             // clear raw buffer, for easy visual control          
             for(int i=0; i<raw_buffer.size; ++i) {                
-                raw_buffer.start[i] = 0;                          
+                raw_buffer.begin[i] = 0;                          
             }                                                     
             std::cout << "from: " << FromCoding << std::endl;     
             std::cout << "to:   " << ToCoding << std::endl;       
@@ -70,7 +70,7 @@ namespace quex {
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(CLASS::buffer_info* user_buffer)                  
         {
             raw_buffer.print("raw buffer");                                                  
-            user_buffer->print("user buffer", user_buffer->position - user_buffer->start);
+            user_buffer->print("user buffer", user_buffer->position - user_buffer->begin);
         }
 
     TEMPLATE_IN void 
@@ -78,13 +78,13 @@ namespace quex {
         {
             if( until_idx == -1 ) until_idx = size;
             fprintf(stdout, "%s:\n", name);
-            fprintf(stdout, "  position   = %i\n", (int)(position - start));
+            fprintf(stdout, "  position   = %i\n", (int)(position - begin));
             fprintf(stdout, "  bytes left = %i\n", bytes_left_n);
             fprintf(stdout, "  content = {\n");
 
             fprintf(stdout, "    ");
             for(int i=0; i < until_idx ; ++i) {
-                unsigned char b = start[i+0];
+                unsigned char b = begin[i+0];
                 fprintf(stdout, "%02X.", (unsigned)b);
                 if( (i+1) % 10 == 0 ) fprintf(stdout, "\n    ");
             }

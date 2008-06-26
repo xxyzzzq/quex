@@ -19,7 +19,6 @@ struct QUEX_CORE_ANALYSER_STRUCT;
 #endif
 #ifndef __QUEX_CORE_OPTION_CHARACTER_TYPE_DEFINED
     typedef char   QUEX_CHARACTER_TYPE;
-    typedef char   QUEX_LEXEME_CHARACTER_TYPE;
 #endif
 
 typedef char*  QUEX_CHARACTER_POSITION;
@@ -146,7 +145,7 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 #define QUEX_PREPARE_LEXEME_OBJECT()                                 \
         me->char_covered_by_terminating_zero = *(me->input_p); \
         *(me->input_p)= '\0';                                  \
-	    Lexeme = (QUEX_LEXEME_CHARACTER_TYPE*)(me->lexeme_start_p);                              
+	    Lexeme = (QUEX_CHARACTER_TYPE*)(me->lexeme_start_p);                              
 
 /* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
 ** QUEX_PREPARE_LEXEME_OBJECT in case that no Lexeme object is

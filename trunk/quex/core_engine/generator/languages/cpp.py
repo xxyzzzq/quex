@@ -149,7 +149,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
               ["QUEX_GOTO_LABEL_TYPE",        "drop_out_state_index",           "QUEX_GOTO_STATE_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
               ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"], 
-              ["QUEX_LEXEME_CHARACTER_TYPE*", "Lexeme",                         "0x0"],
+              ["QUEX_CHARACTER_TYPE*",        "Lexeme",                         "0x0"],
               ["size_t",                      "LexemeL",                        "-1"],
               ["int",                         "loaded_byte_n",                  "-1"]])
               

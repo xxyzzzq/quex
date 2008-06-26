@@ -21,7 +21,7 @@ void test(const char* TestString, my_tester& x)
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    x.count_indentation((QUEX_LEXEME_CHARACTER_TYPE*)TestString, strlen(TestString));
+    x.count_indentation((QUEX_CHARACTER_TYPE*)TestString, strlen(TestString));
     cout << "  end:    " << x.line_number_at_end()    << ", " << x.column_number_at_end() << endl;
 
     total_string += TestString;

@@ -3,7 +3,7 @@ to:   UCS-4BE
 (*) loaded bytes = 44
 raw buffer:
   position   = 0
-  bytes left = 128
+  bytes left = 44
   content = {
     31.32.30.EF.AC.85.20.C2.AB.C5.
     9E.C3.B8.C2.BB.20.D8.AF.D9.84.
