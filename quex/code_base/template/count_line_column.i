@@ -60,7 +60,7 @@ CLASS::__count_shift_end_values_to_start_values()
 
 
 inline void    
-CLASS::count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+CLASS::count(QUEX_CHARACTER_TYPE* Lexeme,
              const int                   LexemeLength)
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
@@ -104,7 +104,7 @@ CLASS::count_NoNewline(const int LexemeLength)
 }
 
 inline void  
-CLASS::count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+CLASS::count_FixNewlineN(QUEX_CHARACTER_TYPE* Lexeme,
                          const int           LexemeLength, 
                          const int           LineNIncrement) 
 {

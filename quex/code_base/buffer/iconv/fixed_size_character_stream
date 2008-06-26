@@ -1,5 +1,5 @@
-// : -*- C++ -*-  vim: set syntax=cpp:
-// (C) 2007 Frank-Rene Schaefer
+// -*- C++ -*-  vim: set syntax=cpp:
+// (C) 2007-2008 Frank-Rene Schaefer
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__
 #define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__
 //
@@ -114,7 +114,7 @@ namespace quex {
 
     private:
         struct buffer_info {
-            uint8_t*  start;
+            uint8_t*  begin;
             size_t    size;
             uint8_t*  position;
             size_t    bytes_left_n;
@@ -122,26 +122,15 @@ namespace quex {
             void   print(const char* name, int until_idx=-1); 
         };
 
-        // (*) housekeeping for statistics:
-        struct statistic_info {
-            float    avrg;
-            size_t   sample_n;
-            void     adapt(size_t ConvertedByteN, buffer_info* user_buffer, size_t SizeOfChar);
-            size_t   estimate_raw_byte_n(const int CharacterN, const size_t BufferSize);
-        };
-
         InputHandleType* ih;
         stream_position  start_position;  // position in stream where analysis started
-        size_t           next_character_to_be_read_i;
 
         // -- conversion data
         iconv_t          iconv_handle;
-
         buffer_info      raw_buffer;
-        statistic_info   statistics;
 
-        size_t __convert(const size_t LoadedByteN, buffer_info* user_buffer);
-        size_t __prepare_next_run(size_t iconv_report, buffer_info* user_buffer);
+        void   __fill_raw_buffer();
+        bool   __convert(buffer_info* user_buffer);
 
 #       ifdef __QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
         void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* From, const char* To,
@@ -160,151 +149,143 @@ namespace quex {
 
 namespace quex {
 
-    TEMPLATE_IN 
-        CLASS::fixed_size_character_stream_iconv(InputHandleType* input_handle, 
+    TEMPLATE_IN CLASS::fixed_size_character_stream_iconv(InputHandleType* input_handle, 
                                                  uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                                  const char* FromCoding,   const char* ToCoding) 
-        { 
-            ih = input_handle;
+    { 
+        ih = input_handle;
 
-            raw_buffer.start = raw_buffer_p;
-            raw_buffer.size  = raw_buffer_size;
+        // Initialize the raw buffer that holds the plain bytes of the input file
+        raw_buffer.begin = raw_buffer_p;
+        raw_buffer.size  = raw_buffer_size;
+        raw_buffer.position      = raw_buffer.begin;
+        raw_buffer.bytes_left_n  = 0;  // --> trigger reload
 
-            iconv_handle = iconv_open(ToCoding, FromCoding);
+        // Initialize the conversion operations
+        iconv_handle = iconv_open(ToCoding, FromCoding);
 
-            statistics.avrg     = 2.0;
-            statistics.sample_n = 0;
-
-            next_character_to_be_read_i = (size_t)0;
-
-            QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
-        }
+        QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
+    }
 
     TEMPLATE_IN CLASS::~fixed_size_character_stream_iconv() 
     { iconv_close(iconv_handle); }
 
     TEMPLATE_IN size_t 
-        CLASS::read_characters(CharacterCarrierType* user_buffer_p, const size_t N) 
+    CLASS::read_characters(CharacterCarrierType* user_buffer_p, const size_t N) 
     {
-        // NOTE: There was an idea to allow multiple fixed_size_character_stream_iconv objects
-        //       access to the same intermediate buffer. In this case (i.e.
-        //       this function is called with the same raw_buffer.start
-        //       inside two threads) the function would have to block.
-
         buffer_info  user_buffer;
-
-        user_buffer.start        = (uint8_t*)user_buffer_p;
+        user_buffer.begin        = (uint8_t*)user_buffer_p;
         user_buffer.size         = N * SizeOfCharacter;
-        user_buffer.position     = user_buffer.start;
+        user_buffer.position     = user_buffer.begin;
         user_buffer.bytes_left_n = user_buffer.size;
 
-        raw_buffer.position      = raw_buffer.start;
-        raw_buffer.bytes_left_n  = raw_buffer.size;
+        // TWO CASES:
+        // (1) There are still some bytes in the raw buffer from the last load.
+        //     in this case, first translate them and then maybe load the raw buffer
+        //     again. (raw_buffer.bytes_left_n != 0)
+        // (2) The raw buffer is empty. Then it must be loaded in order to get some
+        //     basis for conversion. (raw_buffer.bytes_left_n == 0)
+        if( raw_buffer.bytes_left_n == 0 ) __fill_raw_buffer(); 
 
-        // -- estimated number of bytes to be read 
-        //    however:  we cannot read more than the size of the intermediate buffer allows
-        size_t bytes_to_read = statistics.estimate_raw_byte_n(N, raw_buffer.size); 
-        //
-        while( 1 + 1 == 2 ) {
-            const size_t LoadedByteN = \
-                         InputPolicy<InputHandleType*>::load_bytes(ih, raw_buffer.position, bytes_to_read);
+        while( __convert(&user_buffer) == false ) { 
+            QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(&user_buffer);
+            __fill_raw_buffer(); 
+        }
+        QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(&user_buffer);
 
-            QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
-
-            // -- convert raw data and store in target buffer
-            size_t report = __convert(LoadedByteN, &user_buffer);
-            const size_t ConvertedByteN = LoadedByteN - raw_buffer.bytes_left_n;
-            statistics.adapt(ConvertedByteN, &user_buffer, SizeOfCharacter);
-
-            // -- has user buffer been filled to the given limit N ?
-            if( ! user_buffer.bytes_left_n ) { 
-               next_character_to_be_read_i += N;
-               QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(&user_buffer);
-               return /* sum converted characters = */ N;
-            }
-
-            // -- are there still bytes in the stream? 
-            if( LoadedByteN != bytes_to_read )  { 
-               next_character_to_be_read_i += statistics.sample_n;
-               QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(&user_buffer);
-               return statistics.sample_n; // EOF
-            }
-
-            // -- are there some bytes stuck in the intermediate buffer?
-            //    principally no, otherwise they should have been converted.
-            //    however, it is possible that one cut in between a character 
-            //    code (return value == -1).
-            __quex_assert( report == (size_t)(-1) || raw_buffer.bytes_left_n == 0 );
-
-            __prepare_next_run(report, &user_buffer);
-        };
+        if( user_buffer.bytes_left_n == 0 ) { 
+            // The buffer was filled to its limits. All 'N' characters have been written.
+            return N;
+        } else { 
+            // The buffer was not filled completely, because the end of the file was 
+            // reached. The fill level of the user buffer computes as:
+            const size_t ConvertedByteN = (user_buffer.size - user_buffer.bytes_left_n) / SizeOfCharacter;
+            return ConvertedByteN;
+        }
     }
 
-    TEMPLATE_IN size_t CLASS::__convert(const size_t LoadedByteN, buffer_info* user_buffer) 
+    TEMPLATE_IN void CLASS::__fill_raw_buffer() 
     {
-        raw_buffer.bytes_left_n = LoadedByteN + (raw_buffer.position - raw_buffer.start);
-        raw_buffer.position     = raw_buffer.start;
+        // Try to fill the raw buffer to its limits with data from the file.
+        // The filling starts from its current position, thus the remaining bytes
+        // to be translated are exactly the number of bytes in the buffer.
+        const size_t FillLevel   = raw_buffer.position - raw_buffer.begin;
 
+        // There are cases (e.g. when a broken multibyte sequence occured at the end of 
+        // the buffer) where there are bytes left in the raw buffer. These need to be
+        // moved to the beginning of the buffer.
+        if( raw_buffer.position != raw_buffer.begin ) {
+            // Be careful: Maybe one can use 'memcpy()' which is a bit faster but the following
+            // is safe against overlaps.
+            std::memmove(raw_buffer.begin, raw_buffer.position, raw_buffer.bytes_left_n);
+            // Reset the position, so that new conversion get's the whole character.
+            raw_buffer.position = raw_buffer.begin; 
+        }
+
+        uint8_t*     FillStartPosition = raw_buffer.begin + raw_buffer.bytes_left_n;
+        size_t       FillSize          = raw_buffer.size - raw_buffer.bytes_left_n;
+        const size_t LoadedByteN = \
+                     InputPolicy<InputHandleType*>::load_bytes(ih, FillStartPosition, FillSize);
+
+        raw_buffer.bytes_left_n = LoadedByteN; // Bytes left for conversion in next run.
+
+        QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
+    }
+
+    TEMPLATE_IN bool CLASS::__convert(buffer_info* user_buffer) 
+        // RETURNS:  true  --> User buffer is filled as much as possible with converted characters.
+        //           false --> More raw bytes are needed to fill the user buffer.
+    {
         /*  IF YOU GET AN ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
          *
          *      quex/code_base/compatibility/iconv-argument-types.h
          * 
          *  The issue is, that 'iconv' is defined on different systems with different
          *  types of the second argument. There are two variants 'const char**'
-         *  and 'char **'. The file above tries to adapt via a 'typedef' according
-         *  to your system. Obviously, your system is not treated correctly, so
-         *  please, contact the author <fschaef@users.sourceforge.net> and notify
-         *  him about the macro that identifies your system. */
+         *  and 'char **'. If your system is not treated correctly, please
+         *  contact the author <fschaef@users.sourceforge.net>. */
         size_t report = iconv(iconv_handle, 
                               (__Adapter_FuncIconv_SecondArgument)(&raw_buffer.position), &raw_buffer.bytes_left_n,
                               (char**)&(user_buffer->position),                           &(user_buffer->bytes_left_n));
 
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(report);
 
-        if( report == (size_t)-1 ) {
-            switch( errno ) {
-            case EILSEQ:
-                throw std::range_error("Invalid byte sequence encountered for given character coding.");
-            case EINVAL:
-                // There is no problem, if the raw buffer ends in the middle of a character, since
-                // the caller will copy the remaining part and restart with more bytes from the stream.
-                return report;
-            case E2BIG:
-                return report;
-                // throw std::range_error("Output buffer cannot hold number of coded characters.");
-            }
+        if( report != (size_t)-1 ) { 
+            // (*) The input sequence (raw buffer content) has been converted completely.
+            //     But, is the user buffer filled to its limits?
+            if( user_buffer->bytes_left_n == 0 ) return true; 
+            // If the buffer was not filled completely, then was it because we reached EOF?
+            // NOTE: Here, 'raw_buffer.position' points to the position after the last byte
+            //       that has been converted. If this is the end of the buffer, then it means
+            //       that the buffer was filled. If not, it means that the buffer has not been
+            //       filled to its border which happens only if End of File occured.
+            if( raw_buffer.position != raw_buffer.begin + raw_buffer.size ) return true;
+            // Else: The raw buffer needs more bytes. Since, everything went well, the new bytes
+            //       can be stored at the position '0' of the raw_buffer.
+            raw_buffer.position = raw_buffer.begin;
+            return false; // please, refill ...
         }
-        return report;
+
+        switch( errno ) {
+        default:
+            throw std::range_error("Unexpected setting of 'errno' after call to GNU's iconv().");
+
+        case EILSEQ:
+            throw std::range_error("Invalid byte sequence encountered for given character coding.");
+
+        case EINVAL:
+            // (*) Incomplete byte sequence for character conversion
+            //     ('raw_buffer.position' points to the beginning of the incomplete sequence.)
+            return false; // please, refill the buffer (consider copying the bytes from  
+            //            // raw_buffer.position to the end of the buffer in front of the new buffer)
+
+        case E2BIG:
+            // (*) The input buffer was not able to hold the number of converted characters.
+            //     (in other words we're filled up the limit and that's what we actually wanted.)
+            return true;
+        }
     }
 
-    TEMPLATE_IN size_t CLASS::__prepare_next_run(size_t iconv_report, buffer_info* user_buffer) 
-    {
-#       ifdef  __QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
-        std::cout << "(*) prepare next run\n";
-#       endif
-        if( iconv_report == (size_t)(-1) ) {
-            // -- copy the part of the character that was read to the beginning
-            //    of the raw buffer
-            // -- iconv is so nice to let .position point to the begin of the last
-            //    incomplete character
-            std::memmove(raw_buffer.start, raw_buffer.position, raw_buffer.bytes_left_n);
-
-            // -- read into the remaining part of the buffer
-            raw_buffer.position     = raw_buffer.start + raw_buffer.bytes_left_n;
-            raw_buffer.bytes_left_n = raw_buffer.size  - raw_buffer.bytes_left_n;
-        } else {
-            // -- nothing to be done. next buffer reload can happen at start of raw buffer
-            raw_buffer.position     = raw_buffer.start;
-            raw_buffer.bytes_left_n = raw_buffer.size;
-        }
-        //
-        const size_t byte_n_from_last_run = raw_buffer.position - raw_buffer.start;
-
-        QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(user_buffer);
-
-        return statistics.estimate_raw_byte_n(user_buffer->bytes_left_n / SizeOfCharacter, 
-                                              raw_buffer.size - byte_n_from_last_run);
-    }
 
     /*
     TEMPLATE_IN void CLASS::map_to_stream_position(const int CharacterIndex)
@@ -350,37 +331,6 @@ namespace quex {
         InputPolicy<InputHandleType*>::seek(ih, start_position);
     }
 
-    TEMPLATE_IN void CLASS::statistic_info::adapt(size_t ConvertedByteN, 
-                                                  buffer_info* user_buffer, 
-                                                  size_t SizeOfChar) 
-    {
-        const size_t M_plus_N = (   user_buffer->position
-                                    - user_buffer->start) / SizeOfChar;
-
-        if( M_plus_N == 0 ) return;
-        // -- adapt avarage of bytes per character
-        //    avrg     = sum over n elements / n
-        //    new avrg = sum over (n + m) elements / (n + m)
-        //             = sum over n elements / (n + m) + sum over m elements / (n + m)
-        //             = old avrg * n / (n + m) + sum over m elements / (n + m)
-        //    with partial avrg = sum over m elements / m
-        //             = old avrg * n / (n + m) + partial avrg * m / (n + m)
-        //             = (old avrg * n + partial avrg * m) / (n + m)
-        const float N            = sample_n;
-        const float M            = M_plus_N - N;
-        const float partial_avrg = ConvertedByteN / M;
-        //
-        avrg      = (avrg * N + partial_avrg * M) / (float)M_plus_N;
-        sample_n  = M_plus_N;
-    }
-
-    TEMPLATE_IN size_t CLASS::statistic_info::estimate_raw_byte_n(const int CharacterN, 
-                                                                  const size_t BufferSize) 
-    {
-        float bytes_to_read = float(CharacterN) * avrg * 1.015;  // 1.5% safety margin
-
-        return (size_t)(bytes_to_read > BufferSize ? BufferSize : bytes_to_read);
-    }
 
 #undef CLASS
 #undef TEMPLATE_IN

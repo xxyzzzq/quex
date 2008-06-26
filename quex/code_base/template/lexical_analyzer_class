@@ -149,8 +149,6 @@ $$LEX_ID_DEFINITIONS$$
 
 // CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
 //                 a character. This is independent of the coding (ASCII, WinArabic, ...)
-// LEXEME_CHARACTER_TYPE: Type that results in an appropriate type for string handling
-//                        functions such as 'strlen', 'ststr', 'atoi', etc.
 //
 // Both character types are clearly related, because they are supposed to relate to the 
 // same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
@@ -159,12 +157,11 @@ $$LEX_ID_DEFINITIONS$$
 //
 // NOTE: If in parallel another engine is built with other bytes per character settings,
 //       then the engines will also include their own header with their own definition
-//       of QUEX_CHARACTER_TYPE, and QUEX_LEXEME_TYPE. Thus there is no danger at all. 
+//       of QUEX_CHARACTER_TYPE. Thus there is no danger at all. 
 //       Templatifying the lexer would be possible, but the author has in mind to bring out
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
 typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;        
-typedef $$QUEX_LEXEME_TYPE$$     QUEX_LEXEME_CHARACTER_TYPE;        
 // IConv Coding Name for the internally used character coding. 
 //   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
 //   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
@@ -416,14 +413,14 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void  move_backward(const size_t);
 
         //      -- functions computing the current line and column number
-        void  count(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+        void  count(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength);
         void  count_NoNewline(const int LexemeLength);
-        void  count_FixNewlineN(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
+        void  count_FixNewlineN(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
                                 const int        LineNIncrement);
 
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-        void  count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
-        void  count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme, const int LexemeLength);
+        void  count_indentation(QUEX_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
+        void  count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength);
         void  count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement);
         void  count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement);
 

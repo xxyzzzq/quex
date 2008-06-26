@@ -17,7 +17,7 @@
 //       This has to happen outside these functions.
 
 inline void    
-CLASS::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+CLASS::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
                          const int            LexemeLength)
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
@@ -154,7 +154,7 @@ CLASS::count_indentation(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
 
 
 inline void    
-CLASS::count_indentation_NoNewline(QUEX_LEXEME_CHARACTER_TYPE* Lexeme,
+CLASS::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
                                    const int           LexemeLength)
 {
     // NOTE: For an explanation of the algorithm, see the function:
