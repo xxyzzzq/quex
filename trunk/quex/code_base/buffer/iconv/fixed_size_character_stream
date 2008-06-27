@@ -72,6 +72,7 @@
 #include <cerrno>
 #include <stdexcept>
 #include <cstring>
+#include <cassert>
 extern "C" { 
 #include <iconv.h>
 #include <quex/code_base/compatibility/inttypes.h>
@@ -100,10 +101,29 @@ namespace quex {
                                           const char* FromCoding, const char* ToCoding);
         ~fixed_size_character_stream_iconv();
 
-        virtual size_t    tell_character_index()                 { return InputPolicy<InputHandleType*>::tell(ih); }
-        virtual void      seek_character_index(const size_t Pos) { 
-            long tmp = (long)Pos;
-            InputPolicy<InputHandleType*>::seek(ih, tmp); 
+        virtual size_t    tell_character_index()                 { return end_character_index; }
+        virtual void      seek_character_index(const size_t CharacterIndex) { 
+            // seek_character_index(Pos) means that the next time when a character buffer
+            // is to be filled, this has to happen from position 'Pos'.
+            if( has_input_format_dynamic_character_width() ) { 
+                long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
+                InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
+            } 
+            else {
+                if( CharacterIndex == end_character_index ) { 
+                    return;
+                }
+                else if( begin_info.character_index != 0 && CharacterIndex > begin_info.character_index ) {
+                    __seek_character_index_in_stream(begin_info.position, 
+                                                     begin_info.character_index, 
+                                                     CharacterIndex);
+                } 
+                else {
+                    __seek_character_index_in_stream(start_position, 0, CharacterIndex);
+                } 
+                raw_buffer.position = raw_buffer.begin;
+                raw_buffer.bytes_left_n = 0;
+            }
         }
         virtual void      close()                                {  }
         virtual void      destroy_handle()                       { if( ih ) delete ih; ih = 0x0; }
@@ -113,6 +133,12 @@ namespace quex {
         virtual void      seek_begin_of_file();
 
     private:
+        struct character_index_info { 
+            /* Associate a character index with a stream position */
+            size_t          character_index;
+            stream_position position;
+        };
+
         struct buffer_info {
             uint8_t*  begin;
             size_t    size;
@@ -124,13 +150,21 @@ namespace quex {
 
         InputHandleType* ih;
         stream_position  start_position;  // position in stream where analysis started
+        size_t           end_character_index; // character index where analysis ended (last + 1)
 
         // -- conversion data
         iconv_t          iconv_handle;
         buffer_info      raw_buffer;
 
+        character_index_info  end_info;
+        character_index_info  begin_info;
+
         void   __fill_raw_buffer();
         bool   __convert(buffer_info* user_buffer);
+        void   __seek_character_index_in_stream(stream_position   HintStreamPos, 
+                                                const size_t HintCharacterIndex,
+                                                const size_t CharacterIndex);
+        bool   has_input_format_dynamic_character_width();
 
 #       ifdef __QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV
         void QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* From, const char* To,
@@ -164,6 +198,9 @@ namespace quex {
         // Initialize the conversion operations
         iconv_handle = iconv_open(ToCoding, FromCoding);
 
+        // Setup the tell/seek of character positions
+        end_character_index = 0;
+
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
     }
 
@@ -195,11 +232,13 @@ namespace quex {
 
         if( user_buffer.bytes_left_n == 0 ) { 
             // The buffer was filled to its limits. All 'N' characters have been written.
+            end_character_index += N;
             return N;
         } else { 
             // The buffer was not filled completely, because the end of the file was 
             // reached. The fill level of the user buffer computes as:
             const size_t ConvertedByteN = (user_buffer.size - user_buffer.bytes_left_n) / SizeOfCharacter;
+            end_character_index += ConvertedByteN;
             return ConvertedByteN;
         }
     }
@@ -287,39 +326,31 @@ namespace quex {
     }
 
 
-    /*
-    TEMPLATE_IN void CLASS::map_to_stream_position(const int CharacterIndex)
+    TEMPLATE_IN void CLASS::__seek_character_index_in_stream(stream_position   HintStreamPos, 
+                                                             const size_t HintCharacterIndex,
+                                                             const size_t CharacterIndex)
     { 
-        stream_position   position_backup = InputPolicy<InputHandleType*>::tell(ih);
+        const int             ChunkSize = 1024;
+        CharacterCarrierType  chunk[1024];
+        // This type of seek is not thought to be for cases where character positions
+        // can be computed--as is the case for fixed character width encodings.
+        assert(has_input_format_dynamic_character_width());
+        assert(HintCharacterIndex < CharacterIndex);  // NOT: '<=' !
 
-        /-*- There is a potential problem with varying character sizes of some encodings.
-         * Since the function is (most probably) called seldomly--namely only in 'load_backward()'
-         * which is only called when stepping backwards very far for a **long** precondition.
-         * Thus, this function implements the safe variant by stepping through the stream
-         * until the position is reached. -*-/
+        // STRATEGY: Starting from a certain point in the file we read characters
+        //           (we convert them one by one) until we reach the given character
+        //           index.
+        size_t  remaining_character_n = CharacterIndex - HintCharacterIndex;
 
-        /-*- Let's assume we are able to estimate the position with a precision not worse
-         * then 128 characters (This means that for example, one character may be coded with
-         * one byte, the other one with 256 bytes). Thus we target a position of 256 
-         * characters below the CharacterIndex, and then step character by character until
-         * the CharacterIndex is reached. -*-/ 
-        const int             CharacterIndex_Minus1 = CharacterIndex - 1;
-        CharacterCarrierType  tmp[32];
-        int                   characters_to_read = 0;
-        const int             StepN = (int)(CharacterIndex_Minus1 / 16);
-
-        for(int i=0; i <= StepN ; ++i) {
-            CLASS::read_characters((CharacterCarrierType*)tmp, 16);
+        InputPolicy<InputHandleType*>::seek(ih, HintStreamPos);
+        for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize ) { 
+            read_characters(chunk, ChunkSize);
         }
-        if( CharacterIndex_Minus1 % 16 ) {
-            CLASS::read_characters((CharacterCarrierType*)tmp, CharacterIndex_Minus1 % 16);
+        if( remaining_character_n ) {
+            read_characters(chunk, remaining_character_n);
         }
-
-        stream_position   result = InputPolicy<InputHandleType*>::tell(ih);
-        InputPolicy<InputHandleType*>::seek(ih, position_backup);
-        return result;
+        end_character_index = CharacterIndex;
     }
-    */
 
     TEMPLATE_IN void  CLASS::register_begin_of_file() 
     { 
@@ -329,6 +360,12 @@ namespace quex {
     TEMPLATE_IN void  CLASS::seek_begin_of_file()
     {
         InputPolicy<InputHandleType*>::seek(ih, start_position);
+    }
+
+    TEMPLATE_IN bool CLASS::has_input_format_dynamic_character_width() 
+    {
+        return true; // TODO: distinguish between different coding formats
+        //           //       'true' is safe, but possibly a little slower.
     }
 
 
