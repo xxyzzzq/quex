@@ -248,7 +248,8 @@ namespace quex {
         // Try to fill the raw buffer to its limits with data from the file.
         // The filling starts from its current position, thus the remaining bytes
         // to be translated are exactly the number of bytes in the buffer.
-        const size_t FillLevel   = raw_buffer.position - raw_buffer.begin;
+        const size_t FillLevel       = raw_buffer.position - raw_buffer.begin;
+        const size_t RemainingBytesN = raw_buffer.bytes_left_n;
 
         // There are cases (e.g. when a broken multibyte sequence occured at the end of 
         // the buffer) where there are bytes left in the raw buffer. These need to be
@@ -256,7 +257,7 @@ namespace quex {
         if( raw_buffer.position != raw_buffer.begin ) {
             // Be careful: Maybe one can use 'memcpy()' which is a bit faster but the following
             // is safe against overlaps.
-            std::memmove(raw_buffer.begin, raw_buffer.position, raw_buffer.bytes_left_n);
+            std::memmove(raw_buffer.begin, raw_buffer.position, RemainingBytesN);
             // Reset the position, so that new conversion get's the whole character.
             raw_buffer.position = raw_buffer.begin; 
         }
@@ -266,7 +267,7 @@ namespace quex {
         const size_t LoadedByteN = \
                      InputPolicy<InputHandleType*>::load_bytes(ih, FillStartPosition, FillSize);
 
-        raw_buffer.bytes_left_n = LoadedByteN; // Bytes left for conversion in next run.
+        raw_buffer.bytes_left_n = LoadedByteN + RemainingBytesN; // Bytes left for conversion in next run.
 
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
     }
@@ -296,7 +297,7 @@ namespace quex {
             // If the buffer was not filled completely, then was it because we reached EOF?
             // NOTE: Here, 'raw_buffer.position' points to the position after the last byte
             //       that has been converted. If this is the end of the buffer, then it means
-            //       that the buffer was filled. If not, it means that the buffer has not been
+            //       that the raw buffer was read. If not, it means that the buffer has not been
             //       filled to its border which happens only if End of File occured.
             if( raw_buffer.position != raw_buffer.begin + raw_buffer.size ) return true;
             // Else: The raw buffer needs more bytes. Since, everything went well, the new bytes
