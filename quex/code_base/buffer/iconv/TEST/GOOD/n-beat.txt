@@ -9,6 +9,19 @@ raw buffer:
   }
 (*) converted
 incomplete sequence
+raw buffer:
+  position   = 3
+  bytes left = 2
+  content = {
+    31.32.30.EF.AC.
+  }
+user buffer:
+  position   = 12
+  bytes left = 500
+  content = {
+    00.00.00.31.00.00.00.32.00.00.
+    00.30.
+  }
 (*) loaded bytes = 3
 raw buffer:
   position   = 0
@@ -18,6 +31,19 @@ raw buffer:
   }
 (*) converted
 normal conversion completed!
+raw buffer:
+  position   = 3
+  bytes left = 0
+  content = {
+    EF.AC.85.20.C2.
+  }
+user buffer:
+  position   = 16
+  bytes left = 496
+  content = {
+    00.00.00.31.00.00.00.32.00.00.
+    00.30.00.00.FB.05.
+  }
 character n = 4
 00.00.00.31
 00.00.00.32
