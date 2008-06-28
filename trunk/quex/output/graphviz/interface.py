@@ -9,6 +9,9 @@ from quex.core_engine.generator.base import GeneratorBase
 
 class Generator(GeneratorBase):
     def __init__(self, PatternActionPairList, StateMachineName, GraphicFormat):
+        assert map(lambda elm: elm.__class__.__name__, PatternActionPairList) \
+               == [ "ActionInfo" ] * len(PatternActionPairList)
+
         assert_graphviz_installed()
 
         GeneratorBase.__init__(self, PatternActionPairList, StateMachineName)
