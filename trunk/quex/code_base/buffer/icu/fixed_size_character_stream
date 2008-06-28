@@ -25,7 +25,7 @@
 //  ASSUMPTION: 
 //  
 //  -- The input character format is arbitrary. It can be anything that is
-//     supported by 'iconv'. Flexible character length codings are supported.
+//     supported by 'ICU'. Flexible character length codings are supported.
 //  
 //  -- The user's characters format has a fixed character size for each
 //     character. Any coding that involves different byte numbers for different
@@ -97,17 +97,15 @@
 #include <cerrno>
 #include <stdexcept>
 #include <cstring>
-#include <cassert>
 extern "C" { 
-#include <iconv.h>
+#include <ucnv.h>
 #include <quex/code_base/compatibility/inttypes.h>
 }
-#include <quex/code_base/compatibility/iconv-argument-types.h>
 
 namespace quex {
 
     template <class InputHandleType, class CharacterCarrierType>
-    class fixed_size_character_stream_iconv
+    class fixed_size_character_stream_icu
         : public fixed_size_character_stream<CharacterCarrierType> {
 
 
@@ -115,19 +113,41 @@ namespace quex {
         typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
         typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
        
-        /* DISABLED */ fixed_size_character_stream_iconv();
+        /* DISABLED */ fixed_size_character_stream_icu();
 
      public:
-        // NOTE: It makes sense to have multiple fixed_size_character_stream_iconv objects use
+        // NOTE: It makes sense to have multiple fixed_size_character_stream_icu objects use
         //       the same raw buffer, since this buffer is only used temporarily
         //       while loading.
-        fixed_size_character_stream_iconv(InputHandleType* input_handle, 
+        fixed_size_character_stream_icu(InputHandleType* input_handle, 
                                           uint8_t* raw_buffer_p, size_t raw_buffer_size,
                                           const char* FromCoding, const char* ToCoding);
-        ~fixed_size_character_stream_iconv();
+        ~fixed_size_character_stream_icu();
 
-        virtual size_t    tell_character_index();
-        virtual void      seek_character_index(const size_t CharacterIndex);
+        virtual size_t    tell_character_index()                 { return end_character_index; }
+        virtual void      seek_character_index(const size_t CharacterIndex) { 
+            // seek_character_index(Pos) means that the next time when a character buffer
+            // is to be filled, this has to happen from position 'Pos'.
+            if( has_input_format_dynamic_character_width() ) { 
+                long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
+                InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
+            } 
+            else {
+                if( CharacterIndex == end_character_index ) { 
+                    return;
+                }
+                else if( begin_info.character_index != 0 && CharacterIndex > begin_info.character_index ) {
+                    __seek_character_index_in_stream(begin_info.position, 
+                                                     begin_info.character_index, 
+                                                     CharacterIndex);
+                } 
+                else {
+                    __seek_character_index_in_stream(start_position, 0, CharacterIndex);
+                } 
+                raw_buffer.position = raw_buffer.begin;
+                raw_buffer.bytes_left_n = 0;
+            }
+        }
         virtual void      close()                                {  }
         virtual void      destroy_handle()                       { if( ih ) delete ih; ih = 0x0; }
 
@@ -184,11 +204,11 @@ namespace quex {
 #include <quex/code_base/buffer/iconv/debug.i>
 
 #define TEMPLATE_IN  template<class InputHandleType, class CharacterCarrierType>
-#define CLASS        fixed_size_character_stream_iconv<InputHandleType, CharacterCarrierType>
+#define CLASS        fixed_size_character_stream_icu<InputHandleType, CharacterCarrierType>
 
 namespace quex {
 
-    TEMPLATE_IN CLASS::fixed_size_character_stream_iconv(InputHandleType* input_handle, 
+    TEMPLATE_IN CLASS::fixed_size_character_stream_icu(InputHandleType* input_handle, 
                                                  uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                                  const char* FromCoding,   const char* ToCoding) 
         // Initialize the raw buffer that holds the plain bytes of the input file
@@ -197,22 +217,19 @@ namespace quex {
     { 
         ih = input_handle;
 
-        // Initialize the raw buffer that holds the plain bytes of the input file
-        raw_buffer.bytes_left_n  = 0;  // --> trigger reload
-
         // Initialize the conversion operations
         iconv_handle = iconv_open(ToCoding, FromCoding);
 
         // Setup the tell/seek of character positions
-        begin_info.position        = InputPolicy<InputHandleType*>::tell(input_handle);
-        begin_info.character_index = 0;
-        end_info.position          = begin_info.position;
+        start_info.position        = InputPolicy<InputHandleType*>::tell(input_handle);
+        start_info.character_index = 0;
+        end_info.position          = start_info.position;
         end_info.character_index   = 0;
 
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
     }
 
-    TEMPLATE_IN CLASS::~fixed_size_character_stream_iconv() 
+    TEMPLATE_IN CLASS::~fixed_size_character_stream_icu() 
     { iconv_close(iconv_handle); }
 
     TEMPLATE_IN size_t 
@@ -279,6 +296,32 @@ namespace quex {
         // RETURNS:  true  --> User buffer is filled as much as possible with converted characters.
         //           false --> More raw bytes are needed to fill the user buffer.
     {
+
+const char dest_type[] = "UTF-32LE";
+const char source_type[] = "UTF-8";
+
+UErrorCode err = U_ZERO_ERROR;
+int32_t length = ucnv_convert(dest_type, source_type,
+                              0, 0,
+                              source.c_str(),
+                              source.length(),
+                              &err);
+std::vector<char> buffer(length);
+err = U_ZERO_ERROR;
+ucnv_convert(dest_type, source_type,
+             &buffer[0], buffer.size(),
+             source.c_str(),
+             source.length(),
+             &err);
+if (U_FAILURE(err)) {
+    std::stringstream error_string;
+    error_string << "Error converting to " << dest_type << ": " <<
+        u_errorName(err);
+    throw std::runtime_error(error_string.str());
+}
+
+
+
         /*  IF YOU GET AN ERROR HERE, THEN PLEASE HAVE A LOOK AT THE FILE:
          *
          *      quex/code_base/compatibility/iconv-argument-types.h
@@ -423,8 +466,8 @@ namespace quex {
     {
         begin        = Begin;
         size         = SizeInBytes;
-        position     = begin;
-        bytes_left_n = size;
+        position     = user_buffer.begin;
+        bytes_left_n = user_buffer.size;
     }
 
 
