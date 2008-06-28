@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Sat Jun 28 06:14:55 2008
+DATE:  Sat Jun 28 18:26:23 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -8,13 +8,15 @@ TITLE: Regression Tests on Fixed Bugs
  -- attardi:
 
     2001602 RE matching UTF8 l quote uno
-        bug-2001602.sh ........................................[NO GOOD FILE]
+        bug-2001602.sh ..................................................[OK]
     2001787 RE Problem with inverted whitespace
         bug-2001787.sh ..................................................[OK]
     2002070 Output buffer overflow
         bug-2002070.sh ..................................................[OK]
     2002474 Segmentation Fault while UTF-8 Decoding
         bug-2002474.sh ........................................[NO GOOD FILE]
+    2004927 UTF-8 RE Extra Comma Matched
+        bug-2004927.sh ................................................[FAIL]
 
  -- fschaef:
 
@@ -109,12 +111,13 @@ TITLE: Regression Tests on Fixed Bugs
 |  _| (_| | | | |_| | | |  __/ |_|
 |_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+Error: bug-2004927.sh 
 Error: bug-1885304.sh 
 Error: bug-1892809.sh 
 Error: bug-1895066.sh 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sat Jun 28 06:15:47 2008
+DATE:  Sat Jun 28 18:27:15 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -207,7 +210,7 @@ Error: 006.sh NDEBUG
 Error: 006.sh DEBUG
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sat Jun 28 06:15:47 2008
+DATE:  Sat Jun 28 18:27:15 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -222,7 +225,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Sat Jun 28 06:15:48 2008
+DATE:  Sat Jun 28 18:34:33 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -240,7 +243,7 @@ TITLE: Input Buffers Based on the IConv - Library
 Error: n-beat 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Sat Jun 28 06:15:49 2008
+DATE:  Sat Jun 28 18:27:16 2008
 TITLE: Input Buffers
 
 -------------------------------------------------------------------------------
@@ -284,7 +287,7 @@ Error: test-misc-I istream
 Error: test-misc-I stdio
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sat Jun 28 06:15:49 2008
+DATE:  Sat Jun 28 18:27:17 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -304,7 +307,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sat Jun 28 06:15:50 2008
+DATE:  Sat Jun 28 18:27:17 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -337,7 +340,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sat Jun 28 06:16:40 2008
+DATE:  Sat Jun 28 18:28:07 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -439,7 +442,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sat Jun 28 06:16:45 2008
+DATE:  Sat Jun 28 18:28:12 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -501,7 +504,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sat Jun 28 06:16:50 2008
+DATE:  Sat Jun 28 18:28:17 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -518,6 +521,8 @@ TITLE: State Machine Operations
 
     Conversion to DFA (subset construction)
         test-nfa-to-dfa.py ..............................................[OK]
+    Conversion to DFA - Special Case
+        test-nfa-to-dfa-special.py ......................................[OK]
     Epsilon closure (single state)
         test-StateMachine-epsilon-closure.py ............................[OK]
     Get elementary trigger sets (target index --> trigger sets)
@@ -597,7 +602,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sat Jun 28 06:16:51 2008
+DATE:  Sat Jun 28 18:28:17 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -620,7 +625,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sat Jun 28 06:17:07 2008
+DATE:  Sat Jun 28 18:28:34 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -643,7 +648,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Sat Jun 28 06:17:08 2008
+DATE:  Sat Jun 28 18:28:35 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
