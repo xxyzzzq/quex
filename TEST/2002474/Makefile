@@ -7,6 +7,7 @@ all: $(X).cpp
 		$(X).cpp                      \
 		lexer.cpp                     \
 		-ggdb \
+		#-lefence
 	   	#-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
 		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
 
