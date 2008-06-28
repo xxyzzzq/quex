@@ -341,7 +341,7 @@ class StateMachine:
 
         # (*) sort history according to position
         history.sort(lambda a, b: cmp(a.position, b.position))
-        ##DEBUG_print_history(history)
+        ## DEBUG_print_history(history)
 
         # (*) build the elementary subset list 
         combinations = {}                             # use dictionary for uniqueness
@@ -378,7 +378,7 @@ class StateMachine:
                     current_involved_target_indices[item.target_idx] = 1
             else:        # == INTERVAL_END
                 if current_involved_target_indices[item.target_idx] > 1:
-                    current_involved_target_indices[item.target_idx] += 1
+                    current_involved_target_indices[item.target_idx] -= 1
                 else:    
                     del current_involved_target_indices[item.target_idx] 
     

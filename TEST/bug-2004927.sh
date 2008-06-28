@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
-bug=2001602
+bug=2004927
 if [[ $1 == "--hwut-info" ]]; then
-    echo "attardi: $bug RE matching UTF8 l quote uno"
+    echo "attardi: $bug UTF-8 RE Extra Comma Matched"
     exit
 fi
 
 tmp=`pwd`
 cd $bug/ 
 make
-./a.out test.utf8
+./a.out example.dat
 make clean
 cd $tmp
