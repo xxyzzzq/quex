@@ -1,28 +1,28 @@
-<test-database execution-time-sec="1.00" date="Thu Jun 26 08:32:01 2008">
+<test-database execution-time-sec="0.93" date="Sat Jun 28 06:17:08 2008">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." make-required="True" time-sum-sec="0.10"> 
+    <test title="Check supported formats." make-required="True" time-sum-sec="0.09"> 
         <application file-name="get_supported_formats.py" info-request-time="1214029810L"/>
         <choice-list number="1">
-           <choice name="" result="FAIL" time-sec="0.10" crc="-1342312020"/>
+           <choice name="" result="FAIL" time-sec="0.09" crc="-1342312020"/>
         </choice-list>
     </test>
     <group name="Plot">
-        <test title="Core state machine." make-required="True" time-sum-sec="0.21"> 
+        <test title="Core state machine." make-required="True" time-sum-sec="0.20"> 
             <application file-name="plot-core.py" info-request-time="1214029810L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.21" crc="-322414128"/>
+               <choice name="" result="FAIL" time-sec="0.20" crc="-322414128"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.38"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.37"> 
             <application file-name="plot-papc.py" info-request-time="1214029810L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.38" crc="-1052421152"/>
+               <choice name="" result="FAIL" time-sec="0.37" crc="-1052421152"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." make-required="True" time-sum-sec="0.32"> 
+        <test title="Pre-Context." make-required="True" time-sum-sec="0.27"> 
             <application file-name="plot-pre-context.py" info-request-time="1214029810L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.32" crc="1220693871"/>
+               <choice name="" result="FAIL" time-sec="0.27" crc="1220693871"/>
             </choice-list>
         </test>
     </group>
