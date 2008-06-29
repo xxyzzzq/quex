@@ -21,7 +21,8 @@ my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
 
 my_plotter.do()
 
-print open(my_plotter.pre_context_file_name).read()
+# HWUT consideres '##' as comment
+print open(my_plotter.pre_context_file_name).read().replace("#", "##")
 os.remove(my_plotter.pre_context_file_name)
 os.remove("test-plot.fig")
 

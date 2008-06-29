@@ -27,11 +27,11 @@ main(int argc, char** argv)
         else if( strcmp(argv[1], "BLC=0xFF") == 0 ) p = new buffer<uint8_t>(&input_strategy, 25, 5, (uint8_t)0xFF); 
         else {
             cout << "argv[0] == '" << argv[1] << "' --- unrecognized choice\n";
-            exit(-1);
+            return (-1);
         }
     } else {
         cout << "No choice specified. User '--hwut-info'.\n";
-        exit(-1);
+        return (-1);
     }
     buffer<uint8_t>& x = *p;
     //_____________________________________________________________________________________________
