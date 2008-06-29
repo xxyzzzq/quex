@@ -1,9 +1,88 @@
 Plain Reply:
-['canon', 'cmap', 'cmapx', 'dia', 'dot', 'fig', 'gd', 'gd2', 'gif', 'hpgl', 'imap', 'ismap', 'jpeg', 'jpg', 'mif', 'mp', 'pcl', 'pic', 'plain', 'plain-ext', 'png', 'ps', 'ps2', 'svg', 'svgz', 'vrml', 'vtx', 'wbmp', 'xdot']
-
+bmp
+canon
+cmap
+cmapx
+cmapx_np
+dia
+dot
+fig
+gd
+gd2
+gif
+gtk
+hpgl
+ico
+imap
+imap_np
+ismap
+jpe
+jpeg
+jpg
+mif
+mp
+pcl
+pdf
+pic
+plain
+plain-ext
+png
+ps
+ps2
+svg
+svgz
+tif
+tiff
+vml
+vmlz
+vrml
+vtx
+wbmp
+xdot
+xlib
 Pretty Reply:
 SUPPORTED GRAPHIC FORMATS:
-canon, cmap, cmapx, dia, dot, fig, gd, gd2, gif, hpgl, imap, ismap, 
-jpeg, jpg, mif, mp, pcl, pic, plain, plain-ext, png, ps, ps2, svg, 
-svgz, vrml, vtx, wbmp, xdot.
-
+bmp
+ canon
+ cmap
+ cmapx
+ cmapx_np
+ dia
+ dot
+ fig
+ gd
+ gd2
+ gif
+ gtk
+ 
+hpgl
+ ico
+ imap
+ imap_np
+ ismap
+ jpe
+ jpeg
+ jpg
+ mif
+ mp
+ pcl
+ pdf
+ 
+pic
+ plain
+ plain-ext
+ png
+ ps
+ ps2
+ svg
+ svgz
+ tif
+ tiff
+ vml
+ vmlz
+ 
+vrml
+ vtx
+ wbmp
+ xdot
+ xlib.

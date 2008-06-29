@@ -79,6 +79,8 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
         if bracket_i == -1 or (dummy != "" and dummy.isspace() == False): 
             error_msg("missing '(' or ';' at end of '=>' token sending statement.", fh)
 
+        token_constructor_args = ""
+        plain_token_constructor_args = ""
         if bracket_i == 0:
             plain_token_constructor_args = read_until_closing_bracket(fh, "(", ")")
             # NOTE: empty brackets do not need a comma ...
@@ -86,9 +88,6 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
             if plain_token_constructor_args != "":
                 token_constructor_args = ", " + plain_token_constructor_args
             verify_next_word(fh, ";")
-        else:
-            token_constructor_args = ""
-            plain_token_constructor_args = ""
             
         # after 'send' the token queue is filled and one can safely return
         token_name = token_name.strip()

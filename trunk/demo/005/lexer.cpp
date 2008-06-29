@@ -31,7 +31,7 @@ main(int argc, char** argv)
 
         // (*) print out token information
         //     -- name of the token
-        cout << Token.type_id_name() << "\t" << Token.text() << endl;
+        cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
 
         switch( Token.type_id() ) {
         default: 
@@ -40,14 +40,14 @@ main(int argc, char** argv)
         case quex::TKN_INCLUDE: 
             {
                 qlex->get_token(&Token);
-                cout << Token.type_id_name() << "\t" << Token.text() << endl;
+                cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
                 if( Token.type_id() != quex::TKN_IDENTIFIER ) {
                     cout << "found 'include' without a subsequent filename. hm?\n";
                     break;
                 }
                
-                cout << ">> including: " << Token.text() << endl;
-                FILE* fh = fopen(Token.text().c_str(), "r");
+                cout << ">> including: " << Token.text().c_str() << endl;
+                FILE* fh = fopen((const char*)(Token.text().c_str()), "r");
                 if( fh == 0x0 ) {
                     cout << "file not found\n";
                     return 0;

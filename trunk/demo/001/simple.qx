@@ -55,7 +55,7 @@ mode PROGRAM :
     ";"         => TKN_SEMICOLON;
 
     [a-z]+      { self.send(TKN_IDENTIFIER, Lexeme); }
-    {P_NUMBER}  => TKN_NUMBER(atoi(Lexeme));
+    {P_NUMBER}  => TKN_NUMBER(atoi((const char*)Lexeme));
 
     [ \t\n]     { }
 

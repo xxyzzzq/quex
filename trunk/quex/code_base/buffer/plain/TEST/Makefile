@@ -1,8 +1,9 @@
 PROGRAMS = test-forward-get \
-	   test-forward-get-2 \
-	   test-misc-I test-misc-II test-misc-III \
 	   test-backward-get \
+	   # test-forward-get-2 \
+	   # test-misc-I test-misc-II \
 	   # test-backward-get-2 \
+	   # test-misc-III \
 
 DEBUGF = -ggdb \
 	 -D__QUEX_OPTION_UNIT_TEST \

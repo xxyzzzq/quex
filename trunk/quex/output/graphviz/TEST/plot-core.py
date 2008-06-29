@@ -19,10 +19,11 @@ if "--hwut-info" in sys.argv:
 sm = regex.do("a(((b+ee(fe)*)+(b+cd)?)|(b+cd))", {}, 0)
 pattern_action_pair_list = [ ActionInfo(sm, "Don't worry, be happy!") ]
 
+# HWUT consideres '##' as comment
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
 
 my_plotter.do()
-print open("test-plot.fig").read()
+print open("test-plot.fig").read().replace("#", "##")
 os.remove("test-plot.fig")
 
 

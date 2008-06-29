@@ -13,4 +13,3 @@ current_p (offset)    = 7
 lexeme start (offset) = 0
 
 (*) read to begin of file
-- begin of file

@@ -162,7 +162,7 @@ mode PROGRAM :
         RETURN;
     }
     {P_NUMBER} {
-        self.send(TKN_NUMBER, atoi(Lexeme));
+        self.send(TKN_NUMBER, atoi((const char*)Lexeme));
         RETURN;
     }
 
