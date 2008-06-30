@@ -31,48 +31,63 @@ namespace quex {
             stream_position  start_position;  // position in stream where analysis started
 
         public:
-            fixed_size_character_stream_plain(InputHandleType* _ih) 
-                : ih(_ih) 
-            {}
+            fixed_size_character_stream_plain(InputHandleType* _ih);
 
-            virtual size_t   tell_character_index() 
-            { 
-                return (InputPolicy<InputHandleType*>::tell(ih) - start_position) / SizeOfCharacter; 
-            }
-
-            virtual void     seek_character_index(const size_t CharacterIndex) 
-            { 
-                long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
-                InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
-            }
-
-            virtual void     close()          
-            { 
-                // InputPolicy<InputHandleType*>::close(ih); 
-            }
-
-            virtual void     destroy_handle() 
-            { 
-                if( ih ) delete ih; ih = 0x0; 
-            }
-
-            virtual size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N)  
-            { 
-                const size_t ByteN = InputPolicy<InputHandleType*>::load_bytes(ih, start_of_buffer, N * SizeOfCharacter);
-                __quex_assert(ByteN % SizeOfCharacter == 0);
-                return ByteN / SizeOfCharacter; 
-            }
-
-            virtual void     register_begin_of_file() 
-            { 
-                start_position = InputPolicy<InputHandleType*>::tell(ih); 
-            }
-
-            virtual void     seek_begin_of_file()
-            {
-                InputPolicy<InputHandleType*>::seek(ih, start_position);
-            }
-
+            virtual size_t   tell_character_index();
+            virtual void     seek_character_index(const size_t CharacterIndex); 
+            virtual void     close();          
+            virtual size_t   read_characters(CharacterCarrierType* start_of_buffer, const size_t N);  
+            virtual void     register_begin_of_file(); 
+            virtual void     seek_begin_of_file();
         };
+
+
+#define TEMPLATE_IN  template<class InputHandleType, class CharacterCarrierType> inline
+#define CLASS        fixed_size_character_stream_plain<InputHandleType, CharacterCarrierType>
+    TEMPLATE_IN 
+    CLASS::fixed_size_character_stream_plain(InputHandleType* _ih) 
+        : ih(_ih) 
+    {}
+
+    TEMPLATE_IN size_t 
+    CLASS::tell_character_index() 
+    { 
+       return (InputPolicy<InputHandleType*>::tell(ih) - start_position) / SizeOfCharacter; 
+    }
+
+    TEMPLATE_IN void 
+    CLASS::seek_character_index(const size_t CharacterIndex) 
+    { 
+        long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
+        InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
+    }
+
+    TEMPLATE_IN void 
+    CLASS::close()          
+    { 
+        // InputPolicy<InputHandleType*>::close(ih); 
+    }
+
+    TEMPLATE_IN size_t   
+    CLASS::read_characters(CharacterCarrierType* start_of_buffer, const size_t N)  
+    { 
+        const size_t ByteN = InputPolicy<InputHandleType*>::load_bytes(ih, start_of_buffer, N * SizeOfCharacter);
+        __quex_assert(ByteN % SizeOfCharacter == 0);
+        return ByteN / SizeOfCharacter; 
+    }
+
+    TEMPLATE_IN void 
+    CLASS::register_begin_of_file() 
+    { 
+        start_position = InputPolicy<InputHandleType*>::tell(ih); 
+    }
+
+    TEMPLATE_IN void 
+    CLASS::seek_begin_of_file()
+    {
+        InputPolicy<InputHandleType*>::seek(ih, start_position);
+    }
+#undef TEMPLATE_IN
+#undef CLASS
 }
 #endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__

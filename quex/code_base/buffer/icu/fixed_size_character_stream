@@ -149,7 +149,6 @@ namespace quex {
             }
         }
         virtual void      close()                                {  }
-        virtual void      destroy_handle()                       { if( ih ) delete ih; ih = 0x0; }
 
         virtual size_t    read_characters(CharacterCarrierType* buffer, const size_t N);
         virtual void      register_begin_of_file();
