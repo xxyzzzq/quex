@@ -2,7 +2,8 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-COMPILER     = g++ # -S # -E
+COMPILER     = g++   # icpc # g++ 
+COMPILER_V   = 4.3.1 # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
 OPTIMIZATION = -O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 
@@ -15,7 +16,7 @@ SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CHARACTER_SIZE=((unsigned)(1))' \
 	  -D'OS_NAME="linux-2"' \
 	  -D'CC_NAME="$(COMPILER)"' \
-	  -D'CC_VERSION="4.2.1"' \
+	  -D'CC_VERSION="$(COMPILER_V)"' \
       -D'QUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE)' \
 	  -D'NOTE=""'
 
@@ -107,5 +108,5 @@ clean:
 	rm -f token_ids
 	rm -f *.bak
 	rm -f *.asm
-#DO NEVER DELETE THIS: *.gcno *.gcda we might use it for profiling
+	rm *.gcno *.gcda
 
