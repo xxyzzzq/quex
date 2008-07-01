@@ -2,76 +2,14 @@ from quex.core_engine.generator.languages.core import __nice
 from quex.input.setup import setup as Setup
 LanguageDB = Setup.language_db
 
-def do(State, StateIdx, SM, BackwardLexingF, BackwardInputPositionDetectionF=False):
+def do(State, StateIdx, SM):
     assert State.__class__.__name__ == "State"
-    assert SM.__class__.__name__ == "StateMachine"
+    assert SM.__class__.__name__    == "StateMachineDecorator"
 
-    if BackwardInputPositionDetectionF: assert BackwardLexingF
-
-    OriginList = State.origins().get_list()
-
-    if not BackwardLexingF:
-        # (*) Forward Lexing 
-        return forward_lexing(State, StateIdx, SM)
-    else:
-        # (*) Backward Lexing 
-        if not BackwardInputPositionDetectionF:
-            return backward_lexing(OriginList)
-        else:
-            return backward_lexing_find_core_pattern(OriginList)
-
-def backward_lexing(OriginList):
-    """Backward Lexing:
-       -- Using an inverse state machine from 'real' current start position backwards
-          until a drop out occurs.
-       -- During backward lexing, there is no 'winner' so all origins that indicate
-          acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
-    """
-    assert type(OriginList) == list
-    # There should be nothing, but unconditional acceptances or no-acceptance 
-    # origins in the list of origins.
-    inadmissible_origin_list = filter(lambda origin:
-                                      origin.pre_context_begin_of_line_f() or
-                                      origin.pre_context_id() != -1L or
-                                      origin.post_context_id() != -1L,
-                                      OriginList)
-    assert inadmissible_origin_list == [], \
-           "Inadmissible origins for inverse state machine."
-    #___________________________________________________________________________________________
-    txt = ""
-    for origin in OriginList:
-        if not origin.store_input_position_f(): continue
-        assert origin.is_acceptance()
-        variable = "pre_context_%s_fulfilled_f" % __nice(origin.state_machine_id)
-        txt += "    " + LanguageDB["$assignment"](variable, 1)
-    txt += "\n"    
-
-    return txt
-
-def backward_lexing_find_core_pattern(OriginList):
-    """Backward Lexing:
-       -- (see above)
-       -- for the search of the end of the core pattern, the acceptance position
-          backwards must be stored. 
-       -- There is only one pattern involved, so no determination of 'who won'
-          is important.
-    """
-    # There should be nothing, but unconditional acceptances or no-acceptance 
-    # origins in the list of origins.
-    inadmissible_origin_list = filter(lambda origin:
-                                      origin.pre_context_begin_of_line_f() or
-                                      origin.pre_context_id() != -1L or
-                                      origin.post_context_id() != -1L,
-                                      OriginList)
-    assert inadmissible_origin_list == [], \
-           "Inadmissible origins for inverse state machine."
-    #___________________________________________________________________________________________
-
-    for origin in OriginList:
-        if origin.store_input_position_f():
-            assert origin.is_acceptance()
-            return "    " + LanguageDB["$input/tell_position"]("end_of_core_pattern_position") + "\n"
-    return "\n"
+    return { "ForwardLexing":                  forward_lexing(State, StateIdx, SM.sm()),
+             "BackwardLexing":                 backward_lexing(State),
+             "BackwardInputPositionDetection": backward_lexing_find_core_pattern(State),
+           }[SM.mode()]
 
 def forward_lexing(State, StateIdx, SM, ForceF=False):
     """Forward Lexing:
@@ -85,6 +23,8 @@ def forward_lexing(State, StateIdx, SM, ForceF=False):
            => use 'get_acceptance_detector()' in order to get a sequence of 'if-else'
               blocks that determine acceptance. 
     """
+    assert SM.__class__.__name__ == "StateMachine"
+
     OriginList = State.origins().get_list()
 
     txt = ""
@@ -129,6 +69,63 @@ def forward_lexing(State, StateIdx, SM, ForceF=False):
     txt += get_acceptance_detector(OriginList, __on_detection_code)
 
     return txt
+
+def backward_lexing(State):
+    """Backward Lexing:
+       -- Using an inverse state machine from 'real' current start position backwards
+          until a drop out occurs.
+       -- During backward lexing, there is no 'winner' so all origins that indicate
+          acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
+    """
+    assert type(OriginList) == list
+    # There should be nothing, but unconditional acceptances or no-acceptance 
+    # origins in the list of origins.
+    inadmissible_origin_list = filter(lambda origin:
+                                      origin.pre_context_begin_of_line_f() or
+                                      origin.pre_context_id() != -1L or
+                                      origin.post_context_id() != -1L,
+                                      OriginList)
+    assert inadmissible_origin_list == [], \
+           "Inadmissible origins for inverse state machine."
+    #___________________________________________________________________________________________
+    OriginList = State.origins().get_list()
+
+    txt = ""
+    for origin in OriginList:
+        if not origin.store_input_position_f(): continue
+        assert origin.is_acceptance()
+        variable = "pre_context_%s_fulfilled_f" % __nice(origin.state_machine_id)
+        txt += "    " + LanguageDB["$assignment"](variable, 1)
+    txt += "\n"    
+
+    return txt
+
+def backward_lexing_find_core_pattern(State):
+    """Backward Lexing:
+       -- (see above)
+       -- for the search of the end of the core pattern, the acceptance position
+          backwards must be stored. 
+       -- There is only one pattern involved, so no determination of 'who won'
+          is important.
+    """
+    # There should be nothing, but unconditional acceptances or no-acceptance 
+    # origins in the list of origins.
+    inadmissible_origin_list = filter(lambda origin:
+                                      origin.pre_context_begin_of_line_f() or
+                                      origin.pre_context_id() != -1L or
+                                      origin.post_context_id() != -1L,
+                                      OriginList)
+    assert inadmissible_origin_list == [], \
+           "Inadmissible origins for inverse state machine."
+    #___________________________________________________________________________________________
+
+    OriginList = State.origins().get_list()
+
+    for origin in OriginList:
+        if origin.store_input_position_f():
+            assert origin.is_acceptance()
+            return "    " + LanguageDB["$input/tell_position"]("end_of_core_pattern_position") + "\n"
+    return "\n"
 
 def get_acceptance_detector(OriginList, get_on_detection_code_fragment):
         

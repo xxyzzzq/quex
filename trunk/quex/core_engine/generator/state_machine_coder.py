@@ -2,9 +2,10 @@ import quex.core_engine.generator.languages.core  as languages
 from   quex.core_engine.generator.languages.core  import __nice
 import quex.core_engine.generator.state_coder as state_coder
 import quex.core_engine.state_machine.dead_end_analysis as dead_end_analysis
+from   quex.core_engine.state_machine.decorator import StateMachineDecorator
 
 def do(state_machine, LanguageDB, 
-       UserDefinedStateMachineName="", 
+       StateMachineName, 
        BackwardLexingF=False, 
        BackwardInputPositionDetectionF=False, 
        EndOfFile_Code=None):
@@ -32,6 +33,16 @@ def do(state_machine, LanguageDB,
         # there are no dedicated terminal states in the first place.
         directly_reached_terminal_id_list = []
 
+    Mode = "ForwardLexing"
+    if BackwardLexingF:
+        if BackwardInputPositionDetectionF: Mode = "BackwardLexing"
+        else:                               Mode = "BackwardInputPositionDetection"
+
+    decorated_state_machine = StateMachineDecorator(state_machine, 
+                                                    StateMachineName, Mode, 
+                                                    dead_end_state_db, 
+                                                    directly_reached_terminal_id_list)
+
     txt = ""
     # -- treat initial state separately 
     if state_machine.is_init_state_a_target_state():
@@ -47,21 +58,15 @@ def do(state_machine, LanguageDB,
     txt += LanguageDB["$label-def"]("$entry", state_machine.init_state_index) + "\n"
     txt += state_coder.do(init_state, 
                           state_machine.init_state_index,
-                          state_machine,
-                          BackwardLexingF                 = BackwardLexingF,
-                          BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                          InitStateF                      = True,
-                          DeadEndStateDB                  = dead_end_state_db)
+                          decorated_state_machine,
+                          InitStateF = True)
 
     # -- all other states
     for state_index, state in state_machine.states.items():
         # the init state has been coded already
         if state_index == state_machine.init_state_index: continue
 
-        state_code = state_coder.do(state, state_index, state_machine,
-                                    BackwardLexingF                 = BackwardLexingF,
-                                    BackwardInputPositionDetectionF = BackwardInputPositionDetectionF,
-                                    DeadEndStateDB                  = dead_end_state_db)
+        state_code = state_coder.do(state, state_index, decorated_state_machine)
 
         # some states are not coded (some dead end states)
         if state_code == "": continue

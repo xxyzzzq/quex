@@ -1,9 +1,8 @@
 from   quex.input.setup import setup as Setup
 import quex.core_engine.generator.acceptance_info  as acceptance_info
+LanguageDB = Setup.language_db
 
-def do(state, StateIdx, SM, TriggerMap, InitStateF, BackwardLexingF, 
-       BackwardInputPositionDetectionF, 
-       DeadEndStateDB):
+def do(state, StateIdx, SM, InitStateF):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -14,7 +13,9 @@ def do(state, StateIdx, SM, TriggerMap, InitStateF, BackwardLexingF,
        If a buffer limit code is reached, a buffer reload needs to be initiated. If
        the character drops over the edge, then a terminal state needs to be targeted.
     """
-    LanguageDB = Setup.language_db
+    assert SM.__class__.__name__ == "StateMachineDecorator"
+
+    TriggerMap = state.transitions().get_trigger_map()
 
     # -- drop out code (transition to no target state)
     txt = LanguageDB["$label-def"]("$drop-out", StateIdx)
@@ -36,14 +37,31 @@ def do(state, StateIdx, SM, TriggerMap, InitStateF, BackwardLexingF,
     BufferReloadRequiredOnDropOutF = TriggerMap != [] and not BackwardInputPositionDetectionF
     if BufferReloadRequiredOnDropOutF:
         if BackwardLexingF:
-            txt += LanguageDB["$drop-out-backward"](StateIdx).replace("\n", "\n    ")
+            txt += "    " + __reload_backward(StateIdx)
         else:
-            # In case that it cannot load anything, it still needs to know where to
-            # jump to.
+            # In case that it cannot load anything, it still needs to know where to jump to.
             txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM, ForceF=True)
-            txt += "    " + LanguageDB["$drop-out-forward"](StateIdx).replace("\n", "\n    ")
+            txt += "    " + __reload_forward(StateIdx, SM)
 
     return txt + "\n"
+
+def __reload_forward(StateIndex, SM): 
+    arg_list = ""
+    for state_machine_id in SM.post_contexted_sm_id_list():
+        arg_list += ", last_acceptance_%s_input_position" % state_machine_id
+    txt  = "if( %s_buffer_reload_forward(me, &last_acceptance_input_position%s) ) {\n" % \
+            (SM.name(), arg_list)
+    txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
+    txt += LanguageDB["$endif"]                              + "\n"
+    txt += LanguageDB["$goto-last_acceptance"]               + "\n"
+    return
+
+def __reload_backward(StateIndex): 
+    txt  = "if( %s_buffer_reload_backward(me) ) {\n" 
+    txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
+    txt += LanguageDB["$endif"]                              + "\n"
+    txt += LanguageDB["$goto-last_acceptance"]               + "\n"
+    return
 
 def __goto_distinct_terminal(Origin):
     LanguageDB = Setup.language_db
