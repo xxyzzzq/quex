@@ -65,19 +65,8 @@ def __local_variable_definitions(VariableInfoList):
         txt += "    %s%s %s = %s;\n" % (type, " " * (L-len(type)), name, value)
     return txt
          
-__function_header_common = """
-#define $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(LoadedByteN)         \\
-        /* Is this condition really necessary? <fschaef 07y7m26d> */        \\
-        if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) { \\
-            last_acceptance_input_position -= LoadedByteN;                  \\
-            QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", last_acceptance_input_position); \\
-        }                                                                   \\
-                                                                            \\
-$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
 
-"""
-
-__function_header_stand_alone = __function_header_common + """
+__function_header_stand_alone = """
 typedef QUEX_CORE_ANALYSER_STRUCT  $$QUEX_ANALYZER_STRUCT_NAME$$;
 
 /* Protect against redefinition if more than one analyser function is defined 
@@ -95,7 +84,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_do(QUEX_CORE_ANALYSER_STRUCT* me)
 {
 """
 
-__function_header_quex_mode_based = __function_header_common + """
+__function_header_quex_mode_based = """
 QUEX_ANALYSER_RETURN_TYPE
 quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) 
 {
@@ -132,6 +121,9 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                      it is stored in 'me'.
     """              
     txt = ""
+
+    load_procedures_txt = __load_procedure(StateMachineName, PostConditionedStateMachineID_List)
+
     local_variable_list = []
     if StandAloneEngineF: 
         txt += __function_header_stand_alone
@@ -167,15 +159,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     txt += LanguageDB["$label-def"]("$start")
 
-    # -- smart buffers require a reload procedure to adapt the positions of pointers.
-    #    recall, that the pointer point to memory and do not refer to stream positions.
-    #    thus, they need to be adapted according to the loaded number of bytes
-    load_procedure_txt = ""
-    for state_machine_id in PostConditionedStateMachineID_List:
-        load_procedure_txt += "        last_acceptance_%s_input_position -= (LoadedByteN); \\\n" % \
-                              state_machine_id
-    txt = txt.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", load_procedure_txt)                   
-
     # -- entry to the actual function body
     txt += "    QUEX_CORE_MARK_LEXEME_START();\n"
     txt += "    QUEX_UNDO_PREPARE_LEXEME_OBJECT();\n";
@@ -201,6 +184,61 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt = txt.replace("$$QUEX_ANALYZER_STRUCT_NAME$$", EngineClassName)
 
     return txt
+
+
+__function_header_common = """
+static bool 
+$$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_forward($$QUEX_ANALYZER_STRUCT_NAME$$* me, 
+                               QUEX_CHARACTER_TYPE* last_acceptance_input_position
+                               $$LAST_ACCEPTANCE_POSITIONS$$)
+{
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+    loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
+    if( loaded_byte_n == 0 ) return false;
+
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD_SUCCESS");
+    if( *last_acceptance_input_position != 0x0 ) { 
+        *last_acceptance_input_position -= LoadedByteN;
+        QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); 
+    }                                                                  
+                                                                          
+$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
+    return true;
+}
+
+static bool 
+$$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_backward($$QUEX_ANALYZER_STRUCT_NAME$$* me)
+{
+    QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD");
+    loaded_byte_n = QUEX_BUFFER_LOAD_BACKWARD();
+    if( loaded_byte_n == 0 ) return false;
+    
+    QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD_SUCCESS");
+    /* Backward lexing happens in two cases:
+     *
+     *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
+     *      is involved. No acceptance positions are considered.
+     *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
+     *      post conditions. Then, no acceptance positions are involved, because
+     *      the start of the lexeme shall not drop before the begin of the buffer 
+     *      and the end of the core pattern, is of course, after the start of the 
+     *      lexeme. => there will be no reload backwards. */
+    return true;
+}
+
+"""
+
+def __load_procedure(StateMachineName, PostConditionedStateMachineID_List):
+    # Reload requires to adapt the positions of pointers.
+    # Pointers point to memory and do not refer to stream positions.
+    # thus, they need to be adapted according to the loaded number of bytes
+    adapt_txt = ""
+    for state_machine_id in PostConditionedStateMachineID_List:
+        adapt_txt += "        last_acceptance_%s_input_position -= (LoadedByteN); \\\n" % \
+                     state_machine_id
+
+    return __buffer_reload_str.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", 
+                                       adapt_txt)                   
 
 __terminal_state_str  = """
   // (*) Terminal states _______________________________________________________

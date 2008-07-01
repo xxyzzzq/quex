@@ -59,7 +59,7 @@ CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
      # -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
 
-LD = $(COMPILER) 
+LD = $(COMPILER) $(OPTIMIZATION) 
 
 # (*) RULES ____________________________________________________________________
 #    lexer    --> application w/o line or column counting
@@ -108,5 +108,7 @@ clean:
 	rm -f token_ids
 	rm -f *.bak
 	rm -f *.asm
-	rm *.gcno *.gcda
+	rm -f *.gcno 
+	rm -f *.gcda
+	rm -f *.gcov
 

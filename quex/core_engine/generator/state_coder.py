@@ -7,15 +7,15 @@ import quex.core_engine.generator.drop_out         as drop_out
 from   quex.input.setup import setup as Setup
 from copy import deepcopy
 
+LanguageDB = Setup.language_db
+
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
-def do(state, StateIdx, SM, BackwardLexingF, 
-       BackwardInputPositionDetectionF=False, InitStateF=False,
-       DeadEndStateDB={}):
+def do(state, StateIdx, SM, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
-    LanguageDB = Setup.language_db
+    assert SM.__class__.__name__ == "StateMachineDecorator"
 
     # (*) check that no epsilon transition triggers to a real state                   
     if __DEBUG_CHECK_ACTIVE_F:
@@ -24,7 +24,7 @@ def do(state, StateIdx, SM, BackwardLexingF,
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
     if DeadEndStateDB.has_key(StateIdx):
-        return transition.do_dead_end_router(state, StateIdx, BackwardLexingF)
+        return transition.do_dead_end_router(state, StateIdx, SM.backward_lexing_f())
        
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -36,19 +36,15 @@ def do(state, StateIdx, SM, BackwardLexingF,
     #       pointer needs to be incremented.
     txt = ""
     # note down information about success, if state is an acceptance state
-    txt += input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB)
+    txt += input_block(StateIdx, InitStateF, SM.backward_lexing_f())
 
-    txt += acceptance_info.do(state, StateIdx, SM,
-                              BackwardLexingF, BackwardInputPositionDetectionF)
+    txt += acceptance_info.do(state, StateIdx, SM)
 
-    txt += transition_block.do(state, StateIdx, TriggerMap,
-                               InitStateF, BackwardLexingF, BackwardInputPositionDetectionF, 
-                               DeadEndStateDB)
+    txt += transition_block.do(state, StateIdx, 
+                               InitStateF, SM.backward_lexing_f(), SM.backward_input_position_detection_f(),
+                               SM.dead_end_state_db())
 
-    txt += drop_out.do(state, StateIdx, SM, TriggerMap, 
-                       InitStateF, 
-                       BackwardLexingF, BackwardInputPositionDetectionF,
-                       DeadEndStateDB)
+    txt += drop_out.do(state, StateIdx, SM, InitStateF) 
 
     # Define the entry of the init state after the init state itself. This is so,
     # since the init state does not require an increment on the first beat. Later on,
@@ -62,7 +58,7 @@ def do(state, StateIdx, SM, BackwardLexingF,
     
     return txt # .replace("\n", "\n    ") + "\n"
 
-def input_block(StateIdx, InitStateF, BackwardLexingF, LanguageDB):
+def input_block(StateIdx, InitStateF, BackwardLexingF):
     # The initial state starts from the character to be read and is an exception.
     # Any other state starts with an increment (forward) or decrement (backward).
     # This is so, since the beginning of the state is considered to be the 

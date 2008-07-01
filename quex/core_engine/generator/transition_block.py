@@ -17,10 +17,11 @@ class __info:
         self.backward_input_position_detection_f = BackwardInputPositionDetectionF
         self.dead_end_state_db = DeadEndStateDB
 
-def do(state, StateIdx, TriggerMap, InitStateF, 
+def do(state, StateIdx, InitStateF, 
        BackwardLexingF, BackwardInputPositionDetectionF, 
        DeadEndStateDB):
 
+    TriggerMap = state.transitions().get_trigger_map()
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,

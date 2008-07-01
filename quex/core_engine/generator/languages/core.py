@@ -93,12 +93,6 @@ db["C++"] = {
                                 "    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
     "$analyser-func":     cpp.__analyser_function,
     "$terminal-code":     cpp.__terminal_states,      
-    "$drop-out-forward":  lambda StateIndex: 
-                          "QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
-                          "goto __FORWARD_DROP_OUT_HANDLING;\n",
-    "$drop-out-backward": lambda StateIndex:              
-                          "QUEX_SET_drop_out_state_index(%i);\n" % int(StateIndex) + \
-                          "goto __BACKWARD_DROP_OUT_HANDLING;\n",
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value:
                           "QUEX_DEBUG_ASSIGNMENT(\"%s\", \"%s\");\n" % (variable, value) + \
