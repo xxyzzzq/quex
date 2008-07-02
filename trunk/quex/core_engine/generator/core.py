@@ -48,10 +48,9 @@ class Generator(GeneratorBase):
 
         msg, directly_reached_terminal_id_list = \
                 state_machine_coder.do(self.sm, 
-                                       LanguageDB                  = LanguageDB, 
-                                       UserDefinedStateMachineName = self.state_machine_name, 
-                                       BackwardLexingF             = False,
-                                       EndOfFile_Code              = self.end_of_file_code)
+                                       StateMachineName = self.state_machine_name, 
+                                       BackwardLexingF  = False,
+                                       EndOfFile_Code   = self.end_of_file_code)
         txt += msg
 
         
@@ -78,9 +77,8 @@ class Generator(GeneratorBase):
             txt += LanguageDB["$ml-comment"](self.pre_context_sm.get_string(NormalizeF=False)) + "\n"
 
         msg, dummy = state_machine_coder.do(self.pre_context_sm, 
-                                            LanguageDB                  = LanguageDB, 
-                                            UserDefinedStateMachineName = self.state_machine_name + "_CongoBell",
-                                            BackwardLexingF             = True)
+                                            StateMachineName = self.state_machine_name,
+                                            BackwardLexingF  = True)
         txt += msg
 
         txt += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
