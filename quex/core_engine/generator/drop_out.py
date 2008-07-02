@@ -22,25 +22,25 @@ def do(state, StateIdx, SM, InitStateF):
     txt += "    " + LanguageDB["$if not BLC"]
     # -- if it's clear that it's not a buffer limit code, then jump directly
     txt += LanguageDB["$label-def"]("$drop-out-direct", StateIdx)
-    txt += "        " + get_drop_out_goto_string(state, StateIdx, SM, BackwardLexingF) + "\n" 
+    txt += "        " + get_drop_out_goto_string(state, StateIdx, SM.sm(), SM.backward_lexing_f()) + "\n" 
     txt += "    " + LanguageDB["$endif"] + "\n"
 
     # -- in case of the init state, the end of file has to be checked.
     #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
-    if InitStateF and BackwardLexingF == False:
+    if InitStateF and SM.backward_lexing_f() == False:
         txt += "    " + LanguageDB["$if EOF"]
         comment = "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state" 
         txt += "        " + LanguageDB["$comment"](comment) + "\n"
         txt += "        " + LanguageDB["$goto"]("$terminal-EOF") + "\n"
         txt += "    " + LanguageDB["$endif"]
 
-    BufferReloadRequiredOnDropOutF = TriggerMap != [] and not BackwardInputPositionDetectionF
+    BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SM.backward_input_position_detection_f()
     if BufferReloadRequiredOnDropOutF:
-        if BackwardLexingF:
+        if SM.backward_lexing_f():
             txt += "    " + __reload_backward(StateIdx)
         else:
             # In case that it cannot load anything, it still needs to know where to jump to.
-            txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM, ForceF=True)
+            txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM.sm(), ForceF=True)
             txt += "    " + __reload_forward(StateIdx, SM)
 
     return txt + "\n"
@@ -54,14 +54,14 @@ def __reload_forward(StateIndex, SM):
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
     txt += LanguageDB["$goto-last_acceptance"]               + "\n"
-    return
+    return txt
 
 def __reload_backward(StateIndex): 
     txt  = "if( %s_buffer_reload_backward(me) ) {\n" 
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
     txt += LanguageDB["$goto-last_acceptance"]               + "\n"
-    return
+    return txt
 
 def __goto_distinct_terminal(Origin):
     LanguageDB = Setup.language_db

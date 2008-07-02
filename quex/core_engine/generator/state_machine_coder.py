@@ -8,16 +8,13 @@ LanguageDB = Setup.language_db
 
 class StateMachineDecorator:
     def __init__(self, SM, Name, PostConditionID_List, 
-                 BackwardLexingF, BackwardInputPositionDetectionF, 
-                 DeadEndStateDB, DirectlyReachedTerminal_List):
+                 BackwardLexingF, BackwardInputPositionDetectionF):
         assert SM.__class__.__name__ == "StateMachine"
         assert type(BackwardInputPositionDetectionF) == bool
         assert type(BackwardLexingF) == bool
         assert not BackwardInputPositionDetectionF or BackwardLexingF == True, \
                "BackwardInputPositionDetectionF can only be set if BackwardLexingF is set."
         assert type(PostConditionID_List) == list
-        assert type(DeadEndStateDB) == dict
-        assert type(DirectlyReachedTerminal_List) == list
 
         self.__name                   = Name
         self.__state_machine          = SM
@@ -26,10 +23,22 @@ class StateMachineDecorator:
         if BackwardLexingF:
             if BackwardInputPositionDetectionF: self.__mode = "BackwardLexing"
             else:                               self.__mode = "BackwardInputPositionDetection"
-        self.__dead_end_state_db      = DeadEndStateDB
-        self.__directly_reached_terminal_id_list = DirectlyReachedTerminal_List
+
+        # -- collect the 'dead end states' (states without further transitions)
+        #    create a map from the 'dead end state
+        self.__dead_end_state_db, self.__directly_reached_terminal_id_list = \
+                dead_end_analysis.do(SM)
+
+        if BackwardLexingF:
+            # During backward lexing (pre-condition, backward input position detection)
+            # there are no dedicated terminal states in the first place.
+            self.__directly_reached_terminal_id_list = []
+
+    def name(self):
+        return self.__name
 
     def mode(self):
+        print "## <%s>" % self.__mode
         return self.__mode
 
     def backward_lexing_f(self):
@@ -50,17 +59,15 @@ class StateMachineDecorator:
     def sm(self):
         return self.__state_machine
 
-    def dead_end_state_db():
+    def dead_end_state_db(self):
         return self.__dead_end_state_db
 
-    def directly_reached_terminal_id_list():
+    def directly_reached_terminal_id_list(self):
         self.__directly_reached_terminal_id_list
 
-def do(state_machine, 
-       StateMachineName, 
-       BackwardLexingF=False, 
-       BackwardInputPositionDetectionF=False, 
-       EndOfFile_Code=None):
+def do(state_machine, StateMachineName, 
+       BackwardLexingF, BackwardInputPositionDetectionF, 
+       PostConditionID_List):
     """Returns the program code implementing the StateMachine's behavior.
        NOTE: This function should only be called on a DFA after the call
              to 'filter_dominated_origins'. The latter is important
@@ -72,22 +79,11 @@ def do(state_machine,
             ii) state transition code (include marking of last success state
                 and last success stream position).                  
     """
-    assert EndOfFile_Code != None or BackwardLexingF == True
-
     if BackwardInputPositionDetectionF: assert BackwardLexingF
 
-    # -- collect the 'dead end states' (states without further transitions)
-    #    create a map from the 'dead end state
-    dead_end_state_db, directly_reached_terminal_id_list = dead_end_analysis.do(state_machine)
-
-    if BackwardLexingF:
-        # During backward lexing (pre-condition, backward input position detection)
-        # there are no dedicated terminal states in the first place.
-        directly_reached_terminal_id_list = []
-
-    decorated_state_machine = StateMachineDecorator(state_machine, StateMachineName, PostConditionID_List, 
-                                                    BackwardLexingF, BackwardInputPositionDetectionF, 
-                                                    dead_end_state_db, directly_reached_terminal_id_list)
+    decorated_state_machine = StateMachineDecorator(state_machine, StateMachineName, 
+                                                    PostConditionID_List, 
+                                                    BackwardLexingF, BackwardInputPositionDetectionF)
 
     txt = ""
     # -- treat initial state separately 
@@ -121,7 +117,7 @@ def do(state_machine,
         txt += state_code
         txt += "\n"
     
-    return txt, directly_reached_terminal_id_list
+    return txt, decorated_state_machine.directly_reached_terminal_id_list()
 
 
 

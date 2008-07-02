@@ -26,7 +26,8 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body, directly_reached_terminal_id_list = \
               state_machine_coder.do(sm, LanguageDB, 
                                      BackwardLexingF                 = True,
-                                     BackwardInputPositionDetectionF = True)
+                                     BackwardInputPositionDetectionF = True,
+                                     PostConditionID_List            = [])
 
     sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if PrintStateMachineF: 

@@ -23,7 +23,7 @@ def do(state, StateIdx, SM, InitStateF=False):
                "epsilon transition contained target states: state machine was not made a DFA!\n" + \
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
-    if DeadEndStateDB.has_key(StateIdx):
+    if SM.dead_end_state_db().has_key(StateIdx):
         return transition.do_dead_end_router(state, StateIdx, SM.backward_lexing_f())
        
     TriggerMap = state.transitions().get_trigger_map()
@@ -49,7 +49,7 @@ def do(state, StateIdx, SM, InitStateF=False):
     # Define the entry of the init state after the init state itself. This is so,
     # since the init state does not require an increment on the first beat. Later on,
     # when other states enter here, they need to increase/decrease the input pointer.
-    if not BackwardLexingF:
+    if not SM.backward_lexing_f():
         if InitStateF:
             txt += LanguageDB["$label-def"]("$input", StateIdx)
             txt += "    " + LanguageDB["$input/increment"] + "\n"
