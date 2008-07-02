@@ -2,9 +2,61 @@ import quex.core_engine.generator.languages.core  as languages
 from   quex.core_engine.generator.languages.core  import __nice
 import quex.core_engine.generator.state_coder as state_coder
 import quex.core_engine.state_machine.dead_end_analysis as dead_end_analysis
-from   quex.core_engine.state_machine.decorator import StateMachineDecorator
+from   quex.input.setup import setup as Setup
 
-def do(state_machine, LanguageDB, 
+LanguageDB = Setup.language_db
+
+class StateMachineDecorator:
+    def __init__(self, SM, Name, PostConditionID_List, 
+                 BackwardLexingF, BackwardInputPositionDetectionF, 
+                 DeadEndStateDB, DirectlyReachedTerminal_List):
+        assert SM.__class__.__name__ == "StateMachine"
+        assert type(BackwardInputPositionDetectionF) == bool
+        assert type(BackwardLexingF) == bool
+        assert not BackwardInputPositionDetectionF or BackwardLexingF == True, \
+               "BackwardInputPositionDetectionF can only be set if BackwardLexingF is set."
+        assert type(PostConditionID_List) == list
+        assert type(DeadEndStateDB) == dict
+        assert type(DirectlyReachedTerminal_List) == list
+
+        self.__name                   = Name
+        self.__state_machine          = SM
+        self.__post_condition_id_list = PostConditionID_List
+        self.__mode = "ForwardLexing"
+        if BackwardLexingF:
+            if BackwardInputPositionDetectionF: self.__mode = "BackwardLexing"
+            else:                               self.__mode = "BackwardInputPositionDetection"
+        self.__dead_end_state_db      = DeadEndStateDB
+        self.__directly_reached_terminal_id_list = DirectlyReachedTerminal_List
+
+    def mode(self):
+        return self.__mode
+
+    def backward_lexing_f(self):
+        assert self.__mode in ["ForwardLexing", "BackwardLexing", "BackwardInputPositionDetection"]
+        return self.__mode in ["BackwardLexing", "BackwardInputPositionDetection"] 
+
+    def forward_lexing_f(self):
+        assert self.__mode in ["ForwardLexing", "BackwardLexing", "BackwardInputPositionDetection"]
+        return not backward_lexing_f()
+
+    def backward_input_position_detection_f(self):
+        assert self.__mode in ["ForwardLexing", "BackwardLexing", "BackwardInputPositionDetection"]
+        return self.__mode == "BackwardInputPositionDetection" 
+
+    def post_contexted_sm_id_list(self):
+        return self.__post_condition_id_list
+
+    def sm(self):
+        return self.__state_machine
+
+    def dead_end_state_db():
+        return self.__dead_end_state_db
+
+    def directly_reached_terminal_id_list():
+        self.__directly_reached_terminal_id_list
+
+def do(state_machine, 
        StateMachineName, 
        BackwardLexingF=False, 
        BackwardInputPositionDetectionF=False, 
@@ -33,15 +85,9 @@ def do(state_machine, LanguageDB,
         # there are no dedicated terminal states in the first place.
         directly_reached_terminal_id_list = []
 
-    Mode = "ForwardLexing"
-    if BackwardLexingF:
-        if BackwardInputPositionDetectionF: Mode = "BackwardLexing"
-        else:                               Mode = "BackwardInputPositionDetection"
-
-    decorated_state_machine = StateMachineDecorator(state_machine, 
-                                                    StateMachineName, Mode, 
-                                                    dead_end_state_db, 
-                                                    directly_reached_terminal_id_list)
+    decorated_state_machine = StateMachineDecorator(state_machine, StateMachineName, PostConditionID_List, 
+                                                    BackwardLexingF, BackwardInputPositionDetectionF, 
+                                                    dead_end_state_db, directly_reached_terminal_id_list)
 
     txt = ""
     # -- treat initial state separately 
