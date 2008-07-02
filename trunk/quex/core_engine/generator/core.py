@@ -48,9 +48,10 @@ class Generator(GeneratorBase):
 
         msg, directly_reached_terminal_id_list = \
                 state_machine_coder.do(self.sm, 
-                                       StateMachineName = self.state_machine_name, 
-                                       BackwardLexingF  = False,
-                                       EndOfFile_Code   = self.end_of_file_code)
+                                       StateMachineName                = self.state_machine_name, 
+                                       BackwardLexingF                 = False,
+                                       BackwardInputPositionDetectionF = False,
+                                       PostConditionID_List            = self.post_contexted_sm_id_list) 
         txt += msg
 
         
@@ -78,7 +79,9 @@ class Generator(GeneratorBase):
 
         msg, dummy = state_machine_coder.do(self.pre_context_sm, 
                                             StateMachineName = self.state_machine_name,
-                                            BackwardLexingF  = True)
+                                            BackwardLexingF                 = True,
+                                            BackwardInputPositionDetectionF = False,
+                                            PostConditionID_List            = [])
         txt += msg
 
         txt += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
@@ -107,6 +110,7 @@ class Generator(GeneratorBase):
         function_body += self.__get_core_state_machine()
 
         # -- pack the whole thing into a function 
+        print "##ascn:", self.analyzer_state_class_name
         analyzer_function = LanguageDB["$analyser-func"](self.state_machine_name, 
                                                          self.analyzer_state_class_name, 
                                                          self.stand_alone_analyzer_f,

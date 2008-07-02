@@ -77,14 +77,16 @@ typedef QUEX_CORE_ANALYSER_STRUCT  $$QUEX_ANALYZER_STRUCT_NAME$$;
 void (*$$QUEX_ANALYZER_STRUCT_NAME$$_init)(QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST)
      = QUEX_CORE_ANALYSER_STRUCT_init;
 #endif     
+"""
 
+__function_signature_stand_alone = """
 QUEX_INLINE_KEYWORD
 QUEX_ANALYSER_RETURN_TYPE
 $$QUEX_ANALYZER_STRUCT_NAME$$_do(QUEX_CORE_ANALYSER_STRUCT* me) 
 {
 """
 
-__function_header_quex_mode_based = """
+__function_signature_quex_mode_based = """
 QUEX_ANALYSER_RETURN_TYPE
 quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) 
 {
@@ -122,18 +124,22 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     """              
     txt = ""
 
-    load_procedures_txt = __load_procedure(StateMachineName, PostConditionedStateMachineID_List)
-
     local_variable_list = []
     if StandAloneEngineF: 
-        txt += __function_header_stand_alone
+        header    = __function_header_stand_alone
+        signature = __function_signature_stand_alone
     else:                 
-        txt += __function_header_quex_mode_based
+        header    = ""
+        signature = __function_signature_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "QUEX_LEXER_CLASS::" + name]) 
 
-    txt = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
+    txt  = header
+    txt += __load_procedure(PostConditionedStateMachineID_List)
+    txt += signature
+    txt  = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
+
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
 
     local_variable_list.extend(
@@ -186,15 +192,15 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     return txt
 
 
-__function_header_common = """
+__buffer_reload_str = """
 static bool 
 $$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_forward($$QUEX_ANALYZER_STRUCT_NAME$$* me, 
                                QUEX_CHARACTER_TYPE* last_acceptance_input_position
                                $$LAST_ACCEPTANCE_POSITIONS$$)
 {
     QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-    loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
-    if( loaded_byte_n == 0 ) return false;
+    const size_t LoadedByteN = QUEX_BUFFER_LOAD_FORWARD();
+    if( LoadedByteN == 0 ) return false;
 
     QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD_SUCCESS");
     if( *last_acceptance_input_position != 0x0 ) { 
@@ -210,8 +216,8 @@ static bool
 $$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_backward($$QUEX_ANALYZER_STRUCT_NAME$$* me)
 {
     QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD");
-    loaded_byte_n = QUEX_BUFFER_LOAD_BACKWARD();
-    if( loaded_byte_n == 0 ) return false;
+    const size_t LoadedByteN = QUEX_BUFFER_LOAD_BACKWARD();
+    if( LoadedByteN == 0 ) return false;
     
     QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD_SUCCESS");
     /* Backward lexing happens in two cases:
@@ -228,17 +234,20 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_backward($$QUEX_ANALYZER_STRUCT_NAME
 
 """
 
-def __load_procedure(StateMachineName, PostConditionedStateMachineID_List):
+def __load_procedure(PostConditionedStateMachineID_List):
     # Reload requires to adapt the positions of pointers.
     # Pointers point to memory and do not refer to stream positions.
     # thus, they need to be adapted according to the loaded number of bytes
     adapt_txt = ""
+    argument_list = ""
     for state_machine_id in PostConditionedStateMachineID_List:
-        adapt_txt += "        last_acceptance_%s_input_position -= (LoadedByteN); \\\n" % \
-                     state_machine_id
+        variable_name  = "last_acceptance_%s_input_position" % state_machine_id 
+        adapt_txt     += "       %s -= (LoadedByteN); \\\n"  % variable_name
+        argument_list += ", QUEX_CHARACTER_TYPE* %s"         % variable_name
 
-    return __buffer_reload_str.replace("$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", 
-                                       adapt_txt)                   
+    return blue_print(__buffer_reload_str,
+                  [["$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", adapt_txt],
+                   ["$$LAST_ACCEPTANCE_POSITIONS$$", argument_list]])
 
 __terminal_state_str  = """
   // (*) Terminal states _______________________________________________________

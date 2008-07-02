@@ -5,11 +5,13 @@ LanguageDB = Setup.language_db
 def do(State, StateIdx, SM):
     assert State.__class__.__name__ == "State"
     assert SM.__class__.__name__    == "StateMachineDecorator"
-
-    return { "ForwardLexing":                  forward_lexing(State, StateIdx, SM.sm()),
-             "BackwardLexing":                 backward_lexing(State),
-             "BackwardInputPositionDetection": backward_lexing_find_core_pattern(State),
-           }[SM.mode()]
+    
+    mode = SM.mode()
+    if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SM.sm())
+    elif mode == "BackwardLexing":                 return backward_lexing(State)
+    elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State)
+    else:
+        assert False, "This part of the code should never be reached"
 
 def forward_lexing(State, StateIdx, SM, ForceF=False):
     """Forward Lexing:
@@ -77,7 +79,8 @@ def backward_lexing(State):
        -- During backward lexing, there is no 'winner' so all origins that indicate
           acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
     """
-    assert type(OriginList) == list
+    assert State.__class__.__name__ == "State"
+    print 1 / 0
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
@@ -108,6 +111,7 @@ def backward_lexing_find_core_pattern(State):
        -- There is only one pattern involved, so no determination of 'who won'
           is important.
     """
+    assert State.__class__.__name__ == "State"
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
