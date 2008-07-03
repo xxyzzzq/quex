@@ -21,7 +21,9 @@ struct QUEX_CORE_ANALYSER_STRUCT;
     typedef char   QUEX_CHARACTER_TYPE;
 #endif
 
-typedef char*  QUEX_CHARACTER_POSITION;
+typedef void* QUEX_CORE_BUFFER_TYPE;
+
+typedef QUEX_CHARACTER_TYPE* QUEX_CHARACTER_POSITION;
 
 typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 
@@ -53,6 +55,8 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_END_OF_FILE()         (1)
 #define QUEX_BEGIN_OF_FILE()       (me->input_p == me->buffer_begin - 1)
 
+#define QUEX_THE_BUFFER() (0x0 /* no dedicated buffer handling in this case */)
+
 #define QUEX_BUFFER_INCREMENT()           (++(me->input_p));
 #define QUEX_BUFFER_DECREMENT()           (--(me->input_p)); 
 #define QUEX_BUFFER_TELL_ADR(position)                            \
@@ -67,7 +71,7 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_BUFFER_LOAD_FORWARD()                       \
         (0 /* reload not successful, no bytes loaded */) 
 #define QUEX_BUFFER_LOAD_BACKWARD()                      \
-        /* empty */
+        (0 /* empty */)
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *

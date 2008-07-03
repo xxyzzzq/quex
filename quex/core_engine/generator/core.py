@@ -110,7 +110,6 @@ class Generator(GeneratorBase):
         function_body += self.__get_core_state_machine()
 
         # -- pack the whole thing into a function 
-        print "##ascn:", self.analyzer_state_class_name
         analyzer_function = LanguageDB["$analyser-func"](self.state_machine_name, 
                                                          self.analyzer_state_class_name, 
                                                          self.stand_alone_analyzer_f,

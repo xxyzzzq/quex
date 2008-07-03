@@ -37,7 +37,7 @@ def do(state, StateIdx, SM, InitStateF):
     BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SM.backward_input_position_detection_f()
     if BufferReloadRequiredOnDropOutF:
         if SM.backward_lexing_f():
-            txt += "    " + __reload_backward(StateIdx)
+            txt += "    " + __reload_backward(StateIdx, SM)
         else:
             # In case that it cannot load anything, it still needs to know where to jump to.
             txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM.sm(), ForceF=True)
@@ -48,16 +48,16 @@ def do(state, StateIdx, SM, InitStateF):
 def __reload_forward(StateIndex, SM): 
     arg_list = ""
     for state_machine_id in SM.post_contexted_sm_id_list():
-        arg_list += ", last_acceptance_%s_input_position" % state_machine_id
-    txt  = "if( %s_buffer_reload_forward(me, &last_acceptance_input_position%s) ) {\n" % \
+        arg_list += ", &last_acceptance_%s_input_position" % state_machine_id
+    txt  = "if( %s_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position%s) ) {\n" % \
             (SM.name(), arg_list)
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
     txt += LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt
 
-def __reload_backward(StateIndex): 
-    txt  = "if( %s_buffer_reload_backward(me) ) {\n" 
+def __reload_backward(StateIndex, SM): 
+    txt  = "if( %s_buffer_reload_backward(QUEX_THE_BUFFER()) ) {\n" % SM.name()
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
     txt += LanguageDB["$goto-last_acceptance"]               + "\n"

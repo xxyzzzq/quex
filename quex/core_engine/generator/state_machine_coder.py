@@ -10,6 +10,7 @@ class StateMachineDecorator:
     def __init__(self, SM, Name, PostConditionID_List, 
                  BackwardLexingF, BackwardInputPositionDetectionF):
         assert SM.__class__.__name__ == "StateMachine"
+        assert Name != ""
         assert type(BackwardInputPositionDetectionF) == bool
         assert type(BackwardLexingF) == bool
         assert not BackwardInputPositionDetectionF or BackwardLexingF == True, \
@@ -21,8 +22,8 @@ class StateMachineDecorator:
         self.__post_condition_id_list = PostConditionID_List
         self.__mode = "ForwardLexing"
         if BackwardLexingF:
-            if BackwardInputPositionDetectionF: self.__mode = "BackwardLexing"
-            else:                               self.__mode = "BackwardInputPositionDetection"
+            if BackwardInputPositionDetectionF: self.__mode = "BackwardInputPositionDetection"
+            else:                               self.__mode = "BackwardLexing"
 
         # -- collect the 'dead end states' (states without further transitions)
         #    create a map from the 'dead end state
@@ -38,7 +39,6 @@ class StateMachineDecorator:
         return self.__name
 
     def mode(self):
-        print "## <%s>" % self.__mode
         return self.__mode
 
     def backward_lexing_f(self):

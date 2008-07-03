@@ -80,7 +80,8 @@ def backward_lexing(State):
           acceptance need to be considered. They raise there flag 'pre-condition fulfilled'.
     """
     assert State.__class__.__name__ == "State"
-    print 1 / 0
+    OriginList = State.origins().get_list()
+
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
@@ -91,7 +92,6 @@ def backward_lexing(State):
     assert inadmissible_origin_list == [], \
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
-    OriginList = State.origins().get_list()
 
     txt = ""
     for origin in OriginList:
@@ -111,7 +111,11 @@ def backward_lexing_find_core_pattern(State):
        -- There is only one pattern involved, so no determination of 'who won'
           is important.
     """
-    assert State.__class__.__name__ == "State"
+    assert State.__class__.__name__ == "State", \
+           "Received %s as argument." % repr(State)
+
+    OriginList = State.origins().get_list()
+
     # There should be nothing, but unconditional acceptances or no-acceptance 
     # origins in the list of origins.
     inadmissible_origin_list = filter(lambda origin:
@@ -123,7 +127,6 @@ def backward_lexing_find_core_pattern(State):
            "Inadmissible origins for inverse state machine."
     #___________________________________________________________________________________________
 
-    OriginList = State.origins().get_list()
 
     for origin in OriginList:
         if origin.store_input_position_f():
