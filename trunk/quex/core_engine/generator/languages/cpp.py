@@ -133,7 +133,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         signature = __function_signature_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), "QUEX_LEXER_CLASS::" + name]) 
+            local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), 
+                                        "QUEX_LEXER_CLASS::" + name]) 
 
     txt  = header
     txt += __load_procedure(PostConditionedStateMachineID_List)
@@ -194,8 +195,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
 __buffer_reload_str = """
 static bool 
-$$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_forward($$QUEX_ANALYZER_STRUCT_NAME$$* me, 
-                               QUEX_CHARACTER_TYPE* last_acceptance_input_position
+$$STATE_MACHINE_NAME$$_buffer_reload_forward(QUEX_CORE_BUFFER_TYPE* buffer, 
+                               QUEX_CHARACTER_POSITION* last_acceptance_input_position
                                $$LAST_ACCEPTANCE_POSITIONS$$)
 {
     QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
@@ -213,7 +214,7 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 }
 
 static bool 
-$$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_backward($$QUEX_ANALYZER_STRUCT_NAME$$* me)
+$$STATE_MACHINE_NAME$$_buffer_reload_backward(QUEX_CORE_BUFFER_TYPE* buffer)
 {
     QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD");
     const size_t LoadedByteN = QUEX_BUFFER_LOAD_BACKWARD();
@@ -231,7 +232,6 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_buffer_reload_backward($$QUEX_ANALYZER_STRUCT_NAME
      *      lexeme. => there will be no reload backwards. */
     return true;
 }
-
 """
 
 def __load_procedure(PostConditionedStateMachineID_List):
@@ -242,8 +242,8 @@ def __load_procedure(PostConditionedStateMachineID_List):
     argument_list = ""
     for state_machine_id in PostConditionedStateMachineID_List:
         variable_name  = "last_acceptance_%s_input_position" % state_machine_id 
-        adapt_txt     += "       %s -= (LoadedByteN); \\\n"  % variable_name
-        argument_list += ", QUEX_CHARACTER_TYPE* %s"         % variable_name
+        adapt_txt     += "       *%s -= (LoadedByteN); \\\n"  % variable_name
+        argument_list += ", QUEX_CHARACTER_POSITION* %s"         % variable_name
 
     return blue_print(__buffer_reload_str,
                   [["$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", adapt_txt],
@@ -305,39 +305,6 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //
     __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
     $$GOTO_START$$
-"""
-
-__drop_out_buffer_reload_handler = """
-__FORWARD_DROP_OUT_HANDLING:
-    QUEX_DEBUG_LABEL_PASS("__FORWARD_DROP_OUT_HANDLING");
-    // Since all drop out states work the same, we introduce here a 'router' that
-    // jumps to a particular state based on the setting of a variable: drop_out_state_index.
-    loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
-    if( loaded_byte_n != 0 ) {
-        $$QUEX_ANALYZER_STRUCT_NAME$$_on_buffer_reload(loaded_byte_n);
-        QUEX_GOTO_drop_out_state_index();
-    }
-    // no load possible (EOF) => (i)  goto general terminal
-    //                           (ii) init state triggers EOF action
-    QUEX_GOTO_last_acceptance();
-
-#if $$SWITCH_BACKWARD_LEXING_INVOLVED$$
-__BACKWARD_DROP_OUT_HANDLING:
-    QUEX_DEBUG_LABEL_PASS("__BACKWARD_DROP_OUT_HANDLING");
-    QUEX_BUFFER_LOAD_BACKWARD();
-    if( ! QUEX_BEGIN_OF_FILE() ) { 
-        // no re-computation required, since we're not in 'normal lexing mode'
-        QUEX_GOTO_drop_out_state_index();
-    }
-    $$GOTO-TERMINAL_GENERAL_BACKWARD$$
-#endif
-
-#if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-__DROP_OUT_ROUTING:
-    switch( drop_out_state_index ) {
-$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$
-    }
-#endif
 """
 
 def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4): 
@@ -504,10 +471,5 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                        ["$$GOTO_START$$",                            LanguageDB["$goto"]("$start")],
                        ])
 
-    txt += blue_print(__drop_out_buffer_reload_handler, 
-                      [["$$SWITCH_CASES_DROP_OUT_ROUTE_BACK_TO_STATE$$", switch_cases_drop_out_back_router_str],
-                       ["$$SWITCH_BACKWARD_LEXING_INVOLVED$$",           precondition_involved_f],
-                       ["$$GOTO-TERMINAL_GENERAL_BACKWARD$$",  LanguageDB["$goto"]("$terminal-general", True)]
-                       ])
     return txt
     

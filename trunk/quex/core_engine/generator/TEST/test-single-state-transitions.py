@@ -23,6 +23,7 @@ from quex.core_engine.state_machine.core import State, StateMachine
 
 import quex.core_engine.generator.languages.core as languages
 import quex.core_engine.generator.state_coder    as state_transition_coder
+from   quex.core_engine.generator.state_machine_coder import StateMachineDecorator
 
 if "--hwut-info" in sys.argv:
     print "Single State: Transition Code Generation"
@@ -41,7 +42,8 @@ state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71
 # Make sure, that the 'goto state' is transformed into 'return index of target state'
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
-function = "def example_func(input):\n" + state_transition_coder.do(state, -1, StateMachine(), False)
+dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
+function = "def example_func(input):\n" + state_transition_coder.do(state, -1, dsm, False)
 ##function = function.replace("_-1_", "_MINUS_1_")
 ##line_n = 0
 ##for line in function.split("\n"):

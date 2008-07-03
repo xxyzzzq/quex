@@ -122,7 +122,10 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     txt  = "#include<cstdio>\n"
     txt += "#define  __QUEX_OPTION_UNIT_TEST\n"
 
+    sm_name = "UnitTest"
+    if SecondModeF: sm_name += "_2"
     txt += generator.do(PatternActionPairList, 
+                        StateMachineName               = sm_name,
                         DefaultAction                  = default_action, 
                         PrintStateMachineF             = True,
                         AnalyserStateClassName         = "analyser",

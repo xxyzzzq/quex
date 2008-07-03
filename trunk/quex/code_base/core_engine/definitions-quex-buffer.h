@@ -20,7 +20,6 @@ typedef quex::buffer<QUEX_CHARACTER_TYPE>::memory_position   QUEX_CHARACTER_POSI
 // The Analyzer Function for a Mode:
 typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 
-
 #define QUEX_INLINE_KEYWORD inline
 
 struct QUEX_CORE_ANALYSER_STRUCT {
@@ -55,15 +54,15 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST \
         QUEX_CORE_ANALYSER_STRUCT*,                  \
         QUEX_CHARACTER_TYPE*,                        \
-        quex::buffer<QUEX_CHARACTER_TYPE>*,          \
+        QUEX_CORE_BUFFER_TYPE*,                      \
         QUEX_MODE_FUNCTION_P 
 
 QUEX_INLINE_KEYWORD
 void
 QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me, 
                                QUEX_CHARACTER_TYPE*         InputStartPosition,
-                               quex::buffer<QUEX_CHARACTER_TYPE>* the_buffer,
-                               QUEX_MODE_FUNCTION_P               TheInitialAnalyserFunctionP) 
+                               QUEX_CORE_BUFFER_TYPE*       the_buffer,
+                               QUEX_MODE_FUNCTION_P         TheInitialAnalyserFunctionP) 
 {
     /* Provide a string object 'Lexeme' and an integer 'LexemeL' to support
      ** further treatment inside the action.
@@ -111,6 +110,8 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_END_OF_FILE()         me->__buffer->is_end_of_file()
 #define QUEX_BEGIN_OF_FILE()       me->__buffer->is_begin_of_file()
 
+#define QUEX_THE_BUFFER() (me->__buffer)
+
 #define QUEX_BUFFER_INCREMENT()           me->__buffer->increment(); /*me->__buffer->_current_p++; */ 
 #define QUEX_BUFFER_DECREMENT()           me->__buffer->decrement(); /*me->__buffer->_current_p--; */ 
 #define QUEX_BUFFER_TELL_ADR(position)                            \
@@ -126,9 +127,9 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
         (character) = me->__buffer->dereference_character();       \
         QUEX_DEBUG_INFO_INPUT(character); 
 #define QUEX_BUFFER_LOAD_FORWARD()               \
-        (me->__buffer->load_forward())
+        (buffer->load_forward())
 #define QUEX_BUFFER_LOAD_BACKWARD()               \
-        (me->__buffer->load_backward())
+        (buffer->load_backward())
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *

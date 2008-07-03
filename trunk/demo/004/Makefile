@@ -10,8 +10,8 @@ OPTIMIZATION = -O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="IntelCoreDuo"' \
-      -D'CPU_CODE="T2350"' \
-      -D'CPU_FREQ_MHZ=((float)(1866.760))' \
+      -D'CPU_CODE="T2400"' \
+      -D'CPU_FREQ_MHZ=((float)(1833.0))' \
 	  -D'CC_OPTIMIZATION_FLAGS="$(OPTIMIZATION)"' \
       -D'CHARACTER_SIZE=((unsigned)(1))' \
 	  -D'OS_NAME="linux-2"' \
