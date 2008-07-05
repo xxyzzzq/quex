@@ -49,18 +49,22 @@ def __reload_forward(StateIndex, SM):
     arg_list = ""
     for state_machine_id in SM.post_contexted_sm_id_list():
         arg_list += ", &last_acceptance_%s_input_position" % state_machine_id
-    txt  = "if( %s_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position%s) ) {\n" % \
+    txt  = 'QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");\n'
+    txt += "if( %s_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position%s) ) {\n" % \
             (SM.name(), arg_list)
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
+    txt += 'QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");\n'
     txt += LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt
 
 def __reload_backward(StateIndex, SM): 
-    txt  = "if( %s_buffer_reload_backward(QUEX_THE_BUFFER()) ) {\n" % SM.name()
+    txt  = 'QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD");\n'
+    txt += "if( %s_buffer_reload_backward(QUEX_THE_BUFFER()) ) {\n" % SM.name()
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
-    txt += LanguageDB["$goto-last_acceptance"]               + "\n"
+    txt += 'QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");\n'
+    txt += LanguageDB["$goto"]("$terminal-general")          + "\n"
     return txt
 
 def __goto_distinct_terminal(Origin):

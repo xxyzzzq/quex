@@ -1,3 +1,5 @@
+from frs_py import is_identifier_start, \
+                   is_identifier_continue
 
 class ActionInfo:
     def __init__(self, PatternStateMachine, ActionCodeStr):
@@ -13,17 +15,8 @@ class ActionInfo:
     def action_code(self):
         return self.__action_code_str
 
-    def contains_Lexeme_object(self, CommentDelimiters):
-        """Returns information wether the code fragment contains the keyword
-           'Lexeme'. This is important, because some time can be spared if it
-           does not. The preparation of the Lexeme object is some overhead.
-        """
+    def contains_variable(self, VariableName, CommentDelimiters):
         return self.__contains("Lexeme", CommentDelimiters)
-
-    def contains_LexemeLength_object(self, CommentDelimiters):
-        """Same as 'contains_Lexeme_object()' for the LexemeLength.
-        """
-        return self.__contains("LexemeL", CommentDelimiters)
 
     def __contains(self, ObjectName, CommentDelimiters, IgnoreRegions=["\"", "\""]):
         assert type(CommentDelimiters) == list
@@ -33,9 +26,22 @@ class ActionInfo:
             assert len(delimiter_info) == 3, \
                    "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
                    "start of comment, end of comment, replacement string for comment."
-        # TODO: Implement the skip_whitespace() function for more general treatment of Comment
-        #       delimiters. Quotes for strings '"" shall then also be treate like comments.
-        return self.__action_code_str.find(ObjectName) != -1
+
+        txt = self.__action_code_str
+        L       = len(txt)
+        LO      = len(ObjectName)
+        found_i = 0
+        while 1 + 1 == 2:
+            # TODO: Implement the skip_whitespace() function for more general treatment of Comment
+            #       delimiters. Quotes for strings '"" shall then also be treate like comments.
+            found_i = txt.find(ObjectName, found_i) != -1
+
+            if found_i == -1: return False
+
+            # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
+            #       shall not trigger a treatment of 'Lexeme'.
+            if     (found_i == 0      or not is_identifier_start(txt[found_i - 1]))     # Head OK!
+               and (found_i == L - LO or not is_identifier_continue(txt[found_i + LO])) # Tail OK!
 
     def __repr__(self):
         txt0 = "state machine of pattern = \n" + repr(self.__pattern_state_machine)

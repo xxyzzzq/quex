@@ -40,9 +40,7 @@ def do(state, StateIdx, SM, InitStateF=False):
 
     txt += acceptance_info.do(state, StateIdx, SM)
 
-    txt += transition_block.do(state, StateIdx, 
-                               InitStateF, SM.backward_lexing_f(), SM.backward_input_position_detection_f(),
-                               SM.dead_end_state_db())
+    txt += transition_block.do(state, StateIdx, InitStateF, SM)
 
     txt += drop_out.do(state, StateIdx, SM, InitStateF) 
 

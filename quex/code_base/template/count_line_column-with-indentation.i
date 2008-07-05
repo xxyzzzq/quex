@@ -15,10 +15,32 @@
 // NOTE: Those functions are not responsible for setting the begin to the
 //       last end, such as _line_number_at_begin = _line_number_at_end.
 //       This has to happen outside these functions.
+inline 
+CounterWithIndentation::CounterWithIndentation()
+{ init(); }
+
+inline void
+CounterWithIndentation::init(CLASS* TheLexer)
+{
+    _indentation = 0;
+    _indentation_count_enabled_f = false;
+    _indentation_event_enabled_f = true;
+    _the_lexer = TheLexer;
+}
+
+inline void
+CounterWithIndentation::on_end_of_file(quex_mode& mode)
+{
+    // 'flush' remaining indentations
+    if( _indentation_event_enabled_f ) mode.on_indentation(_the_lexer, _indentation);
+}
 
 inline void    
-CLASS::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
-                         const int            LexemeLength)
+CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
+                                          QUEX_CHARACTER_TYPE* LexemeEnd)
+// Lexeme:    Pointer to first character of Lexeme.
+// LexemeEnd: Pointer to first character after Lexeme.
+//
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
 //   and letters of the last line occuring in the lexeme.
@@ -59,23 +81,12 @@ CLASS::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
-    if( __buffer->is_end_of_file() ) {
-        // In this particular case, a lexeme length of zero is admissible
-        __quex_assert((QUEX_CHARACTER_TYPE*)Lexeme <= __buffer->content_back());     // LexemeLength >= 0
-        if( _indentation_event_enabled_f ) 
-            mode().on_indentation(this, _indentation);
-        return;
-    }
-    __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
-    QUEX_CHARACTER_TYPE* End   = Begin + LexemeLength;  
-    QUEX_CHARACTER_TYPE* Last  = End - 1;                
+    QUEX_CHARACTER_TYPE* Last  = LexemeEnd - 1;                
     QUEX_CHARACTER_TYPE* it    = Last;
 
-    __quex_assert(Begin >= __buffer->content_front());
-    __quex_assert(Begin < __buffer->content_back());     // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_back() + 1);  // End > Lexeme follows from LexemeL > 0
-    __quex_assert(Begin < End);                          // LexemeLength >= 1
+    __quex_assert(Begin < LexemeEnd);                          // LexemeLength >= 1
+    __quex_assert(LexemeEnd <= __buffer->content_back() + 1);  // End > Lexeme follows from LexemeL > 0
 
 
     // (1) Last character == newline ? _______________________________________________
@@ -145,8 +156,7 @@ CLASS::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
     //
     // -- whitespace from: start_consideration to first non-whitespace
     //    (indentation count is disabled if non-whitespace arrives)
-    //
-    __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, End, 
+    __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, LexemeEnd, 
                                                /* LicenseToIncrementLineCountF = */ true);
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
@@ -154,20 +164,18 @@ CLASS::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
 
 
 inline void    
-CLASS::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
-                                   const int           LexemeLength)
+CounterWithIndentation::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
+                                                    QUEX_CHARACTER_TYPE* LexemeEnd)
+// Lexeme:    Pointer to first character of Lexeme.
+// LexemeEnd: Pointer to first character after Lexeme.
 {
     // NOTE: For an explanation of the algorithm, see the function:
-    //       count_line_column_n_increment_w_indent(...)
+    //       count_indentation(...)
     //
-    __quex_assert( LexemeLength != 0 );
     QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
-    QUEX_CHARACTER_TYPE* End   = (QUEX_CHARACTER_TYPE*)(Lexeme + LexemeLength);  
 
-    __quex_assert(Begin >= __buffer->content_front());
-    __quex_assert(Begin < __buffer->content_back());  // LexemeLength >= 1
-    __quex_assert(End <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
-    __quex_assert(Begin < End);                       // LexemeLength >= 1
+    __quex_assert(Begin < LexemeEnd);                       // LexemeLength >= 1
+    __quex_assert(LexemeEnd <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
 
     // (1) Last character == newline ? _______________________________________________
     //     [impossible, lexeme does never contain a newline]
@@ -188,13 +196,16 @@ CLASS::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
     // The flag '_indentation_count_enabled_f' tells us that before this
     // pattern there was only whitespace after newline. Let us add the
     // whitespace at the beginning of this pattern to the _indentation.
-    __count_whitespace_to_first_non_whitespace(Begin, Begin, End, /* LicenseToIncrementLineCountF = */ false);
+    __count_whitespace_to_first_non_whitespace(Begin, Begin, LexemeEnd, 
+                                               /* LicenseToIncrementLineCountF = */ false);
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
 
 inline void  
-CLASS::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
+CounterWithIndentation::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
+    // This is the fastest way to count: simply add the constant integer that represents 
+    // the constant length of the lexeme (for patterns with fixed length, e.g. keywords).
 {
     __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -208,7 +219,7 @@ CLASS::count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncre
 }
 
 inline void  
-CLASS::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
+CounterWithIndentation::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
 {
     __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -220,10 +231,10 @@ CLASS::count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement)
 }
 
 inline void
-CLASS::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration_it, 
-                                                  QUEX_CHARACTER_TYPE* Begin,
-                                                  QUEX_CHARACTER_TYPE* End,
-                                                  const bool              LicenseToCountF)
+CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration_it, 
+                                                                   QUEX_CHARACTER_TYPE* Begin,
+                                                                   QUEX_CHARACTER_TYPE* End,
+                                                                   const bool           LicenseToCountF)
 // NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
 //       from the following function or implement it unconditionally, since the decision
 //       is based on a constant (either true or false) -- once the function has been inlined.   
@@ -261,10 +272,10 @@ CLASS::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_con
 }
 
 inline void
-CLASS::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
-                               QUEX_CHARACTER_TYPE* Begin,
-                               QUEX_CHARACTER_TYPE* End, 
-                               const bool          LicenseToCountF)
+CounterWithIndentation::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
+                                                QUEX_CHARACTER_TYPE* Begin,
+                                                QUEX_CHARACTER_TYPE* End, 
+                                                const bool           LicenseToCountF)
 {
     // when inlined, this is a condition on a constant => deleted by compiler.
     if( LicenseToCountF == false ) return;

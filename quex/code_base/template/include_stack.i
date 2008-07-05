@@ -40,38 +40,20 @@ CLASS::__include_stack_push(InputHandle*         new_input_handle_p,
     current.current_mode_analyser_function_p = this->__current_mode_analyser_function_p ;
     current.continue_analysis_after_adapting_mode_function_p_f = \
                this->__continue_analysis_after_adapting_mode_function_p_f;
-#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#   ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
     current.begin_of_line_f = this->begin_of_line_f; 
-#       endif
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    current.indentation                 = this->_indentation;
-    current.indentation_count_enabled_f = this->_indentation_count_enabled_f;
-    current.indentation_event_enabled_f = this->_indentation_event_enabled_f;
-#       endif
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    current.line_number_at_end   = this->_line_number_at_end;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    current.column_number_at_end = this->_column_number_at_end;
-#       endif
+#   endif
+#   if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+       | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+       | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+    current.counter = this->counter;
+#   endif
 
     // (2) initializing the new state of the lexer for reading the new input file/stream
     QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(new_input_handle_p, IConvInputCodingName);
     QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-    _indentation                 = 0;
-    _indentation_count_enabled_f = false;
-    _indentation_event_enabled_f = true;
-#endif
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    _line_number_at_begin = 0;
-    _line_number_at_end   = 1;
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    _column_number_at_begin = 0;
-    _column_number_at_end   = 1; 
-#endif
+    this->counter.init();
 }   
 
 inline bool
@@ -88,20 +70,10 @@ CLASS::include_stack_pop()
     this->__current_mode_analyser_function_p  = previous.current_mode_analyser_function_p;
     this->__continue_analysis_after_adapting_mode_function_p_f = \
               previous.continue_analysis_after_adapting_mode_function_p_f;
-#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#   ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
     this->begin_of_line_f = previous.begin_of_line_f; 
-#       endif
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    this->_indentation                 = previous.indentation;
-    this->_indentation_count_enabled_f = previous.indentation_count_enabled_f;
-    this->_indentation_event_enabled_f = previous.indentation_event_enabled_f;
-#       endif
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    this->_line_number_at_end   = previous.line_number_at_end;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    this->_column_number_at_end = previous.column_number_at_end;
-#       endif
+#   endif
+    this->counter = previous.counter;
 
     _include_stack.pop_back();
 

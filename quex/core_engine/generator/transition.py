@@ -14,30 +14,17 @@ def __goto_distinct_terminal(Origin):
     return txt
 
 
-def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, 
-       BackwardLexingF, BackwardInputPositionDetectionF, 
-       DeadEndStateDB):
+def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
     """
-        StateMachineName: Name of the state machine.
-
         TargetStateIdx: != None: Index of the state to which 'goto' has to go.
                         == None: Drop Out. Goto a terminal state.
-
-        BackwardLexingF: Flag indicating wether this function is called during 
-                         normal forward lexing, or for the implementation of a 
-                         backwards state machine (complex pre-conditions).
-
-        DeadEndStateDB: Contains information about states that have no further transitions. 
-                        If a transition to such a state has to happen, on can directly
-                        go to a correspondent terminal.
-                        
     """
     LanguageDB = Setup.language_db
-    assert type(DeadEndStateDB) == dict
+    assert DSM.__class__.__name__ == "StateMachineDecorator"
     assert TargetStateIdx == None or TargetStateIdx >= 0
 
-    if DeadEndStateDB.has_key(TargetStateIdx):
-        dead_end_target_state = DeadEndStateDB[TargetStateIdx]
+    if DSM.dead_end_state_db().has_key(TargetStateIdx):
+        dead_end_target_state = DSM.dead_end_state_db()[TargetStateIdx]
         assert dead_end_target_state.is_acceptance(), \
                "NON-ACCEPTANCE dead end detected during code generation!\n" + \
                "A dead end that is not deleted must be an ACCEPTANCE dead end. See\n" + \
@@ -49,33 +36,34 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx,
             # Backward lexing (pre-condition or backward input position detection) cannot
             # depend on pre-conditions, since it is not part of the 'main' lexical analyser
             # process.
-            assert not BackwardLexingF
+            assert DSM.mode() == "ForwardLexing"
             return LanguageDB["$goto"]("$entry", TargetStateIdx)       # router to terminal
 
-        elif not BackwardLexingF:
+        elif DSM.mode() == "ForwardLexing":
             winner_origin = dead_end_target_state.origins().find_first_acceptance_origin()
-            assert type(winner_origin) != type(None) # see first condition in this block
+            assert type(winner_origin) != type(None) # see first assert in this block
 
             terminal_id = winner_origin.state_machine_id
 
             # During forward lexing (main lexer process) there are dedicated terminal states.
             return __goto_distinct_terminal(winner_origin)
 
-        else:
-            txt = ""
-            if not BackwardInputPositionDetectionF:
-                # When checking a pre-condition no dedicated terminal exists. However, when
-                # we check for pre-conditions, a pre-condition flag needs to be set.
-                txt += acceptance_info.backward_lexing(dead_end_target_state)
-            else:
-                # When searching backwards for the end of the core pattern, and one reaches
-                # a dead end state, then no position needs to be stored extra since it was
-                # stored at the entry of the state.
-                txt += LanguageDB["$input/decrement"] + "\n"
-                txt += acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state)
+        elif DSM.mode() == "BackwardLexing":
+            # When checking a pre-condition no dedicated terminal exists. However, when
+            # we check for pre-conditions, a pre-condition flag needs to be set.
+            return acceptance_info.backward_lexing(dead_end_target_state)
+
+        elif DSM.mode() == "BackwardInputPositionDetection":
+            # When searching backwards for the end of the core pattern, and one reaches
+            # a dead end state, then no position needs to be stored extra since it was
+            # stored at the entry of the state.
+            txt  = LanguageDB["$input/decrement"] + "\n"
+            txt += acceptance_info.backward_lexing_find_core_pattern(dead_end_target_state)
 
             txt += LanguageDB["$goto"]("$terminal-general", True)   # general terminal
             return txt
+        else:
+            assert False, "Impossible lexing mode: '%s'" % DSM.mode()
     
     # (*) A very normal transition to another state (maybe also a drop-out)
     if   TargetStateIdx == None:   

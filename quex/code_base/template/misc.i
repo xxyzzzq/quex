@@ -18,23 +18,12 @@ CLASS::_reset()
     QUEX_CORE_ANALYSER_STRUCT_init(this, 0, /* use same current buffer */0x0, 
                                    mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]->analyser_function);
 
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-    _indentation = 0;
-    _indentation_count_enabled_f = false;
-    _indentation_event_enabled_f = true;
-#endif
-#ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    _line_number_at_begin = 0;
-    _line_number_at_end   = 1;
-#endif
-#ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    _column_number_at_begin = 0;
-    _column_number_at_end   = 1; 
-#endif
+    counter.init();
+
     // empty the token queue
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
     this->_token_queue->reset();
-#endif
+#   endif
 
     set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
