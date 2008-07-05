@@ -40,12 +40,12 @@ namespace quex {
     public:
         CounterWithIndentation(CLASS*);
         void init();
-        void on_end_of_file(quex_mode& mode);
+        void on_end_of_file();
 
         void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 
         void  count_indentation(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE*  End);
-        void  count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* Begin);
+        void  count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
         void  count_indentation_NoNewline_NeverStartOnWhitespace(const int CharacterN);
         void  count_indentation_NoNewline_ContainsOnlySpace(const int CharacterN);
 

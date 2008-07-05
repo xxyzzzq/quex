@@ -9,7 +9,7 @@ CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 
     , accumulator(this)
 #   endif
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , CounterWithIndentation(this)
+    , counter(this)
 #   endif
 {
     // Buffer: Size = (see macro def.), Fallback = 10 Characters
@@ -32,7 +32,7 @@ CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* =
     , accumulator(this)
 #   endif
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , CounterWithIndentation(this)
+    , counter(this)
 #   endif
 {
     if( p_input_stream == NULL ) throw std::runtime_error("Error: received NULL as pointer to input stream.");
@@ -47,7 +47,7 @@ CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
     , accumulator(this)
 #   endif
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , CounterWithIndentation(this)
+    , counter(this)
 #   endif
 {
     if( fh == NULL ) throw std::runtime_error("Error: received NULL as a file handle.");

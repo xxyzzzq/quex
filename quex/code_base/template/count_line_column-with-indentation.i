@@ -16,28 +16,29 @@
 //       last end, such as _line_number_at_begin = _line_number_at_end.
 //       This has to happen outside these functions.
 inline 
-CounterWithIndentation::CounterWithIndentation()
+CounterWithIndentation::CounterWithIndentation(CLASS* TheLexer)
+    : _the_lexer(TheLexer)
 { init(); }
 
 inline void
-CounterWithIndentation::init(CLASS* TheLexer)
+CounterWithIndentation::init()
 {
     _indentation = 0;
     _indentation_count_enabled_f = false;
     _indentation_event_enabled_f = true;
-    _the_lexer = TheLexer;
 }
 
 inline void
-CounterWithIndentation::on_end_of_file(quex_mode& mode)
+CounterWithIndentation::on_end_of_file()
 {
     // 'flush' remaining indentations
-    if( _indentation_event_enabled_f ) mode.on_indentation(_the_lexer, _indentation);
+    if( _indentation_event_enabled_f ) 
+        _the_lexer->mode().on_indentation(_the_lexer, _indentation);
 }
 
 inline void    
-CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
-                                          QUEX_CHARACTER_TYPE* LexemeEnd)
+CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme_,
+                                          QUEX_CHARACTER_TYPE* LexemeEnd_)
 // Lexeme:    Pointer to first character of Lexeme.
 // LexemeEnd: Pointer to first character after Lexeme.
 //
@@ -81,12 +82,11 @@ CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
-    QUEX_CHARACTER_TYPE* Last  = LexemeEnd - 1;                
+    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme_;
+    QUEX_CHARACTER_TYPE* Last  = LexemeEnd_ - 1;                
     QUEX_CHARACTER_TYPE* it    = Last;
 
-    __quex_assert(Begin < LexemeEnd);                          // LexemeLength >= 1
-    __quex_assert(LexemeEnd <= __buffer->content_back() + 1);  // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < LexemeEnd_);   // LexemeLength >= 1: NEVER COMPROMISE THIS !
 
 
     // (1) Last character == newline ? _______________________________________________
@@ -135,7 +135,7 @@ CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
             //               no column number overflow / restart at '1'
             // no indentation enabled => no indentation increment
 #           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end += LexemeLength;
+            _column_number_at_end += LexemeEnd_ - Begin;
 #           endif
             return;
         }
@@ -156,7 +156,7 @@ CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
     //
     // -- whitespace from: start_consideration to first non-whitespace
     //    (indentation count is disabled if non-whitespace arrives)
-    __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, LexemeEnd, 
+    __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, LexemeEnd_, 
                                                /* LicenseToIncrementLineCountF = */ true);
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
@@ -164,18 +164,17 @@ CounterWithIndentation::count_indentation(QUEX_CHARACTER_TYPE* Lexeme,
 
 
 inline void    
-CounterWithIndentation::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
-                                                    QUEX_CHARACTER_TYPE* LexemeEnd)
+CounterWithIndentation::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme_,
+                                                    QUEX_CHARACTER_TYPE* LexemeEnd_)
 // Lexeme:    Pointer to first character of Lexeme.
 // LexemeEnd: Pointer to first character after Lexeme.
 {
     // NOTE: For an explanation of the algorithm, see the function:
     //       count_indentation(...)
     //
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
+    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme_;
 
-    __quex_assert(Begin < LexemeEnd);                       // LexemeLength >= 1
-    __quex_assert(LexemeEnd <= __buffer->content_back()+1); // End > Lexeme follows from LexemeL > 0
+    __quex_assert(Begin < LexemeEnd_); // LexemeLength >= 1: Never Compromise this!
 
     // (1) Last character == newline ? _______________________________________________
     //     [impossible, lexeme does never contain a newline]
@@ -188,7 +187,7 @@ CounterWithIndentation::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
         //               no column number overflow / restart at '1'
         // no indentation enabled => no indentation increment
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_end += LexemeLength;
+        _column_number_at_end += LexemeEnd_ - Begin;
 #       endif
         return;
     }
@@ -196,7 +195,7 @@ CounterWithIndentation::count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
     // The flag '_indentation_count_enabled_f' tells us that before this
     // pattern there was only whitespace after newline. Let us add the
     // whitespace at the beginning of this pattern to the _indentation.
-    __count_whitespace_to_first_non_whitespace(Begin, Begin, LexemeEnd, 
+    __count_whitespace_to_first_non_whitespace(Begin, Begin, LexemeEnd_, 
                                                /* LicenseToIncrementLineCountF = */ false);
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
@@ -213,7 +212,7 @@ CounterWithIndentation::count_indentation_NoNewline_NeverStartOnWhitespace(const
 #   endif
     if( _indentation_count_enabled_f ) {
         _indentation_count_enabled_f = false; 
-        mode().on_indentation(this, _indentation);
+        _the_lexer->mode().on_indentation(_the_lexer, _indentation);
     }
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
 }
@@ -256,7 +255,7 @@ CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTE
             //   no  -> enable event for the next time.
             //          indentation events can only be disabled for one coming event.
             if( _indentation_event_enabled_f ) 
-                mode().on_indentation(this, _indentation);
+                _the_lexer->mode().on_indentation(_the_lexer, _indentation);
             else
                 // event was disabled this time, enable it for the next time.
                 _indentation_event_enabled_f = true;
