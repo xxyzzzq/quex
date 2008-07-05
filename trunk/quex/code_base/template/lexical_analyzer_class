@@ -203,6 +203,10 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #define CLASS                            $$LEXER_CLASS_NAME$$
 #define __QUEX_SETTING_TOKEN_CLASS_NAME  $$TOKEN_CLASS$$
 
+namespace quex { 
+    class quex_mode;
+}
+#include <quex/code_base/template/counter>
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/template/accumulator>
 #endif
@@ -284,6 +288,12 @@ namespace quex {
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
+#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+    typedef CounterWithIndentation  CounterType;
+#   else
+    typedef Counter                 CounterType;
+#   endif
+
     class $$LEXER_CLASS_NAME$$ :
         protected QUEX_CORE_ANALYSER_STRUCT {
 
@@ -333,7 +343,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         template <class InputHandle> 
         quex::buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
                                                          const char*  IConvInputCodingName = 0x0);
-        //
+          
         // (*) Token sending
         void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const $$TOKEN_CLASS$$& That);
@@ -341,10 +351,33 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void        send_n(const int N, const $$TOKEN_CLASS$$::id_type TokenID);
         template <typename ContentT> 
         void        send(const $$TOKEN_CLASS$$::id_type TokenID, ContentT Content);
+
+
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        int  line_number() const          { return line_number_at_begin(); }
+        int  line_number_at_begin() const { return counter._line_number_at_begin; }
+        int  line_number_at_end() const   { return counter._line_number_at_end; }
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        int  column_number() const          { return column_number_at_begin(); }
+        int  column_number_at_begin() const { return counter._column_number_at_begin; }
+        int  column_number_at_end() const   { return counter._column_number_at_end; }
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        int  indentation() { return counter._indentation; }
+#       endif
+
         //
         // (*) Version information
         const char* version() const; // created by quex for version/date information
 
+    private:
+        // (*) Helper
+        //      -- put whole pattern back into the 'stream to be lexed'
+        void  move_forward(const size_t);
+        void  move_backward(const size_t);
+
+    public:
 #    ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         struct memento {
             quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
@@ -354,16 +387,10 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 #           ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
             int                      begin_of_line_f; 
 #           endif
-#           ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-            int     indentation;
-            bool    indentation_count_enabled_f;
-            bool    indentation_event_enabled_f;
-#           endif
-#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            int     column_number_at_end;           // column after current pattern
-#           endif
-#           ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-            int     line_number_at_end;             // line after current pattern
+#           if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+               | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+               | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+            CounterType              counter;
 #           endif
         };
         std::vector<memento>  _include_stack;
@@ -380,69 +407,17 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void   _reset();
 
      private:
+#       if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+           | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+           | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+        CounterType   counter;
+#       endif
+
         template <class InputHandle> 
         void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
                                     const char* IConvInputCodingName);
 #   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
 
-#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    private: 
-        int  _line_number_at_begin;   // line where current pattern starts
-        int  _line_number_at_end;     // line after current pattern
-    public:  
-        int  line_number() const          { return line_number_at_begin(); }
-        int  line_number_at_begin() const { return _line_number_at_begin; }
-        int  line_number_at_end() const   { return _line_number_at_end; }
-#   endif
-
-#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    private: 
-        int  _column_number_at_begin;  // column where current pattern starts
-        int  _column_number_at_end;   // column after current pattern
-    public:  
-        int  column_number() const          { return column_number_at_begin(); }
-        int  column_number_at_begin() const { return _column_number_at_begin; }
-        int  column_number_at_end() const   { return _column_number_at_end; }
-#   endif
-
-
-    private:
-        // (*) Helper
-        //      -- put whole pattern back into the 'stream to be lexed'
-        void  move_forward(const size_t);
-        void  move_backward(const size_t);
-
-        //      -- functions computing the current line and column number
-        void  count(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength);
-        void  count_NoNewline(const int LexemeLength);
-        void  count_FixNewlineN(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength, 
-                                const int        LineNIncrement);
-
-#    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-        void  count_indentation(QUEX_CHARACTER_TYPE* Lexeme, const int  LexemeLength);
-        void  count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Lexeme, const int LexemeLength);
-        void  count_indentation_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement);
-        void  count_indentation_NoNewline_ContainsOnlySpace(const int ColumnNIncrement);
-
-        void  __count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
-                                      QUEX_CHARACTER_TYPE* Begin,
-                                      QUEX_CHARACTER_TYPE* End, 
-                                      const bool       LicenseToCountF);
-
-        void  __count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration, 
-                                                         QUEX_CHARACTER_TYPE* Begin,
-                                                         QUEX_CHARACTER_TYPE* End,
-                                                         const bool       LicenseToCountF);
-#    endif 
-        void  __count_shift_end_values_to_start_values();
-
-        void  __count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
-                                          QUEX_CHARACTER_TYPE* Begin);
-
-        QUEX_CHARACTER_TYPE* __count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
-                                                                QUEX_CHARACTER_TYPE* End,
-                                                                const int    LexemeLength,
-                                                                const bool   LicenseToIncrementLineCountF=false);
 
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
@@ -505,25 +480,12 @@ $$MODE_OBJECT_MEMBERS$$
         PostCategorizer    post_categorizer;
 #       endif
 
-
-
         // (*) All Modes are Friends _____________________________________________________
 $$MODE_CLASS_FRIENDS$$  
         // (*) User defined Friends ______________________________________________________
 $$LEXER_CLASS_FRIENDS$$
         // (*) User's Lexer Class Body Extenstion ________________________________________
 $$CLASS_BODY_EXTENSION$$
-
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        // (*) Python-like indentation support ___________________________________________
-    private:    
-        int     _indentation;                 // number of columns to first non-whitespace
-        //                                    // in the current line.
-        bool    _indentation_count_enabled_f; // count whitespace for indentation?
-        bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
-    public:
-        void    disable_next_indentation_event() { _indentation_event_enabled_f = false; }
-#endif 
 
     private:
         void __debug_print_transition(quex_mode* Source, quex_mode* Target);
@@ -542,28 +504,12 @@ $$CLASS_BODY_EXTENSION$$
 #endif
     };
 
-#   define CLASS $$LEXER_CLASS_NAME$$
-
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
     {
         QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
         QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        _indentation = 0;
-        _indentation_count_enabled_f = false;
-        _indentation_event_enabled_f = true;
-#       endif
-
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        _line_number_at_begin = 0;
-        _line_number_at_end   = 1;
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_begin = 0;
-        _column_number_at_end   = 1; 
-#       endif
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new token_queue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
 #       endif

@@ -148,7 +148,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
               ["QUEX_GOTO_LABEL_TYPE",        "drop_out_state_index",           "QUEX_GOTO_STATE_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
               ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"], 
-              ["QUEX_CHARACTER_TYPE*",        "Lexeme",                         "0x0"],
               ["size_t",                      "LexemeL",                        "-1"],
               ["int",                         "loaded_byte_n",                  "-1"]])
               
@@ -199,14 +198,12 @@ $$STATE_MACHINE_NAME$$_buffer_reload_forward(QUEX_CORE_BUFFER_TYPE* buffer,
                                QUEX_CHARACTER_POSITION* last_acceptance_input_position
                                $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
     const size_t LoadedByteN = QUEX_BUFFER_LOAD_FORWARD();
     if( LoadedByteN == 0 ) return false;
 
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD_SUCCESS");
     if( *last_acceptance_input_position != 0x0 ) { 
         *last_acceptance_input_position -= LoadedByteN;
-        QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); 
+        // QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); 
     }                                                                  
                                                                           
 $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
@@ -216,11 +213,9 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 static bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_backward(QUEX_CORE_BUFFER_TYPE* buffer)
 {
-    QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD");
     const size_t LoadedByteN = QUEX_BUFFER_LOAD_BACKWARD();
     if( LoadedByteN == 0 ) return false;
     
-    QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD_SUCCESS");
     /* Backward lexing happens in two cases:
      *
      *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
@@ -319,10 +314,10 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
     if SupportBeginOfLineF:
         txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN();\n"
 
-    if action_info.contains_Lexeme_object(ignored_code_regions):
+    if action_info.contains_variable("Lexeme", ignored_code_regions):
         txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT();\n"
 
-    if action_info.contains_LexemeLength_object(ignored_code_regions):      
+    if action_info.contains_variable("LexemeL", ignored_code_regions):
         txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH();\n"
 
     txt += indentation + "{\n"

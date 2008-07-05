@@ -68,6 +68,9 @@ namespace quex {
         bool operator!=(const memory_position_mimiker& That)
         { return ! (this->operator==(That)); }
 
+        bool operator==(const character_type* ThatAdr) { return this->address == ThatAdr; }
+        bool operator!=(const character_type* ThatAdr) { return this->address != ThatAdr; }
+
         // When loading forward from the stream, the pointers to memory_positions move backwards.
         // Thus, the signs in the operators are mirrored.
         // (operators not to be used in concatination -> void)

@@ -22,7 +22,7 @@ from quex.core_engine.interval_handling  import NumberSet, Interval
 from quex.core_engine.state_machine.core import State, StateMachine
 
 import quex.core_engine.generator.languages.core as languages
-import quex.core_engine.generator.state_coder    as state_transition_coder
+import quex.core_engine.generator.transition_block as transition_block
 from   quex.core_engine.generator.state_machine_coder import StateMachineDecorator
 
 if "--hwut-info" in sys.argv:
@@ -43,7 +43,7 @@ state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
-function = "def example_func(input):\n" + state_transition_coder.do(state, -1, dsm, False)
+function = "def example_func(input):\n" + transition_block.do(state, -1, False, dsm)
 ##function = function.replace("_-1_", "_MINUS_1_")
 ##line_n = 0
 ##for line in function.split("\n"):

@@ -6,20 +6,16 @@ LanguageDB = Setup.language_db
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 class __info:
-    def __init__(self, State, StateIdx, IsInitStateF, 
-                 BackwardLexingF, BackwardInputPositionDetectionF, 
-                 DeadEndStateDB):
+    def __init__(self, State, StateIdx, IsInitStateF, DSM):
+        assert DSM.__class__.__name__ == "StateMachineDecorator"
+
         self.state              = State
         self.state_index        = StateIdx
         self.is_init_state_f    = IsInitStateF
 
-        self.backward_f        = BackwardLexingF
-        self.backward_input_position_detection_f = BackwardInputPositionDetectionF
-        self.dead_end_state_db = DeadEndStateDB
+        self.dsm = DSM
 
-def do(state, StateIdx, InitStateF, 
-       BackwardLexingF, BackwardInputPositionDetectionF, 
-       DeadEndStateDB):
+def do(state, StateIdx, InitStateF, DSM):
 
     TriggerMap = state.transitions().get_trigger_map()
     # If a state has no transitions, no new input needs to be eaten => no reload.
@@ -32,10 +28,7 @@ def do(state, StateIdx, InitStateF,
     assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
     #                       # are not to be coded at this place.
 
-    info = __info(State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, 
-                  BackwardLexingF=BackwardLexingF, 
-                  BackwardInputPositionDetectionF=BackwardInputPositionDetectionF, 
-                  DeadEndStateDB=DeadEndStateDB)
+    info = __info(State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
 
     if len(TriggerMap) > 1:
         txt = __get_code(TriggerMap, info)
@@ -47,9 +40,7 @@ def do(state, StateIdx, InitStateF,
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        txt =  "    " + transition.do(StateIdx, TriggerMap[0][0], TriggerMap[0][1], 
-                                      BackwardLexingF, BackwardInputPositionDetectionF, 
-                                      DeadEndStateDB) 
+        txt =  "    " + transition.do(StateIdx, TriggerMap[0][0], TriggerMap[0][1], DSM)
 
     return txt + "\n"
 
@@ -119,8 +110,7 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #  respective language module.
     #
     txt =  "    " + transition.do(info.state_index, interval, target_state_index, 
-                                  info.backward_f, info.backward_input_position_detection_f,
-                                  DeadEndStateDB = info.dead_end_state_db) 
+                                  info.dsm)
     txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 

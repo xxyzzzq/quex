@@ -17,7 +17,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
-#define QUEX_VERSION  "0.29.2-unstable"
+#define QUEX_VERSION  "0.30.2"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -696,15 +696,40 @@ namespace quex {
 
 #endif
 
-#define Simple_on_buffer_reload(LoadedByteN)         \
-        /* Is this condition really necessary? <fschaef 07y7m26d> */        \
-        if( (QUEX_CHARACTER_TYPE*)last_acceptance_input_position != 0x0 ) { \
-            last_acceptance_input_position -= LoadedByteN;                  \
-            QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", last_acceptance_input_position); \
-        }                                                                   \
-                                                                            \
-                
+static bool 
+ONE_AND_ONLY_buffer_reload_forward(QUEX_CORE_BUFFER_TYPE* buffer, 
+                               QUEX_CHARACTER_POSITION* last_acceptance_input_position
+                               )
+{
+    const size_t LoadedByteN = QUEX_BUFFER_LOAD_FORWARD();
+    if( LoadedByteN == 0 ) return false;
 
+    if( *last_acceptance_input_position != 0x0 ) { 
+        *last_acceptance_input_position -= LoadedByteN;
+        // QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); 
+    }                                                                  
+                                                                          
+                
+    return true;
+}
+
+static bool 
+ONE_AND_ONLY_buffer_reload_backward(QUEX_CORE_BUFFER_TYPE* buffer)
+{
+    const size_t LoadedByteN = QUEX_BUFFER_LOAD_BACKWARD();
+    if( LoadedByteN == 0 ) return false;
+    
+    /* Backward lexing happens in two cases:
+     *
+     *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
+     *      is involved. No acceptance positions are considered.
+     *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
+     *      post conditions. Then, no acceptance positions are involved, because
+     *      the start of the lexeme shall not drop before the begin of the buffer 
+     *      and the end of the core pattern, is of course, after the start of the 
+     *      lexeme. => there will be no reload backwards. */
+    return true;
+}
 
 QUEX_ANALYSER_RETURN_TYPE
 quex::Simple_ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) 
@@ -972,9 +997,15 @@ STATE_249_DROP_OUT_DIRECT:
         /* NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state */
         goto TERMINAL_END_OF_STREAM;
     }
-        QUEX_SET_drop_out_state_index(249);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+        QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_249_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 STATE_249_INPUT:
     QUEX_DEBUG_LABEL_PASS("STATE_249_INPUT");
     QUEX_BUFFER_INCREMENT();
@@ -1037,9 +1068,15 @@ STATE_257_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(257);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_257_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_259:
     QUEX_DEBUG_LABEL_PASS("STATE_259");
@@ -1071,9 +1108,15 @@ STATE_259_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(35);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(259);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_259_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_260:
     QUEX_DEBUG_LABEL_PASS("STATE_260");
@@ -1129,9 +1172,15 @@ STATE_260_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(260);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_260_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_261:
     QUEX_DEBUG_LABEL_PASS("STATE_261");
@@ -1187,9 +1236,15 @@ STATE_261_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(261);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_261_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_262:
     QUEX_DEBUG_LABEL_PASS("STATE_262");
@@ -1245,9 +1300,15 @@ STATE_262_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(262);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_262_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_263:
     QUEX_DEBUG_LABEL_PASS("STATE_263");
@@ -1303,9 +1364,15 @@ STATE_263_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(263);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_263_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_264:
     QUEX_DEBUG_LABEL_PASS("STATE_264");
@@ -1361,9 +1428,15 @@ STATE_264_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(264);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_264_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_265:
     QUEX_DEBUG_LABEL_PASS("STATE_265");
@@ -1411,9 +1484,15 @@ STATE_265_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(7);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(265);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_265_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_266:
     QUEX_DEBUG_LABEL_PASS("STATE_266");
@@ -1469,9 +1548,15 @@ STATE_266_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(266);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_266_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_267:
     QUEX_DEBUG_LABEL_PASS("STATE_267");
@@ -1519,9 +1604,15 @@ STATE_267_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(16);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(267);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_267_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_268:
     QUEX_DEBUG_LABEL_PASS("STATE_268");
@@ -1577,9 +1668,15 @@ STATE_268_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(268);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_268_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_269:
     QUEX_DEBUG_LABEL_PASS("STATE_269");
@@ -1627,9 +1724,15 @@ STATE_269_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(10);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(269);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_269_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_270:
     QUEX_DEBUG_LABEL_PASS("STATE_270");
@@ -1685,9 +1788,15 @@ STATE_270_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(270);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_270_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_271:
     QUEX_DEBUG_LABEL_PASS("STATE_271");
@@ -1743,9 +1852,15 @@ STATE_271_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(271);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_271_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_272:
     QUEX_DEBUG_LABEL_PASS("STATE_272");
@@ -1801,9 +1916,15 @@ STATE_272_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(272);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_272_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_273:
     QUEX_DEBUG_LABEL_PASS("STATE_273");
@@ -1859,9 +1980,15 @@ STATE_273_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(273);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_273_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_274:
     QUEX_DEBUG_LABEL_PASS("STATE_274");
@@ -1909,9 +2036,15 @@ STATE_274_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(13);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(274);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_274_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_275:
     QUEX_DEBUG_LABEL_PASS("STATE_275");
@@ -1967,9 +2100,15 @@ STATE_275_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(275);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_275_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_276:
     QUEX_DEBUG_LABEL_PASS("STATE_276");
@@ -2025,9 +2164,15 @@ STATE_276_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(276);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_276_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_277:
     QUEX_DEBUG_LABEL_PASS("STATE_277");
@@ -2083,9 +2228,15 @@ STATE_277_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(277);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_277_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_278:
     QUEX_DEBUG_LABEL_PASS("STATE_278");
@@ -2141,9 +2292,15 @@ STATE_278_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(278);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_278_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_279:
     QUEX_DEBUG_LABEL_PASS("STATE_279");
@@ -2191,9 +2348,15 @@ STATE_279_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(19);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(279);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_279_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_250:
     QUEX_DEBUG_LABEL_PASS("STATE_250");
@@ -2249,9 +2412,15 @@ STATE_250_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(250);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_250_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_251:
     QUEX_DEBUG_LABEL_PASS("STATE_251");
@@ -2299,9 +2468,15 @@ STATE_251_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(5);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(251);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_251_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_252:
     QUEX_DEBUG_LABEL_PASS("STATE_252");
@@ -2357,9 +2532,15 @@ STATE_252_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(252);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_252_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_254:
     QUEX_DEBUG_LABEL_PASS("STATE_254");
@@ -2415,9 +2596,15 @@ STATE_254_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(254);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_254_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 STATE_255:
     QUEX_DEBUG_LABEL_PASS("STATE_255");
@@ -2465,9 +2652,15 @@ STATE_255_DROP_OUT_DIRECT:
     QUEX_SET_last_acceptance(41);
     QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
     
-    QUEX_SET_drop_out_state_index(255);
-    goto __FORWARD_DROP_OUT_HANDLING;
-    
+    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
+if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
+   goto STATE_255_INPUT;
+}
+
+QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
+QUEX_GOTO_last_acceptance();
+
+
 
 
   // (*) Terminal states _______________________________________________________
@@ -2497,7 +2690,7 @@ TERMINAL_35_DIRECT:
         #else
         self.send(atoi((char*)Lexeme)); return TKN_NUMBER;
         #endif
-#line 1839 "Simple-core-engine.cpp"
+#line 2032 "Simple-core-engine.cpp"
         
         }
     }
@@ -2541,7 +2734,7 @@ TERMINAL_7_DIRECT:
         #else
         self.send(); return TKN_STRUCT;
         #endif
-#line 1883 "Simple-core-engine.cpp"
+#line 2076 "Simple-core-engine.cpp"
         
         }
     }
@@ -2564,7 +2757,7 @@ TERMINAL_41_DIRECT:
         
         #line 28 "dos_lf_2.qx"
         self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 1906 "Simple-core-engine.cpp"
+#line 2099 "Simple-core-engine.cpp"
         
         }
     }
@@ -2589,7 +2782,7 @@ TERMINAL_10_DIRECT:
         #else
         self.send(); return TKN_TYPE_INT;
         #endif
-#line 1931 "Simple-core-engine.cpp"
+#line 2124 "Simple-core-engine.cpp"
         
         }
     }
@@ -2614,7 +2807,7 @@ TERMINAL_13_DIRECT:
         #else
         self.send(); return TKN_TYPE_DOUBLE;
         #endif
-#line 1956 "Simple-core-engine.cpp"
+#line 2149 "Simple-core-engine.cpp"
         
         }
     }
@@ -2639,7 +2832,7 @@ TERMINAL_16_DIRECT:
         #else
         self.send(); return TKN_SEND;
         #endif
-#line 1981 "Simple-core-engine.cpp"
+#line 2174 "Simple-core-engine.cpp"
         
         }
     }
@@ -2664,7 +2857,7 @@ TERMINAL_19_DIRECT:
         #else
         self.send(); return TKN_EXPECT;
         #endif
-#line 2006 "Simple-core-engine.cpp"
+#line 2199 "Simple-core-engine.cpp"
         
         }
     }
@@ -2689,7 +2882,7 @@ TERMINAL_22_DIRECT:
         #else
         self.send(); return TKN_SEMICOLON;
         #endif
-#line 2031 "Simple-core-engine.cpp"
+#line 2224 "Simple-core-engine.cpp"
         
         }
     }
@@ -2714,7 +2907,7 @@ TERMINAL_25_DIRECT:
         #else
         self.send(); return TKN_BRACKET_OPEN;
         #endif
-#line 2056 "Simple-core-engine.cpp"
+#line 2249 "Simple-core-engine.cpp"
         
         }
     }
@@ -2739,7 +2932,7 @@ TERMINAL_28_DIRECT:
         #else
         self.send(); return TKN_BRACKET_CLOSE;
         #endif
-#line 2081 "Simple-core-engine.cpp"
+#line 2274 "Simple-core-engine.cpp"
         
         }
     }
@@ -2760,7 +2953,7 @@ TERMINAL_END_OF_STREAM:
         #else
         self.send(); return TKN_TERMINATION;
         #endif
-#line 2102 "Simple-core-engine.cpp"
+#line 2295 "Simple-core-engine.cpp"
         
         }
                 }
@@ -2845,65 +3038,6 @@ __REENTRY_PREPARATION:
     //
     __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
     goto __REENTRY;
-
-__FORWARD_DROP_OUT_HANDLING:
-    QUEX_DEBUG_LABEL_PASS("__FORWARD_DROP_OUT_HANDLING");
-    // Since all drop out states work the same, we introduce here a 'router' that
-    // jumps to a particular state based on the setting of a variable: drop_out_state_index.
-    loaded_byte_n = QUEX_BUFFER_LOAD_FORWARD();
-    if( loaded_byte_n != 0 ) {
-        Simple_on_buffer_reload(loaded_byte_n);
-        QUEX_GOTO_drop_out_state_index();
-    }
-    // no load possible (EOF) => (i)  goto general terminal
-    //                           (ii) init state triggers EOF action
-    QUEX_GOTO_last_acceptance();
-
-#if 0
-__BACKWARD_DROP_OUT_HANDLING:
-    QUEX_DEBUG_LABEL_PASS("__BACKWARD_DROP_OUT_HANDLING");
-    QUEX_BUFFER_LOAD_BACKWARD();
-    if( ! QUEX_BEGIN_OF_FILE() ) { 
-        // no re-computation required, since we're not in 'normal lexing mode'
-        QUEX_GOTO_drop_out_state_index();
-    }
-    goto TERMINAL_GENERAL_BACKWARD;
-#endif
-
-#if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-__DROP_OUT_ROUTING:
-    switch( drop_out_state_index ) {
-            case 257: goto STATE_257_INPUT;
-            case 259: goto STATE_259_INPUT;
-            case 260: goto STATE_260_INPUT;
-            case 261: goto STATE_261_INPUT;
-            case 262: goto STATE_262_INPUT;
-            case 263: goto STATE_263_INPUT;
-            case 264: goto STATE_264_INPUT;
-            case 265: goto STATE_265_INPUT;
-            case 266: goto STATE_266_INPUT;
-            case 267: goto STATE_267_INPUT;
-            case 268: goto STATE_268_INPUT;
-            case 269: goto STATE_269_INPUT;
-            case 270: goto STATE_270_INPUT;
-            case 271: goto STATE_271_INPUT;
-            case 272: goto STATE_272_INPUT;
-            case 273: goto STATE_273_INPUT;
-            case 274: goto STATE_274_INPUT;
-            case 275: goto STATE_275_INPUT;
-            case 276: goto STATE_276_INPUT;
-            case 277: goto STATE_277_INPUT;
-            case 278: goto STATE_278_INPUT;
-            case 279: goto STATE_279_INPUT;
-            case 249: goto STATE_249_INPUT;
-            case 250: goto STATE_250_INPUT;
-            case 251: goto STATE_251_INPUT;
-            case 252: goto STATE_252_INPUT;
-            case 254: goto STATE_254_INPUT;
-            case 255: goto STATE_255_INPUT;
-
-    }
-#endif
 
     // prevent compiler warning 'unused variable': use variables once in a part of the code
     // that is never reached (and deleted by the compiler anyway).

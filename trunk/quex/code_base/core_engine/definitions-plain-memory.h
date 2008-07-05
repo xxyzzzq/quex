@@ -73,6 +73,10 @@ struct QUEX_CORE_ANALYSER_STRUCT {
 #define QUEX_BUFFER_LOAD_BACKWARD()                      \
         (0 /* empty */)
 
+#define Lexeme       (me->lexeme_start_p)
+#define LexemeBegin  (me->lexeme_start_p)
+#define LexemeEnd    (me->input_p)
+
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
  *    After pre-condition state machines analyzed backwards, the analyzer needs
