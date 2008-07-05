@@ -407,12 +407,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void   _reset();
 
      private:
-#       if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
-           | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
-           | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-        CounterType   counter;
-#       endif
-
         template <class InputHandle> 
         void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
                                     const char* IConvInputCodingName);
@@ -475,6 +469,12 @@ $$MODE_OBJECT_MEMBERS$$
         // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
         Accumulator        accumulator;
 #       endif
+#       if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+           | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+           | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+        CounterType   counter;
+#       endif
+
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
     public:
         PostCategorizer    post_categorizer;

@@ -36,7 +36,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
         
     if EOF_ActionF:
         txt += "#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT\n"
-        txt += "    counter.on_end_of_file(me->mode());\n"
+        txt += "    counter.on_end_of_file();\n"
         txt += "#endif\n"
 
     # -- THE action code as specified by the user

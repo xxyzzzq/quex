@@ -26,5 +26,5 @@ echo "(4b) --token-class-file without argument"
 quex -i error.qx -o Simple  --token-class-file Otto --token-class
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token-ids Simplism
+rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism
 cd $tmp

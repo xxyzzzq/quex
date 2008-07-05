@@ -31,7 +31,7 @@ Counter::init()
 }
 
 inline void    
-Counter::count(QUEX_CHARACTER_TYPE* Lexeme, QUEX_CHARACTER_TYPE* LexemeEnd)
+Counter::count(QUEX_CHARACTER_TYPE* Lexeme_, QUEX_CHARACTER_TYPE* LexemeEnd_)
 // PURPOSE:
 //   Adapts the column number and the line number according to the newlines
 //   and letters of the last line occuring in the lexeme.
@@ -45,8 +45,8 @@ Counter::count(QUEX_CHARACTER_TYPE* Lexeme, QUEX_CHARACTER_TYPE* LexemeEnd)
     ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
     return;
 #else
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
-    QUEX_CHARACTER_TYPE* it = __count_chars_to_newline_backwards(Begin, LexemeEnd, LexemeEnd - Begin,
+    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme_;
+    QUEX_CHARACTER_TYPE* it = __count_chars_to_newline_backwards(Begin, LexemeEnd_, LexemeEnd_ - Begin,
                                                                  /* LicenseToIncrementLineCountF = */ true);
 
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -72,19 +72,19 @@ Counter::count_NoNewline(const int LexemeLength)
 }
 
 inline void  
-Counter::count_FixNewlineN(QUEX_CHARACTER_TYPE* Lexeme,
-                           QUEX_CHARACTER_TYPE* LexemeEnd,
+Counter::count_FixNewlineN(QUEX_CHARACTER_TYPE* Lexeme_,
+                           QUEX_CHARACTER_TYPE* LexemeEnd_,
                            const int            LineNIncrement) 
 {
-    __quex_assert( LexemeEnd > Lexeme );
+    __quex_assert( LexemeEnd_ > Lexeme_ );
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
     _line_number_at_end += LineNIncrement;
 #   endif
 
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    __count_chars_to_newline_backwards((QUEX_CHARACTER_TYPE*)Lexeme, 
-                                       (QUEX_CHARACTER_TYPE*)(LexemeEnd), 
-                                       LexemeEnd - Lexeme,
+    __count_chars_to_newline_backwards((QUEX_CHARACTER_TYPE*)Lexeme_, 
+                                       (QUEX_CHARACTER_TYPE*)(LexemeEnd_), 
+                                       LexemeEnd_ - Lexeme_,
                                        /* LicenseToIncrementLineCountF = */ false);
 #   endif
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();

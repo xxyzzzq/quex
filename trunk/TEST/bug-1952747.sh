@@ -10,5 +10,5 @@ cd $bug/
 quex -i simple.qx -o Simple
 grep -e user_specified_tkn_termination_handler Simple-core-engine.cpp
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token-ids 
+rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids 
 cd $tmp
