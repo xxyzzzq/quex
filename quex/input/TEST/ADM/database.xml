@@ -1,23 +1,23 @@
-<test-database execution-time-sec="14.74" date="Fri Jul  4 06:01:49 2008">
+<test-database execution-time-sec="29.57" date="Sun Jul  6 10:07:56 2008">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" make-required="True" time-sum-sec="1.31"> 
+        <test title="Wildcard Property Values" make-required="True" time-sum-sec="2.71"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1215055707L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.31" crc="-989951512"/>
+               <choice name="" result="OK" time-sec="2.71" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" make-required="True" time-sum-sec="11.98"> 
+        <test title="Information about Properties" make-required="True" time-sum-sec="23.97"> 
             <application file-name="test-query.py" info-request-time="1215055707L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="10.62" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="1.37" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time-sec="21.20" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="2.77" crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="1.45"> 
+        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="2.90"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1215055707L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.45" crc="-1719645304"/>
+               <choice name="" result="OK" time-sec="2.90" crc="-1719645304"/>
             </choice-list>
         </test>
     </group>

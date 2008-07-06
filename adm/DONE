@@ -1,3 +1,16 @@
+(*) 08y2m6d:
+
+    In the epsilon transition print the remaining triggers are printed.
+    This is misleading, since an epsilon transition actually 'merges'
+    with the target state.
+
+(*) 08y5m9d:
+
+    Init state: a 'pure get()' would be more appropriate. For this the _current_p
+    needs to point to one position afer the last match. This would also make the
+    check for 'begin of buffer' unnecessary in case of backward lexing at the
+    initial state.
+
 (*) 08y6m6d from 07y7m10d:
 
    THIS has been implemented in quex version 0.26.1 (see repository).

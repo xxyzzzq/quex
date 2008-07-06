@@ -131,9 +131,10 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_BUFFER_LOAD_BACKWARD()               \
         (buffer->load_backward())
 
-#define Lexeme       (me->__buffer->get_lexeme_start_p())
-#define LexemeBegin  (me->__buffer->get_lexeme_start_p())
-#define LexemeEnd    (me->__buffer->current_p())
+#define QUEX_DEFINITION_Lexeme       (me->__buffer->get_lexeme_start_p())
+#define QUEX_DEFINITION_LexemeBegin  (me->__buffer->get_lexeme_start_p())
+#define QUEX_DEFINITION_LexemeEnd    (me->__buffer->current_p())
+#define QUEX_DEFINITION_LexemeL      ((size_t)(((LexemeEnd) - (LexemeBegin))))
 
 /* QUEX_BUFFER_SEEK_START_POSITION()
  *
@@ -160,36 +161,12 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT*   me,
 #define QUEX_PREPARE_LEXEME_OBJECT()                                                  \
         me->char_covered_by_terminating_zero = me->__buffer->get_current_character(); \
         me->__buffer->set_current_character('\0');                                    \
-        Lexeme = (QUEX_CHARACTER_TYPE*)(me->__buffer->get_lexeme_start_p());                              
-
-/* The QUEX_DO_NOT_PREPARE_LEXEME_OBJECT is the alternative to 
-** QUEX_PREPARE_LEXEME_OBJECT in case that no Lexeme object is
-** to be prepared, but the QUEX_UNDO_PREPARE_LEXEME_OBJECT must
-** still be a valid operation at the beginning of the next analysis.
-*/
-#define QUEX_DO_NOT_PREPARE_LEXEME_OBJECT()  /* empty */
 
 #define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                              \
         if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {      \
            me->__buffer->set_current_character(me->char_covered_by_terminating_zero);  \
            me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';           \
         }
-
-/* IMPORTANT: 
-**
-**    The lexeme length must use the **current position** as a reference.
-**    It can be assumed, that in case of acceptance, the SEEK to the last
-**    acceptance has preceeded this command. 
-**
-**    IF YOU REFER THE LEXEME LENGTH TO THE LAST ACCEPTANCE POSITION, THEN
-**    THE DEFAULT ACTION MAY FAIL, BECAUSE THE LAST_ACCEPTANCE_INPUT_POSITION
-**    CAN BE ANYTHING.
-*/
-#define QUEX_PREPARE_LEXEME_LENGTH()                                                     \
-        __quex_assert(me->__buffer->current_p() >= me->__buffer->get_lexeme_start_p());  \
-        LexemeL = (size_t)(me->__buffer->current_p() - me->__buffer->get_lexeme_start_p());       
-
-
 
 #ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
 

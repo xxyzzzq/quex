@@ -22,6 +22,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
     #    (if mode requires indentation events, than a different counting scheme is used)
     if Mode.on_indentation.line_n != -1:
         txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
+
     elif not EOF_ActionF:
         # When there is no indentation detection involved, then there is no need to 
         # count anymore, as soon as the EOF comes in.
@@ -36,7 +37,7 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
         
     if EOF_ActionF:
         txt += "#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT\n"
-        txt += "    counter.on_end_of_file();\n"
+        txt += "    self.counter.on_end_of_file();\n"
         txt += "#endif\n"
 
     # -- THE action code as specified by the user
@@ -64,7 +65,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
     txt = "self.counter.__shift_end_values_to_start_values();\n"
 
     if PatternStateMachine == None:
-        return txt + "self.counter.count(Lexeme, LexemeEnd);\n"
+        return txt + "self.counter.icount(Lexeme, LexemeEnd);\n"
 
     newline_n   = pattern_analyzer.get_newline_n(PatternStateMachine)
     character_n = pattern_analyzer.get_character_n(PatternStateMachine)
@@ -80,18 +81,18 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
         # IDEA: (case newline_n > 0) 
         #       Try to determine number of characters backwards to newline directly
         #       from the pattern state machine.
-        func = "self.counter.count(Lexeme, LexemeEnd);"       
+        func = "self.counter.icount(Lexeme, LexemeEnd);"       
 
     else:
         if character_n == -1: column_increment = "LexemeL"          # based on matched lexeme
         else:                 column_increment = "%i" % character_n # fixed length
             
         if starts_never_on_whitespace_f:
-            func = "self.counter.count_NoNewline_NeverStartOnWhitespace(%s);" % column_increment
+            func = "self.counter.icount_NoNewline_NeverStartOnWhitespace(%s);" % column_increment
         elif contains_only_spaces_f:
-            func = "self.counter.count_NoNewline_ContainsOnlySpaces(%s);" % column_increment
+            func = "self.counter.icount_NoNewline_ContainsOnlySpaces(%s);" % column_increment
         else:
-            func = "self.counter.count_NoNewline(Lexeme, LexemeEnd);"
+            func = "self.counter.icount_NoNewline(Lexeme, LexemeEnd);"
 
     return txt + func + "\n"
 
