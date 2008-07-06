@@ -145,11 +145,9 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     local_variable_list.extend(
             [ ["QUEX_GOTO_LABEL_TYPE",        "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
-              ["QUEX_GOTO_LABEL_TYPE",        "drop_out_state_index",           "QUEX_GOTO_STATE_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
-              ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"], 
-              ["size_t",                      "LexemeL",                        "-1"],
-              ["int",                         "loaded_byte_n",                  "-1"]])
+              ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
+            ])
               
     # -- post-condition position: store position of original pattern
     for state_machine_id in PostConditionedStateMachineID_List:
@@ -252,6 +250,10 @@ __terminal_state_str  = """
   // pattern was according to the terminal state. The terminal states are 
   // numbered after the pattern id.
   //
+#define Lexeme       QUEX_DEFINITION_Lexeme       
+#define LexemeBegin  QUEX_DEFINITION_LexemeBegin  
+#define LexemeEnd    QUEX_DEFINITION_LexemeEnd    
+#define LexemeL      QUEX_DEFINITION_LexemeL      
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -266,6 +268,10 @@ $$TERMINAL_DEFAULT-DEF$$
 $$DEFAULT_ACTION$$
         $$GOTO_START_PREPARATION$$
 
+#undef Lexeme
+#undef LexemeBegin
+#undef LexemeEnd
+#undef LexemeL
 #ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
 __TERMINAL_ROUTER: {
         //  if last_acceptance => goto correspondent acceptance terminal state
@@ -316,9 +322,6 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
 
     if action_info.contains_variable("Lexeme", ignored_code_regions):
         txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT();\n"
-
-    if action_info.contains_variable("LexemeL", ignored_code_regions):
-        txt += indentation + "QUEX_PREPARE_LEXEME_LENGTH();\n"
 
     txt += indentation + "{\n"
     txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  

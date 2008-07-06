@@ -43,17 +43,12 @@ CLASS::__include_stack_push(InputHandle*         new_input_handle_p,
 #   ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
     current.begin_of_line_f = this->begin_of_line_f; 
 #   endif
-#   if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
-       | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
-       | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
     current.counter = this->counter;
-#   endif
+    this->counter.init();
 
     // (2) initializing the new state of the lexer for reading the new input file/stream
     QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(new_input_handle_p, IConvInputCodingName);
     QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, StartModeAnalyzerFunction);
-
-    this->counter.init();
 }   
 
 inline bool

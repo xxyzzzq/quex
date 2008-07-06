@@ -18,7 +18,11 @@ CLASS::_reset()
     QUEX_CORE_ANALYSER_STRUCT_init(this, 0, /* use same current buffer */0x0, 
                                    mode_db[__QUEX_SETTING_INITIAL_LEXER_MODE_ID]->analyser_function);
 
+#   if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+       | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+       | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
     counter.init();
+#   endif
 
     // empty the token queue
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE

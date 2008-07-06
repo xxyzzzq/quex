@@ -9,7 +9,7 @@ namespace quex {
         Counter(const Counter&);
     public:
         Counter();
-        void init();
+        void  init();
 
         void  count(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
         void  count_NoNewline(const int CharacterN);
@@ -35,19 +35,34 @@ namespace quex {
                                                                 const bool   LicenseToIncrementLineCountF=false);
     };
 
+    class CounterPseudo {
+        // PURPOSE: Act as a 'no operation object' in case that no line or column
+        //          counting is required.
+        CounterPseudo(const CounterPseudo&);
+    public:
+        CounterPseudo() { }
+        void  init() { }
+
+        void  count(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End) { }
+        void  count_NoNewline(const int CharacterN) { }
+        void  count_FixNewlineN(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End,
+                                const int LineNIncrement) { }
+        void  __shift_end_values_to_start_values() { }
+    };
+
     class CounterWithIndentation : public Counter { 
         CounterWithIndentation(const CounterWithIndentation&);
     public:
         CounterWithIndentation(CLASS*);
-        void init();
-        void on_end_of_file();
+        void  init();
+        void  on_end_of_file();
 
         void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 
-        void  count_indentation(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE*  End);
-        void  count_indentation_NoNewline(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
-        void  count_indentation_NoNewline_NeverStartOnWhitespace(const int CharacterN);
-        void  count_indentation_NoNewline_ContainsOnlySpace(const int CharacterN);
+        void  icount(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE*  End);
+        void  icount_NoNewline(QUEX_CHARACTER_TYPE* Begin, const int CharacterN);
+        void  icount_NoNewline_NeverStartOnWhitespace(const int CharacterN);
+        void  icount_NoNewline_ContainsOnlySpace(const int CharacterN);
 
         CLASS*  _the_lexer;
         int     _indentation;                 // number of columns to first non-whitespace
