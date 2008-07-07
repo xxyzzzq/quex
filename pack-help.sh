@@ -85,7 +85,7 @@ cd $orig_directory
 
 # (*) make sure that the new version information is checked in
 echo "-- Update repository / Create tag for $1"
-svn commit ./quex/DEFINITIONS.py -m 'version info'
+svn commit -m "Version Info / Prepare Release $1"
 
 # (*) branch on sourceforge subversion
 svn copy https://quex.svn.sourceforge.net/svnroot/quex/trunk \
