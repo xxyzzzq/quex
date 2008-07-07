@@ -519,12 +519,12 @@ $$CONSTRUCTOR_EXTENSTION$$
 #   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID $$INITIAL_LEXER_MODE_ID$$
 
 #   include <quex/code_base/template/constructor.i>
-#   include <quex/code_base/template/count_line_column.i>
+#   include <quex/code_base/template/Counter.i>
 #   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#      include <quex/code_base/template/count_line_column-with-indentation.i>
+#      include <quex/code_base/template/CounterWithIndentation.i>
 #   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-#       include <quex/code_base/template/accumulator.i>
+#       include <quex/code_base/template/Accumulator.i>
 #   endif
 
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
@@ -536,7 +536,7 @@ $$CONSTRUCTOR_EXTENSTION$$
 #   endif
 #   include <quex/code_base/template/mode_handling.i>
 #   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-#      include <quex/code_base/template/include_stack.i>
+#      include <quex/code_base/template/IncludeStack.i>
 #   endif
 #   include <quex/code_base/template/misc.i>
 
