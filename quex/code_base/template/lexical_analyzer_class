@@ -203,18 +203,29 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #define CLASS                            $$LEXER_CLASS_NAME$$
 #define __QUEX_SETTING_TOKEN_CLASS_NAME  $$TOKEN_CLASS$$
 
+#include <quex/code_base/template/Counter>
+
 namespace quex { 
     class quex_mode;
+
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+    typedef CounterWithIndentation  CounterType;
+#elif    defined(QUEX_OPTION_LINE_NUMBER_COUNTING) \
+       | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+    typedef Counter                 CounterType;
+#else
+    typedef CounterPseudo           CounterType;
+#endif
 }
-#include <quex/code_base/template/counter>
+
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
-#   include <quex/code_base/template/accumulator>
+#   include <quex/code_base/template/Accumulator>
 #endif
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #   include <quex/code_base/token_queue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
-#   include <quex/code_base/template/post_categorizer>
+#   include <quex/code_base/template/PostCategorizer>
 #endif
 #ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #   include <quex/code_base/template/IncludeStack>
@@ -290,15 +301,6 @@ namespace quex {
     $$LEXER_CLASS_NAME$$_on_entry_exit_null_function($$LEXER_CLASS_NAME$$*, const quex_mode*);
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
-
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    typedef CounterWithIndentation  CounterType;
-#elif    defined(QUEX_OPTION_LINE_NUMBER_COUNTING) \
-       | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-    typedef Counter                 CounterType;
-#else
-    typedef CounterPseudo           CounterType;
-#endif
 
     class $$LEXER_CLASS_NAME$$ :
         protected QUEX_CORE_ANALYSER_STRUCT {
@@ -385,15 +387,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void  move_backward(const size_t);
 
     public:
-#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        IncludeStack  _include_stack;
-#   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
-        //      -- include events (a file is included)
-        void virtual on_include(const char* Filename) {}
-        void virtual on_include_exit() {}
-
-
-    public:
         // handle with extreme care:
         void   _reset();
 
@@ -447,6 +440,14 @@ $$MODE_OBJECT_MEMBERS$$
         // (*) Who and what am I ? _______________________________________________________
         $$LEXER_DERIVED_CLASS_NAME$$&   self;
 
+    public:
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+        IncludeStack  include_stack;
+#   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
+        //      -- include events (a file is included)
+        void virtual on_include(const char* Filename) {}
+        void virtual on_include_exit() {}
+
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
     public:
         // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
@@ -481,6 +482,9 @@ $$CLASS_BODY_EXTENSION$$
         // one input buffer, they could all use the same iconv translation buffer, since
         // they do not translate at the same time.
         uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
+#endif
+#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+        friend class IncludeStack;
 #endif
     };
 

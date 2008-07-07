@@ -5,6 +5,9 @@ CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+#   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    , include_stack(this)
+#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -28,6 +31,9 @@ CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* =
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+#   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    , include_stack(this)
+#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -43,6 +49,9 @@ inline
 CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
 : 
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+#   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    , include_stack(this)
+#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif

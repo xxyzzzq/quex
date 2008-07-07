@@ -52,12 +52,12 @@ main(int argc, char** argv)
                     cout << "file not found\n";
                     return 0;
                 }
-                qlex->include_stack_push(fh);
+                qlex->include_stack.push(fh);
                 break;
                 
             }
         case quex::TKN_TERMINATION:
-            if( qlex->include_stack_pop() == false ) continue_lexing_f = false;
+            if( qlex->include_stack.pop() == false ) continue_lexing_f = false;
             else                                     cout << "<< return from include\n";
             break;
         }
