@@ -5,10 +5,9 @@
 
 namespace quex {
 
-    class Counter {
-        Counter(const Counter&);
-    public:
+    struct Counter {
         Counter();
+        Counter(const Counter&);
         void  init();
 
         void  count(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
@@ -35,12 +34,11 @@ namespace quex {
                                                                 const bool   LicenseToIncrementLineCountF=false);
     };
 
-    class CounterPseudo {
+    struct CounterPseudo {
         // PURPOSE: Act as a 'no operation object' in case that no line or column
         //          counting is required.
-        CounterPseudo(const CounterPseudo&);
-    public:
         CounterPseudo() { }
+        CounterPseudo(const CounterPseudo&) { }
         void  init() { }
 
         void  count(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End) { }
@@ -50,10 +48,9 @@ namespace quex {
         void  __shift_end_values_to_start_values() { }
     };
 
-    class CounterWithIndentation : public Counter { 
-        CounterWithIndentation(const CounterWithIndentation&);
-    public:
+    struct CounterWithIndentation : public Counter { 
         CounterWithIndentation(CLASS*);
+        CounterWithIndentation(const CounterWithIndentation&);
         void  init();
         void  on_end_of_file();
 

@@ -18,15 +18,13 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
     for code_info in Mode.on_match_code_fragments():
         txt += code_info.get("C")
 
-    # -- line number counting code
-    #    (if mode requires indentation events, than a different counting scheme is used)
     if Mode.on_indentation.line_n != -1:
-        txt += __get_line_and_column_counting_with_indentation(PatternStateMachine)
+        # (*) counters for possible count of lines, columns and indentation
+        txt += __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
 
-    elif not EOF_ActionF:
-        # When there is no indentation detection involved, then there is no need to 
-        # count anymore, as soon as the EOF comes in.
-        txt += __get_line_and_column_counting(PatternStateMachine)
+    else:
+        # (*) counter to possibly count lines and colums (but no indentation)
+        txt += __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
 
     # -- debug match display code
     if Setup.output_debug_f == True:
@@ -35,11 +33,6 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
         txt += '<< ") %s: %s \'" << Lexeme << "\'\\n";\n' % (Mode.name, SafePatternStr)
         txt += '#endif\n'
         
-    if EOF_ActionF:
-        txt += "#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT\n"
-        txt += "    self.counter.on_end_of_file();\n"
-        txt += "#endif\n"
-
     # -- THE action code as specified by the user
     if not Default_ActionF and not EOF_ActionF: 
         txt += CodeFragment.get("C")
@@ -59,10 +52,16 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
 
     return txt
 
-def __get_line_and_column_counting_with_indentation(PatternStateMachine):
+def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
     txt = "self.counter.__shift_end_values_to_start_values();\n"
+
+    if EOF_ActionF:
+        txt += "#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT\n"
+        txt += "    self.counter.on_end_of_file();\n"
+        txt += "#endif\n"
+        return txt
 
     if PatternStateMachine == None:
         return txt + "self.counter.icount(Lexeme, LexemeEnd);\n"
@@ -96,10 +95,13 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine):
 
     return txt + func + "\n"
 
-def __get_line_and_column_counting(PatternStateMachine):
+def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
     txt = "self.counter.__shift_end_values_to_start_values();\n"
+
+    if EOF_ActionF:
+        return txt
 
     if PatternStateMachine == None:
         return txt + "self.counter.count(Lexeme, LexemeEnd);\n"
@@ -116,11 +118,11 @@ def __get_line_and_column_counting(PatternStateMachine):
         # TODO: Try to determine number of characters backwards to newline directly
         #       from the pattern state machine. (Those seldom cases won't bring much
         #       speed-up)
-        return "self.counter.count_FixNewlineN(Lexeme, LexemeEnd, %i);\n" % newline_n
+        return txt + "self.counter.count_FixNewlineN(Lexeme, LexemeEnd, %i);\n" % newline_n
 
     else:
         if character_n == -1: incr_str = "LexemeL"
         else:                 incr_str = repr(character_n) 
 
-        return "self.counter.count_NoNewline(%s);\n" % incr_str
+        return txt + "self.counter.count_NoNewline(%s);\n" % incr_str
 

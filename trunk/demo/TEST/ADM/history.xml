@@ -1,4 +1,4 @@
-<history date="Sun Jul  6 10:05:27 2008" element-n="122">
+<history date="Mon Jul  7 06:57:46 2008" element-n="130">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -271,6 +271,16 @@
         <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="07:32:57"/>
     </day>
     <day year="2008" month="07" day="06">
-        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="08:05:27"/>
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="20:18:57"/>
+    </day>
+    <day year="2008" month="07" day="07">
+        <crc-error time="04:33:03" application="002.sh" choice="NDEBUG" database-crc="1239095203" real-crc="-1026858287"/>
+        <crc-error time="04:51:49" application="001.sh" choice="NDEBUG" database-crc="1917681230" real-crc="1226158072"/>
+        <crc-error time="04:52:31" application="001.sh" choice="DEBUG" database-crc="1226158072" real-crc="390655302"/>
+        <crc-error time="04:57:15" application="003.sh" choice="BPC=2_NDEBUG" database-crc="1420071129" real-crc="-717271771"/>
+        <crc-error time="04:57:20" application="003.sh" choice="BPC=4" database-crc="1420071129" real-crc="-717271771"/>
+        <crc-error time="04:57:24" application="003.sh" choice="BPC=4_NDEBUG" database-crc="1420071129" real-crc="-717271771"/>
+        <crc-error time="04:57:29" application="003.sh" choice="BPC=wchar_t" database-crc="1420071129" real-crc="-717271771"/>
+        <test-runs-today n="8" ok-n="3" fail-n="5" else-n="0" last-run="failure" last-time="04:57:46"/>
     </day>
 </history>

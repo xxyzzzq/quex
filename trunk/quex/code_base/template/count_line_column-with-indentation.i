@@ -20,6 +20,16 @@ CounterWithIndentation::CounterWithIndentation(CLASS* TheLexer)
     : _the_lexer(TheLexer)
 { init(); }
 
+inline 
+CounterWithIndentation::CounterWithIndentation(const CounterWithIndentation& That)
+    : _the_lexer(That._the_lexer)
+{ 
+
+    _indentation                 = That._indentation;
+    _indentation_count_enabled_f = That._indentation_count_enabled_f;
+    _indentation_event_enabled_f = That._indentation_event_enabled_f;
+}
+
 inline void
 CounterWithIndentation::init()
 {
@@ -37,8 +47,8 @@ CounterWithIndentation::on_end_of_file()
 }
 
 inline void    
-CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme_,
-                               QUEX_CHARACTER_TYPE* LexemeEnd_)
+CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme,
+                               QUEX_CHARACTER_TYPE* LexemeEnd)
 // Lexeme:    Pointer to first character of Lexeme.
 // LexemeEnd: Pointer to first character after Lexeme.
 //
@@ -82,11 +92,11 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme_,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme_;
-    QUEX_CHARACTER_TYPE* Last  = LexemeEnd_ - 1;                
+    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
+    QUEX_CHARACTER_TYPE* Last  = LexemeEnd - 1;                
     QUEX_CHARACTER_TYPE* it    = Last;
 
-    __quex_assert(Begin < LexemeEnd_);   // LexemeLength >= 1: NEVER COMPROMISE THIS !
+    __quex_assert(Begin < LexemeEnd);   // LexemeLength >= 1: NEVER COMPROMISE THIS !
 
 
     // (1) Last character == newline ? _______________________________________________
@@ -135,7 +145,7 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme_,
             //               no column number overflow / restart at '1'
             // no indentation enabled => no indentation increment
 #           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end += LexemeEnd_ - Begin;
+            _column_number_at_end += LexemeEnd - Begin;
 #           endif
             return;
         }
@@ -156,7 +166,7 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme_,
     //
     // -- whitespace from: start_consideration to first non-whitespace
     //    (indentation count is disabled if non-whitespace arrives)
-    __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, LexemeEnd_, 
+    __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, LexemeEnd, 
                                                /* LicenseToIncrementLineCountF = */ true);
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
@@ -164,14 +174,14 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme_,
 
 
 inline void    
-CounterWithIndentation::icount_NoNewline(QUEX_CHARACTER_TYPE* Lexeme_,
-                                        const int            LexemeL_)
+CounterWithIndentation::icount_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
+                                         const int            LexemeL)
 // Lexeme:    Pointer to first character of Lexeme.
 // LexemeEnd: Pointer to first character after Lexeme.
 {
     // NOTE: For an explanation of the algorithm, see the function:
     //       count_indentation(...).
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme_;
+    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
 
     // (1) Last character == newline ? _______________________________________________
     //     [impossible, lexeme does never contain a newline]
@@ -184,7 +194,7 @@ CounterWithIndentation::icount_NoNewline(QUEX_CHARACTER_TYPE* Lexeme_,
         //               no column number overflow / restart at '1'
         // no indentation enabled => no indentation increment
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_end += LexemeL_;
+        _column_number_at_end += LexemeL;
 #       endif
         return;
     }
@@ -192,7 +202,7 @@ CounterWithIndentation::icount_NoNewline(QUEX_CHARACTER_TYPE* Lexeme_,
     // The flag '_indentation_count_enabled_f' tells us that before this
     // pattern there was only whitespace after newline. Let us add the
     // whitespace at the beginning of this pattern to the _indentation.
-    __count_whitespace_to_first_non_whitespace(Begin, Begin, Begin + LexemeL_, 
+    __count_whitespace_to_first_non_whitespace(Begin, Begin, Begin + LexemeL, 
                                                /* LicenseToIncrementLineCountF = */ false);
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();

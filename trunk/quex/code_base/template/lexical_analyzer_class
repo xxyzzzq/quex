@@ -216,6 +216,9 @@ namespace quex {
 #ifdef QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/template/post_categorizer>
 #endif
+#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#   include <quex/code_base/template/IncludeStack>
+#endif
 
 
 // RETURN: _____________________________________________________________________
@@ -382,46 +385,24 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void  move_backward(const size_t);
 
     public:
-#    ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        struct memento {
-            quex::buffer<QUEX_CHARACTER_TYPE>*  buffer_p;
-            QUEX_CHARACTER_TYPE      char_covered_by_terminating_zero;
-            QUEX_MODE_FUNCTION_P     current_mode_analyser_function_p;
-            bool                     continue_analysis_after_adapting_mode_function_p_f;
-#           ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-            int                      begin_of_line_f; 
-#           endif
-            CounterType              counter;
-        };
-        std::vector<memento>  _include_stack;
-
-        template <class InputHandle> 
-        void   include_stack_push(InputHandle*, const int MODE_ID = -1, 
-                                  const char* IConvInputCodingName = 0x0);
-        template <class InputHandle> 
-        void   include_stack_push(InputHandle*, const quex_mode&,
-                                  const char* IConvInputCodingName = 0x0);
-        bool   include_stack_pop();
-
-        // handle with extreme care:
-        void   _reset();
-
-     private:
-        template <class InputHandle> 
-        void   __include_stack_push(InputHandle*, QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
-                                    const char* IConvInputCodingName);
+#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+        IncludeStack  _include_stack;
 #   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
-
-
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
         void virtual on_include_exit() {}
+
+
+    public:
+        // handle with extreme care:
+        void   _reset();
 
         // (*) Mode database: allows to match from 'lex mode id' to a real mode object.
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
         //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
         //      to quex's start mode.)
         quex_mode*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
+
     public:
 $$MODE_OBJECT_MEMBERS$$
 
@@ -456,20 +437,23 @@ $$MODE_OBJECT_MEMBERS$$
         //       Otherwise, one would be restricted to sending one token by pattern.        
         //
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+    private:
         token_queue<$$TOKEN_CLASS$$>*   _token_queue;
 #       else
-        $$TOKEN_CLASS$$                 _token;
+    public:
+        $$TOKEN_CLASS$$                 the_token;
 #       endif
     public:
         // (*) Who and what am I ? _______________________________________________________
-        $$LEXER_DERIVED_CLASS_NAME$$&  self;
+        $$LEXER_DERIVED_CLASS_NAME$$&   self;
 
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    protected:
+    public:
         // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
         Accumulator        accumulator;
 #       endif
-        CounterType   counter;
+    private:
+        CounterType        counter;
 
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
     public:
