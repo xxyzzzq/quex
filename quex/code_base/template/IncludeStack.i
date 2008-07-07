@@ -86,7 +86,7 @@ IncludeStack::pop()
 {
     if( _stack.empty() ) return false;
 
-    delete this->__buffer;
+    delete _the_lexer->__buffer;
 
     _stack.back().map_to_lexical_analyzer(_the_lexer);
 
