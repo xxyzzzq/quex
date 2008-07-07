@@ -28,16 +28,45 @@ extern "C" {
 namespace quex {
 
     const uint8_t  DEFAULT_BUFFER_LIMIT_CODE = 0x00;
+    template <class CharacterCarrierType> class BufferIterator;
+    template <class CharacterCarrierType> class Buffer;
 
-    template<class CharacterType=uint8_t>
-        class buffer_core {
-            // (*) Analyzer Main functions _________________________________________________________________
-        public:
-        protected:
+    template<class CharacterCarrierType = uint8_t>
+        struct BufferIterator { 
+            typedef CharacterCarrierType  character_type;
+#           ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+            typedef memory_position_mimiker<character_type>  memory_position;
+#           else
+            typedef character_type*                          memory_position;
+#           endif
+            Buffer<CharacterCarrierType>   the_buffer;
+
+            void              current_character_p_decrement() { --_current_character_p; }
+            void              current_character_p_increment() { ++_current_character_p; }
+            character_type    current_character_get()         { return *_current_character_p; }
+
+            bool   current_character_p_end_of_file();
+            bool   current_character_p_begin_of_file();
+            bool   current_character_p_begin_of_buffer();
+            bool   current_character_p_end_of_buffer();
+
+            character_type*   lexeme_start_p_get()                     { return _lexeme_start_p; }
+            void              lexeme_start_p_set(character_type* Adr)  { _lexeme_start_p = Adr; }
+
+            memory_position   tell_adr();
+            void              seek_adr(memory_position Adr);
+            void              seek_offset(const int Offset);
+
+            void              move_forward(const size_t);   // load buffer if nec. /influences lexeme start
+            void              move_backward(const size_t);  // 
+
+        private:
+            character_type*  _current_p;
+            character_type*  _lexeme_start_p;
         };
 
     template<class CharacterCarrierType = uint8_t>
-        class buffer {
+        class Buffer {
         // IDEA: The iteration over the character has to happen as fast as possible,
         //       since this operation is performed very often. The loading of the
         //       buffer happens seldom, and one can be more tolerant. For iterating
@@ -73,41 +102,14 @@ namespace quex {
                    CharacterCarrierType Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
             virtual ~buffer();
 
-            // (*) Main functions
-            //     -- iteration over buffer content
-            int    get_forward();
-            int    get_backward();
-
             //     -- loading according input strategy
             int    load_forward();
             int    load_backward();
-            bool   is_end_of_file();
-            bool   is_begin_of_file();
-            bool   is_begin_of_buffer();
-            bool   is_end_of_buffer();
             void   close_input() { _input->close(); }
 
             //     -- miscaleneous
-            void              decrement() { --_current_p; }
-            void              increment() { ++_current_p; }
-            character_type    dereference_character() { return *_current_p; }
-            character_type*   current_p() { return _current_p; }
-
-            memory_position   tell_adr();
-            void              seek_adr(memory_position Adr);
-            void              seek_offset(const int Offset);
-
-            character_type    get_previous_character();
-            character_type    get_current_character();
-            void              set_current_character(const character_type Value);
-            character_type*   get_lexeme_start_p();
-            void              mark_lexeme_start();
-            void              move_forward(const size_t);   // load buffer if nec. /influences lexeme start
-            void              move_backward(const size_t);  // 
-            void              set_current_p(character_type* Adr);       
-
             // handle with extreme care
-            void              _reset();
+            void   _reset();
 
             //     -- what happens if there's not enough space?
             bool   (*on_overflow)(buffer<CharacterCarrierType>*, bool ForwardF);
@@ -137,8 +139,6 @@ namespace quex {
 
         protected:
             //
-            character_type*  _current_p;
-            character_type*  _lexeme_start_p;
             character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
             size_t           _character_index_at_front; // global index of the character at the begin of buffer
             //                                          // == 0x0 if EOF not in buffer.
