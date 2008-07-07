@@ -1,0 +1,174 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+//
+// (C) 2007 Frank-Rene Schaefer
+//
+#ifndef __INCLUDE_GUARD_QUEX_BUFFER__
+#define __INCLUDE_GUARD_QUEX_BUFFER__
+
+#include <quex/code_base/buffer/fixed_size_character_stream>
+
+#include <iostream>
+#include <stdexcept>
+
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cassert>
+#   define  __quex_assert(X)   assert(X)
+#else
+#   define  __quex_assert(X)   /*no assert*/
+#endif
+
+extern "C" {
+#include <quex/code_base/compatibility/inttypes.h>
+}
+
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include<quex/code_base/buffer/memory_position_mimiker>
+#endif          
+
+namespace quex {
+
+    const uint8_t  DEFAULT_BUFFER_LIMIT_CODE = 0x00;
+
+    template<class CharacterType=uint8_t>
+        class buffer_core {
+            // (*) Analyzer Main functions _________________________________________________________________
+        public:
+        protected:
+        };
+
+    template<class CharacterCarrierType = uint8_t>
+        class buffer {
+        // IDEA: The iteration over the character has to happen as fast as possible,
+        //       since this operation is performed very often. The loading of the
+        //       buffer happens seldom, and one can be more tolerant. For iterating
+        //       we do not want virtual functions since those are slower and cannot
+        //       be inlined. For loading, virtual functions are OK, it is just one
+        //       word more to dereference (probably neglectable when e.g. 65536 bytes are loaded).
+        //
+        // If the buffer definition is split into base and derived class, the lexical 
+        // analyser can contain 'buffer_core<character_type>*' which can hold any buffer
+        // that runs on the same character type. It is independent of the input strategy,
+        // as long as it also runs on the same character type (e.g. uin8_t, uint16_t ...).
+        //
+        // IMPORTANT: The function calls to get_forward() and get_backward() can be perfectly
+        //            inlined, since the size of increment/decrement is known at compile time.
+        public:
+            typedef CharacterCarrierType  character_type;
+#           ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+            typedef memory_position_mimiker<character_type>  memory_position;
+#           else
+            typedef character_type*                          memory_position;
+#           endif
+
+        private:
+            // buffers cannot be copied!
+            /* DISABLED */ buffer(const buffer&);
+            /* DISABLED */ buffer operator=(const buffer&);
+
+        public:
+            // (*) Constructor/Destructor __________________________________________________________________
+            buffer(fixed_size_character_stream<CharacterCarrierType>* input_strategy, 
+                   size_t BufferSz          = 65536, 
+                   size_t BackupSectionSz   = 64,
+                   CharacterCarrierType Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
+            virtual ~buffer();
+
+            // (*) Main functions
+            //     -- iteration over buffer content
+            int    get_forward();
+            int    get_backward();
+
+            //     -- loading according input strategy
+            int    load_forward();
+            int    load_backward();
+            bool   is_end_of_file();
+            bool   is_begin_of_file();
+            bool   is_begin_of_buffer();
+            bool   is_end_of_buffer();
+            void   close_input() { _input->close(); }
+
+            //     -- miscaleneous
+            void              decrement() { --_current_p; }
+            void              increment() { ++_current_p; }
+            character_type    dereference_character() { return *_current_p; }
+            character_type*   current_p() { return _current_p; }
+
+            memory_position   tell_adr();
+            void              seek_adr(memory_position Adr);
+            void              seek_offset(const int Offset);
+
+            character_type    get_previous_character();
+            character_type    get_current_character();
+            void              set_current_character(const character_type Value);
+            character_type*   get_lexeme_start_p();
+            void              mark_lexeme_start();
+            void              move_forward(const size_t);   // load buffer if nec. /influences lexeme start
+            void              move_backward(const size_t);  // 
+            void              set_current_p(character_type* Adr);       
+
+            // handle with extreme care
+            void              _reset();
+
+            //     -- what happens if there's not enough space?
+            bool   (*on_overflow)(buffer<CharacterCarrierType>*, bool ForwardF);
+
+            // (*) Constants __________________________________________________________________________________
+            const character_type   BLC;              // buffer limit code
+
+        protected:
+
+            // (*) Member Variables ___________________________________________________________________________
+            struct { 
+                character_type*  _front;             // first in buffer 
+                character_type*  _back;              // last in buffer
+                size_t           _default_fallback_n;
+                bool             _external_owner_f; 
+
+                size_t           size() const               { return _back - _front + 1; }
+                size_t           default_fallback_n() const { return _default_fallback_n; }
+                character_type*  front() const { return _front; }
+                character_type*  back() const  { return _back; }
+            } _buffer;
+            //
+            size_t            content_size()  { return _buffer.size() - 2; }
+        public:
+            character_type*   content_front() { return _buffer.front() + 1; } 
+            character_type*   content_back()  { return _buffer.back()  - 1; }  
+
+        protected:
+            //
+            character_type*  _current_p;
+            character_type*  _lexeme_start_p;
+            character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
+            size_t           _character_index_at_front; // global index of the character at the begin of buffer
+            //                                          // == 0x0 if EOF not in buffer.
+            fixed_size_character_stream<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
+
+            // (*) Helper _____________________________________________________________________________________
+            void __constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
+                                      CharacterCarrierType* buffer_memory, size_t BufferSz, 
+                                      size_t FallBackN);
+            void __end_of_file_set(character_type*);
+            void __end_of_file_unset();
+
+#ifdef __QUEX_OPTION_UNIT_TEST
+        public:
+            // (*) Debugging/Unit Tests ______________________________________________________________________
+            size_t           _SHOW_current_fallback_n;
+            // NOTE: Include <iostream> for unit tests before this header!
+            character_type   get_border_char(const character_type*);
+            void             show_content();
+            character_type*  end_of_file_p() { return _end_of_file_p; }
+            void             show_brief_content(); 
+            void             x_show_content(); 
+#endif
+        };    
+
+}
+
+#include <quex/code_base/buffer/debug.i>
+#include <quex/code_base/buffer/buffer.i>
+
+
+
+#endif // __INCLUDE_GUARD_QUEX_BUFFER__

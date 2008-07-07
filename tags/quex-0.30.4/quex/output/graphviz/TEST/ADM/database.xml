@@ -1,0 +1,29 @@
+<test-database execution-time-sec="0.94" date="Mon Jul  7 08:49:54 2008">
+    <last-used-diff-display-program name=""/>
+    <test title="Check supported formats." make-required="True" time-sum-sec="0.06"> 
+        <application file-name="get_supported_formats.py" info-request-time="1215055708L"/>
+        <choice-list number="1">
+           <choice name="" result="OK" time-sec="0.06" crc="-266270399"/>
+        </choice-list>
+    </test>
+    <group name="Plot">
+        <test title="Core state machine." make-required="True" time-sum-sec="0.20"> 
+            <application file-name="plot-core.py" info-request-time="1215055708L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.20" crc="1776201160"/>
+            </choice-list>
+        </test>
+        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.40"> 
+            <application file-name="plot-papc.py" info-request-time="1215055708L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.40" crc="-1399668897"/>
+            </choice-list>
+        </test>
+        <test title="Pre-Context." make-required="True" time-sum-sec="0.28"> 
+            <application file-name="plot-pre-context.py" info-request-time="1215055708L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.28" crc="914585331"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

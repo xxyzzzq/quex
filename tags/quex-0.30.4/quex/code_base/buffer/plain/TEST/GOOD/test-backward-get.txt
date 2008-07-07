@@ -1,0 +1,116 @@
+--------------------------------------------
+||    : S    C           || 'a'
+||beitung gemahlen.]|||||||
+||    : S   C            || 'm'
+||beitung gemahlen.]|||||||
+||    : S  C             || 'e'
+||beitung gemahlen.]|||||||
+||    : S C              || 'g'
+||beitung gemahlen.]|||||||
+||    :  S               || ' '
+||beitung gemahlen.]|||||||
+||    : CS               || 'g'
+||beitung gemahlen.]|||||||
+||    :C S               || 'n'
+||beitung gemahlen.]|||||||
+||    C  S               || 'u'
+||beitung gemahlen.]|||||||
+||   C:  S               || 't'
+||beitung gemahlen.]|||||||
+||  C :  S               || 'i'
+||beitung gemahlen.]|||||||
+|| C  :  S               || 'e'
+||beitung gemahlen.]|||||||
+||C   :  S               || 'b'
+||beitung gemahlen.]|||||||
+try load
+||    :  C      S        || 'b'
+||r Verarbeitung gemahlen||
+||    : C       S        || 'r'
+||r Verarbeitung gemahlen||
+||    :C        S        || 'a'
+||r Verarbeitung gemahlen||
+||    C         S        || 'r'
+||r Verarbeitung gemahlen||
+||   C:         S        || 'e'
+||r Verarbeitung gemahlen||
+||  C :         S        || 'V'
+||r Verarbeitung gemahlen||
+|| S  :                  || ' '
+||r Verarbeitung gemahlen||
+||CS  :                  || 'r'
+||r Verarbeitung gemahlen||
+try load
+||    :  CS              || 'r'
+|| und zur Verarbeitung g||
+||    : C S              || 'u'
+|| und zur Verarbeitung g||
+||    :C  S              || 'z'
+|| und zur Verarbeitung g||
+||    S                  || ' '
+|| und zur Verarbeitung g||
+||   CS                  || 'd'
+|| und zur Verarbeitung g||
+||  C S                  || 'n'
+|| und zur Verarbeitung g||
+|| C  S                  || 'u'
+|| und zur Verarbeitung g||
+||S   :                  || ' '
+|| und zur Verarbeitung g||
+try load
+||    :  S               || ' '
+||eerntet und zur Verarbe||
+||    : CS               || 't'
+||eerntet und zur Verarbe||
+||    :C S               || 'e'
+||eerntet und zur Verarbe||
+||    C  S               || 't'
+||eerntet und zur Verarbe||
+||   C:  S               || 'n'
+||eerntet und zur Verarbe||
+||  C :  S               || 'r'
+||eerntet und zur Verarbe||
+|| C  :  S               || 'e'
+||eerntet und zur Verarbe||
+||C   :  S               || 'e'
+||eerntet und zur Verarbe||
+try load
+||    :  C      S        || 'e'
+|| wird geerntet und zur ||
+||    : C       S        || 'g'
+|| wird geerntet und zur ||
+||    :S                 || ' '
+|| wird geerntet und zur ||
+||    CS                 || 'd'
+|| wird geerntet und zur ||
+||   C:S                 || 'r'
+|| wird geerntet und zur ||
+||  C :S                 || 'i'
+|| wird geerntet und zur ||
+|| C  :S                 || 'w'
+|| wird geerntet und zur ||
+||S   :                  || ' '
+|| wird geerntet und zur ||
+try load
+||    :  S               || ' '
+||as Korn wird geerntet u||
+||    : CS               || 'n'
+||as Korn wird geerntet u||
+||    :C S               || 'r'
+||as Korn wird geerntet u||
+||    C  S               || 'o'
+||as Korn wird geerntet u||
+||   C:  S               || 'K'
+||as Korn wird geerntet u||
+||  S :                  || ' '
+||as Korn wird geerntet u||
+|| CS :                  || 's'
+||as Korn wird geerntet u||
+||C S :                  || 'a'
+||as Korn wird geerntet u||
+try load
+|[ C S:                  || 'a'
+|[Das Korn wird geerntet ||
+|[C  S:                  || 'D'
+|[Das Korn wird geerntet ||
+begin of file
