@@ -17,14 +17,14 @@ CLASS::send()
 inline void   
 CLASS::send(const __QUEX_SETTING_TOKEN_CLASS_NAME& That) 
 {
-    _token = That;
+    the_token = That;
     __QUEX_DEBUG_TOKEN_SENDING();
 }
 
 inline void   
 CLASS::send(const __QUEX_SETTING_TOKEN_CLASS_NAME::id_type ID) 
 {
-    _token.set(ID);
+    the_token.set(ID);
     __QUEX_DEBUG_TOKEN_SENDING();
 }
 
@@ -32,7 +32,7 @@ inline void
 CLASS::send_n(const int N, __QUEX_SETTING_TOKEN_CLASS_NAME::id_type ID) 
 {
     /* this function does not make sense for singleton tokens */
-    _token.set(ID); // applies DEBUG of 'send()'
+    the_token.set(ID); // applies DEBUG of 'send()'
     __QUEX_DEBUG_TOKEN_SENDING();
 }
 
@@ -40,7 +40,7 @@ template <typename ContentT>
 inline void   
 CLASS::send(const __QUEX_SETTING_TOKEN_CLASS_NAME::id_type ID, ContentT Content) 
 {
-    _token.set(ID, Content);
+    the_token.set(ID, Content);
     __QUEX_DEBUG_TOKEN_SENDING();
 }
 
