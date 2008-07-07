@@ -1,0 +1,19 @@
+<test-database execution-time-sec="0.06" date="Mon Jul  7 08:49:37 2008">
+    <last-used-diff-display-program name=""/>
+    <group name="File Input">
+        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.05"> 
+            <application file-name="test-read_until_closing_bracket.py" info-request-time="1215055708L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.05" crc="1489533151"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="String Handling">
+        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.02"> 
+            <application file-name="test-trim.py" info-request-time="1215055708L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.02" crc="-964243626"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

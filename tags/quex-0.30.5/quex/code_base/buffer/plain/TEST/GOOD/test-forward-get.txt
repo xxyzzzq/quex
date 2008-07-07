@@ -1,0 +1,118 @@
+|[S   :                  || 'D'
+|[Das Korn wird geerntet ||
+|[SC  :                  || 'a'
+|[Das Korn wird geerntet ||
+|[S C :                  || 's'
+|[Das Korn wird geerntet ||
+|[S  C:                  || ' '
+|[Das Korn wird geerntet ||
+|[   SC                  || 'K'
+|[Das Korn wird geerntet ||
+|[   S:C                 || 'o'
+|[Das Korn wird geerntet ||
+|[   S: C                || 'r'
+|[Das Korn wird geerntet ||
+|[   S:  C               || 'n'
+|[Das Korn wird geerntet ||
+|[   S:   C              || ' '
+|[Das Korn wird geerntet ||
+|[    :   SC             || 'w'
+|[Das Korn wird geerntet ||
+|[    :   S C            || 'i'
+|[Das Korn wird geerntet ||
+|[    :   S  C           || 'r'
+|[Das Korn wird geerntet ||
+|[    :   S   C          || 'd'
+|[Das Korn wird geerntet ||
+|[    :   S    C         || ' '
+|[Das Korn wird geerntet ||
+|[    :        SC        || 'g'
+|[Das Korn wird geerntet ||
+|[    :        S C       || 'e'
+|[Das Korn wird geerntet ||
+|[    :        S  C      || 'e'
+|[Das Korn wird geerntet ||
+|[    :        S   C     || 'r'
+|[Das Korn wird geerntet ||
+|[    :        S    C    || 'n'
+|[Das Korn wird geerntet ||
+|[    :        S     C   || 't'
+|[Das Korn wird geerntet ||
+|[    :        S      C  || 'e'
+|[Das Korn wird geerntet ||
+|[    :        S       C || 't'
+|[Das Korn wird geerntet ||
+|[    :        S        C|| ' '
+|[Das Korn wird geerntet ||
+|[    :                 SC| BLC
+|[Das Korn wird geerntet ||
+try load
+||    SC                 || 'u'
+||ntet und zur Verarbeitu||
+||    S C                || 'n'
+||ntet und zur Verarbeitu||
+||    S  C               || 'd'
+||ntet und zur Verarbeitu||
+||    S   C              || ' '
+||ntet und zur Verarbeitu||
+||    :   SC             || 'z'
+||ntet und zur Verarbeitu||
+||    :   S C            || 'u'
+||ntet und zur Verarbeitu||
+||    :   S  C           || 'r'
+||ntet und zur Verarbeitu||
+||    :   S   C          || ' '
+||ntet und zur Verarbeitu||
+||    :       SC         || 'V'
+||ntet und zur Verarbeitu||
+||    :       S C        || 'e'
+||ntet und zur Verarbeitu||
+||    :       S  C       || 'r'
+||ntet und zur Verarbeitu||
+||    :       S   C      || 'a'
+||ntet und zur Verarbeitu||
+||    :       S    C     || 'r'
+||ntet und zur Verarbeitu||
+||    :       S     C    || 'b'
+||ntet und zur Verarbeitu||
+||    :       S      C   || 'e'
+||ntet und zur Verarbeitu||
+||    :       S       C  || 'i'
+||ntet und zur Verarbeitu||
+||    :       S        C || 't'
+||ntet und zur Verarbeitu||
+||    :       S         C|| 'u'
+||ntet und zur Verarbeitu||
+||    :       S          C| BLC
+||ntet und zur Verarbeitu||
+try load
+||S         :C           || 'n'
+|| Verarbeitung gemahlen.||
+||S         : C          || 'g'
+|| Verarbeitung gemahlen.||
+||S         :  C         || ' '
+|| Verarbeitung gemahlen.||
+||          :  SC        || 'g'
+|| Verarbeitung gemahlen.||
+||          :  S C       || 'e'
+|| Verarbeitung gemahlen.||
+||          :  S  C      || 'm'
+|| Verarbeitung gemahlen.||
+||          :  S   C     || 'a'
+|| Verarbeitung gemahlen.||
+||          :  S    C    || 'h'
+|| Verarbeitung gemahlen.||
+||          :  S     C   || 'l'
+|| Verarbeitung gemahlen.||
+||          :  S      C  || 'e'
+|| Verarbeitung gemahlen.||
+||          :  S       C || 'n'
+|| Verarbeitung gemahlen.||
+||          :  S        C|| '.'
+|| Verarbeitung gemahlen.||
+||          :  S         C| BLC
+|| Verarbeitung gemahlen.||
+try load
+||S        :C            || BLC
+|| gemahlen.]||||||||||||||
+end of file

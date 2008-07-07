@@ -1,0 +1,9 @@
+<test-database execution-time-sec="0.00" date="Mon Jul  7 08:50:32 2008">
+    <last-used-diff-display-program name=""/>
+    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.00"> 
+        <application file-name="test-coder-get_generator_input.py" info-request-time="1215055707L"/>
+        <choice-list number="1">
+           <choice name="" result="OK" time-sec="0.00" crc="-1625503194"/>
+        </choice-list>
+    </test>
+</test-database>

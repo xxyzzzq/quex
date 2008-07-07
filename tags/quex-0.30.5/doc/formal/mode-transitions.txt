@@ -1,0 +1,26 @@
+There are exactly two events that are related to mode transitions: entering
+and exiting. Accordingly, one can define inside a mode the two handlers` 
+on\_entry` and `on\_exit`. In addition to the `self` reference, the
+following variables are available:
+
+`const quex\_mode& FromMode`:: 
+
+  Only availabe in `on\_entry` where this is the mode _from_ which the current
+  mode is entered.
+
+`const quex\_mode& ToMode`:: 
+
+  Only availabe in `on\_exit` where this is the mode _to_ which the lexical
+  analyser transits.
+
+The `on\_exit` function of the mode that is left is always called before
+the `on\_entry` function of the mode that is entered. Note, that it does
+not make sense inside transitions to use the `RETURN` statement since at
+this point the token-queue is not to be synchronized with a user's token
+request. Examples for enter and exit handlers have been given in section
+\ref{sec:practical/pattern-action-pairs}.
+
+
+
+
+
