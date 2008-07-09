@@ -43,7 +43,7 @@ namespace quex {
         };
 
     template<class CharacterCarrierType = uint8_t>
-        class buffer {
+        class Buffer {
         // IDEA: The iteration over the character has to happen as fast as possible,
         //       since this operation is performed very often. The loading of the
         //       buffer happens seldom, and one can be more tolerant. For iterating
@@ -73,11 +73,11 @@ namespace quex {
 
         public:
             // (*) Constructor/Destructor __________________________________________________________________
-            buffer(fixed_size_character_stream<CharacterCarrierType>* input_strategy, 
+            Buffer(fixed_size_character_stream<CharacterCarrierType>* input_strategy, 
                    size_t BufferSz          = 65536, 
                    size_t BackupSectionSz   = 64,
                    CharacterCarrierType Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
-            virtual ~buffer();
+            virtual ~Buffer();
 
             // (*) Main functions
             //     -- iteration over buffer content
@@ -115,33 +115,19 @@ namespace quex {
             // handle with extreme care
             void              _reset();
 
-            //     -- what happens if there's not enough space?
-            bool   (*on_overflow)(buffer<CharacterCarrierType>*, bool ForwardF);
-
-            // (*) Constants __________________________________________________________________________________
-            const character_type   BLC;              // buffer limit code
-
-        protected:
-
-            // (*) Member Variables ___________________________________________________________________________
-            struct { 
-                character_type*  _front;             // first in buffer 
-                character_type*  _back;              // last in buffer
-                size_t           _default_fallback_n;
-                bool             _external_owner_f; 
-
-                size_t           size() const               { return _back - _front + 1; }
-                size_t           default_fallback_n() const { return _default_fallback_n; }
-                character_type*  front() const { return _front; }
-                character_type*  back() const  { return _back; }
-            } _buffer;
-            //
             size_t            content_size()  { return _buffer.size() - 2; }
-        public:
             character_type*   content_front() { return _buffer.front() + 1; } 
             character_type*   content_back()  { return _buffer.back()  - 1; }  
 
-        protected:
+            //     -- what happens if there's not enough space?
+            bool   (*on_overflow)(buffer<CharacterCarrierType>*, bool ForwardF);
+
+        private:
+            // (*) Constants __________________________________________________________________________________
+            const character_type   BLC;              // buffer limit code
+
+            // (*) Member Variables ___________________________________________________________________________
+            BufferMemory*    _memory;
             //
             character_type*  _current_p;
             character_type*  _lexeme_start_p;
@@ -152,8 +138,8 @@ namespace quex {
 
             // (*) Helper _____________________________________________________________________________________
             void __constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
-                                      CharacterCarrierType* buffer_memory, size_t BufferSz, 
-                                      size_t FallBackN);
+                                    CharacterCarrierType* buffer_memory, size_t BufferSz, 
+                                    size_t FallBackN);
             void __end_of_file_set(character_type*);
             void __end_of_file_unset();
 
