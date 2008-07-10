@@ -6,9 +6,12 @@
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_I_
 
 #include <cstring>
-#include <quex/code_base/buffer/fixed_size_character_stream>
+#include <quex/code_base/buffer/FixedSizeCharacterStream>
 
 namespace quex {
+#   define TEMPLATE_IN  template<class CharacterCarrierType> inline
+#   define CLASS        Buffer<CharacterCarrierType>   
+
 #   ifdef QUEX_OPTION_ACTIVATE_ASSERTS
 #       define  QUEX_BUFFER_ASSERT_CONSISTENCY()                                             \
         {                                                                                    \
@@ -17,20 +20,20 @@ namespace quex {
             /*       _current_p comes before _lexeme_start_p, wherelse for back-      */     \
             /*       ward lexing this is vice versa.                                  */     \
             /*       See "code_base/core_engine/definitions-quex-buffer.h"            */     \
-            __quex_assert(_memory->front()    <  _memory->back());                             \
-            __quex_assert(_current_p         >= _memory->front());                            \
-            __quex_assert(_lexeme_start_p    >= _memory->front());                            \
-            __quex_assert(*(_memory->front()) == CLASS::BLC );                                \
-            __quex_assert(*(_memory->back())  == CLASS::BLC );                                \
+            __quex_assert(_memory.front()    <  _memory.back());                             \
+            __quex_assert(_current_p         >= _memory.front());                            \
+            __quex_assert(_lexeme_start_p    >= _memory.front());                            \
+            __quex_assert(*(_memory.front()) == CLASS::BLC );                                \
+            __quex_assert(*(_memory.back())  == CLASS::BLC );                                \
             if( _end_of_file_p == 0x0 ) {                                                    \
-                __quex_assert(_current_p      <= _memory->back());                            \
-                __quex_assert(_lexeme_start_p <= _memory->back());                            \
+                __quex_assert(_current_p      <= _memory.back());                            \
+                __quex_assert(_lexeme_start_p <= _memory.back());                            \
             } else {                                                                         \
                 __quex_assert(_current_p      <= _end_of_file_p);                            \
                 __quex_assert(_lexeme_start_p <= _end_of_file_p);                            \
                 /**/                                                                         \
                 __quex_assert(_end_of_file_p  >= content_front());                           \
-                __quex_assert(_end_of_file_p  <= _memory->back());                            \
+                __quex_assert(_end_of_file_p  <= _memory.back());                            \
                 /**/                                                                         \
                 __quex_assert(*_end_of_file_p == CLASS::BLC);                                \
             }                                                                                \
@@ -49,49 +52,46 @@ namespace quex {
 #      define QUEX_BUFFER_SHOW_BUFFER_LOAD(InfoStr) /* empty */
 #   endif
 
-#   define TEMPLATE_IN  template<class CharacterCarrierType> inline
-#   define CLASS        buffer<CharacterCarrierType>   
+    TEMPLATE_IN 
+    CLASS::Buffer(FixedSizeCharacterStream<CharacterCarrierType>* _input_strategy, 
+                  size_t         BufferSize   /* = 65536 */, 
+                  size_t         MinFallbackN /* = 64 */,
+                  character_type Value_BLC    /* = DEFAULT_BUFFER_LIMIT_CODE */)
+    : BLC(Value_BLC)
+    {
+        __constructor_core(_input_strategy, 0x0, BufferSize, MinFallbackN);
+    }
 
     TEMPLATE_IN 
-        CLASS::buffer(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
-               size_t BufferSize /* = 65536 */, size_t BackupSectionSize /* = 64 */,
-               character_type Value_BLC  /* = DEFAULT_BUFFER_LIMIT_CODE */)
-        : BLC(Value_BLC)
+    CLASS::Buffer(FixedSizeCharacterStream<CharacterCarrierType>* _input_strategy, 
+                  CharacterCarrierType* memory_chunk,
+                  size_t                ChunkSize, 
+                  size_t                MinFallbackN  /* = 64 */,
+                  character_type        Value_BLC     /* = DEFAULT_BUFFER_LIMIT_CODE */)
+    : BLC(Value_BLC)
     {
-        __constructor_core(_input_strategy, 0x0, BufferSize, BackupSectionSize);
+        __constructor_core(_input_strategy, memory_chunk, ChunkSize, MinFallbackN);
     }
                   
 
     TEMPLATE_IN  void  
-    CLASS::__constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
+    CLASS::__constructor_core(FixedSizeCharacterStream<CharacterCarrierType>* _input_strategy, 
                               CharacterCarrierType* buffer_memory, size_t BufferSize, 
-                              size_t FallBackN) 
+                              size_t MinFallBackN) 
     {
         __quex_assert(BufferSize > 2); 
-        __quex_assert(FallBackN < BufferSize - 2);  // '-2' because of the border chars.
+        __quex_assert(MinFallBackN < BufferSize - 2);  // '-2' because of the border chars.
         //___________________________________________________________________________
         //
         // NOTE: The borders are filled with buffer limit codes. Thus, the
         // buffer's volume is two elements greater then the buffer's content.
         //
         if( buffer_memory == 0x0 ) {
-            _memory->_front            = new character_type[BufferSize];      
-            _memory->_external_owner_f = false;
+            _memory.setup(new character_type[BufferSize], BufferSize, /* ExternalOwnerF */ false, BLC);      
         }
         else {
-            _memory->_front            = buffer_memory;
-            _memory->_external_owner_f = true;
+            _memory.setup(buffer_memory, BufferSize, /* ExternalOwnerF */ true, BLC);      
         }
-        _memory->_back = _memory->_front + BufferSize - 1;
-
-        _memory->_default_fallback_n = FallBackN;
-
-        // _memory[0]             = lower buffer limit code character
-        // _memory[1]             = first char of content
-        // _memory[BUFFER_SIZE-2] = last char of content
-        // _memory[BUFFER_SIZE-1] = upper buffer limit code character
-        *(_memory->_front) = CLASS::BLC; // set buffer limit code
-        *(_memory->_back)  = CLASS::BLC; // set buffer limit code
 
         // -- current = 1 before content, 
         //    because we always read '_current_p + 1' as next char.
@@ -99,6 +99,10 @@ namespace quex {
         _current_p      = content_front();     
         // -- initial lexeme start, of course, at the start
         _lexeme_start_p = content_front();
+
+        // -- how many characters of the old content shall be left in the
+        //    buffer when new content is loaded?
+        _min_fallback_n = MinFallBackN;
 
         // -- for a later 'map_to_stream_position(character_index), the strategy might
         //    have some plans.
@@ -131,39 +135,9 @@ namespace quex {
     TEMPLATE_IN CLASS::~buffer() 
     {
         // if buffer was provided from outside, then we should better not delete it
-        if( _memory->_external_owner_f ) return;
+        if( _memory._external_owner_f ) return;
 
-        delete [] _memory->_front; 
-    }
-
-    //________________________________________________________________________________
-    // NOTE: With the forward/backward behavior implemented below it is
-    //       **always** safe to say that the character which they return is
-    //       the character underneath '_current_p'. This significantly simplfies
-    //       the discussion about possible use-cases.
-    // NOTE: Limit codes are stored at the end of the buffer. This causes
-    //       all transitions to fail in the state machine. The 'fail'
-    //       case has now to check wether the current input is BLC.
-    //       If so, the load_new_content() function is to be called.
-    // THUS: Under normal conditions (99.99% of the cases) no extra
-    //       check for end of buffer is necessary => speed up.
-    TEMPLATE_IN  int CLASS::get_forward()  
-    { 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(); 
-        __quex_assert(*_current_p != CLASS::BLC || _current_p == _memory->front());
-        __quex_assert(_current_p >= _lexeme_start_p - 1);
-        // '*_end_of_file_p == BLC' is checked in QUEX_BUFFER_ASSERT_CONSISTENCY()
-        return *(++_current_p); 
-    }
-    TEMPLATE_IN  int CLASS::get_backward() 
-    { 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(); 
-        __quex_assert(*_current_p != CLASS::BLC || _current_p == _memory->back() || _current_p == _end_of_file_p);
-        // NOTE: __quex_assert(me->__memory->current_p() < me->__memory->get_lexeme_start_p());
-        //       Does not make sense here, since the macro may be used for backward input
-        //       position detection after a post condition has triggered (pseudo ambiguous
-        //       post conditions).
-        return *(--_current_p); 
+        delete [] _memory._front; 
     }
 
     TEMPLATE_IN  int CLASS::load_forward() 
@@ -191,13 +165,13 @@ namespace quex {
         QUEX_BUFFER_SHOW_BUFFER_LOAD("LOAD FORWARD(entry)");
 
         // (*) Check for the three possibilities mentioned above
-        if     ( _current_p == _memory->front() ) { return 0; }      // (1)
+        if     ( _current_p == _memory.front() ) { return 0; }      // (1)
         else if( _current_p == _end_of_file_p )  { return 0; }      // (2)
-        else if( _current_p != _memory->back() ) {                     
+        else if( _current_p != _memory.back() ) {                     
             throw std::range_error("Call to 'load_forward() but '_current_p' not on buffer border.\n" 
                                    "(Check character encoding)");  
         }
-        //                                                           // (3)
+        //                                                          // (3)
 
         //
         // HERE: current_p == END OF THE BUFFER!
@@ -229,8 +203,8 @@ namespace quex {
         const size_t MinFallbackN = _current_p - _lexeme_start_p;
 
         // (*) Fallback region = max(default size, necessary size)
-        const size_t FallBackN = _memory->default_fallback_n() > MinFallbackN ? 
-                                 _memory->default_fallback_n() : MinFallbackN;
+        const size_t FallBackN = _memory.min_fallback_n() > MinFallbackN ? 
+                                 _memory.min_fallback_n() : MinFallbackN;
 
         // (*) Copy fallback region
         //     If there is no 'overlap' from source and drain than the faster memcpy() can 
@@ -339,9 +313,9 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONSISTENCY();
 
         // (*) Check for the three possibilities mentioned above
-        if     ( _current_p == _memory->back() )  { return 0; }   // (1)
+        if     ( _current_p == _memory.back() )  { return 0; }   // (1)
         else if( _current_p == _end_of_file_p )  { return 0; }   // (1)
-        else if( _current_p != _memory->front() ) {
+        else if( _current_p != _memory.front() ) {
             throw std::range_error("Call to 'load_backward() but '_current_p' not on buffer border.\n" 
                                    "(Check character encoding)");  
         }
@@ -423,7 +397,7 @@ namespace quex {
         // -- end of file / end of buffer:
         if( _end_of_file_p ) {
             character_type*   NewEndOfFileP = _end_of_file_p + BackwardDistance;
-            if( NewEndOfFileP < _memory->back() ) __end_of_file_set(NewEndOfFileP);
+            if( NewEndOfFileP < _memory.back() ) __end_of_file_set(NewEndOfFileP);
             else                                 __end_of_file_unset();
         }
         // -- character index of begin of buffer = where we started reading new content
@@ -459,7 +433,7 @@ namespace quex {
         if( _character_index_at_front != 0 ) { return false; }
 
         // if we're at the beginning of the buffer, then this is also the beginning of the file
-        if( _current_p == _memory->front() ) { return true; }
+        if( _current_p == _memory.front() ) { return true; }
 
         return false;
     }
@@ -467,17 +441,18 @@ namespace quex {
     TEMPLATE_IN  bool  CLASS::is_begin_of_memory()
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY();
-        return _current_p == _memory->front();
+        return _current_p == _memory.front();
     }
 
     TEMPLATE_IN  bool  CLASS::is_end_of_memory()
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY();
-        return _current_p == _memory->back();
+        return _current_p == _memory.back();
     }
 
     TEMPLATE_IN  void CLASS::set_current_character(const CharacterCarrierType Value) 
     { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p) = Value; }
+
     TEMPLATE_IN  void CLASS::set_current_p(character_type* Adr)     
     { _current_p = Adr; QUEX_BUFFER_ASSERT_CONSISTENCY(); }
 
@@ -501,8 +476,8 @@ namespace quex {
         _end_of_file_p  = EOF_p; 
         *_end_of_file_p = CLASS::BLC; 
         // NOT YET: QUEX_BUFFER_ASSERT_CONSISTENCY();
-        __quex_assert(_end_of_file_p >  _memory->front());
-        __quex_assert(_end_of_file_p <= _memory->back());
+        __quex_assert(_end_of_file_p >  _memory.front());
+        __quex_assert(_end_of_file_p <= _memory.back());
     }
 
     TEMPLATE_IN  void CLASS::__end_of_file_unset()
@@ -570,7 +545,7 @@ namespace quex {
                     return;
                 } 
             } else {
-                if( _current_p + remaining_distance_to_target < _memory->back() ) {
+                if( _current_p + remaining_distance_to_target < _memory.back() ) {
                     _current_p      += remaining_distance_to_target;
                     _lexeme_start_p  = _current_p + 1;
                     QUEX_BUFFER_ASSERT_CONSISTENCY();
@@ -579,9 +554,9 @@ namespace quex {
             }
 
             // move current_p to end of the buffer, thus decrease the remaining distance
-            remaining_distance_to_target -= (_memory->back() - _current_p);
-            _current_p      = _memory->back();
-            _lexeme_start_p = _memory->back();
+            remaining_distance_to_target -= (_memory.back() - _current_p);
+            _current_p      = _memory.back();
+            _lexeme_start_p = _memory.back();
 
             // load subsequent segment into buffer
             load_forward();
@@ -602,7 +577,7 @@ namespace quex {
         while( 1 + 1 == 2 ) {
             QUEX_BUFFER_ASSERT_CONSISTENCY();
             if( _current_p - remaining_distance_to_target <= content_front() ) {
-                if( *(_memory->front()) == CLASS::BLC ) {
+                if( *(_memory.front()) == CLASS::BLC ) {
                     _current_p      = content_front();
                     _lexeme_start_p = content_front() + 1; 
                     QUEX_BUFFER_ASSERT_CONSISTENCY();
@@ -630,9 +605,9 @@ namespace quex {
         // buffer with a given bunch of memory (the currently used one). Then
         // however, one needs to set the flag 'external memory' according to
         // what it was before.
-        const bool Tmp = _memory->_external_owner_f;
-        CLASS::__constructor_core(_input, _memory->front(), _memory->size(), _memory->default_fallback_n());
-        _memory->_external_owner_f = Tmp;
+        const bool Tmp = _memory._external_owner_f;
+        CLASS::__constructor_core(_input, _memory.front(), _memory.size(), _memory.min_fallback_n());
+        _memory._external_owner_f = Tmp;
     }
 
 #undef TEMPLATE_IN
