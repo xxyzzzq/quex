@@ -18,7 +18,7 @@
 //                                   returns the number of actually filled characters.
 //  
 //
-//  MAIN GOAL: The main goal of a 'fixed_size_character_stream' class is to 
+//  MAIN GOAL: The main goal of a 'FixedSizeCharacterStream' class is to 
 //             fill a buffer with N characters starting from consecutive 
 //             stream positions.
 //
@@ -90,10 +90,10 @@
 
 #include <quex/code_base/asserts>
 #include <quex/code_base/buffer/input_policy>
-#include <quex/code_base/buffer/fixed_size_character_stream>
+#include <quex/code_base/buffer/FixedSizeCharacterStream>
 
-#include <iostream>       // for: fixed_size_character_stream_base<istream*>
-#include <cstdio>         // for: fixed_size_character_stream_base<FILE*>
+#include <iostream>       // for: FixedSizeCharacterStream_base<istream*>
+#include <cstdio>         // for: FixedSizeCharacterStream_base<FILE*>
 #include <cerrno>
 #include <stdexcept>
 #include <cstring>
@@ -107,24 +107,24 @@ extern "C" {
 namespace quex {
 
     template <class InputHandleType, class CharacterCarrierType>
-    class fixed_size_character_stream_iconv
-        : public fixed_size_character_stream<CharacterCarrierType> {
+    class FixedSizeCharacterStream_IConv
+        : public FixedSizeCharacterStream<CharacterCarrierType> {
 
 
         static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
         typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
         typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
        
-        /* DISABLED */ fixed_size_character_stream_iconv();
+        /* DISABLED */ FixedSizeCharacterStream_IConv();
 
      public:
-        // NOTE: It makes sense to have multiple fixed_size_character_stream_iconv objects use
+        // NOTE: It makes sense to have multiple FixedSizeCharacterStream_IConv objects use
         //       the same raw buffer, since this buffer is only used temporarily
         //       while loading.
-        fixed_size_character_stream_iconv(InputHandleType* input_handle, 
+        FixedSizeCharacterStream_IConv(InputHandleType* input_handle, 
                                           uint8_t* raw_buffer_p, size_t raw_buffer_size,
                                           const char* FromCoding, const char* ToCoding);
-        ~fixed_size_character_stream_iconv();
+        ~FixedSizeCharacterStream_IConv();
 
         virtual size_t    tell_character_index();
         virtual void      seek_character_index(const size_t CharacterIndex);
@@ -183,11 +183,11 @@ namespace quex {
 #include <quex/code_base/buffer/iconv/debug.i>
 
 #define TEMPLATE_IN  template<class InputHandleType, class CharacterCarrierType> inline 
-#define CLASS        fixed_size_character_stream_iconv<InputHandleType, CharacterCarrierType>
+#define CLASS        FixedSizeCharacterStream_IConv<InputHandleType, CharacterCarrierType>
 
 namespace quex {
 
-    TEMPLATE_IN CLASS::fixed_size_character_stream_iconv(InputHandleType* input_handle, 
+    TEMPLATE_IN CLASS::FixedSizeCharacterStream_IConv(InputHandleType* input_handle, 
                                                  uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                                  const char* FromCoding,   const char* ToCoding) 
         // Initialize the raw buffer that holds the plain bytes of the input file
@@ -211,7 +211,7 @@ namespace quex {
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
     }
 
-    TEMPLATE_IN CLASS::~fixed_size_character_stream_iconv() 
+    TEMPLATE_IN CLASS::~FixedSizeCharacterStream_IConv() 
     { iconv_close(iconv_handle); }
 
     TEMPLATE_IN size_t 

@@ -52,7 +52,7 @@ namespace quex {
 #      define QUEX_BUFFER_SHOW_BUFFER_LOAD(InfoStr) /* empty */
 #   endif
 
-    TEMPLATE_IN 
+    TEMPLATE_IN
     CLASS::Buffer(FixedSizeCharacterStream<CharacterCarrierType>* _input_strategy, 
                   size_t         BufferSize   /* = 65536 */, 
                   size_t         MinFallbackN /* = 64 */,
@@ -74,7 +74,7 @@ namespace quex {
     }
                   
 
-    TEMPLATE_IN  void  
+    TEMPLATE_IN void  
     CLASS::__constructor_core(FixedSizeCharacterStream<CharacterCarrierType>* _input_strategy, 
                               CharacterCarrierType* buffer_memory, size_t BufferSize, 
                               size_t MinFallBackN) 
@@ -116,7 +116,7 @@ namespace quex {
         _character_index_at_front = 0;
 
 #       ifdef __QUEX_OPTION_UNIT_TEST
-        _SHOW_current_fallback_n = FallBackN; // onyl used for 'show'
+        _SHOW_current_fallback_n = MinFallBackN; // onyl used for 'show'
 #       endif
 
         // -- end of file / end of buffer:
@@ -126,13 +126,13 @@ namespace quex {
             __end_of_file_unset();                        // buffer limit
 
         // -- function pointer for overflow handling
-        on_overflow = 0x0;
+        _on_overflow = 0x0;
         // TODO: on_overflow = default_memory_on_overflow_handler<CharacterCarrierType>;
 
         QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
-    TEMPLATE_IN CLASS::~buffer() 
+    TEMPLATE_IN CLASS::~Buffer() 
     {
         // if buffer was provided from outside, then we should better not delete it
         if( _memory._external_owner_f ) return;
@@ -237,11 +237,11 @@ namespace quex {
         //     then this is a critical overflow. Example: If lexeme extends over 
         //     the whole buffer (==> MinFallbackN >= content_size).
         if( LoadN == 0 ) { 
-            if( on_overflow == 0x0 ) {
+            if( _on_overflow == 0x0 ) {
                 throw std::range_error("Distance between lexeme start and current pointer exceeds buffer size.\n"
                                        "(tried to load buffer in forward direction)");
             }
-            else if( on_overflow(this, /* ForwardF */true) == false ) {
+            else if( _on_overflow(this, /* ForwardF */true) == false ) {
                 return 0; 
             }
         }
@@ -346,11 +346,11 @@ namespace quex {
         //           =>            backward distance < size - (C - L)
         //          
         if( _lexeme_start_p == content_back() ) {
-            if( on_overflow == 0x0 ) {
+            if( _on_overflow == 0x0 ) {
                 throw std::range_error("Distance between lexeme start and current pointer exceeds buffer size.\n"
                                        "(tried to load buffer in backward direction)");
             }
-            else if( on_overflow(this, /* ForwardF */false) == false ) {
+            else if( _on_overflow(this, /* ForwardF */false) == false ) {
                 return 0; 
             }
         }
@@ -438,18 +438,6 @@ namespace quex {
         return false;
     }
 
-    TEMPLATE_IN  bool  CLASS::is_begin_of_memory()
-    {
-        QUEX_BUFFER_ASSERT_CONSISTENCY();
-        return _current_p == _memory.front();
-    }
-
-    TEMPLATE_IN  bool  CLASS::is_end_of_memory()
-    {
-        QUEX_BUFFER_ASSERT_CONSISTENCY();
-        return _current_p == _memory.back();
-    }
-
     TEMPLATE_IN  void CLASS::set_current_character(const CharacterCarrierType Value) 
     { QUEX_BUFFER_ASSERT_CONSISTENCY(); *(_current_p) = Value; }
 
@@ -469,7 +457,6 @@ namespace quex {
         _lexeme_start_p = _current_p;  // pointing to the next character to be read   
         QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
-
 
     TEMPLATE_IN void CLASS::__end_of_file_set(character_type* EOF_p)
     {

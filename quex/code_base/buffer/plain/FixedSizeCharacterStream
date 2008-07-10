@@ -12,26 +12,26 @@ extern "C" {
 #include <quex/code_base/compatibility/inttypes.h>
 }
 #include <quex/code_base/asserts>
-#include <quex/code_base/buffer/input_policy>
-#include <quex/code_base/buffer/fixed_size_character_stream>
+#include <quex/code_base/buffer/InputPolicy>
+#include <quex/code_base/buffer/FixedSizeCharacterStream>
 
 namespace quex {
 
     template <class InputHandleType, class CharacterCarrierType>
-        class fixed_size_character_stream_plain
-        : public fixed_size_character_stream<CharacterCarrierType> {
+        class FixedSizeCharacterStream_Plain
+        : public FixedSizeCharacterStream<CharacterCarrierType> {
 
             static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
             typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
             typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
            
-            /* DISABLED */ fixed_size_character_stream_plain();
+            /* DISABLED */ FixedSizeCharacterStream_Plain();
         protected:
             InputHandleType* ih;
             stream_position  start_position;  // position in stream where analysis started
 
         public:
-            fixed_size_character_stream_plain(InputHandleType* _ih);
+            FixedSizeCharacterStream_Plain(InputHandleType* _ih);
 
             virtual size_t   tell_character_index();
             virtual void     seek_character_index(const size_t CharacterIndex); 
@@ -43,9 +43,9 @@ namespace quex {
 
 
 #define TEMPLATE_IN  template<class InputHandleType, class CharacterCarrierType> inline
-#define CLASS        fixed_size_character_stream_plain<InputHandleType, CharacterCarrierType>
+#define CLASS        FixedSizeCharacterStream_Plain<InputHandleType, CharacterCarrierType>
     TEMPLATE_IN 
-    CLASS::fixed_size_character_stream_plain(InputHandleType* _ih) 
+    CLASS::FixedSizeCharacterStream_Plain(InputHandleType* _ih) 
         : ih(_ih) 
     {}
 
