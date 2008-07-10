@@ -27,28 +27,6 @@ typedef QUEX_CHARACTER_TYPE* QUEX_CHARACTER_POSITION;
 
 typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 
-struct QUEX_CORE_ANALYSER_STRUCT {
-    QUEX_CHARACTER_TYPE*  lexeme_start_p;                 
-    QUEX_CHARACTER_TYPE*  input_p;
-    QUEX_CHARACTER_TYPE*  buffer_begin;
-    QUEX_CHARACTER_TYPE   char_covered_by_terminating_zero;   // MANDATORY MEMBER!
-    QUEX_MODE_FUNCTION_P  __current_mode_analyser_function_p;
-
-#ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-    // NOTE: The begin of line pre-condition needs to be stored 
-    //       in a member variable, because it cannot be derived  
-    //       quickly from the variable 'char_covered_by_terminating_zero'.
-    //       The begin of line may also occur at the beginning of 
-    //       a file/stream.
-    // NOTE: All other trivial pre-conditions can be derived from variable
-    //       'char_covered_by_terminating_zero' because it contains
-    //       the last character that occured---in any case, even when there
-    //       was a post-condition, it ate only the last character from the
-    //       core pattern.
-    int begin_of_line_f;           
-#endif
-};
-
 #ifndef     QUEX_SETTING_BUFFER_LIMIT_CODE
 #    define QUEX_SETTING_BUFFER_LIMIT_CODE (0)
 #endif

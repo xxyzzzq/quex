@@ -66,23 +66,10 @@ def __local_variable_definitions(VariableInfoList):
     return txt
          
 
-__function_header_stand_alone = """
-typedef QUEX_CORE_ANALYSER_STRUCT  $$QUEX_ANALYZER_STRUCT_NAME$$;
-
-/* Protect against redefinition if more than one analyser function is defined 
-** inside the same source code file.
-*/
-#ifndef __DEFINITION_GUARD__QUEX_CORE_ENGINE_INITIALIZATION_FUNCTION_DEFINED__
-#define __DEFINITION_GUARD__QUEX_CORE_ENGINE_INITIALIZATION_FUNCTION_DEFINED__
-void (*$$QUEX_ANALYZER_STRUCT_NAME$$_init)(QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST)
-     = QUEX_CORE_ANALYSER_STRUCT_init;
-#endif     
-"""
-
 __function_signature_stand_alone = """
 QUEX_INLINE_KEYWORD
 QUEX_ANALYSER_RETURN_TYPE
-$$QUEX_ANALYZER_STRUCT_NAME$$_do(QUEX_CORE_ANALYSER_STRUCT* me) 
+$$QUEX_ANALYZER_STRUCT_NAME$$_do(QuexAnalyserCore* me) 
 {
 """
 
@@ -126,7 +113,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     local_variable_list = []
     if StandAloneEngineF: 
-        header    = __function_header_stand_alone
+        header    = ""
         signature = __function_signature_stand_alone
     else:                 
         header    = ""
@@ -196,7 +183,7 @@ $$STATE_MACHINE_NAME$$_buffer_reload_forward(QUEX_CORE_BUFFER_TYPE* buffer,
                                QUEX_CHARACTER_POSITION* last_acceptance_input_position
                                $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    const size_t LoadedByteN = QUEX_BUFFER_LOAD_FORWARD();
+    const size_t LoadedByteN = Buffer_load_forward(buffer);
     if( LoadedByteN == 0 ) return false;
 
     if( *last_acceptance_input_position != 0x0 ) { 
@@ -211,7 +198,7 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 static bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_backward(QUEX_CORE_BUFFER_TYPE* buffer)
 {
-    const size_t LoadedByteN = QUEX_BUFFER_LOAD_BACKWARD();
+    const size_t LoadedByteN = Buffer_load_backward(buffer);
     if( LoadedByteN == 0 ) return false;
     
     /* Backward lexing happens in two cases:

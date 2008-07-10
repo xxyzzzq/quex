@@ -56,9 +56,8 @@ int main(int, char**)
 
 quex_buffer_based_test_program = """
     istringstream                                           istr("$$TEST_STRING$$");
-    quex::fixed_size_character_stream_plain<istringstream, QUEX_CHARACTER_TYPE>  fscs(&istr);
-    quex::buffer< QUEX_CHARACTER_TYPE>   buf(&fscs, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$,
-                                             QUEX_SETTING_BUFFER_LIMIT_CODE);
+    quex::FixedSizeCharacterStreamPlain<istringstream, QUEX_CHARACTER_TYPE>  fscs(&istr);
+    quex::buffer< QUEX_CHARACTER_TYPE>       buf(&fscs, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$, QUEX_SETTING_BUFFER_LIMIT_CODE);
 
     analyser_init(&lexer_state, 0, &buf, analyser_do);
 """
@@ -78,7 +77,7 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     
     if BufferType=="QuexBuffer": 
         if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
-        include_str  = "#include <quex/code_base/buffer/plain/fixed_size_character_stream>\n"
+        include_str  = "#include <quex/code_base/buffer/plain/FixedSizeCharacterStream>\n"
         include_str += "#include <sstream>\n" 
 
         txt = include_str + txt

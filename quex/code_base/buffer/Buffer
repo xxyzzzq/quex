@@ -53,7 +53,7 @@ namespace quex {
         };
 
     template<class CharacterCarrierType = uint8_t>
-        class Buffer {
+        class Buffer : public QuexBufferCore<CharacterCarrierType> {
         // IDEA: The iteration over the character has to happen as fast as possible,
         //       since this operation is performed very often. The loading of the
         //       buffer happens seldom, and one can be more tolerant. For iterating
@@ -143,8 +143,6 @@ namespace quex {
             // (*) Member Variables ___________________________________________________________________________
             BufferMemory<character_type>  _memory;
             //
-            character_type*  _current_p;
-            character_type*  _lexeme_start_p;
             size_t           _min_fallback_n;
             character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
             size_t           _character_index_at_front; // global index of the character at the begin of buffer

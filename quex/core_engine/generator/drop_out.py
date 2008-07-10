@@ -50,7 +50,7 @@ def __reload_forward(StateIndex, SM):
     for state_machine_id in SM.post_contexted_sm_id_list():
         arg_list += ", &last_acceptance_%s_input_position" % state_machine_id
     txt  = 'QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");\n'
-    txt += "if( %s_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position%s) ) {\n" % \
+    txt += "if( %s_buffer_reload_forward(&(me->buffer)), &last_acceptance_input_position%s) ) {\n" % \
             (SM.name(), arg_list)
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
@@ -60,7 +60,7 @@ def __reload_forward(StateIndex, SM):
 
 def __reload_backward(StateIndex, SM): 
     txt  = 'QUEX_DEBUG_LABEL_PASS("BACKWARD_BUFFER_RELOAD");\n'
-    txt += "if( %s_buffer_reload_backward(QUEX_THE_BUFFER()) ) {\n" % SM.name()
+    txt += "if( %s_buffer_reload_backward(&(me->buffer)) ) {\n" % SM.name()
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
     txt += 'QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");\n'

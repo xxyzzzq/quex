@@ -1,0 +1,107 @@
+// -*- C++ -*- vim: set syntax=cpp:
+
+#if defined(__cplusplus)
+namespace quex { 
+#endif
+
+#   if defined(__cplusplus)
+#      define TEMPLATIFIER   template <class CharacterCarrierType>
+#      define INLINER        inline
+#      define TEMPLATE_IN    template <class CharacterCarrierType> inline
+#      define BUFFER_TYPE    BUFFER_TYPE
+#   else
+#      define TEMPLATIFIER   /* no template */
+#      define INLINER        static
+#      define TEMPLATE_IN    /* no template */ static
+#      define BUFFER_TYPE    QuexBufferCore
+
+#      define CharacterCarrierType QUEX_CHARACTER_TYPE  
+#   endif
+
+    TEMPLATIFIER
+    struct QuexBufferCore { 
+        CharacterCarrierType*  _input_p;
+        CharacterCarrierType*  _lexeme_start_p;
+        // NOTE: The terminating zero is stored in the first character **after** the
+        //       lexeme (matching character sequence). The begin of line pre-condition
+        //       is concerned with the last character in the lexeme, which is the one
+        //       before the 'char_covered_by_terminating_zero'.
+        CharacterCarrierType   _character_at_lexeme_start;      // --> terminating zero helper
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        CharacterCarrierType   _character_before_lexeme_start;  // --> begin of line
+#       endif
+    };
+
+    TEMPLATE_IN void
+    Buffer_input_p_increment(BUFFER_TYPE* buffer)
+    { 
+        ++(buffer->_input_p); 
+    }
+
+    TEMPLATE_IN void
+    Buffer_input_p_decrement(BUFFER_TYPE* buffer)
+    { 
+        --(buffer->decrement); 
+    }
+
+    TEMPLATE_IN void
+    Buffer_mark_lexeme_start(BUFFER_TYPE* buffer)
+    { 
+        buffer->_lexeme_start_p = buffer->_input_p; 
+    }
+
+    TEMPLATE_IN QUEX_CHARACTER_POSITION
+    Buffer_tell_adr(BUFFER_TYPE* buffer)
+    {
+        QUEX_DEBUG_ADR_ASSIGNMENT("TELL: ", buffer->_input_p);
+        return buffer->_input_p; 
+    }
+
+    TEMPLATE_IN void
+    Buffer_seek_adr(BUFFER_TYPE* buffer, QUEX_CHARACTER_POSITION Position)
+    {
+        buffer->_input_p = Position;                         
+        QUEX_DEBUG_ADR_ASSIGNMENT("SEEK: ", (int)((QUEX_CHARACTER_POSITION)Position)); 
+    }
+
+    TEMPLATE_IN CharacterCarrierType
+    Buffer_input_get(BUFFER_TYPE* buffer)
+    {
+        QUEX_DEBUG_INFO_INPUT(*(buffer->_input_p));
+        return *(buffer->_input_p); 
+    }
+
+    TEMPLATE_IN void
+    Buffer_get_BLC(BUFFER_TYPE* buffer)
+    { buffer->BLC; }
+
+    TEMPLATE_IN bool
+    Buffer_is_end_of_file(BUFFER_TYPE* buffer)
+    { return buffer->is_end_of_file(); }
+
+    TEMPLATE_IN bool
+    Buffer_is_begin_of_file(BUFFER_TYPE* buffer)
+    { return buffer->is_begin_of_file(); }
+
+    TEMPLATE_IN int
+    Buffer_load_forward(BUFFER_TYPE* buffer)
+    { return buffer->load_forward(); }
+
+    TEMPLATE_IN int
+    Buffer_load_backward(BUFFER_TYPE* buffer)
+    { buffer->load_backward(); }
+
+    TEMPLATIFIER
+    struct QuexAnalyserCore {
+        QuexBufferCore          buffer;
+#       if defined(__cplusplus)
+        CharacterCarrierType*   _buffer_begin;
+#       endif
+        QUEX_RETURN_TYPE        (_current_mode_analyser_function_p)(QuexAnalyserCore*);
+    };
+
+
+#ifdef __cplusplus
+} // namespace quex
+#endif
+
