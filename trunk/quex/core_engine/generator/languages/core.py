@@ -53,11 +53,11 @@ db["C++"] = {
     "$and":           "&&",
     "$loop-start-endless":  "while( 1 + 1 == 2 ) {\n",
     "$loop-end":            "}\n",
-    "$continue":          "continue;\n",
-    "$break":             "break;\n",
-    "$if not BLC":        "if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n",
-    "$if EOF":            "if( QUEX_END_OF_FILE() ) {\n",
-    "$if BOF":            "if( QUEX_BEGIN_OF_FILE() ) {\n",
+    "$continue":            "continue;\n",
+    "$break":               "break;\n",
+    "$if not BLC":          "if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n",
+    "$if EOF":              "if( Buffer_is_end_of_file(&(me->buffer)) ) {\n",
+    "$if BOF":              "if( Buffer_is_begin_of_file(&(me->buffer)) ) {\n",
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$if begin-of-line":      "if( me->begin_of_line_f ) {\n",
@@ -79,11 +79,11 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
-    "$input/increment":     "QUEX_BUFFER_INCREMENT();",
-    "$input/decrement":     "QUEX_BUFFER_DECREMENT();",
-    "$input/get":           "QUEX_BUFFER_GET(input);",
-    "$input/tell_position": lambda PositionStr: "QUEX_BUFFER_TELL_ADR(%s);\n" % PositionStr,
-    "$input/seek_position": lambda PositionStr: "QUEX_BUFFER_SEEK_ADR(%s);\n" % PositionStr,
+    "$input/increment":     "Buffer_input_p_increment(&(me->buffer));",
+    "$input/decrement":     "Buffer_input_p_decrement(&(me->buffer));",
+    "$input/get":           "input = Buffer_input_get(&(me->buffer));",
+    "$input/tell_position": lambda PositionStr: "%s = Buffer_tell_adr(&(me->buffer), %s);\n" % PositionStr,
+    "$input/seek_position": lambda PositionStr: "Buffer_seek_adr(&(me->buffer), %s);\n" % PositionStr,
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
@@ -102,7 +102,7 @@ db["C++"] = {
                           "QUEX_SET_last_acceptance(%s);\n" % value,
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #
-    "$header-definitions":       cpp.__header_definitions,
+    "$header-definitions":   cpp.__header_definitions,
     }
 
 #________________________________________________________________________________
