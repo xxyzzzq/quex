@@ -5,7 +5,7 @@
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER__
 #define __INCLUDE_GUARD_QUEX_BUFFER__
 
-#include <quex/code_base/buffer/fixed_size_character_stream>
+#include <quex/code_base/buffer/FixedSizeCharacterStream>
 
 #include <iostream>
 #include <stdexcept>
@@ -83,11 +83,11 @@ namespace quex {
 
         public:
             // (*) Constructor/Destructor __________________________________________________________________
-            Buffer(fixed_size_character_stream<CharacterCarrierType>* input_strategy, 
+            Buffer(FixedSizeCharacterStream<CharacterCarrierType>* input_strategy, 
                    size_t BufferSz          = 65536, 
                    size_t BackupSectionSz   = 64,
                    CharacterCarrierType Value_BLC = DEFAULT_BUFFER_LIMIT_CODE);          // BLC: buffer limit code
-            Buffer(fixed_size_character_stream<CharacterCarrierType>* input_strategy, 
+            Buffer(FixedSizeCharacterStream<CharacterCarrierType>* input_strategy, 
                    CharacterCarrierType*    buffer_memory,
                    size_t BufferSz          = 65536, 
                    size_t BackupSectionSz   = 64,
@@ -149,13 +149,13 @@ namespace quex {
             character_type*  _end_of_file_p;            // pointer to position in buffer that corresponds EOF, 
             size_t           _character_index_at_front; // global index of the character at the begin of buffer
             //                                          // == 0x0 if EOF not in buffer.
-            fixed_size_character_stream<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
+            FixedSizeCharacterStream<CharacterCarrierType>*  _input;  // DESIGN PATTERN: 'Strategy'
 
             // -- what happens if there's not enough space?
             bool   (*_on_overflow)(Buffer<CharacterCarrierType>*, bool ForwardF);
 
             // (*) Helper _____________________________________________________________________________________
-            void __constructor_core(fixed_size_character_stream<CharacterCarrierType>* _input_strategy, 
+            void __constructor_core(FixedSizeCharacterStream<CharacterCarrierType>* _input_strategy, 
                                     CharacterCarrierType* buffer_memory, size_t BufferSz, 
                                     size_t FallBackN);
             void __end_of_file_set(character_type*);
@@ -173,11 +173,10 @@ namespace quex {
             void             x_show_content(); 
 #       endif
         };    
-
 }
 
 #include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/debug.i>
+#include <quex/code_base/buffer/Buffer_debug.i>
 
 
 

@@ -7,8 +7,8 @@
 namespace quex {
 
     template <class CharacterCarrierType>  // CharacterCarrierType = uin8_t, uint16_t, uint32_t, ...
-    struct fixed_size_character_stream { 
-        // PURPOSE: The 'fixed_size_character_stream' provides the illusion of a continous 
+    struct FixedSizeCharacterStream { 
+        // PURPOSE: The 'FixedSizeCharacterStream' provides the illusion of a continous 
         //          character stream consisting of characters coded all with the **same** 
         //          byte-width.  It hides coding/uncoding and differing character sizes.
         virtual size_t   tell_character_index() = 0;

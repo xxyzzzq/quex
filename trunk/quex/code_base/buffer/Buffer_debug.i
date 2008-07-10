@@ -7,10 +7,12 @@
 
 namespace quex {
 #   define TEMPLATE_IN  template<class InputStrategy> inline
-#   define CLASS        buffer<InputStrategy>   
+#   define CLASS        Buffer<InputStrategy>   
 
 #ifdef __QUEX_OPTION_UNIT_TEST
-    TEMPLATE_IN void CLASS::show_brief_content() 
+#if 0
+    TEMPLATE_IN void 
+    CLASS::show_brief_content() 
     {
         std::cout << "start-pos:  " << _character_index_at_front << std::endl;
         std::cout << "end-pos:    " << _character_index_at_front + content_size() << std::endl;
@@ -90,7 +92,7 @@ namespace quex {
 
         std::cout << "|\n";
     }
-
+#endif
 #endif // __QUEX_OPTION_UNIT_TEST
 
 #undef TEMPLATE_IN

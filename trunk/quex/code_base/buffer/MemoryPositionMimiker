@@ -43,7 +43,7 @@ namespace quex {
     **            'TELL' AND 'SEEK'.                                            **
     */
     template <class character_type> 
-    struct memory_position_mimiker {
+    struct MemoryPositionMimiker {
 
         typedef size_t character_index; // Assume: The 'start position' is stored in
         //                              // terms of 'character index' rather the stream
@@ -54,18 +54,18 @@ namespace quex {
         // ALLOW: Only Adr, so that variable of type memory_position_mimiker can be
         //        can be initialized via a pointer, as a normal pointer does, e.g.
         //        "QUEX_CHARACTER_POSITION last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);"
-        memory_position_mimiker(character_type* Adr, character_index Pos=0) 
+        MemoryPositionMimiker(character_type* Adr, character_index Pos=0) 
             : address(Adr), buffer_start_position(Pos) {}
 
         character_type*  address;
         character_index  buffer_start_position;
 
-        bool operator==(const memory_position_mimiker& That)
+        bool operator==(const MemoryPositionMimiker& That)
         { 
           __quex_assert(this->buffer_start_position == That.buffer_start_position); 
           return this->address == That.address; 
         }
-        bool operator!=(const memory_position_mimiker& That)
+        bool operator!=(const MemoryPositionMimiker& That)
         { return ! (this->operator==(That)); }
 
         bool operator==(const character_type* ThatAdr) { return this->address == ThatAdr; }
