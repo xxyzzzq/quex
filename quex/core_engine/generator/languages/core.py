@@ -82,7 +82,7 @@ db["C++"] = {
     "$input/increment":     "Buffer_input_p_increment(&(me->buffer));",
     "$input/decrement":     "Buffer_input_p_decrement(&(me->buffer));",
     "$input/get":           "input = Buffer_input_get(&(me->buffer));",
-    "$input/tell_position": lambda PositionStr: "%s = Buffer_tell_adr(&(me->buffer), %s);\n" % PositionStr,
+    "$input/tell_position": lambda PositionStr: "%s = Buffer_tell_adr(&(me->buffer));\n" % PositionStr,
     "$input/seek_position": lambda PositionStr: "Buffer_seek_adr(&(me->buffer), %s);\n" % PositionStr,
     "$return":              "return;",
     "$return_true":         "return true;",

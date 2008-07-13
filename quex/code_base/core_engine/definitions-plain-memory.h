@@ -17,39 +17,13 @@ struct QUEX_CORE_ANALYSER_STRUCT;
 #ifndef __QUEX_CORE_OPTION_ANALYZER_RETURN_TYPE_DEFINED
     typedef int    QUEX_ANALYSER_RETURN_TYPE;
 #endif
-#ifndef __QUEX_CORE_OPTION_CHARACTER_TYPE_DEFINED
-    typedef char   QUEX_CHARACTER_TYPE;
-#endif
 
-typedef void* QUEX_CORE_BUFFER_TYPE;
-
-typedef QUEX_CHARACTER_TYPE* QUEX_CHARACTER_POSITION;
 
 typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
 
 #ifndef     QUEX_SETTING_BUFFER_LIMIT_CODE
 #    define QUEX_SETTING_BUFFER_LIMIT_CODE (0)
 #endif
-#define QUEX_END_OF_FILE()         (1)
-#define QUEX_BEGIN_OF_FILE()       (me->input_p == me->buffer_begin - 1)
-
-#define QUEX_THE_BUFFER() (0x0 /* no dedicated buffer handling in this case */)
-
-#define QUEX_BUFFER_INCREMENT()           (++(me->input_p));
-#define QUEX_BUFFER_DECREMENT()           (--(me->input_p)); 
-#define QUEX_BUFFER_TELL_ADR(position)                            \
-        position    = me->input_p;                                \
-        QUEX_DEBUG_ADR_ASSIGNMENT("TELL: " #position, position); 
-#define QUEX_BUFFER_SEEK_ADR(position)                            \
-        me->input_p = position;                                   \
-        QUEX_DEBUG_ADR_ASSIGNMENT("SEEK: " #position, position); 
-#define QUEX_BUFFER_GET(character)        \
-        character = *(me->input_p);       \
-        QUEX_DEBUG_INFO_INPUT(character); 
-#define QUEX_BUFFER_LOAD_FORWARD()                       \
-        (0 /* reload not successful, no bytes loaded */) 
-#define QUEX_BUFFER_LOAD_BACKWARD()                      \
-        (0 /* empty */)
 
 #define QUEX_DEFINITION_Lexeme       (me->lexeme_start_p)
 #define QUEX_DEFINITION_LexemeBegin  (me->lexeme_start_p)
@@ -62,9 +36,6 @@ typedef QUEX_ANALYSER_RETURN_TYPE  (*QUEX_MODE_FUNCTION_P)(QUEX_LEXER_CLASS*);
  *    to go to the point where the actual analysis starts. The macro
  *    performs this positioning of the input pointer.
  */
-#define QUEX_BUFFER_SEEK_START_POSITION() \
-        (me->input_p) = (me->lexeme_start_p); 
-
 #define QUEX_INLINE_KEYWORD static
 
 #define QUEX_CORE_ANALYSER_STRUCT_init_ARGUMENT_LIST \
@@ -100,32 +71,6 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 #   endif
 }
 
-
-#define QUEX_CORE_MARK_LEXEME_START() (me->lexeme_start_p = me->input_p)
-
-/* NOTE: Again, whenever pre-conditions are involved the buffer needs to 
-**       contain a character (== Buffer Limit Code, or Begin of File) 
-**       before the character stream starts. For regular inverted
-**       state machines, this delimits the token stream, for the
-**       begin-of-line condition, this ensures that the pointer 
-**       'me->input_p - 1' is always welldefined.
-*/
-#define QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN() \
-        me->begin_of_line_f = (*(me->input_p - 1) == '\n');
-        
-#define QUEX_PREPARE_LEXEME_OBJECT()                           \
-        me->char_covered_by_terminating_zero = *(me->input_p); \
-        *(me->input_p)= '\0';                                  
-
-/* At the beginning of the file, the initialization sets the character that
- * covers the terminating zero to '\0'. In this case, one cannot say that '\n'
- * is a valid condition for the 'begin of line' flag.    
- */
-#define QUEX_UNDO_PREPARE_LEXEME_OBJECT()                                     \
-   if( me->char_covered_by_terminating_zero != (QUEX_CHARACTER_TYPE)'\0' ) {  \
-      *(me->input_p) = me->char_covered_by_terminating_zero;                  \
-        me->char_covered_by_terminating_zero = (QUEX_CHARACTER_TYPE)'\0';     \
-   }
 
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE    /* nothing happens here (yet) */                         
 

@@ -1,0 +1,109 @@
+// -*- C++ -*- vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   if defined(QUEX_OPTION_ACTIVATE_ASSERTS)
+#      include<quex/code_base/buffer/MemoryPositionMimiker>
+#   endif
+namespace quex { 
+#endif
+
+#ifndef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+#    define __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  void
+#endif
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#    define TEMPLATIFIER           template <class CharacterCarrierType>
+#    define BUFFER_MEMORY_TYPE     quex::BufferMemory<CharacterCarrierType>
+#    define BUFFER_TYPE            quex::QuexBufferCore<CharacterCarrierType>
+#    define BUFFER_FILLER_TYPE     quex::QuexBufferFiller<CharacterCarrierType>
+#    define MINIMAL_ANALYZER_TYPE  quex::QuexAnalyserMinimal<CharacterCarrierType>
+#else
+#    define TEMPLATIFIER           /* no template */
+#    define CharacterCarrierType   QUEX_CHARACTER_TYPE  
+#    define BUFFER_MEMORY_TYPE     BufferMemory
+#    define BUFFER_TYPE            QuexBufferCore
+#    define BUFFER_FILLER_TYPE     QuexBufferFiller
+#    define MINIMAL_ANALYZER_TYPE  QuexAnalyserMinimal
+#endif
+
+    TEMPLATIFIER
+    class BufferMemory { 
+        // (*) Buffer Memory Setup:
+        //      memory[0]             = lower buffer limit code character
+        //      memory[1]             = first char of content
+        //      ...
+        //      memory[BUFFER_SIZE-2] = last char of content
+        //      memory[BUFFER_SIZE-1] = upper buffer limit code character
+        CharacterCarrierType*  _front;   // first character in buffer 
+        CharacterCarrierType*  _back;    // last character in buffer
+        // (*) 'Owner' (who is to delete it's memory?)
+        bool                   _external_owner_f; 
+    };
+
+    TEMPLATIFIER
+    struct QuexBufferCore { 
+#       if      defined( QUEX_OPTION_ACTIVATE_ASSERTS) \
+           && ! defined (__QUEX_SETTING_PLAIN_C)
+        typedef MemoryPositionMimiker<CharacterCarrierType>  BufferMemoryPosition;
+#       else
+        typedef CharacterCarrierType*                        BufferMemoryPosition;
+#       endif
+
+        BUFFER_MEMORY_TYPE     _memory;
+
+        // (*) Iterator positions for lexical analysis
+        CharacterCarrierType*  _input_p;
+        CharacterCarrierType*  _lexeme_start_p;
+
+        // (*) Origin of the content in the input stream:
+        //     -- pointer to position in buffer that corresponds EOF 
+        CharacterCarrierType*  _end_of_file_p;  
+        //     -- character index in the stream that corresponds to the character
+        //        at the first character (see above: _front[1])
+        size_t                 _content_first_character_index;
+        
+        // (*) Information about characters that passed.
+        //     This is required to temporarily store a terminating zero and to
+        //     check for the 'begin of line' pre-condition.
+        //
+        //     NOTE: The terminating zero is stored in the first character **after** the
+        //           lexeme (matching character sequence). The begin of line pre-condition
+        //           is concerned with the last character in the lexeme, which is the one
+        //           before the 'char_covered_by_terminating_zero'.
+        CharacterCarrierType   _character_at_lexeme_start;      // --> terminating zero helper
+#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        CharacterCarrierType   _character_before_lexeme_start;  // --> begin of line
+#       endif
+    };
+
+    TEMPLATIFIER
+    struct QuexBufferFiller {
+        BUFFER_TYPE*         client;
+        int    (*load_forward)(BUFFER_FILLER_TYPE* _this_);
+        int    (*load_backward)(BUFFER_FILLER_TYPE* _this_);
+    };
+
+    // The following presents a minimal structure for a lexical analyser to work with the 
+    // constructed engine. Actually, it should only be useful for unit tests. Else, it has
+    // more a documentary character telling: This is the heart of the matter--anything else
+    // is just decoration!
+    TEMPLATIFIER
+    struct QuexAnalyserMinimal {
+        BUFFER_TYPE                                   buffer;
+        BUFFER_FILLER_TYPE                            buffer_filler;
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*current_analyser_function)(MINIMAL_ANALYZER_TYPE*);
+    };
+
+#   undef TEMPLATIFIER
+#   undef BUFFER_MEMORY_TYPE
+#   undef BUFFER_TYPE
+#   undef BUFFER_FILLER_TYPE
+#   undef MINIMAL_ANALYZER_TYPE
+    
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
+
+#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
