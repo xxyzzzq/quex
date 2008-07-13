@@ -3,8 +3,12 @@
 #define __INCLUDE_GUARD__QUEX_ASSERTS__
 
 #ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-#   include <cassert>
-#   define  __quex_assert(X)   assert(X)
+#   ifdef  QUEX_OPTION_ACTIVATE_ASSERTS_DISABLED 
+#      undef QUEX_OPTION_ACTIVATE_ASSERTS
+#   else
+#      include <cassert>
+#      define  __quex_assert(X)   assert(X)
+#   endif
 #else
 #   define  __quex_assert(X)   /*no assert*/
 #endif
