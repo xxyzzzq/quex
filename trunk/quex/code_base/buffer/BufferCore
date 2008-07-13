@@ -29,7 +29,7 @@ namespace quex {
 #endif
 
     TEMPLATIFIER
-    class BufferMemory { 
+    struct BufferMemory { 
         // (*) Buffer Memory Setup:
         //      memory[0]             = lower buffer limit code character
         //      memory[1]             = first char of content
@@ -81,8 +81,8 @@ namespace quex {
     TEMPLATIFIER
     struct QuexBufferFiller {
         BUFFER_TYPE*         client;
-        int    (*load_forward)(BUFFER_FILLER_TYPE* _this_);
-        int    (*load_backward)(BUFFER_FILLER_TYPE* _this_);
+        size_t    (*load_forward)(BUFFER_FILLER_TYPE* _this_);
+        size_t    (*load_backward)(BUFFER_FILLER_TYPE* _this_);
     };
 
     // The following presents a minimal structure for a lexical analyser to work with the 
@@ -105,5 +105,6 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
+#include <quex/code_base/buffer/BufferCore.i>
 
 #endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__

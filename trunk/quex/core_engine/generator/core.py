@@ -10,25 +10,15 @@ class Generator(GeneratorBase):
     def __init__(self, PatternActionPair_List, 
                  StateMachineName, AnalyserStateClassName, Language, 
                  DefaultAction, EndOfStreamAction, 
-                 QuexEngineHeaderDefinitionFile, ModeNameList, 
+                 ModeNameList, 
                  PrintStateMachineF, StandAloneAnalyserF, EndOfFile_Code):
 
-        if not StandAloneAnalyserF: 
-            assert QuexEngineHeaderDefinitionFile != "", \
-               "Non-Stand-Alone Lexical Analyser cannot be created without naming explicitly\n" + \
-               "a header file for the core engine define statements. See file\n" + \
-               "$QUEX_DIR/code_base/core_engine/definitions-plain-memory.h for an example"       
-
-        if QuexEngineHeaderDefinitionFile == "":
-            QuexEngineHeaderDefinitionFile = "core_engine/definitions-plain-memory.h" 
-    
         self.state_machine_name                  = StateMachineName
         self.analyzer_state_class_name           = AnalyserStateClassName
         self.programming_language                = Language
         self.language_db                         = Setup.language_db
         self.end_of_stream_action                = EndOfStreamAction
         self.default_action                      = DefaultAction
-        self.core_engine_header_definitions_file = QuexEngineHeaderDefinitionFile
         self.mode_name_list                      = ModeNameList
         self.print_state_machine_f               = PrintStateMachineF
         self.stand_alone_analyzer_f              = StandAloneAnalyserF
@@ -125,7 +115,7 @@ class Generator(GeneratorBase):
             option_str = LanguageDB["$compile-option"]("__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
 
         #  -- paste the papc functions (if there are some) in front of the analyzer functions
-        header_str = LanguageDB["$header-definitions"](self.core_engine_header_definitions_file, LanguageDB)
+        header_str = LanguageDB["$header-definitions"](LanguageDB)
         txt =   option_str                                     \
               + header_str                                     \
               + papc_input_postion_backward_detector_functions \
@@ -162,6 +152,6 @@ def do(PatternActionPair_List, DefaultAction,
     """
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
-                     DefaultAction, EndOfStreamAction, QuexEngineHeaderDefinitionFile, ModeNameList, 
+                     DefaultAction, EndOfStreamAction, ModeNameList, 
                      PrintStateMachineF, StandAloneAnalyserF, EndOfFile_Code).do()
     
