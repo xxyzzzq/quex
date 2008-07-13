@@ -33,6 +33,7 @@ static int    analyser_do(QUEX_CORE_ANALYSER_STRUCT* me);
 static int    analyser_do_2(QUEX_CORE_ANALYSER_STRUCT* me);
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
+$$TEST_CASE$$
 """
 
 test_program_common = """
@@ -65,7 +66,7 @@ quex_buffer_based_test_program = """
 plain_memory_based_test_program = """
     char   tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
-    analyser_init(&lexer_state, &(tmp[1]), analyser_do);
+    QuexAnalyserMinimal_init(&lexer_state, 0x0, 0x0, &tmp, strlen(tmp) + 1, /* BLC */0x0);
 """
 
 def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallbackN):
@@ -84,10 +85,8 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
 
         buffer_specific_str = quex_buffer_based_test_program.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
         buffer_specific_str = buffer_specific_str.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
-        core_engine_definition_file = "quex/code_base/core_engine/definitions-quex-buffer.h"
     else:                        
         buffer_specific_str = plain_memory_based_test_program
-        core_engine_definition_file = "quex/code_base/core_engine/definitions-plain-memory.h"
 
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
@@ -95,11 +94,11 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     txt = txt.replace("$$BUFFER_SPECIFIC_SETUP$$", buffer_specific_str)
     txt = txt.replace("$$TEST_STRING$$",           test_str)
 
-    return txt, core_engine_definition_file
+    return txt
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode,
-                                  core_engine_definition_file, SecondModeF=False):
+                                  SecondModeF=False):
     default_action = "return 0;"
 
     # -- produce some visible output about the setup
@@ -129,7 +128,6 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         PrintStateMachineF             = True,
                         AnalyserStateClassName         = "analyser",
                         StandAloneAnalyserF            = True, 
-                        QuexEngineHeaderDefinitionFile = core_engine_definition_file,
                         EndOfFile_Code                 = 0x19)
 
     if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
@@ -159,20 +157,25 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
 
     except RegularExpressionException, x:
         print "Dictionary Creation:\n" + repr(x)
+
+    common_str = test_program_common_declarations
+    common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
+    test_case_str = { "QuexBuffer":  "// #define __QUEX_SETTING_PLAIN_C",
+                      "PlainMemory": "#define __QUEX_SETTING_PLAIN_C\n" + \
+                                     "typedef unsigned char QUEX_CHARACTER_TYPE;\n", }[BufferType]
+    common_str = common_str.replace("$$TEST_CASE$$", test_case_str)
     
-    test_program, core_engine_definition_file = create_main_function(BufferType, TestStr,
-                                                                     QuexBufferSize, QuexBufferFallbackN)
+    test_program = create_main_function(BufferType, TestStr,
+                                        QuexBufferSize, QuexBufferFallbackN)
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
                                                        adapted_dict, 
-                                                       BufferLimitCode,
-                                                       core_engine_definition_file)
+                                                       BufferLimitCode)
 
     if SecondPatternActionPairList != []:
         state_machine_code += create_state_machine_function(SecondPatternActionPairList, 
                                                             PatternDictionary, 
                                                             BufferLimitCode,
-                                                            core_engine_definition_file, 
                                                             SecondModeF=True)
 
 
@@ -183,7 +186,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                              state_machine_code
 
     fd, filename_tmp = mkstemp(".cpp", "tmp-", dir=os.getcwd())
-    os.write(fd, test_program_common_declarations.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode)))
+    os.write(fd, common_str)
     os.write(fd, state_machine_code)
     os.write(fd, test_program)    
     os.close(fd)    

@@ -13,6 +13,9 @@ def __nice(SM_ID):
 #
 
 __header_definitions_txt = """
+
+#include <quex/code_base/buffer/BufferCore>
+
 #ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
 #   if    defined(__GNUC__) \
        && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
@@ -40,7 +43,6 @@ __header_definitions_txt = """
 #       define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
 #   endif
 
-#   include "$$INCLUDE$$"
 #   define __QUEX_ENGINE_HEADER_DEFINITIONS
 
 #   ifdef CONTINUE
@@ -50,8 +52,9 @@ __header_definitions_txt = """
 
 #endif
 """
-def __header_definitions(IncludeFile, LanguageDB):
-    txt = __header_definitions_txt.replace("$$INCLUDE$$", IncludeFile)
+def __header_definitions(LanguageDB):
+
+    txt = __header_definitions_txt
     txt = txt.replace("$$GOTO_START_PREPARATION$$", LanguageDB["$goto"]("$re-start"))
     return txt
 
@@ -179,11 +182,11 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
 __buffer_reload_str = """
 static bool 
-$$STATE_MACHINE_NAME$$_buffer_reload_forward(QUEX_CORE_BUFFER_TYPE* buffer, 
-                               QUEX_CHARACTER_POSITION* last_acceptance_input_position
-                               $$LAST_ACCEPTANCE_POSITIONS$$)
+$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler, 
+                                             QUEX_CHARACTER_POSITION* last_acceptance_input_position
+                                             $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    const size_t LoadedByteN = Buffer_load_forward(buffer);
+    const size_t LoadedByteN = filler->load_forward(filler);
     if( LoadedByteN == 0 ) return false;
 
     if( *last_acceptance_input_position != 0x0 ) { 
@@ -196,9 +199,9 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 }
 
 static bool 
-$$STATE_MACHINE_NAME$$_buffer_reload_backward(QUEX_CORE_BUFFER_TYPE* buffer)
+$$STATE_MACHINE_NAME$$_buffer_reload_backward(QuexBufferFiller* filler)
 {
-    const size_t LoadedByteN = Buffer_load_backward(buffer);
+    const size_t LoadedByteN = filler->load_backward(filler);
     if( LoadedByteN == 0 ) return false;
     
     /* Backward lexing happens in two cases:
