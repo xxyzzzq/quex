@@ -16,41 +16,10 @@ __header_definitions_txt = """
 
 #include <quex/code_base/buffer/BufferCore>
 
-#ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
-#   if    defined(__GNUC__) \
-       && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
-#       if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-#           define __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
-#       endif
-#   endif
-#   ifdef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
-
-        typedef  void*    QUEX_GOTO_LABEL_TYPE;
-#       define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       &&TERMINAL_DEFAULT
-#       define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (0x0)
-#       define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
-#       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
-#       define QUEX_GOTO_drop_out_state_index()          goto *drop_out_state_index;
-#       define QUEX_GOTO_last_acceptance()               goto *last_acceptance;
-
-#   else
-        typedef  uint32_t QUEX_GOTO_LABEL_TYPE;
-#       define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (-1)
-#       define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (-1)
-#       define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
-#       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
-#       define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
-#       define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
-#   endif
-
-#   define __QUEX_ENGINE_HEADER_DEFINITIONS
-
-#   ifdef CONTINUE
-#      undef CONTINUE
-#   endif
-#   define CONTINUE  $$GOTO_START_PREPARATION$$
-
+#ifdef CONTINUE
+#   undef CONTINUE
 #endif
+#define CONTINUE  $$GOTO_START_PREPARATION$$
 """
 def __header_definitions(LanguageDB):
 
@@ -71,13 +40,13 @@ def __local_variable_definitions(VariableInfoList):
 
 __function_signature_stand_alone = """
 QUEX_INLINE_KEYWORD
-QUEX_ANALYSER_RETURN_TYPE
+__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
 $$QUEX_ANALYZER_STRUCT_NAME$$_do(QuexAnalyserCore* me) 
 {
 """
 
 __function_signature_quex_mode_based = """
-QUEX_ANALYSER_RETURN_TYPE
+__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
 quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) 
 {
     // NOTE: Different modes correspond to different analyser functions. The analyser
@@ -135,15 +104,15 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     local_variable_list.extend(
             [ ["QUEX_GOTO_LABEL_TYPE",        "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
-              ["QUEX_CHARACTER_POSITION",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
+              ["QUEX_CHARACTER_POSITION_TYPE",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
               ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
             ])
               
     # -- post-condition position: store position of original pattern
     for state_machine_id in PostConditionedStateMachineID_List:
-         local_variable_list.append(["QUEX_CHARACTER_POSITION",
+         local_variable_list.append(["QUEX_CHARACTER_POSITION_TYPE",
                                      "last_acceptance_%s_input_position" % __nice(state_machine_id),
-                                     "(QUEX_CHARACTER_POSITION)(0x00)"])
+                                     "(QUEX_CHARACTER_POSITION_TYPE)(0x00)"])
 
     # -- pre-condition fulfillment flags                
     for pre_context_sm_id in PreConditionIDList:
@@ -183,9 +152,11 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 __buffer_reload_str = """
 static bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler, 
-                                             QUEX_CHARACTER_POSITION* last_acceptance_input_position
+                                             QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {
+    if( filler->load_forward == 0x0) return false;
+
     const size_t LoadedByteN = filler->load_forward(filler);
     if( LoadedByteN == 0 ) return false;
 
@@ -201,6 +172,8 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 static bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_backward(QuexBufferFiller* filler)
 {
+    if( filler->load_backward == 0x0) return false;
+
     const size_t LoadedByteN = filler->load_backward(filler);
     if( LoadedByteN == 0 ) return false;
     
@@ -226,7 +199,7 @@ def __load_procedure(PostConditionedStateMachineID_List):
     for state_machine_id in PostConditionedStateMachineID_List:
         variable_name  = "last_acceptance_%s_input_position" % state_machine_id 
         adapt_txt     += "       *%s -= (LoadedByteN); \\\n"  % variable_name
-        argument_list += ", QUEX_CHARACTER_POSITION* %s"         % variable_name
+        argument_list += ", QUEX_CHARACTER_POSITION_TYPE* %s"         % variable_name
 
     return blue_print(__buffer_reload_str,
                   [["$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", adapt_txt],

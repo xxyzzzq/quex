@@ -74,33 +74,5 @@ QUEX_CORE_ANALYSER_STRUCT_init(QUEX_CORE_ANALYSER_STRUCT* me,
 
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE    /* nothing happens here (yet) */                         
 
-#if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
-#   define QUEX_DEBUG_LABEL_PASS(Terminal)            /* empty */
-#   define QUEX_DEBUG_INFO_INPUT(Character)           /* empty */
-#   define QUEX_DEBUG_ADR_ASSIGNMENT(Variable, Value) /* empty */
-#   define QUEX_DEBUG_ASSIGNMENT(Variable, Value)     /* empty */
-#else
-#   define __QUEX_PRINT_SOURCE_POSITION()                             \
-          std::fprintf(stderr, "%s:%i: @%08X \t", __FILE__, __LINE__, \
-                       (int)(me->input_p - me->buffer_begin));            
-
-#   define QUEX_DEBUG_LABEL_PASS(Label)   \
-           __QUEX_PRINT_SOURCE_POSITION()   \
-           std::fprintf(stderr, Label "\n")
-
-#   define QUEX_DEBUG_ASSIGNMENT(Variable, Value)   \
-           __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stdout, Variable " = " Value "\n")
-
-#   define QUEX_DEBUG_ADR_ASSIGNMENT(Variable, Value)   \
-           __QUEX_PRINT_SOURCE_POSITION() \
-           std::fprintf(stdout, Variable " = @%08X\n", (int)(Value - me->buffer_begin))
-
-#   define QUEX_DEBUG_INFO_INPUT(Character)                              \
-           __QUEX_PRINT_SOURCE_POSITION()                                  \
-             Character == '\n' ? std::fprintf(stderr, "input:    '\\n'\n") \
-           : Character == '\t' ? std::fprintf(stderr, "input:    '\\t'\n") \
-           :                     std::fprintf(stderr, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
-#endif
 #endif // __INCLUDE_GUARD_QUEX_ANALYSER_CORE_DEFINITIONS_H__
 
