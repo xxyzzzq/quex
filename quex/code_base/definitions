@@ -1,10 +1,14 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
 
-#if defined(__QUEX_SETTING_PLAIN_C)
-#   define QUEX_INLINE_KEYWORD  static
-#else
+#include<cstdlib>
+#include<quex/code_base/compatibility/inttypes.h>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
 #   define QUEX_INLINE_KEYWORD  inline
+#else
+#   define QUEX_INLINE_KEYWORD  static
 #endif
 
 /* Detect the compiler */
@@ -38,9 +42,9 @@
 
 /* Return type of analyser function */
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-       typedef void  __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+       typedef void  __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
 #   else
-       typedef int   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
+       typedef int   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
 #   endif
 
 #endif // __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__

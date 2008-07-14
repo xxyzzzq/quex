@@ -2,15 +2,13 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
 
+#include<quex/code_base/definitions>
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   if defined(QUEX_OPTION_ACTIVATE_ASSERTS)
 #      include<quex/code_base/buffer/MemoryPositionMimiker>
 #   endif
 namespace quex { 
-#endif
-
-#ifndef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-#    define __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  void
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

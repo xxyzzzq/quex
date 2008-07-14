@@ -41,13 +41,13 @@ def __local_variable_definitions(VariableInfoList):
 __function_signature_stand_alone = """
 QUEX_INLINE_KEYWORD
 __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-$$QUEX_ANALYZER_STRUCT_NAME$$_do(QuexAnalyserCore* me) 
+$$QUEX_ANALYZER_STRUCT_NAME$$_do(QuexAnalyserMinimal* me) 
 {
 """
 
 __function_signature_quex_mode_based = """
 __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QUEX_LEXER_CLASS* me) 
+quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyserMinimal* me) 
 {
     // NOTE: Different modes correspond to different analyser functions. The analyser
     //       functions are all located inside the main class as static functions. That
@@ -123,8 +123,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += LanguageDB["$label-def"]("$start")
 
     # -- entry to the actual function body
-    txt += "    QUEX_CORE_MARK_LEXEME_START();\n"
-    txt += "    QUEX_UNDO_PREPARE_LEXEME_OBJECT();\n";
+    txt += "    Buffer_mark_lexeme_start(&me->buffer);\n"
+    txt += "    Buffer_undo_terminating_zero_for_lexeme(&me->buffer);\n";
     
     txt += function_body
 
@@ -213,10 +213,10 @@ __terminal_state_str  = """
   // pattern was according to the terminal state. The terminal states are 
   // numbered after the pattern id.
   //
-#define Lexeme       QUEX_DEFINITION_Lexeme       
-#define LexemeBegin  QUEX_DEFINITION_LexemeBegin  
-#define LexemeEnd    QUEX_DEFINITION_LexemeEnd    
-#define LexemeL      QUEX_DEFINITION_LexemeL      
+#define Lexeme       (me->buffer._lexeme_start_p)
+#define LexemeBegin  (me->buffer._lexeme_start_p)
+#define LexemeEnd    (me->buffer._input_p)
+#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -281,10 +281,10 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "QUEX_PREPARE_BEGIN_OF_LINE_CONDITION_FOR_NEXT_RUN();\n"
+        txt += indentation + "Buffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
 
     if action_info.contains_variable("Lexeme", ignored_code_regions):
-        txt += indentation + "QUEX_PREPARE_LEXEME_OBJECT();\n"
+        txt += indentation + "Buffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
 
     txt += indentation + "{\n"
     txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  

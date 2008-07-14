@@ -90,15 +90,15 @@ db["C++"] = {
     "$goto":                lambda Type, Argument=None:  "goto %s;" % label_db[Type](Argument),
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                                % label_db[Type](Argument) + \
-                                "    QUEX_DEBUG_LABEL_PASS(\"%s\");\n" % label_db[Type](Argument),
+                                "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db[Type](Argument),
     "$analyser-func":     cpp.__analyser_function,
     "$terminal-code":     cpp.__terminal_states,      
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value:
-                          "QUEX_DEBUG_ASSIGNMENT(\"%s\", \"%s\");\n" % (variable, value) + \
+                          "QUEX_DEBUG_PRINT(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
                           "%s = %s;\n" % (variable, value),
     "$set-last_acceptance": lambda value:
-                          "QUEX_DEBUG_ASSIGNMENT(\"ACCEPTANCE\", \"%s\");\n" % value + \
+                          "QUEX_DEBUG_PRINT(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
                           "QUEX_SET_last_acceptance(%s);\n" % value,
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #
