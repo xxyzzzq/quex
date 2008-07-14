@@ -19,6 +19,7 @@ namespace quex {
 #    define BUFFER_TYPE            quex::QuexBufferCore<CharacterCarrierType>
 #    define BUFFER_FILLER_TYPE     quex::QuexBufferFiller<CharacterCarrierType>
 #    define MINIMAL_ANALYZER_TYPE  quex::QuexAnalyserMinimal<CharacterCarrierType>
+
 #else
 #    define TEMPLATIFIER           /* no template */
 #    define CharacterCarrierType   QUEX_CHARACTER_TYPE  
@@ -26,10 +27,17 @@ namespace quex {
 #    define BUFFER_TYPE            QuexBufferCore
 #    define BUFFER_FILLER_TYPE     QuexBufferFiller
 #    define MINIMAL_ANALYZER_TYPE  QuexAnalyserMinimal
+
 #endif
 
     TEMPLATIFIER
     struct BufferMemory { 
+#       if ! defined(__QUEX_SETTING_PLAIN_C)
+#          if defined (QUEX_OPTION_ACTIVATE_ASSERTS)
+           typedef MemoryPositionMimiker<CharacterCarrierType>   Position;
+#          endif
+           typedef CharacterCarrierType*                         Position;
+#       endif
         // (*) Buffer Memory Setup:
         //      memory[0]             = lower buffer limit code character
         //      memory[1]             = first char of content
@@ -42,15 +50,14 @@ namespace quex {
         bool                   _external_owner_f; 
     };
 
+#   if ! defined(__QUEX_SETTING_PLAIN_C)
+#      define QUEX_CHARACTER_POSITION_TYPE   quex::BufferMemory<CharacterCarrierType>::Position 
+#   else
+       typedef CharacterCarrierType* QUEX_CHARACTER_POSITION_TYPE;
+#   endif
+
     TEMPLATIFIER
     struct QuexBufferCore { 
-#       if      defined( QUEX_OPTION_ACTIVATE_ASSERTS) \
-           && ! defined (__QUEX_SETTING_PLAIN_C)
-        typedef MemoryPositionMimiker<CharacterCarrierType>  BufferMemoryPosition;
-#       else
-        typedef CharacterCarrierType*                        BufferMemoryPosition;
-#       endif
-
         BUFFER_MEMORY_TYPE     _memory;
 
         // (*) Iterator positions for lexical analysis
