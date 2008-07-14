@@ -28,20 +28,23 @@ def action(PatternName):
     return txt
     
 test_program_common_declarations = """
-struct QUEX_CORE_ANALYSER_STRUCT;
-static int    analyser_do(QUEX_CORE_ANALYSER_STRUCT* me);
-static int    analyser_do_2(QUEX_CORE_ANALYSER_STRUCT* me);
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
 $$TEST_CASE$$
+#define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE /* nothing */
+#include <quex/code_base/buffer/BufferCore>
+static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
+static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
 """
 
 test_program_common = """
+
+#include <cstring>
 int main(int, char**)
 {
     using namespace std;
 
-    analyser   lexer_state;
+    QuexAnalyserMinimal   lexer_state;
     //
     int    success_f = 0;
     //
@@ -50,7 +53,7 @@ int main(int, char**)
     printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
     printf("(*) result:\\n");
     do {
-        success_f = lexer_state.__current_mode_analyser_function_p(&lexer_state);
+        success_f = lexer_state.current_analyser_function(&lexer_state);
     } while ( success_f );      
     printf("  ''\\n");
 }\n"""
@@ -66,7 +69,9 @@ quex_buffer_based_test_program = """
 plain_memory_based_test_program = """
     char   tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
-    QuexAnalyserMinimal_init(&lexer_state, 0x0, 0x0, &tmp, strlen(tmp) + 1, /* BLC */0x0);
+    QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
+                             (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
+                             /* load forward = */ 0x0, /* load backward */ 0x0);
 """
 
 def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallbackN):
@@ -188,7 +193,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     fd, filename_tmp = mkstemp(".cpp", "tmp-", dir=os.getcwd())
     os.write(fd, common_str)
     os.write(fd, state_machine_code)
-    os.write(fd, test_program)    
+    os.write(fd, test_program) 
     os.close(fd)    
 
     os.system("mv -f %s tmp.cpp" % filename_tmp); filename_tmp = "./tmp.cpp" # DEBUG
@@ -199,7 +204,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
                   "-ggdb " + \
-                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
+                  "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG

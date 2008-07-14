@@ -5,19 +5,20 @@
 // (C) 2008 Frank-Rene Schaefer
 //
 #if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
-#   define QUEX_DEBUG_PRINT(FormatStr, ...)       /* empty */
-#   define QUEX_DEBUG_PRINT_INPUT(Character)      /* empty */
+#   define QUEX_DEBUG_PRINT(Buffer, FormatStr, ...)       /* empty */
+#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)      /* empty */
 #else
-#   define __QUEX_PRINT_SOURCE_POSITION()                             \
+#   include<cstdio>
+#   define __QUEX_PRINT_SOURCE_POSITION(Buffer)                       \
           std::fprintf(stderr, "%s:%i: @%08X \t", __FILE__, __LINE__, \
-                       (int)(me->input_p - me->buffer_begin));            
+                       (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
 
-#   define QUEX_DEBUG_PRINT(FormatStr, ...)   \
-           __QUEX_PRINT_SOURCE_POSITION()   \
-           std::fprintf(stderr, FormatStr, ##__VA_ARGS__)
+#   define QUEX_DEBUG_PRINT(Buffer, FormatStr, ...)   \
+           __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
+           std::fprintf(stderr, FormatStr "\n", ##__VA_ARGS__)
 
-#   define QUEX_DEBUG_PRINT_INPUT(Character)                               \
-           __QUEX_PRINT_SOURCE_POSITION()                                  \
+#   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)                       \
+           __QUEX_PRINT_SOURCE_POSITION(Buffer)                            \
              Character == '\n' ? std::fprintf(stderr, "input:    '\\n'\n") \
            : Character == '\t' ? std::fprintf(stderr, "input:    '\\t'\n") \
            :                     std::fprintf(stderr, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
