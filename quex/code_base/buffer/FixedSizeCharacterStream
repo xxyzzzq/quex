@@ -1,9 +1,9 @@
 // vim:set syntax=cpp:
 // (C) 2007 Frank-Rene Schaefer
 //
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
-#define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY__
-#include <quex/code_base/buffer/BufferCore>
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER__FIXED_SIZE_CHARACTER_STREAM__
+#define __INCLUDE_GUARD__QUEX_BUFFER__FIXED_SIZE_CHARACTER_STREAM__
+#include <quex/code_base/buffer/Buffer>
 
 namespace quex {
 

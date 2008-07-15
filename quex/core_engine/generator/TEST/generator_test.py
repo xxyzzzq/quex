@@ -33,7 +33,7 @@ const int TKN_TERMINATION = 0;
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE /* nothing */
 $$TEST_CASE$$
-#include <quex/code_base/buffer/BufferCore>
+#include <quex/code_base/buffer/Buffer>
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
 """
