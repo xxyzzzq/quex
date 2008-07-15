@@ -78,7 +78,7 @@ namespace quex {
         //           is concerned with the last character in the lexeme, which is the one
         //           before the 'char_covered_by_terminating_zero'.
         CharacterCarrierType   _character_at_lexeme_start;      // --> terminating zero helper
-#       ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         CharacterCarrierType   _character_before_lexeme_start;  // --> begin of line
 #       endif
     };
@@ -97,7 +97,7 @@ namespace quex {
     TEMPLATIFIER
     struct QuexAnalyserMinimal {
         BUFFER_TYPE                                   buffer;
-        BUFFER_FILLER_TYPE                            buffer_filler;
+        BUFFER_FILLER_TYPE*                           buffer_filler;
         __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*current_analyser_function)(MINIMAL_ANALYZER_TYPE*);
     };
 

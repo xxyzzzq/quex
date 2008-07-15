@@ -136,9 +136,9 @@ $$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 //   Begin of line pre-condition introduces an extra flag in the buffer
 //   structure. Only out-comment this in case of tough memory restrictions,
 //   if no begin of line pre-condition is required.
-$$SWITCH$$ __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
-#   undef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+$$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
+#   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
 namespace quex {

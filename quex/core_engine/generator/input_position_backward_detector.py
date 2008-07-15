@@ -13,7 +13,7 @@ from quex.frs_py.string_handling import blue_print
 
 function_str = """
 static void 
-PAPC_input_postion_backward_detector_$$ID$$(QUEX_CORE_ANALYSER_STRUCT* me) 
+PAPC_input_postion_backward_detector_$$ID$$(QuexAnalyserMinimal* me) 
 {
 $$LOCAL_VARIABLES$$
 $$STATE_MACHINE$$
@@ -39,8 +39,8 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body += LanguageDB["$input/increment"] + "\n"
 
     variables_txt = LanguageDB["$local-variable-defs"](
-            [["QUEX_CHARACTER_TYPE",     "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
-             ["QUEX_CHARACTER_POSITION", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
+            [["QUEX_CHARACTER_TYPE",          "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
+             ["QUEX_CHARACTER_POSITION_TYPE", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
 
     return blue_print(function_str, 
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
