@@ -86,8 +86,13 @@ namespace quex {
     TEMPLATIFIER
     struct QuexBufferFiller {
         BUFFER_TYPE*         client;
-        size_t    (*load_forward)(BUFFER_FILLER_TYPE* _this_);
-        size_t    (*load_backward)(BUFFER_FILLER_TYPE* _this_);
+
+        size_t   (*tell_character_index)(BUFFER_FILLER_TYPE*);
+        size_t   (*seek_character_index)(BUFFER_FILLER_TYPE*);
+        size_t   (*read_characters)(BUFFER_FILLER_TYPE*,
+                                    CharacterCarrierType* buffer, const size_t N);
+        // void   register_begin_of_file() = 0;
+        // void   seek_begin_of_file() = 0;
     };
 
     // The following presents a minimal structure for a lexical analyser to work with the 
@@ -110,6 +115,7 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
-#include <quex/code_base/buffer/BufferCore.i>
+#include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/buffer/BufferFiller.i>
 
 #endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__

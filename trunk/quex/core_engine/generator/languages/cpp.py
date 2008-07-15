@@ -14,7 +14,7 @@ def __nice(SM_ID):
 
 __header_definitions_txt = """
 
-#include <quex/code_base/buffer/BufferCore>
+#include <quex/code_base/buffer/Buffer>
 
 #ifdef CONTINUE
 #   undef CONTINUE
@@ -155,9 +155,7 @@ $$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler,
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    if( filler == 0x0 ) return false;
-
-    const size_t LoadedByteN = filler->load_forward(filler);
+    const size_t LoadedByteN = QuexBufferFiller_load_forward(filler);
     if( LoadedByteN == 0 ) return false;
 
     if( *last_acceptance_input_position != 0x0 ) { 
@@ -172,9 +170,7 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 static bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_backward(QuexBufferFiller* filler)
 {
-    if( filler == 0x0) return false;
-
-    const size_t LoadedByteN = filler->load_backward(filler);
+    const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
     if( LoadedByteN == 0 ) return false;
     
     /* Backward lexing happens in two cases:
