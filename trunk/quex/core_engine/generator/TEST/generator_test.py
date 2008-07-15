@@ -30,8 +30,9 @@ def action(PatternName):
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
-$$TEST_CASE$$
+#define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE /* nothing */
+$$TEST_CASE$$
 #include <quex/code_base/buffer/BufferCore>
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
@@ -71,7 +72,7 @@ plain_memory_based_test_program = """
 
     QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
                              (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
-                             /* load forward = */ 0x0, /* load backward */ 0x0);
+                             /* buffer filler = */ 0x0);
 """
 
 def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallbackN):

@@ -60,7 +60,7 @@ db["C++"] = {
     "$if BOF":              "if( Buffer_is_begin_of_file(&(me->buffer)) ) {\n",
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
-    "$if begin-of-line":      "if( me->begin_of_line_f ) {\n",
+    "$if begin-of-line":      "if( me->buffer._character_before_lexeme_start == '\\n' ) {\n",
     "$elseif begin-of-line":  "else if( me->begin_of_line_f ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if ==":             lambda value: "if( input == " + value + ") {\n",

@@ -155,7 +155,7 @@ $$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler,
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    if( filler->load_forward == 0x0) return false;
+    if( filler == 0x0 ) return false;
 
     const size_t LoadedByteN = filler->load_forward(filler);
     if( LoadedByteN == 0 ) return false;
@@ -172,7 +172,7 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
 static bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_backward(QuexBufferFiller* filler)
 {
-    if( filler->load_backward == 0x0) return false;
+    if( filler == 0x0) return false;
 
     const size_t LoadedByteN = filler->load_backward(filler);
     if( LoadedByteN == 0 ) return false;
