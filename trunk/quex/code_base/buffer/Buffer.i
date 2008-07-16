@@ -203,7 +203,7 @@ namespace quex {
         __quex_assert(Position <= me->_memory._back);
         // NOTE: The content starts at _front[1], since _front[0] contains 
         //       the buffer limit code.
-        me->_end_of_file_p = Position;
+        me->_end_of_file_p    = Position;
         *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 

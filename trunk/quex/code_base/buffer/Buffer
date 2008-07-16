@@ -87,12 +87,18 @@ namespace quex {
     struct QuexBufferFiller {
         BUFFER_TYPE*         client;
 
+        size_t   _min_fallback_n;
+
         size_t   (*tell_character_index)(BUFFER_FILLER_TYPE*);
-        size_t   (*seek_character_index)(BUFFER_FILLER_TYPE*);
+        size_t   (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t Index);
         size_t   (*read_characters)(BUFFER_FILLER_TYPE*,
                                     CharacterCarrierType* buffer, const size_t N);
         // void   register_begin_of_file() = 0;
         // void   seek_begin_of_file() = 0;
+
+        // -- User defined handler for the case that the distance from lexeme start
+        //    to lexeme end exceeds the buffer size.
+        size_t   (*_on_overflow)(BUFFER_TYPE*, bool ForwardF);
     };
 
     // The following presents a minimal structure for a lexical analyser to work with the 
