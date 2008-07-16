@@ -140,7 +140,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     return txt
 
-def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMemory", QuexBufferSize=15,
+def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMemory", 
+       QuexBufferSize=15, # DO NOT CHANGE!
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
        NDEBUG_str=""):    
 

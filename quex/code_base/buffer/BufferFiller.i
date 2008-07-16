@@ -27,7 +27,7 @@ namespace quex {
     TEMPLATE_IN void   __QuexBufferFiller_on_overflow(BUFFER_FILLER_TYPE* me, bool ForwardF);
     TEMPLATE_IN void   __QuexBufferFiller_forward_asserts(BUFFER_FILLER_TYPE* me);
     TEMPLATE_IN size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
-                                                                               const size_t Distance_LexemeStart_to_InputP);
+                                                                       const size_t Distance_LexemeStart_to_InputP);
     TEMPLATE_IN void   __QuexBufferFiller_forward_adapt_pointers(BUFFER_TYPE* buffer, 
                                                                  const size_t DesiredLoadN,
                                                                  const size_t LoadedN,
@@ -37,9 +37,30 @@ namespace quex {
     TEMPLATE_IN void   __QuexBufferFiller_backward_adapt_pointers(BUFFER_TYPE* buffer, 
                                                                   const size_t BackwardDistance);
 
+    TEMPLATE_IN void
+    QuexBufferFiller_init(BUFFER_FILLER_TYPE* me,
+                          const size_t MinFallbackN,
+                          size_t       (*tell_character_index)(BUFFER_FILLER_TYPE*),
+                          size_t       (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t),
+                          size_t       (*read_characters)(BUFFER_FILLER_TYPE*,
+                                                          CharacterCarrierType* buffer, const size_t),
+                          bool         (*on_overflow_callback)(BUFFER_TYPE*, bool))
+    {
+        me->_min_fallback_n      = MinFallbackN;
+        me->tell_character_index = tell_character_index;
+        me->seek_character_index = seek_character_index;
+        me->read_characters      = read_characters;
+        me->_on_overflow         = on_overflow_callback;
+    }
+
+
+
     TEMPLATE_IN size_t
     QuexBufferFiller_load_forward(BUFFER_FILLER_TYPE* me)
     {
+        __quex_assert(me->tell_character_index != 0x0);
+        __quex_assert(me->seek_character_index != 0x0);
+        __quex_assert(me->read_characters != 0x0);
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
         __quex_assert(me->client != 0x0);
         BUFFER_TYPE*  buffer = me->client;
