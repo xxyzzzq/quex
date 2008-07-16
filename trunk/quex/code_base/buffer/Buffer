@@ -89,16 +89,21 @@ namespace quex {
 
         size_t   _min_fallback_n;
 
+        // -- 'Tell' returns the character index of the last character read. This corresponds
+        //    to the character index of the last character that is currently in the buffer.
         size_t   (*tell_character_index)(BUFFER_FILLER_TYPE*);
+        // -- 'Seek' sets the input position for the next buffer-read-action.
         size_t   (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t Index);
+        // -- 'Read' reads N characters from a stream into a buffer (independent of their size)
         size_t   (*read_characters)(BUFFER_FILLER_TYPE*,
                                     CharacterCarrierType* buffer, const size_t N);
+
         // void   register_begin_of_file() = 0;
         // void   seek_begin_of_file() = 0;
 
         // -- User defined handler for the case that the distance from lexeme start
         //    to lexeme end exceeds the buffer size.
-        size_t   (*_on_overflow)(BUFFER_TYPE*, bool ForwardF);
+        bool   (*_on_overflow)(BUFFER_TYPE*, bool ForwardF);
     };
 
     // The following presents a minimal structure for a lexical analyser to work with the 

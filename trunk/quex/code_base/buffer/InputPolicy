@@ -8,6 +8,7 @@
 #include<iostream>
 #include<stdexcept> // Standard C++ Exceptions
 
+#if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 
     // PURPOSE: The input policy provides a common interface for operations related
@@ -57,6 +58,19 @@ namespace quex {
         }
     };
 
+#   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS) \
+           InputPolicy<(IH_TYPE*)>::seek((IH), (POS))
+#   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE) \
+           InputPolicy<(IH_TYPE*)>::tell((IH))
+#   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
+           InputPolicy<(IH_TYPE*)>::load_bytes((IH), (BUFFER), (BYTE_N))
 }
+#else
+// In 'C' we only load from FILE*. So if you want to do something non-standard, then provide
+// a FILE interface.
+#   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS)                  std::fseek((IH), (POS))
+#   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE)                       std::ftell((IH))
+#   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) std::fread((IH), (BUFFER), (BYTE_N))
+#endif
 
 #endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_POLICY__
