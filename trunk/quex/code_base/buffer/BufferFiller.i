@@ -2,21 +2,23 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__
 
+#include <cstring>  // gets: memmove, memcpy
+#include <cstdio>   // gets: fprintf
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+#   include <stdexcept>
 namespace quex { 
-#include <stdexcept>
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #    define TEMPLATE_IN    template <class CharacterCarrierType> inline
 
-#    define BUFFER_TYPE               quex::Buffer<CharacterCarrierType>
+#    define BUFFER_TYPE               quex::QuexBufferCore<CharacterCarrierType>
 #    define BUFFER_FILLER_TYPE        quex::QuexBufferFiller<CharacterCarrierType>
     
 #else
-#    include <cstring>  // gets: memmove, memcpy
-#    include <cstdio>   // gets: fprintf
 #    define CharacterCarrierType QUEX_CHARACTER_TYPE  
+
 #    define TEMPLATE_IN             /* no template */ static
 #    define BUFFER_TYPE             QuexBufferCore
 #    define BUFFER_FILLER_TYPE      QuexBufferFiller
@@ -26,7 +28,7 @@ namespace quex {
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_exit_on_error(const char* Msg);
     TEMPLATE_IN void   __QuexBufferFiller_on_overflow(BUFFER_FILLER_TYPE* me, bool ForwardF);
     TEMPLATE_IN void   __QuexBufferFiller_forward_asserts(BUFFER_FILLER_TYPE* me);
-    TEMPLATE_IN size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
+    TEMPLATE_IN size_t __QuexBufferFiller_forward_copy_fallback_region(BUFFER_FILLER_TYPE* me,
                                                                        const size_t Distance_LexemeStart_to_InputP);
     TEMPLATE_IN void   __QuexBufferFiller_forward_adapt_pointers(BUFFER_TYPE* buffer, 
                                                                  const size_t DesiredLoadN,
@@ -152,7 +154,7 @@ namespace quex {
     }
 
     TEMPLATE_IN size_t
-    __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
+    __QuexBufferFiller_forward_copy_fallback_region(BUFFER_FILLER_TYPE* me,
                                                     const size_t Distance_LexemeStart_to_InputP)
     {
         // (1) Fallback: A certain region of the current buffer is copied in front such that
@@ -408,6 +410,10 @@ namespace quex {
                                              "(tried to load buffer in backward direction)");
         }
     }
+
+#    undef TEMPLATE_IN
+#    undef BUFFER_TYPE
+#    undef BUFFER_FILLER_TYPE
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__ */
 

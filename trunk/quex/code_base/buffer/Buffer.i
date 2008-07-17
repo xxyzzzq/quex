@@ -12,20 +12,20 @@ namespace quex {
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define TEMPLATE_IN    template <class CharacterCarrierType> inline
+#    define TEMPLATE_IN            template <class CharacterCarrierType> inline
 
-#    define BUFFER_TYPE               quex::Buffer<CharacterCarrierType>
+#    define BUFFER_TYPE               quex::QuexBufferCore<CharacterCarrierType>
 #    define BUFFER_MEMORY_TYPE        quex::BufferMemory<CharacterCarrierType>
 #    define BUFFER_FILLER_TYPE        quex::QuexBufferFiller<CharacterCarrierType>
 #    define MINIMAL_ANALYZER_TYPE     quex::QuexAnalyserMinimal<CharacterCarrierType>
     
 #    define __BUFFER_GET_BUFFER_LIMIT_CODE(buffer)  ()
 #    define __BUFFER_IS_BEGIN_OF_FILE(buffer)       (buffer->is_begin_of_file())
-#    define __ALLOCATE_MEMORY(N)                    (new CharacterCarrierType[(size_t)N]);
+#    define __ALLOCATE_MEMORY(N)                    (new CharacterCarrierType[(size_t)N])
 
 #else
 #    define CharacterCarrierType QUEX_CHARACTER_TYPE  
-#    define TEMPLATE_IN             /* no template */ static
+#    define TEMPLATE_IN             /* no template */ QUEX_INLINE_KEYWORD
 #    define BUFFER_TYPE             QuexBufferCore
 #    define BUFFER_MEMORY_TYPE      BufferMemory
 #    define BUFFER_FILLER_TYPE      QuexBufferFiller
@@ -82,10 +82,10 @@ namespace quex {
 
     TEMPLATE_IN void
     QuexAnalyserMinimal_init(MINIMAL_ANALYZER_TYPE* me,
-                             __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*AnalyserFunction)(QuexAnalyserMinimal*),
+                             __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*AnalyserFunction)(MINIMAL_ANALYZER_TYPE*),
                              CharacterCarrierType* memory_chunk, size_t Size, 
                              CharacterCarrierType  BLC,
-                             QuexBufferFiller*     BufferFiller)
+                             BUFFER_FILLER_TYPE*   BufferFiller)
     {
         QuexBufferCore_init(&me->buffer, memory_chunk, Size, BLC);
         me->current_analyser_function = AnalyserFunction;
