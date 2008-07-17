@@ -34,6 +34,7 @@ const int TKN_TERMINATION = 0;
 #define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE /* nothing */
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain>
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
 """
@@ -60,11 +61,15 @@ int main(int, char**)
 }\n"""
 
 quex_buffer_based_test_program = """
-    istringstream                                           istr("$$TEST_STRING$$");
-    quex::FixedSizeCharacterStreamPlain<istringstream, QUEX_CHARACTER_TYPE>  fscs(&istr);
-    quex::buffer< QUEX_CHARACTER_TYPE>       buf(&fscs, $$BUFFER_SIZE$$, $$BUFFER_FALLBACK_N$$, QUEX_SETTING_BUFFER_LIMIT_CODE);
+    istringstream            istr("$$TEST_STRING$$");
+    QuexBufferFiller_Plain   buffer_filler;
+    const size_t             MemorySize = $$BUFFER_SIZE$$;
 
-    analyser_init(&lexer_state, 0, &buf, analyser_do);
+    QuexBufferFiller_Plain_init(&istr, &buffer_filler, 256, 0x0);
+
+    QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
+                             (QUEX_CHARACTER_TYPE*)0x0, MemorySize, /* BLC */0x0, 
+                             buffer_filler);
 """
 
 plain_memory_based_test_program = """
