@@ -38,22 +38,19 @@ def __local_variable_definitions(VariableInfoList):
     return txt
          
 
-__function_signature_stand_alone = """
-QUEX_INLINE_KEYWORD
-__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-$$QUEX_ANALYZER_STRUCT_NAME$$_do(QuexAnalyserMinimal* me) 
-{
-"""
-
-__function_signature_quex_mode_based = """
-__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-quex::$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyserMinimal* me) 
+__function_signature = """
+TEMPLATE_2_IN __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(MINIMAL_ANALYZER_TYPE* me) 
 {
     // NOTE: Different modes correspond to different analyser functions. The analyser
     //       functions are all located inside the main class as static functions. That
     //       means, they are something like 'globals'. They receive a pointer to the 
     //       lexical analyser, since static member do not have access to the 'this' pointer.
-    QUEX_LEXER_CLASS& self = *me;
+#   if defined (__QUEX_SETTING_PLAIN_C)
+#      define self (*me)
+#   else
+       MINIMAL_ANALYZER_TYPE& self = *me;
+#   endif
 """
 
 
@@ -71,7 +68,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
              created additionally: 
 
                'EngineClassName'_init(EngineClassName* me,
-                                      QUEX_CHARACTER_TYPE StartInputPosition);
+                                      CharacterCarrierType StartInputPosition);
 
                      This function has to be called before starting the lexing process.
                      See the unit tests for examples.
@@ -84,18 +81,18 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt = ""
 
     local_variable_list = []
+    signature = __function_signature
+
     if StandAloneEngineF: 
-        header    = ""
-        signature = __function_signature_stand_alone
+        pass
     else:                 
-        header    = ""
         signature = __function_signature_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), 
                                         "QUEX_LEXER_CLASS::" + name]) 
 
-    txt  = header
+    txt  = "#include <quex/code_base/temporary_macros_on>\n"
     txt += __load_procedure(PostConditionedStateMachineID_List)
     txt += signature
     txt  = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
@@ -103,9 +100,9 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
 
     local_variable_list.extend(
-            [ ["QUEX_GOTO_LABEL_TYPE",        "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
-              ["QUEX_CHARACTER_POSITION_TYPE",     "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
-              ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
+            [ ["QUEX_GOTO_LABEL_TYPE",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
+              ["QUEX_CHARACTER_POSITION_TYPE", "last_acceptance_input_position", "(CharacterCarrierType*)(0x00)"],
+              ["CharacterCarrierType",         "input",                          "(CharacterCarrierType)(0x00)"]
             ])
               
     # -- post-condition position: store position of original pattern
@@ -146,12 +143,13 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     # -- the name of the game
     txt = txt.replace("$$QUEX_ANALYZER_STRUCT_NAME$$", EngineClassName)
 
+    txt += "#include <quex/code_base/temporary_macros_off>\n"
     return txt
 
 
 __buffer_reload_str = """
-static bool 
-$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler, 
+TEMPLATE_2_IN bool 
+$$STATE_MACHINE_NAME$$_buffer_reload_forward(BUFFER_FILLER_TYPE* filler, 
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {
@@ -167,8 +165,8 @@ $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$
     return true;
 }
 
-static bool 
-$$STATE_MACHINE_NAME$$_buffer_reload_backward(QuexBufferFiller* filler)
+TEMPLATE_2_IN bool 
+$$STATE_MACHINE_NAME$$_buffer_reload_backward(BUFFER_FILLER_TYPE* filler)
 {
     const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
     if( LoadedByteN == 0 ) return false;

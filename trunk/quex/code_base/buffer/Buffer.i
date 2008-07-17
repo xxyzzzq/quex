@@ -6,35 +6,16 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/temporary_macros_on>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define TEMPLATE_IN            template <class CharacterCarrierType> inline
-
-#    define BUFFER_TYPE               quex::QuexBufferCore<CharacterCarrierType>
-#    define BUFFER_MEMORY_TYPE        quex::BufferMemory<CharacterCarrierType>
-#    define BUFFER_FILLER_TYPE        quex::QuexBufferFiller<CharacterCarrierType>
-#    define MINIMAL_ANALYZER_TYPE     quex::QuexAnalyserMinimal<CharacterCarrierType>
-    
-#    define __BUFFER_GET_BUFFER_LIMIT_CODE(buffer)  ()
-#    define __BUFFER_IS_BEGIN_OF_FILE(buffer)       (buffer->is_begin_of_file())
-#    define __ALLOCATE_MEMORY(N)                    (new CharacterCarrierType[(size_t)N])
-
+#    define __ALLOCATE_MEMORY(N)   (new CharacterCarrierType[(size_t)N])
 #else
-#    define CharacterCarrierType QUEX_CHARACTER_TYPE  
-#    define TEMPLATE_IN             /* no template */ QUEX_INLINE_KEYWORD
-#    define BUFFER_TYPE             QuexBufferCore
-#    define BUFFER_MEMORY_TYPE      BufferMemory
-#    define BUFFER_FILLER_TYPE      QuexBufferFiller
-#    define MINIMAL_ANALYZER_TYPE   QuexAnalyserMinimal
-
-#    define __BUFFER_GET_BUFFER_LIMIT_CODE(buffer)  (QUEX_SETTING_BUFFER_LIMIT_CODE)
-#    define __BUFFER_IS_BEGIN_OF_FILE(buffer)       (buffer->_input_p == me->_buffer_begin - 1)
-#    define __ALLOCATE_MEMORY(N)                    (CharacterCarrierType*)malloc(sizeof(CharacterCarrierType)*(size_t)N)
-
+#    define __ALLOCATE_MEMORY(N)   (CharacterCarrierType*)malloc(sizeof(CharacterCarrierType)*(size_t)N)
 #endif
        
 
@@ -237,14 +218,6 @@ namespace quex {
         return QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
-#   undef TEMPLATE_IN
-#   undef BUFFER_TYPE
-#   undef BUFFER_MEMORY_TYPE
-#   undef BUFFER_FILLER_TYPE
-#   undef MINIMAL_ANALYZER_TYPE
-    
-#   undef __BUFFER_LOAD_FORWARD
-#   undef __BUFFER_LOAD_BACKWARD
 #   undef __ALLOCATE_MEMORY
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -252,6 +225,7 @@ namespace quex {
 #endif
 
 
+#include <quex/code_base/temporary_macros_off>
 
 #endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 

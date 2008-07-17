@@ -10,23 +10,7 @@
 #    endif
 namespace quex { 
 #endif
-
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define TEMPLATIFIER           template <class CharacterCarrierType>
-#    define BUFFER_MEMORY_TYPE     quex::BufferMemory<CharacterCarrierType>
-#    define BUFFER_TYPE            quex::QuexBufferCore<CharacterCarrierType>
-#    define BUFFER_FILLER_TYPE     quex::QuexBufferFiller<CharacterCarrierType>
-#    define MINIMAL_ANALYZER_TYPE  quex::QuexAnalyserMinimal<CharacterCarrierType>
-
-#else
-#    define TEMPLATIFIER           /* no template */
-#    define CharacterCarrierType   QUEX_CHARACTER_TYPE  
-#    define BUFFER_MEMORY_TYPE     BufferMemory
-#    define BUFFER_TYPE            QuexBufferCore
-#    define BUFFER_FILLER_TYPE     QuexBufferFiller
-#    define MINIMAL_ANALYZER_TYPE  QuexAnalyserMinimal
-
-#endif
+#   include<quex/code_base/temporary_macros_on>
 
     TEMPLATIFIER
     struct BufferMemory { 

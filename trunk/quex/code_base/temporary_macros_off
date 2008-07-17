@@ -1,0 +1,20 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#undef TEMPLATIFIER
+#undef TEMPLATE_IN
+#undef TEMPLATIFIER_2
+#undef TEMPLATE_2_IN
+#undef BUFFER_MEMORY_TYPE
+#undef BUFFER_TYPE
+#undef BUFFER_FILLER_TYPE
+#undef BUFFER_FILLER_PLAIN_TYPE
+#undef MINIMAL_ANALYZER_TYPE
+#undef STREAM_POSITION_TYPE
+#undef STREAM_OFFSET_TYPE
+#undef SizeOfCharacter
+
+#if defined(__QUEX_SETTING_PLAIN_C)
+#    undef CharacterCarrierType
+#    undef InputHandleType
+#    undef SizeOfCharacter
+#endif
+

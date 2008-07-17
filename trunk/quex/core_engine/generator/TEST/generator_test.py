@@ -35,50 +35,69 @@ const int TKN_TERMINATION = 0;
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
-static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
-static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
+#if defined (__QUEX_SETTING_PLAIN_C)
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
+#else
+    template<class CharacterCarrierType>
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
+    template<class CharacterCarrierType>
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
+#endif
 """
 
 test_program_common = """
 
 #include <cstring>
-int main(int, char**)
-{
-    using namespace std;
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+    int main(int, char**)
+    {
+        using namespace std;
+        using namespace quex;
 
-    QuexAnalyserMinimal   lexer_state;
-    //
-    int    success_f = 0;
-    //
-    $$BUFFER_SPECIFIC_SETUP$$
-    //
-    printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
-    printf("(*) result:\\n");
-    do {
-        success_f = lexer_state.current_analyser_function(&lexer_state);
-    } while ( success_f );      
-    printf("  ''\\n");
-}\n"""
+        QuexAnalyserMinimal<char> lexer_state;
+        int                       success_f = 0;
+        //
+        istringstream                           istr("$$TEST_STRING$$");
+        QuexBufferFiller_Plain<istringstream>   buffer_filler;
+        const size_t                            MemorySize = $$BUFFER_SIZE$$;
 
-quex_buffer_based_test_program = """
-    istringstream            istr("$$TEST_STRING$$");
-    QuexBufferFiller_Plain   buffer_filler;
-    const size_t             MemorySize = $$BUFFER_SIZE$$;
+        QuexBufferFiller_Plain_init(&istr, &buffer_filler, 256, 0x0);
 
-    QuexBufferFiller_Plain_init(&istr, &buffer_filler, 256, 0x0);
+        QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
+                                 (QUEX_CHARACTER_TYPE*)0x0, MemorySize, /* BLC */0x0, 
+                                 buffer_filler);
+        //
+        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) result:\\n");
+        do {
+            success_f = lexer_state.current_analyser_function(&lexer_state);
+        } while ( success_f );      
+        printf("  ''\\n");
+    }
+#else
+    int main(int, char**)
+    {
+        using namespace std;
 
-    QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
-                             (QUEX_CHARACTER_TYPE*)0x0, MemorySize, /* BLC */0x0, 
-                             buffer_filler);
-"""
+        QuexAnalyserMinimal   lexer_state;
+        int                   success_f = 0;
+        char                  tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
-plain_memory_based_test_program = """
-    char   tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
+        QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
+                                 (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
+                                 /* buffer filler = */ 0x0);
+        //
+        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) result:\\n");
+        do {
+            success_f = lexer_state.current_analyser_function(&lexer_state);
+        } while ( success_f );      
+        printf("  ''\\n");
+    }
+#endif
+\n"""
 
-    QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
-                             (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
-                             /* buffer filler = */ 0x0);
-"""
 
 def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallbackN):
     global plain_memory_based_test_program
