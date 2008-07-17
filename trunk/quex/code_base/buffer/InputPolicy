@@ -68,9 +68,9 @@ namespace quex {
 #else
 // In 'C' we only load from FILE*. So if you want to do something non-standard, then provide
 // a FILE interface.
-#   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS)                  std::fseek((IH), (POS))
+#   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS)                  std::fseek((IH), (POS), SEEK_SET)
 #   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE)                       std::ftell((IH))
-#   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) std::fread((IH), (BUFFER), (BYTE_N))
+#   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) std::fread((BUFFER), 1, (BYTE_N), (IH))
 #endif
 
 #endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_POLICY__

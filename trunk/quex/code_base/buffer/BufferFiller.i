@@ -43,7 +43,7 @@ namespace quex {
     QuexBufferFiller_init(BUFFER_FILLER_TYPE* me,
                           const size_t MinFallbackN,
                           size_t       (*tell_character_index)(BUFFER_FILLER_TYPE*),
-                          size_t       (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t),
+                          void         (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t),
                           size_t       (*read_characters)(BUFFER_FILLER_TYPE*,
                                                           CharacterCarrierType* buffer, const size_t),
                           bool         (*on_overflow_callback)(BUFFER_TYPE*, bool))
