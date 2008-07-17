@@ -89,8 +89,7 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     
     if BufferType=="QuexBuffer": 
         if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
-        include_str  = "#include <quex/code_base/buffer/plain/FixedSizeCharacterStream>\n"
-        include_str += "#include <sstream>\n" 
+        include_str = "#include <sstream>\n" 
 
         txt = include_str + txt
 
