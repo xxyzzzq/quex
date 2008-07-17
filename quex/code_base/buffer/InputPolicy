@@ -59,11 +59,11 @@ namespace quex {
     };
 
 #   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS) \
-           InputPolicy<(IH_TYPE*)>::seek((IH), (POS))
+           InputPolicy<IH_TYPE*>::seek((IH), (POS))
 #   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE) \
-           InputPolicy<(IH_TYPE*)>::tell((IH))
+           InputPolicy<IH_TYPE*>::tell((IH))
 #   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
-           InputPolicy<(IH_TYPE*)>::load_bytes((IH), (BUFFER), (BYTE_N))
+           InputPolicy<IH_TYPE*>::load_bytes((IH), (BUFFER), (BYTE_N))
 }
 #else
 // In 'C' we only load from FILE*. So if you want to do something non-standard, then provide
