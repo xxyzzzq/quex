@@ -1,0 +1,117 @@
+// : -*- C++ -*-  vim: set syntax=cpp:
+// (C) 2008 Frank-Rene Schaefer
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER__BUFFER_FILLER_PLAIN__
+#define __INCLUDE_GUARD__QUEX_BUFFER__BUFFER_FILLER_PLAIN__
+//
+#include <iostream> 
+#include <cstdio>  
+#include <cerrno>
+#include <stdexcept>
+extern "C" { 
+#include <quex/code_base/compatibility/inttypes.h>
+}
+#include <quex/code_base/asserts>
+#include <quex/code_base/buffer/InputPolicy>
+#include <quex/code_base/buffer/Buffer>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#    define TEMPLATIFIER                  template <class InputHandleType, class CharacterCarrierType>
+#    define TEMPLATE_IN                   template <class InputHandleType, class CharacterCarrierType> inline
+#    define BUFFER_FILLER_TYPE            quex::QuexBufferFiller<CharacterCarrierType>
+#    define BUFFER_FILLER_PLAIN_TYPE      quex::QuexBufferFiller_Plain<CharacterCarrierType>
+#    define STREAM_POSITION_TYPE(IH_TYPE) (typename InputPolicy<IH_TYPE*>::stream_position)
+#    define STREAM_OFFSET_TYPE(IH_TYPE)   (typename InputPolicy<IH_TYPE*>::stream_offset)
+
+#else
+#    define TEMPLATIFIER              /* no template */
+#    define TEMPLATE_IN               /* no template */ QUEX_INLINE_KEYWORD
+#    define CharacterCarrierType      QUEX_CHARACTER_TYPE  
+#    define InputHandleType           QUEX_INPUT_HANDLE_TYPE  
+#    define SizeOfCharacter           (sizeof(CharacterCarrierType))
+#    define BUFFER_FILLER_TYPE        QuexBufferFiller
+#    define BUFFER_FILLER_PLAIN_TYPE  QuexBufferFiller_Plain
+#    define STREAM_POSITION_TYPE(IH_TYPE) long
+#    define STREAM_OFFSET_TYPE(IH_TYPE)   long
+
+#endif
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+    TEMPLATE_IN size_t __BufferFiller_Plain_tell_character_index(BUFFER_FILLER_PLAIN_TYPE* me) 
+    TEMPLATE_IN void   __BufferFiller_Plain_seek_character_index(const size_t CharacterIndex);
+    TEMPLATE_IN size_t __BufferFiller_Plain_read_characters(CharacterCarrierType* start_of_buffer, 
+                                                            const size_t N);
+
+    template <class InputHandleType, class CharacterCarrierType>
+    struct BufferFiller_Plain { 
+        /* Derived QuexBufferFiller from implemented as 'first member is base class'.
+         * (This is the 'C' way to express derivation) */
+        BUFFER_FILLER_TYPE   base;
+
+#       if ! defined (__QUEX_SETTING_PLAIN_C)
+        static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
+#       endif
+           
+        InputHandleType* ih;
+        stream_position  start_position;  // position in stream where analysis started
+    };
+
+    TEMPLATE_IN void
+    BufferFiller_Plain_init(BUFFER_FILLER_PLAIN_TYPE* me, 
+                            const size_t              MinFallbackN,
+                            InputHandleType*          input_handle,
+                            bool                      (*on_overflow_callback(BUFFER_TYPE*, bool))
+    {
+        QuexBufferFiller_init(MinFallbackN,
+                              __BufferFiller_Plain_tell_character_index,
+                              __BufferFiller_Plain_seek_character_index, 
+                              __BufferFiller_Plain_read_characters, 
+                              on_overflow_callback);
+        //
+        me->ih             = input_handle;
+        me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleType*);
+    }
+
+    TEMPLATE_IN size_t 
+    __BufferFiller_Plain_tell_character_index(BUFFER_FILLER_PLAIN_TYPE* me) 
+    { 
+       return (QUEX_INPUT_POLICY_TELL(me->ih, InputHandleType*) - me->start_position) / SizeOfCharacter; 
+    }
+
+    TEMPLATE_IN void 
+    __BufferFiller_Plain_seek_character_index(const size_t CharacterIndex) 
+    { 
+        long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
+        QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleType*, avoid_tmp_arg);
+    }
+
+    TEMPLATE_IN size_t   
+    __BufferFiller_Plain_read_characters(CharacterCarrierType* start_of_buffer, const size_t N)  
+    { 
+        const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleType*, 
+                                                          start_of_buffer, N * SizeOfCharacter);
+        __quex_assert(ByteN % SizeOfCharacter == 0);
+        return ByteN / SizeOfCharacter; 
+    }
+
+    TEMPLATE_IN void 
+    __BufferFiller_Plain_mark_start_position(BUFFER_FILLER_PLAIN_TYPE* me) 
+    { 
+        me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleType*);
+    }
+
+    TEMPLATE_IN void 
+    __BufferFiller_Plain_reset_start_position(BUFFER_FILLER_PLAIN_TYPE* me) 
+    {
+        QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleType*, me->start_position);
+    }
+
+#   undef TEMPLATE_IN
+#   undef TEMPLATIFIER
+#   undef BUFFER_FILLER_TYPE
+#   undef BUFFER_FILLER_PLAIN_TYPE
+#   undef STREAM_POSITION_TYPE
+#   undef STREAM_OFFSET_TYPE
+}
+#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN__
