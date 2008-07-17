@@ -415,5 +415,9 @@ namespace quex {
 #    undef BUFFER_TYPE
 #    undef BUFFER_FILLER_TYPE
 
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
+
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__ */
 
