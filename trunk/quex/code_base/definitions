@@ -13,6 +13,10 @@
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 
+#ifndef  QUEX_SETTING_BUFFER_LIMIT_CODE
+#   define  QUEX_SETTING_BUFFER_LIMIT_CODE  0x0
+#endif
+
 /* Detect the compiler */
 #if    defined(__GNUC__) \
     && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))

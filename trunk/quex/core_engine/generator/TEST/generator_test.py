@@ -36,13 +36,13 @@ $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 #if defined (__QUEX_SETTING_PLAIN_C)
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(QuexAnalyserMinimal* me);
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(QuexAnalyserMinimal* me);
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyserMinimal* me);
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyserMinimal* me);
 #else
-    template<class CharacterCarrierType>
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
-    template<class CharacterCarrierType>
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  analyser_do_2(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
+    template<class CharacterCarrierType> inline
+    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
+    template<class CharacterCarrierType> inline 
+    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
 #endif
 """
 
@@ -58,15 +58,18 @@ test_program_common = """
         QuexAnalyserMinimal<char> lexer_state;
         int                       success_f = 0;
         //
-        istringstream                           istr("$$TEST_STRING$$");
-        QuexBufferFiller_Plain<istringstream>   buffer_filler;
-        const size_t                            MemorySize = $$BUFFER_SIZE$$;
+        istringstream                                 istr("$$TEST_STRING$$");
+        QuexBufferFiller_Plain<istringstream, char>   buffer_filler;
+        const size_t                                  MemorySize = $$BUFFER_SIZE$$;
 
-        QuexBufferFiller_Plain_init(&istr, &buffer_filler, 256, 0x0);
+        BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr);
 
-        QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
-                                 (QUEX_CHARACTER_TYPE*)0x0, MemorySize, /* BLC */0x0, 
-                                 buffer_filler);
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*tmp)(QuexAnalyserMinimal<char>*) = \n
+                Mr_UnitTest_analyser_function<char>;
+
+        QuexAnalyserMinimal_init(&lexer_state, tmp, // Mr_UnitTest_analyser_function<char>, 
+                                 (char*)0x0, MemorySize, /* BLC */(char)0x0, 
+                                 &buffer_filler.base);
         //
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
@@ -84,7 +87,7 @@ test_program_common = """
         int                   success_f = 0;
         char                  tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
-        QuexAnalyserMinimal_init(&lexer_state, analyser_do, 
+        QuexAnalyserMinimal_init(&lexer_state, Mr_UnitTest_analyser_function, 
                                  (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
                                  /* buffer filler = */ 0x0);
         //
@@ -104,24 +107,20 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     global quex_buffer_based_test_program
     global test_program_common
 
-    txt = test_program_common
+    test_str = TestStr.replace("\"", "\\\"")
+    test_str = test_str.replace("\n", "\\n\"\n\"")
     
     if BufferType=="QuexBuffer": 
         if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
         include_str = "#include <sstream>\n" 
 
-        txt = include_str + txt
-
-        buffer_specific_str = quex_buffer_based_test_program.replace("$$BUFFER_SIZE$$", repr(QuexBufferSize))
-        buffer_specific_str = buffer_specific_str.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
     else:                        
-        buffer_specific_str = plain_memory_based_test_program
+        include_str = ""
 
-    test_str = TestStr.replace("\"", "\\\"")
-    test_str = test_str.replace("\n", "\\n\"\n\"")
-
-    txt = txt.replace("$$BUFFER_SPECIFIC_SETUP$$", buffer_specific_str)
-    txt = txt.replace("$$TEST_STRING$$",           test_str)
+    txt = include_str + test_program_common
+    txt = txt.replace("$$BUFFER_SIZE$$",       repr(QuexBufferSize))
+    txt = txt.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
+    txt = txt.replace("$$TEST_STRING$$",       test_str)
 
     return txt
 
@@ -149,17 +148,16 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     txt  = "#include<cstdio>\n"
     txt += "#define  __QUEX_OPTION_UNIT_TEST\n"
 
-    sm_name = "UnitTest"
-    if SecondModeF: sm_name += "_2"
+    if not SecondModeF:  sm_name = "Mr"
+    else:                sm_name = "Mrs"
+
     txt += generator.do(PatternActionPairList, 
-                        StateMachineName               = sm_name,
+                        StateMachineName               = "UnitTest",
                         DefaultAction                  = default_action, 
                         PrintStateMachineF             = True,
-                        AnalyserStateClassName         = "analyser",
+                        AnalyserStateClassName         = sm_name,
                         StandAloneAnalyserF            = True, 
                         EndOfFile_Code                 = 0x19)
-
-    if SecondModeF: txt = txt.replace("analyser_do(", "analyser_do_2(")
 
     return txt
 

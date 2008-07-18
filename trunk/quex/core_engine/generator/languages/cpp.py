@@ -39,7 +39,7 @@ def __local_variable_definitions(VariableInfoList):
          
 
 __function_signature = """
-TEMPLATE_2_IN __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+TEMPLATE_IN __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
 $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(MINIMAL_ANALYZER_TYPE* me) 
 {
     // NOTE: Different modes correspond to different analyser functions. The analyser
@@ -83,9 +83,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     local_variable_list = []
     signature = __function_signature
 
-    if StandAloneEngineF: 
-        pass
-    else:                 
+    if not StandAloneEngineF: 
         signature = __function_signature_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
@@ -148,7 +146,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
 
 __buffer_reload_str = """
-TEMPLATE_2_IN bool 
+TEMPLATE_IN bool 
 $$STATE_MACHINE_NAME$$_buffer_reload_forward(BUFFER_FILLER_TYPE* filler, 
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
@@ -162,24 +160,6 @@ $$STATE_MACHINE_NAME$$_buffer_reload_forward(BUFFER_FILLER_TYPE* filler,
     }                                                                  
                                                                           
 $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
-    return true;
-}
-
-TEMPLATE_2_IN bool 
-$$STATE_MACHINE_NAME$$_buffer_reload_backward(BUFFER_FILLER_TYPE* filler)
-{
-    const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
-    if( LoadedByteN == 0 ) return false;
-    
-    /* Backward lexing happens in two cases:
-     *
-     *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
-     *      is involved. No acceptance positions are considered.
-     *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
-     *      post conditions. Then, no acceptance positions are involved, because
-     *      the start of the lexeme shall not drop before the begin of the buffer 
-     *      and the end of the core pattern, is of course, after the start of the 
-     *      lexeme. => there will be no reload backwards. */
     return true;
 }
 """

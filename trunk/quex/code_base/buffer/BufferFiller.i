@@ -45,14 +45,13 @@ namespace quex {
                           size_t       (*tell_character_index)(BUFFER_FILLER_TYPE*),
                           void         (*seek_character_index)(BUFFER_FILLER_TYPE*, const size_t),
                           size_t       (*read_characters)(BUFFER_FILLER_TYPE*,
-                                                          CharacterCarrierType* buffer, const size_t),
-                          bool         (*on_overflow_callback)(BUFFER_TYPE*, bool))
+                                                          CharacterCarrierType* buffer, const size_t))
     {
         me->_min_fallback_n      = MinFallbackN;
         me->tell_character_index = tell_character_index;
         me->seek_character_index = seek_character_index;
         me->read_characters      = read_characters;
-        me->_on_overflow         = on_overflow_callback;
+        me->_on_overflow         = 0x0;
     }
 
 
