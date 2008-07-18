@@ -13,6 +13,7 @@ extern "C" {
 #include <quex/code_base/asserts>
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/BufferFiller.i>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -24,10 +25,10 @@ namespace quex {
 
     TEMPLATE_2_IN size_t __BufferFiller_Plain_tell_character_index(BUFFER_FILLER_TYPE* alter_ego);
     TEMPLATE_2_IN void   __BufferFiller_Plain_seek_character_index(BUFFER_FILLER_TYPE* alter_ego, 
-                                                                 const size_t        CharacterIndex); 
+                                                                   const size_t        CharacterIndex); 
     TEMPLATE_2_IN size_t __BufferFiller_Plain_read_characters(BUFFER_FILLER_TYPE*   alter_ego,
-                                                            CharacterCarrierType* start_of_buffer, 
-                                                            const size_t          N);
+                                                              CharacterCarrierType* start_of_buffer, 
+                                                              const size_t          N);
 
     TEMPLATIFIER_2
     struct QuexBufferFiller_Plain { 
@@ -39,22 +40,28 @@ namespace quex {
         static const size_t SizeOfCharacter_tag = sizeof(CharacterCarrierType);
 #       endif
            
-        InputHandleType*                        ih;
-        STREAM_POSITION_TYPE(InputHandleType*)  start_position;  // position in stream where analysis started
+        InputHandleType*                       ih;
+        STREAM_POSITION_TYPE(InputHandleType)  start_position;  // position in stream where analysis started
     };
 
     TEMPLATE_2_IN void
     BufferFiller_Plain_init(BUFFER_FILLER_PLAIN_TYPE* me, 
                             const size_t              MinFallbackN,
-                            InputHandleType*          input_handle,
-                            bool                      (*on_overflow_callback)(BUFFER_TYPE*, bool))
+                            InputHandleType*          input_handle)
     {
+#       if ! defined(__QUEX_SETTING_PLAIN_C)
+        QuexBufferFiller_init(&me->base,
+                              MinFallbackN,
+                              __BufferFiller_Plain_tell_character_index<InputHandleType, CharacterCarrierType>,
+                              __BufferFiller_Plain_seek_character_index<InputHandleType, CharacterCarrierType>, 
+                              __BufferFiller_Plain_read_characters<InputHandleType, CharacterCarrierType>);
+#       else
         QuexBufferFiller_init(&me->base,
                               MinFallbackN,
                               __BufferFiller_Plain_tell_character_index,
                               __BufferFiller_Plain_seek_character_index, 
-                              __BufferFiller_Plain_read_characters, 
-                              on_overflow_callback);
+                              __BufferFiller_Plain_read_characters);
+#       endif
         //
         me->ih             = input_handle;
         me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleType);
@@ -78,7 +85,7 @@ namespace quex {
         BUFFER_FILLER_PLAIN_TYPE* me = (BUFFER_FILLER_PLAIN_TYPE*)alter_ego;
 
         long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + me->start_position); 
-        QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleType*, avoid_tmp_arg);
+        QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleType, avoid_tmp_arg);
     }
 
     TEMPLATE_2_IN size_t   

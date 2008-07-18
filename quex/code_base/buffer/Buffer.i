@@ -40,7 +40,7 @@ namespace quex {
 
     TEMPLATE_IN void
     QuexBufferCore_init(BUFFER_TYPE*          me, 
-                        CharacterCarrierType* memory_chunk, size_t Size, 
+                        CharacterCarrierType* memory_chunk, const size_t Size, 
                         CharacterCarrierType  BLC)
     {
         if( memory_chunk != 0x0 ) 
@@ -64,7 +64,7 @@ namespace quex {
     TEMPLATE_IN void
     QuexAnalyserMinimal_init(MINIMAL_ANALYZER_TYPE* me,
                              __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*AnalyserFunction)(MINIMAL_ANALYZER_TYPE*),
-                             CharacterCarrierType* memory_chunk, size_t Size, 
+                             CharacterCarrierType* memory_chunk, const size_t Size, 
                              CharacterCarrierType  BLC,
                              BUFFER_FILLER_TYPE*   BufferFiller)
     {
@@ -73,6 +73,29 @@ namespace quex {
         me->buffer_filler             = BufferFiller;
         if( BufferFiller != 0x0 ) me->buffer_filler->client = &me->buffer;
     }
+
+    TEMPLATE_IN bool 
+    QuexAnalyserMinimal_buffer_reload_backward(BUFFER_FILLER_TYPE* filler)
+    /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
+     *       addresses related to acceptance positions need to be adapted. This
+     *       is not the case for 'reload_backward()'. In no case of backward
+     *       reloading, there are important addresses to keep track. */
+    {
+        const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
+        if( LoadedByteN == 0 ) return false;
+        
+        /* Backward lexing happens in two cases:
+         *
+         *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
+         *      is involved. No acceptance positions are considered.
+         *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
+         *      post conditions. Then, no acceptance positions are involved, because
+         *      the start of the lexeme shall not drop before the begin of the buffer 
+         *      and the end of the core pattern, is of course, after the start of the 
+         *      lexeme. => there will be no reload backwards. */
+        return true;
+    }
+
 
     TEMPLATE_IN void
     Buffer_input_p_increment(BUFFER_TYPE* buffer)
