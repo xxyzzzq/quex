@@ -60,7 +60,7 @@ def __reload_forward(StateIndex, SM):
 
 def __reload_backward(StateIndex, SM): 
     txt  = 'QUEX_DEBUG_PRINT(&me->buffer, "BACKWARD_BUFFER_RELOAD");\n'
-    txt += "if( %s_buffer_reload_backward(me->buffer_filler) ) {\n" % SM.name()
+    txt += "if( QuexAnalyserMinimal_buffer_reload_backward(me->buffer_filler) ) {\n" % SM.name()
     txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += LanguageDB["$endif"]                              + "\n"
     txt += 'QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'

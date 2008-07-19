@@ -3,6 +3,9 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 
+#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#   include <cstring>  // gets memmset()
+#endif
 #include <quex/code_base/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer_debug.i>
@@ -26,7 +29,7 @@ namespace quex {
         bmem->_front    = memory;
         bmem->_back     = memory + (Size - 1);
 #       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-        memset(bmem->front, 0, Size);
+        std::memset(bmem->_front, 0, Size);
 #       endif
         *(bmem->_front) = BLC; // buffer limit code
         *(bmem->_back)  = BLC; // buffer limit code
@@ -54,8 +57,9 @@ namespace quex {
         //       lexeme (matching character sequence). The begin of line pre-condition
         //       is concerned with the last character in the lexeme, which is the one
         //       before the 'char_covered_by_terminating_zero'.
-        me->_end_of_file_p    = 0x0;
+        me->_end_of_file_p                 = 0x0;
         me->_character_at_lexeme_start     = '\0';  // (0 means: no character covered)
+        me->_content_first_character_index = 0;
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  // --> begin of line
 #       endif
@@ -71,7 +75,13 @@ namespace quex {
         QuexBufferCore_init(&me->buffer, memory_chunk, Size, BLC);
         me->current_analyser_function = AnalyserFunction;
         me->buffer_filler             = BufferFiller;
-        if( BufferFiller != 0x0 ) me->buffer_filler->client = &me->buffer;
+        if( BufferFiller != 0x0 ) {
+            me->buffer_filler->client = &me->buffer;
+            /* The buffer filler knows the buffer and sets up everything correctly */
+            me->buffer_filler->read_characters(me->buffer_filler, 
+                                               Buffer_content_front(&me->buffer), 
+                                               Buffer_content_size(&me->buffer));
+        }
     }
 
     TEMPLATE_IN bool 
@@ -81,6 +91,8 @@ namespace quex {
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     {
+        if( filler == 0x0 ) return;
+
         const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
         if( LoadedByteN == 0 ) return false;
         
@@ -128,7 +140,7 @@ namespace quex {
         QUEX_DEBUG_PRINT(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if      defined (QUEX_OPTION_ACTIVATE_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
-        return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_character_index_at_front);
+        return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_content_first_character_index);
 #       else
         return (QUEX_CHARACTER_POSITION_TYPE)(buffer->_input_p);
 #       endif
@@ -142,7 +154,7 @@ namespace quex {
         // Check wether the memory_position is relative to the current start position 
         // of the stream. That means, that the tell_adr() command was called on the
         // same buffer setting or the positions have been adapted using the += operator.
-        __quex_assert(Position.buffer_start_position == buffer->_character_index_at_front);
+        __quex_assert(Position.buffer_start_position == buffer->_content_first_character_index);
         buffer->_input_p = Position.address;
 #       else
         buffer->_input_p = Position;
@@ -214,14 +226,14 @@ namespace quex {
     TEMPLATE_IN void
     Buffer_end_of_file_unset(BUFFER_TYPE* buffer)
     {
-        __quex_assert(buffer->_end_of_file_p <= _memory._back);
+        __quex_assert(buffer->_end_of_file_p <= buffer->_memory._back);
         buffer->_end_of_file_p = 0x0;
     }
 
     TEMPLATE_IN bool 
     Buffer_is_end_of_file(BUFFER_TYPE* buffer)
     { 
-        __quex_assert(buffer->_input != 0x0);
+        __quex_assert(buffer->_input_p != 0x0);
         return buffer->_input_p == buffer->_end_of_file_p;
     }
 

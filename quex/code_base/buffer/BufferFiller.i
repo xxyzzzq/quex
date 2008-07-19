@@ -47,6 +47,11 @@ namespace quex {
                           size_t       (*read_characters)(BUFFER_FILLER_TYPE*,
                                                           CharacterCarrierType* buffer, const size_t))
     {
+        __quex_assert(me != 0x0);
+        __quex_assert(tell_character_index != 0x0);
+        __quex_assert(seek_character_index != 0x0);
+        __quex_assert(read_characters != 0x0);
+
         me->_min_fallback_n      = MinFallbackN;
         me->tell_character_index = tell_character_index;
         me->seek_character_index = seek_character_index;
@@ -59,6 +64,7 @@ namespace quex {
     TEMPLATE_IN size_t
     QuexBufferFiller_load_forward(BUFFER_FILLER_TYPE* me)
     {
+        __quex_assert(me != 0x0);
         __quex_assert(me->tell_character_index != 0x0);
         __quex_assert(me->seek_character_index != 0x0);
         __quex_assert(me->read_characters != 0x0);
@@ -149,6 +155,7 @@ namespace quex {
         //     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.
         const size_t CharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
                                                     Buffer_content_size(buffer));
+        std::cout << me->tell_character_index(me) << ", " << CharacterIndexAtEnd << std::endl;
         __quex_assert( me->tell_character_index(me) == CharacterIndexAtEnd );
     }
 
@@ -223,6 +230,7 @@ namespace quex {
     TEMPLATE_IN size_t   
     QuexBufferFiller_load_backward(BUFFER_FILLER_TYPE* me)
     {
+        __quex_assert(me != 0x0);
         // PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
         //          as returned by 'get_backward()'. Its task is the same as the one of 
         //          'load_forward()'--only in opposite direction. Here only two cases need 

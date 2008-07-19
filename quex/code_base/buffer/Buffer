@@ -67,6 +67,9 @@ namespace quex {
         CharacterCarrierType   _character_before_lexeme_start;  // --> begin of line
 #       endif
     };
+    TEMPLATE_IN CharacterCarrierType* Buffer_content_front(BUFFER_TYPE* me);
+    TEMPLATE_IN CharacterCarrierType* Buffer_content_back(BUFFER_TYPE* me);
+    TEMPLATE_IN size_t                Buffer_content_size(BUFFER_TYPE* me);
 
     TEMPLATIFIER
     struct QuexBufferFiller {
@@ -90,6 +93,10 @@ namespace quex {
         //    to lexeme end exceeds the buffer size.
         bool   (*_on_overflow)(BUFFER_TYPE*, bool ForwardF);
     };
+
+    TEMPLATE_IN size_t  QuexBufferFiller_load_backward(BUFFER_FILLER_TYPE* me);
+    TEMPLATE_IN size_t  QuexBufferFiller_load_forward(BUFFER_FILLER_TYPE* me);
+
 
     // The following presents a minimal structure for a lexical analyser to work with the 
     // constructed engine. Actually, it should only be useful for unit tests. Else, it has
