@@ -64,10 +64,7 @@ test_program_common = """
 
         BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr);
 
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*tmp)(QuexAnalyserMinimal<char>*) = \n
-                Mr_UnitTest_analyser_function<char>;
-
-        QuexAnalyserMinimal_init(&lexer_state, tmp, // Mr_UnitTest_analyser_function<char>, 
+        QuexAnalyserMinimal_init(&lexer_state, Mr_UnitTest_analyser_function<char>, 
                                  (char*)0x0, MemorySize, /* BLC */(char)0x0, 
                                  &buffer_filler.base);
         //
@@ -226,8 +223,9 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
+                  "-DQUEX_OPTION_ACTIVATE_ASSERTS " + \
                   "-ggdb " + \
-                  "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
+                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
