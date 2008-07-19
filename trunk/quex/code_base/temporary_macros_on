@@ -1,4 +1,19 @@
-/* -*- C++ -*- vim: set syntax=cpp: */
+/* -*- C++ -*- vim: set syntax=cpp: 
+ *
+ * PURPOSE: Definition of handy macros that facilitate the common definition
+ *          of plain 'C' functions and elegant 'C++' templates. Note, that 
+ *          before including any other file, these macros have to be deactivated
+ *          by including <code_base/temporary_macros_off>. 
+ *
+ * NOTE: 'defines' were used instead of propper 'typedefs' because this allows
+ *       to define the relation without a existing type definition. By this means
+ *       one is discharged of the task of including all required headers. */
+#ifdef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+#error "File " __FILE__ " was included twice without including the correspondent\n" + \
+       "template_macros_off file."
+#endif
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+       
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #    define TEMPLATIFIER           template <class CharacterCarrierType>
 #    define TEMPLATE_IN            template <class CharacterCarrierType> inline
@@ -13,7 +28,6 @@
 #    define STREAM_OFFSET_TYPE(IH_TYPE)   typename InputPolicy<IH_TYPE*>::stream_offset
 
 
-#    define SizeOfCharacter       quex::QuexBufferFiller_Plain<InputHandleType, CharacterCarrierType>::SizeOfCharacter_tag
 #else
 #    define TEMPLATIFIER                  /* no template */
 #    define TEMPLATE_IN                   /* no template */ QUEX_INLINE_KEYWORD
@@ -29,7 +43,6 @@
 
 #    define CharacterCarrierType   QUEX_CHARACTER_TYPE  
 #    define InputHandleType        QUEX_INPUT_HANDLE_TYPE  
-#    define SizeOfCharacter        (sizeof(CharacterCarrierType))
 #endif
 
 
