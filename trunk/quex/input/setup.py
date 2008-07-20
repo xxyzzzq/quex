@@ -32,7 +32,6 @@ SETUP_INFO = {
     "no_mode_transition_check_f":     [["--no-mode-transition-check"],       FLAG],
     "output_debug_f":                 [["--debug"],                          FLAG],
     "output_engine_name":             [["-o", "--engine"],                   "lexer"],    
-    "plain_memory_f":                 [["--plain-memory"],                   FLAG],
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
@@ -47,6 +46,7 @@ SETUP_INFO = {
     "input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECIATED 
     "input_token_id_db":              [["-t", "--token-id-db"],     LIST],                    # DEPRECIATED
     "leave_temporary_files_f":        [["--leave-tmp-files"],       FLAG],                    # DEPRECIATED
+    "plain_memory_f":                 [["--plain-memory"],          FLAG],                    # DEPRECIATED
     "std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECIATED
     "yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECIATED
 }
@@ -69,6 +69,10 @@ DEPRECATED = {
   "leave_temporary_files_f":
      ("Since the mentioned version, the flex core engine is no longer supported. The\n" + \
       "flag makes only sense for flex core engines.", "0.13.1"),
+  "plain_memory_f":                 
+     ("Since the mentioned version, quex does no longer need the '--plain-memory' command\n" + \
+      "line argument. The engine can be used with plain memory directly. Please, consider\n" + \
+      "reading the documentation on this issue.", "0.31.1"),
   "std_istream_support_f":
      ("The lexical analyzer has a flexible interface now, for both C++ istreams and FILE*\n" + \
       "so that rigid setting with this option is superfluous", "0.13.1"),
