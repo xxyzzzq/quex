@@ -18,8 +18,13 @@ def action(PatternName):
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
+    txt += "#ifndef __QUEX_SETTING_PLAIN_C\n"
     if   "->1" in PatternName: txt += "me->current_analyser_function = Mr_UnitTest_analyser_function<char>;\n"
     elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function<char>;\n"
+    txt += "#else\n"
+    if   "->1" in PatternName: txt += "me->current_analyser_function = Mr_UnitTest_analyser_function;\n"
+    elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function;\n"
+    txt += "#endif\n"
 
     if "CONTINUE" in PatternName: txt += ""
     elif "STOP" in PatternName:   txt += "return 0;"
@@ -31,7 +36,6 @@ test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE /* nothing */
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -226,8 +230,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
                   "-DQUEX_OPTION_ACTIVATE_ASSERTS " + \
                   "-ggdb " + \
-                  "" "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
-                  "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
     os.system(compile_str)

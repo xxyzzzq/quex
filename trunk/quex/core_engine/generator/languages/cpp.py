@@ -114,6 +114,9 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
 
     txt += __local_variable_definitions(local_variable_list)
+    txt += "#   ifdef QUEX_OPTION_ACTIVATE_ASSERTS\n"
+    txt += "    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;\n"
+    txt += "#   endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
 
@@ -242,7 +245,12 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
     //  When the analyzer returns, the caller function has to watch if a mode change
     //  occured. If not it can call this function again.
     //
-    __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
+#   ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) {
+        fprintf(stderr, "Mode change without immediate return from the lexical analyser.");
+        exit(-1);
+    }
+#   endif
     $$GOTO_START$$
 """
 

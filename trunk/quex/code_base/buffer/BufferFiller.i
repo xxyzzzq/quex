@@ -293,6 +293,8 @@ namespace quex {
         //_______________________________________________________________________________
         // (1) Compute distance to go backwards
         const size_t BackwardDistance = __QuexBufferFiller_backward_copy_backup_region(me);
+        if( BackwardDistance == 0 ) return 0;
+
         //_______________________________________________________________________________
         // (2) Compute the stream position of the 'start to read' 
         //
@@ -345,6 +347,8 @@ namespace quex {
         __quex_assert(buffer->_lexeme_start_p > buffer->_input_p);
         const size_t IntendedBackwardDistance = (size_t)(ContentSize / 3);   
 
+        // Limit 1:
+        //
         //     Before:    |C      L                  |
         //
         //     After:     |       C      L           |
@@ -360,23 +364,27 @@ namespace quex {
             __QuexBufferFiller_on_overflow(me, /* ForwardF */ false);
             return 0;
         }
+        //           (result is possitive, see __quex_assert(...) above)
+        const size_t Distance_InputP_to_LexemeStart = (size_t)(buffer->_lexeme_start_p - buffer->_input_p);
+        const int    LimitBackwardDist_1 = ContentSize - Distance_InputP_to_LexemeStart; 
 
-        const int    MaxBackwardDistance_pre = ContentSize - (int)(buffer->_lexeme_start_p - buffer->_input_p);
-        // NOTE: Split the minimum operation, because 'size_t' might be defined as 'unsigned'
-        // NOTE: It holds: _content_first_character_index >= 0
-        const size_t MaxBackwardDistance =
-                    MaxBackwardDistance_pre < 0 ?                                              MaxBackwardDistance_pre 
-                  : (size_t)MaxBackwardDistance_pre < buffer->_content_first_character_index ? MaxBackwardDistance_pre 
-                  : buffer->_content_first_character_index;
+        // Limit 2:
+        //
+        //     We cannot go before the first character in the stream.
+        const size_t LimitBackwardDist_2 = buffer->_content_first_character_index;
 
-        const int BackwardDistance = IntendedBackwardDistance > MaxBackwardDistance ? 
-                                     MaxBackwardDistance : IntendedBackwardDistance;
+        // Taking the minimum of all:
+        const size_t Limit_1_and_2 = LimitBackwardDist_1 < LimitBackwardDist_2 ? LimitBackwardDist_1
+                                     :                                           LimitBackwardDist_2;
+        const size_t BackwardDistance = IntendedBackwardDistance < Limit_1_and_2 ?  IntendedBackwardDistance 
+                                        :                                           Limit_1_and_2;
 
         // (*) copy content that is already there to its new position.
         //     (copying is much faster then loading new content from file)
         std::memmove(ContentFront + BackwardDistance, ContentFront, 
                      ContentSize - BackwardDistance);
 
+        return BackwardDistance;
     }
 
     TEMPLATE_IN void
