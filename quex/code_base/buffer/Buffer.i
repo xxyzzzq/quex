@@ -78,9 +78,11 @@ namespace quex {
         if( BufferFiller != 0x0 ) {
             me->buffer_filler->client = &me->buffer;
             /* The buffer filler knows the buffer and sets up everything correctly */
-            me->buffer_filler->read_characters(me->buffer_filler, 
-                                               Buffer_content_front(&me->buffer), 
-                                               Buffer_content_size(&me->buffer));
+            const size_t LoadedN = me->buffer_filler->read_characters(me->buffer_filler, 
+                                                                      Buffer_content_front(&me->buffer), 
+                                                                      Buffer_content_size(&me->buffer));
+            if( LoadedN != Buffer_content_size(&me->buffer) )  
+                me->buffer._end_of_file_p = Buffer_content_front(&me->buffer) + LoadedN;
         }
     }
 
@@ -91,7 +93,7 @@ namespace quex {
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
     {
-        if( filler == 0x0 ) return;
+        if( filler == 0x0 ) return false;
 
         const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
         if( LoadedByteN == 0 ) return false;

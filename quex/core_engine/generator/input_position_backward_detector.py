@@ -12,13 +12,15 @@ import quex.core_engine.generator.state_machine_coder as state_machine_coder
 from quex.frs_py.string_handling import blue_print
 
 function_str = """
-static void 
-PAPC_input_postion_backward_detector_$$ID$$(QuexAnalyserMinimal* me) 
+#include <quex/code_base/temporary_macros_on>
+TEMPLATE_IN void 
+PAPC_input_postion_backward_detector_$$ID$$(MINIMAL_ANALYZER_TYPE* me) 
 {
 $$LOCAL_VARIABLES$$
 $$STATE_MACHINE$$
 $$FUNCTION_BODY$$ 
 }
+#include <quex/code_base/temporary_macros_off>
 """
 
 def do(sm, LanguageDB, PrintStateMachineF):
@@ -39,8 +41,8 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body += LanguageDB["$input/increment"] + "\n"
 
     variables_txt = LanguageDB["$local-variable-defs"](
-            [["QUEX_CHARACTER_TYPE",          "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
-             ["QUEX_CHARACTER_POSITION_TYPE", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
+            [["CharacterCarrierType",         "input",                        "(CharacterCarrierType)(0x0)"],
+             ["QUEX_CHARACTER_POSITION_TYPE", "end_of_core_pattern_position", "(CharacterCarrierType*)(0x0)"]])
 
     return blue_print(function_str, 
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],
