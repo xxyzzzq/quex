@@ -101,11 +101,6 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
 
-$$SWITCH$$ __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
-//
-#ifdef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED_DISABLED
-#   undef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
-#endif
 //   If one mode requires indentation support, then the lexical analyser
 //   class must be setup for indentation counting. The following flag is
 //   defined or undefined by the lexical analyser generator quex.
@@ -187,16 +182,12 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
     typedef quex::$$TOKEN_CLASS$$::id_type QUEX_ANALYSER_RETURN_TYPE;
 #endif
 
-#ifdef  __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
-#   include<quex/code_base/core_engine/definitions-plain-memory.h>
+#ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#    include<quex/code_base/buffer/iconv/BufferFiller_IConv>
 #else
-#   ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#       include<quex/code_base/buffer/iconv/fixed_size_character_stream>
-#   endif
-#   include<quex/code_base/buffer/plain/fixed_size_character_stream>
-#   include<quex/code_base/buffer/Buffer>
-#   include<quex/code_base/core_engine/definitions-quex-buffer.h>
+#    include<quex/code_base/buffer/plain/BufferFiller_Plain>
 #endif
+#include<quex/code_base/buffer/Buffer>
 
 // Quex/User
 #define CLASS                            $$LEXER_CLASS_NAME$$
