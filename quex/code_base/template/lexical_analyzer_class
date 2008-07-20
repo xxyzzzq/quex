@@ -176,7 +176,6 @@ const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "$$CORE_ENGINE_CHARACTE
 //       resrictions are tough. THUS: We communicate the class name to the analyzer
 //       functions via a macro and NOT via traits or anything like that.
 typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
-#define __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
 
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"

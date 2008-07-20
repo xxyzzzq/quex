@@ -164,27 +164,6 @@ QuexAnalyserCore_undo_terminating_zero_for_Lexeme(QuexAnalyserCore<CharacterCarr
     }
 }
 
-#ifdef  __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
-
-// We equal __previous_mode_p to __current_mode_p here, so that it does not
-// have to happen at each time get_token() is called.
-#   ifdef  __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-#      define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE                     \
-              if( self.__previous_mode_p != self.__current_mode_p) {                \
-                  self.__previous_mode_p = self.__current_mode_p;                   \
-                  self.__continue_analysis_after_adapting_mode_function_p_f = true; \
-                  return /*1*/;                                                         \
-              }
-#   else
-#      define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE  /* nothing happens here (yet) */                         
-#   endif
-
-#else
-
-#   define __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE    /* nothing happens here (yet) */                         
-
-#endif
-
 #undef TEMPLATE_IN 
 #endif // __INCLUDE_GUARD_QUEX_ANALYSER_CORE_DEFINITIONS_QUEX_BUFFER_H__
 
