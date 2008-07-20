@@ -18,8 +18,8 @@ def action(PatternName):
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
-    if   "->1" in PatternName: txt += "me->__current_mode_analyser_function_p = analyser_do;\n"
-    elif "->2" in PatternName: txt += "me->__current_mode_analyser_function_p = analyser_do_2;\n"
+    if   "->1" in PatternName: txt += "me->current_analyser_function = Mr_UnitTest_analyser_function<char>;\n"
+    elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function<char>;\n"
 
     if "CONTINUE" in PatternName: txt += ""
     elif "STOP" in PatternName:   txt += "return 0;"
@@ -109,6 +109,7 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     
     if BufferType=="QuexBuffer": 
         if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
+        # if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 5
         include_str = "#include <sstream>\n" 
 
     else:                        
@@ -225,8 +226,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
                   "-DQUEX_OPTION_ACTIVATE_ASSERTS " + \
                   "-ggdb " + \
-                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "# + \
-                  #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+                  "" "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
     os.system(compile_str)

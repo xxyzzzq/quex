@@ -147,11 +147,11 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
 __buffer_reload_str = """
 TEMPLATE_IN bool 
-$$STATE_MACHINE_NAME$$_buffer_reload_forward(BUFFER_FILLER_TYPE* filler, 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(BUFFER_FILLER_TYPE* filler, 
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    if( filler == 0x0 ) return;
+    if( filler == 0x0 ) return false;
     const size_t LoadedByteN = QuexBufferFiller_load_forward(filler);
     if( LoadedByteN == 0 ) return false;
 

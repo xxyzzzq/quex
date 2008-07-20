@@ -5,6 +5,8 @@
 #include <cstring>  // gets: memmove, memcpy
 #include <cstdio>   // gets: fprintf
 
+#include <quex/code_base/buffer/Buffer_debug.i>
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <stdexcept>
 namespace quex { 
@@ -93,7 +95,7 @@ namespace quex {
         //
         // RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
         //          '-1'     if forward loading was not possible (end of file)
-        QUEX_DEBUG_PRINT(buffer, "LOAD FORWARD(entry)");
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "FORWARD(entry)");
 
         // (*) Check for the three possibilities mentioned above
         if     ( buffer->_input_p == buffer->_memory._front ) { return 0; }      // (1)
@@ -121,7 +123,7 @@ namespace quex {
             __QuexBufferFiller_on_overflow(me, /* Forward */ true);
             return 0;
         }
-        CharacterCarrierType* new_content_begin = buffer->_memory._front + FallBackN;
+        CharacterCarrierType* new_content_begin = buffer->_memory._front + 1 + FallBackN;
         const size_t          LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
 
         //___________________________________________________________________________________
@@ -130,7 +132,7 @@ namespace quex {
                                                   DesiredLoadN, LoadedN, FallBackN, 
                                                   Distance_LexemeStart_to_InputP);
 
-        QUEX_DEBUG_PRINT(buffer, "LOAD FORWARD(exit)");
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "LOAD FORWARD(exit)");
         //QUEX_BUFFER_ASSERT_CONSISTENCY();
 
         // NOTE: Return value is used for adaptions of memory addresses. It happens that the
@@ -155,7 +157,6 @@ namespace quex {
         //     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.
         const size_t CharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
                                                     Buffer_content_size(buffer));
-        std::cout << me->tell_character_index(me) << ", " << CharacterIndexAtEnd << std::endl;
         __quex_assert( me->tell_character_index(me) == CharacterIndexAtEnd );
     }
 
@@ -185,7 +186,7 @@ namespace quex {
         // (*) Copy fallback region
         //     If there is no 'overlap' from source and drain than the faster memcpy() can 
         //     used instead of memmove().
-        CharacterCarrierType*  source = Buffer_content_back(me->client) - FallBackN; // end of content - fallback
+        CharacterCarrierType*  source = Buffer_content_back(me->client) - FallBackN + 1; // end of content - fallback
         CharacterCarrierType*  drain  = Buffer_content_front(me->client);       
         if( drain + FallBackN >= source  ) {
             std::memmove(drain, source, FallBackN * sizeof(CharacterCarrierType));
@@ -274,7 +275,7 @@ namespace quex {
         const size_t          ContentSize  = Buffer_content_size(buffer);
         CharacterCarrierType* ContentFront = Buffer_content_front(buffer);
 
-        QUEX_DEBUG_PRINT(buffer, "LOAD BACKWARD(entry)");
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "BACKWARD(entry)");
         //QUEX_BUFFER_ASSERT_CONSISTENCY();
 
         // (*) Check for the three possibilities mentioned above
@@ -321,7 +322,7 @@ namespace quex {
         //
         __QuexBufferFiller_backward_adapt_pointers(me->client, BackwardDistance);
 
-        QUEX_DEBUG_PRINT(buffer, "LOAD BACKWARD(exit)");
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "BACKWARD(exit)");
         //QUEX_BUFFER_ASSERT_CONSISTENCY();
         return BackwardDistance;
     }
