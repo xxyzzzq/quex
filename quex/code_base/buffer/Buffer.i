@@ -65,51 +65,6 @@ namespace quex {
 #       endif
     }
 
-    TEMPLATE_IN void
-    QuexAnalyserMinimal_init(MINIMAL_ANALYZER_TYPE* me,
-                             __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*AnalyserFunction)(MINIMAL_ANALYZER_TYPE*),
-                             CharacterCarrierType* memory_chunk, const size_t Size, 
-                             CharacterCarrierType  BLC,
-                             BUFFER_FILLER_TYPE*   BufferFiller)
-    {
-        QuexBufferCore_init(&me->buffer, memory_chunk, Size, BLC);
-        me->current_analyser_function = AnalyserFunction;
-        me->buffer_filler             = BufferFiller;
-        if( BufferFiller != 0x0 ) {
-            me->buffer_filler->client = &me->buffer;
-            /* The buffer filler knows the buffer and sets up everything correctly */
-            const size_t LoadedN = me->buffer_filler->read_characters(me->buffer_filler, 
-                                                                      Buffer_content_front(&me->buffer), 
-                                                                      Buffer_content_size(&me->buffer));
-            if( LoadedN != Buffer_content_size(&me->buffer) )  
-                me->buffer._end_of_file_p = Buffer_content_front(&me->buffer) + LoadedN;
-        }
-    }
-
-    TEMPLATE_IN bool 
-    QuexAnalyserMinimal_buffer_reload_backward(BUFFER_FILLER_TYPE* filler)
-    /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
-     *       addresses related to acceptance positions need to be adapted. This
-     *       is not the case for 'reload_backward()'. In no case of backward
-     *       reloading, there are important addresses to keep track. */
-    {
-        if( filler == 0x0 ) return false;
-
-        const size_t LoadedByteN = QuexBufferFiller_load_backward(filler);
-        if( LoadedByteN == 0 ) return false;
-        
-        /* Backward lexing happens in two cases:
-         *
-         *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
-         *      is involved. No acceptance positions are considered.
-         *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
-         *      post conditions. Then, no acceptance positions are involved, because
-         *      the start of the lexeme shall not drop before the begin of the buffer 
-         *      and the end of the core pattern, is of course, after the start of the 
-         *      lexeme. => there will be no reload backwards. */
-        return true;
-    }
-
 
     TEMPLATE_IN void
     Buffer_input_p_increment(BUFFER_TYPE* buffer)

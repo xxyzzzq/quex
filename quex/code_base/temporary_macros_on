@@ -9,8 +9,8 @@
  *       to define the relation without a existing type definition. By this means
  *       one is discharged of the task of including all required headers. */
 #ifdef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
-#error "File " __FILE__ " was included twice without including the correspondent\n" + \
-       "template_macros_off file."
+#error "File <template_macros_on> was included twice without including the correspondent\n" + \
+       "<template_macros_off> file."
 #endif
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
        
