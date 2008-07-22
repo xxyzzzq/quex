@@ -35,10 +35,11 @@ def action(PatternName):
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
+typedef int QUEX_TOKEN_ID_TYPE;
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/plain/BufferFiller_Plain>
+#include <quex/code_base/template/Analyser>
 #if defined (__QUEX_SETTING_PLAIN_C)
     static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyserMinimal* me);
     static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyserMinimal* me);
@@ -53,7 +54,11 @@ $$TEST_CASE$$
 test_program_common = """
 
 #include <cstring>
+#include <quex/code_base/template/Analyser.i>
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+
     int main(int, char**)
     {
         using namespace std;
