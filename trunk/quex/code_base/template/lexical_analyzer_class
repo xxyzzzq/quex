@@ -175,13 +175,6 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-    typedef void QUEX_ANALYSER_RETURN_TYPE;
-#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-#else
-    typedef quex::$$TOKEN_CLASS$$::id_type QUEX_ANALYSER_RETURN_TYPE;
-#endif
-
 #ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #    include<quex/code_base/buffer/iconv/BufferFiller_IConv>
 #else
@@ -212,7 +205,7 @@ namespace quex {
 #   include <quex/code_base/template/Accumulator>
 #endif
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   include <quex/code_base/token_queue>
+#   include <quex/code_base/TokenQueue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/template/PostCategorizer>
@@ -265,25 +258,25 @@ $$USER_DEFINED_HEADER$$
 
 namespace quex {
 
-    struct quex_mode {  
-        int          id;
-        const char*  name;
-        $$LEXER_CLASS_NAME$$* the_lexer;
+    struct QuexMode {  
+        int                     id;
+        const char*             name;
+        MINIMAL_ANALYZER_TYPE*  the_lexer;
 
-        QUEX_ANALYSER_RETURN_TYPE (*analyser_function)($$LEXER_CLASS_NAME$$*);
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indentation)($$LEXER_CLASS_NAME$$*, const int Indentation);
-#endif
-        void (*on_entry)($$LEXER_CLASS_NAME$$*, const quex_mode* FromMode);
-        void (*on_exit)($$LEXER_CLASS_NAME$$*, const quex_mode* ToMode);
-#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
-        bool (*has_base)(const quex_mode* Mode);
-        bool (*has_entry_from)(const quex_mode* Mode);
-        bool (*has_exit_to)(const quex_mode* Mode);
-#endif
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*analyser_function)(MINIMAL_ANALYZER_TYPE*);
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+        void (*on_indentation)(MINIMAL_ANALYZER_TYPE*, const int Indentation);
+#       endif
+        void (*on_entry)(MINIMAL_ANALYZER_TYPE*, const QuexMode* FromMode);
+        void (*on_exit)(MINIMAL_ANALYZER_TYPE*, const QuexMode* ToMode);
+#       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
+        bool (*has_base)(const QuexMode* Mode);
+        bool (*has_entry_from)(const QuexMode* Mode);
+        bool (*has_exit_to)(const QuexMode* Mode);
+#       endif
     };
     
-    extern QUEX_ANALYSER_RETURN_TYPE
+    extern __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
     $$LEXER_CLASS_NAME$$_uncallable_analyser_function($$LEXER_CLASS_NAME$$*);
     extern void
     $$LEXER_CLASS_NAME$$_on_indentation_null_function($$LEXER_CLASS_NAME$$*, const int);
@@ -306,12 +299,12 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         virtual ~$$LEXER_CLASS_NAME$$();
         //
         // -- token stream: read next token
-#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-        $$TOKEN_CLASS$$::id_type   get_token();
-#else
-        $$TOKEN_CLASS$$::id_type   get_token($$TOKEN_CLASS$$*  result_p);
-        void                       get_token($$TOKEN_CLASS$$** result_pp);
-#endif   
+#       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+        QUEX_TOKEN_ID_TYPE   get_token();
+#       else
+        QUEX_TOKEN_ID_TYPE   get_token($$TOKEN_CLASS$$*  result_p);
+        void                 get_token($$TOKEN_CLASS$$** result_pp);
+#       endif   
         //
         // (*) Mode handling
         //
@@ -346,10 +339,10 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) Token sending
         void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const $$TOKEN_CLASS$$& That);
-        void        send(const $$TOKEN_CLASS$$::id_type TokenID);
-        void        send_n(const int N, const $$TOKEN_CLASS$$::id_type TokenID);
+        void        send(const QUEX_TOKEN_ID_TYPE TokenID);
+        void        send_n(const int N, const QUEX_TOKEN_ID_TYPE TokenID);
         template <typename ContentT> 
-        void        send(const $$TOKEN_CLASS$$::id_type TokenID, ContentT Content);
+        void        send(const QUEX_TOKEN_ID_TYPE TokenID, ContentT Content);
 
 
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING

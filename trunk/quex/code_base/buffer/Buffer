@@ -97,21 +97,6 @@ namespace quex {
     TEMPLATE_IN size_t  QuexBufferFiller_load_backward(BUFFER_FILLER_TYPE* me);
     TEMPLATE_IN size_t  QuexBufferFiller_load_forward(BUFFER_FILLER_TYPE* me);
 
-
-    // The following presents a minimal structure for a lexical analyser to work with the 
-    // constructed engine. Actually, it should only be useful for unit tests. Else, it has
-    // more a documentary character telling: This is the heart of the matter--anything else
-    // is just decoration!
-    TEMPLATIFIER
-    struct QuexAnalyserMinimal {
-        BUFFER_TYPE                                   buffer;
-        BUFFER_FILLER_TYPE*                           buffer_filler;
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*current_analyser_function)(MINIMAL_ANALYZER_TYPE*);
-#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*DEBUG_analyser_function_at_entry)(MINIMAL_ANALYZER_TYPE*);
-#       endif
-    };
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
