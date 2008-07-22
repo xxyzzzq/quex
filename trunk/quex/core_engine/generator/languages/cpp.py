@@ -13,14 +13,15 @@ def __nice(SM_ID):
 #
 
 __header_definitions_txt = """
-
 #include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/template/Analyser>
 
 #ifdef CONTINUE
 #   undef CONTINUE
 #endif
 #define CONTINUE  $$GOTO_START_PREPARATION$$
 """
+
 def __header_definitions(LanguageDB):
 
     txt = __header_definitions_txt
@@ -84,7 +85,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     signature = __function_signature
 
     if not StandAloneEngineF: 
-        signature = __function_signature_quex_mode_based
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), 

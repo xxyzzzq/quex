@@ -265,7 +265,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     txt = ""
     for mode in Modes:
         if mode.options["inheritable"] != "only":
-            txt += __mode_functions(prolog, "QUEX_ANALYSER_RETURN_TYPE", ["analyser_function"],
+            txt += __mode_functions(prolog, "__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE", ["analyser_function"],
                                     LexerClassName + "*")
     for mode in Modes:
         if mode.on_indentation_code_fragments() != []:

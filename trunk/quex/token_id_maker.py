@@ -17,8 +17,6 @@ class TokenInfo:
         self.positions    = [ Filename, LineN ]
         self.id           = None
 
-
-
 class Setup:
     def __init__(self, GlobalSetup):
 
@@ -56,11 +54,6 @@ namespace quex {
 
 $$CONTENT$$
 
-// NOT YET:
-//   template <$$TOKEN_CLASS$$::id_type TokenT>
-//   struct token_trait;
-//
-$$TOKEN_TRAITS$$
 }
 #endif // __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_GENERATED__
 """
@@ -68,15 +61,15 @@ $$TOKEN_TRAITS$$
 func_str = \
 """
     inline const std::string&
-    $$TOKEN_CLASS$$::map_id_to_name(const $$TOKEN_CLASS$$::id_type TokenID)
+    $$TOKEN_CLASS$$::map_id_to_name(const QUEX_TOKEN_ID_TYPE TokenID)
     {
        static bool virginity_f = true;
-       static std::map<$$TOKEN_CLASS$$::id_type, std::string>  db;
+       static std::map<QUEX_TOKEN_ID_TYPE, std::string>  db;
        static std::string  error_string("");
        static std::string  uninitialized_string("<UNINITIALIZED>");
        static std::string  termination_string("<TERMINATION>");
        
-       // NOTE: In general no assumptions can be made that the token::id_type
+       // NOTE: In general no assumptions can be made that the QUEX_TOKEN_ID_TYPE
        //       is an integer. Thus, no switch statement is used. 
        if( virginity_f ) {
            virginity_f = false;
@@ -86,7 +79,7 @@ func_str = \
 
        if     ( TokenID == $$TOKEN_PREFIX$$TERMINATION )   return termination_string;
        else if( TokenID == $$TOKEN_PREFIX$$UNINITIALIZED ) return uninitialized_string;
-       std::map<$$TOKEN_CLASS$$::id_type, std::string>::const_iterator it = db.find(TokenID);
+       std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];
@@ -121,8 +114,6 @@ def do(global_setup):
                 sys.exit(-1)
 
             lexer_mode.token_id_db[token_info.name] = token_info
-
-    
 
 def output(global_setup):
     assert lexer_mode.token_id_db.has_key("TERMINATION"), \
@@ -183,10 +174,9 @@ def output(global_setup):
             token_info = lexer_mode.token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
-            token_id_txt += "const quex::%s::id_type %s%s %s= %i;\n" % (setup.token_class,
-                                                                        setup.token_prefix,
-                                                                        token_name, space(token_name), 
-                                                                        token_info.number)
+            token_id_txt += "const QUEX_TOKEN_ID_TYPE %s%s %s= %i;\n" % (setup.token_prefix,
+                                                                         token_name, space(token_name), 
+                                                                         token_info.number)
     token_id_txt += "} // namespace quex\n" 
 
     # -- define the function for token names
@@ -201,13 +191,6 @@ def output(global_setup):
                                 ["$$TOKEN_PREFIX$$",   setup.token_prefix]])
 
 
-    # -- define the token traits
-    trait_txt = ""
-    for info in lexer_mode.token_id_db.values():
-        trait_txt += "//    template<> struct token_trait <%s%s> %s{ typedef %s type; };\n" % \
-                     (setup.token_prefix, info.name, space(info.name), info.related_type)
-
-
     t = time.localtime()
     date_str = "%iy%im%id_%ih%02im%02is" % (t[0], t[1], t[2], t[3], t[4], t[5])
 
@@ -218,7 +201,6 @@ def output(global_setup):
                          [["$$CONTENT$$",                     txt],
                           ["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
-                          ["$$TOKEN_TRAITS$$",                trait_txt],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", setup.token_class_file],
                           ["$$DATE_IG$$",                     date_str]])
 

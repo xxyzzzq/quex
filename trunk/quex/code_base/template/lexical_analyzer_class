@@ -254,21 +254,23 @@ $$LEXER_DERIVED_CLASS_DECL$$
 // User defined header content. _________________________________________________
 //
 // This is pasted after the definitions, such that the user can make use of them.
+// START:
 $$USER_DEFINED_HEADER$$
+// :END
 
 namespace quex {
 
     struct QuexMode {  
-        int                     id;
-        const char*             name;
-        MINIMAL_ANALYZER_TYPE*  the_lexer;
+        int           id;
+        const char*   name;
+        CLASS*        the_lexer;
 
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*analyser_function)(MINIMAL_ANALYZER_TYPE*);
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*analyser_function)(CLASS*);
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indentation)(MINIMAL_ANALYZER_TYPE*, const int Indentation);
+        void (*on_indentation)(CLASS*, const int Indentation);
 #       endif
-        void (*on_entry)(MINIMAL_ANALYZER_TYPE*, const QuexMode* FromMode);
-        void (*on_exit)(MINIMAL_ANALYZER_TYPE*, const QuexMode* ToMode);
+        void (*on_entry)(CLASS*, const QuexMode* FromMode);
+        void (*on_exit)(CLASS*, const QuexMode* ToMode);
 #       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
         bool (*has_base)(const QuexMode* Mode);
         bool (*has_entry_from)(const QuexMode* Mode);
@@ -285,8 +287,9 @@ namespace quex {
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
+    template <class CharacterCarrierType>
     class $$LEXER_CLASS_NAME$$ :
-        protected QUEX_CORE_ANALYSER_STRUCT {
+        protected QuexAnalyserMinimal<CharacterCarrierType> {
 
         /* DISABLED */ $$LEXER_CLASS_NAME$$();
         /* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);
@@ -333,7 +336,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) buffer handling
         Buffer   buffer;
         template <class InputHandle> 
-        quex::Buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
+        quex::QuexBufferCore<CharacterCarrierType>* create_buffer(InputHandle* input_handle, 
                                                          const char*  IConvInputCodingName = 0x0);
           
         // (*) Token sending
@@ -415,7 +418,7 @@ $$MODE_OBJECT_MEMBERS$$
         //
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     private:
-        token_queue<$$TOKEN_CLASS$$>*   _token_queue;
+        TokenQueue<$$TOKEN_CLASS$$>*   _token_queue;
 #       else
     public:
         $$TOKEN_CLASS$$                 the_token;
@@ -487,7 +490,7 @@ $$CLASS_BODY_EXTENSION$$
         QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
-        _token_queue = new token_queue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+        _token_queue = new TokenQueue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
 #       endif
 
         mode_db[0] = 0x0;

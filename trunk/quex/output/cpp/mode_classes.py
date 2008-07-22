@@ -1,9 +1,9 @@
 from   quex.frs_py.string_handling import blue_print
 
 dummy_functions = """
-    QUEX_ANALYSER_RETURN_TYPE 
+    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE 
     $$LEXER_CLASS_NAME$$_uncallable_analyser_function($$LEXER_CLASS_NAME$$* me)
-    { __quex_assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
+    { __quex_assert(0); return (__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE)(0); }
 
     void 
     $$LEXER_CLASS_NAME$$_on_indentation_null_function($$LEXER_CLASS_NAME$$*, const int)

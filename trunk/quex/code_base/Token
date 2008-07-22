@@ -70,13 +70,13 @@ namespace quex {
         void    set(QUEX_TOKEN_ID_TYPE ID, const int   Number1);
 
     private:
-        void __copy(const token& That);
+        void __copy(const Token& That);
     };
 
     inline int unicode_to_utf8(int UCS_CharacterCode, uint8_t* utf8_result);
 
     inline void 
-        Token::__copy(const token& That) 
+        Token::__copy(const Token& That) 
         {
             _id     = That._id;
             _text   = That._text;
@@ -96,7 +96,7 @@ namespace quex {
         { _id = Type; }
 
     inline std::ostream&
-        operator<<(std::ostream& ostr, const token& Tok)
+        operator<<(std::ostream& ostr, const Token& Tok)
         { ostr << std::string(Tok); return ostr; }
 
     inline
