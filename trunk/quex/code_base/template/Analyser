@@ -13,11 +13,11 @@ namespace quex {
     // is just decoration!
     TEMPLATIFIER
     struct QuexAnalyserMinimal {
-        BUFFER_TYPE                                   buffer;
-        BUFFER_FILLER_TYPE*                           buffer_filler;
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*current_analyser_function)(MINIMAL_ANALYZER_TYPE*);
+        BUFFER_TYPE               buffer;
+        BUFFER_FILLER_TYPE*       buffer_filler;
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(current_analyser_function))(MINIMAL_ANALYZER_TYPE*);
 #       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  (*DEBUG_analyser_function_at_entry)(MINIMAL_ANALYZER_TYPE*);
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(DEBUG_analyser_function_at_entry))(MINIMAL_ANALYZER_TYPE*);
 #       endif
     };
 

@@ -189,7 +189,7 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #include <quex/code_base/template/Counter>
 
 namespace quex { 
-    class quex_mode;
+    class QuexMode;
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
     typedef CounterWithIndentation  CounterType;
@@ -249,7 +249,9 @@ namespace quex {
 #endif
 
 
+// START:
 $$LEXER_DERIVED_CLASS_DECL$$
+// :END
 
 // User defined header content. _________________________________________________
 //
@@ -258,33 +260,11 @@ $$LEXER_DERIVED_CLASS_DECL$$
 $$USER_DEFINED_HEADER$$
 // :END
 
+#include <quex/code_base/template/QuexMode>
 namespace quex {
 
-    struct QuexMode {  
-        int           id;
-        const char*   name;
-        CLASS*        the_lexer;
-
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*analyser_function)(CLASS*);
-#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indentation)(CLASS*, const int Indentation);
-#       endif
-        void (*on_entry)(CLASS*, const QuexMode* FromMode);
-        void (*on_exit)(CLASS*, const QuexMode* ToMode);
-#       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
-        bool (*has_base)(const QuexMode* Mode);
-        bool (*has_entry_from)(const QuexMode* Mode);
-        bool (*has_exit_to)(const QuexMode* Mode);
-#       endif
-    };
+#   include <quex/code_base/temporary_macros_on>
     
-    extern __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
-    $$LEXER_CLASS_NAME$$_uncallable_analyser_function($$LEXER_CLASS_NAME$$*);
-    extern void
-    $$LEXER_CLASS_NAME$$_on_indentation_null_function($$LEXER_CLASS_NAME$$*, const int);
-    extern void
-    $$LEXER_CLASS_NAME$$_on_entry_exit_null_function($$LEXER_CLASS_NAME$$*, const quex_mode*);
-
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
     template <class CharacterCarrierType>
@@ -312,26 +292,26 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) Mode handling
         //
         //     -- modes: read access
-        quex_mode&    mode();
+        QUEX_MODE_TYPE&    mode();
         const int     mode_id() const;
         const char*   mode_name() const;
         //
         //     -- modes: changing lexical analysis mode
         void        set_mode_brutally(const int        LexerMode);
-        void        set_mode_brutally(const quex_mode& Mode);
+        void        set_mode_brutally(const QUEX_MODE_TYPE& Mode);
         //
         void        operator<<(const int MODE_ID);               // not to be used in concatination
-        void        operator<<(/* NOT const*/ quex_mode& Mode);  // not to be used in concatination
+        void        operator<<(/* NOT const*/ QUEX_MODE_TYPE& Mode);  // not to be used in concatination
         //
         void        pop_mode();
         void        pop_drop_mode();
-        void        push_mode(quex_mode& new_mode);
+        void        push_mode(QUEX_MODE_TYPE& new_mode);
         //
-        void        enter_mode(/* NOT const*/ quex_mode& TargetMode);
+        void        enter_mode(/* NOT const*/ QUEX_MODE_TYPE& TargetMode);
         //
         //     -- map: mode id to mode and vice versa
-        quex_mode&  map_mode_id_to_mode(const int        ModeID);       
-        const int   map_mode_to_mode_id(const quex_mode& Mode) const;
+        QUEX_MODE_TYPE&  map_mode_id_to_mode(const int        ModeID);       
+        const int   map_mode_to_mode_id(const QUEX_MODE_TYPE& Mode) const;
 
         // (*) buffer handling
         Buffer   buffer;
@@ -381,7 +361,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
         //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
         //      to quex's start mode.)
-        quex_mode*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
+        QUEX_MODE_TYPE*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
 
     public:
 $$MODE_OBJECT_MEMBERS$$
@@ -393,8 +373,8 @@ $$MODE_OBJECT_MEMBERS$$
         //    CONTINUE. In this case, it needs to be checked wether the return has
         //    to be forced. The caller, can then call the newly setup analyzer function
         //    from where the current one has been called --- see get_token().
-        quex_mode*   __current_mode_p;
-        quex_mode*   __previous_mode_p;
+        QUEX_MODE_TYPE*   __current_mode_p;
+        QUEX_MODE_TYPE*   __previous_mode_p;
         // -- with the quex core engine(s) each mode has a dedicated analyser function.
         //    (with the flex core engine, modes were modelled as start conditions
         //     of a single engine)
@@ -403,7 +383,7 @@ $$MODE_OBJECT_MEMBERS$$
         //
     private:
         // (*) mode stack allows for pushing and popping of lexical analysis modes
-        std::vector<quex_mode*>   _mode_stack;
+        std::vector<QUEX_MODE_TYPE*>   _mode_stack;
 
         // (*) The Token Queue ___________________________________________________________
         //
@@ -428,9 +408,9 @@ $$MODE_OBJECT_MEMBERS$$
         $$LEXER_DERIVED_CLASS_NAME$$&   self;
 
     public:
-#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#       ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         IncludeStack  include_stack;
-#   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
+#       endif 
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
         void virtual on_include_exit() {}
@@ -459,21 +439,25 @@ $$CLASS_BODY_EXTENSION$$
 #       endif
 
     private:
-        void __debug_print_transition(quex_mode* Source, quex_mode* Target);
+        void __debug_print_transition(QUEX_MODE_TYPE* Source, QUEX_MODE_TYPE* Target);
 
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleP> 
         void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
 
-#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#       ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
         // (*) Translation buffer ________________________________________________________
         // Iconv requires an intermediate buffer to read data into, before it can trans-
         // late it into a target character coding format. However, if there are more than
         // one input buffer, they could all use the same iconv translation buffer, since
         // they do not translate at the same time.
         uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
-#endif
+#       endif
     };
+ 
+#   ifdef QUEX_CHARACTER_TYPE
+    typedef Quex$$LEXER_CLASS_NAME$$   $$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>;
+#   endif
 
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
@@ -512,6 +496,7 @@ $$CONSTRUCTOR_EXTENSTION$$
         return "$$LEXER_CLASS_NAME$$: Version $$LEXER_BUILD_VERSION$$. Date $$LEXER_BUILD_DATE$$\n"
                "Generated by Quex $$QUEX_VERSION$$";
     }
+#   include <quex/code_base/temporary_macros_off>
 
 #   define __QUEX_SETTING_DERIVED_CLASS_NAME    $$LEXER_DERIVED_CLASS_NAME$$
 #   define __QUEX_SETTING_MAX_MODE_CLASS_N      $$MAX_MODE_CLASS_N$$

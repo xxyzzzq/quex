@@ -16,7 +16,7 @@
 #   define QUEX_INLINE_KEYWORD     static
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #   ifndef QUEX_CHARACTER_TYPE
-#        define QUEX_CHARACTER_TYPE  (uint8_t)
+#      define QUEX_CHARACTER_TYPE  /* inttypes' */ uint8_t   
 #   endif
 #endif
 

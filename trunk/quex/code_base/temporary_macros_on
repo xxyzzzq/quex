@@ -19,14 +19,15 @@
 #    define TEMPLATE_IN            template <class CharacterCarrierType> inline
 #    define TEMPLATIFIER_2         template <class InputHandleType, class CharacterCarrierType>
 #    define TEMPLATE_2_IN          template <class InputHandleType, class CharacterCarrierType> inline
+
 #    define BUFFER_MEMORY_TYPE     quex::BufferMemory<CharacterCarrierType>
 #    define BUFFER_TYPE            quex::QuexBufferCore<CharacterCarrierType>
 #    define BUFFER_FILLER_TYPE     quex::QuexBufferFiller<CharacterCarrierType>
 #    define BUFFER_FILLER_PLAIN_TYPE      quex::QuexBufferFiller_Plain<InputHandleType, CharacterCarrierType>
 #    define MINIMAL_ANALYZER_TYPE         quex::QuexAnalyserMinimal<CharacterCarrierType>
+#    define QUEX_MODE_TYPE                quex::QuexMode<CharacterCarrierType>
 #    define STREAM_POSITION_TYPE(IH_TYPE) typename InputPolicy<IH_TYPE*>::stream_position
 #    define STREAM_OFFSET_TYPE(IH_TYPE)   typename InputPolicy<IH_TYPE*>::stream_offset
-
 
 #else
 #    define TEMPLATIFIER                  /* no template */
@@ -38,6 +39,7 @@
 #    define BUFFER_FILLER_TYPE            QuexBufferFiller
 #    define BUFFER_FILLER_PLAIN_TYPE      QuexBufferFiller_Plain
 #    define MINIMAL_ANALYZER_TYPE         QuexAnalyserMinimal
+#    define QUEX_MODE_TYPE                QuexMode
 #    define STREAM_POSITION_TYPE(IH_TYPE) long
 #    define STREAM_OFFSET_TYPE(IH_TYPE)   long
 
