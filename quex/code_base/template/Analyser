@@ -7,12 +7,12 @@
 namespace quex {
 #endif
 
-    // The following presents a minimal structure for a lexical analyser to work with the 
-    // constructed engine. Actually, it should only be useful for unit tests. Else, it has
-    // more a documentary character telling: This is the heart of the matter--anything else
-    // is just decoration!
+    /* The following presents a minimal structure for a lexical analyser to work with the 
+     * constructed engine. Actually, it should only be useful for unit tests. Else, it has
+     * more a documentary character telling: This is the heart of the matter--anything else
+     * is just decoration! Any 'real' lexical analyser should be derived from this class. */
     TEMPLATIFIER
-    struct QuexAnalyserMinimal {
+    struct QuexAnalyser {
         BUFFER_TYPE               buffer;
         BUFFER_FILLER_TYPE*       buffer_filler;
         __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(current_analyser_function))(MINIMAL_ANALYZER_TYPE*);
@@ -22,6 +22,9 @@ namespace quex {
     };
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+#   if defined(QUEX_CHARACTER_TYPE)
+    struct Analyser : public QuexAnalyser<QUEX_CHARACTER_TYPE> { };
+#   endif
 } // namespace quex
 #endif
 

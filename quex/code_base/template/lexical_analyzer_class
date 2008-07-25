@@ -277,7 +277,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
      */
     template <class CharacterCarrierType>
     class __$$LEXER_CLASS_NAME$$ :
-        protected QuexAnalyserMinimal<CharacterCarrierType> {
+        protected QuexAnalyser<CharacterCarrierType> {
 
         /* DISABLED */ $$LEXER_CLASS_NAME$$();
         /* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);

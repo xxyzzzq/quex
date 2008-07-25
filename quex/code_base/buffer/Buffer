@@ -126,6 +126,11 @@ namespace quex {
     TEMPLATE_IN size_t  QuexBufferFiller_load_forward(BUFFER_FILLER_TYPE* me);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+#   ifdef QUEX_CHARACTER_TYPE
+    struct BufferMemory : public QuexBufferMemory<QUEX_CHARACTER_TYPE> { };
+    struct Buffer       : public QuexBuffer<QUEX_CHARACTER_TYPE> { };
+    struct BufferFiller : public QuexBufferFiller<QUEX_CHARACTER_TYPE> { };
+#   endif
 } // namespace quex
 #endif
 #include <quex/code_base/temporary_macros_off>

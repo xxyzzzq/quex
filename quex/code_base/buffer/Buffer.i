@@ -43,8 +43,8 @@ namespace quex {
 
     TEMPLATE_IN void
     QuexBuffer_init(BUFFER_TYPE*          me, 
-                        CharacterCarrierType* memory_chunk, const size_t Size, 
-                        CharacterCarrierType  BLC)
+                    CharacterCarrierType* memory_chunk, const size_t Size, 
+                    CharacterCarrierType  BLC)
     {
         if( memory_chunk != 0x0 ) 
             QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true, BLC);      

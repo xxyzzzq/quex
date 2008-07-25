@@ -41,13 +41,13 @@ $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/template/Analyser>
 #if defined (__QUEX_SETTING_PLAIN_C)
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyserMinimal* me);
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyserMinimal* me);
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyser* me);
+    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
 #else
     template<class CharacterCarrierType> inline
-    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
+    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(quex::QuexAnalyser<CharacterCarrierType>* me);
     template<class CharacterCarrierType> inline 
-    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(quex::QuexAnalyserMinimal<CharacterCarrierType>* me);
+    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(quex::QuexAnalyser<CharacterCarrierType>* me);
 #endif
 """
 
@@ -64,7 +64,7 @@ test_program_common = """
         using namespace std;
         using namespace quex;
 
-        QuexAnalyserMinimal<char> lexer_state;
+        QuexAnalyser<char> lexer_state;
         int                       success_f = 0;
         //
         istringstream                                 istr("$$TEST_STRING$$");
@@ -73,7 +73,7 @@ test_program_common = """
 
         BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr);
 
-        QuexAnalyserMinimal_init(&lexer_state, Mr_UnitTest_analyser_function<char>, 
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function<char>, 
                                  (char*)0x0, MemorySize, /* BLC */(char)0x0, 
                                  &buffer_filler.base);
         //
@@ -89,11 +89,11 @@ test_program_common = """
     {
         using namespace std;
 
-        QuexAnalyserMinimal   lexer_state;
+        QuexAnalyser   lexer_state;
         int                   success_f = 0;
         char                  tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
-        QuexAnalyserMinimal_init(&lexer_state, Mr_UnitTest_analyser_function, 
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
                                  (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
                                  /* buffer filler = */ 0x0);
         //
