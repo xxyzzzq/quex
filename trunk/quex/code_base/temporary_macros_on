@@ -24,7 +24,7 @@
 #    define BUFFER_TYPE            quex::QuexBuffer<CharacterCarrierType>
 #    define BUFFER_FILLER_TYPE     quex::QuexBufferFiller<CharacterCarrierType>
 #    define BUFFER_FILLER_PLAIN_TYPE      quex::QuexBufferFiller_Plain<InputHandleType, CharacterCarrierType>
-#    define MINIMAL_ANALYZER_TYPE         quex::QuexAnalyserMinimal<CharacterCarrierType>
+#    define MINIMAL_ANALYZER_TYPE         quex::QuexAnalyser<CharacterCarrierType>
 #    define QUEX_MODE_TYPE                quex::QuexMode<CharacterCarrierType>
 #    define STREAM_POSITION_TYPE(IH_TYPE) typename InputPolicy<IH_TYPE*>::stream_position
 #    define STREAM_OFFSET_TYPE(IH_TYPE)   typename InputPolicy<IH_TYPE*>::stream_offset
@@ -38,7 +38,7 @@
 #    define BUFFER_TYPE                   QuexBuffer
 #    define BUFFER_FILLER_TYPE            QuexBufferFiller
 #    define BUFFER_FILLER_PLAIN_TYPE      QuexBufferFiller_Plain
-#    define MINIMAL_ANALYZER_TYPE         QuexAnalyserMinimal
+#    define MINIMAL_ANALYZER_TYPE         QuexAnalyser
 #    define QUEX_MODE_TYPE                QuexMode
 #    define STREAM_POSITION_TYPE(IH_TYPE) long
 #    define STREAM_OFFSET_TYPE(IH_TYPE)   long
