@@ -267,8 +267,16 @@ namespace quex {
     
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
+    /* NOTE: Implement the created class as a template with a preceeding '__' in the
+     *       name. So, if the user likes, he can create his own templated lexer with
+     *       a different character carrier type (e.g. uint32_t, instead of whatsoever).
+     *       The default is defined by QUEX_CHARACTER_TYPE. Thus, later on in this file
+     *       the class $$LEXER_CLASS_NAME$$ is defined as 
+     *
+     *                      __$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>
+     */
     template <class CharacterCarrierType>
-    class $$LEXER_CLASS_NAME$$ :
+    class __$$LEXER_CLASS_NAME$$ :
         protected QuexAnalyserMinimal<CharacterCarrierType> {
 
         /* DISABLED */ $$LEXER_CLASS_NAME$$();
@@ -316,7 +324,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) buffer handling
         Buffer   buffer;
         template <class InputHandle> 
-        quex::QuexBufferCore<CharacterCarrierType>* create_buffer(InputHandle* input_handle, 
+        quex::QuexBuffer<CharacterCarrierType>* create_buffer(InputHandle* input_handle, 
                                                          const char*  IConvInputCodingName = 0x0);
           
         // (*) Token sending
@@ -456,7 +464,7 @@ $$CLASS_BODY_EXTENSION$$
     };
  
 #   ifdef QUEX_CHARACTER_TYPE
-    typedef Quex$$LEXER_CLASS_NAME$$   $$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>;
+    typedef $$LEXER_CLASS_NAME$$   __$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>;
 #   endif
 
     template <class InputHandleP> inline void
@@ -467,7 +475,7 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "!! This is very good, in a way that anything unexpected will cause a comment\n";
         std::cout << "!! and a program exit. However, the paranoia is a heavy load on speed performance!\n";
         std::cout << "!! To disable it, please, compile with the following compile option:\n";
-        std::cout << "!! \"-DQUEX_OPTION_ACTIVATE_ASSERTS_DISABLED\".\n"
+        std::cout << "!! \"-DQUEX_OPTION_ASSERTS_DISABLED\".\n"
 #       endif
 
         QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);

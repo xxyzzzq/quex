@@ -23,7 +23,7 @@ namespace quex {
        
 
     TEMPLATE_IN void 
-    BufferMemory_setup(BUFFER_MEMORY_TYPE* bmem, CharacterCarrierType* memory, size_t Size, 
+    QuexBufferMemory_setup(BUFFER_MEMORY_TYPE* bmem, CharacterCarrierType* memory, size_t Size, 
                        bool ExternalOwnerF, CharacterCarrierType BLC) 
     {
         bmem->_front    = memory;
@@ -38,18 +38,18 @@ namespace quex {
 
 
     TEMPLATE_IN size_t          
-    BufferMemory_size(BUFFER_MEMORY_TYPE* bmem)
+    QuexBufferMemory_size(BUFFER_MEMORY_TYPE* bmem)
     { return bmem->_back - bmem->_front + 1; }
 
     TEMPLATE_IN void
-    QuexBufferCore_init(BUFFER_TYPE*          me, 
+    QuexBuffer_init(BUFFER_TYPE*          me, 
                         CharacterCarrierType* memory_chunk, const size_t Size, 
                         CharacterCarrierType  BLC)
     {
         if( memory_chunk != 0x0 ) 
-            BufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true, BLC);      
+            QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true, BLC);      
         else 
-            BufferMemory_setup(&(me->_memory), __ALLOCATE_MEMORY(Size), Size, false, BLC);      
+            QuexBufferMemory_setup(&(me->_memory), __ALLOCATE_MEMORY(Size), Size, false, BLC);      
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;
@@ -166,7 +166,7 @@ namespace quex {
     TEMPLATE_IN size_t
     Buffer_content_size(BUFFER_TYPE* me)
     {
-        return BufferMemory_size(&(me->_memory)) - 2;
+        return QuexBufferMemory_size(&(me->_memory)) - 2;
     }
 
     TEMPLATE_IN void
