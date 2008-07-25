@@ -121,8 +121,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += LanguageDB["$label-def"]("$start")
 
     # -- entry to the actual function body
-    txt += "    Buffer_mark_lexeme_start(&me->buffer);\n"
-    txt += "    Buffer_undo_terminating_zero_for_lexeme(&me->buffer);\n";
+    txt += "    QuexBuffer_mark_lexeme_start(&me->buffer);\n"
+    txt += "    QuexBuffer_undo_terminating_zero_for_lexeme(&me->buffer);\n";
     
     txt += function_body
 
@@ -264,10 +264,10 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "Buffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
+        txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
 
     if action_info.contains_variable("Lexeme", ignored_code_regions):
-        txt += indentation + "Buffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
+        txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
 
     txt += indentation + "{\n"
     txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  

@@ -92,8 +92,8 @@ namespace quex {
         //       it is thought to print only ASCII characters (i.e. code points < 0xFF)
         int                    covered_char = 0xFFFF;
         CharacterCarrierType*  end_p = 0x0;
-        const size_t           ContentSize  = Buffer_content_size(buffer);
-        CharacterCarrierType*  ContentFront = Buffer_content_front(buffer);
+        const size_t           ContentSize  = QuexBuffer_content_size(buffer);
+        CharacterCarrierType*  ContentFront = QuexBuffer_content_front(buffer);
         CharacterCarrierType*  BufferFront  = buffer->_memory._front;
         CharacterCarrierType*  BufferBack   = buffer->_memory._back;
 

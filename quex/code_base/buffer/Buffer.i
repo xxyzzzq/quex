@@ -67,31 +67,31 @@ namespace quex {
 
 
     TEMPLATE_IN void
-    Buffer_input_p_increment(BUFFER_TYPE* buffer)
+    QuexBuffer_input_p_increment(BUFFER_TYPE* buffer)
     { 
         ++(buffer->_input_p); 
     }
 
     TEMPLATE_IN void
-    Buffer_input_p_decrement(BUFFER_TYPE* buffer)
+    QuexBuffer_input_p_decrement(BUFFER_TYPE* buffer)
     { 
         --(buffer->_input_p); 
     }
 
     TEMPLATE_IN void
-    Buffer_mark_lexeme_start(BUFFER_TYPE* buffer)
+    QuexBuffer_mark_lexeme_start(BUFFER_TYPE* buffer)
     { 
         buffer->_lexeme_start_p = buffer->_input_p; 
     }
 
     TEMPLATE_IN void
-    Buffer_seek_lexeme_start(BUFFER_TYPE* buffer)
+    QuexBuffer_seek_lexeme_start(BUFFER_TYPE* buffer)
     { 
         buffer->_input_p = buffer->_lexeme_start_p;
     }
 
     TEMPLATE_IN QUEX_CHARACTER_POSITION_TYPE
-    Buffer_tell_adr(BUFFER_TYPE* buffer)
+    QuexBuffer_tell_memory_adr(BUFFER_TYPE* buffer)
     {
         // QUEX_BUFFER_ASSERT_CONSISTENCY();
         QUEX_DEBUG_PRINT(buffer, "TELL: %i", (int)buffer->_input_p);
@@ -104,7 +104,7 @@ namespace quex {
     }
 
     TEMPLATE_IN void
-    Buffer_seek_adr(BUFFER_TYPE* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
+    QuexBuffer_seek_memory_adr(BUFFER_TYPE* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
     {
 #       if      defined (QUEX_OPTION_ACTIVATE_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
@@ -120,14 +120,14 @@ namespace quex {
     }
 
     TEMPLATE_IN CharacterCarrierType
-    Buffer_input_get(BUFFER_TYPE* me)
+    QuexBuffer_input_get(BUFFER_TYPE* me)
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
         return *(me->_input_p); 
     }
 
     TEMPLATE_IN void
-    Buffer_store_last_character_of_lexeme_for_next_run(BUFFER_TYPE* me)
+    QuexBuffer_store_last_character_of_lexeme_for_next_run(BUFFER_TYPE* me)
     { 
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = *(me->_input_p - 1); 
@@ -135,14 +135,14 @@ namespace quex {
     }  
 
     TEMPLATE_IN void
-    Buffer_set_terminating_zero_for_lexeme(BUFFER_TYPE* me)
+    QuexBuffer_set_terminating_zero_for_lexeme(BUFFER_TYPE* me)
     { 
         me->_character_at_lexeme_start = *(me->_input_p); 
         *(me->_input_p) = '\0';
     }
 
     TEMPLATE_IN void
-    Buffer_undo_terminating_zero_for_lexeme(BUFFER_TYPE* me)
+    QuexBuffer_undo_terminating_zero_for_lexeme(BUFFER_TYPE* me)
     {
         // only need to reset, in case that the terminating zero was set
         if( me->_character_at_lexeme_start != (CharacterCarrierType)'\0' ) {  
@@ -152,25 +152,25 @@ namespace quex {
     }
 
     TEMPLATE_IN CharacterCarrierType*
-    Buffer_content_front(BUFFER_TYPE* me)
+    QuexBuffer_content_front(BUFFER_TYPE* me)
     {
         return me->_memory._front + 1;
     }
 
     TEMPLATE_IN CharacterCarrierType*
-    Buffer_content_back(BUFFER_TYPE* me)
+    QuexBuffer_content_back(BUFFER_TYPE* me)
     {
         return me->_memory._back - 1;
     }
 
     TEMPLATE_IN size_t
-    Buffer_content_size(BUFFER_TYPE* me)
+    QuexBuffer_content_size(BUFFER_TYPE* me)
     {
         return QuexBufferMemory_size(&(me->_memory)) - 2;
     }
 
     TEMPLATE_IN void
-    Buffer_end_of_file_set(BUFFER_TYPE* me, CharacterCarrierType* Position)
+    QuexBuffer_end_of_file_set(BUFFER_TYPE* me, CharacterCarrierType* Position)
     {
         __quex_assert(Position > me->_memory._front);
         __quex_assert(Position <= me->_memory._back);
@@ -181,21 +181,21 @@ namespace quex {
     }
 
     TEMPLATE_IN void
-    Buffer_end_of_file_unset(BUFFER_TYPE* buffer)
+    QuexBuffer_end_of_file_unset(BUFFER_TYPE* buffer)
     {
         __quex_assert(buffer->_end_of_file_p <= buffer->_memory._back);
         buffer->_end_of_file_p = 0x0;
     }
 
     TEMPLATE_IN bool 
-    Buffer_is_end_of_file(BUFFER_TYPE* buffer)
+    QuexBuffer_is_end_of_file(BUFFER_TYPE* buffer)
     { 
         __quex_assert(buffer->_input_p != 0x0);
         return buffer->_input_p == buffer->_end_of_file_p;
     }
 
     TEMPLATE_IN bool                  
-    Buffer_is_begin_of_file(BUFFER_TYPE* buffer)
+    QuexBuffer_is_begin_of_file(BUFFER_TYPE* buffer)
     { 
         if     ( buffer->_input_p != buffer->_memory._front )  return false;
         else if( buffer->_content_first_character_index != 0 ) return false;
@@ -203,7 +203,7 @@ namespace quex {
     }
 
     TEMPLATE_IN CharacterCarrierType  
-    Buffer_get_BLC(BUFFER_TYPE* me)
+    QuexBuffer_get_BLC(BUFFER_TYPE* me)
     { 
         /* The buffer limit code can be made buffer specific. However, this has
          * a significant influence on analysis speed */

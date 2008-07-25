@@ -73,29 +73,31 @@ namespace quex {
 #       endif
     };
 
-    TEMPLATE_IN void QuexBuffer_init(BUFFER_TYPE*, 
-                                     CharacterCarrierType* memory_chunk, const size_t Size, 
-                                     CharacterCarrierType  BLC);
+    TEMPLATE_IN void  QuexBuffer_init(BUFFER_TYPE*, 
+                                      CharacterCarrierType* memory_chunk, const size_t Size, 
+                                      CharacterCarrierType  BLC);
 
-    TEMPLATE_IN CharacterCarrierType Buffer_input_get(BUFFER_TYPE*);
-    TEMPLATE_IN void                 Buffer_input_p_increment(BUFFER_TYPE*);
-    TEMPLATE_IN void                 Buffer_input_p_decrement(BUFFER_TYPE*);
-    TEMPLATE_IN void Buffer_mark_lexeme_start(BUFFER_TYPE*);
-    TEMPLATE_IN void Buffer_seek_lexeme_start(BUFFER_TYPE*);
-    TEMPLATE_IN void Buffer_store_last_character_of_lexeme_for_next_run(BUFFER_TYPE*);
-    TEMPLATE_IN CharacterCarrierType* Buffer_content_front(BUFFER_TYPE*);
-    TEMPLATE_IN CharacterCarrierType* Buffer_content_back(BUFFER_TYPE*);
-    TEMPLATE_IN size_t                Buffer_content_size(BUFFER_TYPE*);
-    TEMPLATE_IN QUEX_CHARACTER_POSITION_TYPE Buffer_tell_adr(BUFFER_TYPE*);
-    TEMPLATE_IN void                         Buffer_seek_adr(BUFFER_TYPE*, 
-                                                             QUEX_CHARACTER_POSITION_TYPE Position);
-    TEMPLATE_IN void Buffer_set_terminating_zero_for_lexeme(BUFFER_TYPE*);
-    TEMPLATE_IN void Buffer_undo_terminating_zero_for_lexeme(BUFFER_TYPE*);
-    TEMPLATE_IN void Buffer_end_of_file_set(BUFFER_TYPE*, CharacterCarrierType* Position);
-    TEMPLATE_IN void Buffer_end_of_file_unset(BUFFER_TYPE*);
-    TEMPLATE_IN bool Buffer_is_end_of_file(BUFFER_TYPE*);
-    TEMPLATE_IN bool Buffer_is_begin_of_file(BUFFER_TYPE*);
-    TEMPLATE_IN CharacterCarrierType  Buffer_get_BLC(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType   QuexBuffer_input_get(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_input_p_increment(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_input_p_decrement(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_mark_lexeme_start(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_seek_lexeme_start(BUFFER_TYPE*);
+    TEMPLATE_IN void                   QuexBuffer_store_last_character_of_lexeme_for_next_run(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType*  QuexBuffer_content_front(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType*  QuexBuffer_content_back(BUFFER_TYPE*);
+    TEMPLATE_IN size_t                 QuexBuffer_content_size(BUFFER_TYPE*);
+    TEMPLATE_IN CharacterCarrierType   QuexBuffer_get_BLC(BUFFER_TYPE*);
+
+    TEMPLATE_IN QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(BUFFER_TYPE*);
+    TEMPLATE_IN void                          QuexBuffer_seek_memory_adr(BUFFER_TYPE*, 
+                                                                         QUEX_CHARACTER_POSITION_TYPE Position);
+    
+    TEMPLATE_IN void  QuexBuffer_set_terminating_zero_for_lexeme(BUFFER_TYPE*);
+    TEMPLATE_IN void  QuexBuffer_undo_terminating_zero_for_lexeme(BUFFER_TYPE*);
+    TEMPLATE_IN void  QuexBuffer_end_of_file_set(BUFFER_TYPE*, CharacterCarrierType* Position);
+    TEMPLATE_IN void  QuexBuffer_end_of_file_unset(BUFFER_TYPE*);
+    TEMPLATE_IN bool  QuexBuffer_is_end_of_file(BUFFER_TYPE*);
+    TEMPLATE_IN bool  QuexBuffer_is_begin_of_file(BUFFER_TYPE*);
 
 
     TEMPLATIFIER struct QuexBufferFiller {

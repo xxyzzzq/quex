@@ -73,7 +73,7 @@ namespace quex {
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
         __quex_assert(me->client != 0x0);
         BUFFER_TYPE*  buffer = me->client;
-        size_t        ContentSize = Buffer_content_size(buffer);
+        size_t        ContentSize = QuexBuffer_content_size(buffer);
 
         // PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
         //          as returned by 'get_forward()'. Its task is to load new content into the 
@@ -156,7 +156,7 @@ namespace quex {
         //     of the character coding that is used. Thus, it is safe to compute the position at the
         //     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.
         const size_t CharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
-                                                    Buffer_content_size(buffer));
+                                                    QuexBuffer_content_size(buffer));
         __quex_assert( me->tell_character_index(me) == CharacterIndexAtEnd );
     }
 
@@ -186,8 +186,8 @@ namespace quex {
         // (*) Copy fallback region
         //     If there is no 'overlap' from source and drain than the faster memcpy() can 
         //     used instead of memmove().
-        CharacterCarrierType*  source = Buffer_content_back(me->client) - FallBackN + 1; // end of content - fallback
-        CharacterCarrierType*  drain  = Buffer_content_front(me->client);       
+        CharacterCarrierType*  source = QuexBuffer_content_back(me->client) - FallBackN + 1; // end of content - fallback
+        CharacterCarrierType*  drain  = QuexBuffer_content_front(me->client);       
         if( drain + FallBackN >= source  ) {
             std::memmove(drain, source, FallBackN * sizeof(CharacterCarrierType));
         } else { 
@@ -203,14 +203,14 @@ namespace quex {
                                               const size_t FallBackN, 
                                               const size_t Distance_LexemeStart_to_InputP)
     {
-        const size_t          ContentSize  = Buffer_content_size(buffer);
-        CharacterCarrierType* ContentFront = Buffer_content_front(buffer);
+        const size_t          ContentSize  = QuexBuffer_content_size(buffer);
+        CharacterCarrierType* ContentFront = QuexBuffer_content_front(buffer);
 
         // (*) If end of file has been reached, then the 'end of file' pointer needs to be set
         if( LoadedN != DesiredLoadN ) 
-            Buffer_end_of_file_set(buffer, ContentFront + FallBackN + LoadedN);
+            QuexBuffer_end_of_file_set(buffer, ContentFront + FallBackN + LoadedN);
         else
-            Buffer_end_of_file_unset(buffer);
+            QuexBuffer_end_of_file_unset(buffer);
 
         // (*) Character index of the first character in the content of the buffer
         //     increases by content size - fallback indenpendently how many bytes
@@ -272,8 +272,8 @@ namespace quex {
 
         __quex_assert(me->client != 0x0);
         BUFFER_TYPE* buffer = me->client;
-        const size_t          ContentSize  = Buffer_content_size(buffer);
-        CharacterCarrierType* ContentFront = Buffer_content_front(buffer);
+        const size_t          ContentSize  = QuexBuffer_content_size(buffer);
+        CharacterCarrierType* ContentFront = QuexBuffer_content_front(buffer);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "BACKWARD(entry)");
         //QUEX_BUFFER_ASSERT_CONSISTENCY();
@@ -336,9 +336,9 @@ namespace quex {
         __quex_assert(me != 0x0);
         __quex_assert(me->client != 0x0);
         BUFFER_TYPE* buffer = me->client;
-        const size_t          ContentSize  = Buffer_content_size(buffer);
-        CharacterCarrierType* ContentFront = Buffer_content_front(buffer);
-        CharacterCarrierType* ContentBack  = Buffer_content_back(buffer);
+        const size_t          ContentSize  = QuexBuffer_content_size(buffer);
+        CharacterCarrierType* ContentFront = QuexBuffer_content_front(buffer);
+        CharacterCarrierType* ContentBack  = QuexBuffer_content_back(buffer);
 
         //     We need to make sure, that the lexeme start pointer remains inside the
         //     buffer, so that we do not loose the reference. From current_p == buffer begin
@@ -394,9 +394,9 @@ namespace quex {
         if( buffer->_end_of_file_p ) {
             CharacterCarrierType*   NewEndOfFileP = buffer->_end_of_file_p + BackwardDistance;
             if( NewEndOfFileP <= buffer->_memory._back ) 
-                Buffer_end_of_file_set(buffer, NewEndOfFileP);
+                QuexBuffer_end_of_file_set(buffer, NewEndOfFileP);
             else  
-                Buffer_end_of_file_unset(buffer);
+                QuexBuffer_end_of_file_unset(buffer);
         }
         // -- character index of begin of buffer = where we started reading new content
         buffer->_content_first_character_index -= BackwardDistance;
