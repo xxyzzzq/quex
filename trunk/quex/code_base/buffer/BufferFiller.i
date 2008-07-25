@@ -15,14 +15,14 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #    define TEMPLATE_IN    template <class CharacterCarrierType> inline
 
-#    define BUFFER_TYPE               quex::QuexBufferCore<CharacterCarrierType>
+#    define BUFFER_TYPE               quex::QuexBuffer<CharacterCarrierType>
 #    define BUFFER_FILLER_TYPE        quex::QuexBufferFiller<CharacterCarrierType>
     
 #else
 #    define CharacterCarrierType QUEX_CHARACTER_TYPE  
 
 #    define TEMPLATE_IN             /* no template */ static
-#    define BUFFER_TYPE             QuexBufferCore
+#    define BUFFER_TYPE             QuexBuffer
 #    define BUFFER_FILLER_TYPE      QuexBufferFiller
 
 #endif
