@@ -1,27 +1,41 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__
 
-#include<cstdlib>
+#include<quex/code_base/asserts>
 #include<quex/code_base/compatibility/inttypes.h>
+#include<quex/code_base/compatibility/stdbool.h>
 
 #ifndef QUEX_TOKEN_ID_TYPE
 #   define QUEX_TOKEN_ID_TYPE  uint32_t
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+#   include <cstring>  // gets: memmove, memcpy
+#   include <cstdio>   // gets: fprintf
+#   include <cstdlib>
+#   define __QUEX_STD_memmove  std::memmove
+#   define __QUEX_STD_memcpy   std::memcpy
+#   define __QUEX_STD_memset   std::memset
+#   define __QUEX_STD_fprintf  std::fprintf
+
 #   define QUEX_INLINE_KEYWORD     inline
     /* Input handle type is determined automagically via templates */
 #else
+#   include <string.h>  // gets: memmove, memcpy
+#   include <stdio.h>   // gets: fprintf
+#   include <stdlib.h>
+#   define __QUEX_STD_memmove  memmove
+#   define __QUEX_STD_memcpy   memcpy
+#   define __QUEX_STD_memset   memset
+#   define __QUEX_STD_fprintf  fprintf
+
 #   define QUEX_INLINE_KEYWORD     static
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
-#   ifndef QUEX_CHARACTER_TYPE
-#      define QUEX_CHARACTER_TYPE  /* inttypes' */ uint8_t   
-#   endif
 #endif
 
 #ifndef  QUEX_SETTING_BUFFER_LIMIT_CODE
-#   define  QUEX_SETTING_BUFFER_LIMIT_CODE  0x0
+#   define  QUEX_SETTING_BUFFER_LIMIT_CODE  (QUEX_CHARACTER_TYPE)(0x0)
 #endif
 
 /* Detect the compiler */
@@ -59,4 +73,4 @@
     typedef QUEX_TOKEN_ID_TYPE   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
 #endif
 
-#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS_H__
+#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__

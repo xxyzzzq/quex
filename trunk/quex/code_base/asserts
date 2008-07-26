@@ -6,7 +6,11 @@
 #   ifdef  QUEX_OPTION_ASSERTS_DISABLED 
 #      undef QUEX_OPTION_ACTIVATE_ASSERTS
 #   else
-#      include <cassert>
+#      if ! defined (__QUEX_SETTING_PLAIN_C)
+#          include <cassert>
+#      else
+#          include <assert.h>
+#      endif
 #      define  __quex_assert(X)   assert(X)
 #   endif
 #else

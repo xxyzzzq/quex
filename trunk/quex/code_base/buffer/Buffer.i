@@ -3,53 +3,48 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-#   include <cstring>  // gets memmset()
-#endif
 #include <quex/code_base/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer_debug.i>
-#include <quex/code_base/temporary_macros_on>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define __ALLOCATE_MEMORY(N)   (new CharacterCarrierType[(size_t)N])
+#    define __ALLOCATE_MEMORY(N)   (new QUEX_CHARACTER_TYPE[(size_t)N])
 #else
-#    define __ALLOCATE_MEMORY(N)   (CharacterCarrierType*)malloc(sizeof(CharacterCarrierType)*(size_t)N)
+#    define __ALLOCATE_MEMORY(N)   (QUEX_CHARACTER_TYPE*)malloc(sizeof(QUEX_CHARACTER_TYPE)*(size_t)N)
 #endif
        
-
-    TEMPLATE_IN void 
-    QuexBufferMemory_setup(BUFFER_MEMORY_TYPE* bmem, CharacterCarrierType* memory, size_t Size, 
-                       bool ExternalOwnerF, CharacterCarrierType BLC) 
+    QUEX_INLINE_KEYWORD void 
+    QuexBufferMemory_setup(QuexBufferMemory* me, 
+                           QUEX_CHARACTER_TYPE* memory, size_t Size, 
+                           bool ExternalOwnerF) 
     {
-        bmem->_front    = memory;
-        bmem->_back     = memory + (Size - 1);
+        me->_front    = memory;
+        me->_back     = memory + (Size - 1);
 #       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-        std::memset(bmem->_front, 0, Size);
+        __QUEX_STD_memset(me->_front, 0, Size);
 #       endif
-        *(bmem->_front) = BLC; // buffer limit code
-        *(bmem->_back)  = BLC; // buffer limit code
-        bmem->_external_owner_f = ExternalOwnerF;
+        *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        me->_external_owner_f = ExternalOwnerF;
     }
 
 
-    TEMPLATE_IN size_t          
-    QuexBufferMemory_size(BUFFER_MEMORY_TYPE* bmem)
-    { return bmem->_back - bmem->_front + 1; }
+    QUEX_INLINE_KEYWORD size_t          
+    QuexBufferMemory_size(QuexBufferMemory* me)
+    { return me->_back - me->_front + 1; }
 
-    TEMPLATE_IN void
-    QuexBuffer_init(BUFFER_TYPE*          me, 
-                    CharacterCarrierType* memory_chunk, const size_t Size, 
-                    CharacterCarrierType  BLC)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_init(QuexBuffer*          me, 
+                    QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size)
     {
         if( memory_chunk != 0x0 ) 
-            QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true, BLC);      
+            QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true);      
         else 
-            QuexBufferMemory_setup(&(me->_memory), __ALLOCATE_MEMORY(Size), Size, false, BLC);      
+            QuexBufferMemory_setup(&(me->_memory), __ALLOCATE_MEMORY(Size), Size, false);      
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;
@@ -66,32 +61,32 @@ namespace quex {
     }
 
 
-    TEMPLATE_IN void
-    QuexBuffer_input_p_increment(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_input_p_increment(QuexBuffer* buffer)
     { 
         ++(buffer->_input_p); 
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_input_p_decrement(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_input_p_decrement(QuexBuffer* buffer)
     { 
         --(buffer->_input_p); 
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_mark_lexeme_start(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_mark_lexeme_start(QuexBuffer* buffer)
     { 
         buffer->_lexeme_start_p = buffer->_input_p; 
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_seek_lexeme_start(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_seek_lexeme_start(QuexBuffer* buffer)
     { 
         buffer->_input_p = buffer->_lexeme_start_p;
     }
 
-    TEMPLATE_IN QUEX_CHARACTER_POSITION_TYPE
-    QuexBuffer_tell_memory_adr(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD QUEX_CHARACTER_POSITION_TYPE
+    QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
         // QUEX_BUFFER_ASSERT_CONSISTENCY();
         QUEX_DEBUG_PRINT(buffer, "TELL: %i", (int)buffer->_input_p);
@@ -103,8 +98,8 @@ namespace quex {
 #       endif
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_seek_memory_adr(BUFFER_TYPE* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_seek_memory_adr(QuexBuffer* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
     {
 #       if      defined (QUEX_OPTION_ACTIVATE_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
@@ -119,58 +114,58 @@ namespace quex {
         // QUEX_BUFFER_ASSERT_CONSISTENCY();
     }
 
-    TEMPLATE_IN CharacterCarrierType
-    QuexBuffer_input_get(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE
+    QuexBuffer_input_get(QuexBuffer* me)
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
         return *(me->_input_p); 
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_store_last_character_of_lexeme_for_next_run(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_store_last_character_of_lexeme_for_next_run(QuexBuffer* me)
     { 
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = *(me->_input_p - 1); 
 #       endif
     }  
 
-    TEMPLATE_IN void
-    QuexBuffer_set_terminating_zero_for_lexeme(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer* me)
     { 
         me->_character_at_lexeme_start = *(me->_input_p); 
         *(me->_input_p) = '\0';
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_undo_terminating_zero_for_lexeme(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer* me)
     {
         // only need to reset, in case that the terminating zero was set
-        if( me->_character_at_lexeme_start != (CharacterCarrierType)'\0' ) {  
+        if( me->_character_at_lexeme_start != (QUEX_CHARACTER_TYPE)'\0' ) {  
             *(me->_input_p) = me->_character_at_lexeme_start;                  
-            me->_character_at_lexeme_start = (CharacterCarrierType)'\0';     
+            me->_character_at_lexeme_start = (QUEX_CHARACTER_TYPE)'\0';     
         }
     }
 
-    TEMPLATE_IN CharacterCarrierType*
-    QuexBuffer_content_front(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE*
+    QuexBuffer_content_front(QuexBuffer* me)
     {
         return me->_memory._front + 1;
     }
 
-    TEMPLATE_IN CharacterCarrierType*
-    QuexBuffer_content_back(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE*
+    QuexBuffer_content_back(QuexBuffer* me)
     {
         return me->_memory._back - 1;
     }
 
-    TEMPLATE_IN size_t
-    QuexBuffer_content_size(BUFFER_TYPE* me)
+    QUEX_INLINE_KEYWORD size_t
+    QuexBuffer_content_size(QuexBuffer* me)
     {
         return QuexBufferMemory_size(&(me->_memory)) - 2;
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_end_of_file_set(BUFFER_TYPE* me, CharacterCarrierType* Position)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_end_of_file_set(QuexBuffer* me, QUEX_CHARACTER_TYPE* Position)
     {
         __quex_assert(Position > me->_memory._front);
         __quex_assert(Position <= me->_memory._back);
@@ -180,34 +175,26 @@ namespace quex {
         *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
-    TEMPLATE_IN void
-    QuexBuffer_end_of_file_unset(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD void
+    QuexBuffer_end_of_file_unset(QuexBuffer* buffer)
     {
         __quex_assert(buffer->_end_of_file_p <= buffer->_memory._back);
         buffer->_end_of_file_p = 0x0;
     }
 
-    TEMPLATE_IN bool 
-    QuexBuffer_is_end_of_file(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD bool 
+    QuexBuffer_is_end_of_file(QuexBuffer* buffer)
     { 
         __quex_assert(buffer->_input_p != 0x0);
         return buffer->_input_p == buffer->_end_of_file_p;
     }
 
-    TEMPLATE_IN bool                  
-    QuexBuffer_is_begin_of_file(BUFFER_TYPE* buffer)
+    QUEX_INLINE_KEYWORD bool                  
+    QuexBuffer_is_begin_of_file(QuexBuffer* buffer)
     { 
         if     ( buffer->_input_p != buffer->_memory._front )  return false;
         else if( buffer->_content_first_character_index != 0 ) return false;
         return true;
-    }
-
-    TEMPLATE_IN CharacterCarrierType  
-    QuexBuffer_get_BLC(BUFFER_TYPE* me)
-    { 
-        /* The buffer limit code can be made buffer specific. However, this has
-         * a significant influence on analysis speed */
-        return QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
 #   undef __ALLOCATE_MEMORY
@@ -215,9 +202,6 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
-
-
-#include <quex/code_base/temporary_macros_off>
 
 #endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 

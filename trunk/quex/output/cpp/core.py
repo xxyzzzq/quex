@@ -178,7 +178,7 @@ def write_mode_class_implementation(Modes, Setup):
 
     mode_objects_txt = ""    
     for mode_name in Modes:
-        mode_objects_txt += "        quex_mode  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
+        mode_objects_txt += "        QuexMode  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
 
     txt += "namespace quex {\n"
     txt += mode_objects_txt
@@ -275,16 +275,16 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.on_entry_code_fragments() != []:
             txt += __mode_functions(prolog, "void", ["on_entry"], 
-                                    LexerClassName + "*, const quex_mode*")
+                                    LexerClassName + "*, const QuexMode*")
 
         if mode.on_exit_code_fragments() != []:
             txt += __mode_functions(prolog, "void", ["on_exit"], 
-                                    LexerClassName + "*, const quex_mode*")
+                                    LexerClassName + "*, const QuexMode*")
 
     txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     for mode in Modes:
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
-                                "const quex_mode*")
+                                "const QuexMode*")
         
     txt += "#endif\n"
     txt += "\n"
@@ -305,7 +305,7 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
 
     members_txt = ""    
     for mode in Modes:
-        members_txt += "        static quex_mode  %s;\n" % mode.name
+        members_txt += "        static QuexMode  %s;\n" % mode.name
 
     # constructor code
     txt = ""

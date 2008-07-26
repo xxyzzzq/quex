@@ -137,6 +137,7 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
 namespace quex {
+    template <class QUEX_CHARACTER_TYPE> class Quex$$LEXER_CLASS_NAME$$;
     class $$LEXER_CLASS_NAME$$;
 
 $$LEX_ID_DEFINITIONS$$
@@ -163,15 +164,6 @@ typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;
 //      e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
 const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "$$CORE_ENGINE_CHARACTER_CODING$$";
 
-// NOTE: The original design of the core engine was independent of quex's global
-//       mode oriented design. The author thinks this is a good idea, because then
-//       the analyzer functions can still used easily in isolation from the rest
-//       of the engine. They can be a starting point for an even more improved
-//       post-hand coded lexical analyzer or for embedded systems where memory
-//       resrictions are tough. THUS: We communicate the class name to the analyzer
-//       functions via a macro and NOT via traits or anything like that.
-typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
-
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
@@ -183,21 +175,23 @@ typedef quex::$$LEXER_CLASS_NAME$$  QUEX_LEXER_CLASS;
 #include<quex/code_base/buffer/Buffer>
 
 // Quex/User
-#define CLASS                            $$LEXER_CLASS_NAME$$
+#define CLASS                            Quex$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>
+#define __CLASS                          Quex$$LEXER_CLASS_NAME$$
 #define __QUEX_SETTING_TOKEN_CLASS_NAME  $$TOKEN_CLASS$$
 
+#include <quex/code_base/template/QuexMode>
+
+#include <quex/code_base/template/Analyser>
+
 #include <quex/code_base/template/Counter>
-
 namespace quex { 
-    class QuexMode;
-
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    typedef CounterWithIndentation  CounterType;
+    typedef CounterWithIndentation CounterType;
 #elif    defined(QUEX_OPTION_LINE_NUMBER_COUNTING) \
        | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-    typedef Counter                 CounterType;
+    typedef Counter                CounterType;
 #else
-    typedef CounterPseudo           CounterType;
+    typedef CounterPseudo          CounterType;
 #endif
 }
 
@@ -260,7 +254,6 @@ $$LEXER_DERIVED_CLASS_DECL$$
 $$USER_DEFINED_HEADER$$
 // :END
 
-#include <quex/code_base/template/QuexMode>
 namespace quex {
 
 #   include <quex/code_base/temporary_macros_on>
@@ -275,19 +268,19 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
      *
      *                      __$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>
      */
-    template <class CharacterCarrierType>
-    class __$$LEXER_CLASS_NAME$$ :
-        protected QuexAnalyser<CharacterCarrierType> {
+    template <class QUEX_CHARACTER_TYPE>
+    class __CLASS :
+        protected QuexAnalyser<QUEX_CHARACTER_TYPE> {
 
-        /* DISABLED */ $$LEXER_CLASS_NAME$$();
-        /* DISABLED */ $$LEXER_CLASS_NAME$$(const $$LEXER_CLASS_NAME$$&);
+        /* DISABLED */ __CLASS();
+        /* DISABLED */ __CLASS(const __CLASS&);
 
     public:
-        $$LEXER_CLASS_NAME$$(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
-        $$LEXER_CLASS_NAME$$(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
-        $$LEXER_CLASS_NAME$$(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0);
+        __CLASS(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
+        __CLASS(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
+        __CLASS(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0);
 
-        virtual ~$$LEXER_CLASS_NAME$$();
+        virtual ~__CLASS();
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
@@ -300,31 +293,30 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) Mode handling
         //
         //     -- modes: read access
-        QUEX_MODE_TYPE&    mode();
+        QuexMode&    mode();
         const int     mode_id() const;
         const char*   mode_name() const;
         //
         //     -- modes: changing lexical analysis mode
         void        set_mode_brutally(const int        LexerMode);
-        void        set_mode_brutally(const QUEX_MODE_TYPE& Mode);
+        void        set_mode_brutally(const QuexMode& Mode);
         //
         void        operator<<(const int MODE_ID);               // not to be used in concatination
-        void        operator<<(/* NOT const*/ QUEX_MODE_TYPE& Mode);  // not to be used in concatination
+        void        operator<<(/* NOT const*/ QuexMode& Mode);  // not to be used in concatination
         //
         void        pop_mode();
         void        pop_drop_mode();
-        void        push_mode(QUEX_MODE_TYPE& new_mode);
+        void        push_mode(QuexMode& new_mode);
         //
-        void        enter_mode(/* NOT const*/ QUEX_MODE_TYPE& TargetMode);
+        void        enter_mode(/* NOT const*/ QuexMode& TargetMode);
         //
         //     -- map: mode id to mode and vice versa
-        QUEX_MODE_TYPE&  map_mode_id_to_mode(const int        ModeID);       
-        const int   map_mode_to_mode_id(const QUEX_MODE_TYPE& Mode) const;
+        QuexMode&  map_mode_id_to_mode(const int        ModeID);       
+        const int   map_mode_to_mode_id(const QuexMode& Mode) const;
 
         // (*) buffer handling
-        Buffer   buffer;
         template <class InputHandle> 
-        quex::QuexBuffer<CharacterCarrierType>* create_buffer(InputHandle* input_handle, 
+        quex::QuexBuffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
                                                          const char*  IConvInputCodingName = 0x0);
           
         // (*) Token sending
@@ -369,7 +361,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
         //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
         //      to quex's start mode.)
-        QUEX_MODE_TYPE*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
+        QuexMode*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
 
     public:
 $$MODE_OBJECT_MEMBERS$$
@@ -381,8 +373,8 @@ $$MODE_OBJECT_MEMBERS$$
         //    CONTINUE. In this case, it needs to be checked wether the return has
         //    to be forced. The caller, can then call the newly setup analyzer function
         //    from where the current one has been called --- see get_token().
-        QUEX_MODE_TYPE*   __current_mode_p;
-        QUEX_MODE_TYPE*   __previous_mode_p;
+        QuexMode*   __current_mode_p;
+        QuexMode*   __previous_mode_p;
         // -- with the quex core engine(s) each mode has a dedicated analyser function.
         //    (with the flex core engine, modes were modelled as start conditions
         //     of a single engine)
@@ -391,7 +383,7 @@ $$MODE_OBJECT_MEMBERS$$
         //
     private:
         // (*) mode stack allows for pushing and popping of lexical analysis modes
-        std::vector<QUEX_MODE_TYPE*>   _mode_stack;
+        std::vector<QuexMode*>   _mode_stack;
 
         // (*) The Token Queue ___________________________________________________________
         //
@@ -417,7 +409,7 @@ $$MODE_OBJECT_MEMBERS$$
 
     public:
 #       ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        IncludeStack  include_stack;
+        IncludeStack<QUEX_CHARACTER_TYPE>  include_stack;
 #       endif 
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
@@ -429,7 +421,7 @@ $$MODE_OBJECT_MEMBERS$$
         Accumulator        accumulator;
 #       endif
     private:
-        CounterType        counter;
+        CounterType<QUEX_CHARACTER_TYPE>        counter;
     public:
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         PostCategorizer    post_categorizer;
@@ -443,11 +435,11 @@ $$LEXER_CLASS_FRIENDS$$
         // (*) User's Lexer Class Body Extenstion ________________________________________
 $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        friend class       IncludeStack;
+        friend class       IncludeStack<QUEX_CHARACTER_TYPE>;
 #       endif
 
     private:
-        void __debug_print_transition(QUEX_MODE_TYPE* Source, QUEX_MODE_TYPE* Target);
+        void __debug_print_transition(QuexMode* Source, QuexMode* Target);
 
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleP> 
@@ -464,9 +456,10 @@ $$CLASS_BODY_EXTENSION$$
     };
  
 #   ifdef QUEX_CHARACTER_TYPE
-    typedef $$LEXER_CLASS_NAME$$   __$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>;
+    typedef $$LEXER_CLASS_NAME$$ Quex$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>;
 #   endif
 
+    template <class QUEX_CHARACTER_TYPE>
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
     {
@@ -475,11 +468,8 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "!! This is very good, in a way that anything unexpected will cause a comment\n";
         std::cout << "!! and a program exit. However, the paranoia is a heavy load on speed performance!\n";
         std::cout << "!! To disable it, please, compile with the following compile option:\n";
-        std::cout << "!! \"-DQUEX_OPTION_ASSERTS_DISABLED\".\n"
+        std::cout << "!! \"-DQUEX_OPTION_ASSERTS_DISABLED\".\n";
 #       endif
-
-        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
-        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
 
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new TokenQueue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
@@ -491,6 +481,13 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
 
+        QuexAnalyser_init((QuexAnalyser<QUEX_CHARACTER_TYPE>*)this, 
+                          __current_mode_p->current_mode_analyser_function_p,
+                          /* allocate yourself */ 0x0, const size_t QUEX_SETTING_BUFFER_SIZE, 
+                          /* buffer limit code */ 0x0,
+                          buffer_filler)
+
+
         __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
         //                                     // pattern actions
         __continue_analysis_after_adapting_mode_function_p_f = false;
@@ -498,7 +495,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 $$CONSTRUCTOR_EXTENSTION$$
     }   
 
-    inline const char* 
+    template <QUEX_CHARACTER_TYPE> inline const char* 
     CLASS::version() const
     { 
         return "$$LEXER_CLASS_NAME$$: Version $$LEXER_BUILD_VERSION$$. Date $$LEXER_BUILD_DATE$$\n"

@@ -77,7 +77,7 @@ IncludeStack::__push(InputHandle*         new_input_handle_p,
     _the_lexer->counter.init();
 
     // (2) initializing the new state of the lexer for reading the new input file/stream
-    QUEX_CORE_BUFFER_TYPE* tmp = _the_lexer->create_buffer(new_input_handle_p, IConvInputCodingName);
+    QUEX_CORE_QuexBuffer* tmp = _the_lexer->create_buffer(new_input_handle_p, IConvInputCodingName);
     QUEX_CORE_ANALYSER_STRUCT_init(_the_lexer, 0, tmp, StartModeAnalyzerFunction);
 }   
 

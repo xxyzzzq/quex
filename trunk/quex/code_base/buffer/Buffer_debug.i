@@ -5,14 +5,12 @@
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
 
-#include <iostream>
-#include <quex/code_base/temporary_macros_on>
+#include <quex/code_base/definitions>
 
 #if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
 #   define QUEX_DEBUG_PRINT(Buffer, FormatStr, ...)       /* empty */
 #   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)      /* empty */
 #else
-#   include<cstdio>
 #   define __QUEX_PRINT_SOURCE_POSITION(Buffer)                       \
           std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, \
                        (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
@@ -38,18 +36,19 @@
             QUEX_DEBUG_PRINT(Filler->client, "LOAD BUFFER " Msg); \
             BufferFiller_x_show_content(Filler); /* empty */
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
+#    if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
-#endif
-    TEMPLATE_IN void BufferFiller_x_show_content(BUFFER_FILLER_TYPE* me); 
-    TEMPLATE_IN void BufferFiller_show_brief_content(BUFFER_FILLER_TYPE* me);
-    TEMPLATE_IN void BufferFiller_show_content(BUFFER_FILLER_TYPE* me); 
+#    endif
 
-    TEMPLATE_IN void 
-    BufferFiller_show_brief_content(BUFFER_FILLER_TYPE* me) 
+    QUEX_INLINE_KEYWORD void BufferFiller_x_show_content(QuexBufferFiller* me); 
+    QUEX_INLINE_KEYWORD void BufferFiller_show_brief_content(QuexBufferFiller* me);
+    QUEX_INLINE_KEYWORD void BufferFiller_show_content(QuexBufferFiller* me); 
+
+    QUEX_INLINE_KEYWORD void 
+    BufferFiller_show_brief_content(QuexBufferFiller* me) 
     {
         __quex_assert(me != 0x0);
-        BUFFER_TYPE* buffer = me->client;
+        QuexBuffer* buffer = me->client;
         __quex_assert(buffer != 0x0);
         std::printf("Begin of Buffer Character Index: %i\n", (int)buffer->_content_first_character_index);
         std::printf("End   of Buffer Character Index: %i\n", (int)me->tell_character_index(me));
@@ -58,44 +57,44 @@ namespace quex {
         std::printf("_lexeme_start_p (offset) = %08X\n",     (int)(buffer->_lexeme_start_p - buffer->_memory._front));
     }
 
-    TEMPLATE_IN void 
-    BufferFiller_x_show_content(BUFFER_FILLER_TYPE* me) 
+    QUEX_INLINE_KEYWORD void 
+    BufferFiller_x_show_content(QuexBufferFiller* me) 
     {
         BufferFiller_show_content(me);
         BufferFiller_show_brief_content(me);
     }
 
-    TEMPLATE_IN CharacterCarrierType
-    __BufferFiller_get_border_char(BUFFER_TYPE* buffer, const CharacterCarrierType* C) 
+    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE
+    __BufferFiller_get_border_char(QuexBuffer* buffer, const QUEX_CHARACTER_TYPE* C) 
     {
         if     ( *C != QUEX_SETTING_BUFFER_LIMIT_CODE )   
-            return (CharacterCarrierType)'?'; 
+            return (QUEX_CHARACTER_TYPE)'?'; 
         else if( buffer->_end_of_file_p == C )       
-            return (CharacterCarrierType)']';
+            return (QUEX_CHARACTER_TYPE)']';
         else if( buffer->_content_first_character_index == 0 && buffer->_memory._front == C )     
-            return (CharacterCarrierType)'[';
+            return (QUEX_CHARACTER_TYPE)'[';
         else
-            return (CharacterCarrierType)'|';
+            return (QUEX_CHARACTER_TYPE)'|';
     }
 
     // Do not forget to include <iostream> before this header when doing those unit tests
     // which are using this function.
-    TEMPLATE_IN void  
-    BufferFiller_show_content(BUFFER_FILLER_TYPE* me) 
+    QUEX_INLINE_KEYWORD void  
+    BufferFiller_show_content(QuexBufferFiller* me) 
     {
         __quex_assert(me != 0x0);
-        BUFFER_TYPE* buffer = me->client;
+        QuexBuffer* buffer = me->client;
         __quex_assert(buffer != 0x0);
         // NOTE: If the limiting char needs to be replaced temporarily by
         //       a terminating zero.
         // NOTE: This is a **simple** printing function for unit testing and debugging
         //       it is thought to print only ASCII characters (i.e. code points < 0xFF)
         int                    covered_char = 0xFFFF;
-        CharacterCarrierType*  end_p = 0x0;
+        QUEX_CHARACTER_TYPE*  end_p = 0x0;
         const size_t           ContentSize  = QuexBuffer_content_size(buffer);
-        CharacterCarrierType*  ContentFront = QuexBuffer_content_front(buffer);
-        CharacterCarrierType*  BufferFront  = buffer->_memory._front;
-        CharacterCarrierType*  BufferBack   = buffer->_memory._back;
+        QUEX_CHARACTER_TYPE*  ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;
+        QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
 
         for(end_p = ContentFront; end_p <= BufferBack; ++end_p) {
             if( end_p == buffer->_end_of_file_p || *end_p == QUEX_SETTING_BUFFER_LIMIT_CODE ) { break; }
@@ -132,7 +131,7 @@ namespace quex {
         // std::cout << " = 0x" << std::hex << int(*buffer->_input_p) << std::dec 
         std::cout << std::endl;
         std::cout << "|" << __BufferFiller_get_border_char(me->client, BufferFront);
-        for(CharacterCarrierType* iterator = ContentFront; iterator != end_p; ++iterator) {
+        for(QUEX_CHARACTER_TYPE* iterator = ContentFront; iterator != end_p; ++iterator) {
             std::cout << *iterator;
         }
         std::cout << __BufferFiller_get_border_char(me->client, end_p);
@@ -143,11 +142,10 @@ namespace quex {
         std::cout << "|\n";
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
-#endif 
+#   endif 
 
-#endif // __QUEX_OPTION_UNIT_TEST
+#endif  // __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS 
 
-#include <quex/code_base/temporary_macros_off>
 #endif // __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_

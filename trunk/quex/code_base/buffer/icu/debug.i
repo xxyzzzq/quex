@@ -14,11 +14,11 @@
 
 #else 
 
-#define TEMPLATE_IN  template<class InputHandleType, class CharacterCarrierType>
-#define CLASS        fixed_size_character_stream_iconv<InputHandleType, CharacterCarrierType>
+#define QUEX_INLINE_KEYWORD  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
+#define CLASS        fixed_size_character_stream_iconv<QUEX_CHARACTER_TYPE, QUEX_CHARACTER_TYPE>
 
 namespace quex {
-    TEMPLATE_IN void 
+    QUEX_INLINE_KEYWORD void 
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* FromCoding, const char* ToCoding,
                                                                      iconv_t IconvResult)
         {
@@ -37,14 +37,14 @@ namespace quex {
             }
         }
 
-    TEMPLATE_IN void
+    QUEX_INLINE_KEYWORD void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(size_t LoadedByteN)      
         {
             std::cout << "(*) loaded bytes = " << LoadedByteN << std::endl;  
             raw_buffer.print("raw buffer");
         }
 
-    TEMPLATE_IN void
+    QUEX_INLINE_KEYWORD void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(size_t Report)                             
         {
             std::cout << "(*) converted\n";                                                     
@@ -66,14 +66,14 @@ namespace quex {
             }
         }
 
-    TEMPLATE_IN void
+    QUEX_INLINE_KEYWORD void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(CLASS::buffer_info* user_buffer)                  
         {
             raw_buffer.print("raw buffer");                                                  
             user_buffer->print("user buffer", user_buffer->position - user_buffer->begin);
         }
 
-    TEMPLATE_IN void 
+    QUEX_INLINE_KEYWORD void 
         CLASS::buffer_info::print(const char* name, int until_idx /* = -1*/) 
         {
             if( until_idx == -1 ) until_idx = size;
@@ -94,7 +94,7 @@ namespace quex {
         }
 }
 #undef CLASS
-#undef TEMPLATE_IN
+#undef QUEX_INLINE_KEYWORD
 
 #endif
 
