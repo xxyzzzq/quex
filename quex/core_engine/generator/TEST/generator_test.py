@@ -18,13 +18,8 @@ def action(PatternName):
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
-    txt += "#ifndef __QUEX_SETTING_PLAIN_C\n"
-    if   "->1" in PatternName: txt += "me->current_analyser_function = Mr_UnitTest_analyser_function<char>;\n"
-    elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function<char>;\n"
-    txt += "#else\n"
     if   "->1" in PatternName: txt += "me->current_analyser_function = Mr_UnitTest_analyser_function;\n"
     elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function;\n"
-    txt += "#endif\n"
 
     if "CONTINUE" in PatternName: txt += ""
     elif "STOP" in PatternName:   txt += "return 0;"
@@ -40,15 +35,11 @@ typedef int QUEX_TOKEN_ID_TYPE;
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/template/Analyser>
-#if defined (__QUEX_SETTING_PLAIN_C)
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyser* me);
-    static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
-#else
-    template<class CharacterCarrierType> inline
-    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(quex::QuexAnalyser<CharacterCarrierType>* me);
-    template<class CharacterCarrierType> inline 
-    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(quex::QuexAnalyser<CharacterCarrierType>* me);
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+    using namespace quex;
 #endif
+static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyser* me);
+static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
 """
 
 test_program_common = """
@@ -64,18 +55,18 @@ test_program_common = """
         using namespace std;
         using namespace quex;
 
-        QuexAnalyser<char> lexer_state;
-        int                       success_f = 0;
+        QuexAnalyser lexer_state;
+        int          success_f = 0;
         //
-        istringstream                                 istr("$$TEST_STRING$$");
-        QuexBufferFiller_Plain<istringstream, char>   buffer_filler;
-        const size_t                                  MemorySize = $$BUFFER_SIZE$$;
+        istringstream                           istr("$$TEST_STRING$$");
+        QuexBufferFiller_Plain<istringstream>   buffer_filler;
+        const size_t                            MemorySize = $$BUFFER_SIZE$$;
 
         BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr);
 
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function<char>, 
-                                 (char*)0x0, MemorySize, /* BLC */(char)0x0, 
-                                 &buffer_filler.base);
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
+                          (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
+                          &buffer_filler.base);
         //
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
@@ -87,15 +78,13 @@ test_program_common = """
 #else
     int main(int, char**)
     {
-        using namespace std;
-
         QuexAnalyser   lexer_state;
-        int                   success_f = 0;
-        char                  tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
+        int            success_f = 0;
+        char           tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                                 (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1, /* BLC */0x0,
-                                 /* buffer filler = */ 0x0);
+                          (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1,
+                          /* buffer filler = */ 0x0);
         //
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
@@ -195,9 +184,17 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
 
     common_str = test_program_common_declarations
     common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
-    test_case_str = { "QuexBuffer":  "// #define __QUEX_SETTING_PLAIN_C",
-                      "PlainMemory": "#define __QUEX_SETTING_PLAIN_C\n" + \
-                                     "typedef unsigned char QUEX_CHARACTER_TYPE;\n", }[BufferType]
+    if BufferType == "PlainMemory":
+        extension = ".c"
+        compiler  = "gcc"
+        test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
+                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
+    else:
+        extension = ".cpp"
+        compiler  = "g++"
+        test_case_str = "// #define __QUEX_SETTING_PLAIN_C\n" + \
+                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
+
     common_str = common_str.replace("$$TEST_CASE$$", test_case_str)
     
     test_program = create_main_function(BufferType, TestStr,
@@ -220,16 +217,17 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                              "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n" + \
                              state_machine_code
 
-    fd, filename_tmp = mkstemp(".cpp", "tmp-", dir=os.getcwd())
+    fd, filename_tmp = mkstemp(extension, "tmp-", dir=os.getcwd())
     os.write(fd, common_str)
     os.write(fd, state_machine_code)
     os.write(fd, test_program) 
     os.close(fd)    
 
-    os.system("mv -f %s tmp.cpp" % filename_tmp); filename_tmp = "./tmp.cpp" # DEBUG
 
     print "## (2) compiling generated engine code and test"    
-    compile_str = "g++ %s %s " % (NDEBUG_str, filename_tmp) + \
+    os.system("mv -f %s tmp%s" % (filename_tmp, extension)); filename_tmp = "./tmp%s" % extension # DEBUG
+
+    compile_str = compiler + " %s %s " % (NDEBUG_str, filename_tmp) + \
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \

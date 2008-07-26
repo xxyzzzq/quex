@@ -4,11 +4,11 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_POLICY__
 #define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_POLICY__
 
+#if ! defined (__QUEX_SETTING_PLAIN_C)
 #include<cstdio>
 #include<iostream>
 #include<stdexcept> // Standard C++ Exceptions
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 
     // PURPOSE: The input policy provides a common interface for operations related
@@ -18,7 +18,7 @@ namespace quex {
     //          to be provided. The remaining framework still works the same.
     // NOTE: The input policy does not provide a way to open or close those interfaces.
     //       This is up to the user somewhere up in the hierarchie.
-    template <class InputHandleTypeP> struct InputPolicy;
+    template <class InputHandleT> struct InputPolicy;
 
     template <>
     struct InputPolicy<std::FILE*> { 
@@ -32,23 +32,23 @@ namespace quex {
         { return fread(buffer_position, 1, ByteNToRead, ih); }
     };
 
-    template <class InputHandleType>
-    struct InputPolicy<InputHandleType*> { 
-        typedef typename InputHandleType::pos_type   stream_position;
-        typedef typename InputHandleType::off_type   stream_offset;
+    template <class StdStreamType>
+    struct InputPolicy<StdStreamType*> { 
+        typedef typename StdStreamType::pos_type   stream_position;
+        typedef typename StdStreamType::off_type   stream_offset;
 
-        static stream_position tell(InputHandleType* me) { 
+        static stream_position tell(StdStreamType* me) { 
             return me->tellg(); 
         }
-        static void    seek(InputHandleType* me, const stream_position& Pos) { 
+        static void    seek(StdStreamType* me, const stream_position& Pos) { 
             me->seekg(Pos); 
         }
 
-        static size_t  load_bytes(InputHandleType* me, void* buffer_position, const size_t ByteNToRead) 
+        static size_t  load_bytes(StdStreamType* me, void* buffer_position, const size_t ByteNToRead) 
         { 
             // std::fprintf(stdout, "tell 0 = %i\n", (long)(me->tellg()));
             const stream_position position_before = me->tellg();
-            me->read((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            me->read((typename StdStreamType::char_type*)buffer_position, ByteNToRead); 
             const size_t Result = me->gcount();
             if( me->eof() && ! me->bad() ) {
                 me->clear();
@@ -56,7 +56,7 @@ namespace quex {
             } else if( me->fail() ) {
                 throw std::runtime_error("Fatal error during stream reading.");
             }
-            // const size_t Result = me->readsome((typename InputHandleType::char_type*)buffer_position, ByteNToRead); 
+            // const size_t Result = me->readsome((typename QUEX_CHARACTER_TYPE::char_type*)buffer_position, ByteNToRead); 
             // std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(me->tellg()), Result);
             return Result;
         }

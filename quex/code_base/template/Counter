@@ -48,7 +48,8 @@ namespace quex {
         void  __shift_end_values_to_start_values() { }
     };
 
-    struct CounterWithIndentation : public Counter { 
+    struct CounterWithIndentation 
+        : public Counter { 
         CounterWithIndentation(CLASS*);
         CounterWithIndentation(const CounterWithIndentation&);
         void  init();

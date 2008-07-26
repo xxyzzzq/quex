@@ -106,14 +106,14 @@ extern "C" {
 
 namespace quex {
 
-    template <class InputHandleType, class CharacterCarrierType>
+    template <class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
     class FixedSizeCharacterStream_IConv
-        : public FixedSizeCharacterStream<CharacterCarrierType> {
+        : public FixedSizeCharacterStream<QUEX_CHARACTER_TYPE> {
 
 
-        static const size_t SizeOfCharacter = sizeof(CharacterCarrierType);
-        typedef typename InputPolicy<InputHandleType*>::stream_position stream_position;
-        typedef typename InputPolicy<InputHandleType*>::stream_offset   stream_offset;
+        static const size_t SizeOfCharacter = sizeof(QUEX_CHARACTER_TYPE);
+        typedef typename InputPolicy<QUEX_CHARACTER_TYPE*>::stream_position stream_position;
+        typedef typename InputPolicy<QUEX_CHARACTER_TYPE*>::stream_offset   stream_offset;
        
         /* DISABLED */ FixedSizeCharacterStream_IConv();
 
@@ -121,7 +121,7 @@ namespace quex {
         // NOTE: It makes sense to have multiple FixedSizeCharacterStream_IConv objects use
         //       the same raw buffer, since this buffer is only used temporarily
         //       while loading.
-        FixedSizeCharacterStream_IConv(InputHandleType* input_handle, 
+        FixedSizeCharacterStream_IConv(QUEX_CHARACTER_TYPE* input_handle, 
                                           uint8_t* raw_buffer_p, size_t raw_buffer_size,
                                           const char* FromCoding, const char* ToCoding);
         ~FixedSizeCharacterStream_IConv();
@@ -130,7 +130,7 @@ namespace quex {
         virtual void      seek_character_index(const size_t CharacterIndex);
         virtual void      close()                                {  }
 
-        virtual size_t    read_characters(CharacterCarrierType* buffer, const size_t N);
+        virtual size_t    read_characters(QUEX_CHARACTER_TYPE* buffer, const size_t N);
         virtual void      register_begin_of_file();
         virtual void      seek_begin_of_file();
 
@@ -152,7 +152,7 @@ namespace quex {
             void   print(const char* name, int until_idx=-1); 
         };
 
-        InputHandleType* ih;
+        QUEX_CHARACTER_TYPE* ih;
         stream_position  start_position;  // position in stream where analysis started
         size_t           end_character_index; // character index where analysis ended (last + 1)
 
@@ -182,12 +182,12 @@ namespace quex {
 
 #include <quex/code_base/buffer/iconv/debug.i>
 
-#define TEMPLATE_IN  template<class InputHandleType, class CharacterCarrierType> inline 
-#define CLASS        FixedSizeCharacterStream_IConv<InputHandleType, CharacterCarrierType>
+#define QUEX_INLINE_KEYWORD  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE> inline 
+#define CLASS        FixedSizeCharacterStream_IConv<QUEX_CHARACTER_TYPE, QUEX_CHARACTER_TYPE>
 
 namespace quex {
 
-    TEMPLATE_IN CLASS::FixedSizeCharacterStream_IConv(InputHandleType* input_handle, 
+    QUEX_INLINE_KEYWORD CLASS::FixedSizeCharacterStream_IConv(QUEX_CHARACTER_TYPE* input_handle, 
                                                  uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                                  const char* FromCoding,   const char* ToCoding) 
         // Initialize the raw buffer that holds the plain bytes of the input file
@@ -203,7 +203,7 @@ namespace quex {
         iconv_handle = iconv_open(ToCoding, FromCoding);
 
         // Setup the tell/seek of character positions
-        begin_info.position        = InputPolicy<InputHandleType*>::tell(input_handle);
+        begin_info.position        = InputPolicy<QUEX_CHARACTER_TYPE*>::tell(input_handle);
         begin_info.character_index = 0;
         end_info.position          = begin_info.position;
         end_info.character_index   = 0;
@@ -211,11 +211,11 @@ namespace quex {
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
     }
 
-    TEMPLATE_IN CLASS::~FixedSizeCharacterStream_IConv() 
+    QUEX_INLINE_KEYWORD CLASS::~FixedSizeCharacterStream_IConv() 
     { iconv_close(iconv_handle); }
 
-    TEMPLATE_IN size_t 
-    CLASS::read_characters(CharacterCarrierType* user_buffer_p, const size_t N) 
+    QUEX_INLINE_KEYWORD size_t 
+    CLASS::read_characters(QUEX_CHARACTER_TYPE* user_buffer_p, const size_t N) 
     {
         buffer_info  user_buffer((uint8_t*)user_buffer_p, N * SizeOfCharacter);
         // TWO CASES:
@@ -245,7 +245,7 @@ namespace quex {
         }
     }
 
-    TEMPLATE_IN void CLASS::__fill_raw_buffer() 
+    QUEX_INLINE_KEYWORD void CLASS::__fill_raw_buffer() 
     {
         // Try to fill the raw buffer to its limits with data from the file.
         // The filling starts from its current position, thus the remaining bytes
@@ -267,14 +267,14 @@ namespace quex {
         uint8_t*     FillStartPosition = raw_buffer.begin + raw_buffer.bytes_left_n;
         size_t       FillSize          = raw_buffer.size - raw_buffer.bytes_left_n;
         const size_t LoadedByteN = \
-                     InputPolicy<InputHandleType*>::load_bytes(ih, FillStartPosition, FillSize);
+                     InputPolicy<QUEX_CHARACTER_TYPE*>::load_bytes(ih, FillStartPosition, FillSize);
 
         raw_buffer.bytes_left_n = LoadedByteN + RemainingBytesN; // Bytes left for conversion in next run.
 
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
     }
 
-    TEMPLATE_IN bool CLASS::__convert(buffer_info* user_buffer) 
+    QUEX_INLINE_KEYWORD bool CLASS::__convert(buffer_info* user_buffer) 
         // RETURNS:  true  --> User buffer is filled as much as possible with converted characters.
         //           false --> More raw bytes are needed to fill the user buffer.
     {
@@ -329,10 +329,10 @@ namespace quex {
     }
 
 
-    TEMPLATE_IN size_t CLASS::tell_character_index()
+    QUEX_INLINE_KEYWORD size_t CLASS::tell_character_index()
     { return end_character_index; }
 
-    TEMPLATE_IN void CLASS::seek_character_index(const size_t CharacterIndex) 
+    QUEX_INLINE_KEYWORD void CLASS::seek_character_index(const size_t CharacterIndex) 
     { 
         // Seek_character_index(Pos) means that the next time when a character buffer
         // is to be filled, this has to happen from position 'CharacterIndex'. NOTE: The
@@ -343,7 +343,7 @@ namespace quex {
 
         if( has_input_format_dynamic_character_width() ) { 
             long avoid_tmp_arg = (long)(CharacterIndex * SizeOfCharacter + start_position); 
-            InputPolicy<InputHandleType*>::seek(ih, avoid_tmp_arg);
+            InputPolicy<QUEX_CHARACTER_TYPE*>::seek(ih, avoid_tmp_arg);
         } 
         else if( begin_info.character_index != 0 && CharacterIndex > begin_info.character_index ) {
             __seek_character_index_in_stream(begin_info.position, begin_info.character_index, 
@@ -357,12 +357,12 @@ namespace quex {
         raw_buffer.bytes_left_n = 0;
     }
 
-    TEMPLATE_IN void CLASS::__seek_character_index_in_stream(stream_position   HintStreamPos, 
+    QUEX_INLINE_KEYWORD void CLASS::__seek_character_index_in_stream(stream_position   HintStreamPos, 
                                                              const size_t HintCharacterIndex,
                                                              const size_t CharacterIndex)
     { 
         const int             ChunkSize = 512;
-        CharacterCarrierType  chunk[512];
+        QUEX_CHARACTER_TYPE  chunk[512];
         // This type of seek is not thought to be for cases where character positions
         // can be computed--as is the case for fixed character width encodings.
         __quex_assert(has_input_format_dynamic_character_width());
@@ -390,7 +390,7 @@ namespace quex {
                 // points already to the right place. 
                 __quex_assert(end_info.character_index == HintCharacterIndex);
             } else { 
-                InputPolicy<InputHandleType*>::seek(ih, HintStreamPos);
+                InputPolicy<QUEX_CHARACTER_TYPE*>::seek(ih, HintStreamPos);
             }
         }
         for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize ) { 
@@ -402,23 +402,23 @@ namespace quex {
         end_character_index = CharacterIndex;
     }
 
-    TEMPLATE_IN void  CLASS::register_begin_of_file() 
+    QUEX_INLINE_KEYWORD void  CLASS::register_begin_of_file() 
     { 
-        start_position = InputPolicy<InputHandleType*>::tell(ih); 
+        start_position = InputPolicy<QUEX_CHARACTER_TYPE*>::tell(ih); 
     }
 
-    TEMPLATE_IN void  CLASS::seek_begin_of_file()
+    QUEX_INLINE_KEYWORD void  CLASS::seek_begin_of_file()
     {
-        InputPolicy<InputHandleType*>::seek(ih, start_position);
+        InputPolicy<QUEX_CHARACTER_TYPE*>::seek(ih, start_position);
     }
 
-    TEMPLATE_IN bool CLASS::has_input_format_dynamic_character_width() 
+    QUEX_INLINE_KEYWORD bool CLASS::has_input_format_dynamic_character_width() 
     {
         return true; // TODO: distinguish between different coding formats
         //           //       'true' is safe, but possibly a little slower.
     }
 
-    TEMPLATE_IN CLASS::buffer_info::buffer_info(uint8_t* Begin, size_t SizeInBytes)
+    QUEX_INLINE_KEYWORD CLASS::buffer_info::buffer_info(uint8_t* Begin, size_t SizeInBytes)
     {
         begin        = Begin;
         size         = SizeInBytes;
@@ -429,7 +429,7 @@ namespace quex {
 
 
 #undef CLASS
-#undef TEMPLATE_IN
+#undef QUEX_INLINE_KEYWORD
 
 }
 

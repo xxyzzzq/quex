@@ -40,8 +40,8 @@ def __local_variable_definitions(VariableInfoList):
          
 
 __function_signature = """
-TEMPLATE_IN __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(MINIMAL_ANALYZER_TYPE* me) 
+QUEX_INLINE_KEYWORD __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyser* me) 
 {
     // NOTE: Different modes correspond to different analyser functions. The analyser
     //       functions are all located inside the main class as static functions. That
@@ -50,7 +50,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(MINIMAL_A
 #   if defined (__QUEX_SETTING_PLAIN_C)
 #      define self (*me)
 #   else
-       MINIMAL_ANALYZER_TYPE& self = *me;
+       QuexAnalyser& self = *me;
 #   endif
 """
 
@@ -69,7 +69,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
              created additionally: 
 
                'EngineClassName'_init(EngineClassName* me,
-                                      CharacterCarrierType StartInputPosition);
+                                      QUEX_CHARACTER_TYPE StartInputPosition);
 
                      This function has to be called before starting the lexing process.
                      See the unit tests for examples.
@@ -99,8 +99,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     local_variable_list.extend(
             [ ["QUEX_GOTO_LABEL_TYPE",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
-              ["QUEX_CHARACTER_POSITION_TYPE", "last_acceptance_input_position", "(CharacterCarrierType*)(0x00)"],
-              ["CharacterCarrierType",         "input",                          "(CharacterCarrierType)(0x00)"]
+              ["QUEX_CHARACTER_POSITION_TYPE", "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
+              ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
             ])
               
     # -- post-condition position: store position of original pattern
@@ -149,8 +149,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
 
 __buffer_reload_str = """
-TEMPLATE_IN bool 
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(BUFFER_FILLER_TYPE* filler, 
+QUEX_INLINE_KEYWORD bool 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler, 
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {

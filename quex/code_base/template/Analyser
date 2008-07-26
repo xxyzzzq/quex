@@ -11,13 +11,13 @@ namespace quex {
      * constructed engine. Actually, it should only be useful for unit tests. Else, it has
      * more a documentary character telling: This is the heart of the matter--anything else
      * is just decoration! Any 'real' lexical analyser should be derived from this class. */
-    TEMPLATIFIER
+    
     struct QuexAnalyser {
-        BUFFER_TYPE               buffer;
-        BUFFER_FILLER_TYPE*       buffer_filler;
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(current_analyser_function))(MINIMAL_ANALYZER_TYPE*);
+        QuexBuffer               buffer;
+        QuexBufferFiller*       buffer_filler;
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(current_analyser_function))(QuexAnalyser*);
 #       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(DEBUG_analyser_function_at_entry))(MINIMAL_ANALYZER_TYPE*);
+        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(DEBUG_analyser_function_at_entry))(QuexAnalyser*);
 #       endif
     };
 
