@@ -1,0 +1,44 @@
+Quex only allows to specify pattern-action pairs inside modes. As the name
+says, a pattern-action pair consists of a pattern that is to be matched and a
+code fragment that is executed when the pattern matches. Patterns are best
+specified inside the pattern definition sections, so that inside the mode
+sections only names of patterns occur. However, one can also use regular
+expressions inside the mode definitions. The format for pattern-action pairs is
+as simple as can be: 
+
+. The _pattern_ is specified as a regular expression or a pattern name
+embraced by curly brackets.
+. Then comes a _whitespace_ that separates the pattern from the action.
+. Then there must be a _curly bracket followed by whitespace_ that
+  delimits the start of the code fragment of the action. Quex parses then
+  until the _matching closing curly bracket_ that terminates the action.
+
+Examples for pattern-action pairs have been given enough in section
+\ref{sec:practical/pattern-action-pairs}, page
+\pageref{sec:practical/pattern-action-pairs}.  There are a few important
+variables to know for coding the action for a pattern match:
+
+- `self`: Use the reference `self.` + `member\_name` in order to access a member of
+  the lexical analyser. This works in any place - also in event handlers.
+  Better do not try to use the `this` pointer in order to keep the code
+  uniform.  The `self` reference automatically referes to an object of the
+  derived class if such exists, and it points to the lexical analyser even if
+  the code is pasted into member functions of different objects.
+
+- `RETURN`: Using the `RETURN` macro to return from a pattern action 
+  pair ensures a synchronization with the token queue. If the
+  token queue is empty, it does not return but continue the current
+  analysis. If it is sure that the token queue is non-empty (because
+  a token was recently sent, then a simple `return` is a little faster
+  alternative.
+
+- `Lexeme`: The string that matched the pattern of the current action
+  can be accessed through variable `Lexeme`.
+
+- `LexemeL`: The length of a lexeme  that matched a pattern can be accessed
+  through variable `LexemeL`.
+
+
+
+
+

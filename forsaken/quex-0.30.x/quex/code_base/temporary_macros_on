@@ -1,0 +1,50 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ *
+ * PURPOSE: Definition of handy macros that facilitate the common definition
+ *          of plain 'C' functions and elegant 'C++' templates. Note, that 
+ *          before including any other file, these macros have to be deactivated
+ *          by including <code_base/temporary_macros_off>. 
+ *
+ * NOTE: 'defines' were used instead of propper 'typedefs' because this allows
+ *       to define the relation without a existing type definition. By this means
+ *       one is discharged of the task of including all required headers. */
+#ifdef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+#error "File <template_macros_on> was included twice without including the correspondent\n" + \
+       "<template_macros_off> file."
+#endif
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+       
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#    define TEMPLATIFIER           template <class CharacterCarrierType>
+#    define TEMPLATE_IN            template <class CharacterCarrierType> inline
+#    define TEMPLATIFIER_2         template <class InputHandleType, class CharacterCarrierType>
+#    define TEMPLATE_2_IN          template <class InputHandleType, class CharacterCarrierType> inline
+
+#    define BUFFER_MEMORY_TYPE     quex::QuexBufferMemory<CharacterCarrierType>
+#    define BUFFER_TYPE            quex::QuexBuffer<CharacterCarrierType>
+#    define BUFFER_FILLER_TYPE     quex::QuexBufferFiller<CharacterCarrierType>
+#    define BUFFER_FILLER_PLAIN_TYPE      quex::QuexBufferFiller_Plain<InputHandleType, CharacterCarrierType>
+#    define MINIMAL_ANALYZER_TYPE         quex::QuexAnalyser<CharacterCarrierType>
+#    define QUEX_MODE_TYPE                quex::QuexMode<CharacterCarrierType>
+#    define STREAM_POSITION_TYPE(IH_TYPE) typename InputPolicy<IH_TYPE*>::stream_position
+#    define STREAM_OFFSET_TYPE(IH_TYPE)   typename InputPolicy<IH_TYPE*>::stream_offset
+
+#else
+#    define TEMPLATIFIER                  /* no template */
+#    define TEMPLATE_IN                   /* no template */ QUEX_INLINE_KEYWORD
+#    define TEMPLATIFIER_2                /* no template */
+#    define TEMPLATE_2_IN                 /* no template */ QUEX_INLINE_KEYWORD
+#    define BUFFER_MEMORY_TYPE            QuexBufferMemory
+#    define BUFFER_TYPE                   QuexBuffer
+#    define BUFFER_FILLER_TYPE            QuexBufferFiller
+#    define BUFFER_FILLER_PLAIN_TYPE      QuexBufferFiller_Plain
+#    define MINIMAL_ANALYZER_TYPE         QuexAnalyser
+#    define QUEX_MODE_TYPE                QuexMode
+#    define STREAM_POSITION_TYPE(IH_TYPE) long
+#    define STREAM_OFFSET_TYPE(IH_TYPE)   long
+
+#    define CharacterCarrierType   QUEX_CHARACTER_TYPE  
+#    define InputHandleType        QUEX_INPUT_HANDLE_TYPE  
+#endif
+
+

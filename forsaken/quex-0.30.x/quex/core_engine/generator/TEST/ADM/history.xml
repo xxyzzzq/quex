@@ -1,0 +1,423 @@
+<history date="Thu Jul 24 23:16:12 2008" element-n="207">
+    <day year="2008" month="02" day="10">
+        <history-init time="09:55:25"/>
+        <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
+        <crc-error time="09:56:19" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="-1275287335" real-crc="885683181"/>
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:16:55"/>
+    </day>
+    <day year="2008" month="02" day="12">
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="17:01:58"/>
+    </day>
+    <day year="2008" month="02" day="13">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:23:00"/>
+    </day>
+    <day year="2008" month="02" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:32:56"/>
+    </day>
+    <day year="2008" month="02" day="16">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:44:32"/>
+    </day>
+    <day year="2008" month="02" day="17">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="09:14:09"/>
+    </day>
+    <day year="2008" month="02" day="18">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:10:03"/>
+    </day>
+    <day year="2008" month="02" day="19">
+        <test-runs-today n="8" ok-n="7" fail-n="1" else-n="0" last-run="oll korrekt" last-time="16:02:48"/>
+    </day>
+    <day year="2008" month="02" day="20">
+        <test-runs-today n="7" ok-n="7" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:33:53"/>
+    </day>
+    <day year="2008" month="02" day="21">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="15:53:05"/>
+    </day>
+    <day year="2008" month="02" day="22">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:57:26"/>
+    </day>
+    <day year="2008" month="02" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:45:27"/>
+    </day>
+    <day year="2008" month="02" day="24">
+        <test-runs-today n="8" ok-n="8" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:00:53"/>
+    </day>
+    <day year="2008" month="02" day="25">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:48:39"/>
+    </day>
+    <day year="2008" month="02" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="14:35:27"/>
+    </day>
+    <day year="2008" month="02" day="28">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:08:27"/>
+    </day>
+    <day year="2008" month="02" day="29">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="23:44:14"/>
+    </day>
+    <day year="2008" month="03" day="01">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:26:07"/>
+    </day>
+    <day year="2008" month="03" day="02">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:27:19"/>
+    </day>
+    <day year="2008" month="03" day="03">
+        <test-runs-today n="7" ok-n="5" fail-n="2" else-n="0" last-run="oll korrekt" last-time="23:18:35"/>
+    </day>
+    <day year="2008" month="03" day="04">
+        <test-runs-today n="4" ok-n="4" fail-n="0" else-n="0" last-run="oll korrekt" last-time="23:17:21"/>
+    </day>
+    <day year="2008" month="03" day="05">
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="22:30:05"/>
+    </day>
+    <day year="2008" month="03" day="06">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="failure" last-time="22:29:51"/>
+    </day>
+    <day year="2008" month="03" day="08">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="12:43:09"/>
+    </day>
+    <day year="2008" month="03" day="12">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="21:36:20"/>
+    </day>
+    <day year="2008" month="03" day="20">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:55:09"/>
+    </day>
+    <day year="2008" month="03" day="21">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:01:54"/>
+    </day>
+    <day year="2008" month="03" day="22">
+        <test-runs-today n="5" ok-n="0" fail-n="5" else-n="0" last-run="failure" last-time="23:23:22"/>
+    </day>
+    <day year="2008" month="03" day="23">
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="19:20:29"/>
+    </day>
+    <day year="2008" month="03" day="24">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="20:50:58"/>
+    </day>
+    <day year="2008" month="03" day="25">
+        <test-runs-today n="13" ok-n="3" fail-n="10" else-n="0" last-run="oll korrekt" last-time="20:12:59"/>
+    </day>
+    <day year="2008" month="03" day="27">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:37:59"/>
+    </day>
+    <day year="2008" month="03" day="28">
+        <test-runs-today n="24" ok-n="15" fail-n="9" else-n="0" last-run="oll korrekt" last-time="23:42:22"/>
+    </day>
+    <day year="2008" month="03" day="29">
+        <test-runs-today n="19" ok-n="14" fail-n="5" else-n="0" last-run="oll korrekt" last-time="23:45:14"/>
+    </day>
+    <day year="2008" month="03" day="30">
+        <test-runs-today n="5" ok-n="4" fail-n="1" else-n="0" last-run="oll korrekt" last-time="20:24:49"/>
+    </day>
+    <day year="2008" month="03" day="31">
+        <test-runs-today n="20" ok-n="16" fail-n="4" else-n="0" last-run="oll korrekt" last-time="18:51:18"/>
+    </day>
+    <day year="2008" month="04" day="01">
+        <test-runs-today n="8" ok-n="5" fail-n="3" else-n="0" last-run="oll korrekt" last-time="19:13:08"/>
+    </day>
+    <day year="2008" month="04" day="03">
+        <test-runs-today n="5" ok-n="3" fail-n="2" else-n="0" last-run="oll korrekt" last-time="19:05:50"/>
+    </day>
+    <day year="2008" month="04" day="05">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="22:28:05"/>
+    </day>
+    <day year="2008" month="04" day="06">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:36:44"/>
+    </day>
+    <day year="2008" month="04" day="07">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="08:11:27"/>
+    </day>
+    <day year="2008" month="04" day="14">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="17:53:58"/>
+    </day>
+    <day year="2008" month="04" day="15">
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="17:08:36"/>
+    </day>
+    <day year="2008" month="04" day="20">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:42:19"/>
+    </day>
+    <day year="2008" month="04" day="21">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="16:20:13"/>
+    </day>
+    <day year="2008" month="04" day="22">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="16:59:50"/>
+    </day>
+    <day year="2008" month="04" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:12:21"/>
+    </day>
+    <day year="2008" month="04" day="24">
+        <test-runs-today n="8" ok-n="4" fail-n="4" else-n="0" last-run="oll korrekt" last-time="16:20:42"/>
+    </day>
+    <day year="2008" month="04" day="25">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:04:16"/>
+    </day>
+    <day year="2008" month="04" day="26">
+        <test-runs-today n="8" ok-n="5" fail-n="3" else-n="0" last-run="failure" last-time="19:13:43"/>
+    </day>
+    <day year="2008" month="04" day="27">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="14:34:40"/>
+    </day>
+    <day year="2008" month="05" day="07">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="16:39:18"/>
+    </day>
+    <day year="2008" month="05" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="03:36:12"/>
+    </day>
+    <day year="2008" month="05" day="09">
+        <test-runs-today n="6" ok-n="0" fail-n="6" else-n="0" last-run="failure" last-time="16:32:25"/>
+    </day>
+    <day year="2008" month="05" day="10">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="04:13:34"/>
+    </day>
+    <day year="2008" month="05" day="11">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="14:55:06"/>
+    </day>
+    <day year="2008" month="05" day="12">
+        <test-runs-today n="5" ok-n="0" fail-n="5" else-n="0" last-run="failure" last-time="08:03:58"/>
+    </day>
+    <day year="2008" month="05" day="13">
+        <accept    time="04:58:05" application="test-single-state-transitions-x.py" choice="" crc="-44469151" />
+        <accept    time="17:43:07" application="test-no-backward-reloading.py" choice="No_NDEBUG" crc="-404862054" />
+        <accept    time="17:43:12" application="test-no-backward-reloading.py" choice="NDEBUG" crc="-404862054" />
+        <test-runs-today n="16" ok-n="3" fail-n="13" else-n="0" last-run="failure" last-time="20:56:37"/>
+    </day>
+    <day year="2008" month="05" day="14">
+        <crc-error time="02:52:23" application="test-bol-eol.py" choice="QuexBuffer" database-crc="445214074" real-crc="684028106"/>
+        <crc-error time="02:52:45" application="test-bol-eol.py" choice="PlainMemory" database-crc="445214074" real-crc="684028106"/>
+        <accept    time="02:53:18" application="test-bol-eol.py" choice="PlainMemory" crc="-1893329280" />
+        <crc-error time="02:53:21" application="test-bol-eol.py" choice="QuexBuffer" database-crc="684028106" real-crc="-1893329280"/>
+        <accept    time="02:53:41" application="test-bol-eol.py" choice="QuexBuffer" crc="-795451360" />
+        <crc-error time="02:53:51" application="test-bol-eol.py" choice="PlainMemory" database-crc="-1893329280" real-crc="-795451360"/>
+        <crc-error time="03:08:58" application="test-backward_loading.py" choice="NDEBUG" database-crc="962615018" real-crc="-413667162"/>
+        <accept    time="03:09:59" application="test-backward_loading.py" choice="NDEBUG" crc="449398091" />
+        <crc-error time="03:10:10" application="test-backward_loading.py" choice="No_NDEBUG" database-crc="962615018" real-crc="449398091"/>
+        <test-runs-today n="21" ok-n="12" fail-n="9" else-n="0" last-run="failure" last-time="05:14:23"/>
+    </day>
+    <day year="2008" month="05" day="15">
+        <crc-error time="04:07:51" application="test-bol-eol.py" choice="PlainMemory" database-crc="-795451360" real-crc="445214074"/>
+        <test-runs-today n="9" ok-n="4" fail-n="5" else-n="0" last-run="oll korrekt" last-time="04:40:58"/>
+    </day>
+    <day year="2008" month="05" day="17">
+        <test-runs-today n="5" ok-n="5" fail-n="0" else-n="0" last-run="oll korrekt" last-time="20:10:32"/>
+    </day>
+    <day year="2008" month="05" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="04:26:10"/>
+    </day>
+    <day year="2008" month="05" day="20">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="04:42:14"/>
+    </day>
+    <day year="2008" month="05" day="21">
+        <accept    time="04:36:53" application="test-bol-eol.py" choice="PlainMemory" crc="-795451360" />
+        <test-runs-today n="5" ok-n="2" fail-n="3" else-n="0" last-run="oll korrekt" last-time="04:42:39"/>
+    </day>
+    <day year="2008" month="05" day="22">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:52:28"/>
+    </day>
+    <day year="2008" month="05" day="23">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:38:51"/>
+    </day>
+    <day year="2008" month="05" day="24">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:46:59"/>
+    </day>
+    <day year="2008" month="05" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:16:41"/>
+    </day>
+    <day year="2008" month="05" day="28">
+        <test-runs-today n="6" ok-n="5" fail-n="1" else-n="0" last-run="oll korrekt" last-time="15:10:19"/>
+    </day>
+    <day year="2008" month="05" day="29">
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="failure" last-time="20:00:33"/>
+    </day>
+    <day year="2008" month="05" day="30">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="03:36:58"/>
+    </day>
+    <day year="2008" month="05" day="31">
+        <test-runs-today n="13" ok-n="4" fail-n="9" else-n="0" last-run="failure" last-time="12:18:18"/>
+    </day>
+    <day year="2008" month="06" day="01">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="13:15:56"/>
+    </day>
+    <day year="2008" month="06" day="02">
+        <test-runs-today n="9" ok-n="2" fail-n="7" else-n="0" last-run="failure" last-time="03:59:06"/>
+    </day>
+    <day year="2008" month="06" day="05">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="18:55:22"/>
+    </day>
+    <day year="2008" month="06" day="06">
+        <test-runs-today n="6" ok-n="1" fail-n="5" else-n="0" last-run="failure" last-time="11:49:07"/>
+    </day>
+    <day year="2008" month="06" day="07">
+        <test-runs-today n="15" ok-n="3" fail-n="12" else-n="0" last-run="failure" last-time="09:18:36"/>
+    </day>
+    <day year="2008" month="06" day="08">
+        <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="02:27:59"/>
+    </day>
+    <day year="2008" month="06" day="09">
+        <test-runs-today n="10" ok-n="6" fail-n="4" else-n="0" last-run="oll korrekt" last-time="03:48:41"/>
+    </day>
+    <day year="2008" month="06" day="10">
+        <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="oll korrekt" last-time="20:03:47"/>
+    </day>
+    <day year="2008" month="06" day="11">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="04:05:01"/>
+    </day>
+    <day year="2008" month="06" day="13">
+        <crc-error time="03:51:07" application="test-backward_loading.py" choice="No_NDEBUG" database-crc="449398091" real-crc="962615018"/>
+        <crc-error time="03:51:07" application="test-backward_loading.py" choice="NDEBUG" database-crc="449398091" real-crc="962615018"/>
+        <crc-error time="04:15:36" application="test-backward_loading.py" choice="No_NDEBUG" database-crc="962615018" real-crc="449398091"/>
+        <crc-error time="04:15:37" application="test-backward_loading.py" choice="NDEBUG" database-crc="962615018" real-crc="449398091"/>
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="04:16:03"/>
+    </day>
+    <day year="2008" month="06" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="04:20:08"/>
+    </day>
+    <day year="2008" month="06" day="15">
+        <crc-error time="13:08:40" application="test-backward_loading.py" choice="NDEBUG" database-crc="449398091" real-crc="953107237"/>
+        <crc-error time="13:11:35" application="test-simple.py" choice="PlainMemory" database-crc="-771053764" real-crc="1610974138"/>
+        <test-runs-today n="12" ok-n="0" fail-n="12" else-n="0" last-run="failure" last-time="13:11:36"/>
+        <crc-error time="13:11:36" application="test-simple.py" choice="QuexBuffer" database-crc="-771053764" real-crc="1610974138"/>
+        <crc-error time="13:11:49" application="test-simple.py" choice="QuexBuffer" database-crc="1610974138" real-crc="-771053764"/>
+        <crc-error time="13:11:54" application="test-simple-2.py" choice="PlainMemory" database-crc="-270685933" real-crc="1033906266"/>
+        <crc-error time="13:19:01" application="test-bol-eol.py" choice="PlainMemory" database-crc="-795451360" real-crc="-1565444249"/>
+    </day>
+    <day year="2008" month="06" day="16">
+        <crc-error time="02:31:52" application="test-pre-conditions.py" choice="QuexBuffer" database-crc="-1785236051" real-crc="-524887799"/>
+        <crc-error time="02:32:12" application="test-continue-without-return-2.py" choice="QuexBuffer" database-crc="-1062255732" real-crc="-759134064"/>
+        <crc-error time="02:38:46" application="test-no-backward-reloading.py" choice="No_NDEBUG" database-crc="-404862054" real-crc="1278059331"/>
+        <crc-error time="02:39:49" application="test-no-backward-reloading.py" choice="NDEBUG" database-crc="-404862054" real-crc="-838664925"/>
+        <crc-error time="02:42:35" application="test-mode-changes.py" choice="QuexBuffer" database-crc="1005719447" real-crc="270103911"/>
+        <crc-error time="02:44:23" application="test-continue-without-return.py" choice="QuexBuffer" database-crc="1124200934" real-crc="-1324080938"/>
+        <crc-error time="02:50:59" application="test-pre-conditions-2.py" choice="QuexBuffer" database-crc="-1192757738" real-crc="-2081003305"/>
+        <crc-error time="02:52:15" application="test-pre-conditions-3.py" choice="QuexBuffer" database-crc="1245844997" real-crc="-1449812084"/>
+        <test-runs-today n="12" ok-n="6" fail-n="6" else-n="0" last-run="failure" last-time="13:50:42"/>
+    </day>
+    <day year="2008" month="06" day="17">
+        <crc-error time="03:51:50" application="test-post-conditions.py" choice="PlainMemory" database-crc="778667223" real-crc="1338437579"/>
+        <crc-error time="03:52:52" application="test-position_adaption.py" choice="NDEBUG" database-crc="1194462991" real-crc="1319922986"/>
+        <crc-error time="03:55:25" application="test-pseudo_ambiguous_post_conditions.py" choice="QuexBuffer" database-crc="46622910" real-crc="252074334"/>
+        <crc-error time="03:57:14" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="885683181" real-crc="1614045300"/>
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="06:07:51"/>
+    </day>
+    <day year="2008" month="06" day="18">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:10:48"/>
+    </day>
+    <day year="2008" month="06" day="19">
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="05:36:54"/>
+    </day>
+    <day year="2008" month="06" day="22">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="10:23:45"/>
+    </day>
+    <day year="2008" month="06" day="23">
+        <crc-error time="03:12:02" application="test-simple-5.py" choice="PlainMemory" database-crc="2009231125" real-crc="-680455951"/>
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="03:12:06"/>
+    </day>
+    <day year="2008" month="06" day="25">
+        <crc-error time="03:49:40" application="test-post-conditions-2.py" choice="QuexBuffer" database-crc="1110981718" real-crc="-1069020887"/>
+        <crc-error time="03:51:07" application="test-pre-post-condition.py" choice="QuexBuffer" database-crc="365920718" real-crc="-347610264"/>
+        <test-runs-today n="13" ok-n="4" fail-n="9" else-n="0" last-run="oll korrekt" last-time="05:55:53"/>
+    </day>
+    <day year="2008" month="06" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:31:26"/>
+    </day>
+    <day year="2008" month="06" day="28">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="16:28:07"/>
+    </day>
+    <day year="2008" month="06" day="29">
+        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="13:21:51"/>
+    </day>
+    <day year="2008" month="06" day="30">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="04:55:01"/>
+    </day>
+    <day year="2008" month="07" day="03">
+        <test-runs-today n="8" ok-n="1" fail-n="7" else-n="0" last-run="failure" last-time="05:10:00"/>
+    </day>
+    <day year="2008" month="07" day="04">
+        <crc-error time="03:27:58" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="1614045300" real-crc="885683181"/>
+        <crc-error time="03:27:58" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="1614045300" real-crc="885683181"/>
+        <crc-error time="03:27:58" application="test-pre-conditions-2.py" choice="PlainMemory" database-crc="-2081003305" real-crc="-1192757738"/>
+        <crc-error time="03:27:58" application="test-pre-conditions-2.py" choice="QuexBuffer" database-crc="-2081003305" real-crc="-1192757738"/>
+        <crc-error time="03:27:58" application="test-backward_loading.py" choice="No_NDEBUG" database-crc="953107237" real-crc="962615018"/>
+        <crc-error time="03:27:58" application="test-backward_loading.py" choice="NDEBUG" database-crc="953107237" real-crc="962615018"/>
+        <crc-error time="03:27:59" application="test-pseudo_ambiguous_post_conditions.py" choice="PlainMemory" database-crc="252074334" real-crc="46622910"/>
+        <crc-error time="03:27:59" application="test-pseudo_ambiguous_post_conditions.py" choice="QuexBuffer" database-crc="252074334" real-crc="46622910"/>
+        <crc-error time="03:27:59" application="test-bol-eol.py" choice="PlainMemory" database-crc="-1565444249" real-crc="-795451360"/>
+        <crc-error time="03:27:59" application="test-bol-eol.py" choice="QuexBuffer" database-crc="-1565444249" real-crc="-795451360"/>
+        <crc-error time="03:27:59" application="test-no-backward-reloading.py" choice="No_NDEBUG" database-crc="-838664925" real-crc="-404862054"/>
+        <crc-error time="03:27:59" application="test-no-backward-reloading.py" choice="NDEBUG" database-crc="-838664925" real-crc="-404862054"/>
+        <crc-error time="03:27:59" application="test-pre-post-condition.py" choice="PlainMemory" database-crc="-347610264" real-crc="365920718"/>
+        <crc-error time="03:27:59" application="test-pre-post-condition.py" choice="QuexBuffer" database-crc="-347610264" real-crc="365920718"/>
+        <crc-error time="03:27:59" application="test-continue-without-return.py" choice="PlainMemory" database-crc="-1324080938" real-crc="1124200934"/>
+        <crc-error time="03:27:59" application="test-continue-without-return.py" choice="QuexBuffer" database-crc="-1324080938" real-crc="1124200934"/>
+        <crc-error time="03:27:59" application="test-mode-changes.py" choice="PlainMemory" database-crc="270103911" real-crc="1005719447"/>
+        <crc-error time="03:27:59" application="test-mode-changes.py" choice="QuexBuffer" database-crc="270103911" real-crc="1005719447"/>
+        <crc-error time="03:27:59" application="test-continue-without-return-2.py" choice="QuexBuffer" database-crc="-759134064" real-crc="-360880531"/>
+        <crc-error time="03:27:59" application="test-pre-conditions-3.py" choice="PlainMemory" database-crc="-1449812084" real-crc="1245844997"/>
+        <crc-error time="03:27:59" application="test-pre-conditions-3.py" choice="QuexBuffer" database-crc="-1449812084" real-crc="1245844997"/>
+        <crc-error time="03:28:00" application="test-post-conditions.py" choice="PlainMemory" database-crc="1338437579" real-crc="778667223"/>
+        <crc-error time="03:28:00" application="test-post-conditions.py" choice="QuexBuffer" database-crc="1338437579" real-crc="778667223"/>
+        <crc-error time="03:28:00" application="test-pre-conditions.py" choice="QuexBuffer" database-crc="-524887799" real-crc="-1785236051"/>
+        <crc-error time="03:28:00" application="test-post-conditions-2.py" choice="PlainMemory" database-crc="-1069020887" real-crc="1110981718"/>
+        <crc-error time="03:28:00" application="test-post-conditions-2.py" choice="QuexBuffer" database-crc="-1069020887" real-crc="1110981718"/>
+        <crc-error time="03:28:00" application="test-position_adaption.py" choice="No_NDEBUG" database-crc="1319922986" real-crc="1194462991"/>
+        <crc-error time="03:28:00" application="test-position_adaption.py" choice="NDEBUG" database-crc="1319922986" real-crc="1194462991"/>
+        <crc-error time="03:31:12" application="test-backward_loading.py" choice="No_NDEBUG" database-crc="962615018" real-crc="953107237"/>
+        <crc-error time="03:31:13" application="test-backward_loading.py" choice="NDEBUG" database-crc="962615018" real-crc="953107237"/>
+        <crc-error time="03:31:14" application="test-position_adaption.py" choice="No_NDEBUG" database-crc="1194462991" real-crc="1319922986"/>
+        <crc-error time="03:31:15" application="test-position_adaption.py" choice="NDEBUG" database-crc="1194462991" real-crc="1319922986"/>
+        <crc-error time="03:31:15" application="test-no-backward-reloading.py" choice="No_NDEBUG" database-crc="-404862054" real-crc="-838664925"/>
+        <crc-error time="03:31:16" application="test-no-backward-reloading.py" choice="NDEBUG" database-crc="-404862054" real-crc="-838664925"/>
+        <crc-error time="03:31:17" application="test-continue-without-return-2.py" choice="QuexBuffer" database-crc="-360880531" real-crc="-759134064"/>
+        <crc-error time="03:31:17" application="test-mode-changes.py" choice="PlainMemory" database-crc="1005719447" real-crc="270103911"/>
+        <crc-error time="03:31:18" application="test-mode-changes.py" choice="QuexBuffer" database-crc="1005719447" real-crc="270103911"/>
+        <crc-error time="03:31:18" application="test-continue-without-return.py" choice="PlainMemory" database-crc="1124200934" real-crc="-1324080938"/>
+        <crc-error time="03:31:19" application="test-continue-without-return.py" choice="QuexBuffer" database-crc="1124200934" real-crc="-1324080938"/>
+        <crc-error time="03:31:19" application="test-post-conditions.py" choice="PlainMemory" database-crc="778667223" real-crc="1338437579"/>
+        <crc-error time="03:31:19" application="test-post-conditions.py" choice="QuexBuffer" database-crc="778667223" real-crc="1338437579"/>
+        <crc-error time="03:31:20" application="test-post-conditions-2.py" choice="PlainMemory" database-crc="1110981718" real-crc="-1069020887"/>
+        <crc-error time="03:31:20" application="test-post-conditions-2.py" choice="QuexBuffer" database-crc="1110981718" real-crc="-1069020887"/>
+        <crc-error time="03:31:22" application="test-pre-conditions-3.py" choice="PlainMemory" database-crc="1245844997" real-crc="-1449812084"/>
+        <crc-error time="03:31:23" application="test-pre-conditions-3.py" choice="QuexBuffer" database-crc="1245844997" real-crc="-1449812084"/>
+        <crc-error time="03:31:24" application="test-pre-conditions.py" choice="QuexBuffer" database-crc="-1785236051" real-crc="-524887799"/>
+        <crc-error time="03:31:24" application="test-pre-conditions-2.py" choice="PlainMemory" database-crc="-1192757738" real-crc="-2081003305"/>
+        <crc-error time="03:31:25" application="test-pre-conditions-2.py" choice="QuexBuffer" database-crc="-1192757738" real-crc="-2081003305"/>
+        <crc-error time="03:31:25" application="test-pre-post-condition.py" choice="PlainMemory" database-crc="365920718" real-crc="-347610264"/>
+        <crc-error time="03:31:26" application="test-pre-post-condition.py" choice="QuexBuffer" database-crc="365920718" real-crc="-347610264"/>
+        <crc-error time="03:31:26" application="test-pseudo_ambiguous_post_conditions.py" choice="PlainMemory" database-crc="46622910" real-crc="252074334"/>
+        <crc-error time="03:31:27" application="test-pseudo_ambiguous_post_conditions.py" choice="QuexBuffer" database-crc="46622910" real-crc="252074334"/>
+        <crc-error time="03:31:27" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="885683181" real-crc="1614045300"/>
+        <crc-error time="03:31:28" application="test-pseudo_ambiguous_post_conditions-2.py" choice="QuexBuffer" database-crc="885683181" real-crc="1614045300"/>
+        <crc-error time="03:31:28" application="test-bol-eol.py" choice="PlainMemory" database-crc="-795451360" real-crc="-1565444249"/>
+        <crc-error time="03:31:29" application="test-bol-eol.py" choice="QuexBuffer" database-crc="-795451360" real-crc="-1565444249"/>
+        <test-runs-today n="8" ok-n="2" fail-n="6" else-n="0" last-run="oll korrekt" last-time="04:01:24"/>
+    </day>
+    <day year="2008" month="07" day="06">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="08:14:37"/>
+    </day>
+    <day year="2008" month="07" day="07">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:49:27"/>
+    </day>
+    <day year="2008" month="07" day="14">
+        <test-runs-today n="3" ok-n="1" fail-n="2" else-n="0" last-run="failure" last-time="20:41:24"/>
+    </day>
+    <day year="2008" month="07" day="15">
+        <test-runs-today n="6" ok-n="1" fail-n="5" else-n="0" last-run="failure" last-time="20:21:15"/>
+    </day>
+    <day year="2008" month="07" day="16">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="23:54:07"/>
+    </day>
+    <day year="2008" month="07" day="19">
+        <test-runs-today n="4" ok-n="0" fail-n="4" else-n="0" last-run="failure" last-time="06:10:27"/>
+    </day>
+    <day year="2008" month="07" day="20">
+        <crc-error time="01:09:05" application="test-no-backward-reloading.py" choice="NDEBUG" database-crc="-838664925" real-crc="401254750"/>
+        <crc-error time="11:06:30" application="test-backward_loading.py" choice="NDEBUG" database-crc="953107237" real-crc="1539907426"/>
+        <test-runs-today n="5" ok-n="2" fail-n="3" else-n="0" last-run="oll korrekt" last-time="11:56:49"/>
+    </day>
+    <day year="2008" month="07" day="21">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="18:56:17"/>
+    </day>
+    <day year="2008" month="07" day="22">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:09:15"/>
+    </day>
+    <day year="2008" month="07" day="24">
+        <test-runs-today n="9" ok-n="8" fail-n="1" else-n="0" last-run="oll korrekt" last-time="21:16:12"/>
+    </day>
+</history>

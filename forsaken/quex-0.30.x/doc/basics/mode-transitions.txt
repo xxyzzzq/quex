@@ -1,0 +1,58 @@
+In Quex modes can be changed by two basic mechanisms. First, modes can
+simple be _changed_. This makes sense, if the new mode knows exactly to what
+modes it has to change and this does not depend on the previous mode. Another
+mechanism is that of _pushing and popping_. This makes sense, if the new
+mode shall return to the previous mode. It is therefore similar to a
+'call-subroutine' in procedural programming languages. 
+
+Figure <<fig:mode-transitions, style=ref>> shows a typical mode transition. Mode X has some patterns
+and one of them matched. Inside the pattern match action a transition to mode
+Y is requested. This triggers the event handler `on\_exit()` of mode X
+before any transition is made. Here the user can send tokens, change some
+internal variables or write some debug output. Then 
+the event handler `on\_entry()` of entered mode Y is called. Again the user
+can provide some actions related to the entrance of that mode.
+
+[[fig:mode-transitions]]
+.Event handling during lexical mode transitions.
+image::figures/mode-transition.png[]
+
+The ability to define event handlers for entering and exiting modes not only
+supports implicit token production, but also supports transparency. It can now
+exactly be traced how modes are transited. In order to _restrict_ the
+transition from and to lexical modes, quex provides transition control
+mechanisms. In the header of a definition of a mode X it can be specified from
+what modes the mode X can be entered and to what modes the mode X can exit.
+If a mode transition happens that is not conform to this restrictions a
+run-time error is triggered. This helps to prevent the lexical analyser to
+slide from one mode to another due to some thoughtlessly designed patterns.
+
+Figure <<fig:mode-transition-control, style=ref>> shows an example, where mode
+transition control comes very handy. Here, there is a lexical mode for parsing
+the content of a {\sf FUNCTION}, a mode for {\sf COMMENT} and one for {\sf
+  DOCU}-mentation parsing, a mode for parsing a character {\sf STRING} and one
+for {\sf MATH}. The design here says, that the comment mode can only be
+activated from the {\sf FUNCTION} mode and can only leave to {\sf FUNCTION}
+mode. Similarly for the {\sf STRING} and the {\sf MATH} mode. Quex provides
+the feature, that for {\sf COMMENT} mode, for example, one can specify that it
+can only be entered from {\sf FUNCTION} mode, thus preventing the {\sf DOCU},
+{\sf STRING} and the {\sf MATH} mode from ever transiting into {\sf COMMENT}
+mode. Also, it can be specified that the {\sf COMMENT} mode can only exit to
+{\sf FUNCTION} or {\sf DOCU} mode, thus preventing it from dropping into {\sf
+  STRING} or {\sf MATH} mode.
+
+[[fig:mode-transition-control]]
+.Restricted mode transitions.
+image::figures/mode-transition-control.png[]
+
+
+Extensive mode transitions without a control mechanism as the one implemented
+is quex is highly error prone. The advantage here is that the restrictions
+on the mode transitions are _explicitly_ specified in the description of
+the lexical analyser. The alternative would be to create an external document
+and review the behavior of the lexical analyser with respect to mode
+transitions whenever an error is assumed from being caused by straying mode
+transitions. Practically, solid handling of extensive mode transitions in
+lexical analysis are not possible except with a control mechanism as provided
+by quex.
+
