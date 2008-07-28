@@ -1,5 +1,5 @@
 // -*- C++ -*- vim:set syntax=cpp:
-inline quex_mode&
+inline QuexMode&
 CLASS::mode() 
 { return *__current_mode_p; }
 
@@ -16,14 +16,14 @@ CLASS::set_mode_brutally(const int ModeID)
 { set_mode_brutally(*(mode_db[ModeID])); }
 
 inline void 
-CLASS::set_mode_brutally(const quex_mode& Mode) 
+CLASS::set_mode_brutally(const QuexMode& Mode) 
 { 
-    __current_mode_p                   = (quex_mode*)&Mode;
-    __current_mode_analyser_function_p = Mode.analyser_function; 
+    __current_mode_p                        = (QuexMode*)&Mode;
+    QuexAnalyser::current_analyser_function = Mode.analyser_function; 
 }
 
 inline void
-CLASS::__debug_print_transition(quex_mode* Source, quex_mode* Target)
+CLASS::__debug_print_transition(QuexMode* Source, QuexMode* Target)
 {
 #   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -37,9 +37,9 @@ CLASS::__debug_print_transition(quex_mode* Source, quex_mode* Target)
 }
 
 inline void    
-CLASS::enter_mode(/* NOT const*/ quex_mode& TargetMode) 
+CLASS::enter_mode(/* NOT const*/ QuexMode& TargetMode) 
 {
-    /* NOT const */ quex_mode& SourceMode = mode();
+    /* NOT const */ QuexMode& SourceMode = mode();
 
     /* To be optimized aways if its function body is empty (see above) */
     __debug_print_transition(&SourceMode, &TargetMode);  
@@ -59,7 +59,7 @@ CLASS::operator<<(const int ModeID)
 { enter_mode(map_mode_id_to_mode(ModeID)); }
 
 inline void 
-CLASS::operator<<(/* NOT const*/ quex_mode& Mode) 
+CLASS::operator<<(/* NOT const*/ QuexMode& Mode) 
 { enter_mode(Mode); }
 
 
@@ -67,7 +67,7 @@ inline void
 CLASS::pop_mode() 
 { 
     __quex_assert(_mode_stack.size() != 0);
-    quex_mode* tmp; 
+    QuexMode* tmp; 
     tmp = _mode_stack.back(); 
     _mode_stack.pop_back(); 
     enter_mode(*tmp); 
@@ -81,14 +81,14 @@ CLASS::pop_drop_mode()
 }
     
 inline void       
-CLASS::push_mode(quex_mode& new_mode) 
+CLASS::push_mode(QuexMode& new_mode) 
 { 
     _mode_stack.push_back(&(mode())); 
     enter_mode(new_mode); 
 }
 
 
-inline quex_mode&
+inline QuexMode&
 CLASS::map_mode_id_to_mode(const int ModeID)
 { 
     __quex_assert(ModeID >= 0);
@@ -97,6 +97,6 @@ CLASS::map_mode_id_to_mode(const int ModeID)
 }
 
 inline const int  
-CLASS::map_mode_to_mode_id(const quex_mode& Mode) const
+CLASS::map_mode_to_mode_id(const QuexMode& Mode) const
 { return Mode.id; }
 

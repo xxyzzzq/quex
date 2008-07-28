@@ -44,20 +44,20 @@ static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_funct
 
 test_program_common = """
 
-#include <cstring>
 #include <quex/code_base/template/Analyser.i>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
+    #include <cstring>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
-    int main(int, char**)
+    int main(int argc, char** argv)
     {
         using namespace std;
         using namespace quex;
 
         QuexAnalyser lexer_state;
         int          success_f = 0;
-        //
+        /**/
         istringstream                           istr("$$TEST_STRING$$");
         QuexBufferFiller_Plain<istringstream>   buffer_filler;
         const size_t                            MemorySize = $$BUFFER_SIZE$$;
@@ -67,7 +67,7 @@ test_program_common = """
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
                           (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
                           &buffer_filler.base);
-        //
+        /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
         do {
@@ -76,16 +76,16 @@ test_program_common = """
         printf("  ''\\n");
     }
 #else
-    int main(int, char**)
+    int main(int argc, char** argv)
     {
         QuexAnalyser   lexer_state;
         int            success_f = 0;
-        char           tmp[] = "\\0$$TEST_STRING$$";  // introduce first '0' for safe backward lexing
+        char           tmp[] = "\\0$$TEST_STRING$$";  /* introduce first '0' for safe backward lexing*/
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
                           (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1,
                           /* buffer filler = */ 0x0);
-        //
+        /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
         do {
@@ -141,8 +141,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
         sys.exit(0)
 
     print "## (1) code generation"    
-    txt  = "#include<cstdio>\n"
-    txt += "#define  __QUEX_OPTION_UNIT_TEST\n"
+    txt = "#define  __QUEX_OPTION_UNIT_TEST\n"
 
     if not SecondModeF:  sm_name = "Mr"
     else:                sm_name = "Mrs"
@@ -186,13 +185,13 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
     if BufferType == "PlainMemory":
         extension = ".c"
-        compiler  = "gcc"
+        compiler  = "gcc -ansi"
         test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
                         "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
     else:
         extension = ".cpp"
         compiler  = "g++"
-        test_case_str = "// #define __QUEX_SETTING_PLAIN_C\n" + \
+        test_case_str = "/* #define __QUEX_SETTING_PLAIN_C */\n" + \
                         "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
 
     common_str = common_str.replace("$$TEST_CASE$$", test_case_str)
@@ -231,7 +230,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
-                  "-DQUEX_OPTION_ACTIVATE_ASSERTS " + \
+                  "-DQUEX_OPTION_ASSERTS " + \
                   "-ggdb " + \
                   ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 

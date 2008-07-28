@@ -43,10 +43,10 @@ __function_signature = """
 QUEX_INLINE_KEYWORD __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
 $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyser* me) 
 {
-    // NOTE: Different modes correspond to different analyser functions. The analyser
-    //       functions are all located inside the main class as static functions. That
-    //       means, they are something like 'globals'. They receive a pointer to the 
-    //       lexical analyser, since static member do not have access to the 'this' pointer.
+    /* NOTE: Different modes correspond to different analyser functions. The analyser*/
+    /*       functions are all located inside the main class as static functions. That*/
+    /*       means, they are something like 'globals'. They receive a pointer to the */
+    /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
 #   if defined (__QUEX_SETTING_PLAIN_C)
 #      define self (*me)
 #   else
@@ -114,7 +114,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
 
     txt += __local_variable_definitions(local_variable_list)
-    txt += "#   ifdef QUEX_OPTION_ACTIVATE_ASSERTS\n"
+    txt += "#   ifdef QUEX_OPTION_ASSERTS\n"
     txt += "    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;\n"
     txt += "#   endif\n"
 
@@ -128,8 +128,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     # -- prevent the warning 'unused variable'
     txt += "\n"
-    txt += "    // prevent compiler warning 'unused variable': use variables once in a part of the code\n"
-    txt += "    // that is never reached (and deleted by the compiler anyway).\n"
+    txt += "    /* prevent compiler warning 'unused variable': use variables once in a part of the code*/\n"
+    txt += "    /* that is never reached (and deleted by the compiler anyway).*/\n"
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
     for mode_name in ModeNameList:
@@ -160,7 +160,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexB
 
     if( *last_acceptance_input_position != 0x0 ) { 
         *last_acceptance_input_position -= LoadedByteN;
-        // QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); 
+        /* QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); */
     }                                                                  
                                                                           
 $$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
@@ -184,13 +184,13 @@ def __load_procedure(PostConditionedStateMachineID_List):
                    ["$$LAST_ACCEPTANCE_POSITIONS$$", argument_list]])
 
 __terminal_state_str  = """
-  // (*) Terminal states _______________________________________________________
-  //
-  // Acceptance terminal states, i.e. the 'winner patterns'. This means
-  // that the last input dropped out of a state where the longest matching
-  // pattern was according to the terminal state. The terminal states are 
-  // numbered after the pattern id.
-  //
+  /* (*) Terminal states _______________________________________________________*/
+  /**/
+  /* Acceptance terminal states, i.e. the 'winner patterns'. This means*/
+  /* that the last input dropped out of a state where the longest matching*/
+  /* pattern was according to the terminal state. The terminal states are */
+  /* numbered after the pattern id.*/
+  /**/
 #define Lexeme       (me->buffer._lexeme_start_p)
 #define LexemeBegin  (me->buffer._lexeme_start_p)
 #define LexemeEnd    (me->buffer._input_p)
@@ -215,37 +215,37 @@ $$DEFAULT_ACTION$$
 #undef LexemeL
 #ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
 __TERMINAL_ROUTER: {
-        //  if last_acceptance => goto correspondent acceptance terminal state
-        //  else               => execute defaul action
+        /*  if last_acceptance => goto correspondent acceptance terminal state*/
+        /*  else               => execute defaul action*/
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_DEFAULT-GOTO$$; /* nothing matched */
         }
     }
-#endif // __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#endif /* __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED*/
 """
 
 __on_continue_reentry_preparation_str = """
   
 $$REENTRY_PREPARATION$$
-    // (*) Common point for **restarting** lexical analysis.
-    //     at each time when CONTINUE is called at the end of a pattern.
-    //
+    /* (*) Common point for **restarting** lexical analysis.*/
+    /*     at each time when CONTINUE is called at the end of a pattern.*/
+    /**/
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
-    //
-    //  If a mode change happened, then the function must first return and
-    //  indicate that another mode function is to be called. At this point, 
-    //  we to force a 'return' on a mode change. 
-    //
-    //  Pseudo Code: if( previous_mode != current_mode ) {
-    //                   return 0;
-    //               }
-    // 
-    //  When the analyzer returns, the caller function has to watch if a mode change
-    //  occured. If not it can call this function again.
-    //
-#   ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+    /**/
+    /*  If a mode change happened, then the function must first return and*/
+    /*  indicate that another mode function is to be called. At this point, */
+    /*  we to force a 'return' on a mode change. */
+    /**/
+    /*  Pseudo Code: if( previous_mode != current_mode ) {*/
+    /*                   return 0;*/
+    /*               }*/
+    /* */
+    /*  When the analyzer returns, the caller function has to watch if a mode change*/
+    /*  occured. If not it can call this function again.*/
+    /**/
+#   ifdef QUEX_OPTION_ASSERTS
     if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) {
         fprintf(stderr, "Mode change without immediate return from the lexical analyser.");
         exit(-1);

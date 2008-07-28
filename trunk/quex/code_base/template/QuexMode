@@ -8,7 +8,7 @@
 #include<quex/code_base/temporary_macros_on>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    if defined(QUEX_OPTION_ACTIVATE_ASSERTS)
+#    if defined(QUEX_OPTION_ASSERTS)
 #       include<quex/code_base/buffer/MemoryPositionMimiker>
 #    endif
 

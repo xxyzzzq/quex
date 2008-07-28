@@ -22,4 +22,4 @@ extern "C" {
 } /* extern "C" */
 #endif
 
-#endif // __INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__
+#endif /* __INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__ */

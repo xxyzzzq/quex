@@ -1,25 +1,11 @@
 from   quex.frs_py.string_handling import blue_print
 
-dummy_functions = """
-    __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE 
-    $$LEXER_CLASS_NAME$$_uncallable_analyser_function($$LEXER_CLASS_NAME$$* me)
-    { __quex_assert(0); return (__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE)(0); }
-
-    void 
-    $$LEXER_CLASS_NAME$$_on_indentation_null_function($$LEXER_CLASS_NAME$$*, const int)
-    {}
-    
-    void 
-    $$LEXER_CLASS_NAME$$_on_entry_exit_null_function($$LEXER_CLASS_NAME$$*, const QuexMode*)
-    {}
-"""
 
 def do(Modes):
 
     # -- get the implementation of mode class functions
     #    (on_entry, on_exit, on_indendation, has_base, has_entry, has_exit)
     txt  = "#define self  (*me)\n"
-    txt += dummy_functions
     for mode in Modes:        
         txt += get_implementation_of_mode_functions(mode, Modes)
 
@@ -33,6 +19,7 @@ mode_function_implementation_str = \
     $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry($$LEXER_CLASS_NAME$$* me, const QuexMode* FromMode) {
 $$ENTER-PROCEDURE$$
     }
+
     void
     $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit($$LEXER_CLASS_NAME$$* me, const QuexMode* ToMode)  {
 $$EXIT-PROCEDURE$$

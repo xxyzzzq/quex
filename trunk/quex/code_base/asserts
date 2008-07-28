@@ -1,10 +1,10 @@
-// vim: set syntax=cpp:
+/* vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD__QUEX_ASSERTS__
 #define __INCLUDE_GUARD__QUEX_ASSERTS__
 
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#ifdef QUEX_OPTION_ASSERTS
 #   ifdef  QUEX_OPTION_ASSERTS_DISABLED 
-#      undef QUEX_OPTION_ACTIVATE_ASSERTS
+#      undef QUEX_OPTION_ASSERTS
 #   else
 #      if ! defined (__QUEX_SETTING_PLAIN_C)
 #          include <cassert>
@@ -17,5 +17,5 @@
 #   define  __quex_assert(X)   /*no assert*/
 #endif
 
-#endif // __INCLUDE_GUARD__QUEX_ASSERTS__
+#endif /* __INCLUDE_GUARD__QUEX_ASSERTS__ */
 

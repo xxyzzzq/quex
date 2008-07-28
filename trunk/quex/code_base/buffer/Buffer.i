@@ -1,4 +1,4 @@
-// -*- C++ -*- vim: set syntax=cpp:
+/* -*- C++ -*- vim: set syntax=cpp: */
 
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
@@ -11,12 +11,6 @@
 namespace quex { 
 #endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define __ALLOCATE_MEMORY(N)   (new QUEX_CHARACTER_TYPE[(size_t)N])
-#else
-#    define __ALLOCATE_MEMORY(N)   (QUEX_CHARACTER_TYPE*)malloc(sizeof(QUEX_CHARACTER_TYPE)*(size_t)N)
-#endif
-       
     QUEX_INLINE_KEYWORD void 
     QuexBufferMemory_setup(QuexBufferMemory* me, 
                            QUEX_CHARACTER_TYPE* memory, size_t Size, 
@@ -24,7 +18,7 @@ namespace quex {
     {
         me->_front    = memory;
         me->_back     = memory + (Size - 1);
-#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#       ifdef QUEX_OPTION_ASSERTS
         __QUEX_STD_memset(me->_front, 0, Size);
 #       endif
         *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
@@ -44,19 +38,19 @@ namespace quex {
         if( memory_chunk != 0x0 ) 
             QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true);      
         else 
-            QuexBufferMemory_setup(&(me->_memory), __ALLOCATE_MEMORY(Size), Size, false);      
+            QuexBufferMemory_setup(&(me->_memory), __QUEX_ALLOCATE_MEMORY(QUEX_CHARACTER_TYPE, Size), Size, false);      
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;
-        // NOTE: The terminating zero is stored in the first character **after** the
-        //       lexeme (matching character sequence). The begin of line pre-condition
-        //       is concerned with the last character in the lexeme, which is the one
-        //       before the 'char_covered_by_terminating_zero'.
+        /* NOTE: The terminating zero is stored in the first character **after** the  
+         *       lexeme (matching character sequence). The begin of line pre-condition  
+         *       is concerned with the last character in the lexeme, which is the one  
+         *       before the 'char_covered_by_terminating_zero'.*/
         me->_end_of_file_p                 = 0x0;
-        me->_character_at_lexeme_start     = '\0';  // (0 means: no character covered)
+        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)*/
         me->_content_first_character_index = 0;
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  // --> begin of line
+        me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
 #       endif
     }
 
@@ -88,9 +82,9 @@ namespace quex {
     QUEX_INLINE_KEYWORD QUEX_CHARACTER_POSITION_TYPE
     QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
-        // QUEX_BUFFER_ASSERT_CONSISTENCY();
+        /* QUEX_BUFFER_ASSERT_CONSISTENCY();*/
         QUEX_DEBUG_PRINT(buffer, "TELL: %i", (int)buffer->_input_p);
-#       if      defined (QUEX_OPTION_ACTIVATE_ASSERTS) \
+#       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
         return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_content_first_character_index);
 #       else
@@ -101,17 +95,17 @@ namespace quex {
     QUEX_INLINE_KEYWORD void
     QuexBuffer_seek_memory_adr(QuexBuffer* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
     {
-#       if      defined (QUEX_OPTION_ACTIVATE_ASSERTS) \
+#       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
-        // Check wether the memory_position is relative to the current start position 
-        // of the stream. That means, that the tell_adr() command was called on the
-        // same buffer setting or the positions have been adapted using the += operator.
+        /* Check wether the memory_position is relative to the current start position   
+         * of the stream. That means, that the tell_adr() command was called on the  
+         * same buffer setting or the positions have been adapted using the += operator.*/
         __quex_assert(Position.buffer_start_position == buffer->_content_first_character_index);
         buffer->_input_p = Position.address;
 #       else
         buffer->_input_p = Position;
 #       endif
-        // QUEX_BUFFER_ASSERT_CONSISTENCY();
+        /* QUEX_BUFFER_ASSERT_CONSISTENCY(); */
     }
 
     QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE
@@ -139,7 +133,7 @@ namespace quex {
     QUEX_INLINE_KEYWORD void
     QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer* me)
     {
-        // only need to reset, in case that the terminating zero was set
+        /* only need to reset, in case that the terminating zero was set*/
         if( me->_character_at_lexeme_start != (QUEX_CHARACTER_TYPE)'\0' ) {  
             *(me->_input_p) = me->_character_at_lexeme_start;                  
             me->_character_at_lexeme_start = (QUEX_CHARACTER_TYPE)'\0';     
@@ -169,8 +163,8 @@ namespace quex {
     {
         __quex_assert(Position > me->_memory._front);
         __quex_assert(Position <= me->_memory._back);
-        // NOTE: The content starts at _front[1], since _front[0] contains 
-        //       the buffer limit code.
+        /* NOTE: The content starts at _front[1], since _front[0] contains 
+         *       the buffer limit code. */
         me->_end_of_file_p    = Position;
         *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
@@ -197,12 +191,10 @@ namespace quex {
         return true;
     }
 
-#   undef __ALLOCATE_MEMORY
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
+} /* namespace quex */
 #endif
 
-#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__ */
 
 

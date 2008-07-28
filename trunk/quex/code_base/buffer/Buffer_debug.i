@@ -1,7 +1,6 @@
-// -*- C++ -*-  vim: set syntax=cpp:
-//
-// (C) 2008 Frank-Rene Schaefer
-//
+/* -*- C++ -*-  vim: set syntax=cpp:
+ *
+ * (C) 2008 Frank-Rene Schaefer */
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
 #define __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
 
@@ -77,18 +76,18 @@ namespace quex {
             return (QUEX_CHARACTER_TYPE)'|';
     }
 
-    // Do not forget to include <iostream> before this header when doing those unit tests
-    // which are using this function.
+    /* Do not forget to include <iostream> before this header when doing those unit tests*/
+    /* which are using this function.*/
     QUEX_INLINE_KEYWORD void  
     BufferFiller_show_content(QuexBufferFiller* me) 
     {
         __quex_assert(me != 0x0);
         QuexBuffer* buffer = me->client;
         __quex_assert(buffer != 0x0);
-        // NOTE: If the limiting char needs to be replaced temporarily by
-        //       a terminating zero.
-        // NOTE: This is a **simple** printing function for unit testing and debugging
-        //       it is thought to print only ASCII characters (i.e. code points < 0xFF)
+        /* NOTE: If the limiting char needs to be replaced temporarily by
+         *       a terminating zero.
+         * NOTE: This is a **simple** printing function for unit testing and debugging
+         *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         int                    covered_char = 0xFFFF;
         QUEX_CHARACTER_TYPE*  end_p = 0x0;
         const size_t           ContentSize  = QuexBuffer_content_size(buffer);
@@ -99,26 +98,25 @@ namespace quex {
         for(end_p = ContentFront; end_p <= BufferBack; ++end_p) {
             if( end_p == buffer->_end_of_file_p || *end_p == QUEX_SETTING_BUFFER_LIMIT_CODE ) { break; }
         }
-        //_________________________________________________________________________________
+        /*_________________________________________________________________________________*/
         char tmp[ContentSize+4];
-        // tmp[0]                  = outer border
-        // tmp[1]                  = buffer limit
-        // tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]
-        // tmp[ContentSize+2]     = buffer limit
-        // tmp[ContentSize+3]     = outer border
-        // tmp[ContentSize+4]     = terminating zero
+        /* tmp[0]                  = outer border*/
+        /* tmp[1]                  = buffer limit*/
+        /* tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]*/
+        /* tmp[ContentSize+2]     = buffer limit*/
+        /* tmp[ContentSize+3]     = outer border*/
+        /* tmp[ContentSize+4]     = terminating zero*/
         for(size_t i=2; i<ContentSize + 2 ; ++i) tmp[i] = ' ';
         tmp[ContentSize+4] = '\0';
         tmp[ContentSize+3] = '|';
         tmp[ContentSize+2] = __BufferFiller_get_border_char(me->client, BufferBack);
         tmp[1]             = __BufferFiller_get_border_char(me->client, BufferFront);
         tmp[0]             = '|';
-        //
-        // tmp[_SHOW_current_fallback_n - 1 + 2] = ':';        
+        /* tmp[_SHOW_current_fallback_n - 1 + 2] = ':';        */
         tmp[buffer->_input_p - ContentFront + 2] = 'C';
         if( buffer->_lexeme_start_p >= ContentFront && buffer->_lexeme_start_p <= BufferBack ) 
             tmp[(int)(buffer->_lexeme_start_p - ContentFront) + 2] = 'S';
-        //
+        /**/
         if ( buffer->_input_p == ContentFront - 2 ) {
             std::cout << tmp << " <out>";
         } else {
@@ -128,14 +126,14 @@ namespace quex {
             else                                  
                 std::cout << "'" << *buffer->_input_p << "'";
         }
-        // std::cout << " = 0x" << std::hex << int(*buffer->_input_p) << std::dec 
+        /* std::cout << " = 0x" << std::hex << int(*buffer->_input_p) << std::dec */
         std::cout << std::endl;
         std::cout << "|" << __BufferFiller_get_border_char(me->client, BufferFront);
         for(QUEX_CHARACTER_TYPE* iterator = ContentFront; iterator != end_p; ++iterator) {
             std::cout << *iterator;
         }
         std::cout << __BufferFiller_get_border_char(me->client, end_p);
-        //
+        /**/
         const size_t L = (buffer->_end_of_file_p == 0x0) ? 0 : BufferBack - buffer->_end_of_file_p;
         for(size_t i=0; i < L; ++i) std::cout << "|";
 
@@ -143,9 +141,9 @@ namespace quex {
     }
 
 #   if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
+} /* namespace quex */
 #   endif 
 
-#endif  // __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS 
+#endif  /* __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
 
-#endif // __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_
+#endif /* __INCLUDE_GUARD_QUEX_BUFFER_BUFFER_UNIT_TEST_I_ */

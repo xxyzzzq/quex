@@ -87,7 +87,7 @@ public:
 	ostr << std::dec << "):\n";
     }
 
-#if defined(QUEX_OPTION_ACTIVATE_ASSERTS) && (! defined(NDEBUG)) || defined(___UNIT_TEST__FRANK_RENE_SCHAEFER__CIRCULAR_QUEUE___)
+#if defined(QUEX_OPTION_ASSERTS) && (! defined(NDEBUG)) || defined(___UNIT_TEST__FRANK_RENE_SCHAEFER__CIRCULAR_QUEUE___)
     void assert_consistency() {
 	// NOTE: If NDEBUG is define, the following asserts are taken out
 	//       and this function is a null function that is deleted by the compiler.

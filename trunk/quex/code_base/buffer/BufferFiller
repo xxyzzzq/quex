@@ -1,0 +1,62 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER__
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/temporary_macros_on>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex { 
+#endif
+
+     typedef struct __QuexBufferFiller_tag {
+        QuexBuffer*         client;
+
+        size_t   _min_fallback_n;
+
+        /* -- 'Tell' returns the character index of the last character read. This corresponds   
+         *    to the character index of the last character that is currently in the buffer.  */
+        size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);
+        /* -- 'Seek' sets the input position for the next buffer-read-action.*/
+        void     (*seek_character_index)(struct __QuexBufferFiller_tag*, const size_t Index);
+        /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)*/
+        size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
+                                    QUEX_CHARACTER_TYPE* buffer, const size_t N);
+
+        /* void   register_begin_of_file() = 0;  
+         * void   seek_begin_of_file() = 0;     */
+
+        /* -- User defined handler for the case that the distance from lexeme start  
+         *    to lexeme end exceeds the buffer size.  */
+        bool  (*_on_overflow)(QuexBuffer*, bool ForwardF);
+
+        /* -- There are derived 'classes' from this one, but in the class we only store  
+         *    a pointer to QuexBufferFiller. In order to be compatible with 'C' we store  
+         *    the de-allocate and destruct procedure that is appropriate in a function pointer. */
+        void  (*_destroy)(struct __QuexBufferFiller_tag*);
+    } QuexBufferFiller;
+
+    QUEX_INLINE_KEYWORD void 
+        __QuexBufferFiller_init(QuexBufferFiller* me,
+                                const size_t MinFallbackN,
+                                size_t       (*tell_character_index)(QuexBufferFiller*),
+                                void         (*seek_character_index)(QuexBufferFiller*, const size_t),
+                                size_t       (*read_characters)(QuexBufferFiller*,
+                                                                QUEX_CHARACTER_TYPE* buffer, const size_t),
+                                void         (*destroy)(QuexBufferFiller*));
+    TEMPLATE_IN(InputHandleT) QuexBufferFiller*  
+                                QuexBufferFiller_create(InputHandleT* ih,
+                                                        const char* IANA_CodingName,
+                                                        uint8_t*    place_in_memory);
+    QUEX_INLINE_KEYWORD void    QuexBufferFiller_destroy(QuexBufferFiller*); 
+
+    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_backward(QuexBufferFiller*);
+    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_forward(QuexBufferFiller*);
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} /* namespace quex */
+#endif
+
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER__ */
