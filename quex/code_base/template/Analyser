@@ -1,7 +1,10 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
 #define __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
-#include <quex/code_base/temporary_macros_on>
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/BufferFiller>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
@@ -11,24 +14,23 @@ namespace quex {
      * constructed engine. Actually, it should only be useful for unit tests. Else, it has
      * more a documentary character telling: This is the heart of the matter--anything else
      * is just decoration! Any 'real' lexical analyser should be derived from this class. */
-    
-    struct QuexAnalyser {
-        QuexBuffer               buffer;
-        QuexBufferFiller*       buffer_filler;
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(current_analyser_function))(QuexAnalyser*);
-#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
-        __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(DEBUG_analyser_function_at_entry))(QuexAnalyser*);
+    struct __QuexAnalyser_tag {
+        QuexBuffer                   buffer;
+        QuexBufferFiller*            buffer_filler;
+        QUEX_ANALYSER_FUNCTION_TYPE  current_analyser_function;
+#       ifdef QUEX_OPTION_ASSERTS
+        /* When a mode change happens and the user does not 'return' but 'CONTINUE'
+         * an error must be logged, since the following characters are still swallowed
+         * by the current function and not the new one. For this one needs to return and
+         * then continue further. */
+        QUEX_ANALYSER_FUNCTION_TYPE  DEBUG_analyser_function_at_entry;
 #       endif
     };
+    typedef struct __QuexAnalyser_tag QuexAnalyser;
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#   if defined(QUEX_CHARACTER_TYPE)
-    struct Analyser : public QuexAnalyser<QUEX_CHARACTER_TYPE> { };
-#   endif
-} // namespace quex
+} /* namespace quex */
 #endif
-
-#include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/template/Analyser.i>
 #endif /* __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__ */

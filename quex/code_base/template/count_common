@@ -2,7 +2,7 @@
 #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON
 #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON
 
-#ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#ifdef QUEX_OPTION_ASSERTS
 #   define __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY()                                          \
     {                                                                                       \
         __quex_assert(_line_number_at_begin   <= _line_number_at_end);                      \

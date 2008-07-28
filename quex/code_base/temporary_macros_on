@@ -15,16 +15,17 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
        
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define TEMPLATIFIER(SOME_CLASS)      template <class SOME_CLASS>
-#    define TEMPLATE_IN(SOME_CLASS)       template <class SOME_CLASS> inline
-#    define STREAM_POSITION_TYPE(IH_TYPE) typename InputPolicy<IH_TYPE*>::stream_position
-#    define STREAM_OFFSET_TYPE(IH_TYPE)   typename InputPolicy<IH_TYPE*>::stream_offset
+#    define TEMPLATIFIER(SOME_CLASS)            template <class SOME_CLASS>
+#    define TEMPLATE_IN(SOME_CLASS)             template <class SOME_CLASS> inline
+#    define STREAM_POSITION_TYPE(IH_TYPE)       typename InputPolicy<IH_TYPE*>::stream_position
+#    define STREAM_OFFSET_TYPE(IH_TYPE)         typename InputPolicy<IH_TYPE*>::stream_offset
 
 #else
-#    define TEMPLATIFIER(SOME_CLASS)      /* empty */
-#    define TEMPLATE_IN(SOME_CLASS)       QUEX_INLINE_KEYWORD
-#    define STREAM_POSITION_TYPE(IH_TYPE) long
-#    define STREAM_OFFSET_TYPE(IH_TYPE)   long
+#    define TEMPLATIFIER(SOME_CLASS)               /* empty */
+#    define TEMPLATE_IN(SOME_CLASS)                QUEX_INLINE_KEYWORD
+#    define STREAM_POSITION_TYPE(IH_TYPE)          long
+#    define STREAM_OFFSET_TYPE(IH_TYPE)            long
+#    define InputHandleT                           FILE
 #endif
 
 

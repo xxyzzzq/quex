@@ -1,36 +1,36 @@
-// -*- C++ -*- vim: set syntax=cpp:
+/* -*- C++ -*- vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
 
 #include<quex/code_base/definitions>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    if defined(QUEX_OPTION_ACTIVATE_ASSERTS)
+#    if defined(QUEX_OPTION_ASSERTS)
 #       include<quex/code_base/buffer/MemoryPositionMimiker>
 #    endif
 namespace quex { 
 #endif
 
     
-    struct QuexBufferMemory { 
+    typedef struct { 
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
-#          if defined (QUEX_OPTION_ACTIVATE_ASSERTS)
+#          if defined (QUEX_OPTION_ASSERTS)
            typedef MemoryPositionMimiker<QUEX_CHARACTER_TYPE>   Position;
 #          else
            typedef QUEX_CHARACTER_TYPE*                         Position;
 #          endif
 #       endif
-        // (*) Buffer Memory Setup:
-        //      memory[0]             = lower buffer limit code character
-        //      memory[1]             = first char of content
-        //      ...
-        //      memory[BUFFER_SIZE-2] = last char of content
-        //      memory[BUFFER_SIZE-1] = upper buffer limit code character
-        QUEX_CHARACTER_TYPE*  _front;   // first character in buffer 
-        QUEX_CHARACTER_TYPE*  _back;    // last character in buffer
-        // (*) 'Owner' (who is to delete it's memory?)
+        /* (*) Buffer Memory Setup:
+         *      memory[0]             = lower buffer limit code character
+         *      memory[1]             = first char of content
+         *      ...
+         *      memory[BUFFER_SIZE-2] = last char of content
+         *      memory[BUFFER_SIZE-1] = upper buffer limit code character */
+        QUEX_CHARACTER_TYPE*  _front;   /* first character in buffer      */
+        QUEX_CHARACTER_TYPE*  _back;    /* last character in buffer       */
+        /* (*) 'Owner' (who is to delete it's memory?)                    */
         bool                   _external_owner_f; 
-    };
+    } QuexBufferMemory;
 
     QUEX_INLINE_KEYWORD void    QuexBufferMemory_setup(QuexBufferMemory*, 
                                                        QUEX_CHARACTER_TYPE* memory, size_t Size, 
@@ -44,36 +44,36 @@ namespace quex {
 #   endif
 
     
-    struct QuexBuffer { 
+    typedef struct { 
         QuexBufferMemory     _memory;
 
-        // (*) Iterator positions for lexical analysis
+        /* (*) Iterator positions for lexical analysis */
         QUEX_CHARACTER_TYPE*  _input_p;
         QUEX_CHARACTER_TYPE*  _lexeme_start_p;
 
-        // (*) Origin of the content in the input stream:
-        //     -- pointer to position in buffer that corresponds EOF 
+        /* (*) Origin of the content in the input stream:
+         *     -- pointer to position in buffer that corresponds EOF */
         QUEX_CHARACTER_TYPE*  _end_of_file_p;  
-        //     -- character index in the stream that corresponds to the character
-        //        at the first character (see above: _front[1])
+        /*     -- character index in the stream that corresponds to the character
+         *        at the first character (see above: _front[1]) */
         size_t                 _content_first_character_index;
         
-        // (*) Information about characters that passed.
-        //     This is required to temporarily store a terminating zero and to
-        //     check for the 'begin of line' pre-condition.
-        //
-        //     NOTE: The terminating zero is stored in the first character **after** the
-        //           lexeme (matching character sequence). The begin of line pre-condition
-        //           is concerned with the last character in the lexeme, which is the one
-        //           before the 'char_covered_by_terminating_zero'.
-        QUEX_CHARACTER_TYPE   _character_at_lexeme_start;      // --> terminating zero helper
+        /* (*) Information about characters that passed.
+         *     This is required to temporarily store a terminating zero and to
+         *     check for the 'begin of line' pre-condition.
+         *
+         *     NOTE: The terminating zero is stored in the first character **after** the
+         *           lexeme (matching character sequence). The begin of line pre-condition
+         *           is concerned with the last character in the lexeme, which is the one
+         *           before the 'char_covered_by_terminating_zero'. */
+        QUEX_CHARACTER_TYPE   _character_at_lexeme_start;      /* --> terminating zero helper */
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        QUEX_CHARACTER_TYPE   _character_before_lexeme_start;  // --> begin of line
+        QUEX_CHARACTER_TYPE   _character_before_lexeme_start;  /* --> begin of line           */
 #       endif
-    };
+    } QuexBuffer;
 
     QUEX_INLINE_KEYWORD void  QuexBuffer_init(QuexBuffer*, 
-                                      QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size);
+                                              QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size);
 
     QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
     QUEX_INLINE_KEYWORD void                  QuexBuffer_input_p_increment(QuexBuffer*);
@@ -97,40 +97,11 @@ namespace quex {
     QUEX_INLINE_KEYWORD bool  QuexBuffer_is_begin_of_file(QuexBuffer*);
 
 
-     struct QuexBufferFiller {
-        QuexBuffer*         client;
-
-        size_t   _min_fallback_n;
-
-        // -- 'Tell' returns the character index of the last character read. This corresponds
-        //    to the character index of the last character that is currently in the buffer.
-        size_t   (*tell_character_index)(QuexBufferFiller*);
-        // -- 'Seek' sets the input position for the next buffer-read-action.
-        void     (*seek_character_index)(QuexBufferFiller*, const size_t Index);
-        // -- 'Read' reads N characters from a stream into a buffer (independent of their size)
-        size_t   (*read_characters)(QuexBufferFiller*,
-                                    QUEX_CHARACTER_TYPE* buffer, const size_t N);
-
-        // void   register_begin_of_file() = 0;
-        // void   seek_begin_of_file() = 0;
-
-        // -- User defined handler for the case that the distance from lexeme start
-        //    to lexeme end exceeds the buffer size.
-        bool   (*_on_overflow)(QuexBuffer*, bool ForwardF);
-    };
-
-    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_backward(QuexBufferFiller* me);
-    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_forward(QuexBufferFiller* me);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#   ifdef QUEX_CHARACTER_TYPE
-    struct BufferMemory : public QuexBufferMemory<QUEX_CHARACTER_TYPE> { };
-    struct Buffer       : public QuexBuffer<QUEX_CHARACTER_TYPE> { };
-    struct BufferFiller : public QuexBufferFiller<QUEX_CHARACTER_TYPE> { };
-#   endif
-} // namespace quex
+} /* namespace quex */
 #endif
 
 #include <quex/code_base/buffer/Buffer.i>
 
-#endif // __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__ */

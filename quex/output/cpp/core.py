@@ -225,16 +225,16 @@ def __get_mode_init_call(mode, LexerClassName):
     has_exit_to       = header_str + "has_exit_to"       
 
     if mode.options["inheritable"] == "only": 
-        analyser_function = LexerClassName + "_uncallable_analyser_function"
+        analyser_function = "QuexMode_uncallable_analyser_function"
 
     if mode.on_entry_code_fragments() == []:
-        on_entry = LexerClassName + "_on_entry_exit_null_function"
+        on_entry = "QuexMode_on_entry_exit_null_function"
 
     if mode.on_exit_code_fragments() == []:
-        on_exit = LexerClassName + "_on_entry_exit_null_function"
+        on_exit = "QuexMode_on_entry_exit_null_function"
 
     if mode.on_indentation_code_fragments() == []:
-        on_indentation = LexerClassName + "_on_indentation_null_function"
+        on_indentation = "QuexMode_on_indentation_null_function"
 
     txt = blue_print(quex_mode_init_call_str,
                 [["$$MN$$",             mode.name],

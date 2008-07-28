@@ -65,8 +65,9 @@ CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
     __constructor_core(fh, IConvInputCodingName);
 }
 
+#if 0
 template <class InputHandle> inline
-quex::buffer<QUEX_CHARACTER_TYPE>*
+QuexBufferquex::buffer<QUEX_CHARACTER_TYPE>*
 CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName /* = 0x0 */)
 {
     fixed_size_character_stream<QUEX_CHARACTER_TYPE>*  is = 0x0;
@@ -89,12 +90,11 @@ CLASS::create_buffer(InputHandle* input_handle, const char* IConvInputCodingName
                                            QUEX_SETTING_BUFFER_FALLBACK_SIZE,
                                            (QUEX_CHARACTER_TYPE)QUEX_SETTING_BUFFER_LIMIT_CODE);
 }
+#endif
 
 inline
 CLASS::~CLASS() 
 {
-    QUEX_CORE_ANALYSER_STRUCT::__buffer->close_input();
-    delete QUEX_CORE_ANALYSER_STRUCT::__buffer;
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     delete _token_queue;
 #   endif

@@ -175,8 +175,7 @@ const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "$$CORE_ENGINE_CHARACTE
 #include<quex/code_base/buffer/Buffer>
 
 // Quex/User
-#define CLASS                            Quex$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>
-#define __CLASS                          Quex$$LEXER_CLASS_NAME$$
+#define CLASS                            $$LEXER_CLASS_NAME$$
 #define __QUEX_SETTING_TOKEN_CLASS_NAME  $$TOKEN_CLASS$$
 
 #include <quex/code_base/template/QuexMode>
@@ -260,27 +259,18 @@ namespace quex {
     
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
-    /* NOTE: Implement the created class as a template with a preceeding '__' in the
-     *       name. So, if the user likes, he can create his own templated lexer with
-     *       a different character carrier type (e.g. uint32_t, instead of whatsoever).
-     *       The default is defined by QUEX_CHARACTER_TYPE. Thus, later on in this file
-     *       the class $$LEXER_CLASS_NAME$$ is defined as 
-     *
-     *                      __$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>
-     */
-    template <class QUEX_CHARACTER_TYPE>
-    class __CLASS :
-        protected QuexAnalyser<QUEX_CHARACTER_TYPE> {
+    class CLASS :
+        protected QuexAnalyser {
 
-        /* DISABLED */ __CLASS();
-        /* DISABLED */ __CLASS(const __CLASS&);
+        /* DISABLED */ CLASS();
+        /* DISABLED */ CLASS(const CLASS&);
 
     public:
-        __CLASS(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
-        __CLASS(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
-        __CLASS(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0);
+        CLASS(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
+        CLASS(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
+        CLASS(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0);
 
-        virtual ~__CLASS();
+        virtual ~CLASS();
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
@@ -311,14 +301,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         void        enter_mode(/* NOT const*/ QuexMode& TargetMode);
         //
         //     -- map: mode id to mode and vice versa
-        QuexMode&  map_mode_id_to_mode(const int        ModeID);       
+        QuexMode&   map_mode_id_to_mode(const int        ModeID);       
         const int   map_mode_to_mode_id(const QuexMode& Mode) const;
 
-        // (*) buffer handling
-        template <class InputHandle> 
-        quex::QuexBuffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
-                                                         const char*  IConvInputCodingName = 0x0);
-          
         // (*) Token sending
         void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const $$TOKEN_CLASS$$& That);
@@ -367,14 +352,8 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 $$MODE_OBJECT_MEMBERS$$
 
     private:
-        // -- keeping track of the currently active mode
-        //    Inside analyzer function of a mode, it is possible that the analyzer
-        //    does not return immediately after a mode has been set. I.e. it calls
-        //    CONTINUE. In this case, it needs to be checked wether the return has
-        //    to be forced. The caller, can then call the newly setup analyzer function
-        //    from where the current one has been called --- see get_token().
         QuexMode*   __current_mode_p;
-        QuexMode*   __previous_mode_p;
+
         // -- with the quex core engine(s) each mode has a dedicated analyser function.
         //    (with the flex core engine, modes were modelled as start conditions
         //     of a single engine)
@@ -409,7 +388,7 @@ $$MODE_OBJECT_MEMBERS$$
 
     public:
 #       ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        IncludeStack<QUEX_CHARACTER_TYPE>  include_stack;
+        IncludeStack       include_stack;
 #       endif 
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
@@ -421,7 +400,7 @@ $$MODE_OBJECT_MEMBERS$$
         Accumulator        accumulator;
 #       endif
     private:
-        CounterType<QUEX_CHARACTER_TYPE>        counter;
+        CounterType        counter;
     public:
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         PostCategorizer    post_categorizer;
@@ -435,7 +414,7 @@ $$LEXER_CLASS_FRIENDS$$
         // (*) User's Lexer Class Body Extenstion ________________________________________
 $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        friend class       IncludeStack<QUEX_CHARACTER_TYPE>;
+        friend class       IncludeStack;
 #       endif
 
     private:
@@ -455,15 +434,10 @@ $$CLASS_BODY_EXTENSION$$
 #       endif
     };
  
-#   ifdef QUEX_CHARACTER_TYPE
-    typedef $$LEXER_CLASS_NAME$$ Quex$$LEXER_CLASS_NAME$$<QUEX_CHARACTER_TYPE>;
-#   endif
-
-    template <class QUEX_CHARACTER_TYPE>
     template <class InputHandleP> inline void
     CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
     {
-#       ifdef QUEX_OPTION_ACTIVATE_ASSERTS
+#       ifdef QUEX_OPTION_ASSERTS
         std::cout << "!! You are running a lexical analyser generated by quex in 'paranoid' mode.\n";
         std::cout << "!! This is very good, in a way that anything unexpected will cause a comment\n";
         std::cout << "!! and a program exit. However, the paranoia is a heavy load on speed performance!\n";
@@ -481,21 +455,15 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
 
-        QuexAnalyser_init((QuexAnalyser<QUEX_CHARACTER_TYPE>*)this, 
-                          __current_mode_p->current_mode_analyser_function_p,
-                          /* allocate yourself */ 0x0, const size_t QUEX_SETTING_BUFFER_SIZE, 
-                          /* buffer limit code */ 0x0,
-                          buffer_filler)
-
-
-        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
-        //                                     // pattern actions
-        __continue_analysis_after_adapting_mode_function_p_f = false;
+        QuexAnalyser_init((QuexAnalyser*)this, 
+                          __current_mode_p->analyser_function,
+                          /* allocate yourself */ 0x0, QUEX_SETTING_BUFFER_SIZE, 
+                          buffer_filler);
 
 $$CONSTRUCTOR_EXTENSTION$$
     }   
 
-    template <QUEX_CHARACTER_TYPE> inline const char* 
+    inline const char* 
     CLASS::version() const
     { 
         return "$$LEXER_CLASS_NAME$$: Version $$LEXER_BUILD_VERSION$$. Date $$LEXER_BUILD_DATE$$\n"

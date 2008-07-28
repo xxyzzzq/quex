@@ -11,12 +11,19 @@
 
 #if defined(__QUEX_SETTING_PLAIN_C)
 
-typedef int bool;
+#define bool _Bool
+
+/* Some compilers (I guess compilers build towards C89) do not
+ * even provide the __STDC_VERSION__ macro. C99, though requires
+ * the _Bool type to be there. */
+#if ! defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L
+typedef int _Bool;
+#endif
 
 #define true  ((int)(1))
 #define false ((int)(1))
 
 #define __bool_true_false_are_defined ((int)(1))
 
-#endif /* __cplusplus */
+#endif /* __QUEX_SETTING_PLAIN_C */
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__COMPATIBILITY_STDBOOL_H__ */
