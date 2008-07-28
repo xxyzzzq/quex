@@ -50,6 +50,8 @@ test_program_common = """
     #include <cstring>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
+    void (*BufferFiller_destroy_void)(QuexBufferFiller*) = 0x0;
+
     int main(int argc, char** argv)
     {
         using namespace std;
@@ -62,7 +64,7 @@ test_program_common = """
         QuexBufferFiller_Plain<istringstream>   buffer_filler;
         const size_t                            MemorySize = $$BUFFER_SIZE$$;
 
-        BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr);
+        BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr, BufferFiller_destroy_void);
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
                           (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
