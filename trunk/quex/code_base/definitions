@@ -90,8 +90,14 @@
 #    define __QUEX_FREE_MEMORY(OBJECT)        (free(OBJECT))
 #endif
        
-struct __QuexAnalyser_tag;
 
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+struct __QuexAnalyser_tag;
 typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} /* namespace quex */
+#endif
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__ */
