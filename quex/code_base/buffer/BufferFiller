@@ -12,8 +12,6 @@ namespace quex {
      typedef struct __QuexBufferFiller_tag {
         QuexBuffer*         client;
 
-        size_t   _min_fallback_n;
-
         /* -- 'Tell' returns the character index of the last character read. This corresponds   
          *    to the character index of the last character that is currently in the buffer.  */
         size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);
@@ -38,7 +36,6 @@ namespace quex {
 
     QUEX_INLINE_KEYWORD void 
         __QuexBufferFiller_init(QuexBufferFiller* me,
-                                const size_t MinFallbackN,
                                 size_t       (*tell_character_index)(QuexBufferFiller*),
                                 void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                 size_t       (*read_characters)(QuexBufferFiller*,

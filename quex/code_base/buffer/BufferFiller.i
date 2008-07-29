@@ -17,13 +17,13 @@ namespace quex {
     QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
                                                                        const size_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer* buffer, 
-                                                                 const size_t DesiredLoadN,
-                                                                 const size_t LoadedN,
-                                                                 const size_t FallBackN, 
-                                                                 const size_t Distance_LexemeStart_to_InputP);
+                                                                         const size_t DesiredLoadN,
+                                                                         const size_t LoadedN,
+                                                                         const size_t FallBackN, 
+                                                                         const size_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_backward_copy_backup_region(QuexBufferFiller* me);
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_backward_adapt_pointers(QuexBuffer* buffer, 
-                                                                  const size_t BackwardDistance);
+                                                                          const size_t BackwardDistance);
 
 #   ifndef __QUEX_SETTING_PLAIN_C
 #   define BUFFER_FILLER_PLAIN QuexBufferFiller_Plain<InputHandleT>
@@ -44,7 +44,7 @@ namespace quex {
             } else { 
                 me = 0x0; /* return new QuexBufferFiller_IConv;*/
             }
-            BufferFiller_Plain_init((BUFFER_FILLER_PLAIN*)me, 64, ih);
+            BufferFiller_Plain_init((BUFFER_FILLER_PLAIN*)me, ih);
         }
         else { 
             if( place_in_memory == 0x0 ) { 
@@ -70,7 +70,6 @@ namespace quex {
 
     QUEX_INLINE_KEYWORD void
     __QuexBufferFiller_init(QuexBufferFiller* me,
-                            const size_t MinFallbackN,
                             size_t       (*tell_character_index)(QuexBufferFiller*),
                             void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                             size_t       (*read_characters)(QuexBufferFiller*,
@@ -82,7 +81,6 @@ namespace quex {
         __quex_assert(seek_character_index != 0x0);
         __quex_assert(read_characters != 0x0);
 
-        me->_min_fallback_n      = MinFallbackN;
         me->tell_character_index = tell_character_index;
         me->seek_character_index = seek_character_index;
         me->read_characters      = read_characters;
@@ -93,11 +91,11 @@ namespace quex {
     QUEX_INLINE_KEYWORD size_t
     QuexBufferFiller_load_forward(QuexBufferFiller* me)
     {
-        __quex_assert(me != 0x0);
+        if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
+
         __quex_assert(me->tell_character_index != 0x0);
         __quex_assert(me->seek_character_index != 0x0);
         __quex_assert(me->read_characters != 0x0);
-        if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
         __quex_assert(me->client != 0x0);
         QuexBuffer*  buffer = me->client;
         size_t        ContentSize = QuexBuffer_content_size(buffer);
@@ -171,6 +169,7 @@ namespace quex {
     __QuexBufferFiller_forward_asserts(QuexBufferFiller* me)
     {
         QuexBuffer* buffer = me->client;
+
         __quex_assert(buffer->_input_p >= buffer->_lexeme_start_p);
         /* (*) Double check on consistency*/
         /*     -- 'load_forward()' should only be called, if the '_input_p' reached a border.*/
@@ -191,24 +190,26 @@ namespace quex {
     __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
                                                     const size_t Distance_LexemeStart_to_InputP)
     {
-        /* (1) Fallback: A certain region of the current buffer is copied in front such that*/
-        /*               if necessary the stream can go backwards without a backward load.*/
-        /**/
-        /*                            fallback_n*/
-        /*                               :*/
-        /*                |11111111111111:22222222222222222222222222222222222222|*/
-        /*                  copy of      :   new loaded content of buffer*/
-        /*                  end of old   */
-        /*                  buffer      */
-        /**/
-        /*     The fallback region is related to the lexeme start pointer. The lexeme start */
-        /*     pointer always needs to lie inside the buffer, because applications might read*/
-        /*     their characters from it. The 'stretch' [lexeme start, current_p] must be */
-        /*     contained in the new buffer (precisely in the fallback region).*/
+        /* (1) Fallback: A certain region of the current buffer is copied in front such that
+         *               if necessary the stream can go backwards without a backward load.
+         *
+         *                            fallback_n
+         *                               :
+         *                |11111111111111:22222222222222222222222222222222222222|
+         *                  copy of      :   new loaded content of buffer
+         *                  end of old   
+         *                  buffer      
+         *
+         *     The fallback region is related to the lexeme start pointer. The lexeme start 
+         *     pointer always needs to lie inside the buffer, because applications might read
+         *     their characters from it. The 'stretch' [lexeme start, current_p] must be 
+         *     contained in the new buffer (precisely in the fallback region). */
+        __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(me->client));
 
         /* (*) Fallback region = max(default size, necessary size)*/
-        const size_t FallBackN = me->_min_fallback_n > Distance_LexemeStart_to_InputP ? me->_min_fallback_n 
-                                 :                                                      Distance_LexemeStart_to_InputP;
+        const size_t FallBackN = QUEX_SETTING_BUFFER_MIN_FALLBACK_N > Distance_LexemeStart_to_InputP 
+                                 ? QUEX_SETTING_BUFFER_MIN_FALLBACK_N  
+                                 : Distance_LexemeStart_to_InputP;
 
         /* (*) Copy fallback region*/
         /*     If there is no 'overlap' from source and drain than the faster memcpy() can */
@@ -220,6 +221,8 @@ namespace quex {
         } else { 
             __QUEX_STD_memcpy(drain, source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
         }
+
+        __quex_assert(FallBackN < QuexBuffer_content_size(me->client));
         return FallBackN;
     }
 
@@ -258,44 +261,43 @@ namespace quex {
     QUEX_INLINE_KEYWORD size_t   
     QuexBufferFiller_load_backward(QuexBufferFiller* me)
     {
-        __quex_assert(me != 0x0);
-        /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'*/
-        /*          as returned by 'get_backward()'. Its task is the same as the one of */
-        /*          'load_forward()'--only in opposite direction. Here only two cases need */
-        /*          to be distinguished. The current_p points to */
-        /**/
-        /*          (1) End of Buffer or End of File pointer: No backward load needs to */
-        /*              happen. This can only occur if a 'get_forward()' was called right*/
-        /*              before.*/
-        /**/
-        /*          (2) Begin of the buffer and the buffer is the 'start buffer':*/
-        /*              in this case no backward load can happen, because we are at the */
-        /*              beginning. The function returns -1.*/
-        /**/
-        /*          (3) Begin of buffer and _begin_of_file_f is not set!: This is the case*/
-        /*              where this function, actually, has some work to do. It loads the*/
-        /*              buffer with 'earlier' content from the file.*/
-        /**/
-        /**/
-        /* RETURNS: Distance that was loaded backwards.*/
-        /*          -1 in case of backward loading is not possible (begin of file)*/
-        /*     */
-        /* COMMENT: */
-        /*     */
-        /* For normal cases the fallback region, i.e. the 'FALLBACK_N' buffer bytes */
-        /* allows to go a certain distance backwards immediately. If still the begin */
-        /* of the buffer is reached, then this is an indication that something is*/
-        /* 'off-the-norm'. Lexical analysis is not supposed to go longtimes*/
-        /* backwards. For such cases we step a long stretch backwards: A*/
-        /* THIRD of the buffer's size! */
-        /**/
-        /* A meaningful fallback_n would be 64 Bytes. If the buffer's size*/
-        /* is for example 512 kB then the backwards_distance of A THIRD means 170*/
-        /* kB. This leaves a  safety region which is about 2730 times*/
-        /* greater than normal (64 Bytes). After all, lexical analysis means*/
-        /* to go **mainly forward** and not backwards.*/
-        /**/
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
+
+        /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
+         *          as returned by 'get_backward()'. Its task is the same as the one of 
+         *          'load_forward()'--only in opposite direction. Here only two cases need 
+         *          to be distinguished. The current_p points to 
+         *
+         *          (1) End of Buffer or End of File pointer: No backward load needs to 
+         *              happen. This can only occur if a 'get_forward()' was called right
+         *              before.
+         *
+         *          (2) Begin of the buffer and the buffer is the 'start buffer':
+         *              in this case no backward load can happen, because we are at the 
+         *              beginning. The function returns -1.
+         *
+         *          (3) Begin of buffer and _begin_of_file_f is not set!: This is the case
+         *              where this function, actually, has some work to do. It loads the
+         *              buffer with 'earlier' content from the file.
+         *
+         *
+         * RETURNS: Distance that was loaded backwards.
+         *          -1 in case of backward loading is not possible (begin of file)
+         *     
+         * COMMENT: 
+         *     
+         * For normal cases the fallback region, i.e. the 'FALLBACK_N' buffer bytes 
+         * allows to go a certain distance backwards immediately. If still the begin 
+         * of the buffer is reached, then this is an indication that something is
+         * 'off-the-norm'. Lexical analysis is not supposed to go longtimes
+         * backwards. For such cases we step a long stretch backwards: A
+         * THIRD of the buffer's size! 
+         *
+         * A meaningful fallback_n would be 64 Bytes. If the buffer's size
+         * is for example 512 kB then the backwards_distance of A THIRD means 170
+         * kB. This leaves a  safety region which is about 2730 times
+         * greater than normal (64 Bytes). After all, lexical analysis means
+         * to go **mainly forward** and not backwards.  */
 
         __quex_assert(me->client != 0x0);
         QuexBuffer* buffer = me->client;
