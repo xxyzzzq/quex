@@ -52,21 +52,18 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void
     BufferFiller_Plain_init(TEMPLATED_CLASS* me, 
-                            const size_t     MinFallbackN,
                             InputHandleT*    input_handle)
     {
         __quex_assert(me != 0x0);
         __quex_assert(input_handle != 0x0);
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
         __QuexBufferFiller_init(&me->base,
-                                MinFallbackN,
                                 __BufferFiller_Plain_tell_character_index<InputHandleT>,
                                 __BufferFiller_Plain_seek_character_index<InputHandleT>, 
-                                __BufferFiller_Plain_read_characters<InputHandleT>);
-                                __BufferFiller_Plain_destroy<InputHandleT>,
+                                __BufferFiller_Plain_read_characters<InputHandleT>,
+                                __BufferFiller_Plain_destroy<InputHandleT>);
 #       else 
         __QuexBufferFiller_init(&me->base,
-                                MinFallbackN,
                                 __BufferFiller_Plain_tell_character_index,
                                 __BufferFiller_Plain_seek_character_index, 
                                 __BufferFiller_Plain_read_characters,

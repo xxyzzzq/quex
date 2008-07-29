@@ -11,18 +11,18 @@
 #   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)      /* empty */
 #else
 #   define __QUEX_PRINT_SOURCE_POSITION(Buffer)                       \
-          std::fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, \
-                       (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
+          __QUEX_STD_fprintf(stdout, "%s:%i: @%08X \t", __FILE__, __LINE__, \
+                             (int)((Buffer)->_input_p - (Buffer)->_memory._front));            
 
 #   define QUEX_DEBUG_PRINT(Buffer, FormatStr, ...)   \
            __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
-           std::fprintf(stdout, FormatStr "\n", ##__VA_ARGS__)
+           __QUEX_STD_fprintf(stdout, FormatStr "\n", ##__VA_ARGS__)
 
 #   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)                       \
            __QUEX_PRINT_SOURCE_POSITION(Buffer)                            \
-             Character == '\n' ? std::fprintf(stdout, "input:    '\\n'\n") \
-           : Character == '\t' ? std::fprintf(stdout, "input:    '\\t'\n") \
-           :                     std::fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
+             Character == '\n' ? __QUEX_STD_fprintf(stdout, "input:    '\\n'\n") \
+           : Character == '\t' ? __QUEX_STD_fprintf(stdout, "input:    '\\t'\n") \
+           :                     __QUEX_STD_fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
 #endif
 
 #ifndef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS 

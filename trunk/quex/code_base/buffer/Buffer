@@ -10,7 +10,6 @@
 #    endif
 namespace quex { 
 #endif
-
     
     typedef struct { 
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -29,7 +28,7 @@ namespace quex {
         QUEX_CHARACTER_TYPE*  _front;   /* first character in buffer      */
         QUEX_CHARACTER_TYPE*  _back;    /* last character in buffer       */
         /* (*) 'Owner' (who is to delete it's memory?)                    */
-        bool                   _external_owner_f; 
+        bool                  _external_owner_f; 
     } QuexBufferMemory;
 
     QUEX_INLINE_KEYWORD void    QuexBufferMemory_setup(QuexBufferMemory*, 
@@ -45,7 +44,7 @@ namespace quex {
 
     
     typedef struct { 
-        QuexBufferMemory     _memory;
+        QuexBufferMemory      _memory;
 
         /* (*) Iterator positions for lexical analysis */
         QUEX_CHARACTER_TYPE*  _input_p;
@@ -56,7 +55,7 @@ namespace quex {
         QUEX_CHARACTER_TYPE*  _end_of_file_p;  
         /*     -- character index in the stream that corresponds to the character
          *        at the first character (see above: _front[1]) */
-        size_t                 _content_first_character_index;
+        size_t                _content_first_character_index;
         
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to
