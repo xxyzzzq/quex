@@ -44,7 +44,7 @@ static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_funct
 """
 
 test_program_db = { 
-    "ANSI-C": """
+    "ANSI-C-PlainMemory": """
     int main(int argc, char** argv)
     {
         QuexAnalyser   lexer_state;
@@ -61,9 +61,9 @@ test_program_db = {
             success_f = lexer_state.current_analyser_function(&lexer_state);
         } while ( success_f );      
         printf("  ''\\n");
-    }
-\n""",
-    "PlainMemory": """
+    }\n""",
+
+    "ANSI-C": """
     #include <stdio.h>
     #include <quex/code_base/template/Analyser.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -96,9 +96,9 @@ test_program_db = {
         printf("  ''\\n");
 
         fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
-    }
-    """,
-    "QuexBuffer": """
+    }\n""",
+
+    "Cpp": """
     #include <cstring>
     #include <quex/code_base/template/Analyser.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -127,8 +127,7 @@ test_program_db = {
             success_f = lexer_state.current_analyser_function(&lexer_state);
         } while ( success_f );      
         printf("  ''\\n");
-    }
-    """,
+    }\n""",
 }
 
 
@@ -140,7 +139,7 @@ def create_main_function(BufferType, TestStr, QuexBufferSize):
     test_str = TestStr.replace("\"", "\\\"")
     test_str = test_str.replace("\n", "\\n\"\n\"")
     
-    if BufferType=="QuexBuffer": 
+    if BufferType=="Cpp": 
         # if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 5
         include_str = "#include <sstream>\n" 
 
@@ -189,13 +188,13 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     return txt
 
-def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMemory", 
+def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
-       NDEBUG_str=""):    
+       AssertsActionvation_str="-DQUEX_OPTION_ASSERTS"):    
 
-    if BufferType=="QuexBuffer": BufferLimitCode = 0;
-    else:                        BufferLimitCode = 0;
+    if BufferType=="Cpp": BufferLimitCode = 0;
+    else:                 BufferLimitCode = 0;
 
     try:
         adapted_dict = {}
@@ -217,7 +216,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
     common_str = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
     common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
-    if BufferType == "PlainMemory":
+    if BufferType in ["ANSI-C", "ANSI-C-PlainMemory"]:
         extension = ".c"
         compiler  = "gcc -ansi"
         test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
@@ -260,11 +259,11 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     print "## (2) compiling generated engine code and test"    
     os.system("mv -f %s tmp%s" % (filename_tmp, extension)); filename_tmp = "./tmp%s" % extension # DEBUG
 
-    compile_str = compiler + " %s %s " % (NDEBUG_str, filename_tmp) + \
+    # NOTE: QUEX_OPTION_ASSERTS is defined by AssertsActionvation_str (or not)
+    compile_str = compiler + " %s %s " % (AssertsActionvation_str, filename_tmp) + \
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
-                  "-DQUEX_OPTION_ASSERTS " + \
                   "-ggdb " + \
                   "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " #+ \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 

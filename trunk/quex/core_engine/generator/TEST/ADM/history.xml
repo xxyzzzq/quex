@@ -1,4 +1,4 @@
-<history date="Mon Jul 28 21:55:45 2008" element-n="213">
+<history date="Mon Jul 28 22:33:41 2008" element-n="275">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -428,6 +428,68 @@
         <crc-error time="18:49:08" application="test-backward_loading.py" choice="NDEBUG" database-crc="1539907426" real-crc="-1584767564"/>
         <crc-error time="18:49:10" application="test-no-backward-reloading.py" choice="No_NDEBUG" database-crc="401254750" real-crc="-887225006"/>
         <crc-error time="18:49:10" application="test-no-backward-reloading.py" choice="NDEBUG" database-crc="401254750" real-crc="-887225006"/>
-        <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:55:45"/>
+        <crc-error time="20:18:07" application="test-continue-without-return-2.py" choice="ANSI-C-PlainMemory" database-crc="-1256038093" real-crc="-759134064"/>
+        <crc-error time="20:18:08" application="test-continue-without-return-2.py" choice="ANSI-C" database-crc="-1256038093" real-crc="-759134064"/>
+        <crc-error time="20:18:08" application="test-continue-without-return-2.py" choice="Cpp" database-crc="1364919612" real-crc="-759134064"/>
+        <crc-error time="20:18:08" application="test-mode-changes.py" choice="ANSI-C-PlainMemory" database-crc="109072457" real-crc="270103911"/>
+        <crc-error time="20:18:09" application="test-mode-changes.py" choice="ANSI-C" database-crc="109072457" real-crc="270103911"/>
+        <crc-error time="20:18:09" application="test-mode-changes.py" choice="Cpp" database-crc="2129823693" real-crc="270103911"/>
+        <crc-error time="20:18:09" application="test-continue-without-return.py" choice="ANSI-C-PlainMemory" database-crc="-399872381" real-crc="-1324080938"/>
+        <crc-error time="20:18:10" application="test-continue-without-return.py" choice="ANSI-C" database-crc="-399872381" real-crc="-1324080938"/>
+        <crc-error time="20:18:10" application="test-continue-without-return.py" choice="Cpp" database-crc="-1138408054" real-crc="-1324080938"/>
+        <crc-error time="20:18:11" application="test-post-conditions.py" choice="ANSI-C-PlainMemory" database-crc="1203138387" real-crc="1338437579"/>
+        <crc-error time="20:18:11" application="test-post-conditions.py" choice="ANSI-C" database-crc="1203138387" real-crc="1338437579"/>
+        <crc-error time="20:18:12" application="test-post-conditions.py" choice="Cpp" database-crc="-310645837" real-crc="1338437579"/>
+        <crc-error time="20:18:12" application="test-post-conditions-2.py" choice="ANSI-C-PlainMemory" database-crc="1043348332" real-crc="-1069020887"/>
+        <crc-error time="20:18:12" application="test-post-conditions-2.py" choice="ANSI-C" database-crc="1043348332" real-crc="-1069020887"/>
+        <crc-error time="20:18:13" application="test-post-conditions-2.py" choice="Cpp" database-crc="-469104845" real-crc="-1069020887"/>
+        <crc-error time="20:18:13" application="test-post-conditions-3.py" choice="ANSI-C-PlainMemory" database-crc="-2047620398" real-crc="-423588249"/>
+        <crc-error time="20:18:13" application="test-post-conditions-3.py" choice="ANSI-C" database-crc="-2047620398" real-crc="-423588249"/>
+        <crc-error time="20:18:14" application="test-post-conditions-3.py" choice="Cpp" database-crc="-548346957" real-crc="-423588249"/>
+        <crc-error time="20:18:15" application="test-pre-conditions-3.py" choice="ANSI-C-PlainMemory" database-crc="-1438585072" real-crc="-1449812084"/>
+        <crc-error time="20:18:15" application="test-pre-conditions-3.py" choice="ANSI-C" database-crc="-1438585072" real-crc="-1449812084"/>
+        <crc-error time="20:18:16" application="test-pre-conditions-3.py" choice="Cpp" database-crc="-502322979" real-crc="-1449812084"/>
+        <crc-error time="20:18:17" application="test-pre-conditions.py" choice="ANSI-C-PlainMemory" database-crc="1686892412" real-crc="-524887799"/>
+        <crc-error time="20:18:17" application="test-pre-conditions.py" choice="ANSI-C" database-crc="1686892412" real-crc="-524887799"/>
+        <crc-error time="20:18:18" application="test-pre-conditions.py" choice="Cpp" database-crc="588297280" real-crc="-524887799"/>
+        <crc-error time="20:18:18" application="test-pre-conditions-2.py" choice="ANSI-C-PlainMemory" database-crc="-1555052860" real-crc="-2081003305"/>
+        <crc-error time="20:18:18" application="test-pre-conditions-2.py" choice="ANSI-C" database-crc="-1555052860" real-crc="-2081003305"/>
+        <crc-error time="20:18:19" application="test-pre-conditions-2.py" choice="Cpp" database-crc="1033578707" real-crc="-2081003305"/>
+        <crc-error time="20:18:19" application="test-pre-post-condition.py" choice="ANSI-C-PlainMemory" database-crc="747163175" real-crc="-347610264"/>
+        <crc-error time="20:18:20" application="test-pre-post-condition.py" choice="ANSI-C" database-crc="747163175" real-crc="-347610264"/>
+        <crc-error time="20:18:20" application="test-pre-post-condition.py" choice="Cpp" database-crc="-1292637189" real-crc="-347610264"/>
+        <crc-error time="20:18:21" application="test-pseudo_ambiguous_post_conditions.py" choice="ANSI-C-PlainMemory" database-crc="1881308717" real-crc="252074334"/>
+        <crc-error time="20:18:21" application="test-pseudo_ambiguous_post_conditions.py" choice="ANSI-C" database-crc="1881308717" real-crc="252074334"/>
+        <crc-error time="20:18:22" application="test-pseudo_ambiguous_post_conditions.py" choice="Cpp" database-crc="-1241813939" real-crc="252074334"/>
+        <crc-error time="20:18:22" application="test-pseudo_ambiguous_post_conditions-2.py" choice="ANSI-C-PlainMemory" database-crc="-1991563836" real-crc="1614045300"/>
+        <crc-error time="20:18:22" application="test-pseudo_ambiguous_post_conditions-2.py" choice="ANSI-C" database-crc="-1991563836" real-crc="1614045300"/>
+        <crc-error time="20:18:23" application="test-pseudo_ambiguous_post_conditions-2.py" choice="Cpp" database-crc="1771730582" real-crc="1614045300"/>
+        <crc-error time="20:18:23" application="test-bol-eol.py" choice="ANSI-C-PlainMemory" database-crc="148718080" real-crc="-1565444249"/>
+        <crc-error time="20:18:23" application="test-bol-eol.py" choice="ANSI-C" database-crc="148718080" real-crc="-1565444249"/>
+        <crc-error time="20:18:24" application="test-bol-eol.py" choice="Cpp" database-crc="96280394" real-crc="-1565444249"/>
+        <crc-error time="20:18:24" application="test-simple-5.py" choice="ANSI-C-PlainMemory" database-crc="1971857231" real-crc="-680455951"/>
+        <crc-error time="20:18:25" application="test-simple-5.py" choice="ANSI-C" database-crc="1971857231" real-crc="-680455951"/>
+        <crc-error time="20:18:25" application="test-simple-5.py" choice="Cpp" database-crc="1783996299" real-crc="-680455951"/>
+        <crc-error time="20:18:26" application="test-simple-2.py" choice="ANSI-C-PlainMemory" database-crc="551236357" real-crc="-270685933"/>
+        <crc-error time="20:18:27" application="test-simple-2.py" choice="ANSI-C" database-crc="551236357" real-crc="-270685933"/>
+        <crc-error time="20:18:28" application="test-simple-2.py" choice="Cpp" database-crc="803773728" real-crc="-270685933"/>
+        <crc-error time="20:18:28" application="test-simple-3.py" choice="ANSI-C-PlainMemory" database-crc="392047905" real-crc="-1792493362"/>
+        <crc-error time="20:18:28" application="test-simple-3.py" choice="ANSI-C" database-crc="392047905" real-crc="-1792493362"/>
+        <crc-error time="20:18:28" application="test-simple-3.py" choice="Cpp" database-crc="249345288" real-crc="-1792493362"/>
+        <crc-error time="20:18:29" application="test-simple.py" choice="ANSI-C-PlainMemory" database-crc="-765205256" real-crc="-771053764"/>
+        <crc-error time="20:18:29" application="test-simple.py" choice="ANSI-C" database-crc="-765205256" real-crc="-771053764"/>
+        <crc-error time="20:18:30" application="test-simple.py" choice="Cpp" database-crc="622239005" real-crc="-771053764"/>
+        <crc-error time="20:32:45" application="test-backward_loading.py" choice="Cpp_ASSERTS" database-crc="1475896019" real-crc="-1584767564"/>
+        <crc-error time="20:32:45" application="test-backward_loading.py" choice="Cpp" database-crc="-1425333838" real-crc="-1584767564"/>
+        <crc-error time="20:32:46" application="test-backward_loading.py" choice="ANSI-C-ASSERTS" database-crc="1475896019" real-crc="-1584767564"/>
+        <crc-error time="20:32:47" application="test-backward_loading.py" choice="ANSI-C" database-crc="-1425333838" real-crc="-1584767564"/>
+        <crc-error time="20:32:47" application="test-position_adaption.py" choice="Cpp_ASSERTS" database-crc="976626206" real-crc="1319922986"/>
+        <crc-error time="20:32:49" application="test-position_adaption.py" choice="ANSI-C-ASSERTS" database-crc="305445015" real-crc="1319922986"/>
+        <crc-error time="20:32:49" application="test-position_adaption.py" choice="ANSI-C" database-crc="-2131376176" real-crc="1319922986"/>
+        <crc-error time="20:32:50" application="test-no-backward-reloading.py" choice="Cpp_ASSERTS" database-crc="1296302696" real-crc="-887225006"/>
+        <crc-error time="20:32:50" application="test-no-backward-reloading.py" choice="Cpp" database-crc="-1541650590" real-crc="-887225006"/>
+        <crc-error time="20:32:51" application="test-no-backward-reloading.py" choice="ANSI-C-ASSERTS" database-crc="1353468103" real-crc="-887225006"/>
+        <crc-error time="20:32:51" application="test-no-backward-reloading.py" choice="ANSI-C" database-crc="1747838710" real-crc="-887225006"/>
+        <test-runs-today n="7" ok-n="5" fail-n="2" else-n="0" last-run="oll korrekt" last-time="20:33:41"/>
     </day>
 </history>

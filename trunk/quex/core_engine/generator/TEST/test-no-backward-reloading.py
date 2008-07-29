@@ -6,14 +6,14 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Buffer Reload: No Backward Reload -- Precondition at Border"
-    print "CHOICES: No_NDEBUG, NDEBUG;"
+    print "CHOICES: Cpp_ASSERTS, Cpp, ANSI-C-ASSERTS, ANSI-C;"
     print "SAME;"
     sys.exit(0)
 
-if "NDEBUG" in sys.argv:
-    NDEBUG_compiler_str = "-DNDEBUG"
-else:
-    NDEBUG_compiler_str = ""
+if sys.argv[1].find("ASSERTS") != -1: ASSERT_str = "-DQUEX_OPTION_ASSERTS"
+else:                                 ASSERT_str = ""
+if sys.argv[1].find("ANSI-C") != -1: BufferType = "ANSI-C"
+else:                                BufferType = "Cpp"
 
 pattern_action_pair_list = [
     # keyword (needs to come before identifier, because otherwise they would be overruled by it.)
@@ -28,7 +28,7 @@ pattern_action_pair_list = [
 print "## NOTE: The following setup guides the lexer into a buffer reload right after"
 print "##       the pre-conditions. No buffer reload backwards is to appear!"
 test_str = "   0xxxxxa lola"
-generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="QuexBuffer", 
+generator_test.do(pattern_action_pair_list, test_str, {}, BufferType, 
                   QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
-                  NDEBUG_str=NDEBUG_compiler_str)
+                  AssertsActionvation_str=ASSERT_str)
     
