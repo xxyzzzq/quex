@@ -29,8 +29,9 @@ def action(PatternName):
     
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
-#define QUEX_SETTING_BUFFER_LIMIT_CODE ($$BUFFER_LIMIT_CODE$$)
-typedef int QUEX_TOKEN_ID_TYPE;
+#define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$)
+typedef int QUEX_TOKEN_ID_TYPE;              
+#define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
@@ -42,42 +43,8 @@ static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_functi
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
 """
 
-test_program_common = """
-
-#include <quex/code_base/template/Analyser.i>
-
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-    #include <cstring>
-    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
-
-    void (*BufferFiller_destroy_void)(QuexBufferFiller*) = 0x0;
-
-    int main(int argc, char** argv)
-    {
-        using namespace std;
-        using namespace quex;
-
-        QuexAnalyser lexer_state;
-        int          success_f = 0;
-        /**/
-        istringstream                           istr("$$TEST_STRING$$");
-        QuexBufferFiller_Plain<istringstream>   buffer_filler;
-        const size_t                            MemorySize = $$BUFFER_SIZE$$;
-
-        BufferFiller_Plain_init(&buffer_filler, (size_t)$$BUFFER_FALLBACK_N$$, &istr, BufferFiller_destroy_void);
-
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
-                          &buffer_filler.base);
-        /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
-        printf("(*) result:\\n");
-        do {
-            success_f = lexer_state.current_analyser_function(&lexer_state);
-        } while ( success_f );      
-        printf("  ''\\n");
-    }
-#else
+test_program_db = { 
+    "ANSI-C": """
     int main(int argc, char** argv)
     {
         QuexAnalyser   lexer_state;
@@ -95,11 +62,77 @@ test_program_common = """
         } while ( success_f );      
         printf("  ''\\n");
     }
-#endif
-\n"""
+\n""",
+    "PlainMemory": """
+    #include <stdio.h>
+    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+
+    int main(int argc, char** argv)
+    {
+        QuexAnalyser lexer_state;
+        int          success_f = 0;
+        /**/
+        const char*             test_string = "$$TEST_STRING$$";
+        FILE*                   fh          = tmpfile();
+        QuexBufferFiller_Plain  buffer_filler;
+        const size_t            MemorySize  = $$BUFFER_SIZE$$;
+
+        /* Write test string into temporary file */
+        fwrite(test_string, strlen(test_string), 1, fh);
+        fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
+
+        BufferFiller_Plain_init(&buffer_filler, fh);
+
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
+                          (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
+                          &buffer_filler.base);
+        /**/
+        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) result:\\n");
+        do {
+            success_f = lexer_state.current_analyser_function(&lexer_state);
+        } while ( success_f );      
+        printf("  ''\\n");
+
+        fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
+    }
+    """,
+    "QuexBuffer": """
+    #include <cstring>
+    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+
+    int main(int argc, char** argv)
+    {
+        using namespace std;
+        using namespace quex;
+
+        QuexAnalyser lexer_state;
+        int          success_f = 0;
+        /**/
+        istringstream                           istr("$$TEST_STRING$$");
+        QuexBufferFiller_Plain<istringstream>   buffer_filler;
+        const size_t                            MemorySize = $$BUFFER_SIZE$$;
+
+        BufferFiller_Plain_init(&buffer_filler, &istr);
+
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
+                          (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
+                          &buffer_filler.base);
+        /**/
+        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) result:\\n");
+        do {
+            success_f = lexer_state.current_analyser_function(&lexer_state);
+        } while ( success_f );      
+        printf("  ''\\n");
+    }
+    """,
+}
 
 
-def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallbackN):
+def create_main_function(BufferType, TestStr, QuexBufferSize):
     global plain_memory_based_test_program
     global quex_buffer_based_test_program
     global test_program_common
@@ -108,16 +141,14 @@ def create_main_function(BufferType, TestStr, QuexBufferSize, QuexBufferFallback
     test_str = test_str.replace("\n", "\\n\"\n\"")
     
     if BufferType=="QuexBuffer": 
-        if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
         # if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 5
         include_str = "#include <sstream>\n" 
 
     else:                        
         include_str = ""
 
-    txt = include_str + test_program_common
+    txt = include_str + test_program_db[BufferType]
     txt = txt.replace("$$BUFFER_SIZE$$",       repr(QuexBufferSize))
-    txt = txt.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
     txt = txt.replace("$$TEST_STRING$$",       test_str)
 
     return txt
@@ -183,7 +214,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     except RegularExpressionException, x:
         print "Dictionary Creation:\n" + repr(x)
 
-    common_str = test_program_common_declarations
+    if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
+    common_str = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
     common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
     if BufferType == "PlainMemory":
         extension = ".c"
@@ -199,7 +231,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
     common_str = common_str.replace("$$TEST_CASE$$", test_case_str)
     
     test_program = create_main_function(BufferType, TestStr,
-                                        QuexBufferSize, QuexBufferFallbackN)
+                                        QuexBufferSize)
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
                                                        adapted_dict, 
@@ -234,7 +266,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="PlainMe
                   "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
                   "-DQUEX_OPTION_ASSERTS " + \
                   "-ggdb " + \
-                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " #+ \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
