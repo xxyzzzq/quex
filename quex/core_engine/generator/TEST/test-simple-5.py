@@ -4,7 +4,7 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Simple: Keywords 'for', 'forest', 'forester', and 'formidable'"
-    print "CHOICES: PlainMemory, QuexBuffer;"
+    print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp;"
     print "SAME;"
     sys.exit(0)
 
@@ -13,7 +13,7 @@ if len(sys.argv) < 2:
     sys.exit(0)
 
 choice = sys.argv[1]
-if not (choice == "PlainMemory" or choice == "QuexBuffer"): 
+if not (choice in ["ANSI-C-PlainMemory", "ANSI-C", "Cpp"]): 
     print "choice argument not acceptable"
     sys.exit(0)
 

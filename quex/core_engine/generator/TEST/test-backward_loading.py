@@ -6,14 +6,12 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Buffer Reload: Backwards;"
-    print "CHOICES: No_NDEBUG, NDEBUG;"
+    print "CHOICES: Cpp_ASSERTS, Cpp, ANSI-C-ASSERTS, ANSI-C;"
     print "SAME;"
     sys.exit(0)
 
-if "NDEBUG" in sys.argv:
-    NDEBUG_compiler_str = "-DNDEBUG"
-else:
-    NDEBUG_compiler_str = ""
+if sys.argv[1].find("ASSERTS") != -1: ASSERT_str = "-DQUEX_OPTION_ASSERTS"
+else:                                 ASSERT_str = ""
 
 
 pattern_action_pair_list = [
@@ -27,7 +25,9 @@ pattern_action_pair_list = [
 
 #          |12456789|
 test_str = "   0xxxxxxalola 0xxxxxxxa"
-generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="QuexBuffer", 
+
+
+generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="Cpp", 
                   QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
-                  NDEBUG_str=NDEBUG_compiler_str)
+                  AssertsActionvation_str=ASSERT_str)
     

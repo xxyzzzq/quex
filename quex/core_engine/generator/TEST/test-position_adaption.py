@@ -6,14 +6,14 @@ import generator_test
 
 if "--hwut-info" in sys.argv:
     print "Buffer Reload: Forward Position Adaption"
-    print "CHOICES: No_NDEBUG, NDEBUG;"
+    print "CHOICES: Cpp_ASSERTS, Cpp, ANSI-C-ASSERTS, ANSI-C;"
     print "SAME;"
     exit(0)
 
-if "NDEBUG" in sys.argv:
-    NDEBUG_compiler_str = "-DNDEBUG"
-else:
-    NDEBUG_compiler_str = ""
+if sys.argv[1].find("ASSERTS") != -1: ASSERT_str = "-DQUEX_OPTION_ASSERTS"
+else:                                 ASSERT_str = ""
+if sys.argv[1].find("ANSI-C") != -1: BufferType = "ANSI-C"
+else:                                BufferType = "Cpp"
 
 pattern_action_pair_list = [
     # keyword (needs to come before identifier, because otherwise they would be overruled by it.)
@@ -55,6 +55,6 @@ A
 XXXXXXXXXA
 """
 
-generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="QuexBuffer",
-                  NDEBUG_str=NDEBUG_compiler_str)
+generator_test.do(pattern_action_pair_list, test_str, {}, BufferType,
+                  AssertsActionvation_str=ASSERT_str)
     
