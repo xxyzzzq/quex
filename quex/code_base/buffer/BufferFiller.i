@@ -14,15 +14,15 @@ namespace quex {
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_exit_on_error(const char* Msg);
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_on_overflow(QuexBufferFiller* me, bool ForwardF);
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_asserts(QuexBufferFiller* me);
-    QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
+    QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
                                                                        const size_t Distance_LexemeStart_to_InputP);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer* buffer, 
+    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*, 
                                                                          const size_t DesiredLoadN,
                                                                          const size_t LoadedN,
                                                                          const size_t FallBackN, 
                                                                          const size_t Distance_LexemeStart_to_InputP);
-    QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_backward_copy_backup_region(QuexBufferFiller* me);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_backward_adapt_pointers(QuexBuffer* buffer, 
+    QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_backward_copy_backup_region(QuexBuffer*);
+    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_backward_adapt_pointers(QuexBuffer*, 
                                                                           const size_t BackwardDistance);
 
 #   ifndef __QUEX_SETTING_PLAIN_C
@@ -135,7 +135,7 @@ namespace quex {
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region*/
         const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
-        const size_t FallBackN = __QuexBufferFiller_forward_copy_fallback_region(me, 
+        const size_t FallBackN = __QuexBufferFiller_forward_copy_fallback_region(me->client, 
                                                                                  Distance_LexemeStart_to_InputP);
 
         /*___________________________________________________________________________________*/
@@ -187,7 +187,7 @@ namespace quex {
     }
 
     QUEX_INLINE_KEYWORD size_t
-    __QuexBufferFiller_forward_copy_fallback_region(QuexBufferFiller* me,
+    __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer* buffer,
                                                     const size_t Distance_LexemeStart_to_InputP)
     {
         /* (1) Fallback: A certain region of the current buffer is copied in front such that
@@ -204,7 +204,7 @@ namespace quex {
          *     pointer always needs to lie inside the buffer, because applications might read
          *     their characters from it. The 'stretch' [lexeme start, current_p] must be 
          *     contained in the new buffer (precisely in the fallback region). */
-        __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(me->client));
+        __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(buffer));
 
         /* (*) Fallback region = max(default size, necessary size)*/
         const size_t FallBackN = QUEX_SETTING_BUFFER_MIN_FALLBACK_N > Distance_LexemeStart_to_InputP 
@@ -214,15 +214,15 @@ namespace quex {
         /* (*) Copy fallback region*/
         /*     If there is no 'overlap' from source and drain than the faster memcpy() can */
         /*     used instead of memmove().*/
-        QUEX_CHARACTER_TYPE*  source = QuexBuffer_content_back(me->client) - FallBackN + 1; /* end of content - fallback*/
-        QUEX_CHARACTER_TYPE*  drain  = QuexBuffer_content_front(me->client);       
+        QUEX_CHARACTER_TYPE*  source = QuexBuffer_content_back(buffer) - FallBackN + 1; /* end of content - fallback*/
+        QUEX_CHARACTER_TYPE*  drain  = QuexBuffer_content_front(buffer);       
         if( drain + FallBackN >= source  ) {
             __QUEX_STD_memmove(drain, source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
         } else { 
             __QUEX_STD_memcpy(drain, source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
         }
 
-        __quex_assert(FallBackN < QuexBuffer_content_size(me->client));
+        __quex_assert(FallBackN < QuexBuffer_content_size(buffer));
         return FallBackN;
     }
 
@@ -319,7 +319,7 @@ namespace quex {
         /* HERE: current_p == FRONT OF THE BUFFER! */
         /*_______________________________________________________________________________*/
         /* (1) Compute distance to go backwards*/
-        const size_t BackwardDistance = __QuexBufferFiller_backward_copy_backup_region(me);
+        const size_t BackwardDistance = __QuexBufferFiller_backward_copy_backup_region(me->client);
         if( BackwardDistance == 0 ) return 0;
 
         /*_______________________________________________________________________________
@@ -356,12 +356,9 @@ namespace quex {
 
 
     QUEX_INLINE_KEYWORD size_t
-    __QuexBufferFiller_backward_copy_backup_region(QuexBufferFiller* me)
+    __QuexBufferFiller_backward_copy_backup_region(QuexBuffer* buffer)
     {
-        __quex_assert(me != 0x0);
-        __quex_assert(me->client != 0x0);
-        QuexBuffer* buffer = me->client;
-        const size_t          ContentSize  = QuexBuffer_content_size(buffer);
+        const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
 
