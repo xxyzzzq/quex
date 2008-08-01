@@ -38,18 +38,19 @@ from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_exit
 
 special_character_set_db = {
-        "alnum":  traditional_character_set.do_string("[a-zA-Z0-9]"),
-        "alpha":  traditional_character_set.do_string("[a-zA-Z]"),
-        "blank":  traditional_character_set.do_string("[ \\t]"),
-        "cntrl":  traditional_character_set.do_string("[\\x00-\\x1F\\x7F]"), 
-        "digit":  traditional_character_set.do_string("[0-9]"),
-        "graph":  traditional_character_set.do_string("[\\x21-\\x7E]"),
-        "lower":  traditional_character_set.do_string("[a-z]"),
-        "print":  traditional_character_set.do_string("[\\x20-\\x7E]"), 
-        "punct":  traditional_character_set.do_string("[!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]"),
-        "space":  traditional_character_set.do_string("[ \\t\\r\\n]"),
-        "upper":  traditional_character_set.do_string("[A-Z]"),
-        "xdigit": traditional_character_set.do_string("[a-fA-F0-9]"),
+        # The closing ']' is to trigger the end of the traditional character set
+        "alnum":  traditional_character_set.do_string("a-zA-Z0-9]"),
+        "alpha":  traditional_character_set.do_string("a-zA-Z]"),
+        "blank":  traditional_character_set.do_string(" \\t]"),
+        "cntrl":  traditional_character_set.do_string("\\x00-\\x1F\\x7F]"), 
+        "digit":  traditional_character_set.do_string("0-9]"),
+        "graph":  traditional_character_set.do_string("\\x21-\\x7E]"),
+        "lower":  traditional_character_set.do_string("a-z]"),
+        "print":  traditional_character_set.do_string("\\x20-\\x7E]"), 
+        "punct":  traditional_character_set.do_string("!\"#$%&'()*+,-./:;?@[\\]_`{|}~\\\\]"),
+        "space":  traditional_character_set.do_string(" \\t\\r\\n]"),
+        "upper":  traditional_character_set.do_string("A-Z]"),
+        "xdigit": traditional_character_set.do_string("a-fA-F0-9]"),
 }
 
 def do(stream):

@@ -19,6 +19,7 @@
 #   define __QUEX_STD_memcpy   std::memcpy
 #   define __QUEX_STD_memset   std::memset
 #   define __QUEX_STD_fprintf  std::fprintf
+#   define __QUEX_STD_printf   std::printf
 #   define __QUEX_STD_fseek    std::fseek 
 #   define __QUEX_STD_ftell    std::ftell 
 #   define __QUEX_STD_fread    std::fread 
@@ -33,6 +34,7 @@
 #   define __QUEX_STD_memcpy   memcpy
 #   define __QUEX_STD_memset   memset
 #   define __QUEX_STD_fprintf  fprintf
+#   define __QUEX_STD_printf   printf
 #   define __QUEX_STD_fseek    fseek 
 #   define __QUEX_STD_ftell    ftell 
 #   define __QUEX_STD_fread    fread 
@@ -99,5 +101,39 @@ typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TY
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif
+
+#ifdef QUEX_OPTION_ASSERTS
+#    define  QUEX_BUFFER_ASSERT_CONSISTENCY(B)                                            \
+     {                                                                                    \
+         /* NOTE: No assumptions can be made in general on the relation between    */     \
+         /*       _input_p and _lexeme_start_p, since for forwards lexing          */     \
+         /*       _input_p comes before _lexeme_start_p, wherelse for back-        */     \
+         /*       ward lexing this is vice versa.                                  */     \
+         /*       See "code_base/core_engine/definitions-quex-buffer.h"            */     \
+         __quex_assert( (B) != 0x0 );                                                     \
+         __quex_assert((*B)._memory._front    <  (*B)._memory._back);                     \
+         __quex_assert((*B)._input_p          >= (*B)._memory._front);                    \
+         __quex_assert((*B)._lexeme_start_p   >= (*B)._memory._front);                    \
+         __quex_assert(*((*B)._memory._front) == QUEX_SETTING_BUFFER_LIMIT_CODE );        \
+         __quex_assert(*((*B)._memory._back)  == QUEX_SETTING_BUFFER_LIMIT_CODE );        \
+         if( (*B)._end_of_file_p == 0x0 ) {                                               \
+             __quex_assert((*B)._input_p        <= (*B)._memory._back);                   \
+             __quex_assert((*B)._lexeme_start_p <= (*B)._memory._back);                   \
+         } else {                                                                         \
+             __quex_assert((*B)._input_p        <= (*B)._end_of_file_p);                  \
+             __quex_assert((*B)._lexeme_start_p <= (*B)._end_of_file_p);                  \
+             /**/                                                                         \
+             __quex_assert((*B)._end_of_file_p  >= (*B)._memory._front + 1);              \
+             __quex_assert((*B)._end_of_file_p  <= (*B)._memory._back);                   \
+             /**/                                                                         \
+             __quex_assert(*(*B)._end_of_file_p == QUEX_SETTING_BUFFER_LIMIT_CODE);       \
+         }                                                                                \
+     }
+#else
+#   define  QUEX_BUFFER_ASSERT_CONSISTENCY(B)  /* empty */
+#endif
+
+        
+
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__ */

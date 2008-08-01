@@ -69,10 +69,13 @@ namespace quex {
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         QUEX_CHARACTER_TYPE   _character_before_lexeme_start;  /* --> begin of line           */
 #       endif
+
+        struct __QuexBufferFiller_tag*  filler;
     } QuexBuffer;
 
     QUEX_INLINE_KEYWORD void  QuexBuffer_init(QuexBuffer*, 
-                                              QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size);
+                                              QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
+                                              struct __QuexBufferFiller_tag* Filler);
 
     QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
     QUEX_INLINE_KEYWORD void                  QuexBuffer_input_p_increment(QuexBuffer*);
@@ -100,7 +103,5 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif
-
-#include <quex/code_base/buffer/Buffer.i>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__ */

@@ -52,7 +52,7 @@ test_program_db = {
         char           tmp[] = "\\0$$TEST_STRING$$";  /* introduce first '0' for safe backward lexing*/
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp) + 1,
+                          (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp+1) + 2,
                           /* buffer filler = */ 0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
@@ -263,7 +263,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="ANSI-C-
     compile_str = compiler + " %s %s " % (AssertsActionvation_str, filename_tmp) + \
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
-                  "-D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION " + \
                   "-ggdb " + \
                   "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " #+ \
                   #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 

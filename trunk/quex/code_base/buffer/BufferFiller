@@ -3,6 +3,8 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER__
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+
 #include <quex/code_base/temporary_macros_on>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -10,8 +12,6 @@ namespace quex {
 #endif
 
      typedef struct __QuexBufferFiller_tag {
-        QuexBuffer*         client;
-
         /* -- 'Tell' returns the character index of the last character read. This corresponds   
          *    to the character index of the last character that is currently in the buffer.  */
         size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);
@@ -19,7 +19,7 @@ namespace quex {
         void     (*seek_character_index)(struct __QuexBufferFiller_tag*, const size_t Index);
         /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)*/
         size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
-                                    QUEX_CHARACTER_TYPE* buffer, const size_t N);
+                                    QUEX_CHARACTER_TYPE* memory, const size_t N);
 
         /* void   register_begin_of_file() = 0;  
          * void   seek_begin_of_file() = 0;     */
@@ -47,8 +47,8 @@ namespace quex {
                                                         uint8_t*    place_in_memory);
     QUEX_INLINE_KEYWORD void    QuexBufferFiller_destroy(QuexBufferFiller*); 
 
-    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_backward(QuexBufferFiller*);
-    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_forward(QuexBufferFiller*);
+    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_backward(QuexBuffer*);
+    QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_forward(QuexBuffer*);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
