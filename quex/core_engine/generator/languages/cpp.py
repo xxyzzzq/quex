@@ -150,12 +150,12 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
 __buffer_reload_str = """
 QUEX_INLINE_KEYWORD bool 
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBufferFiller* filler, 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBuffer* buffer, 
                                              QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
                                              $$LAST_ACCEPTANCE_POSITIONS$$)
 {
-    if( filler == 0x0 ) return false;
-    const size_t LoadedByteN = QuexBufferFiller_load_forward(filler);
+    if( buffer->filler == 0x0 ) return false;
+    const size_t LoadedByteN = QuexBufferFiller_load_forward(buffer);
     if( LoadedByteN == 0 ) return false;
 
     if( *last_acceptance_input_position != 0x0 ) { 

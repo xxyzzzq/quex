@@ -3,6 +3,7 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
@@ -12,10 +13,10 @@ namespace quex {
 #endif
 
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_exit_on_error(const char* Msg);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_on_overflow(QuexBufferFiller* me, bool ForwardF);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_asserts(QuexBufferFiller* me);
+    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
+    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_asserts(QuexBuffer*);
     QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
-                                                                       const size_t Distance_LexemeStart_to_InputP);
+                                                                               const size_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*, 
                                                                          const size_t DesiredLoadN,
                                                                          const size_t LoadedN,
@@ -89,15 +90,15 @@ namespace quex {
     }
 
     QUEX_INLINE_KEYWORD size_t
-    QuexBufferFiller_load_forward(QuexBufferFiller* me)
+    QuexBufferFiller_load_forward(QuexBuffer* buffer)
     {
+        QuexBufferFiller*  me = buffer->filler;
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
 
         __quex_assert(me->tell_character_index != 0x0);
         __quex_assert(me->seek_character_index != 0x0);
         __quex_assert(me->read_characters != 0x0);
-        __quex_assert(me->client != 0x0);
-        QuexBuffer*  buffer = me->client;
+        __quex_assert(buffer != 0x0);
         size_t        ContentSize = QuexBuffer_content_size(buffer);
 
         /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
@@ -120,7 +121,7 @@ namespace quex {
          *
          * RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
          *          '-1'     if forward loading was not possible (end of file)*/
-        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "FORWARD(entry)");
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
 
         /* (*) Check for the three possibilities mentioned above*/
         if     ( buffer->_input_p == buffer->_memory._front ) { return 0; }      /* (1)*/
@@ -130,12 +131,12 @@ namespace quex {
                                              "(Check character encoding)");  
         }
         /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                        * (3)*/  
-        __QuexBufferFiller_forward_asserts(me);
+        __QuexBufferFiller_forward_asserts(buffer);
 
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region*/
         const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
-        const size_t FallBackN = __QuexBufferFiller_forward_copy_fallback_region(me->client, 
+        const size_t FallBackN = __QuexBufferFiller_forward_copy_fallback_region(buffer, 
                                                                                  Distance_LexemeStart_to_InputP);
 
         /*___________________________________________________________________________________*/
@@ -145,11 +146,11 @@ namespace quex {
         /*     then this is a critical overflow. Example: If lexeme extends over */
         /*     the whole buffer (==> Distance_LexemeStart_to_InputP >= content_size).*/
         if( DesiredLoadN == 0 ) { 
-            __QuexBufferFiller_on_overflow(me, /* Forward */ true);
+            __QuexBufferFiller_on_overflow(buffer, /* Forward */ true);
             return 0;
         }
         QUEX_CHARACTER_TYPE* new_content_begin = buffer->_memory._front + 1 + FallBackN;
-        const size_t          LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
+        const size_t          LoadedN          = me->read_characters(me, new_content_begin, DesiredLoadN);
 
         /*___________________________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
@@ -157,8 +158,8 @@ namespace quex {
                                                   DesiredLoadN, LoadedN, FallBackN, 
                                                   Distance_LexemeStart_to_InputP);
 
-        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "LOAD FORWARD(exit)");
-        /*QUEX_BUFFER_ASSERT_CONSISTENCY();*/
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 
         /* NOTE: Return value is used for adaptions of memory addresses. It happens that the*/
         /*       address offset is equal to DesiredLoadN; see function __forward_adapt_pointers().*/
@@ -166,9 +167,9 @@ namespace quex {
     }
 
     QUEX_INLINE_KEYWORD void
-    __QuexBufferFiller_forward_asserts(QuexBufferFiller* me)
+    __QuexBufferFiller_forward_asserts(QuexBuffer* buffer)
     {
-        QuexBuffer* buffer = me->client;
+        QuexBufferFiller* me = buffer->filler;
 
         __quex_assert(buffer->_input_p >= buffer->_lexeme_start_p);
         /* (*) Double check on consistency*/
@@ -176,7 +177,7 @@ namespace quex {
         /*        Since we know from above, that we did not reach end of file, it can be assumed*/
         /*        that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
         __quex_assert(buffer->_end_of_file_p == 0x0);
-        /*QUEX_BUFFER_ASSERT_CONSISTENCY();*/
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         /* (*) Suppose: No one has touched the input stream since last load!*/
         /*     The _input object simulates a stream of characters of constant width, independtly */
         /*     of the character coding that is used. Thus, it is safe to compute the position at the*/
@@ -204,7 +205,13 @@ namespace quex {
          *     pointer always needs to lie inside the buffer, because applications might read
          *     their characters from it. The 'stretch' [lexeme start, current_p] must be 
          *     contained in the new buffer (precisely in the fallback region). */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+        __quex_assert(Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
         __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(buffer));
+        /* Copying shall **only** happen when new content is to be loaded. This is not the case
+         * if EOF as reached and the _end_of_file_p lies inside the buffer. Thus the _input_p
+         * must have reached the upper border of the buffer. */
+        __quex_assert(buffer->_input_p == buffer->_memory._back);
 
         /* (*) Fallback region = max(default size, necessary size)*/
         const size_t FallBackN = QUEX_SETTING_BUFFER_MIN_FALLBACK_N > Distance_LexemeStart_to_InputP 
@@ -233,7 +240,7 @@ namespace quex {
                                               const size_t FallBackN, 
                                               const size_t Distance_LexemeStart_to_InputP)
     {
-        const size_t          ContentSize  = QuexBuffer_content_size(buffer);
+        const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
@@ -259,8 +266,11 @@ namespace quex {
 
 
     QUEX_INLINE_KEYWORD size_t   
-    QuexBufferFiller_load_backward(QuexBufferFiller* me)
+    QuexBufferFiller_load_backward(QuexBuffer* buffer)
     {
+        QuexBufferFiller* me = buffer->filler;
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
 
         /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
@@ -298,14 +308,12 @@ namespace quex {
          * kB. This leaves a  safety region which is about 2730 times
          * greater than normal (64 Bytes). After all, lexical analysis means
          * to go **mainly forward** and not backwards.  */
-
-        __quex_assert(me->client != 0x0);
-        QuexBuffer* buffer = me->client;
-        const size_t          ContentSize  = QuexBuffer_content_size(buffer);
+        __quex_assert(buffer != 0x0);
+        const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
-        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "BACKWARD(entry)");
-        /*QUEX_BUFFER_ASSERT_CONSISTENCY();*/
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(entry)");
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 
         /* (*) Check for the three possibilities mentioned above*/
         if     ( buffer->_input_p == buffer->_memory._back )  { return 0; }   /* (1)*/
@@ -319,7 +327,7 @@ namespace quex {
         /* HERE: current_p == FRONT OF THE BUFFER! */
         /*_______________________________________________________________________________*/
         /* (1) Compute distance to go backwards*/
-        const size_t BackwardDistance = __QuexBufferFiller_backward_copy_backup_region(me->client);
+        const size_t BackwardDistance = __QuexBufferFiller_backward_copy_backup_region(buffer);
         if( BackwardDistance == 0 ) return 0;
 
         /*_______________________________________________________________________________
@@ -347,10 +355,10 @@ namespace quex {
 
         /*________________________________________________________________________________
          * (4) Adapt pointers*/
-        __QuexBufferFiller_backward_adapt_pointers(me->client, BackwardDistance);
+        __QuexBufferFiller_backward_adapt_pointers(buffer, BackwardDistance);
 
-        QUEX_DEBUG_PRINT_BUFFER_LOAD(me, "BACKWARD(exit)");
-        /*QUEX_BUFFER_ASSERT_CONSISTENCY();*/
+        QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(exit)");
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         return BackwardDistance;
     }
 
@@ -358,6 +366,7 @@ namespace quex {
     QUEX_INLINE_KEYWORD size_t
     __QuexBufferFiller_backward_copy_backup_region(QuexBuffer* buffer)
     {
+        QuexBufferFiller*    filler       = buffer->filler;
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
@@ -366,6 +375,7 @@ namespace quex {
         /*     buffer, so that we do not loose the reference. From current_p == buffer begin*/
         /*     it is safe to say that _lexeme_start_p > _input_p (the lexeme starts*/
         /*     on a letter not the buffer limit).*/
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         __quex_assert(buffer->_lexeme_start_p > buffer->_input_p);
         const size_t IntendedBackwardDistance = (size_t)(ContentSize / 3);   
 
@@ -383,7 +393,7 @@ namespace quex {
          *           =>            backward distance < size - (C - L)
          *          */
         if( buffer->_lexeme_start_p == ContentBack ) { 
-            __QuexBufferFiller_on_overflow(me, /* ForwardF */ false);
+            __QuexBufferFiller_on_overflow(buffer, /* ForwardF */ false);
             return 0;
         }
         /*           (result is possitive, see __quex_assert(...) above) */
@@ -439,10 +449,12 @@ namespace quex {
     }
 
     QUEX_INLINE_KEYWORD void
-    __QuexBufferFiller_on_overflow(QuexBufferFiller* me, bool ForwardF)
+    __QuexBufferFiller_on_overflow(QuexBuffer* buffer, bool ForwardF)
     {
+        QuexBufferFiller* me = buffer->filler;
+
         if(    me->_on_overflow == 0x0
-            || me->_on_overflow(me->client, ForwardF) == false ) {
+            || me->_on_overflow(buffer, ForwardF) == false ) {
             __QuexBufferFiller_exit_on_error("Distance between lexeme start and current pointer exceeds buffer size.\n"
                                              "(tried to load buffer in backward direction)");
         }

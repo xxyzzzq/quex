@@ -16,7 +16,6 @@ namespace quex {
      * is just decoration! Any 'real' lexical analyser should be derived from this class. */
     struct __QuexAnalyser_tag {
         QuexBuffer                   buffer;
-        QuexBufferFiller*            buffer_filler;
         QUEX_ANALYSER_FUNCTION_TYPE  current_analyser_function;
 #       ifdef QUEX_OPTION_ASSERTS
         /* When a mode change happens and the user does not 'return' but 'CONTINUE'

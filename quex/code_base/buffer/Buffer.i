@@ -16,6 +16,9 @@ namespace quex {
                            QUEX_CHARACTER_TYPE* memory, size_t Size, 
                            bool ExternalOwnerF) 
     {
+        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
+         * one character to be read in forward direction. */
+        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
         me->_front    = memory;
         me->_back     = memory + (Size - 1);
 #       ifdef QUEX_OPTION_ASSERTS
@@ -33,7 +36,8 @@ namespace quex {
 
     QUEX_INLINE_KEYWORD void
     QuexBuffer_init(QuexBuffer*          me, 
-                    QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size)
+                    QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
+                    struct __QuexBufferFiller_tag* filler)
     {
         if( memory_chunk != 0x0 ) 
             QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true);      
@@ -41,7 +45,7 @@ namespace quex {
             QuexBufferMemory_setup(&(me->_memory), __QUEX_ALLOCATE_MEMORY(QUEX_CHARACTER_TYPE, Size), Size, false);      
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
-        me->_lexeme_start_p = me->_memory._front + 1;
+        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
         /* NOTE: The terminating zero is stored in the first character **after** the  
          *       lexeme (matching character sequence). The begin of line pre-condition  
          *       is concerned with the last character in the lexeme, which is the one  
@@ -52,6 +56,7 @@ namespace quex {
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
 #       endif
+        me->filler = filler;
     }
 
 
@@ -82,7 +87,7 @@ namespace quex {
     QUEX_INLINE_KEYWORD QUEX_CHARACTER_POSITION_TYPE
     QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
-        /* QUEX_BUFFER_ASSERT_CONSISTENCY();*/
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_DEBUG_PRINT(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
@@ -105,7 +110,7 @@ namespace quex {
 #       else
         buffer->_input_p = Position;
 #       endif
-        /* QUEX_BUFFER_ASSERT_CONSISTENCY(); */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     }
 
     QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE
