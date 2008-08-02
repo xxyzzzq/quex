@@ -10,7 +10,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Forward: Copy Region;\n");
+        printf("Forward: Adapt Pointers;\n");
         return 0;
     }
 
@@ -52,7 +52,7 @@ main(int argc, char** argv)
 
         distance_i_l = buffer._input_p - buffer._lexeme_start_p;
         if( buffer._input_p - buffer._lexeme_start_p == memory_size - 2 ) 
-            printf("##NOTE: The following break up is intended\n");
+            printf("##NOTE: The following break up is intended\n##");
         fallback_n   = __QuexBufferFiller_forward_copy_fallback_region(&buffer, distance_i_l);
         QuexBuffer_show_content(&buffer);
         printf("\n");

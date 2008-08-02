@@ -96,7 +96,7 @@ namespace quex {
 
         __QUEX_STD_printf("|%c", __BufferFiller_get_border_char(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
-            __QUEX_STD_printf("%c", *iterator == '\0' ? '~' : *iterator);
+            __QUEX_STD_printf("%c", *iterator == (uint8_t)(0xFF) ? '~' : *iterator);
         }
         __QUEX_STD_printf("%c", __BufferFiller_get_border_char(buffer, end_p));
         /**/
