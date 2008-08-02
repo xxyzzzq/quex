@@ -101,6 +101,13 @@ namespace quex {
         __quex_assert(buffer != 0x0);
         size_t        ContentSize = QuexBuffer_content_size(buffer);
 
+        /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
+         * spans the whole buffer content, then nothing can be loaded into it. */
+        const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
+        if( Distance_LexemeStart_to_InputP >= ContentSize ) { 
+            __QuexBufferFiller_on_overflow(buffer, /* Forward */ true);
+            return 0;
+        }
         /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
          *          as returned by 'get_forward()'. Its task is to load new content into the 
          *          buffer such that 'get_forward() can continue iterating. This means that the 
@@ -135,20 +142,13 @@ namespace quex {
 
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region*/
-        const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
         const size_t FallBackN = __QuexBufferFiller_forward_copy_fallback_region(buffer, 
                                                                                  Distance_LexemeStart_to_InputP);
 
         /*___________________________________________________________________________________*/
         /* (2) Load new content*/
         const size_t DesiredLoadN = ContentSize - FallBackN;
-        /*  -- If more characters need to be loaded than the buffer can hold,*/
-        /*     then this is a critical overflow. Example: If lexeme extends over */
-        /*     the whole buffer (==> Distance_LexemeStart_to_InputP >= content_size).*/
-        if( DesiredLoadN == 0 ) { 
-            __QuexBufferFiller_on_overflow(buffer, /* Forward */ true);
-            return 0;
-        }
+        __quex_assert(DesiredLoadN != 0); /* Because Distance_LexemeStart_to_InputP != Contentsize */
         QUEX_CHARACTER_TYPE* new_content_begin = buffer->_memory._front + 1 + FallBackN;
         const size_t          LoadedN          = me->read_characters(me, new_content_begin, DesiredLoadN);
 
@@ -208,7 +208,7 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         __quex_assert(Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
         __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(buffer));
-        /* Copying shall **only** happen when new content is to be loaded. This is not the case
+        /* Copying forward shall **only** happen when new content is to be loaded. This is not the case
          * if EOF as reached and the _end_of_file_p lies inside the buffer. Thus the _input_p
          * must have reached the upper border of the buffer. */
         __quex_assert(buffer->_input_p == buffer->_memory._back);
@@ -228,6 +228,10 @@ namespace quex {
         } else { 
             __QUEX_STD_memcpy(drain, source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
         }
+
+#       ifdef QUEX_OPTION_ASSERTS
+        __QUEX_STD_memset(drain + FallBackN, '\0', QuexBuffer_content_size(buffer) - FallBackN); 
+#       endif
 
         __quex_assert(FallBackN < QuexBuffer_content_size(buffer));
         return FallBackN;
@@ -311,21 +315,28 @@ namespace quex {
         __quex_assert(buffer != 0x0);
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(entry)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
 
         /* (*) Check for the three possibilities mentioned above*/
-        if     ( buffer->_input_p == buffer->_memory._back )  { return 0; }   /* (1)*/
-        else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }   /* (1)*/
+        if     ( buffer->_input_p == buffer->_memory._back )  { return 0; }   /* (1) */
+        else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }   /* (1) */
         else if( buffer->_input_p != buffer->_memory._front ) {
             __QuexBufferFiller_exit_on_error("Call to 'load_backward() but '_input_p' not on buffer border.\n" 
                                              "(Check character encoding)");  
         }
-        else if( buffer->_content_first_character_index == 0 ) { return 0; }  /* (2)*/
-        /*                                                                     * (3)*/
-        /* HERE: current_p == FRONT OF THE BUFFER! */
-        /*_______________________________________________________________________________*/
+        else if( buffer->_content_first_character_index == 0 ) { return 0; }  /* (2) */
+        /*                                                                     * (3) */
+        /* HERE: current_p == FRONT OF THE BUFFER!   
+         *_______________________________________________________________________________*/
+        /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
+         * spans the whole buffer content, then nothing can be loaded into it. */
+        if( buffer->_lexeme_start_p == ContentBack ) { 
+            __QuexBufferFiller_on_overflow(buffer, /* ForwardF */ false);
+            return 0;
+        }
         /* (1) Compute distance to go backwards*/
         const size_t BackwardDistance = __QuexBufferFiller_backward_copy_backup_region(buffer);
         if( BackwardDistance == 0 ) return 0;
@@ -371,12 +382,17 @@ namespace quex {
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
 
-        /*     We need to make sure, that the lexeme start pointer remains inside the*/
-        /*     buffer, so that we do not loose the reference. From current_p == buffer begin*/
-        /*     it is safe to say that _lexeme_start_p > _input_p (the lexeme starts*/
-        /*     on a letter not the buffer limit).*/
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+        /* Copying backward shall **only** happen when new content is to be loaded. In back
+         * ward direction, this makes only sense if the lower border was reached. */
+        __quex_assert(buffer->_input_p == buffer->_memory._front);
+        /* We need to make sure, that the lexeme start pointer remains inside the
+         * buffer, so that we do not loose the reference. From current_p == buffer begin
+         * it is safe to say that _lexeme_start_p > _input_p (the lexeme starts
+         * on a letter not the buffer limit). */
         __quex_assert(buffer->_lexeme_start_p > buffer->_input_p);
+        __quex_assert(buffer->_lexeme_start_p - buffer->_input_p < QuexBuffer_content_size(buffer));
+
         const size_t IntendedBackwardDistance = (size_t)(ContentSize / 3);   
 
         /* Limit 1:
@@ -392,10 +408,6 @@ namespace quex {
          *               backward distance + (C - L) < size
          *           =>            backward distance < size - (C - L)
          *          */
-        if( buffer->_lexeme_start_p == ContentBack ) { 
-            __QuexBufferFiller_on_overflow(buffer, /* ForwardF */ false);
-            return 0;
-        }
         /*           (result is possitive, see __quex_assert(...) above) */
         const size_t Distance_InputP_to_LexemeStart = (size_t)(buffer->_lexeme_start_p - buffer->_input_p);
         const int    LimitBackwardDist_1 = ContentSize - Distance_InputP_to_LexemeStart; 

@@ -11,14 +11,12 @@ main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("Forward: Copy Region;\n");
-        printf("CHOICES: LS>C, LS=0, LS=4, LS=5, L=11;\n");
         return 0;
     }
 
     using namespace quex;
 
     QuexBuffer           buffer;
-    QuexBufferFiller     filler;
     QUEX_CHARACTER_TYPE  content[] =  "0987654321"; 
     QUEX_CHARACTER_TYPE  memory[]  = "|----------|"; 
     int                  memory_size  = strlen((char*)memory);
@@ -29,32 +27,34 @@ main(int argc, char** argv)
     stderr = stdout;
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
+    printf("## NOTE: FallbackN = %i!\n", QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+    printf("## NOTE: When copying, it can be assumed that the _input_p stands on _memory._back\n");
 
-    QuexBuffer_init(&buffer, memory, memory_size, &filler);
+    /* Filler = 0x0, otherwise, buffer would start loading content */
+    QuexBuffer_init(&buffer, memory, memory_size, 0x0);
 
-    int s=0;
-    if     ( cl_has(argc, argv, "LS=0") )   s = 0; 
-    else if( cl_has(argc, argv, "LS=4") )   s = 4;
-    else if( cl_has(argc, argv, "LS=5") )   s = 5;
-    else if( cl_has(argc, argv, "LS=6") )   s = 6;
-    else if( cl_has(argc, argv, "LS=10") )  s = 10;
-
-    buffer._lexeme_start_p = buffer._memory._front + 1 + s;
-
+    buffer._input_p        = buffer._memory._back;
 
     /* We want to observe the standard error output in HWUT, so redirect to stdout */
-    for(buffer._input_p = buffer._lexeme_start_p; 
-        buffer._input_p <= buffer._memory._back + 1; 
-        ++(buffer._input_p) ) { 
+    for(buffer._lexeme_start_p = buffer._memory._back; 
+        buffer._lexeme_start_p != buffer._memory._front; 
+        --(buffer._lexeme_start_p) ) { 
 
-        printf("------------------------------\n");
-        printf("C - S = %i\n", (int)(buffer._input_p - buffer._lexeme_start_p));
-        /**/
         memcpy((char*)(memory+1), (char*)content, strlen((char*)content));
-        BufferFiller_show_content(&buffer);
+        /**/
+        printf("------------------------------\n");
+        printf("lexem start = %i (--> '%c')\n", 
+               (int)(buffer._lexeme_start_p - buffer._memory._front),
+               (char)*buffer._lexeme_start_p);
+        /**/
+        QuexBuffer_show_content(&buffer);
+        printf("\n");
 
         distance_i_l = buffer._input_p - buffer._lexeme_start_p;
+        if( buffer._input_p - buffer._lexeme_start_p == memory_size - 2 ) 
+            printf("##NOTE: The following break up is intended\n");
         fallback_n   = __QuexBufferFiller_forward_copy_fallback_region(&buffer, distance_i_l);
-        BufferFiller_show_content(&buffer);
+        QuexBuffer_show_content(&buffer);
+        printf("\n");
     }
 }

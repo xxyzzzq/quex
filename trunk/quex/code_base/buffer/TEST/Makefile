@@ -1,7 +1,7 @@
 TEST_FILES = \
 	       BufferFiller_forward_copy.exe \
-	       BufferFiller_forward_pointer_adaption.exe \
 	       BufferFiller_backward_copy.exe \
+	       BufferFiller_forward_pointer_adaption.exe \
 	       BufferFiller_backward_pointer_adaption.exe \
 
 DEFS = \
@@ -17,7 +17,7 @@ hwut-info:
 	@echo $(TEST_FILES)
 
 %.exe: %.cpp
-	g++ -I$(QUEX_PATH) $(DEFS) $< -o $@
+	g++ -ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 clean:
 	rm -rf $(TEST_FILES)

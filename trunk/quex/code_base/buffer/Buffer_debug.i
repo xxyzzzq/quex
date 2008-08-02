@@ -23,25 +23,27 @@
              Character == '\n' ? __QUEX_STD_fprintf(stdout, "input:    '\\n'\n") \
            : Character == '\t' ? __QUEX_STD_fprintf(stdout, "input:    '\\t'\n") \
            :                     __QUEX_STD_fprintf(stdout, "input:    (%x) '%c'\n", (char)Character, (int)Character) 
-#endif
+#endif /* ! __QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS */
 
-#ifndef __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS 
+#if ! defined(__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS) 
 
 #    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg) /* empty */
 
 #else
 
-#    include <quex/code_base/definitions>
-#    include <quex/code_base/buffer/Buffer>
-#    include <quex/code_base/buffer/BufferFiller>
-
 #    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)                   \
             QUEX_DEBUG_PRINT(Filler->client, "LOAD BUFFER " Msg); \
             BufferFiller_x_show_content(Filler); /* empty */
 
-#    if ! defined (__QUEX_SETTING_PLAIN_C)
+#endif /* ! __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
-#    endif
+#endif
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/BufferFiller>
 
     QUEX_INLINE_KEYWORD void BufferFiller_x_show_content(QuexBuffer* buffer); 
     QUEX_INLINE_KEYWORD void BufferFiller_show_brief_content(QuexBuffer* buffer);
@@ -81,7 +83,7 @@ namespace quex {
             return (QUEX_CHARACTER_TYPE)'|';
     }
 
-    void
+    QUEX_INLINE_KEYWORD void
     QuexBuffer_show_content(QuexBuffer* buffer)
     {
         size_t                i = 0;
@@ -90,11 +92,11 @@ namespace quex {
         QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
         QUEX_CHARACTER_TYPE*  iterator = 0x0;
         QUEX_CHARACTER_TYPE*  end_p    = buffer->_end_of_file_p != 0x0 ? buffer->_end_of_file_p 
-                                         :                               buffer->_memory._back + 1;
+                                         :                               buffer->_memory._back;
 
         __QUEX_STD_printf("|%c", __BufferFiller_get_border_char(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
-            __QUEX_STD_printf("%c", *iterator);
+            __QUEX_STD_printf("%c", *iterator == '\0' ? '~' : *iterator);
         }
         __QUEX_STD_printf("%c", __BufferFiller_get_border_char(buffer, end_p));
         /**/
@@ -118,15 +120,13 @@ namespace quex {
          *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         size_t                i = 0;
         int                   covered_char = 0xFFFF;
-        QUEX_CHARACTER_TYPE*  end_p = 0x0;
+        QUEX_CHARACTER_TYPE*  end_p    = buffer->_end_of_file_p != 0x0 ? buffer->_end_of_file_p 
+                                         :                               buffer->_memory._back;
         const size_t          ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE*  ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;
         QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
 
-        for(end_p = ContentFront; end_p <= BufferBack; ++end_p) {
-            if( end_p == buffer->_end_of_file_p || *end_p == QUEX_SETTING_BUFFER_LIMIT_CODE ) { break; }
-        }
         /*_________________________________________________________________________________*/
         char tmp[ContentSize+4];
         /* tmp[0]                  = outer border*/
@@ -160,14 +160,11 @@ namespace quex {
         QuexBuffer_show_content(buffer);
     }
 
-
-
-#   if ! defined(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
-#   endif 
+#endif 
 
-#   include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/buffer/Buffer.i>
 
-#endif  /* __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_DEBUG_I_ */

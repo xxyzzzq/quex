@@ -45,17 +45,23 @@ static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_funct
 
 test_program_db = { 
     "ANSI-C-PlainMemory": """
+    #include <stdlib.h>
     int main(int argc, char** argv)
     {
         QuexAnalyser   lexer_state;
         int            success_f = 0;
-        char           tmp[] = "\\0$$TEST_STRING$$";  /* introduce first '0' for safe backward lexing*/
+        char           TestString[] = "$$TEST_STRING$$";
+        const size_t   L            = strlen(TestString);
+        const size_t   MemorySize   = $$BUFFER_SIZE$$ > L + 2 ? $$BUFFER_SIZE$$ : L + 2;
+        char*          tmp          = malloc(MemorySize);
+
+        memcpy(tmp+1, TestString, L);
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          (QUEX_CHARACTER_TYPE*)&tmp, strlen(tmp+1) + 2,
+                          (QUEX_CHARACTER_TYPE*)tmp, MemorySize,
                           /* buffer filler = */ 0x0);
         /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) test string: \\n'%s'\\n", TestString);
         printf("(*) result:\\n");
         do {
             success_f = lexer_state.current_analyser_function(&lexer_state);
@@ -264,8 +270,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="ANSI-C-
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-ggdb " + \
-                  "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " #+ \
-                  #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+                  "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  #"" #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
     os.system(compile_str)

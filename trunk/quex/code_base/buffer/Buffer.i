@@ -21,9 +21,15 @@ namespace quex {
         __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
         me->_front    = memory;
         me->_back     = memory + (Size - 1);
-#       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(me->_front, 0, Size);
-#       endif
+        /* NOTE: We cannot set the memory all to zero at this point in time. It may be that the
+         *       memory is already filled with content (e.g. by an external owner). The following
+         *       code has deliberately be disabled:
+         *           #ifdef QUEX_OPTION_ASSERTS
+         *           __QUEX_STD_memset(me->_front, 0, Size);
+         *           #endif 
+         *       When the buffer uses a buffer filler, then it is a different ball game. Please,
+         *       consider QuexBuffer_init().
+         */
         *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
         *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
         me->_external_owner_f = ExternalOwnerF;
@@ -57,6 +63,19 @@ namespace quex {
         me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
 #       endif
         me->filler = filler;
+
+        if( filler != 0x0 ) {
+#           ifdef QUEX_OPTION_ASSERTS
+            __QUEX_STD_memset(me->_memory._front, 0, Size);
+#           endif 
+            /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
+             * assumes, that the user fills/has filled it with whatever his little heart desired. */
+            const size_t LoadedN = me->filler->read_characters(me->filler, 
+                                                               QuexBuffer_content_front(me), 
+                                                               QuexBuffer_content_size(me));
+            if( LoadedN != QuexBuffer_content_size(me) )  
+                me->_end_of_file_p = QuexBuffer_content_front(me) + LoadedN;
+        }
     }
 
 
