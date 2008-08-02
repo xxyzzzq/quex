@@ -230,7 +230,7 @@ namespace quex {
         }
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(drain + FallBackN, '\0', QuexBuffer_content_size(buffer) - FallBackN); 
+        __QUEX_STD_memset(drain + FallBackN, (uint8_t)(0xFF), QuexBuffer_content_size(buffer) - FallBackN); 
 #       endif
 
         __quex_assert(FallBackN < QuexBuffer_content_size(buffer));
@@ -247,25 +247,26 @@ namespace quex {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
+        __quex_assert(LoadedN + FallBackN == QuexBuffer_content_size(buffer));
+
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
         if( LoadedN != DesiredLoadN ) 
             QuexBuffer_end_of_file_set(buffer, ContentFront + FallBackN + LoadedN);
         else
             QuexBuffer_end_of_file_unset(buffer);
 
-        /* (*) Character index of the first character in the content of the buffer*/
-        /*     increases by content size - fallback indenpendently how many bytes*/
-        /*     have actually been loaded.*/
+        /* (*) Character index of the first character in the content of the buffer  
+         *     increases by content size - fallback indenpendently how many bytes  
+         *     have actually been loaded. */
         buffer->_content_first_character_index += ContentSize - FallBackN;
 
         /*___________________________________________________________________________________*/
         /* (*) Pointer adaption*/
         /*     Next char to be read: '_input_p + 1'*/
         buffer->_input_p        = ContentFront + FallBackN - 1;   
-        /*     NOTE: _input_p is set to (_input_p - 1) so that the next get_forward()*/
+        /*     NOTE: _input_p is set to (_input_p - 1) so that the next *(++_input_p) */
         /*           reads the _input_p.*/
         buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
-
     }
 
 
@@ -377,7 +378,6 @@ namespace quex {
     QUEX_INLINE_KEYWORD size_t
     __QuexBufferFiller_backward_copy_backup_region(QuexBuffer* buffer)
     {
-        QuexBufferFiller*    filler       = buffer->filler;
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
@@ -425,8 +425,11 @@ namespace quex {
         /* (*) copy content that is already there to its new position.
          *     (copying is much faster then loading new content from file). */
         __QUEX_STD_memmove(ContentFront + BackwardDistance, ContentFront, 
-                     ContentSize - BackwardDistance);
+                           ContentSize - BackwardDistance);
 
+#       ifdef QUEX_OPTION_ASSERTS
+        __QUEX_STD_memset(ContentFront, (uint8_t)(0xFF), BackwardDistance); 
+#       endif
         return BackwardDistance;
     }
 
