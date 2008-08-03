@@ -3,6 +3,7 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -95,10 +96,10 @@ namespace quex {
         QuexBufferFiller*  me = buffer->filler;
         if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
 
+        __quex_assert(buffer != 0x0);
         __quex_assert(me->tell_character_index != 0x0);
         __quex_assert(me->seek_character_index != 0x0);
         __quex_assert(me->read_characters != 0x0);
-        __quex_assert(buffer != 0x0);
         size_t        ContentSize = QuexBuffer_content_size(buffer);
 
         /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
@@ -144,13 +145,12 @@ namespace quex {
         /* (1) Handle fallback region*/
         const size_t FallBackN = __QuexBufferFiller_forward_copy_fallback_region(buffer, 
                                                                                  Distance_LexemeStart_to_InputP);
-
+        __quex_assert(FallBackN < ContentSize);
         /*___________________________________________________________________________________*/
         /* (2) Load new content*/
         const size_t DesiredLoadN = ContentSize - FallBackN;
-        __quex_assert(DesiredLoadN != 0); /* Because Distance_LexemeStart_to_InputP != Contentsize */
         QUEX_CHARACTER_TYPE* new_content_begin = buffer->_memory._front + 1 + FallBackN;
-        const size_t          LoadedN          = me->read_characters(me, new_content_begin, DesiredLoadN);
+        const size_t         LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
 
         /*___________________________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
@@ -169,22 +169,24 @@ namespace quex {
     QUEX_INLINE_KEYWORD void
     __QuexBufferFiller_forward_asserts(QuexBuffer* buffer)
     {
+#       ifdef QUEX_OPTION_ASSERTS
         QuexBufferFiller* me = buffer->filler;
 
         __quex_assert(buffer->_input_p >= buffer->_lexeme_start_p);
-        /* (*) Double check on consistency*/
-        /*     -- 'load_forward()' should only be called, if the '_input_p' reached a border.*/
-        /*        Since we know from above, that we did not reach end of file, it can be assumed*/
-        /*        that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
+        /* (*) Double check on consistency  
+         *     -- 'load_forward()' should only be called, if the '_input_p' reached a border.  
+         *        Since we know from above, that we did not reach end of file, it can be assumed  
+         *        that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
         __quex_assert(buffer->_end_of_file_p == 0x0);
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        /* (*) Suppose: No one has touched the input stream since last load!*/
-        /*     The _input object simulates a stream of characters of constant width, independtly */
-        /*     of the character coding that is used. Thus, it is safe to compute the position at the*/
-        /*     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.*/
+        /* (*) Suppose: No one has touched the input stream since last load!  
+         *     The _input object simulates a stream of characters of constant width, independtly   
+         *     of the character coding that is used. Thus, it is safe to compute the position at the  
+         *     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.*/
         const size_t CharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
                                                     QuexBuffer_content_size(buffer));
         __quex_assert( me->tell_character_index(me) == CharacterIndexAtEnd );
+#       endif
     }
 
     QUEX_INLINE_KEYWORD size_t
@@ -230,7 +232,8 @@ namespace quex {
         }
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(drain + FallBackN, (uint8_t)(0xFF), QuexBuffer_content_size(buffer) - FallBackN); 
+        __QUEX_STD_memset(drain + FallBackN, (uint8_t)(0xFF), 
+                          (QuexBuffer_content_size(buffer) - FallBackN)*sizeof(QUEX_CHARACTER_TYPE)); 
 #       endif
 
         __quex_assert(FallBackN < QuexBuffer_content_size(buffer));
@@ -247,7 +250,7 @@ namespace quex {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
-        __quex_assert(LoadedN + FallBackN == QuexBuffer_content_size(buffer));
+        __quex_assert( buffer->_end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );
 
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
         if( LoadedN != DesiredLoadN ) 
@@ -267,6 +270,9 @@ namespace quex {
         /*     NOTE: _input_p is set to (_input_p - 1) so that the next *(++_input_p) */
         /*           reads the _input_p.*/
         buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
+
+        __quex_assert( buffer->_end_of_file_p == 0x0 || LoadedN + FallBackN == buffer->_end_of_file_p - buffer->_memory._front - 1);
+
     }
 
 
