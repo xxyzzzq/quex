@@ -5,6 +5,7 @@
 
 #include <quex/code_base/asserts>
 #include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/Buffer_debug.i>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

@@ -5,6 +5,9 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_DEBUG_I_
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/BufferFiller>
+
 
 #if ! defined (__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS)
 #   define QUEX_DEBUG_PRINT(Buffer, FormatStr, ...)       /* empty */
@@ -40,10 +43,6 @@
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
-
-#include <quex/code_base/definitions>
-#include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/BufferFiller>
 
     QUEX_INLINE_KEYWORD void BufferFiller_x_show_content(QuexBuffer* buffer); 
     QUEX_INLINE_KEYWORD void BufferFiller_show_brief_content(QuexBuffer* buffer);
@@ -86,7 +85,17 @@ namespace quex {
     QUEX_INLINE_KEYWORD void
     QuexBuffer_show_content(QuexBuffer* buffer)
     {
+#       if QUEX_CHARACTER_TYPE   == uint8_t
+#          define QUEX_BUFFER_EMPTY_CHAR ((uint8_t)0xFFFFFFFF)
+#       elif QUEX_CHARACTER_TYPE == uint16_t
+#          define QUEX_BUFFER_EMPTY_CHAR ((uint16_t)0xFFFFFFFF)
+#       else /* QUEX_CHARACTER_TYPE == uint32_t */
+#          define QUEX_BUFFER_EMPTY_CHAR ((uint32_t)0xFFFFFFFF)
+#       endif
         size_t                i = 0;
+        QUEX_CHARACTER_TYPE   EmptyChar =   sizeof(QUEX_CHARACTER_TYPE) == 1 ? (QUEX_CHARACTER_TYPE)(0xFF)
+                                          : sizeof(QUEX_CHARACTER_TYPE) == 2 ? (QUEX_CHARACTER_TYPE)(0xFFFF)
+                                          :                                    (QUEX_CHARACTER_TYPE)(0xFFFFFFFF);
         QUEX_CHARACTER_TYPE*  ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;
         QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
@@ -96,7 +105,7 @@ namespace quex {
 
         __QUEX_STD_printf("|%c", __BufferFiller_get_border_char(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
-            __QUEX_STD_printf("%c", *iterator == (uint8_t)(0xFF) ? '~' : *iterator);
+            __QUEX_STD_printf("%c", *iterator == EmptyChar ? '~' : *iterator);
         }
         __QUEX_STD_printf("%c", __BufferFiller_get_border_char(buffer, end_p));
         /**/
@@ -106,8 +115,6 @@ namespace quex {
         __QUEX_STD_printf("|");
     }
 
-    /* Do not forget to include <iostream> before this header when doing those unit tests*/
-    /* which are using this function.*/
     QUEX_INLINE_KEYWORD void  
     BufferFiller_show_content(QuexBuffer* buffer) 
     {
@@ -119,7 +126,6 @@ namespace quex {
          * NOTE: This is a **simple** printing function for unit testing and debugging
          *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         size_t                i = 0;
-        int                   covered_char = 0xFFFF;
         QUEX_CHARACTER_TYPE*  end_p    = buffer->_end_of_file_p != 0x0 ? buffer->_end_of_file_p 
                                          :                               buffer->_memory._back;
         const size_t          ContentSize  = QuexBuffer_content_size(buffer);
@@ -129,8 +135,8 @@ namespace quex {
 
         /*_________________________________________________________________________________*/
         char tmp[ContentSize+4];
-        /* tmp[0]                  = outer border*/
-        /* tmp[1]                  = buffer limit*/
+        /* tmp[0]                 = outer border*/
+        /* tmp[1]                 = buffer limit*/
         /* tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]*/
         /* tmp[ContentSize+2]     = buffer limit*/
         /* tmp[ContentSize+3]     = outer border*/
@@ -158,6 +164,36 @@ namespace quex {
         /* std::cout << " = 0x" << std::hex << int(*buffer->_input_p) << std::dec */
         __QUEX_STD_printf("\n");
         QuexBuffer_show_content(buffer);
+    }
+
+    QUEX_INLINE_KEYWORD void  
+    QuexBuffer_show_byte_content(QuexBuffer* buffer, const int IndentationN) 
+    {
+        __quex_assert(buffer != 0x0);
+        QuexBufferMemory*  memory = &buffer->_memory;
+        __quex_assert(memory != 0x0);
+
+        int      i = 0, j = 0;
+        uint8_t* byte_p      = (uint8_t*)memory->_front;
+        uint8_t* next_byte_p = (uint8_t*)memory->_front + 1;
+        uint8_t* End         = (uint8_t*)(memory->_back + 1);
+
+        for(j=0; j<IndentationN; ++j) fprintf(stdout, " ");
+        for(; byte_p != End; ++byte_p, ++next_byte_p, ++i) {
+            fprintf(stdout, "%02X", (int)*byte_p);
+            if     ( next_byte_p == (uint8_t*)buffer->_end_of_file_p ) 
+                fprintf(stdout, "[");
+            else if( byte_p      == (uint8_t*)buffer->_end_of_file_p + sizeof(QUEX_CHARACTER_TYPE)-1) 
+                fprintf(stdout, "]");
+            else 
+                fprintf(stdout, ".");
+            if( (i+1) % 0x8  == 0 ) fprintf(stdout, " ");
+            if( (i+1) % 0x10 == 0 ) { 
+                fprintf(stdout, "\n");
+                for(j=0; j<IndentationN; ++j) fprintf(stdout, " ");
+            }
+        }
+        fprintf(stdout, "\n");
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
