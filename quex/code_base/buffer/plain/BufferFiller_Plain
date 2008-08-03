@@ -31,8 +31,9 @@ namespace quex {
         QuexBufferFiller   base;
 
         InputHandleT*                       ih;
-        size_t                              size_of_character;
-        STREAM_POSITION_TYPE(InputHandleT)  start_position;  /* position in stream where analysis started*/
+
+        /* position in stream where analysis started */
+        STREAM_POSITION_TYPE(InputHandleT)  start_position;  
     };
 
 #   ifndef __QUEX_SETTING_PLAIN_C
@@ -70,7 +71,6 @@ namespace quex {
                                 __BufferFiller_Plain_destroy);
 #       endif
         /**/
-        me->size_of_character = sizeof(QUEX_CHARACTER_TYPE);
         me->ih                = input_handle;
         me->start_position    = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
@@ -90,7 +90,7 @@ namespace quex {
        TEMPLATED_CLASS* me = (TEMPLATED_CLASS*)alter_ego;
 
         __quex_assert(me->ih != 0x0); 
-       return (QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT) - me->start_position) / me->size_of_character; 
+       return (QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT) - me->start_position) / sizeof(QUEX_CHARACTER_TYPE); 
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -100,9 +100,9 @@ namespace quex {
         /* The type cast is necessary, since the function signature needs to 
          * work with the first argument being of base class type. */
         TEMPLATED_CLASS* me = (TEMPLATED_CLASS*)alter_ego;
-
-        long avoid_tmp_arg = (long)(CharacterIndex * me->size_of_character + me->start_position); 
         __quex_assert(me->ih != 0x0); 
+
+        long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_CHARACTER_TYPE) + me->start_position); 
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
     }
 
@@ -118,9 +118,9 @@ namespace quex {
 
         __quex_assert(me->ih != 0x0); 
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
-                                                          buffer_memory, N * me->size_of_character);
-        __quex_assert(ByteN % me->size_of_character == 0);
-        return ByteN / me->size_of_character; 
+                                                          buffer_memory, N * sizeof(QUEX_CHARACTER_TYPE));
+        __quex_assert(ByteN % sizeof(QUEX_CHARACTER_TYPE) == 0);
+        return ByteN / sizeof(QUEX_CHARACTER_TYPE); 
     }
 
     TEMPLATE_IN(InputHandleT) void 
