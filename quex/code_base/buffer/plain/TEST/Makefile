@@ -1,27 +1,69 @@
 TEST_FILES = \
-	       BufferFiller_forward_load-1.exe \
-	       BufferFiller_forward_load-2.exe \
-	       BufferFiller_forward_load-4.exe \
-	       BufferFiller_backward_load.exe
+	       BufferFiller_forward_load-1-fb0.exe \
+	       BufferFiller_forward_load-2-fb0.exe \
+	       BufferFiller_forward_load-4-fb0.exe \
+		   \
+	       BufferFiller_forward_load-1-fb1.exe \
+	       BufferFiller_forward_load-2-fb1.exe \
+	       BufferFiller_forward_load-4-fb1.exe \
+		   \
+	       BufferFiller_forward_load-1-fb5.exe \
+	       BufferFiller_forward_load-2-fb5.exe \
+	       BufferFiller_forward_load-4-fb5.exe \
+		   \
+	       BufferFiller_forward_load-error.exe \
+		   \
+	       BufferFiller_backward_load-1.exe \
+	       BufferFiller_backward_load-2.exe \
+	       BufferFiller_backward_load-4.exe \
+	       #BufferFiller_backward_load.exe
 
-DEFS = \
-	   -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=2 \
-	   \
-	   -DQUEX_OPTION_ASSERTS
+DEFS = -DQUEX_OPTION_ASSERTS
+
+CS1 = -DQUEX_CHARACTER_TYPE=uint8_t
+CS2 = -DQUEX_CHARACTER_TYPE=uint16_t
+CS4 = -DQUEX_CHARACTER_TYPE=uint32_t
+FB0 = -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 
+FB1 = -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=1 
+FB5 = -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=5 
+
+CC = g++ -ggdb -I$(QUEX_PATH) $(DEFS) 
 
 all: $(TEST_FILES)
 
 hwut-info:
 	@echo $(TEST_FILES)
 
-%-4.exe: %.cpp
-	g++ -ggdb -DQUEX_CHARACTER_TYPE=uint32_t -I$(QUEX_PATH) $(DEFS) $< -o $@
+%-4-fb0.exe: %.cpp
+	$(CC) $(CS4) $(FB0) $< -o $@
+%-4-fb1.exe: %.cpp
+	$(CC) $(CS4) $(FB1) $< -o $@
+%-4-fb5.exe: %.cpp
+	$(CC) $(CS4) $(FB5) $< -o $@
 
-%-2.exe: %.cpp
-	g++ -ggdb -DQUEX_CHARACTER_TYPE=uint16_t -I$(QUEX_PATH) $(DEFS) $< -o $@
+%-2-fb0.exe: %.cpp
+	$(CC) $(CS2) $(FB0) $< -o $@
+%-2-fb1.exe: %.cpp
+	$(CC) $(CS2) $(FB1) $< -o $@
+%-2-fb5.exe: %.cpp
+	$(CC) $(CS2) $(FB5) $< -o $@
+
+%-1-fb0.exe: %.cpp
+	$(CC) $(CS1) $(FB0) $< -o $@
+%-1-fb1.exe: %.cpp
+	$(CC) $(CS1) $(FB1) $< -o $@
+%-1-fb5.exe: %.cpp
+	$(CC) $(CS1) $(FB5) $< -o $@
+
+%-error.exe: %-error.cpp
+	$(CC) $(CS4) $(FB0) $< -o $@
 
 %-1.exe: %.cpp
-	g++ -ggdb -DQUEX_CHARACTER_TYPE=uint8_t  -I$(QUEX_PATH) $(DEFS) $< -o $@
+	$(CC) $(CS1) $(FB0) $< -o $@
+%-2.exe: %.cpp
+	$(CC) $(CS2) $(FB0) $< -o $@
+%-4.exe: %.cpp
+	$(CC) $(CS4) $(FB0) $< -o $@
 
 clean:
 	rm -rf $(TEST_FILES)
