@@ -119,7 +119,11 @@ namespace quex {
         __quex_assert(me->ih != 0x0); 
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
                                                           buffer_memory, N * sizeof(QUEX_CHARACTER_TYPE));
-        __quex_assert(ByteN % sizeof(QUEX_CHARACTER_TYPE) == 0);
+
+        if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) {
+            __QuexBufferFiller_exit_on_error(
+                "Error: Character encoding: End of file cuts in the middle a multi-byte character.");
+        }
         return ByteN / sizeof(QUEX_CHARACTER_TYPE); 
     }
 

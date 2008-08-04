@@ -295,7 +295,7 @@ namespace quex {
          *
          *          (2) Begin of the buffer and the buffer is the 'start buffer':
          *              in this case no backward load can happen, because we are at the 
-         *              beginning. The function returns -1.
+         *              beginning. The function returns 0.
          *
          *          (3) Begin of buffer and _begin_of_file_f is not set!: This is the case
          *              where this function, actually, has some work to do. It loads the
@@ -431,10 +431,10 @@ namespace quex {
         /* (*) copy content that is already there to its new position.
          *     (copying is much faster then loading new content from file). */
         __QUEX_STD_memmove(ContentFront + BackwardDistance, ContentFront, 
-                           ContentSize - BackwardDistance);
+                           (ContentSize - BackwardDistance)*sizeof(QUEX_CHARACTER_TYPE));
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(ContentFront, (uint8_t)(0xFF), BackwardDistance); 
+        __QUEX_STD_memset(ContentFront, (uint8_t)(0xFF), BackwardDistance * sizeof(QUEX_CHARACTER_TYPE)); 
 #       endif
         return BackwardDistance;
     }
