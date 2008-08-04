@@ -85,46 +85,45 @@
 //
 //  NOTE: The 'raw_buffer.position' remains between calls to "read_characters()".
 //        This is equivalent to having some bytes in the pipeline.
+/**/
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+#   include <iostream> 
+#   include <cerrno>
+#   include <stdexcept>
+#endif
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/InputPolicy>
+#include <quex/code_base/buffer/Buffer>
+#include <quex/code_base/buffer/BufferFiller>
 
-
-
-#include <quex/code_base/asserts>
-#include <quex/code_base/buffer/input_policy>
-#include <quex/code_base/buffer/FixedSizeCharacterStream>
-
-#include <iostream>       // for: FixedSizeCharacterStream_base<istream*>
-#include <cstdio>         // for: FixedSizeCharacterStream_base<FILE*>
-#include <cerrno>
-#include <stdexcept>
-#include <cstring>
-#include <cassert>
 extern "C" { 
 #include <iconv.h>
-#include <quex/code_base/compatibility/inttypes.h>
 }
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
+
+#include <quex/code_base/temporary_macros_on>
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
+#endif
 
-    template <class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
-    class FixedSizeCharacterStream_IConv
-        : public FixedSizeCharacterStream<QUEX_CHARACTER_TYPE> {
+    TEMPLATIFIER(InputHandleT)
+#   ifndef __QUEX_SETTING_PLAIN_C
+    struct QuexBufferFiller_IConv { 
+#   else
+    struct __QuexBufferFiller_IConv_tag { 
+#   endif
+        /* Derived QuexBufferFiller from implemented as 'first member is base class'.
+         * (This is the 'C' way to express derivation) */
+        QuexBufferFiller   base;
+
+        InputHandleT*                       ih;
+
+        /* position in stream where analysis started */
+        STREAM_POSITION_TYPE(InputHandleT)  start_position;  
 
 
-        static const size_t SizeOfCharacter = sizeof(QUEX_CHARACTER_TYPE);
-        typedef typename InputPolicy<QUEX_CHARACTER_TYPE*>::stream_position stream_position;
-        typedef typename InputPolicy<QUEX_CHARACTER_TYPE*>::stream_offset   stream_offset;
-       
-        /* DISABLED */ FixedSizeCharacterStream_IConv();
-
-     public:
-        // NOTE: It makes sense to have multiple FixedSizeCharacterStream_IConv objects use
-        //       the same raw buffer, since this buffer is only used temporarily
-        //       while loading.
-        FixedSizeCharacterStream_IConv(QUEX_CHARACTER_TYPE* input_handle, 
-                                          uint8_t* raw_buffer_p, size_t raw_buffer_size,
-                                          const char* FromCoding, const char* ToCoding);
-        ~FixedSizeCharacterStream_IConv();
 
         virtual size_t    tell_character_index();
         virtual void      seek_character_index(const size_t CharacterIndex);
@@ -179,6 +178,14 @@ namespace quex {
 #       endif
     };
 }
+
+    TEMPLATE_IN(InputHandleT) size_t __BufferFiller_Plain_tell_character_index(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_seek_character_index(QuexBufferFiller* alter_ego, 
+                                                                 const size_t      CharacterIndex); 
+    TEMPLATE_IN(InputHandleT) size_t __BufferFiller_Plain_read_characters(QuexBufferFiller*    alter_ego,
+                                                            QUEX_CHARACTER_TYPE* start_of_buffer, 
+                                                            const size_t         N);
+    TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego);
 
 #include <quex/code_base/buffer/iconv/debug.i>
 
@@ -433,4 +440,4 @@ namespace quex {
 
 }
 
-#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__
+#define /* __INCLUDE_GUARD__QUEX_BUFFER__BUFFER_FILLER_ICONV__ */

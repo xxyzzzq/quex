@@ -49,6 +49,7 @@ namespace quex {
 
     QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_backward(QuexBuffer*);
     QUEX_INLINE_KEYWORD size_t  QuexBufferFiller_load_forward(QuexBuffer*);
+    QUEX_INLINE_KEYWORD void    __QuexBufferFiller_exit_on_error(const char* Msg);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

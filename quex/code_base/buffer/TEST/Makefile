@@ -10,6 +10,21 @@ DEFS = \
 	   -D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS \
 	   -DQUEX_OPTION_ASSERTS
 
+HEADERS =  $(QUEX_PATH)/quex/code_base/definitions \
+           $(QUEX_PATH)/quex/code_base/asserts \
+           $(QUEX_PATH)/quex/code_base/compatibility/inttypes.h \
+           $(QUEX_PATH)/quex/code_base/compatibility/pseudo-stdbool.h \
+           $(QUEX_PATH)/quex/code_base/buffer/Buffer.i \
+           $(QUEX_PATH)/quex/code_base/buffer/Buffer \
+           $(QUEX_PATH)/quex/code_base/buffer/Buffer_debug.i \
+           $(QUEX_PATH)/quex/code_base/buffer/BufferFiller \
+           $(QUEX_PATH)/quex/code_base/temporary_macros_on \
+           $(QUEX_PATH)/quex/code_base/temporary_macros_off \
+           $(QUEX_PATH)/quex/code_base/buffer/BufferFiller.i \
+           $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain \
+           $(QUEX_PATH)/quex/code_base/buffer/InputPolicy \
+           test-helper.h
+
 all: $(TEST_FILES)
 
 hwut-info:
@@ -23,5 +38,5 @@ hwut-info:
 	g++ -DQUEX_CHARACTER_TYPE=uint32_t \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
-clean:
+clean: $(HEADERS)
 	rm -rf $(TEST_FILES)
