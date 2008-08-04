@@ -9,17 +9,24 @@ main(int argc, char** argv)
 {
     using namespace quex;
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Load Forward: Character=%i Byte(s), Fallback=%i\n", 
+        printf("Load Backward: Character=%i Byte(s), Fallback=%i\n", 
                sizeof(QUEX_CHARACTER_TYPE), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
     FILE*                         fh = prepare_input();
     QuexBuffer                    buffer;
     QuexBufferFiller_Plain<FILE>  filler;
-    QUEX_CHARACTER_TYPE           memory[8];
+    QUEX_CHARACTER_TYPE           memory[12];
+
+    fseek(fh, 15 * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
 
     BufferFiller_Plain_init(&filler, fh);
-    QuexBuffer_init(&buffer, memory, 8, (QuexBufferFiller*)&filler);
+    QuexBuffer_init(&buffer, memory, 12, (QuexBufferFiller*)&filler);
+
+    /* Simulate, as if we started at 0, and now reached '15' */
+    buffer._content_first_character_index = 15;
+    filler.start_position                 = 0;
+
 
     
     do {
@@ -28,14 +35,15 @@ main(int argc, char** argv)
         printf("     ");
         QuexBuffer_show_content(&buffer);
         printf("\n");
-        if( buffer._end_of_file_p != 0x0 ) break;
-        buffer._input_p        = buffer._memory._back;
-        buffer._lexeme_start_p = buffer._memory._back;
+        if( buffer._content_first_character_index == 0 ) break;
+        buffer._input_p        = buffer._memory._front;
+        buffer._lexeme_start_p = buffer._memory._front + 1;
         /**/
-        QuexBufferFiller_load_forward(&buffer);
+        QuexBufferFiller_load_backward(&buffer);
         printf("\n");
     } while( 1 + 1 == 2 );
 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
 }
+
 

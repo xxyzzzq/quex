@@ -9,11 +9,11 @@ main(int argc, char** argv)
 {
     using namespace quex;
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Load Forward: Character=%i Byte(s), Fallback=%i\n", 
-               sizeof(QUEX_CHARACTER_TYPE), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+        printf("Load Forward: With Error in Stream (Character=%i Byte(s))\n", 
+               sizeof(QUEX_CHARACTER_TYPE));
         return 0;
     }
-    FILE*                         fh = prepare_input();
+    FILE*                         fh = prepare_input_error();
     QuexBuffer                    buffer;
     QuexBufferFiller_Plain<FILE>  filler;
     QUEX_CHARACTER_TYPE           memory[8];
