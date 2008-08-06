@@ -14,28 +14,27 @@
 
 #else 
 
-#define QUEX_INLINE_KEYWORD  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
-#define CLASS        fixed_size_character_stream_iconv<QUEX_CHARACTER_TYPE, QUEX_CHARACTER_TYPE>
-
 namespace quex {
-    QUEX_INLINE_KEYWORD void 
-        CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* FromCoding, const char* ToCoding,
-                                                                     iconv_t IconvResult)
-        {
-            // clear raw buffer, for easy visual control          
-            for(int i=0; i<raw_buffer.size; ++i) {                
-                raw_buffer.begin[i] = 0;                          
-            }                                                     
-            std::cout << "from: " << FromCoding << std::endl;     
-            std::cout << "to:   " << ToCoding << std::endl;       
 
-            if( IconvResult == (iconv_t)(-1) ) {                 
-                switch( errno ) {                                 
-                case EINVAL:  // incomplete sequence ecountered (cut in between character) 
-                    std::cout << "invalid conversion\n";      
-                }                                                 
-            }
+    QUEX_INLINE_KEYWORD void 
+    QuexBufferFiller_IConv_print_construction_info(TEMPLATED_CLASS(QuexBufferFiller_IConv)* me,
+                                                   const char* FromCoding, const char* ToCoding,
+                                                   iconv_t IconvResult)
+    {
+        /* clear raw buffer, for easy visual control */
+        for(int i=0; i<raw_buffer.size; ++i) {                
+            raw_buffer.begin[i] = 0;                          
+        }                                                     
+        std::cout << "from: " << FromCoding << std::endl;     
+        std::cout << "to:   " << ToCoding << std::endl;       
+
+        if( IconvResult == (iconv_t)(-1) ) {                 
+            switch( errno ) {                                 
+            case EINVAL:  // incomplete sequence ecountered (cut in between character) 
+                std::cout << "invalid conversion\n";      
+            }                                                 
         }
+    }
 
     QUEX_INLINE_KEYWORD void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(size_t LoadedByteN)      

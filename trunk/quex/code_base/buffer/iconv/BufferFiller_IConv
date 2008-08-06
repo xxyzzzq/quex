@@ -110,6 +110,7 @@ namespace quex {
     }
 #endif
 
+
 #ifndef __QUEX_SETTING_PLAIN_C
     TEMPLATIFIER(InputHandleT)
     struct QuexCharacterIndexToStreamPosition { 
@@ -119,6 +120,7 @@ namespace quex {
         size_t                             character_index;  /* with its position in the  */
         STREAM_POSITION_TYPE(InputHandleT) position;         /* stream.                   */
     } QuexCharacterIndexToStreamPosition;
+
 
     typedef struct {
         uint8_t*  begin;
@@ -141,11 +143,8 @@ namespace quex {
 
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
 
-        size_t           end_character_index; /* character index where analysis ended (last + 1) */
-
-        
-        iconv_t                           iconv_handle;        /* conversion data */
-        QuexBufferFiller_IConv_BufferInfo raw_buffer;
+        iconv_t                             iconv_handle;  /* conversion data */
+        QuexBufferFiller_IConv_BufferInfo   raw_buffer;
 
         QuexCharacterIndexToStreamPosition  end_info;
         QuexCharacterIndexToStreamPosition  begin_info;
