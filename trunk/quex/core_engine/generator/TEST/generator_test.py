@@ -88,7 +88,7 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        BufferFiller_Plain_init(&buffer_filler, fh);
+        QuexBufferFiller_Plain_init(&buffer_filler, fh);
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
                           (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
@@ -121,7 +121,7 @@ test_program_db = {
         QuexBufferFiller_Plain<istringstream>   buffer_filler;
         const size_t                            MemorySize = $$BUFFER_SIZE$$;
 
-        BufferFiller_Plain_init(&buffer_filler, &istr);
+        QuexBufferFiller_Plain_init(&buffer_filler, &istr);
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
                           (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  

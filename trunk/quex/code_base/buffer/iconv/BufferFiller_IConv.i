@@ -6,20 +6,33 @@
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/iconv/BufferFiller_IConv>
 
-#include <quex/code_base/buffer/iconv/debug.i>
+// #include <quex/code_base/buffer/iconv/debug.i>
 
+
+#ifndef __QUEX_SETTING_PLAIN_C
+#   define TEMPLATE_CLASS                       QuexBufferFiller_IConv<InputHandleT>
+#   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition<TYPE>
+#else
+#   define TEMPLATE_CLASS                       QuexBufferFiller_IConv
+#   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
+#endif 
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     extern "C" { 
 #   include <iconv.h>
     }
 #   include <quex/code_base/compatibility/iconv-argument-types.h>
+#endif
 
+#include <quex/code_base/template_macros_on>
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
-    void
-    QuexBufferFiller_IConv_init(QUEX_CHARACTER_TYPE* input_handle, 
+    QUEX_INLINE_KEYWORD void
+    QuexBufferFiller_IConv_init(TEMPLATE_CLASS* me,
+                                QUEX_CHARACTER_TYPE* input_handle, 
                                 const char* FromCoding,   const char* ToCoding,
                                 uint8_t*    raw_buffer_p, size_t      RawBufferSize)
     { 
@@ -356,7 +369,9 @@ namespace quex {
 
 #undef CLASS
 #undef QUEX_INLINE_KEYWORD
-
+#undef CHAR_INDEX_AND_STREAM_POSITION
 }
+
+#include <quex/code_base/template_macros_off>
 
 #endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__

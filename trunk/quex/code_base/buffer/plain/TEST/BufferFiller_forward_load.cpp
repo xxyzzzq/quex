@@ -18,7 +18,7 @@ main(int argc, char** argv)
     QuexBufferFiller_Plain<FILE>  filler;
     QUEX_CHARACTER_TYPE           memory[8];
 
-    BufferFiller_Plain_init(&filler, fh);
+    QuexBufferFiller_Plain_init(&filler, fh);
     QuexBuffer_init(&buffer, memory, 8, (QuexBufferFiller*)&filler);
 
     

@@ -1,7 +1,8 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/iconv/fixed_size_character_stream>
+#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
 
 using namespace std;
 

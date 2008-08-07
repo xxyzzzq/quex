@@ -1,8 +1,8 @@
 #include<iostream>
-#include<fstream>
+#include<cstdio>
 
-#include<quex/code_base/memory/iconv/BufferFiller_IConv>
-#include<quex/code_base/memory/iconv/BufferFiller_IConv.i>
+#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
 
 using namespace std;
 
@@ -10,21 +10,21 @@ int
 main(int argc, char** argv) 
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "Converting Stream in N Tiny Beats\n";
+        cout << "read_characters: UTF8 (with tiny buffers)\n";
         return 0;
     }
 
-    std::FILE*   fh = fopen("test.txt", "r");
-    uint8_t      raw_memory[5];
-    char*        target_charset = (char*)"UCS-4BE";
-    uint8_t      memory[512];
+    std::FILE*           fh = fopen("test.txt", "r");
+    uint8_t              raw_memory[3];
+    const int            RawMemorySize = 3;
+    char*                target_charset = (char*)"UCS-4BE";
+    QUEX_CHARACTER_TYPE  memory[64];
 
     QuexBuffer               buffer;
     QuexBufferFiller_IConv   filler;
 
-    BufferFiller_Plain_init(&filler, fh, "UTF8", raw_memory, 5);
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, raw_memory, 3);
     QuexBuffer_init(&buffer, memory, 12, (QuexBufferFiller*)&filler);
-    quex::fixed_size_character_stream_iconv<std::FILE, uint32_t>   is(fh, raw_memory, 5, "UTF8", target_charset);
 
     if( argc > 1 ) target_charset = argv[1];
 
