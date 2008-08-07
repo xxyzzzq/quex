@@ -20,7 +20,7 @@ main(int argc, char** argv)
 
     fseek(fh, 15 * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
 
-    BufferFiller_Plain_init(&filler, fh);
+    QuexBufferFiller_Plain_init(&filler, fh);
     QuexBuffer_init(&buffer, memory, 12, (QuexBufferFiller*)&filler);
 
     /* Simulate, as if we started at 0, and now reached '15' */

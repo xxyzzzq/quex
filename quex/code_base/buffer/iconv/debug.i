@@ -17,7 +17,7 @@
 namespace quex {
 
     QUEX_INLINE_KEYWORD void 
-    QuexBufferFiller_IConv_print_construction_info(TEMPLATED_CLASS(QuexBufferFiller_IConv)* me,
+    QuexBufferFiller_IConv_print_construction_info(TEMPLATED_CLASS* me,
                                                    const char* FromCoding, const char* ToCoding,
                                                    iconv_t IconvResult)
     {

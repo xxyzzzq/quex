@@ -112,14 +112,19 @@ namespace quex {
 
 
 #ifndef __QUEX_SETTING_PLAIN_C
-    TEMPLATIFIER(InputHandleT)
+    template <class InputHandleT>
     struct QuexCharacterIndexToStreamPosition { 
+        size_t                             character_index;  /* with its position in the  */
+        STREAM_POSITION_TYPE(InputHandleT) position;         /* stream.                   */
+    };
+#   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition<TYPE>
 #else
-    struct __QuexCharacterIndexToStreamPosition_tag { 
-#endif                                                    /* Associate character index */
+    typedef struct { 
         size_t                             character_index;  /* with its position in the  */
         STREAM_POSITION_TYPE(InputHandleT) position;         /* stream.                   */
     } QuexCharacterIndexToStreamPosition;
+#   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
+#endif 
 
 
     typedef struct {
@@ -146,8 +151,8 @@ namespace quex {
         iconv_t                             iconv_handle;  /* conversion data */
         QuexBufferFiller_IConv_BufferInfo   raw_buffer;
 
-        QuexCharacterIndexToStreamPosition  end_info;
-        QuexCharacterIndexToStreamPosition  begin_info;
+        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  end_info;
+        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  begin_info;
     };
 
     TEMPLATE_IN(InputHandleT) size_t __BufferFiller_IConv_tell_character_index(QuexBufferFiller* alter_ego);
@@ -158,11 +163,12 @@ namespace quex {
                                                                           const size_t         N);
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_IConv_destroy(QuexBufferFiller* alter_ego);
 
-#if ! define(__QUEX_SETTING_PLAIN_C)
+#if ! defined(__QUEX_SETTING_PLAIN_C)
 }
 #endif
 
+#undef CHAR_INDEX_AND_STREAM_POSITION
 #include <quex/code_base/temporary_macros_off>
 
 
-#define /* __INCLUDE_GUARD__QUEX__BUFFER__ICONV__BUFFER_FILLER__ */
+#endif /* __INCLUDE_GUARD__QUEX__BUFFER__ICONV__BUFFER_FILLER__ */
