@@ -149,19 +149,21 @@ namespace quex {
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
 
         iconv_t                             iconv_handle;  /* conversion data */
+        bool                                _constant_size_character_encoding_f;
         QuexBufferFiller_IConv_BufferInfo   raw_buffer;
+        bool                                _raw_buffer_external_owner_f;
 
         CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  end_info;
         CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  begin_info;
     };
 
-    TEMPLATE_IN(InputHandleT) size_t __BufferFiller_IConv_tell_character_index(QuexBufferFiller* alter_ego);
-    TEMPLATE_IN(InputHandleT) void   __BufferFiller_IConv_seek_character_index(QuexBufferFiller* alter_ego, 
-                                                                               const size_t      CharacterIndex); 
-    TEMPLATE_IN(InputHandleT) size_t __BufferFiller_IConv_read_characters(QuexBufferFiller*    alter_ego,
-                                                                          QUEX_CHARACTER_TYPE* start_of_buffer, 
-                                                                          const size_t         N);
-    TEMPLATE_IN(InputHandleT) void   __BufferFiller_IConv_destroy(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_IConv_tell_character_index(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   __QuexBufferFiller_IConv_seek_character_index(QuexBufferFiller* alter_ego, 
+                                                                                   const size_t      CharacterIndex); 
+    TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_IConv_read_characters(QuexBufferFiller*    alter_ego,
+                                                                              QUEX_CHARACTER_TYPE* start_of_buffer, 
+                                                                              const size_t         N);
+    TEMPLATE_IN(InputHandleT) void   __QuexBufferFiller_IConv_destroy(QuexBufferFiller* alter_ego);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }
