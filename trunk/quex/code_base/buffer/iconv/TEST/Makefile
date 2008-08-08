@@ -13,7 +13,7 @@ hwut-info:
 
 %.exe: %.cpp $(HEADERS)
 	g++ -I$(QUEX_PATH) $(DEFS) \
-		-ggdb \
+		-ggdb  \
 		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV $< -o $@
 
 

@@ -4,15 +4,18 @@
 #include<quex/code_base/buffer/iconv/BufferFiller_IConv>
 #include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
 
-using namespace std;
 
 int
 main(int argc, char** argv) 
 {
+    using namespace std;
+    using namespace quex;
+
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "read_characters: UTF8 (with tiny buffers)\n";
         return 0;
     }
+    assert(sizeof(QUEX_CHARACTER_TYPE) == 4);
 
     std::FILE*           fh = fopen("test.txt", "r");
     uint8_t              raw_memory[3];
@@ -20,15 +23,17 @@ main(int argc, char** argv)
     char*                target_charset = (char*)"UCS-4BE";
     QUEX_CHARACTER_TYPE  memory[64];
 
-    QuexBuffer               buffer;
-    QuexBufferFiller_IConv   filler;
+    QuexBuffer                   buffer;
+    QuexBufferFiller_IConv<FILE> filler;
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, raw_memory, 3);
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, (size_t)3);
     QuexBuffer_init(&buffer, memory, 12, (QuexBufferFiller*)&filler);
 
     if( argc > 1 ) target_charset = argv[1];
 
-    const int LoadedN = is.read_characters((uint32_t*)memory, 128);
+    const size_t LoadedN = __QuexBufferFiller_IConv_read_characters(&filler.base, 
+                                                                    (QUEX_CHARACTER_TYPE*)memory, 
+                                                                    (size_t)sizeof(memory));
 
     cout << "character n = " << LoadedN << endl;
  

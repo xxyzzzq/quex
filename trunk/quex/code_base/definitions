@@ -83,11 +83,11 @@
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define __QUEX_ALLOCATE_MEMORY(TYPE, N)   (new QUEX_CHARACTER_TYPE[(size_t)N])
+#    define __QUEX_ALLOCATE_MEMORY(TYPE, N)   (new TYPE[(size_t)N])
 #    define __QUEX_FREE_ARRAY_MEMORY(OBJECT)  (delete[] OBJECT)
 #    define __QUEX_FREE_MEMORY(OBJECT)        (delete OBJECT)
 #else
-#    define __QUEX_ALLOCATE_MEMORY(TYPE, N)   (QUEX_CHARACTER_TYPE*)malloc(sizeof(QUEX_CHARACTER_TYPE)*(size_t)N)
+#    define __QUEX_ALLOCATE_MEMORY(TYPE, N)   (TYPE*)malloc(sizeof(TYPE)*(size_t)N)
 #    define __QUEX_FREE_ARRAY_MEMORY(OBJECT)  (free(OBJECT))
 #    define __QUEX_FREE_MEMORY(OBJECT)        (free(OBJECT))
 #endif

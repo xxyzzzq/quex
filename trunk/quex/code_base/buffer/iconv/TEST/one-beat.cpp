@@ -20,12 +20,12 @@ main(int argc, char** argv)
     uint8_t      raw_buffer[128];
     char*        target_charset = (char*)"UCS-4BE";
     uint8_t      buffer[512];
-    fixed_size_character_stream_iconv<std::FILE, uint8_t>   is(fh, raw_buffer, 128, "UTF8", target_charset);
+    QuexBufferFiller_IConv<std::FILE>   filler;
 
 
     if( argc > 1 ) target_charset = argv[1];
 
-    const int LoadedN = is.read_characters(buffer, 128);
+    const int LoadedN = __QuexBufferFiller_IConv_read_characters(&filler.base, buffer, 128);
  
     for(int i=0; i < LoadedN ; i+=4) {
         unsigned char b0 = buffer[i+0];
