@@ -10,12 +10,21 @@
 
 // #include <quex/code_base/buffer/iconv/debug.i>
 
+#ifdef QUEX_OPTION_ASSERTS
+#   define QUEX_ASSERT_BUFFER_INFO(BI)                                    \
+    __quex_assert( BI != 0x0 );                                           \
+    __quex_assert((*BI).position - (*BI).begin <= (*BI).size);            \
+    __quex_assert((*BI).bytes_left_n <= (*BI).size); 
+#else
+#   define QUEX_ASSERT_BUFFER_INFO(BI) /* empty */
+#endif
+
 
 #ifndef __QUEX_SETTING_PLAIN_C
-#   define TEMPLATED_CLASS                       QuexBufferFiller_IConv<InputHandleT>
+#   define TEMPLATED_CLASS                      QuexBufferFiller_IConv<InputHandleT>
 #   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition<TYPE>
 #else
-#   define TEMPLATED_CLASS                       QuexBufferFiller_IConv
+#   define TEMPLATED_CLASS                      QuexBufferFiller_IConv
 #   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
 #endif 
 
@@ -40,7 +49,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) size_t 
     __QuexBufferFiller_IConv_read_characters(QuexBufferFiller*    alter_ego,
-                                             QUEX_CHARACTER_TYPE* user_buffer_p, 
+                                             QUEX_CHARACTER_TYPE* user_memory_p, 
                                              const size_t         N);
 
     TEMPLATE_IN(InputHandleT) void 
@@ -62,6 +71,7 @@ namespace quex {
                                 const char* FromCoding,   const char* ToCoding,
                                 uint8_t*    raw_buffer_p, size_t      RawBufferSize)
     { 
+        __quex_assert(RawBufferSize >= 6); /* UTF-8 char can be 6 bytes long */
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
         __QuexBufferFiller_init(&me->base,
                                 __QuexBufferFiller_IConv_tell_character_index<InputHandleT>,
@@ -103,26 +113,31 @@ namespace quex {
         me->end_info.character_index   = 0;
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
+        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
     }
 
     TEMPLATE_IN(InputHandleT) void   
     __QuexBufferFiller_IConv_destroy(QuexBufferFiller* alter_ego)
     { 
         TEMPLATED_CLASS* me = (TEMPLATED_CLASS*)alter_ego;
+        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
         if( ! me->_raw_buffer_external_owner_f ) __QUEX_FREE_MEMORY(&me->raw_buffer);
         iconv_close(me->iconv_handle); 
     }
 
     TEMPLATE_IN(InputHandleT) size_t 
     __QuexBufferFiller_IConv_read_characters(QuexBufferFiller*    alter_ego,
-                                             QUEX_CHARACTER_TYPE* user_buffer_p, 
+                                             QUEX_CHARACTER_TYPE* user_memory_p, 
                                              const size_t         N)
     {
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED_CLASS* me = (TEMPLATED_CLASS*)alter_ego;
 
         QuexBufferFiller_IConv_BufferInfo user_buffer;
-        QuexBufferFiller_IConv_BufferInfo_init(&user_buffer, (uint8_t*)user_buffer_p, N * sizeof(QUEX_CHARACTER_TYPE));
+        QuexBufferFiller_IConv_BufferInfo_init(&user_buffer, (uint8_t*)user_memory_p, 
+                                               N * sizeof(QUEX_CHARACTER_TYPE));
+        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+        QUEX_ASSERT_BUFFER_INFO(&user_buffer);
 
         /* TWO CASES:
          * (1) There are still some bytes in the raw buffer from the last load.
@@ -160,6 +175,7 @@ namespace quex {
         QuexBufferFiller_IConv_BufferInfo* buffer = &me->raw_buffer;
         const size_t FillLevel       = buffer->position - buffer->begin;
         const size_t RemainingBytesN = buffer->bytes_left_n;
+        QUEX_ASSERT_BUFFER_INFO(buffer);
 
         /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
          * the buffer) where there are bytes left in the raw buffer. These need to be
@@ -172,11 +188,12 @@ namespace quex {
             buffer->position = buffer->begin; 
         }
 
-        uint8_t*     FillStartPosition = buffer->begin + buffer->bytes_left_n;
-        size_t       FillSize          = buffer->size  - buffer->bytes_left_n;
+        uint8_t*     FillStartPosition = buffer->begin + RemainingBytesN;
+        size_t       FillSize          = buffer->size  - RemainingBytesN;
         const size_t LoadedByteN = \
-                     QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, buffer->begin, FillSize);
+                     QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, FillStartPosition, FillSize);
 
+        /* NOTE: In case of 'end of file' it is possible: bytes_left_n != buffer->size */
         buffer->bytes_left_n = LoadedByteN + RemainingBytesN; 
 
 #       ifdef QUEX_OPTION_ASSERTS
@@ -185,6 +202,7 @@ namespace quex {
 #       endif
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
+        QUEX_ASSERT_BUFFER_INFO(buffer);
     }
 
     TEMPLATE_IN(InputHandleT) bool 
@@ -208,7 +226,8 @@ namespace quex {
          *  as a compile option. If you have an elegant solution to solve the problem for 
          *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
         QuexBufferFiller_IConv_BufferInfo* source = &me->raw_buffer;
-        
+        QUEX_ASSERT_BUFFER_INFO(source);
+        QUEX_ASSERT_BUFFER_INFO(drain);
         size_t report = iconv(me->iconv_handle, 
                               __QUEX_ADAPTER_ICONV_2ND_ARG(&source->position), &source->bytes_left_n,
                               (char**)&(drain->position),                      &(drain->bytes_left_n));
@@ -353,9 +372,9 @@ namespace quex {
          * It remains to interpret 'remaining_character_n' number of characters. Since the
          * the interpretation is best done using a buffer, we do this in chunks.      */ 
         for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
-            __QuexBufferFiller_IConv_read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize);
+            me->base.read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize);
         if( remaining_character_n ) 
-            __QuexBufferFiller_IConv_read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
+            me->base.read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
        
         me->end_info.character_index = CharacterIndex;
     }
