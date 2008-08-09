@@ -13,35 +13,42 @@ main(int argc, char** argv)
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "read_characters: UTF8 (with tiny buffers)\n";
+        cout << "CHOICES: 3, 4, 5, 6, 8, 9;\n";
+        cout << "SAME;\n";
         return 0;
     }
     assert(sizeof(QUEX_CHARACTER_TYPE) == 4);
 
+    if( argc < 2 )  {
+        printf("Missing choice argument. Use --hwut-info\n");
+        return 0;
+    }
+
     std::FILE*           fh = fopen("test.txt", "r");
-    uint8_t              raw_memory[3];
-    const int            RawMemorySize = 3;
+    const int            RawMemorySize = 6;
+    uint8_t              raw_memory[6];
     char*                target_charset = (char*)"UCS-4BE";
-    QUEX_CHARACTER_TYPE  memory[64];
+    size_t               memory_size = 3;
+    memory_size = argv[1][0] - '0';
+    assert(memory_size >= 3);
+    assert(memory_size <= 9);
+    QUEX_CHARACTER_TYPE  memory[memory_size];
 
     QuexBuffer                   buffer;
     QuexBufferFiller_IConv<FILE> filler;
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, (size_t)3);
-    QuexBuffer_init(&buffer, memory, 12, (QuexBufferFiller*)&filler);
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, RawMemorySize);
 
-    if( argc > 1 ) target_charset = argv[1];
+    size_t loaded_n = 0;
+    do {
+        loaded_n = filler.base.read_characters(&filler.base, 
+                                               (QUEX_CHARACTER_TYPE*)memory, memory_size);
 
-    const size_t LoadedN = __QuexBufferFiller_IConv_read_characters(&filler.base, 
-                                                                    (QUEX_CHARACTER_TYPE*)memory, 
-                                                                    (size_t)sizeof(memory));
-
-    cout << "character n = " << LoadedN << endl;
- 
-    for(int i=0; i < LoadedN*4 ; i+=4) {
-        unsigned char b0 = memory[i+0];
-        unsigned char b1 = memory[i+1];
-        unsigned char b2 = memory[i+2];
-        unsigned char b3 = memory[i+3];
-        printf("%02X.%02X.%02X.%02X\n", (unsigned)b0, (unsigned)b1, (unsigned)b2, (unsigned)b3);
-    }
+        cout << "## loaded character n = " << loaded_n << endl;
+     
+        for(int i=0; i < loaded_n ; ++i) {
+            uint8_t*  raw = (uint8_t*)(memory + i);
+            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+        }
+    } while( loaded_n == memory_size );
 }

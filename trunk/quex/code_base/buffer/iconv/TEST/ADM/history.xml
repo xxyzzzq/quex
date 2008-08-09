@@ -1,4 +1,4 @@
-<history date="Mon Jul  7 08:48:33 2008" element-n="75">
+<history date="Sat Aug  9 00:48:02 2008" element-n="81">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -221,5 +221,13 @@
     </day>
     <day year="2008" month="07" day="07">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:48:33"/>
+    </day>
+    <day year="2008" month="08" day="08">
+        <test-runs-today n="2" ok-n="1" fail-n="0" else-n="1" last-run="oll korrekt" last-time="22:48:02"/>
+        <crc-error time="22:48:02" application="n-beat.exe" choice="4" database-crc="-207804085" real-crc="174303693"/>
+        <crc-error time="22:48:02" application="n-beat.exe" choice="5" database-crc="2070100254" real-crc="174303693"/>
+        <crc-error time="22:48:02" application="n-beat.exe" choice="6" database-crc="-1052451948" real-crc="174303693"/>
+        <crc-error time="22:48:02" application="n-beat.exe" choice="8" database-crc="921684142" real-crc="174303693"/>
+        <crc-error time="22:48:02" application="n-beat.exe" choice="9" database-crc="556561654" real-crc="174303693"/>
     </day>
 </history>
