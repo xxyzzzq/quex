@@ -13,7 +13,7 @@
 #ifdef QUEX_OPTION_ASSERTS
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                                    \
     __quex_assert( BI != 0x0 );                                           \
-    __quex_assert((*BI).position - (*BI).begin <= (*BI).size);            \
+    __quex_assert((*BI).iterator - (*BI).begin <= (*BI).size);            \
     __quex_assert((*BI).bytes_left_n <= (*BI).size); 
 #else
 #   define QUEX_ASSERT_BUFFER_INFO(BI) /* empty */
@@ -107,10 +107,10 @@ namespace quex {
                         ! QuexBufferFiller_IConv_has_coding_dynamic_character_width(FromCoding);
 
         /* Setup the tell/seek of character positions                                       */
-        me->begin_info.position        = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-        me->begin_info.character_index = 0;
-        me->end_info.position          = me->begin_info.position;
-        me->end_info.character_index   = 0;
+        me->raw_buffer_begin_info.stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+        me->raw_buffer_begin_info.character_index = 0;
+        me->raw_buffer_end_info.stream_position   = me->raw_buffer_begin_info.stream_position;
+        me->raw_buffer_end_info.character_index   = 0;
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
@@ -155,13 +155,19 @@ namespace quex {
 
         if( user_buffer.bytes_left_n == 0 ) { 
             /* The buffer was filled to its limits. All 'N' characters have been written. */
-            me->end_info.character_index += N;
+            me->raw_buffer_end_info.character_index += N;
             return N;
         } else { 
             /* The buffer was not filled completely, because the end of the file was 
              * reached. The fill level of the user buffer computes as:                    */
-            const size_t ConvertedByteN = (user_buffer.size - user_buffer.bytes_left_n) / sizeof(QUEX_CHARACTER_TYPE);
-            me->end_info.character_index += ConvertedByteN;
+            const size_t ConvertedCharN = (user_buffer.size - user_buffer.bytes_left_n) / sizeof(QUEX_CHARACTER_TYPE);
+            me->raw_buffer_end_info.character_index += ConvertedCharN;
+#           ifdef QUEX_OPTION_ASSERTS
+            /* '.bytes_left_n' is not always correct. '.iterator' points always directly 
+              * behind the last written byte. */
+            __QUEX_STD_memset(user_buffer.iterator, 0xFF, 
+                              (user_buffer.begin + user_buffer.size) - user_buffer.iterator);
+#           endif
             return ConvertedByteN;
         }
     }
@@ -173,19 +179,19 @@ namespace quex {
          * The filling starts from its current position, thus the remaining bytes
          * to be translated are exactly the number of bytes in the buffer.              */
         QuexBufferFiller_IConv_BufferInfo* buffer = &me->raw_buffer;
-        const size_t FillLevel       = buffer->position - buffer->begin;
+        const size_t FillLevel       = buffer->iterator - buffer->begin;
         const size_t RemainingBytesN = buffer->bytes_left_n;
         QUEX_ASSERT_BUFFER_INFO(buffer);
 
         /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
          * the buffer) where there are bytes left in the raw buffer. These need to be
          * moved to the beginning of the buffer.                                        */
-        if( buffer->position != buffer->begin ) {
+        if( buffer->iterator != buffer->begin ) {
             /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
              * following is safe against overlaps.                                      */
-            std::memmove(buffer->begin, buffer->position, RemainingBytesN);
+            std::memmove(buffer->begin, buffer->iterator, RemainingBytesN);
             /* Reset the position, so that new conversion get's the whole character.    */
-            buffer->position = buffer->begin; 
+            buffer->iterator = buffer->begin; 
         }
 
         uint8_t*     FillStartPosition = buffer->begin + RemainingBytesN;
@@ -229,8 +235,8 @@ namespace quex {
         QUEX_ASSERT_BUFFER_INFO(source);
         QUEX_ASSERT_BUFFER_INFO(drain);
         size_t report = iconv(me->iconv_handle, 
-                              __QUEX_ADAPTER_ICONV_2ND_ARG(&source->position), &source->bytes_left_n,
-                              (char**)&(drain->position),                      &(drain->bytes_left_n));
+                              __QUEX_ADAPTER_ICONV_2ND_ARG(&source->iterator), &source->bytes_left_n,
+                              (char**)&(drain->iterator),                      &(drain->bytes_left_n));
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(report);*/
 
@@ -239,17 +245,17 @@ namespace quex {
              * But, is the user buffer filled to its limits?                                   */
             if( drain->bytes_left_n == 0 ) return true; 
             /* If the buffer was not filled completely, then was it because we reached EOF?
-             * NOTE: Here, 'source->position' points to the position after the last byte
+             * NOTE: Here, 'source->iterator' points to the position after the last byte
              *       that has been converted. If this is the end of the buffer, then it means
              *       that the raw buffer was read. If not, it means that the buffer has not been
              *       filled to its border which happens only if End of File occured.           */
-            if( source->position != source->begin + source->size ) {
+            if( source->iterator != source->begin + source->size ) {
                 return true;
             }
             else {
                 /* Else: The raw buffer needs more bytes. Since, everything went well, the new bytes
                  *       can be stored at the position '0' of the raw_buffer.                  */
-                source->position = source->begin;
+                source->iterator = source->begin;
                 /* please, refill ...                                                          */
                 return false; 
             }
@@ -264,8 +270,8 @@ namespace quex {
 
         case EINVAL:
             /* (*) Incomplete byte sequence for character conversion
-             *     ('raw_buffer.position' points to the beginning of the incomplete sequence.)
-             *     Please, refill the buffer (consider copying the bytes from raw_buffer.position 
+             *     ('raw_buffer.iterator' points to the beginning of the incomplete sequence.)
+             *     Please, refill the buffer (consider copying the bytes from raw_buffer.iterator 
              *     to the end of the buffer in front of the new buffer).                             */
             return false; 
 
@@ -282,7 +288,7 @@ namespace quex {
     { 
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED_CLASS* me = (TEMPLATED_CLASS*)alter_ego;
-        return me->end_info.character_index; 
+        return me->raw_buffer_end_info.character_index; 
     }
 
     TEMPLATE_IN(InputHandleT) void   
@@ -310,23 +316,23 @@ namespace quex {
          *        (4) No hint, then start analysing from the beginning of the file.
          *            until the character index is reached (very worst case).
          */
-        if( CharacterIndex == me->end_info.character_index ) { 
+        if( CharacterIndex == me->raw_buffer_end_info.character_index ) { 
             return; 
         }
         else if( me->_constant_size_character_encoding_f ) { 
             long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_CHARACTER_TYPE) + me->start_position); 
             QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
         } 
-        else if( me->begin_info.character_index != 0 && CharacterIndex > me->begin_info.character_index ) {
-            __QuexBufferFiller_IConv_seek_character_index_in_stream(me, me->begin_info.position, 
-                                                                    me->begin_info.character_index, 
+        else if( me->raw_buffer_begin_info.character_index != 0 && CharacterIndex > me->raw_buffer_begin_info.character_index ) {
+            __QuexBufferFiller_IConv_seek_character_index_in_stream(me, me->raw_buffer_begin_info.stream_position, 
+                                                                    me->raw_buffer_begin_info.character_index, 
                                                                     CharacterIndex);
         } 
         else {
             __QuexBufferFiller_IConv_seek_character_index_in_stream(me, me->start_position, 0, CharacterIndex);
         } 
         /* Indicate: buffer reload required on next run! (trigger by bytes_left_n = 0) */
-        me->raw_buffer.position     = me->raw_buffer.begin;
+        me->raw_buffer.iterator     = me->raw_buffer.begin;
         me->raw_buffer.bytes_left_n = 0;
     }
 
@@ -336,8 +342,13 @@ namespace quex {
                                                             const size_t                       HintCharacterIndex,
                                                             const size_t CharacterIndex)
     { 
-        const size_t         ChunkSize = 512;
-        QUEX_CHARACTER_TYPE  chunk[512];
+        /* We cannot use the raw buffer at this point in time, since this is required 
+         * to interpret characters. Whenever a dynamic size coding is required this
+         * way of searching may become necessary.                                     */
+        const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+        QUEX_CHARACTER_TYPE  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+        /* Same restriction as for raw_buffer (see above) */
+        __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 6);
         /* This type of seek is not thought to be for cases where character positions
          * can be computed--as is the case for fixed character width encodings.       */
         __quex_assert(me->_constant_size_character_encoding_f == false);
@@ -348,22 +359,22 @@ namespace quex {
          *           index.                                                           */
         size_t  remaining_character_n = CharacterIndex - HintCharacterIndex;
 
-        if( me->begin_info.position == HintStreamPos ) { 
+        if( me->raw_buffer_begin_info.stream_position == HintStreamPos ) { 
             /* The 'read_characters()' function works on the content of the bytes
              * in the raw_buffer. The only thing that has to happen is to reset 
              * the raw buffer's position pointer to '0'.                              */
-            me->raw_buffer.bytes_left_n += (me->raw_buffer.position - me->raw_buffer.begin);
-            me->raw_buffer.position     = me->raw_buffer.begin;
+            me->raw_buffer.bytes_left_n += (me->raw_buffer.iterator - me->raw_buffer.begin);
+            me->raw_buffer.iterator     = me->raw_buffer.begin;
         }
         else {
             /* We cannot make any assumptions about the relation between stream position
              * and character index--trigger reload (bytes_left_n = 0):                */
-            me->raw_buffer.position     = me->raw_buffer.begin;
+            me->raw_buffer.iterator     = me->raw_buffer.begin;
             me->raw_buffer.bytes_left_n = 0; 
-            if ( me->end_info.position == HintStreamPos ) { 
+            if ( me->raw_buffer_end_info.stream_position == HintStreamPos ) { 
                 /* Here, no seek in the stream has to happen either, because the position
                  * points already to the right place.                                 */
-                __quex_assert(me->end_info.character_index == HintCharacterIndex);
+                __quex_assert(me->raw_buffer_end_info.character_index == HintCharacterIndex);
             } else { 
                 QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, HintStreamPos);
             }
@@ -376,7 +387,9 @@ namespace quex {
         if( remaining_character_n ) 
             me->base.read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
        
-        me->end_info.character_index = CharacterIndex;
+        me->raw_buffer_end_info.character_index = CharacterIndex;
+        /* The raw-buffer is in a consistent state at this point--ready to read starting
+         * from character number 'CharacterIndex'.                                    */ 
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -406,7 +419,7 @@ namespace quex {
     {
         me->begin        = Begin;
         me->size         = SizeInBytes;
-        me->position     = me->begin;
+        me->iterator     = me->begin;
         me->bytes_left_n = me->size;
 
 #       ifdef QUEX_OPTION_ASSERTS

@@ -7,31 +7,47 @@
 using namespace std;
 
 int
-main(int argc, char** argv) 
+main(int argc, char** argv)
 {
+    using namespace std;
     using namespace quex;
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "Converting Stream in One Beat\n";
+        cout << "read_characters: Raw buffer size varries (UTF-8)\n";
+        cout << "CHOICES: 6, 7, 8, 9;\n";
+        cout << "SAME;\n";
+        return 0;
+    }
+    assert(sizeof(QUEX_CHARACTER_TYPE) == 4);
+
+    if( argc < 2 )  {
+        printf("Missing choice argument. Use --hwut-info\n");
         return 0;
     }
 
-    std::FILE*   fh = fopen("test.txt", "r");
-    uint8_t      raw_buffer[128];
-    char*        target_charset = (char*)"UCS-4BE";
-    uint8_t      buffer[512];
-    QuexBufferFiller_IConv<std::FILE>   filler;
+    std::FILE*           fh = fopen("test.txt", "r");
+    char*                target_charset = (char*)"UCS-4BE";
+    size_t               raw_memory_size = 3;
+    raw_memory_size = argv[1][0] - '0';
+    assert(raw_memory_size >= 1);
+    assert(raw_memory_size <= 9);
+    uint8_t              raw_memory[raw_memory_size];
+    const int            MemorySize = 512; /* no re-load necessary */
+    QUEX_CHARACTER_TYPE  memory[MemorySize];
 
+    QuexBuffer                   buffer;
+    QuexBufferFiller_IConv<FILE> filler;
 
-    if( argc > 1 ) target_charset = argv[1];
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, raw_memory_size);
 
-    const int LoadedN = __QuexBufferFiller_IConv_read_characters(&filler.base, buffer, 128);
- 
-    for(int i=0; i < LoadedN ; i+=4) {
-        unsigned char b0 = buffer[i+0];
-        unsigned char b1 = buffer[i+1];
-        unsigned char b2 = buffer[i+2];
-        unsigned char b3 = buffer[i+3];
-        printf("%02X.%02X.%02X.%02X\n", (unsigned)b0, (unsigned)b1, (unsigned)b2, (unsigned)b3);
-    }
+    size_t loaded_n = 0;
+    loaded_n = filler.base.read_characters(&filler.base, 
+                                           (QUEX_CHARACTER_TYPE*)memory, MemorySize);
+
+cout << "## loaded character n = " << loaded_n << endl;
+
+for(int i=0; i < loaded_n ; ++i) {
+    uint8_t*  raw = (uint8_t*)(memory + i);
+    printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+}
 }
