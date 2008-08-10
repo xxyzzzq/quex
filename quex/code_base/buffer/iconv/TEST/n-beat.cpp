@@ -12,8 +12,8 @@ main(int argc, char** argv)
     using namespace quex;
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "read_characters: UTF8 (with tiny buffers)\n";
-        cout << "CHOICES: 3, 4, 5, 6, 8, 9;\n";
+        cout << "read_characters: User buffer size varries (UTF-8)\n";
+        cout << "CHOICES: 1, 2, 3, 4, 5, 6, 7, 8, 9;\n";
         cout << "SAME;\n";
         return 0;
     }
@@ -30,7 +30,7 @@ main(int argc, char** argv)
     char*                target_charset = (char*)"UCS-4BE";
     size_t               memory_size = 3;
     memory_size = argv[1][0] - '0';
-    assert(memory_size >= 3);
+    assert(memory_size >= 1);
     assert(memory_size <= 9);
     QUEX_CHARACTER_TYPE  memory[memory_size];
 

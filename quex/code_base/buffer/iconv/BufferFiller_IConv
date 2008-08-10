@@ -48,7 +48,7 @@
  *                                                                |           
  *       Stream:         ||aa.aa.aa.bb.cc.cc.cc.cc.dd.dd.ee.ee.ee.ee.ff.ff.gg.||
  *                         
- *                         raw_buffer.position
+ *                         raw_buffer.iterator
  *                         |                        
  *       Raw Buffer:     ||aa.aa.aa.bb.cc.cc.cc.cc.dd.dd.ee.ee.ee||
  *  
@@ -71,7 +71,7 @@
  *
  *  (3b) Load remaining bytes from the stream into raw buffer
  *
- *                         raw_buffer.position
+ *                         raw_buffer.iterator
  *                         |
  *        Raw Buffer:    ||ee.ee.ee.ee.ff.ff.gg.hh.ii.ii.________||
  *         
@@ -83,7 +83,7 @@
  *  
  *  (4b) goto (2b)
  *
- *  NOTE: The 'raw_buffer.position' remains between calls to "read_characters()".
+ *  NOTE: The 'raw_buffer.iterator' remains between calls to "read_characters()".
  *        This is equivalent to having some bytes in the pipeline.
  **********************************************************************************/
 #if ! defined (__QUEX_SETTING_PLAIN_C)
@@ -113,24 +113,23 @@ namespace quex {
 
 #ifndef __QUEX_SETTING_PLAIN_C
     template <class InputHandleT>
-    struct QuexCharacterIndexToStreamPosition { 
+    struct QuexCharacterIndexToStreamPosition {              /* Associate character index */
         size_t                             character_index;  /* with its position in the  */
-        STREAM_POSITION_TYPE(InputHandleT) position;         /* stream.                   */
+        STREAM_POSITION_TYPE(InputHandleT) stream_position;  /* stream.                   */
     };
 #   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition<TYPE>
 #else
     typedef struct { 
-        size_t                             character_index;  /* with its position in the  */
-        STREAM_POSITION_TYPE(InputHandleT) position;         /* stream.                   */
+        size_t                             character_index;  
+        STREAM_POSITION_TYPE(InputHandleT) stream_position;        
     } QuexCharacterIndexToStreamPosition;
 #   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
 #endif 
 
-
     typedef struct {
         uint8_t*  begin;
         size_t    size;
-        uint8_t*  position;
+        uint8_t*  iterator;
         size_t    bytes_left_n;
     } QuexBufferFiller_IConv_BufferInfo;
 
@@ -150,11 +149,12 @@ namespace quex {
 
         iconv_t                             iconv_handle;  /* conversion data */
         bool                                _constant_size_character_encoding_f;
+
         QuexBufferFiller_IConv_BufferInfo   raw_buffer;
         bool                                _raw_buffer_external_owner_f;
 
-        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  end_info;
-        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  begin_info;
+        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  raw_buffer_end_info;
+        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  raw_buffer_begin_info;
     };
 
     TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_IConv_tell_character_index(QuexBufferFiller* alter_ego);
