@@ -145,16 +145,18 @@ namespace quex {
 
         InputHandleT*      ih;
 
-        STREAM_POSITION_TYPE(InputHandleT)  start_position;  
-
-        iconv_t                             iconv_handle;  /* conversion data */
+        iconv_t                             iconv_handle;  /* Conversion Data */
         bool                                _constant_size_character_encoding_f;
 
         QuexBufferFiller_IConv_BufferInfo   raw_buffer;
         bool                                _raw_buffer_external_owner_f;
 
-        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  raw_buffer_end_info;
-        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  raw_buffer_begin_info;
+        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT) raw_buffer_begin;
+        size_t                                       raw_buffer_iterators_character_index;
+        STREAM_POSITION_TYPE(InputHandleT)           raw_buffer_end_stream_position;
+
+        /* Position where the whole analysis starts. The '0' when we are asked to reset. */
+        STREAM_POSITION_TYPE(InputHandleT)  start_position;  
     };
 
     TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_IConv_tell_character_index(QuexBufferFiller* alter_ego);
