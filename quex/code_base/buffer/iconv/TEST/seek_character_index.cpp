@@ -13,7 +13,7 @@ main(int argc, char** argv)
     using namespace quex;
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "Seek character index position\n";
+        cout << "Seek: Plain search\n";
         cout << "CHOICES: Forward, Backward;\n";
         return 0;
     }
@@ -31,11 +31,12 @@ main(int argc, char** argv)
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_CHARACTER_TYPE  memory[MemorySize];
     /**/
-    const int    Delta = strcmp(argv[1], "Forward") == 0 ?  1 : -1;
-    const int    Front = strcmp(argv[1], "Forward") == 0 ?  0 : 23;
-    const int    Back  = strcmp(argv[1], "Forward") == 0 ? 23 : 0;
+    int    Delta = 0;
+    int    Front = 0;
+    int    Back  = 0;
+    if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
+    else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    QuexBuffer                   buffer;
     QuexBufferFiller_IConv<FILE> filler;
 
     QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, RawMemorySize);
@@ -47,9 +48,11 @@ main(int argc, char** argv)
         loaded_n = filler.base.read_characters(&filler.base, 
                                                (QUEX_CHARACTER_TYPE*)memory, MemorySize);
 
-        /* Print first read character from position 'i' */
-        uint8_t*  raw = (uint8_t*)(memory);
-        printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+        if( loaded_n != 0 ) {
+            /* Print first read character from position 'i' */
+            uint8_t*  raw = (uint8_t*)(memory);
+            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+        }
 
         if( i == Back ) break;
     }

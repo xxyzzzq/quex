@@ -34,7 +34,6 @@ main(int argc, char** argv)
     assert(memory_size <= 9);
     QUEX_CHARACTER_TYPE  memory[memory_size];
 
-    QuexBuffer                   buffer;
     QuexBufferFiller_IConv<FILE> filler;
 
     QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, RawMemorySize);
