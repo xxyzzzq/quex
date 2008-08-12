@@ -300,7 +300,7 @@ namespace quex {
                                               const size_t          Index)
     { 
         __quex_assert(alter_ego != 0x0); 
-        TEMPLATED_CLASS* me = (TEMPLATED_CLASS*)alter_ego;
+        TEMPLATED_CLASS* me         = (TEMPLATED_CLASS*)alter_ego;
         const size_t     BeginIndex = me->raw_buffer_begin.character_index;
 
         /* Seek_character_index(Pos) means that the next time when a character buffer
@@ -308,50 +308,71 @@ namespace quex {
          *
          * NOTE: The reference for character positioning is **not** directly the stream.
          * Moreover, it is the internal raw_buffer.position. It determines what characters 
-         * are converted next into the user's buffer.                                      
-         *
-         * Cases:
-         *        (1) Anyway, the next character to be read == CharacterIndex
-         *            => just relax, return without doing anything.
-         *        (2) The coding has a constant character size (UCS-2, UCS-4, but not UTF-8)
-         *            => seek according to computed stream position.
-         *        (3) The CharacterIndex > character_index of the last stored
-         *            pair of (character_index, stream position), then use that
-         *            as a hint for the search of the stream position.
-         *        (4) No hint, then start analysing from the beginning of the file.
-         *            until the character index is reached (very worst case).                       */
+         * are converted next into the user's buffer.                                             */
         if( Index == me->raw_buffer_iterators_character_index ) { 
-            return; 
+            return;                                                /* Nothing to be done          */
         }
-        /* We promise, at the end it will be ... */
+        /* At the end it will be ... */
         me->raw_buffer_iterators_character_index = Index;
 
-        if( Index == BeginIndex ) { 
-            /* The 'read_characters()' function works on the content of the bytes
-             * in the raw_buffer. The only thing that has to happen is to reset 
-             * the raw buffer's position pointer to '0'.                              */
-            me->raw_buffer.bytes_left_n += (me->raw_buffer.iterator - me->raw_buffer.begin);
-            me->raw_buffer.iterator     = me->raw_buffer.begin;
-            return;
-        }
-        else if( me->_constant_size_character_encoding_f ) { 
-            long avoid_tmp_arg = (long)(Index * sizeof(QUEX_CHARACTER_TYPE) + me->start_position); 
-            QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
-            me->raw_buffer.bytes_left_n = 0;                     /* Trigger reload */
-            me->raw_buffer.iterator     = me->raw_buffer.begin;
+        /* Depending on the character encoding, the seek procedure can be optimized there are the 
+         * following two cases:
+         *
+         *   (1) The coding uses **fixed** character widths (such as ASCII, UCS2, UCS4, etc.) where
+         *       each character always occupies the same amount of bytes. Here, offsets can be 
+         *       **computed**. This makes things faster.
+         *   (2) The coding uses **dynamic** character width (e.g. UTF-8). Here the position cannot
+         *       be computed. Instead, the conversion must start from a given 'known' position 
+         *       until one reaches the specified character index.                                 */
+        if( me->_constant_size_character_encoding_f ) { 
+            /* (1) Fixed Character Width */
+            const size_t EndIndex = BeginIndex + (me->raw_buffer.size / sizeof(QUEX_CHARACTER_TYPE));
+            if( Index >= BeginIndex && Index < EndIndex ) {
+                uint8_t* new_iterator = me->raw_buffer.begin + (Index - BeginIndex) * sizeof(QUEX_CHARACTER_TYPE);
+                me->raw_buffer.bytes_left_n -= (new_iterator - me->raw_buffer.iterator);
+                me->raw_buffer.iterator      = new_iterator;
+                return;
+            }
+            else  /* Index not in [BeginIndex:EndIndex) */ {
+                STREAM_POSITION_TYPE(InputHandleT) avoid_tmp_arg =
+                    (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_CHARACTER_TYPE) + me->start_position);
+                QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
+                me->raw_buffer.bytes_left_n = 0;                                 /* Trigger reload */
+                me->raw_buffer.iterator     = me->raw_buffer.begin;
+                return;
+            }
         } 
-        else if( Index > BeginIndex ) { 
-            /* We cannot make any assumptions about the relation between stream position
-             * and character index--trigger reload (bytes_left_n = 0):                */
+        else  { 
+            /* (2) Dynamic Character Width */
+            /* Setting the iterator to the begin of the raw_buffer initiates a conversion
+             * start from this point.                                                              */
             me->raw_buffer.iterator = me->raw_buffer.begin;
-            QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->raw_buffer_begin.stream_position);
-            __QuexBufferFiller_IConv_step_forward_n_characters(me, Index - BeginIndex);
+            if( Index == BeginIndex ) { 
+                /* The 'read_characters()' function works on the content of the bytes
+                 * in the raw_buffer. The only thing that has to happen is to reset 
+                 * the raw buffer's position pointer to '0'.                                       */
+                me->raw_buffer.bytes_left_n += (me->raw_buffer.iterator - me->raw_buffer.begin);
+                return;
+            }
+            else if( Index > BeginIndex ) { 
+                /* The searched index lies in the current raw_buffer or behind. Simply start 
+                 * conversion from the current position until it is reached--but use the stuff 
+                 * currently inside the buffer.                                                   */
+                me->raw_buffer.bytes_left_n += (me->raw_buffer.iterator - me->raw_buffer.begin);
+                __QuexBufferFiller_IConv_step_forward_n_characters(me, Index - BeginIndex);
+                return;
+            }
+            else  /* Index < BeginIndex */ {
+                /* No idea where to start --> start from the beginning. In some cases this might
+                 * mean a huge performance penalty. But note, that is only occurs at pre-conditions
+                 * that are very very long and happen right at the beginning of the raw buffer.   */
+                me->raw_buffer.bytes_left_n = 0; /* trigger reload, not only conversion           */
+                STREAM_POSITION_TYPE(InputHandleT) avoid_tmp_arg =(STREAM_POSITION_TYPE(InputHandleT))(0);
+                QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
+                __QuexBufferFiller_IConv_step_forward_n_characters(me, Index);
+                return;
+            } 
         }
-        else /* Index < BeginIndex */ {
-            me->raw_buffer.iterator = me->raw_buffer.begin;
-            QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->raw_buffer_begin.stream_position);
-            __QuexBufferFiller_IConv_step_forward_n_characters(me, Index - BeginIndex);
-        } 
     }
 
     TEMPLATE_IN(InputHandleT) void 
