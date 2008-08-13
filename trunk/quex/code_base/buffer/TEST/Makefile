@@ -38,5 +38,5 @@ hwut-info:
 	g++ -DQUEX_CHARACTER_TYPE=uint32_t \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
-clean: $(HEADERS)
+clean: 
 	rm -rf $(TEST_FILES)

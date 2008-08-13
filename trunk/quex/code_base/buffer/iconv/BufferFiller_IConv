@@ -131,6 +131,9 @@ namespace quex {
         size_t    size;
         uint8_t*  iterator;
         size_t    bytes_left_n;
+#       ifdef QUEX_OPTION_ASSERTS
+        bool      eof_reached_f;  /* Has end of file been reached? */
+#       endif
     } QuexBufferFiller_IConv_BufferInfo;
 
 #   ifndef __QUEX_SETTING_PLAIN_C
