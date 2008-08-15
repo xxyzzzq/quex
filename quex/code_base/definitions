@@ -10,6 +10,9 @@
 #ifndef QUEX_TOKEN_ID_TYPE
 #   define QUEX_TOKEN_ID_TYPE  uint32_t
 #endif
+#ifndef QUEX_SETTING_BUFFER_MIN_FALLBACK_N 
+#   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N   256
+#endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <cstring>  // gets: memmove, memcpy
@@ -24,7 +27,7 @@
 #   define __QUEX_STD_ftell    std::ftell 
 #   define __QUEX_STD_fread    std::fread 
 
-#   define QUEX_INLINE_KEYWORD     inline
+#   define QUEX_INLINE     inline
     /* Input handle type is determined automagically via templates */
 #else
 #   include <string.h>  /* gets: memmove, memcpy     */
@@ -39,7 +42,7 @@
 #   define __QUEX_STD_ftell    ftell 
 #   define __QUEX_STD_fread    fread 
 
-#   define QUEX_INLINE_KEYWORD     static
+#   define QUEX_INLINE     static
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 

@@ -22,7 +22,7 @@
 
 #else
 #    define TEMPLATIFIER(SOME_CLASS)               /* empty */
-#    define TEMPLATE_IN(SOME_CLASS)                QUEX_INLINE_KEYWORD
+#    define TEMPLATE_IN(SOME_CLASS)                QUEX_INLINE
 #    define STREAM_POSITION_TYPE(IH_TYPE)          long
 #    define STREAM_OFFSET_TYPE(IH_TYPE)            long
 #    define InputHandleT                           FILE
