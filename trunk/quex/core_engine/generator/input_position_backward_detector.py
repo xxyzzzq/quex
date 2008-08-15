@@ -13,7 +13,7 @@ from quex.frs_py.string_handling import blue_print
 
 function_str = """
 #include <quex/code_base/temporary_macros_on>
-QUEX_INLINE_KEYWORD void 
+QUEX_INLINE void 
 PAPC_input_postion_backward_detector_$$ID$$(QuexAnalyser* me) 
 {
 $$LOCAL_VARIABLES$$

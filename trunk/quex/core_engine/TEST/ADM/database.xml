@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.25" date="Sun Jul 27 23:09:28 2008">
+<test-database execution-time-sec="0.30" date="Fri Aug 15 10:28:12 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.05"> 
@@ -13,16 +13,16 @@
                <choice name="" result="OK" time-sec="0.03" crc="1433382430"/>
             </choice-list>
         </test>
-        <test title="Difference" make-required="True" time-sum-sec="0.03"> 
+        <test title="Difference" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1217103553L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="2115164504"/>
+               <choice name="" result="OK" time-sec="0.04" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Intersection" make-required="True" time-sum-sec="0.04"> 
+        <test title="Intersection" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1217103553L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="892506273"/>
+               <choice name="" result="OK" time-sec="0.05" crc="892506273"/>
             </choice-list>
         </test>
         <test title="Union" make-required="True" time-sum-sec="0.04"> 
@@ -39,10 +39,10 @@
         </test>
     </group>
     <group name="Utf8-Module">
-        <test title="Map UTF8 String To Unicode Values" make-required="True" time-sum-sec="0.03"> 
+        <test title="Map UTF8 String To Unicode Values" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-utf8-UCS-to-UTF8.py" info-request-time="1217103553L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="-99051650"/>
+               <choice name="" result="OK" time-sec="0.04" crc="-99051650"/>
             </choice-list>
         </test>
     </group>

@@ -35,15 +35,15 @@ namespace quex {
 #       endif
     };
     
-    QUEX_INLINE_KEYWORD __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
+    QUEX_INLINE __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE
     QuexMode_uncallable_analyser_function(QuexAnalyser*)
     { __quex_assert(0); return (__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE)(0); }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexMode_on_indentation_null_function(QuexAnalyser*, const int) 
     { }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexMode_on_entry_exit_null_function(QuexAnalyser*, const QuexMode*) 
     { }
 

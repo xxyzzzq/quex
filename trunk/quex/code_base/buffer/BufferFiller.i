@@ -13,19 +13,25 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_exit_on_error(const char* Msg);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_asserts(QuexBuffer*);
-    QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
+    QUEX_INLINE void   __QuexBufferFiller_exit_on_error(const char* Msg);
+    QUEX_INLINE void   __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
+    QUEX_INLINE void   __QuexBufferFiller_forward_asserts(QuexBuffer*);
+    QUEX_INLINE size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
                                                                                const size_t Distance_LexemeStart_to_InputP);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*, 
+    QUEX_INLINE void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*, 
                                                                          const size_t DesiredLoadN,
                                                                          const size_t LoadedN,
                                                                          const size_t FallBackN, 
                                                                          const size_t Distance_LexemeStart_to_InputP);
-    QUEX_INLINE_KEYWORD size_t __QuexBufferFiller_backward_copy_backup_region(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void   __QuexBufferFiller_backward_adapt_pointers(QuexBuffer*, 
+    QUEX_INLINE size_t __QuexBufferFiller_backward_copy_backup_region(QuexBuffer*);
+    QUEX_INLINE void   __QuexBufferFiller_backward_adapt_pointers(QuexBuffer*, 
                                                                           const size_t BackwardDistance);
+
+#   ifndef __QUEX_SETTING_PLAIN_C
+#   define BUFFER_FILLER_CONVERTER QuexBufferFiller_IConv<InputHandleT>
+#   else
+#   define BUFFER_FILLER_CONVERTER QuexBufferFiller_IConv
+#   endif
 
 #   ifndef __QUEX_SETTING_PLAIN_C
 #   define BUFFER_FILLER_PLAIN QuexBufferFiller_Plain<InputHandleT>
@@ -46,7 +52,7 @@ namespace quex {
             } else { 
                 me = 0x0; /* return new QuexBufferFiller_IConv;*/
             }
-            BufferFiller_Plain_init((BUFFER_FILLER_PLAIN*)me, ih);
+            QuexBufferFiller_Plain_init((BUFFER_FILLER_PLAIN*)me, ih);
         }
         else { 
             if( place_in_memory == 0x0 ) { 
@@ -61,7 +67,7 @@ namespace quex {
 
 #   undef BUFFER_FILLER_PLAIN 
 
-    QUEX_INLINE_KEYWORD void       
+    QUEX_INLINE void       
     QuexBufferFiller_destroy(QuexBufferFiller* me)
     { 
         /* if no dedicated deallocator is specified then free only the basic
@@ -70,7 +76,7 @@ namespace quex {
         else                      __QUEX_FREE_MEMORY(me);
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     __QuexBufferFiller_init(QuexBufferFiller* me,
                             size_t       (*tell_character_index)(QuexBufferFiller*),
                             void         (*seek_character_index)(QuexBufferFiller*, const size_t),
@@ -90,7 +96,7 @@ namespace quex {
         me->_destroy             = destroy;
     }
 
-    QUEX_INLINE_KEYWORD size_t
+    QUEX_INLINE size_t
     QuexBufferFiller_load_forward(QuexBuffer* buffer)
     {
         QuexBufferFiller*  me = buffer->filler;
@@ -166,7 +172,7 @@ namespace quex {
         return DesiredLoadN; /* THUS NOT: LoadedN*/
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     __QuexBufferFiller_forward_asserts(QuexBuffer* buffer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
@@ -189,7 +195,7 @@ namespace quex {
 #       endif
     }
 
-    QUEX_INLINE_KEYWORD size_t
+    QUEX_INLINE size_t
     __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer* buffer,
                                                     const size_t Distance_LexemeStart_to_InputP)
     {
@@ -240,7 +246,7 @@ namespace quex {
         return FallBackN;
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     __QuexBufferFiller_forward_adapt_pointers(QuexBuffer* buffer, 
                                               const size_t DesiredLoadN,
                                               const size_t LoadedN,
@@ -276,7 +282,7 @@ namespace quex {
     }
 
 
-    QUEX_INLINE_KEYWORD size_t   
+    QUEX_INLINE size_t   
     QuexBufferFiller_load_backward(QuexBuffer* buffer)
     {
         QuexBufferFiller* me = buffer->filler;
@@ -381,7 +387,7 @@ namespace quex {
     }
 
 
-    QUEX_INLINE_KEYWORD size_t
+    QUEX_INLINE size_t
     __QuexBufferFiller_backward_copy_backup_region(QuexBuffer* buffer)
     {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
@@ -439,7 +445,7 @@ namespace quex {
         return BackwardDistance;
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     __QuexBufferFiller_backward_adapt_pointers(QuexBuffer* buffer, const size_t BackwardDistance)
     {
         /* -- end of file / end of buffer:*/
@@ -458,7 +464,7 @@ namespace quex {
 
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     __QuexBufferFiller_exit_on_error(const char* Msg)
     {
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -469,7 +475,7 @@ namespace quex {
 #       endif
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     __QuexBufferFiller_on_overflow(QuexBuffer* buffer, bool ForwardF)
     {
         QuexBufferFiller* me = buffer->filler;

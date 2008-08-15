@@ -44,11 +44,11 @@
 namespace quex {
 #endif
 
-    QUEX_INLINE_KEYWORD void BufferFiller_x_show_content(QuexBuffer* buffer); 
-    QUEX_INLINE_KEYWORD void BufferFiller_show_brief_content(QuexBuffer* buffer);
-    QUEX_INLINE_KEYWORD void BufferFiller_show_content(QuexBuffer* buffer); 
+    QUEX_INLINE void BufferFiller_x_show_content(QuexBuffer* buffer); 
+    QUEX_INLINE void BufferFiller_show_brief_content(QuexBuffer* buffer);
+    QUEX_INLINE void BufferFiller_show_content(QuexBuffer* buffer); 
 
-    QUEX_INLINE_KEYWORD void 
+    QUEX_INLINE void 
     BufferFiller_show_brief_content(QuexBuffer* buffer) 
     {
         __quex_assert(buffer != 0x0);
@@ -62,14 +62,14 @@ namespace quex {
         __QUEX_STD_printf("_lexeme_start_p (offset) = %08X\n",     (int)(buffer->_lexeme_start_p - buffer->_memory._front));
     }
 
-    QUEX_INLINE_KEYWORD void 
+    QUEX_INLINE void 
     BufferFiller_x_show_content(QuexBuffer* buffer) 
     {
         BufferFiller_show_content(buffer);
         BufferFiller_show_brief_content(buffer);
     }
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE
+    QUEX_INLINE QUEX_CHARACTER_TYPE
     __BufferFiller_get_border_char(QuexBuffer* buffer, const QUEX_CHARACTER_TYPE* C) 
     {
         if     ( *C != QUEX_SETTING_BUFFER_LIMIT_CODE )   
@@ -82,7 +82,7 @@ namespace quex {
             return (QUEX_CHARACTER_TYPE)'|';
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_show_content(QuexBuffer* buffer)
     {
 #       if QUEX_CHARACTER_TYPE   == uint8_t
@@ -115,7 +115,7 @@ namespace quex {
         __QUEX_STD_printf("|");
     }
 
-    QUEX_INLINE_KEYWORD void  
+    QUEX_INLINE void  
     BufferFiller_show_content(QuexBuffer* buffer) 
     {
         __quex_assert(buffer != 0x0);
@@ -166,7 +166,7 @@ namespace quex {
         QuexBuffer_show_content(buffer);
     }
 
-    QUEX_INLINE_KEYWORD void  
+    QUEX_INLINE void  
     QuexBuffer_show_byte_content(QuexBuffer* buffer, const int IndentationN) 
     {
         __quex_assert(buffer != 0x0);

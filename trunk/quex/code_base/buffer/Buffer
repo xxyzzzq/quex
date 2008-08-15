@@ -31,10 +31,10 @@ namespace quex {
         bool                  _external_owner_f; 
     } QuexBufferMemory;
 
-    QUEX_INLINE_KEYWORD void    QuexBufferMemory_setup(QuexBufferMemory*, 
+    QUEX_INLINE void    QuexBufferMemory_setup(QuexBufferMemory*, 
                                                        QUEX_CHARACTER_TYPE* memory, size_t Size, 
                                                        bool ExternalOwnerF); 
-    QUEX_INLINE_KEYWORD size_t  QuexBufferMemory_size(QuexBufferMemory*);
+    QUEX_INLINE size_t  QuexBufferMemory_size(QuexBufferMemory*);
 
 #   if ! defined(__QUEX_SETTING_PLAIN_C)
     typedef QuexBufferMemory::Position  QUEX_CHARACTER_POSITION_TYPE;
@@ -73,30 +73,30 @@ namespace quex {
         struct __QuexBufferFiller_tag*  filler;
     } QuexBuffer;
 
-    QUEX_INLINE_KEYWORD void  QuexBuffer_init(QuexBuffer*, 
+    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*, 
                                               QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
                                               struct __QuexBufferFiller_tag* Filler);
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void                  QuexBuffer_input_p_increment(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void                  QuexBuffer_input_p_decrement(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void                  QuexBuffer_mark_lexeme_start(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void                  QuexBuffer_seek_lexeme_start(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void                  QuexBuffer_store_last_character_of_lexeme_for_next_run(QuexBuffer*);
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE*  QuexBuffer_content_front(QuexBuffer*);
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE*  QuexBuffer_content_back(QuexBuffer*);
-    QUEX_INLINE_KEYWORD size_t                QuexBuffer_content_size(QuexBuffer*);
+    QUEX_INLINE QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
+    QUEX_INLINE void                  QuexBuffer_input_p_increment(QuexBuffer*);
+    QUEX_INLINE void                  QuexBuffer_input_p_decrement(QuexBuffer*);
+    QUEX_INLINE void                  QuexBuffer_mark_lexeme_start(QuexBuffer*);
+    QUEX_INLINE void                  QuexBuffer_seek_lexeme_start(QuexBuffer*);
+    QUEX_INLINE void                  QuexBuffer_store_last_character_of_lexeme_for_next_run(QuexBuffer*);
+    QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_content_front(QuexBuffer*);
+    QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_content_back(QuexBuffer*);
+    QUEX_INLINE size_t                QuexBuffer_content_size(QuexBuffer*);
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void                          QuexBuffer_seek_memory_adr(QuexBuffer*, 
+    QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(QuexBuffer*);
+    QUEX_INLINE void                          QuexBuffer_seek_memory_adr(QuexBuffer*, 
                                                                                  QUEX_CHARACTER_POSITION_TYPE);
     
-    QUEX_INLINE_KEYWORD void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);
-    QUEX_INLINE_KEYWORD void  QuexBuffer_end_of_file_set(QuexBuffer*, QUEX_CHARACTER_TYPE* Position);
-    QUEX_INLINE_KEYWORD void  QuexBuffer_end_of_file_unset(QuexBuffer*);
-    QUEX_INLINE_KEYWORD bool  QuexBuffer_is_end_of_file(QuexBuffer*);
-    QUEX_INLINE_KEYWORD bool  QuexBuffer_is_begin_of_file(QuexBuffer*);
+    QUEX_INLINE void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
+    QUEX_INLINE void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);
+    QUEX_INLINE void  QuexBuffer_end_of_file_set(QuexBuffer*, QUEX_CHARACTER_TYPE* Position);
+    QUEX_INLINE void  QuexBuffer_end_of_file_unset(QuexBuffer*);
+    QUEX_INLINE bool  QuexBuffer_is_end_of_file(QuexBuffer*);
+    QUEX_INLINE bool  QuexBuffer_is_begin_of_file(QuexBuffer*);
 
 
 

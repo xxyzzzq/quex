@@ -14,11 +14,11 @@
 
 #else 
 
-#define QUEX_INLINE_KEYWORD  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
+#define QUEX_INLINE  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
 #define CLASS        fixed_size_character_stream_iconv<QUEX_CHARACTER_TYPE, QUEX_CHARACTER_TYPE>
 
 namespace quex {
-    QUEX_INLINE_KEYWORD void 
+    QUEX_INLINE void 
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(const char* FromCoding, const char* ToCoding,
                                                                      iconv_t IconvResult)
         {
@@ -37,14 +37,14 @@ namespace quex {
             }
         }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(size_t LoadedByteN)      
         {
             std::cout << "(*) loaded bytes = " << LoadedByteN << std::endl;  
             raw_buffer.print("raw buffer");
         }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_ICONV_REPORT(size_t Report)                             
         {
             std::cout << "(*) converted\n";                                                     
@@ -66,14 +66,14 @@ namespace quex {
             }
         }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_AND_USER_BUFFER(CLASS::buffer_info* user_buffer)                  
         {
             raw_buffer.print("raw buffer");                                                  
             user_buffer->print("user buffer", user_buffer->position - user_buffer->begin);
         }
 
-    QUEX_INLINE_KEYWORD void 
+    QUEX_INLINE void 
         CLASS::buffer_info::print(const char* name, int until_idx /* = -1*/) 
         {
             if( until_idx == -1 ) until_idx = size;
@@ -94,7 +94,7 @@ namespace quex {
         }
 }
 #undef CLASS
-#undef QUEX_INLINE_KEYWORD
+#undef QUEX_INLINE
 
 #endif
 

@@ -10,7 +10,7 @@
 namespace quex {
 #endif
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexAnalyser_init(QuexAnalyser* me,
                       QUEX_ANALYSER_FUNCTION_TYPE AnalyserFunction,
                       QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size, 
@@ -28,7 +28,7 @@ namespace quex {
      *       addresses related to acceptance positions need to be adapted. This
      *       is not the case for 'reload_backward()'. In no case of backward
      *       reloading, there are important addresses to keep track. */
-    QUEX_INLINE_KEYWORD bool 
+    QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer)
     {
         if( buffer->filler == 0x0 ) return false;

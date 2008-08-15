@@ -12,7 +12,7 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE_KEYWORD void 
+    QUEX_INLINE void 
     QuexBufferMemory_setup(QuexBufferMemory* me, 
                            QUEX_CHARACTER_TYPE* memory, size_t Size, 
                            bool ExternalOwnerF) 
@@ -37,11 +37,11 @@ namespace quex {
     }
 
 
-    QUEX_INLINE_KEYWORD size_t          
+    QUEX_INLINE size_t          
     QuexBufferMemory_size(QuexBufferMemory* me)
     { return me->_back - me->_front + 1; }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_init(QuexBuffer*          me, 
                     QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
                     struct __QuexBufferFiller_tag* filler)
@@ -80,31 +80,31 @@ namespace quex {
     }
 
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_input_p_increment(QuexBuffer* buffer)
     { 
         ++(buffer->_input_p); 
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_input_p_decrement(QuexBuffer* buffer)
     { 
         --(buffer->_input_p); 
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_mark_lexeme_start(QuexBuffer* buffer)
     { 
         buffer->_lexeme_start_p = buffer->_input_p; 
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_seek_lexeme_start(QuexBuffer* buffer)
     { 
         buffer->_input_p = buffer->_lexeme_start_p;
     }
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_POSITION_TYPE
+    QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE
     QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -117,7 +117,7 @@ namespace quex {
 #       endif
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_seek_memory_adr(QuexBuffer* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
     {
 #       if      defined (QUEX_OPTION_ASSERTS) \
@@ -133,14 +133,14 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     }
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE
+    QUEX_INLINE QUEX_CHARACTER_TYPE
     QuexBuffer_input_get(QuexBuffer* me)
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
         return *(me->_input_p); 
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_store_last_character_of_lexeme_for_next_run(QuexBuffer* me)
     { 
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
@@ -148,14 +148,14 @@ namespace quex {
 #       endif
     }  
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer* me)
     { 
         me->_character_at_lexeme_start = *(me->_input_p); 
         *(me->_input_p) = '\0';
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer* me)
     {
         /* only need to reset, in case that the terminating zero was set*/
@@ -165,25 +165,25 @@ namespace quex {
         }
     }
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE*
+    QUEX_INLINE QUEX_CHARACTER_TYPE*
     QuexBuffer_content_front(QuexBuffer* me)
     {
         return me->_memory._front + 1;
     }
 
-    QUEX_INLINE_KEYWORD QUEX_CHARACTER_TYPE*
+    QUEX_INLINE QUEX_CHARACTER_TYPE*
     QuexBuffer_content_back(QuexBuffer* me)
     {
         return me->_memory._back - 1;
     }
 
-    QUEX_INLINE_KEYWORD size_t
+    QUEX_INLINE size_t
     QuexBuffer_content_size(QuexBuffer* me)
     {
         return QuexBufferMemory_size(&(me->_memory)) - 2;
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_end_of_file_set(QuexBuffer* me, QUEX_CHARACTER_TYPE* Position)
     {
         __quex_assert(Position > me->_memory._front);
@@ -194,21 +194,21 @@ namespace quex {
         *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
-    QUEX_INLINE_KEYWORD void
+    QUEX_INLINE void
     QuexBuffer_end_of_file_unset(QuexBuffer* buffer)
     {
         __quex_assert(buffer->_end_of_file_p <= buffer->_memory._back);
         buffer->_end_of_file_p = 0x0;
     }
 
-    QUEX_INLINE_KEYWORD bool 
+    QUEX_INLINE bool 
     QuexBuffer_is_end_of_file(QuexBuffer* buffer)
     { 
         __quex_assert(buffer->_input_p != 0x0);
         return buffer->_input_p == buffer->_end_of_file_p;
     }
 
-    QUEX_INLINE_KEYWORD bool                  
+    QUEX_INLINE bool                  
     QuexBuffer_is_begin_of_file(QuexBuffer* buffer)
     { 
         if     ( buffer->_input_p != buffer->_memory._front )  return false;

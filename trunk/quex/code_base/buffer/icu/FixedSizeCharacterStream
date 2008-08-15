@@ -202,12 +202,12 @@ namespace quex {
 
 #include <quex/code_base/buffer/iconv/debug.i>
 
-#define QUEX_INLINE_KEYWORD  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
+#define QUEX_INLINE  template<class QUEX_CHARACTER_TYPE, class QUEX_CHARACTER_TYPE>
 #define CLASS        fixed_size_character_stream_icu<QUEX_CHARACTER_TYPE, QUEX_CHARACTER_TYPE>
 
 namespace quex {
 
-    QUEX_INLINE_KEYWORD CLASS::fixed_size_character_stream_icu(QUEX_CHARACTER_TYPE* input_handle, 
+    QUEX_INLINE CLASS::fixed_size_character_stream_icu(QUEX_CHARACTER_TYPE* input_handle, 
                                                  uint8_t*    raw_buffer_p, size_t      raw_buffer_size,
                                                  const char* FromCoding,   const char* ToCoding) 
         // Initialize the raw buffer that holds the plain bytes of the input file
@@ -228,10 +228,10 @@ namespace quex {
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, iconv_handle);
     }
 
-    QUEX_INLINE_KEYWORD CLASS::~fixed_size_character_stream_icu() 
+    QUEX_INLINE CLASS::~fixed_size_character_stream_icu() 
     { iconv_close(iconv_handle); }
 
-    QUEX_INLINE_KEYWORD size_t 
+    QUEX_INLINE size_t 
     CLASS::read_characters(QUEX_CHARACTER_TYPE* user_buffer_p, const size_t N) 
     {
         buffer_info  user_buffer((uint8_t*)user_buffer_p, N * SizeOfCharacter);
@@ -262,7 +262,7 @@ namespace quex {
         }
     }
 
-    QUEX_INLINE_KEYWORD void CLASS::__fill_raw_buffer() 
+    QUEX_INLINE void CLASS::__fill_raw_buffer() 
     {
         // Try to fill the raw buffer to its limits with data from the file.
         // The filling starts from its current position, thus the remaining bytes
@@ -291,7 +291,7 @@ namespace quex {
         QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);
     }
 
-    QUEX_INLINE_KEYWORD bool CLASS::__convert(buffer_info* user_buffer) 
+    QUEX_INLINE bool CLASS::__convert(buffer_info* user_buffer) 
         // RETURNS:  true  --> User buffer is filled as much as possible with converted characters.
         //           false --> More raw bytes are needed to fill the user buffer.
     {
@@ -372,10 +372,10 @@ if (U_FAILURE(err)) {
     }
 
 
-    QUEX_INLINE_KEYWORD size_t CLASS::tell_character_index()
+    QUEX_INLINE size_t CLASS::tell_character_index()
     { return end_character_index; }
 
-    QUEX_INLINE_KEYWORD void CLASS::seek_character_index(const size_t CharacterIndex) 
+    QUEX_INLINE void CLASS::seek_character_index(const size_t CharacterIndex) 
     { 
         // Seek_character_index(Pos) means that the next time when a character buffer
         // is to be filled, this has to happen from position 'CharacterIndex'. NOTE: The
@@ -400,7 +400,7 @@ if (U_FAILURE(err)) {
         raw_buffer.bytes_left_n = 0;
     }
 
-    QUEX_INLINE_KEYWORD void CLASS::__seek_character_index_in_stream(stream_position   HintStreamPos, 
+    QUEX_INLINE void CLASS::__seek_character_index_in_stream(stream_position   HintStreamPos, 
                                                              const size_t HintCharacterIndex,
                                                              const size_t CharacterIndex)
     { 
@@ -445,23 +445,23 @@ if (U_FAILURE(err)) {
         end_character_index = CharacterIndex;
     }
 
-    QUEX_INLINE_KEYWORD void  CLASS::register_begin_of_file() 
+    QUEX_INLINE void  CLASS::register_begin_of_file() 
     { 
         start_position = InputPolicy<QUEX_CHARACTER_TYPE*>::tell(ih); 
     }
 
-    QUEX_INLINE_KEYWORD void  CLASS::seek_begin_of_file()
+    QUEX_INLINE void  CLASS::seek_begin_of_file()
     {
         InputPolicy<QUEX_CHARACTER_TYPE*>::seek(ih, start_position);
     }
 
-    QUEX_INLINE_KEYWORD bool CLASS::has_input_format_dynamic_character_width() 
+    QUEX_INLINE bool CLASS::has_input_format_dynamic_character_width() 
     {
         return true; // TODO: distinguish between different coding formats
         //           //       'true' is safe, but possibly a little slower.
     }
 
-    QUEX_INLINE_KEYWORD CLASS::buffer_info::buffer_info(uint8_t* Begin, size_t SizeInBytes)
+    QUEX_INLINE CLASS::buffer_info::buffer_info(uint8_t* Begin, size_t SizeInBytes)
     {
         begin        = Begin;
         size         = SizeInBytes;
@@ -472,7 +472,7 @@ if (U_FAILURE(err)) {
 
 
 #undef CLASS
-#undef QUEX_INLINE_KEYWORD
+#undef QUEX_INLINE
 
 }
 
