@@ -32,8 +32,8 @@ namespace quex {
     } QuexBufferMemory;
 
     QUEX_INLINE void    QuexBufferMemory_setup(QuexBufferMemory*, 
-                                                       QUEX_CHARACTER_TYPE* memory, size_t Size, 
-                                                       bool ExternalOwnerF); 
+                                               QUEX_CHARACTER_TYPE* memory, size_t Size, 
+                                               bool ExternalOwnerF); 
     QUEX_INLINE size_t  QuexBufferMemory_size(QuexBufferMemory*);
 
 #   if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -74,8 +74,8 @@ namespace quex {
     } QuexBuffer;
 
     QUEX_INLINE void  QuexBuffer_init(QuexBuffer*, 
-                                              QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
-                                              struct __QuexBufferFiller_tag* Filler);
+                                      QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
+                                      struct __QuexBufferFiller_tag* Filler);
 
     QUEX_INLINE QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_input_p_increment(QuexBuffer*);
@@ -89,7 +89,7 @@ namespace quex {
 
     QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(QuexBuffer*);
     QUEX_INLINE void                          QuexBuffer_seek_memory_adr(QuexBuffer*, 
-                                                                                 QUEX_CHARACTER_POSITION_TYPE);
+                                                                         QUEX_CHARACTER_POSITION_TYPE);
     
     QUEX_INLINE void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
     QUEX_INLINE void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);
