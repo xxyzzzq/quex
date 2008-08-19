@@ -35,21 +35,16 @@ namespace quex {
     } QuexBufferFiller;
 
     QUEX_INLINE void 
-        __QuexBufferFiller_init(QuexBufferFiller* me,
-                                size_t       (*tell_character_index)(QuexBufferFiller*),
-                                void         (*seek_character_index)(QuexBufferFiller*, const size_t),
-                                size_t       (*read_characters)(QuexBufferFiller*,
-                                                                QUEX_CHARACTER_TYPE* buffer, const size_t),
-                                void         (*destroy)(QuexBufferFiller*));
-    TEMPLATE_IN(InputHandleT) QuexBufferFiller*  
-                                QuexBufferFiller_create(InputHandleT* ih,
-                                                        const char* IANA_CodingName,
-                                                        uint8_t*    place_in_memory);
+    __QuexBufferFiller_init_functions(QuexBufferFiller* me,
+                                      size_t       (*tell_character_index)(QuexBufferFiller*),
+                                      void         (*seek_character_index)(QuexBufferFiller*, const size_t),
+                                      size_t       (*read_characters)(QuexBufferFiller*,
+                                                                      QUEX_CHARACTER_TYPE* buffer, const size_t),
+                                      void         (*destroy)(QuexBufferFiller*));
     QUEX_INLINE void    QuexBufferFiller_destroy(QuexBufferFiller*); 
 
     QUEX_INLINE size_t  QuexBufferFiller_load_backward(QuexBuffer*);
     QUEX_INLINE size_t  QuexBufferFiller_load_forward(QuexBuffer*);
-    QUEX_INLINE void    __QuexBufferFiller_exit_on_error(const char* Msg);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

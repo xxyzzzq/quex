@@ -27,8 +27,6 @@ namespace quex {
          *      memory[BUFFER_SIZE-1] = upper buffer limit code character */
         QUEX_CHARACTER_TYPE*  _front;   /* first character in buffer      */
         QUEX_CHARACTER_TYPE*  _back;    /* last character in buffer       */
-        /* (*) 'Owner' (who is to delete it's memory?)                    */
-        bool                  _external_owner_f; 
     } QuexBufferMemory;
 
     QUEX_INLINE void    QuexBufferMemory_setup(QuexBufferMemory*, 

@@ -18,6 +18,7 @@
 #   include <cstring>  // gets: memmove, memcpy
 #   include <cstdio>   // gets: fprintf
 #   include <cstdlib>
+#   include <stdexcept>
 #   define __QUEX_STD_memmove  std::memmove
 #   define __QUEX_STD_memcpy   std::memcpy
 #   define __QUEX_STD_memset   std::memset
@@ -102,8 +103,21 @@
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
-struct __QuexAnalyser_tag;
-typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
+
+    struct __QuexAnalyser_tag;
+    typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
+
+    QUEX_INLINE void
+    QUEX_ERROR_EXIT(const char* Msg)
+    {
+#       if ! defined(__QUEX_SETTING_PLAIN_C)
+        throw std::range_error(Msg);
+#       else
+        __QUEX_STD_fprintf(stderr, Msg);
+        exit(-1);
+#       endif
+    }
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif

@@ -1,6 +1,8 @@
 // -*- C++ -*- vim:set syntax=cpp:
 inline
-CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 0x0 */)
+CLASS::CLASS(const std::string&      Filename, 
+             const char*             InputCodingName /* = 0x0 */, 
+             QuexInputCodingTypeEnum ICT /* = QUEX_AUTO */)
 : 
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
@@ -22,11 +24,13 @@ CLASS::CLASS(const std::string& Filename, const char* IConvInputCodingName /* = 
     if( fh == NULL ) throw std::runtime_error("Error on attempt to open specified file.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
-    __constructor_core(fh, IConvInputCodingName);
+    __constructor_core(fh, InputCodingName, ICT);
 }
 
 inline
-CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* = 0x0 */)
+CLASS::CLASS(std::istream* p_input_stream, 
+             const char* InputCodingName /* = 0x0 */,
+             QuexInputCodingTypeEnum ICT /* = QUEX_AUTO */)
 :
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
@@ -42,11 +46,13 @@ CLASS::CLASS(std::istream* p_input_stream, const char* IConvInputCodingName /* =
 #   endif
 {
     if( p_input_stream == NULL ) throw std::runtime_error("Error: received NULL as pointer to input stream.");
-    __constructor_core(p_input_stream, IConvInputCodingName);
+    __constructor_core(p_input_stream, InputCodingName, ICT);
 }
 
 inline
-CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
+CLASS::CLASS(std::FILE* fh, 
+             const char* InputCodingName /* = 0x0 */,
+             QuexInputCodingTypeEnum ICT /* = QUEX_AUTO */)
 : 
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
 #   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
@@ -62,7 +68,7 @@ CLASS::CLASS(std::FILE* fh, const char* IConvInputCodingName /* = 0x0 */)
     if( fh == NULL ) throw std::runtime_error("Error: received NULL as a file handle.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
-    __constructor_core(fh, IConvInputCodingName);
+    __constructor_core(fh, InputCodingName, ICT);
 }
 
 #if 0

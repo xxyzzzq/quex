@@ -1,6 +1,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 
 #include "test-helper.h"
 

@@ -22,6 +22,7 @@ HEADERS =  $(QUEX_PATH)/quex/code_base/definitions \
            $(QUEX_PATH)/quex/code_base/temporary_macros_off \
            $(QUEX_PATH)/quex/code_base/buffer/BufferFiller.i \
            $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain \
+           $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain.i \
            $(QUEX_PATH)/quex/code_base/buffer/InputPolicy \
            test-helper.h
 
