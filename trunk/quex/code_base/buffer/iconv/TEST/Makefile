@@ -19,6 +19,7 @@ HEADERS = \
 		  $(QUEX_PATH)/quex/code_base/buffer/Buffer.i                      \
 		  $(QUEX_PATH)/quex/code_base/buffer/Buffer_debug.i                \
 		  $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain      \
+          $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain.i    \
 		  $(QUEX_PATH)/quex/code_base/buffer/InputPolicy                   \
 		  $(QUEX_PATH)/quex/code_base/buffer/Buffer                        \
 		  $(QUEX_PATH)/quex/code_base/buffer/BufferFiller                  \

@@ -27,6 +27,12 @@ namespace quex {
     };
     typedef struct __QuexAnalyser_tag QuexAnalyser;
 
+    QUEX_INLINE void
+    QuexAnalyser_init(QuexAnalyser* me,
+                      QUEX_ANALYSER_FUNCTION_TYPE AnalyserFunction,
+                      QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size, 
+                      QuexBufferFiller*    BufferFiller);
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif

@@ -1,36 +1,36 @@
-<test-database execution-time-sec="67.26" date="Fri Aug 15 14:50:13 2008">
+<test-database execution-time-sec="62.14" date="Fri Aug 15 15:27:06 2008">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
-        <test title="Backwards;" make-required="True" time-sum-sec="3.01"> 
+        <test title="Backwards;" make-required="True" time-sum-sec="2.76"> 
             <application file-name="test-backward_loading.py" info-request-time="1218803929L"/>
             <choice-list number="4">
-               <choice name="Cpp_ASSERTS" result="OK" time-sec="0.80" crc="-1584767564"/>
-               <choice name="Cpp" result="OK" time-sec="0.68" crc="-1584767564"/>
-               <choice name="ANSI-C-ASSERTS" result="OK" time-sec="0.85" crc="-1584767564"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.68" crc="-1584767564"/>
+               <choice name="Cpp_ASSERTS" result="OK" time-sec="0.72" crc="-1584767564"/>
+               <choice name="Cpp" result="OK" time-sec="0.62" crc="-1584767564"/>
+               <choice name="ANSI-C-ASSERTS" result="OK" time-sec="0.78" crc="-1584767564"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.64" crc="-1584767564"/>
             </choice-list>
         </test>
-        <test title="No Backward Reload -- Precondition at Border" make-required="True" time-sum-sec="2.33"> 
+        <test title="No Backward Reload -- Precondition at Border" make-required="True" time-sum-sec="2.08"> 
             <application file-name="test-no-backward-reloading.py" info-request-time="1218803929L"/>
             <choice-list number="4">
-               <choice name="Cpp_ASSERTS" result="OK" time-sec="0.79" crc="-887225006"/>
-               <choice name="Cpp" result="OK" time-sec="0.76" crc="-887225006"/>
-               <choice name="ANSI-C-ASSERTS" result="OK" time-sec="0.47" crc="-887225006"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.32" crc="-887225006"/>
+               <choice name="Cpp_ASSERTS" result="OK" time-sec="0.73" crc="-887225006"/>
+               <choice name="Cpp" result="OK" time-sec="0.66" crc="-887225006"/>
+               <choice name="ANSI-C-ASSERTS" result="OK" time-sec="0.41" crc="-887225006"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.28" crc="-887225006"/>
             </choice-list>
         </test>
-        <test title="Forward Position Adaption" make-required="True" time-sum-sec="3.33"> 
+        <test title="Forward Position Adaption" make-required="True" time-sum-sec="2.92"> 
             <application file-name="test-position_adaption.py" info-request-time="1218803929L"/>
             <choice-list number="4">
-               <choice name="Cpp_ASSERTS" result="OK" time-sec="1.30" crc="1319922986"/>
-               <choice name="Cpp" result="OK" time-sec="0.83" crc="1319922986"/>
-               <choice name="ANSI-C-ASSERTS" result="OK" time-sec="0.67" crc="1319922986"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.53" crc="1319922986"/>
+               <choice name="Cpp_ASSERTS" result="OK" time-sec="0.90" crc="1319922986"/>
+               <choice name="Cpp" result="OK" time-sec="0.76" crc="1319922986"/>
+               <choice name="ANSI-C-ASSERTS" result="OK" time-sec="0.78" crc="1319922986"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.48" crc="1319922986"/>
             </choice-list>
         </test>
     </group>
     <group name="CONTINUE">
-        <test title="Reentry analysis without return from function" make-required="True" time-sum-sec="1.49"> 
+        <test title="Reentry analysis without return from function" make-required="True" time-sum-sec="1.48"> 
             <application file-name="test-continue-without-return.py" info-request-time="1218803930L"/>
             <choice-list number="3">
                <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.40" crc="-1324080938"/>
@@ -38,142 +38,142 @@
                <choice name="Cpp" result="OK" time-sec="0.73" crc="-1324080938"/>
             </choice-list>
         </test>
-        <test title="Mode Changes" make-required="True" time-sum-sec="1.45"> 
+        <test title="Mode Changes" make-required="True" time-sum-sec="1.48"> 
             <application file-name="test-mode-changes.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.40" crc="270103911"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.36" crc="270103911"/>
-               <choice name="Cpp" result="OK" time-sec="0.70" crc="270103911"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.46" crc="270103911"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.35" crc="270103911"/>
+               <choice name="Cpp" result="OK" time-sec="0.67" crc="270103911"/>
             </choice-list>
         </test>
-        <test title="(special use case)" make-required="True" time-sum-sec="1.45"> 
+        <test title="(special use case)" make-required="True" time-sum-sec="1.23"> 
             <application file-name="test-continue-without-return-2.py" info-request-time="1218803930L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.35" crc="-759134064"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.35" crc="-759134064"/>
-               <choice name="Cpp" result="OK" time-sec="0.76" crc="-759134064"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.29" crc="-759134064"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.29" crc="-759134064"/>
+               <choice name="Cpp" result="OK" time-sec="0.64" crc="-759134064"/>
             </choice-list>
         </test>
     </group>
     <group name="Post Conditions">
-        <test title="Part 1" make-required="True" time-sum-sec="1.45"> 
+        <test title="Part 1" make-required="True" time-sum-sec="1.39"> 
             <application file-name="test-post-conditions.py" info-request-time="1218803930L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.38" crc="1338437579"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.37" crc="1338437579"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.34" crc="1338437579"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.35" crc="1338437579"/>
                <choice name="Cpp" result="OK" time-sec="0.70" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" make-required="True" time-sum-sec="1.72"> 
+        <test title="Part 2" make-required="True" time-sum-sec="1.65"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.45" crc="-1069020887"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.42" crc="-1069020887"/>
-               <choice name="Cpp" result="OK" time-sec="0.85" crc="-1069020887"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.38" crc="-1069020887"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.39" crc="-1069020887"/>
+               <choice name="Cpp" result="OK" time-sec="0.87" crc="-1069020887"/>
             </choice-list>
         </test>
-        <test title="Part 3" make-required="True" time-sum-sec="1.85"> 
+        <test title="Part 3" make-required="True" time-sum-sec="1.61"> 
             <application file-name="test-post-conditions-3.py" info-request-time="1218803930L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.66" crc="-423588249"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.42" crc="-423588249"/>
-               <choice name="Cpp" result="OK" time-sec="0.76" crc="-423588249"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.46" crc="-423588249"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.38" crc="-423588249"/>
+               <choice name="Cpp" result="OK" time-sec="0.77" crc="-423588249"/>
             </choice-list>
         </test>
     </group>
     <group name="Pre Conditions">
-        <test title="Part 2" make-required="True" time-sum-sec="1.62"> 
+        <test title="Part 2" make-required="True" time-sum-sec="1.54"> 
             <application file-name="test-pre-conditions-2.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.41" crc="-2081003305"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.44" crc="-2081003305"/>
-               <choice name="Cpp" result="OK" time-sec="0.77" crc="-2081003305"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.40" crc="-2081003305"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.41" crc="-2081003305"/>
+               <choice name="Cpp" result="OK" time-sec="0.74" crc="-2081003305"/>
             </choice-list>
         </test>
-        <test title="Multiple Identical Pre-Conditions" make-required="True" time-sum-sec="2.90"> 
+        <test title="Multiple Identical Pre-Conditions" make-required="True" time-sum-sec="2.76"> 
             <application file-name="test-pre-conditions-3.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.83" crc="-1449812084"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.89" crc="-1449812084"/>
-               <choice name="Cpp" result="OK" time-sec="1.18" crc="-1449812084"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.85" crc="-1449812084"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.76" crc="-1449812084"/>
+               <choice name="Cpp" result="OK" time-sec="1.15" crc="-1449812084"/>
             </choice-list>
         </test>
-        <test title="Part 1" make-required="True" time-sum-sec="1.67"> 
+        <test title="Part 1" make-required="True" time-sum-sec="1.49"> 
             <application file-name="test-pre-conditions.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.43" crc="-524887799"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.40" crc="-524887799"/>
-               <choice name="Cpp" result="OK" time-sec="0.84" crc="-524887799"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.38" crc="-524887799"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.37" crc="-524887799"/>
+               <choice name="Cpp" result="OK" time-sec="0.74" crc="-524887799"/>
             </choice-list>
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" make-required="True" time-sum-sec="1.98"> 
+        <test title="Simple" make-required="True" time-sum-sec="2.01"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1218803929L"/>
             <choice-list number="3">
                <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.49" crc="-347610264"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.53" crc="-347610264"/>
-               <choice name="Cpp" result="OK" time-sec="0.95" crc="-347610264"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.61" crc="-347610264"/>
+               <choice name="Cpp" result="OK" time-sec="0.91" crc="-347610264"/>
             </choice-list>
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" make-required="True" time-sum-sec="2.21"> 
+        <test title="Part II" make-required="True" time-sum-sec="1.57"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.46" crc="1614045300"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.88" crc="1614045300"/>
-               <choice name="Cpp" result="OK" time-sec="0.87" crc="1614045300"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.41" crc="1614045300"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.42" crc="1614045300"/>
+               <choice name="Cpp" result="OK" time-sec="0.74" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" make-required="True" time-sum-sec="1.80"> 
+        <test title="Part I" make-required="True" time-sum-sec="1.37"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.65" crc="252074334"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.39" crc="252074334"/>
-               <choice name="Cpp" result="OK" time-sec="0.75" crc="252074334"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.34" crc="252074334"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.37" crc="252074334"/>
+               <choice name="Cpp" result="OK" time-sec="0.66" crc="252074334"/>
             </choice-list>
         </test>
     </group>
     <group name="Simple">
-        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" make-required="True" time-sum-sec="1.69"> 
+        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" make-required="True" time-sum-sec="1.66"> 
             <application file-name="test-simple-5.py" info-request-time="1218803930L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.43" crc="-680455951"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.47" crc="-680455951"/>
-               <choice name="Cpp" result="OK" time-sec="0.80" crc="-680455951"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.45" crc="-680455951"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.42" crc="-680455951"/>
+               <choice name="Cpp" result="OK" time-sec="0.79" crc="-680455951"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" make-required="True" time-sum-sec="1.70"> 
+        <test title="Tiny Expressions" make-required="True" time-sum-sec="1.35"> 
             <application file-name="test-simple.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.42" crc="-771053764"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.41" crc="-771053764"/>
-               <choice name="Cpp" result="OK" time-sec="0.87" crc="-771053764"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.37" crc="-771053764"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.34" crc="-771053764"/>
+               <choice name="Cpp" result="OK" time-sec="0.64" crc="-771053764"/>
             </choice-list>
         </test>
-        <test title="Special Case '.' (drop out on valid target state)" make-required="True" time-sum-sec="1.43"> 
+        <test title="Special Case '.' (drop out on valid target state)" make-required="True" time-sum-sec="1.15"> 
             <application file-name="test-simple-3.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.35" crc="-1792493362"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.33" crc="-1792493362"/>
-               <choice name="Cpp" result="OK" time-sec="0.75" crc="-1792493362"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.28" crc="-1792493362"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.28" crc="-1792493362"/>
+               <choice name="Cpp" result="OK" time-sec="0.58" crc="-1792493362"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" make-required="True" time-sum-sec="1.70"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" make-required="True" time-sum-sec="1.62"> 
             <application file-name="test-bol-eol.py" info-request-time="1218803929L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.47" crc="-1565444249"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.39" crc="-1565444249"/>
                <choice name="ANSI-C" result="OK" time-sec="0.46" crc="-1565444249"/>
                <choice name="Cpp" result="OK" time-sec="0.77" crc="-1565444249"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" make-required="True" time-sum-sec="2.85"> 
+        <test title="Maximum Length Match" make-required="True" time-sum-sec="2.51"> 
             <application file-name="test-simple-2.py" info-request-time="1218803931L"/>
             <choice-list number="3">
-               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.81" crc="-270685933"/>
-               <choice name="ANSI-C" result="OK" time-sec="0.77" crc="-270685933"/>
-               <choice name="Cpp" result="OK" time-sec="1.27" crc="-270685933"/>
+               <choice name="ANSI-C-PlainMemory" result="OK" time-sec="0.74" crc="-270685933"/>
+               <choice name="ANSI-C" result="OK" time-sec="0.72" crc="-270685933"/>
+               <choice name="Cpp" result="OK" time-sec="1.05" crc="-270685933"/>
             </choice-list>
         </test>
     </group>
@@ -184,10 +184,10 @@
                <choice name="" result="OK" time-sec="0.05" crc="276539331"/>
             </choice-list>
         </test>
-        <test title="Extensive Transition Code Generation" make-required="True" time-sum-sec="27.58"> 
+        <test title="Extensive Transition Code Generation" make-required="True" time-sum-sec="26.45"> 
             <application file-name="test-single-state-transitions-x.py" info-request-time="1218803929L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="27.58" crc="-44469151"/>
+               <choice name="" result="OK" time-sec="26.45" crc="-44469151"/>
             </choice-list>
         </test>
     </group>

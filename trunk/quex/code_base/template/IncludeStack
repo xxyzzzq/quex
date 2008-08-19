@@ -13,6 +13,10 @@ namespace quex {
         struct memento {
             QuexAnalyser base;
             CounterType  counter;
+#           ifdef QUEX_OPTION_STRING_ACCUMULATOR
+            Accumulator  accumulator;
+#           endif
+            QuexMode*    current_mode_p;
 
             void   map_to_lexical_analyzer(CLASS*);
             void   map_from_lexical_analyzer(CLASS*);

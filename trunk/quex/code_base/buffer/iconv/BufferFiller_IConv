@@ -157,15 +157,14 @@ namespace quex {
         struct {
             QuexBufferFiller_IConv_BufferInfo  base;
             bool                               _external_owner_f;
-            size_t                             fill_level_n;  /* Has end of file been reached? */
-
             size_t                             begin_character_index;  
             STREAM_POSITION_TYPE(InputHandleT) begin_stream_position;        
             size_t                             iterators_character_index;
             STREAM_POSITION_TYPE(InputHandleT) end_stream_position;
+            size_t                             fill_level_n; 
         } raw_buffer;
 
-        /* Position where the whole analysis starts. The '0' when we are asked to reset. */
+        /* Position where the whole analysis starts. The '0' when we are asked to reset.      */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
     };
 
@@ -174,6 +173,17 @@ namespace quex {
                                 InputHandleT* input_handle, 
                                 const char* FromCoding,   const char* ToCoding,
                                 uint8_t*    raw_buffer_p, size_t      RawBufferSize);
+    /* input_handle         is the file handle or pointer to stream from which characters come.
+     *
+     * ToCoding == 0x0      causes an automatic choice of the target coding to according to 
+     *                      the value of 'sizeof(QUEX_CHARACTER_TYPE)'.                  
+     *
+     * raw_buffer_p == 0x0  causes a dynamic allocation of the intermediate translation
+     *                      buffer. The ownership in this case remains inside the 'filler'
+     *                      and the buffer is destroyed as soon as the filler is destroyed.  
+     *              != 0x0  leaves the ownership of the buffer to the caller of this function.
+     *                      Memory is not freed on destruction.
+     */
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }

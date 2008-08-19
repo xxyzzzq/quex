@@ -26,15 +26,15 @@ IncludeStack::push(InputHandle*   new_input_handle_p,
     __quex_assert(    MODE_ID == -1 
                   || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
     if( MODE_ID == -1 ) 
-        __push(new_input_handle_p, _the_lexer->__current_mode_analyser_function_p, IANA_CodingName); 
+        __push(new_input_handle_p, _the_lexer->current_analyser_function, IANA_CodingName); 
     else
         __push(new_input_handle_p, _the_lexer->mode_db[MODE_ID]->analyser_function, IANA_CodingName);
 }
 
 template <class InputHandle> inline void    
-IncludeStack::__push(InputHandle*         new_input_handle_p, 
-                     QUEX_MODE_FUNCTION_P StartModeAnalyzerFunction, 
-                     const char*          IANA_CodingName)
+IncludeStack::__push(InputHandle*                 new_input_handle_p, 
+                     QUEX_ANALYSER_FUNCTION_TYPE  StartModeAnalyzerFunction, 
+                     const char*                  IANA_CodingName)
 {
     __quex_assert(StartModeAnalyzerFunction != 0x0);
     __quex_assert(new_input_handle_p != 0x0);
@@ -48,8 +48,8 @@ IncludeStack::__push(InputHandle*         new_input_handle_p,
     _the_lexer->counter.init();
 
     // (2) initializing the new state of the lexer for reading the new input file/stream
-    QUEX_CORE_QuexBuffer* tmp = _the_lexer->create_buffer(new_input_handle_p, IANA_CodingName);
-    QUEX_CORE_ANALYSER_STRUCT_init(_the_lexer, 0, tmp, StartModeAnalyzerFunction);
+    QuexBuffer* tmp = _the_lexer->create_buffer(new_input_handle_p, IANA_CodingName);
+    QuexAnalyser_init(_the_lexer, 0, tmp, StartModeAnalyzerFunction);
 }   
 
 inline bool

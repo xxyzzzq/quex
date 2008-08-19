@@ -1,6 +1,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 
 #include "test-helper.h"
 
@@ -18,7 +19,7 @@ main(int argc, char** argv)
     QuexBufferFiller_Plain<FILE>  filler;
     QUEX_CHARACTER_TYPE           memory[8];
 
-    BufferFiller_Plain_init(&filler, fh);
+    QuexBufferFiller_Plain_init(&filler, fh);
     QuexBuffer_init(&buffer, memory, 8, (QuexBufferFiller*)&filler);
 
     

@@ -13,7 +13,6 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE void   __QuexBufferFiller_exit_on_error(const char* Msg);
     QUEX_INLINE void   __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
     QUEX_INLINE void   __QuexBufferFiller_forward_asserts(QuexBuffer*);
     QUEX_INLINE size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
@@ -28,43 +27,22 @@ namespace quex {
                                                                           const size_t BackwardDistance);
 
 #   ifndef __QUEX_SETTING_PLAIN_C
-#   define BUFFER_FILLER_CONVERTER QuexBufferFiller_IConv<InputHandleT>
-#   else
-#   define BUFFER_FILLER_CONVERTER QuexBufferFiller_IConv
-#   endif
-
-#   ifndef __QUEX_SETTING_PLAIN_C
 #   define BUFFER_FILLER_PLAIN QuexBufferFiller_Plain<InputHandleT>
 #   else
 #   define BUFFER_FILLER_PLAIN QuexBufferFiller_Plain
 #   endif
-
-    TEMPLATE_IN(InputHandleT) QuexBufferFiller*  
-    QuexBufferFiller_create(InputHandleT* ih,
-                            const char*   IANA_CodingName,
-                            uint8_t*      place_in_memory)
+    TEMPLATE_IN void
+    QuexBufferFiller_get_memory_size(QuexInputCodingTypeEnum InputCodingType, const char* InputCodingName=0x0)
     {
-        QuexBufferFiller* me = (QuexBufferFiller*)place_in_memory;
+        QuexInputCodingTypeEnum input_coding_type = InputCodingType;
+        if( InputCodingType == QUEX_AUTO ) 
+            input_coding_type = InputCodingName == 0x0 ? QUEX_PLAIN : QUEX_ICONV;
 
-        if( IANA_CodingName == 0x0 ) { 
-            if( place_in_memory == 0x0 ) { 
-                me = (QuexBufferFiller*)__QUEX_ALLOCATE_MEMORY(BUFFER_FILLER_PLAIN, 1);
-            } else { 
-                me = 0x0; /* return new QuexBufferFiller_IConv;*/
-            }
-            QuexBufferFiller_Plain_init((BUFFER_FILLER_PLAIN*)me, ih);
+        switch( input_coding_type ) {
+        case QUEX_PLAIN: return sizeof(BUFFER_FILLER_PLAIN);
+        case QUEX_ICONV: return sizeof(BUFFER_FILLER_CONVERTER);
         }
-        else { 
-            if( place_in_memory == 0x0 ) { 
-                /* me = (QuexBufferFiller*)__QUEX_ALLOCATE_MEMORY(QuexBufferFiller_Plain<InputHandleT>, 1);*/
-            } else { 
-                /* me = 0x0; /* return new QuexBufferFiller_IConv;*/
-            }
-            /* BufferFiller_IConv_init((QuexBufferFiller_Plain<InputHandleT>*)me, 64, ih);*/
-        }
-
     }
-
 #   undef BUFFER_FILLER_PLAIN 
 
     QUEX_INLINE void       
@@ -72,17 +50,17 @@ namespace quex {
     { 
         /* if no dedicated deallocator is specified then free only the basic
          * BufferFiller structure. */
-        if( me->_destroy == 0x0 ) me->_destroy(me); 
-        else                      __QUEX_FREE_MEMORY(me);
+        if( me->_destroy == 0x0 ) __QUEX_FREE_MEMORY(me);
+        else                      me->_destroy(me);
     }
 
     QUEX_INLINE void
-    __QuexBufferFiller_init(QuexBufferFiller* me,
-                            size_t       (*tell_character_index)(QuexBufferFiller*),
-                            void         (*seek_character_index)(QuexBufferFiller*, const size_t),
-                            size_t       (*read_characters)(QuexBufferFiller*,
-                                                            QUEX_CHARACTER_TYPE* buffer, const size_t),
-                            void         (*destroy)(QuexBufferFiller*))
+    __QuexBufferFiller_init_functions(QuexBufferFiller* me,
+                                      size_t       (*tell_character_index)(QuexBufferFiller*),
+                                      void         (*seek_character_index)(QuexBufferFiller*, const size_t),
+                                      size_t       (*read_characters)(QuexBufferFiller*,
+                                                                      QUEX_CHARACTER_TYPE* buffer, const size_t),
+                                      void         (*destroy)(QuexBufferFiller*))
     {
         __quex_assert(me != 0x0);
         __quex_assert(tell_character_index != 0x0);
@@ -141,8 +119,8 @@ namespace quex {
         if     ( buffer->_input_p == buffer->_memory._front ) { return 0; }      /* (1)*/
         else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }      /* (2)*/
         else if( buffer->_input_p != buffer->_memory._back  ) {                     
-            __QuexBufferFiller_exit_on_error("Call to 'load_forward() but '_input_p' not on buffer border.\n" 
-                                             "(Check character encoding)");  
+            QUEX_ERROR_EXIT("Call to 'load_forward() but '_input_p' not on buffer border.\n" 
+                            "(Check character encoding)");  
         }
         /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                        * (3)*/  
         __QuexBufferFiller_forward_asserts(buffer);
@@ -337,8 +315,8 @@ namespace quex {
         if     ( buffer->_input_p == buffer->_memory._back )  { return 0; }   /* (1) */
         else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }   /* (1) */
         else if( buffer->_input_p != buffer->_memory._front ) {
-            __QuexBufferFiller_exit_on_error("Call to 'load_backward() but '_input_p' not on buffer border.\n" 
-                                             "(Check character encoding)");  
+            QUEX_ERROR_EXIT("Call to 'load_backward() but '_input_p' not on buffer border.\n" 
+                            "(Check character encoding)");  
         }
         else if( buffer->_content_first_character_index == 0 ) { return 0; }  /* (2) */
         /*                                                                     * (3) */
@@ -465,25 +443,14 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    __QuexBufferFiller_exit_on_error(const char* Msg)
-    {
-#       if ! defined(__QUEX_SETTING_PLAIN_C)
-        throw std::range_error(Msg);
-#       else
-        __QUEX_STD_fprintf(stderr, Msg);
-        exit(-1);
-#       endif
-    }
-
-    QUEX_INLINE void
     __QuexBufferFiller_on_overflow(QuexBuffer* buffer, bool ForwardF)
     {
         QuexBufferFiller* me = buffer->filler;
 
         if(    me->_on_overflow == 0x0
             || me->_on_overflow(buffer, ForwardF) == false ) {
-            __QuexBufferFiller_exit_on_error("Distance between lexeme start and current pointer exceeds buffer size.\n"
-                                             "(tried to load buffer in backward direction)");
+            QUEX_ERROR_EXIT("Distance between lexeme start and current pointer exceeds buffer size.\n"
+                            "(tried to load buffer in backward direction)");
         }
     }
 

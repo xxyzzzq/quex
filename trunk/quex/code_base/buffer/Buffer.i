@@ -14,8 +14,7 @@ namespace quex {
 
     QUEX_INLINE void 
     QuexBufferMemory_setup(QuexBufferMemory* me, 
-                           QUEX_CHARACTER_TYPE* memory, size_t Size, 
-                           bool ExternalOwnerF) 
+                           QUEX_CHARACTER_TYPE* memory, size_t Size) 
     {
         /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
          * one character to be read in forward direction. */
@@ -46,10 +45,8 @@ namespace quex {
                     QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
                     struct __QuexBufferFiller_tag* filler)
     {
-        if( memory_chunk != 0x0 ) 
-            QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size, /* ExternalOwnerF */ true);      
-        else 
-            QuexBufferMemory_setup(&(me->_memory), __QUEX_ALLOCATE_MEMORY(QUEX_CHARACTER_TYPE, Size), Size, false);      
+        memory_chunk = MemoryManager_get_BufferMemory(me, Size);
+        QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size);      
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
