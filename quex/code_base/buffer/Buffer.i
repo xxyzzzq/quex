@@ -12,41 +12,40 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE void 
-    QuexBufferMemory_setup(QuexBufferMemory* me, 
-                           QUEX_CHARACTER_TYPE* memory, size_t Size) 
+    TEMPLATE_IN void
+    QuexBuffer_instantiate(QuexBuffer* me, InputHandleT* input_handle,
+                           const char* IANA_InputCodingName, QuexInputCodingTypeEnum InputCodingType,
+                           const size_t BufferMemorySize,
+                           const size_t TranslationBufferMemorySize)
     {
-        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
-         * one character to be read in forward direction. */
-        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
-        me->_front    = memory;
-        me->_back     = memory + (Size - 1);
-        /* NOTE: We cannot set the memory all to zero at this point in time. It may be that the
-         *       memory is already filled with content (e.g. by an external owner). The following
-         *       code has deliberately be disabled:
-         *           #ifdef QUEX_OPTION_ASSERTS
-         *           __QUEX_STD_memset(me->_front, 0, Size);
-         *           #endif 
-         *       When the buffer uses a buffer filler, then it is a different ball game. Please,
-         *       consider QuexBuffer_init().
-         */
-        *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        me->_external_owner_f = ExternalOwnerF;
+        QuexBufferFiller* buffer_filler = 0x0;
+
+        switch( input_coding_type ) {
+        case QUEX_PLAIN: 
+            QuexBufferFiller_Plain_init(buffer_filler, input_handle);
+            break;
+        case QUEX_ICONV: 
+            buffer_filler = MemoryManager_get_BufferFiller(InputCodingType);
+            QuexBufferFiller_IConv_init(buffer_filler, input_handle, 
+                                        IANA_InputCodingName, InputCodingType, 
+                                        TranslationBufferMemorySize);
+            break;
+        }
+        QuexBuffer_init(me, const size_t BufferMemorySize, buffer_filler);
     }
 
-
-    QUEX_INLINE size_t          
-    QuexBufferMemory_size(QuexBufferMemory* me)
-    { return me->_back - me->_front + 1; }
+    TEMPLATE_IN void
+    QuexBuffer_deinstantiate(QuexBuffer* me)
+    {
+        buffer->buffer_filler->destroy(buffer->buffer_filler);
+        MemoryManager_free_BufferMemory(me->_memory.front);
+    }
 
     QUEX_INLINE void
-    QuexBuffer_init(QuexBuffer*          me, 
-                    QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
-                    struct __QuexBufferFiller_tag* filler)
+    QuexBuffer_init(QuexBuffer*  me, const size_t Size, struct __QuexBufferFiller_tag* filler)
     {
         memory_chunk = MemoryManager_get_BufferMemory(me, Size);
-        QuexBufferMemory_setup(&(me->_memory), memory_chunk, Size);      
+        QuexBufferMemory_init(&(me->_memory), memory_chunk, Size);      
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
@@ -212,6 +211,33 @@ namespace quex {
         else if( buffer->_content_first_character_index != 0 ) return false;
         return true;
     }
+
+    QUEX_INLINE void 
+    QuexBufferMemory_init(QuexBufferMemory* me, 
+                           QUEX_CHARACTER_TYPE* memory, size_t Size) 
+    {
+        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
+         * one character to be read in forward direction. */
+        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
+        me->_front    = memory;
+        me->_back     = memory + (Size - 1);
+        /* NOTE: We cannot set the memory all to zero at this point in time. It may be that the
+         *       memory is already filled with content (e.g. by an external owner). The following
+         *       code has deliberately be disabled:
+         *           #ifdef QUEX_OPTION_ASSERTS
+         *           __QUEX_STD_memset(me->_front, 0, Size);
+         *           #endif 
+         *       When the buffer uses a buffer filler, then it is a different ball game. Please,
+         *       consider QuexBuffer_init().
+         */
+        *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    }
+
+
+    QUEX_INLINE size_t          
+    QuexBufferMemory_size(QuexBufferMemory* me)
+    { return me->_back - me->_front + 1; }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
