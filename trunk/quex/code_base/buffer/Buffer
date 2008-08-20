@@ -8,6 +8,10 @@
 #    if defined(QUEX_OPTION_ASSERTS)
 #       include<quex/code_base/buffer/MemoryPositionMimiker>
 #    endif
+#endif
+
+#include <quex/code_base/temporary_macros_on>
+#endif
 namespace quex { 
 #endif
     
@@ -71,9 +75,11 @@ namespace quex {
         struct __QuexBufferFiller_tag*  filler;
     } QuexBuffer;
 
-    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*, 
-                                      QUEX_CHARACTER_TYPE* memory_chunk, const size_t Size,
-                                      struct __QuexBufferFiller_tag* Filler);
+    TEMPLATE_IN void
+    QuexBuffer_instantiate(QuexBuffer* me, InputHandleT* input_handle,
+                           const char* IANA_InputCodingName, QuexInputCodingTypeEnum InputCodingType,
+                           const size_t BufferMemorySize,
+                           const size_t TranslationBufferMemorySize);
 
     QUEX_INLINE QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_input_p_increment(QuexBuffer*);
@@ -101,5 +107,6 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif
+#include <quex/code_base/temporary_macros_off>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__ */
