@@ -29,7 +29,8 @@ main(int argc, char** argv)
     printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QuexBuffer_init(&buffer, memory, memory_size, 0x0);
+    QuexBuffer_init(&buffer, memory_size, 0x0);
+    QuexBufferMemory_init(&buffer._memory, memory, memory_size);
 
     buffer._input_p = buffer._memory._front;
     if( cl_has(argc, argv, "Normal") ) 

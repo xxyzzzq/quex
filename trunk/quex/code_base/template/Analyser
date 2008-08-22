@@ -27,10 +27,13 @@ namespace quex {
     };
     typedef struct __QuexAnalyser_tag QuexAnalyser;
 
-    QUEX_INLINE void
+    TEMPLATE_IN void
     QuexAnalyser_init(QuexAnalyser* me,
-                      QUEX_ANALYSER_FUNCTION_TYPE AnalyserFunction,
-                      const char* IANA_InputCodingName);
+                      InputHandleT*           input_handle,
+                      const char*             IANA_InputCodingName, 
+                      QuexInputCodingTypeEnum InputCodingType,
+                      const size_t            BufferMemorySize,
+                      const size_t            TranslationBufferMemorySize);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

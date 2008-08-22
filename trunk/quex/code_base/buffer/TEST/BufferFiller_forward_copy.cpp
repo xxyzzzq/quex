@@ -31,7 +31,8 @@ main(int argc, char** argv)
     printf("## NOTE: When copying, it can be assumed that the _input_p stands on _memory._back\n");
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QuexBuffer_init(&buffer, memory, memory_size, 0x0);
+    QuexBuffer_init(&buffer, memory_size, 0x0);
+    QuexBufferMemory_init(&buffer._memory, memory, memory_size);
 
     buffer._input_p        = buffer._memory._back;
 

@@ -26,7 +26,6 @@ main(int argc, char** argv)
 
     std::FILE*           fh = fopen("test.txt", "r");
     const int            RawMemorySize = 6;
-    uint8_t              raw_memory[6];
     char*                target_charset = (char*)"UCS-4BE";
     size_t               memory_size = 3;
     memory_size = argv[1][0] - '0';
@@ -36,7 +35,7 @@ main(int argc, char** argv)
 
     QuexBufferFiller_IConv<FILE> filler;
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, RawMemorySize);
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     do {

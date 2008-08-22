@@ -29,7 +29,6 @@ main(int argc, char** argv)
     char*                target_charset = (char*)"UCS-2LE"; 
     char*                source_charset = (char*)""; 
     size_t               RawMemorySize = 6;
-    uint8_t              raw_memory[RawMemorySize];
     const int            ReferenceSize = 24; 
     QUEX_CHARACTER_TYPE  reference[ReferenceSize];
     /**/
@@ -47,7 +46,7 @@ main(int argc, char** argv)
         exit(-1);
     }
 
-    QuexBufferFiller_IConv_init(&filler, fh, source_charset, target_charset, (uint8_t*)raw_memory, RawMemorySize);
+    QuexBufferFiller_IConv_init(&filler, fh, source_charset, target_charset, RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler.base.read_characters(&filler.base, reference, ReferenceSize);
 

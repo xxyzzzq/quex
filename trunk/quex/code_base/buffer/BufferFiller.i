@@ -3,10 +3,11 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+#include <quex/code_base/buffer/iconv/BufferFiller_IConv>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <stdexcept>
@@ -27,23 +28,25 @@ namespace quex {
                                                                           const size_t BackwardDistance);
 
 #   ifndef __QUEX_SETTING_PLAIN_C
-#   define BUFFER_FILLER_PLAIN QuexBufferFiller_Plain<InputHandleT>
+    /* NOTE: The filler types carry only pointers to input handles. So, the 
+     *       required memory size is the same for any type. Let us use std::istream*
+     *       to feed the sizeof()-operator. */
+#   define BUFFER_FILLER_PLAIN   QuexBufferFiller_Plain<std::istream>
+#   define BUFFER_FILLER_ICONV   QuexBufferFiller_IConv<std::istream>
 #   else
-#   define BUFFER_FILLER_PLAIN QuexBufferFiller_Plain
+#   define BUFFER_FILLER_PLAIN   QuexBufferFiller_Plain
+#   define BUFFER_FILLER_ICONV   QuexBufferFiller_IConv
 #   endif
-    TEMPLATE_IN void
-    QuexBufferFiller_get_memory_size(QuexInputCodingTypeEnum InputCodingType, const char* InputCodingName=0x0)
+    QUEX_INLINE size_t
+    QuexBufferFiller_get_memory_size(QuexBufferFillerTypeEnum FillerType)
     {
-        QuexInputCodingTypeEnum input_coding_type = InputCodingType;
-        if( InputCodingType == QUEX_AUTO ) 
-            input_coding_type = InputCodingName == 0x0 ? QUEX_PLAIN : QUEX_ICONV;
-
-        switch( input_coding_type ) {
+        switch( FillerType ) {
         case QUEX_PLAIN: return sizeof(BUFFER_FILLER_PLAIN);
-        case QUEX_ICONV: return sizeof(BUFFER_FILLER_CONVERTER);
+        case QUEX_ICONV: return sizeof(BUFFER_FILLER_ICONV);
         }
     }
 #   undef BUFFER_FILLER_PLAIN 
+#   undef BUFFER_FILLER_ICONV 
 
     QUEX_INLINE void       
     QuexBufferFiller_destroy(QuexBufferFiller* me)

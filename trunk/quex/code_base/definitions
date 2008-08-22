@@ -90,13 +90,11 @@
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define __QUEX_ALLOCATE_MEMORY(TYPE, N)   (new TYPE[(size_t)N])
-#    define __QUEX_FREE_ARRAY_MEMORY(OBJECT)  (delete[] OBJECT)
-#    define __QUEX_FREE_MEMORY(OBJECT)        (delete OBJECT)
+#    define __QUEX_ALLOCATE_MEMORY(N)   (new uint8_t[(size_t)N])
+#    define __QUEX_FREE_MEMORY(OBJECT)  (delete[] OBJECT)
 #else
-#    define __QUEX_ALLOCATE_MEMORY(TYPE, N)   (TYPE*)malloc(sizeof(TYPE)*(size_t)N)
-#    define __QUEX_FREE_ARRAY_MEMORY(OBJECT)  (free(OBJECT))
-#    define __QUEX_FREE_MEMORY(OBJECT)        (free(OBJECT))
+#    define __QUEX_ALLOCATE_MEMORY(N)   (uint8_t*)malloc((size_t)N)
+#    define __QUEX_FREE_MEMORY(OBJECT)  (free(OBJECT))
 #endif
        
 
@@ -104,8 +102,16 @@
 namespace quex {
 #endif
 
-    struct __QuexAnalyser_tag;
+    typedef enum { 
+        QUEX_AUTO,
+        QUEX_PLAIN,
+        QUEX_ICONV,
+    } QuexBufferFillerTypeEnum;
+
+    struct  __QuexAnalyser_tag;
     typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
+
+    QUEX_INLINE size_t QuexBufferFiller_get_memory_size(QuexBufferFillerTypeEnum FillerType);
 
     QUEX_INLINE void
     QUEX_ERROR_EXIT(const char* Msg)

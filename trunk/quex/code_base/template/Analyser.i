@@ -10,14 +10,20 @@
 namespace quex {
 #endif
 
-    QUEX_INLINE void
+    TEMPLATE_IN void
     QuexAnalyser_init(QuexAnalyser* me,
-                      QUEX_ANALYSER_FUNCTION_TYPE AnalyserFunction,
-                      const char* IANA_InputCodingName)
+                      InputHandleT*           input_handle,
+                      const char*             IANA_InputCodingName, 
+                      QuexInputCodingTypeEnum InputCodingType,
+                      const size_t            BufferMemorySize,
+                      const size_t            TranslationBufferMemorySize)
     {
-        QuexBuffer_instantiate(&me->buffer, Size, 
-                               IANA_InputCodingName, IANA_InputCodingName == 0 ? QUEX_PLAIN : QUEX_ICONV,
-                               65536, 65536);
+        QuexBuffer_instantiate(&me->buffer, 
+                               input_handle,
+                               IANA_InputCodingName, InputCodingType,
+                               BufferMemorySize,
+                               TranslationBufferMemorySize);
+
         me->current_analyser_function = AnalyserFunction;
 
         /* Double check that everything is setup propperly. */
