@@ -12,11 +12,12 @@ namespace quex {
 
     TEMPLATE_IN void
     QuexAnalyser_init(QuexAnalyser* me,
-                      InputHandleT*           input_handle,
-                      const char*             IANA_InputCodingName, 
-                      QuexInputCodingTypeEnum InputCodingType,
-                      const size_t            BufferMemorySize,
-                      const size_t            TranslationBufferMemorySize)
+                      QUEX_ANALYSER_FUNCTION_TYPE  analyser_function,
+                      InputHandleT*                input_handle,
+                      QuexInputCodingTypeEnum      InputCodingType,
+                      const char*                  IANA_InputCodingName, 
+                      const size_t                 BufferMemorySize,
+                      const size_t                 TranslationBufferMemorySize)
     {
         QuexBuffer_instantiate(&me->buffer, 
                                input_handle,
