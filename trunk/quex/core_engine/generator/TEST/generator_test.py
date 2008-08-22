@@ -88,11 +88,9 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QuexBufferFiller_Plain_init(&buffer_filler, fh);
-
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
-                          &buffer_filler.base);
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, &istr,
+                          QUEX_PLAIN, 0x0,
+                          $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
@@ -117,14 +115,11 @@ test_program_db = {
         QuexAnalyser lexer_state;
         int          success_f = 0;
         /**/
-        istringstream                           istr("$$TEST_STRING$$");
-        QuexBufferFiller_Plain<istringstream>   buffer_filler;
-        const size_t                            MemorySize = $$BUFFER_SIZE$$;
+        istringstream  istr("$$TEST_STRING$$");
 
-        QuexBufferFiller_Plain_init(&buffer_filler, &istr);
-
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          0x0, MemorySize, 0); 
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, &istr,
+                          QUEX_PLAIN, 0x0,
+                          $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");
