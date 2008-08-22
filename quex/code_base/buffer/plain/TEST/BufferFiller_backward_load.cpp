@@ -17,19 +17,16 @@ main(int argc, char** argv)
     FILE*                         fh = prepare_input();
     QuexBuffer                    buffer;
     QuexBufferFiller_Plain<FILE>  filler;
-    QUEX_CHARACTER_TYPE           memory[12];
 
     fseek(fh, 15 * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
 
     QuexBufferFiller_Plain_init(&filler, fh);
-    QuexBuffer_init(&buffer, memory, 12, (QuexBufferFiller*)&filler);
+    QuexBuffer_init(&buffer, 12, (QuexBufferFiller*)&filler);
 
     /* Simulate, as if we started at 0, and now reached '15' */
     buffer._content_first_character_index = 15;
     filler.start_position                 = 0;
 
-
-    
     do {
         printf("------------------------------------------------------------\n");
         QuexBuffer_show_byte_content(&buffer, 5);

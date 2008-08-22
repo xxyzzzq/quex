@@ -17,11 +17,9 @@ main(int argc, char** argv)
     FILE*                         fh = prepare_input_error();
     QuexBuffer                    buffer;
     QuexBufferFiller_Plain<FILE>  filler;
-    QUEX_CHARACTER_TYPE           memory[8];
 
     QuexBufferFiller_Plain_init(&filler, fh);
-    QuexBuffer_init(&buffer, memory, 8, (QuexBufferFiller*)&filler);
-
+    QuexBuffer_init(&buffer, 8, (QuexBufferFiller*)&filler);
     
     do {
         printf("------------------------------------------------------------\n");

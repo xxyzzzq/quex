@@ -124,8 +124,7 @@ test_program_db = {
         QuexBufferFiller_Plain_init(&buffer_filler, &istr);
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          (QUEX_CHARACTER_TYPE*)0x0, MemorySize,  
-                          &buffer_filler.base);
+                          0x0, MemorySize, 0); 
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
         printf("(*) result:\\n");

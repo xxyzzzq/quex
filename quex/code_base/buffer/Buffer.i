@@ -7,45 +7,65 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/MemoryManager>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
+    QUEX_INLINE void QuexBuffer_init(QuexBuffer*  me, const size_t Size, struct __QuexBufferFiller_tag* filler); 
+    QUEX_INLINE void QuexBufferMemory_init(QuexBufferMemory* me, 
+                                           QUEX_CHARACTER_TYPE* memory, size_t Size);
 
-    TEMPLATE_IN void
+    TEMPLATE_IN(InputHandleT) void
     QuexBuffer_instantiate(QuexBuffer* me, InputHandleT* input_handle,
-                           const char* IANA_InputCodingName, QuexInputCodingTypeEnum InputCodingType,
+                           const char* IANA_InputCodingName, QuexBufferFillerTypeEnum FillerType,
                            const size_t BufferMemorySize,
                            const size_t TranslationBufferMemorySize)
+    /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
+     *                     user intends to perform the lexical analysis directly on plain
+     *                     memory. In this case, the user needs to call the following function
+     *                     by hand in order to setup the memory:
+     *
+     *                     QuexBufferMemory_init(buffer->_memory, (uint8_t*)MyMemoryP, MyMemorySize); 
+     */
     {
         QuexBufferFiller* buffer_filler = 0x0;
 
-        switch( input_coding_type ) {
-        case QUEX_PLAIN: 
-            QuexBufferFiller_Plain_init(buffer_filler, input_handle);
-            break;
-        case QUEX_ICONV: 
-            buffer_filler = MemoryManager_get_BufferFiller(InputCodingType);
-            QuexBufferFiller_IConv_init(buffer_filler, input_handle, 
-                                        IANA_InputCodingName, InputCodingType, 
-                                        TranslationBufferMemorySize);
-            break;
-        }
-        QuexBuffer_init(me, const size_t BufferMemorySize, buffer_filler);
+        if( input_handle != 0x0 ) {
+            switch( FillerType ) {
+            case QUEX_PLAIN: 
+                QuexBufferFiller_Plain_init(buffer_filler, input_handle);
+                break;
+            case QUEX_ICONV: 
+                buffer_filler = MemoryManager_get_BufferFiller(FillerType);
+                QuexBufferFiller_IConv_init(buffer_filler, input_handle, 
+                                            IANA_InputCodingName, 
+                                            TranslationBufferMemorySize);
+                break;
+            }
+            QuexBuffer_init(me, BufferMemorySize, buffer_filler);
+        } else { 
+            QuexBuffer_init(me, BufferMemorySize, 0x0);
+        } 
     }
 
-    TEMPLATE_IN void
+    TEMPLATE_IN(InputHandleT) void
     QuexBuffer_deinstantiate(QuexBuffer* me)
     {
-        buffer->buffer_filler->destroy(buffer->buffer_filler);
-        MemoryManager_free_BufferMemory(me->_memory.front);
+        me->filler->_destroy(me->filler);
+        MemoryManager_free_BufferMemory(me->_memory._front);
     }
 
     QUEX_INLINE void
     QuexBuffer_init(QuexBuffer*  me, const size_t Size, struct __QuexBufferFiller_tag* filler)
     {
-        memory_chunk = MemoryManager_get_BufferMemory(me, Size);
-        QuexBufferMemory_init(&(me->_memory), memory_chunk, Size);      
+        /* If filler == 0x0, then user wants to operate on plain memory, he has to call
+         * QuexBufferMemory_init(...) by hand later.                                     */
+        if( filler != 0x0 ) { 
+            QuexBufferMemory_init(&(me->_memory), MemoryManager_get_BufferMemory(Size), Size);      
+        } else { 
+            QuexBufferMemory_init(&(me->_memory), 0, 0);      
+        }
 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
@@ -216,6 +236,15 @@ namespace quex {
     QuexBufferMemory_init(QuexBufferMemory* me, 
                            QUEX_CHARACTER_TYPE* memory, size_t Size) 
     {
+        /* The buffer memory can be initially be set to '0x0' if no buffer filler
+         * is specified. Then the user has to call this function on his own in order
+         * to specify the memory on which to rumble. */
+        __quex_assert((Size != 0) || (memory == 0x0)); 
+
+        if( Size == 0 ) { 
+            me->_front = me->_back = 0;
+            return;
+        }
         /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
          * one character to be read in forward direction. */
         __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);

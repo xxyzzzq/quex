@@ -31,13 +31,12 @@ main(int argc, char** argv)
     raw_memory_size = argv[1][0] - '0';
     assert(raw_memory_size >= 1);
     assert(raw_memory_size <= 9);
-    uint8_t              raw_memory[raw_memory_size];
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_CHARACTER_TYPE  memory[MemorySize];
 
     QuexBufferFiller_IConv<FILE> filler;
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, (uint8_t*)raw_memory, raw_memory_size);
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, raw_memory_size);
 
     size_t loaded_n = 0;
     loaded_n = filler.base.read_characters(&filler.base, 

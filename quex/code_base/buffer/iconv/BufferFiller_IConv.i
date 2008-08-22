@@ -80,24 +80,24 @@ namespace quex {
                                 const char*   FromCoding,   const char* ToCoding,
                                 size_t        RawBufferSize)
     { 
-        char* to_coding = 0x0;
+        const char* to_coding = 0x0;
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
 
         __QuexBufferFiller_init_functions(&me->base,
-                                          TEMPLATED(__BufferFiller_Plain_tell_character_index),
-                                          TEMPLATED(__BufferFiller_Plain_seek_character_index), 
-                                          TEMPLATED(__BufferFiller_Plain_read_characters),
-                                          TEMPLATED(__BufferFiller_Plain_destroy));
+                                          TEMPLATED(__QuexBufferFiller_IConv_tell_character_index),
+                                          TEMPLATED(__QuexBufferFiller_IConv_seek_character_index), 
+                                          TEMPLATED(__QuexBufferFiller_IConv_read_characters),
+                                          TEMPLATED(__QuexBufferFiller_IConv_destroy));
 
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
         me->ih = input_handle;
 
         /* Initialize the raw buffer that holds the plain bytes of the input file           */
-        raw_buffer_p = MemoryManager_get_BufferFiller_RawBuffer(me, RawBufferSize);
+        uint8_t* raw_buffer_p = MemoryManager_get_BufferFiller_RawBuffer(RawBufferSize);
         QuexBufferFiller_IConv_BufferInfo_init(&me->raw_buffer.base, raw_buffer_p, RawBufferSize);
 
-        me->raw_buffer.base.bytes_left_n  = 0;  /* --> trigger reload                            */
+        me->raw_buffer.base.bytes_left_n  = 0;  /* --> trigger reload                       */
 
         /* Initialize the conversion operations                                             */
         if( ToCoding != 0x0 ) {
@@ -105,14 +105,18 @@ namespace quex {
         } else { 
             switch( sizeof(QUEX_CHARACTER_TYPE) ) {
             default: 
-                QUEX_ERROR_EXIT(stderr, 
-                    "For character width not in [1, 2, 4] bytes a target coding must be specified.\n");
+                QUEX_ERROR_EXIT("If character size is not 1, 2, or 4 bytes. Then a target coding must be specified.\n");
             case 1: to_coding = "ASCII"; break;
             case 2: to_coding = "UCS2"; break;
             case 4: to_coding = "UCS4"; break;
             }
         }
         me->iconv_handle = iconv_open(to_coding, FromCoding);
+        if( me->iconv_handle == (iconv_t)-1 ) {
+            char tmp[128];
+            snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, to_coding);
+            QUEX_ERROR_EXIT(tmp);
+        }
         me->_constant_size_character_encoding_f = \
                         ! QuexBufferFiller_IConv_has_coding_dynamic_character_width(FromCoding);
 
@@ -133,9 +137,15 @@ namespace quex {
     { 
         TEMPLATED(QuexBufferFiller_IConv)* me = (TEMPLATED(QuexBufferFiller_IConv)*)alter_ego;
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
-        if( ! me->raw_buffer._external_owner_f ) __QUEX_FREE_MEMORY(&me->raw_buffer);
+
         iconv_close(me->iconv_handle); 
-        __QUEX_FREE_MEMORY(me);
+
+        MemoryManager_free_BufferFiller_RawBuffer(me->raw_buffer.base.begin); 
+
+        /* The memory manager allocated the space required for a buffer filler of this
+         * type. Somewhere down the road it is known what size of memory belongs to this
+         * pointer. */
+        MemoryManager_free_BufferFiller(alter_ego);
     }
 
     TEMPLATE_IN(InputHandleT) size_t 

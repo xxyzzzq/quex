@@ -1,3 +1,5 @@
+include $(QUEX_PATH)/quex/code_base/core.mkd
+
 TEST_FILES = \
 	       BufferFiller_forward_load-1-fb0.exe \
 	       BufferFiller_forward_load-2-fb0.exe \
@@ -18,20 +20,8 @@ TEST_FILES = \
 	       BufferFiller_backward_load-4.exe \
 	       #BufferFiller_backward_load.exe
 
-HEADERS =  $(QUEX_PATH)/quex/code_base/definitions \
-           $(QUEX_PATH)/quex/code_base/asserts \
-           $(QUEX_PATH)/quex/code_base/compatibility/inttypes.h \
-           $(QUEX_PATH)/quex/code_base/compatibility/pseudo-stdbool.h \
-           $(QUEX_PATH)/quex/code_base/buffer/Buffer.i \
-           $(QUEX_PATH)/quex/code_base/buffer/Buffer \
-           $(QUEX_PATH)/quex/code_base/buffer/Buffer_debug.i \
-           $(QUEX_PATH)/quex/code_base/buffer/BufferFiller \
-           $(QUEX_PATH)/quex/code_base/temporary_macros_on \
-           $(QUEX_PATH)/quex/code_base/temporary_macros_off \
-           $(QUEX_PATH)/quex/code_base/buffer/BufferFiller.i \
-           $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain \
-           $(QUEX_PATH)/quex/code_base/buffer/plain/BufferFiller_Plain.i \
-           $(QUEX_PATH)/quex/code_base/buffer/InputPolicy \
+HEADERS =  \
+		   $(QUEX_CORE) \
            test-helper.h
 
 DEFS = -DQUEX_OPTION_ASSERTS
@@ -71,7 +61,7 @@ hwut-info:
 %-1-fb5.exe: %.cpp $(HEADERS)
 	$(CC) $(CS1) $(FB5) $< -o $@
 
-%-error.exe: %-error.cpp
+%-error.exe: %-error.cpp $(HEADERS)
 	$(CC) $(CS4) $(FB0) $< -o $@
 
 %-1.exe: %.cpp $(HEADERS)
