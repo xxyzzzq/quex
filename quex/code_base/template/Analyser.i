@@ -4,24 +4,30 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/BufferFiller.i>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
-    TEMPLATE_IN void
+    TEMPLATE_IN(InputHandleT) void
     QuexAnalyser_init(QuexAnalyser* me,
-                      QUEX_ANALYSER_FUNCTION_TYPE  analyser_function,
+                      QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
                       InputHandleT*                input_handle,
-                      QuexInputCodingTypeEnum      InputCodingType,
+                      QuexBufferFillerTypeEnum     InputCodingType,
                       const char*                  IANA_InputCodingName, 
                       const size_t                 BufferMemorySize,
                       const size_t                 TranslationBufferMemorySize)
+    /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
+     *                     user intends to perform the lexical analysis directly on plain
+     *                     memory. In this case, the user needs to call the following function
+     *                     by hand in order to setup the memory:
+     *
+     *                     QuexBufferMemory_init(analyse->buffer._memory, (uint8_t*)MyMemoryP, MyMemorySize); 
+     */
     {
         QuexBuffer_instantiate(&me->buffer, 
                                input_handle,
-                               IANA_InputCodingName, InputCodingType,
+                               InputCodingType, IANA_InputCodingName,
                                BufferMemorySize,
                                TranslationBufferMemorySize);
 
@@ -59,5 +65,10 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex 
 #endif
+
+#include <quex/code_base/buffer/Buffer.i>
+#include <quex/code_base/buffer/BufferFiller.i>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
+#include <quex/code_base/buffer/iconv/BufferFiller_IConv.i>
 
 #endif /* __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL_I__ */
