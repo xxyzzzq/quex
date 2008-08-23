@@ -37,11 +37,11 @@ def do(state, StateIdx, SM, InitStateF):
     BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SM.backward_input_position_detection_f()
     if BufferReloadRequiredOnDropOutF:
         if SM.backward_lexing_f():
-            txt += "    " + __reload_backward(StateIdx, SM)
+            txt += __reload_backward(StateIdx, SM)
         else:
             # In case that it cannot load anything, it still needs to know where to jump to.
             txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM.sm(), ForceF=True)
-            txt += "    " + __reload_forward(StateIdx, SM)
+            txt += __reload_forward(StateIdx, SM)
 
     return txt + "\n"
 
@@ -49,22 +49,22 @@ def __reload_forward(StateIndex, SM):
     arg_list = ""
     for state_machine_id in SM.post_contexted_sm_id_list():
         arg_list += ", &last_acceptance_%s_input_position" % state_machine_id
-    txt  = 'QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n'
-    txt += "if( $$QUEX_ANALYZER_STRUCT_NAME$$_%s_buffer_reload_forward(&me->buffer, &last_acceptance_input_position%s) ) {\n" % \
+    txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n'
+    txt += "    if( $$QUEX_ANALYZER_STRUCT_NAME$$_%s_buffer_reload_forward(&me->buffer, &last_acceptance_input_position%s) ) {\n" % \
             (SM.name(), arg_list)
-    txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
-    txt += LanguageDB["$endif"]                              + "\n"
-    txt += 'QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
-    txt += LanguageDB["$goto-last_acceptance"]               + "\n"
+    txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
+    txt += "    " + LanguageDB["$endif"]                              + "\n"
+    txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
+    txt += "    " + LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt
 
 def __reload_backward(StateIndex, SM): 
-    txt  = 'QUEX_DEBUG_PRINT(&me->buffer, "BACKWARD_BUFFER_RELOAD");\n'
-    txt += "if( QuexAnalyser_buffer_reload_backward(&me->buffer) ) {\n"
-    txt += "   " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
-    txt += LanguageDB["$endif"]                              + "\n"
-    txt += 'QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
-    txt += LanguageDB["$goto"]("$terminal-general")          + "\n"
+    txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "BACKWARD_BUFFER_RELOAD");\n'
+    txt += "    if( QuexAnalyser_buffer_reload_backward(&me->buffer) ) {\n"
+    txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
+    txt += "    " + LanguageDB["$endif"]                              + "\n"
+    txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
+    txt += "    " + LanguageDB["$goto"]("$terminal-general")          + "\n"
     return txt
 
 def __goto_distinct_terminal(Origin):

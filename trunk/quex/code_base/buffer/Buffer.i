@@ -6,8 +6,11 @@
 #include <quex/code_base/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain>
+#include <quex/code_base/buffer/iconv/BufferFiller_IConv>
 #include <quex/code_base/MemoryManager>
+
+#include <quex/code_base/temporary_macros_on>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
@@ -18,7 +21,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void
     QuexBuffer_instantiate(QuexBuffer* me, InputHandleT* input_handle,
-                           const char* IANA_InputCodingName, QuexBufferFillerTypeEnum FillerType,
+                           QuexBufferFillerTypeEnum FillerType, const char* IANA_InputCodingName, 
                            const size_t BufferMemorySize,
                            const size_t TranslationBufferMemorySize)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
@@ -29,17 +32,16 @@ namespace quex {
      *                     QuexBufferMemory_init(buffer->_memory, (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
-        QuexBufferFiller* buffer_filler = 0x0;
+        QuexBufferFiller* buffer_filler = MemoryManager_get_BufferFiller(FillerType);
 
         if( input_handle != 0x0 ) {
             switch( FillerType ) {
             case QUEX_PLAIN: 
-                QuexBufferFiller_Plain_init(buffer_filler, input_handle);
+                QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
                 break;
             case QUEX_ICONV: 
-                buffer_filler = MemoryManager_get_BufferFiller(FillerType);
-                QuexBufferFiller_IConv_init(buffer_filler, input_handle, 
-                                            IANA_InputCodingName, 
+                QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
+                                            IANA_InputCodingName, /* Internal Coding: Default */0x0,
                                             TranslationBufferMemorySize);
                 break;
             }
@@ -93,6 +95,17 @@ namespace quex {
             if( LoadedN != QuexBuffer_content_size(me) )  
                 me->_end_of_file_p = QuexBuffer_content_front(me) + LoadedN;
         }
+    }
+
+    QUEX_INLINE void
+    QuexBuffer_setup_memory(QuexBuffer* me, QUEX_CHARACTER_TYPE* UserMemory, const size_t UserMemorySize)
+    {
+        /* This function initializes lexical analysis on user specified memory chunk. 
+         * Use this function, if no buffer filling shall be used and the analyser runs
+         * solely on a given chunk of memory.                                           */
+        QuexBufferMemory_init(&me->_memory, UserMemory, UserMemorySize); 
+        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
+        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
     }
 
 
@@ -153,6 +166,7 @@ namespace quex {
     QuexBuffer_input_get(QuexBuffer* me)
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         return *(me->_input_p); 
     }
 
@@ -271,6 +285,10 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif
+
+#include <quex/code_base/temporary_macros_off>
+
+#include <quex/code_base/buffer/Buffer_debug.i>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__ */
 

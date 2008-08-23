@@ -46,6 +46,8 @@ static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_funct
 test_program_db = { 
     "ANSI-C-PlainMemory": """
     #include <stdlib.h>
+    #include <quex/code_base/template/Analyser.i>
+
     int main(int argc, char** argv)
     {
         QuexAnalyser   lexer_state;
@@ -57,9 +59,11 @@ test_program_db = {
 
         memcpy(tmp+1, TestString, L);
 
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 
-                          (QUEX_CHARACTER_TYPE*)tmp, MemorySize,
-                          /* buffer filler = */ 0x0);
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 0x0,
+                          QUEX_PLAIN, 0x0,
+                          $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
+        /**/
+        QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)tmp, MemorySize); 
         /**/
         printf("(*) test string: \\n'%s'\\n", TestString);
         printf("(*) result:\\n");
@@ -88,7 +92,7 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, &istr,
+        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, fh,
                           QUEX_PLAIN, 0x0,
                           $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/

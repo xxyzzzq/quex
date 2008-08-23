@@ -1,14 +1,13 @@
-// -*- C++ -*-  vim: set syntax=cpp:
-// (C) 2007-2008 Frank-Rene Schaefer
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer  */
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV_I__
 #define __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV_I_
 
 #include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/buffer/iconv/BufferFiller_IConv>
 #include <quex/code_base/buffer/InputPolicy>
+#include <quex/code_base/compatibility/iconv-argument-types.h>
 
-// #include <quex/code_base/buffer/iconv/debug.i>
 
 #ifdef QUEX_OPTION_ASSERTS
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                                        \
@@ -29,19 +28,14 @@
 #   define QUEX_ASSERT_BUFFER_INFO_EASY(BI) /* empty */
 #endif
 
-
-#   ifndef __QUEX_SETTING_PLAIN_C
-#   define TEMPLATED(CLASS)   CLASS<InputHandleT>
-#   else
-    typedef struct __QuexBufferFiller_IConv_tag QuexBufferFiller_IConv;
-#   define TEMPLATED(CLASS)   CLASS
-#   endif
-
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     extern "C" { 
 #   include <iconv.h>
     }
 #   include <quex/code_base/compatibility/iconv-argument-types.h>
+#      include <cerrno>
+#   else
+#      include <errno.h>
 #endif
 
 #include <quex/code_base/temporary_macros_on>
@@ -73,6 +67,8 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_step_forward_n_characters(TEMPLATED(QuexBufferFiller_IConv)* me,
                                                        const size_t     ForwardN);
+
+    TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_mark_start_position(TEMPLATED(QuexBufferFiller_IConv)* me);
 
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_IConv_init(TEMPLATED(QuexBufferFiller_IConv)* me,
@@ -203,7 +199,8 @@ namespace quex {
 
         /* Update the character index / stream position infos */
         me->raw_buffer.begin_character_index = me->raw_buffer.iterators_character_index;
-        me->raw_buffer.begin_stream_position = me->raw_buffer.end_stream_position - RemainingBytesN;
+        me->raw_buffer.begin_stream_position =   me->raw_buffer.end_stream_position 
+                                               - (STREAM_OFFSET_TYPE(InputHandleT))RemainingBytesN;
 
         /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
          * the buffer) where there are bytes left in the raw buffer. These need to be
@@ -211,7 +208,7 @@ namespace quex {
         if( buffer->iterator != buffer->begin ) {
             /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
              * following is safe against overlaps.                                      */
-            std::memmove(buffer->begin, buffer->iterator, RemainingBytesN);
+            __QUEX_STD_memmove(buffer->begin, buffer->iterator, RemainingBytesN);
             /* Reset the position, so that new conversion get's the whole character.    */
             buffer->iterator = buffer->begin; 
         }
@@ -292,10 +289,10 @@ namespace quex {
 
         switch( errno ) {
         default:
-            throw std::range_error("Unexpected setting of 'errno' after call to GNU's iconv().");
+            QUEX_ERROR_EXIT("Unexpected setting of 'errno' after call to GNU's iconv().");
 
         case EILSEQ:
-            throw std::range_error("Invalid byte sequence encountered for given character coding.");
+            QUEX_ERROR_EXIT("Invalid byte sequence encountered for given character coding.");
 
         case EINVAL:
             /* (*) Incomplete byte sequence for character conversion
@@ -460,7 +457,7 @@ namespace quex {
     QUEX_INLINE bool 
     QuexBufferFiller_IConv_has_coding_dynamic_character_width(const char* Coding) 
     {
-        return true; /* TODO: distinguish between different coding formats
+        return true; /* TODO: distinguish between different coding formats   */
         /*           //       'true' is safe, but possibly a little slower.  */
     }
 
@@ -479,9 +476,13 @@ namespace quex {
     }
 
 #undef CLASS
-#undef QUEX_INLINE
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
 }
+#endif
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif // __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__
+#include <quex/code_base/buffer/BufferFiller.i>
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_ICONV__ */

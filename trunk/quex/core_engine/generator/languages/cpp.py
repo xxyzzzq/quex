@@ -50,6 +50,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnaly
 #   if defined (__QUEX_SETTING_PLAIN_C)
 #      define self (*me)
 #   else
+       using namespace quex;
        QuexAnalyser& self = *me;
 #   endif
 """

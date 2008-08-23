@@ -168,6 +168,10 @@ namespace quex {
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
     };
 
+#   ifdef __QUEX_SETTING_PLAIN_C
+    typedef struct __QuexBufferFiller_IConv_tag QuexBufferFiller_IConv;
+#   endif
+
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_IConv_init(TEMPLATED_CLASS* me,
                                 InputHandleT* input_handle, 

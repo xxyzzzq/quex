@@ -78,7 +78,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void
     QuexBuffer_instantiate(QuexBuffer* me, InputHandleT* input_handle,
-                           const char* IANA_InputCodingName, QuexBufferFillerTypeEnum InputCodingType,
+                           QuexBufferFillerTypeEnum InputCodingType, const char* IANA_InputCodingName, 
                            const size_t BufferMemorySize,
                            const size_t TranslationBufferMemorySize);
 

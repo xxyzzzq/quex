@@ -19,6 +19,7 @@
 #    define TEMPLATE_IN(SOME_CLASS)             template <class SOME_CLASS> inline
 #    define STREAM_POSITION_TYPE(IH_TYPE)       typename InputPolicy<IH_TYPE*>::stream_position
 #    define STREAM_OFFSET_TYPE(IH_TYPE)         typename InputPolicy<IH_TYPE*>::stream_offset
+#    define TEMPLATED(CLASS)                    CLASS<InputHandleT>
 
 #else
 #    define TEMPLATIFIER(SOME_CLASS)               /* empty */
@@ -26,6 +27,8 @@
 #    define STREAM_POSITION_TYPE(IH_TYPE)          long
 #    define STREAM_OFFSET_TYPE(IH_TYPE)            long
 #    define InputHandleT                           FILE
+#    define TEMPLATED(CLASS)                       CLASS
 #endif
+
 
 
