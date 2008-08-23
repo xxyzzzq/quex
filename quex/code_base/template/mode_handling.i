@@ -1,4 +1,5 @@
 // -*- C++ -*- vim:set syntax=cpp:
+namespace quex { 
 inline QuexMode&
 CLASS::mode() 
 { return *__current_mode_p; }
@@ -99,4 +100,4 @@ CLASS::map_mode_id_to_mode(const int ModeID)
 inline const int  
 CLASS::map_mode_to_mode_id(const QuexMode& Mode) const
 { return Mode.id; }
-
+}

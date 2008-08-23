@@ -10,7 +10,7 @@ int
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::token        Token;
+    quex::Token        Token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::tiny_lexer*  qlex = new quex::tiny_lexer(argc == 1 ? "example.txt" : argv[1]);

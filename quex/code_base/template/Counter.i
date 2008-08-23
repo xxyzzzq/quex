@@ -13,6 +13,7 @@
 //       This has to happen outside these functions.
 #include <quex/code_base/template/count_common>
 
+namespace quex { 
 inline
 Counter::Counter()
 { init(); }
@@ -189,4 +190,4 @@ Counter::__shift_end_values_to_start_values()
 #   endif
 }
 
-
+}

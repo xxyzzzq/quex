@@ -96,18 +96,18 @@
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
 
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+    extern "C" { 
+#   include <iconv.h>
+    }
+#else
+#   include <iconv.h>
+#endif
+
 #include <quex/code_base/temporary_macros_on>
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
-#   include <iconv.h>
-#endif
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-    extern "C" { 
-#endif
-#   include <iconv.h>
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-    }
 #endif
 
 #ifndef __QUEX_SETTING_PLAIN_C
@@ -169,7 +169,7 @@ namespace quex {
     };
 
 #   ifdef __QUEX_SETTING_PLAIN_C
-    typedef struct __QuexBufferFiller_IConv_tag QuexBufferFiller_IConv;
+    typedef struct __QuexBufferFiller_IConv_tag   QuexBufferFiller_IConv;
 #   endif
 
     TEMPLATE_IN(InputHandleT) void
@@ -190,7 +190,7 @@ namespace quex {
      */
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-}
+} // namespace quex
 #endif
 
 #undef TEMPLATED_CLASS

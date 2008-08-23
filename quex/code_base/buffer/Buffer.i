@@ -15,6 +15,7 @@
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
+
     QUEX_INLINE void QuexBuffer_init(QuexBuffer*  me, const size_t Size, struct __QuexBufferFiller_tag* filler); 
     QUEX_INLINE void QuexBufferMemory_init(QuexBufferMemory* me, 
                                            QUEX_CHARACTER_TYPE* memory, size_t Size);
@@ -32,14 +33,17 @@ namespace quex {
      *                     QuexBufferMemory_init(buffer->_memory, (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
-        QuexBufferFiller* buffer_filler = MemoryManager_get_BufferFiller(FillerType);
+        QuexBufferFiller* buffer_filler = 0x0;
 
         if( input_handle != 0x0 ) {
             switch( FillerType ) {
             case QUEX_PLAIN: 
+                buffer_filler = MemoryManager_get_BufferFiller(FillerType);
                 QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
                 break;
+
             case QUEX_ICONV: 
+                buffer_filler = MemoryManager_get_BufferFiller(FillerType);
                 QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
                                             IANA_InputCodingName, /* Internal Coding: Default */0x0,
                                             TranslationBufferMemorySize);
@@ -51,7 +55,7 @@ namespace quex {
         } 
     }
 
-    TEMPLATE_IN(InputHandleT) void
+    QUEX_INLINE void
     QuexBuffer_deinstantiate(QuexBuffer* me)
     {
         me->filler->_destroy(me->filler);
@@ -108,6 +112,26 @@ namespace quex {
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
     }
 
+    QUEX_INLINE void
+    QuexBuffer_reset(QuexBuffer* me)
+    {
+        QUEX_CHARACTER_TYPE*  buffer_front       = me->_memory._front;
+        size_t                buffer_memory_size = me->_memory._back - buffer_front + 1;
+        QuexBufferFiller*     filler             = me->filler;
+        /* Perform an initialization as if the buffer was not using a buffer filler.
+         * This re-initiates the memory, so we stored the info and restore it afterwards. */
+        QuexBuffer_init(me, 0, 0x0);
+        QuexBuffer_setup_memory(me, buffer_front, buffer_memory_size);
+
+        /* Make sure, that the buffer filler is equally set up propperly. */
+        me->filler = filler;
+        if( me->_content_first_character_index != 0 ) {
+            me->filler->seek_character_index(me->filler, 0);
+            me->filler->read_characters(me->filler, 
+                                       buffer_front + 1, 
+                                       buffer_memory_size - 2);
+        }
+    }
 
     QUEX_INLINE void
     QuexBuffer_input_p_increment(QuexBuffer* buffer)
@@ -244,6 +268,49 @@ namespace quex {
         if     ( buffer->_input_p != buffer->_memory._front )  return false;
         else if( buffer->_content_first_character_index != 0 ) return false;
         return true;
+    }
+
+    QUEX_INLINE bool  
+    QuexBuffer_move_forward(QuexBuffer* me, const size_t CharacterN)
+    {
+       size_t delta = CharacterN; 
+       __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1);
+       
+       while( delta > (me->_memory._back - me->_input_p) ) {
+           if( me->filler == 0x0 ) { return false; /* move beyond limits */ }
+           delta -= (me->_memory._back - me->_input_p);
+           me->_input_p        = me->_memory._back;
+           me->_lexeme_start_p = me->_memory._back;
+           QuexBufferFiller_load_forward(me);
+       }
+       me->_input_p        += delta;
+       me->_lexeme_start_p += delta;
+       me->_character_at_lexeme_start = *(me->_lexeme_start_p);
+#      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+       me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
+#      endif
+
+    }
+    
+    QUEX_INLINE bool  
+    QuexBuffer_move_backward(QuexBuffer* me, const size_t CharacterN)
+    {
+       size_t delta = CharacterN; 
+       /* When going backward, anyway a non-zero width distance is left ahead. */
+       
+       while( delta > (me->_input_p - me->_memory._front - 1) ) {
+           if( me->filler == 0x0 ) { return false; /* move beyond limits */ }
+           delta -= (me->_input_p - me->_memory._front - 1);
+           me->_input_p        = me->_memory._front;
+           me->_lexeme_start_p = me->_memory._front;
+           QuexBufferFiller_load_backward(me);
+       }
+       me->_input_p        -= delta;
+       me->_lexeme_start_p -= delta;
+       me->_character_at_lexeme_start = *(me->_lexeme_start_p);
+#      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+       me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
+#      endif
     }
 
     QUEX_INLINE void 

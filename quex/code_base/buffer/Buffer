@@ -82,6 +82,12 @@ namespace quex {
                            const size_t BufferMemorySize,
                            const size_t TranslationBufferMemorySize);
 
+    QUEX_INLINE void
+    QuexBuffer_reset(QuexBuffer* me);
+
+    QUEX_INLINE void
+    QuexBuffer_deinstantiate(QuexBuffer* me);
+
     QUEX_INLINE QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_input_p_increment(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_input_p_decrement(QuexBuffer*);
@@ -96,6 +102,9 @@ namespace quex {
     QUEX_INLINE void                          QuexBuffer_seek_memory_adr(QuexBuffer*, 
                                                                          QUEX_CHARACTER_POSITION_TYPE);
     
+    QUEX_INLINE bool  QuexBuffer_move_forward(QuexBuffer*, const size_t CharacterN);
+    QUEX_INLINE bool  QuexBuffer_move_backward(QuexBuffer*, const size_t CharacterN);
+
     QUEX_INLINE void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
     QUEX_INLINE void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);
     QUEX_INLINE void  QuexBuffer_end_of_file_set(QuexBuffer*, QUEX_CHARACTER_TYPE* Position);

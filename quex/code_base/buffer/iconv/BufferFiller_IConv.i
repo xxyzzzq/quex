@@ -6,6 +6,7 @@
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/iconv/BufferFiller_IConv>
 #include <quex/code_base/buffer/InputPolicy>
+#include <quex/code_base/MemoryManager>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
 

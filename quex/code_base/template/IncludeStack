@@ -11,7 +11,7 @@ namespace quex {
         IncludeStack(CLASS* the_lexer);
 
         struct memento {
-            QuexAnalyser base;
+            QuexAnalyser analyser_core;
             CounterType  counter;
 #           ifdef QUEX_OPTION_STRING_ACCUMULATOR
             Accumulator  accumulator;
@@ -25,10 +25,16 @@ namespace quex {
         std::vector<memento>  _stack;
 
         template <class InputHandle> 
-        void   push(InputHandle*, const int MODE_ID = -1, const char* IANA_Coding=0x0);
+        void   push(InputHandle*             new_input_handle_p, 
+                    const QuexMode&          mode, 
+                    QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
+                    const char*              IANA_CodingName /* = 0x0 */);
         
         template <class InputHandle> 
-        void   push(InputHandle*, const QuexMode&, const char* IANA_Coding=0x0);
+        void   push(InputHandle*            new_input_handle_p, 
+                   const int                MODE_ID /* = -1 */, 
+                   QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
+                   const char*              IANA_CodingName /* = 0x0 */);
         bool   pop();
 
     private:
