@@ -38,6 +38,20 @@ namespace quex {
         __quex_assert(me->buffer._input_p == me->buffer._memory._front + 1);
     }
 
+    QUEX_INLINE bool 
+    QuexAnalyser_free_related_memory(QuexAnalyser* me)
+    {
+        QuexBuffer_deinstantiate(&me->buffer);
+    }
+
+    QUEX_INLINE void
+    QuexAnalyser_reset(QuexAnalyser* me)
+    {
+        /* Perform an initialization as if the buffer was not using a buffer filler.
+         * This re-initiates the memory, so we stored the info and restore it afterwards. */
+        QuexBuffer_reset(&me->buffer);
+    }
+
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because
      *       addresses related to acceptance positions need to be adapted. This
      *       is not the case for 'reload_backward()'. In no case of backward

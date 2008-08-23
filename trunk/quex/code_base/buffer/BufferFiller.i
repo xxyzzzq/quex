@@ -458,7 +458,7 @@ namespace quex {
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-} /* namespace quex*/
+} // namespace quex
 #endif
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__ */

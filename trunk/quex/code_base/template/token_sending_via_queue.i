@@ -1,5 +1,5 @@
 // -*- C++ -*- vim:set syntax=cpp:
-
+namespace quex { 
 #ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING
 #   define __QUEX_DEBUG_TOKEN_SENDING() \
         std::cerr << "$$LEXER_CLASS_NAME$$::send " << *(_token_queue->top()) << std::endl;
@@ -35,6 +35,8 @@ CLASS::send(const QUEX_TOKEN_ID_TYPE ID, ContentT Content)
     _token_queue->push(ID, Content);
     __QUEX_DEBUG_TOKEN_SENDING();
 }
+
+} // namespace quex
 
 #undef __QUEX_DEBUG_TOKEN_SENDING
 

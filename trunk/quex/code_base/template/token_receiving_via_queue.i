@@ -1,5 +1,5 @@
 // -*- C++ -*-   vim: set syntax=cpp:
-
+namespace quex { 
 inline void
 CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME** result_pp) 
     // NOTE: As long as the 'get_token()' function is not called there is nothing
@@ -59,4 +59,4 @@ CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME* result_p)
 }
 
 
-
+}

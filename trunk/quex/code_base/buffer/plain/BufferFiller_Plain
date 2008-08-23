@@ -39,7 +39,7 @@ namespace quex {
 #   ifndef __QUEX_SETTING_PLAIN_C
 #   define TEMPLATED_CLASS   QuexBufferFiller_Plain<InputHandleT>
 #   else
-    typedef struct __QuexBufferFiller_Plain_tag QuexBufferFiller_Plain;
+    typedef struct __QuexBufferFiller_Plain_tag    QuexBufferFiller_Plain;
 #   define TEMPLATED_CLASS   QuexBufferFiller_Plain
 #   endif
 
@@ -51,7 +51,7 @@ namespace quex {
 #   undef TEMPLATED_CLASS
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
-}  /* namespace quex*/
+}  // namespace quex
 #endif
 
 #include <quex/code_base/temporary_macros_off>

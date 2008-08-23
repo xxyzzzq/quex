@@ -38,8 +38,14 @@ namespace quex {
                       const size_t                 BufferMemorySize,
                       const size_t                 TranslationBufferMemorySize);
 
+    QUEX_INLINE void
+    QuexAnalyser_reset(QuexAnalyser* me);
+
     QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer);
+
+    QUEX_INLINE bool 
+    QuexAnalyser_free_related_memory(QuexAnalyser* me);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
