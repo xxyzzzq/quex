@@ -37,6 +37,8 @@ namespace quex {
 
         if( input_handle != 0x0 ) {
             switch( FillerType ) {
+            case QUEX_AUTO:
+                QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
             case QUEX_PLAIN: 
                 buffer_filler = MemoryManager_get_BufferFiller(FillerType);
                 QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
@@ -273,7 +275,8 @@ namespace quex {
     QUEX_INLINE bool  
     QuexBuffer_move_forward(QuexBuffer* me, const size_t CharacterN)
     {
-       size_t delta = CharacterN; 
+       int delta = (int)CharacterN; 
+       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
        __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1);
        
        while( delta > (me->_memory._back - me->_input_p) ) {
@@ -295,7 +298,8 @@ namespace quex {
     QUEX_INLINE bool  
     QuexBuffer_move_backward(QuexBuffer* me, const size_t CharacterN)
     {
-       size_t delta = CharacterN; 
+       int delta = (int)CharacterN; 
+       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
        /* When going backward, anyway a non-zero width distance is left ahead. */
        
        while( delta > (me->_input_p - me->_memory._front - 1) ) {

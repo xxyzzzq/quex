@@ -11,14 +11,15 @@
 #    if defined(QUEX_OPTION_ASSERTS)
 #       include<quex/code_base/buffer/MemoryPositionMimiker>
 #    endif
-
-namespace quex { 
 #endif
 
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex { 
+#endif
     
     struct QuexMode {  
-        int                     id;
-        const char*             name;
+        int            id;
+        const char*    name;
         QuexAnalyser*  the_lexer;
 
         __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*(analyser_function))(QuexAnalyser*);
@@ -40,15 +41,15 @@ namespace quex {
     { __quex_assert(0); return (__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE)(0); }
 
     QUEX_INLINE void
-    QuexMode_on_indentation_null_function(QuexAnalyser*, const int) 
+    QuexMode_on_indentation_null_function(CLASS*, const int) 
     { }
 
     QUEX_INLINE void
-    QuexMode_on_entry_exit_null_function(QuexAnalyser*, const QuexMode*) 
+    QuexMode_on_entry_exit_null_function(CLASS*, const QuexMode*) 
     { }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
-} /* namespace quex */
+} // namespace quex 
 #endif
 
 #include <quex/code_base/temporary_macros_off>

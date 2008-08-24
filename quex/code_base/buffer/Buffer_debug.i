@@ -89,15 +89,11 @@ namespace quex {
     BufferFiller_show_content(QuexBuffer* buffer) 
     {
         __quex_assert(buffer != 0x0);
-        QuexBufferFiller*  me = buffer->filler;
-        __quex_assert(me != 0x0);
         /* NOTE: If the limiting char needs to be replaced temporarily by
          *       a terminating zero.
          * NOTE: This is a **simple** printing function for unit testing and debugging
          *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         size_t                i = 0;
-        QUEX_CHARACTER_TYPE*  end_p    = buffer->_end_of_file_p != 0x0 ? buffer->_end_of_file_p 
-                                         :                               buffer->_memory._back;
         const size_t          ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE*  ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;

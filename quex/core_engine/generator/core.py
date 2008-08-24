@@ -11,18 +11,17 @@ class Generator(GeneratorBase):
                  StateMachineName, AnalyserStateClassName, Language, 
                  DefaultAction, EndOfStreamAction, 
                  ModeNameList, 
-                 PrintStateMachineF, StandAloneAnalyserF, EndOfFile_Code):
+                 PrintStateMachineF, StandAloneAnalyserF):
 
-        self.state_machine_name                  = StateMachineName
-        self.analyzer_state_class_name           = AnalyserStateClassName
-        self.programming_language                = Language
-        self.language_db                         = Setup.language_db
-        self.end_of_stream_action                = EndOfStreamAction
-        self.default_action                      = DefaultAction
-        self.mode_name_list                      = ModeNameList
-        self.print_state_machine_f               = PrintStateMachineF
-        self.stand_alone_analyzer_f              = StandAloneAnalyserF
-        self.end_of_file_code                    = EndOfFile_Code
+        self.state_machine_name         = StateMachineName
+        self.analyzer_state_class_name  = AnalyserStateClassName
+        self.programming_language       = Language
+        self.language_db                = Setup.language_db
+        self.end_of_stream_action       = EndOfStreamAction
+        self.default_action             = DefaultAction
+        self.mode_name_list             = ModeNameList
+        self.print_state_machine_f      = PrintStateMachineF
+        self.stand_alone_analyzer_f     = StandAloneAnalyserF
 
         GeneratorBase.__init__(self, PatternActionPair_List, StateMachineName)
 
@@ -129,8 +128,7 @@ def do(PatternActionPair_List, DefaultAction,
        AnalyserStateClassName="analyser_state",
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
-       ModeNameList=[],
-       EndOfFile_Code=0):
+       ModeNameList=[]):
     """Contains a list of pattern-action pairs, i.e. its elements contain
        pairs of state machines and associated actions to be take,
        when a pattern matches. 
@@ -153,5 +151,5 @@ def do(PatternActionPair_List, DefaultAction,
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
                      DefaultAction, EndOfStreamAction, ModeNameList, 
-                     PrintStateMachineF, StandAloneAnalyserF, EndOfFile_Code).do()
+                     PrintStateMachineF, StandAloneAnalyserF).do()
     

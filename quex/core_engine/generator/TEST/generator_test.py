@@ -39,6 +39,9 @@ $$TEST_CASE$$
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     using namespace quex;
 #endif
+
+#define QUEX_LEXER_CLASS QuexAnalyser
+
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyser* me);
 static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
 """
@@ -187,8 +190,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
                         DefaultAction                  = default_action, 
                         PrintStateMachineF             = True,
                         AnalyserStateClassName         = sm_name,
-                        StandAloneAnalyserF            = True, 
-                        EndOfFile_Code                 = 0x19)
+                        StandAloneAnalyserF            = True)
 
     return txt
 
