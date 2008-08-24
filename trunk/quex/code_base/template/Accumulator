@@ -8,7 +8,7 @@ namespace quex {
     struct Accumulator {
         Accumulator(CLASS* lex) : _the_lexer(lex) { _accumulated_text.reserve(1024); }
 
-        void  flush(const __QUEX_SETTING_TOKEN_CLASS_NAME::id_type TokenID);
+        void  flush(const QUEX_TOKEN_ID_TYPE TokenID);
         void  clear();
         void  add(const QUEX_CHARACTER_TYPE*);
         void  add(const QUEX_CHARACTER_TYPE);

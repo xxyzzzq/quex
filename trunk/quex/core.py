@@ -22,8 +22,6 @@ import quex.output.cpp.core                     as quex_class_out
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.graphviz.interface           as plot_generator
 
-
-
 def do():
     """Generates state machines for all modes. Each mode results into 
        a separate state machine that is stuck into a virtual function
@@ -89,11 +87,20 @@ def do():
                                       AnalyserStateClassName         = Setup.output_engine_name,
                                       StandAloneAnalyserF            = False, 
                                       QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
-                                      ModeNameList                   = mode_name_list,   
-                                      EndOfFile_Code                 = Setup.end_of_stream_code)
+                                      ModeNameList                   = mode_name_list)
         
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "wb")
+    analyzer_code = "#include \"%s\"\n" % Setup.output_file_stem + \
+                    "#if ! defined(__QUEX_SETTING_PLAIN_C)\n" + \
+                    "namespace quex {\n" + \
+                    "#endif\n" + \
+                    "#define QUEX_LEXER_CLASS %s\n" % Setup.output_engine_name + \
+                    analyzer_code + \
+                    "#if ! defined(__QUEX_SETTING_PLAIN_C)\n" + \
+                    "} // namespace quex\n" + \
+                    "#endif\n" 
+    
     if os.linesep == "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()

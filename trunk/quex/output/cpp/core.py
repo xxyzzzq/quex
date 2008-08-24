@@ -22,8 +22,6 @@ def write_engine_header(Modes, Setup):
     QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/template/lexical_analyzer_class").replace("//","/")
     CoreEngineDefinitionsHeader = (Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
-    if Setup.plain_memory_f: CoreEngineDefinitionsHeader += "definitions-quex-buffer.h"
-    else:                    CoreEngineDefinitionsHeader += "definitions-plain-memory.h"
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerClassName              = Setup.output_engine_name
     VersionID                   = Setup.input_application_version_id
@@ -32,17 +30,17 @@ def write_engine_header(Modes, Setup):
     # -- determine character type according to number of bytes per ucs character code point
     #    for the internal engine.
     quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
-                                "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
+                                   "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
     quex_lexeme_type_str    = { 1: "char    ", 2: "int16_t",  4: "int32_t",  
-                                "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
+                                   "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
 
     #    are bytes of integers Setup 'little endian' or 'big endian' ?
     if Setup.byte_order == "little":
         quex_coding_name_str = { 1: "ASCII", 2: "UCS-2LE", 4: "UCS-4LE", 
-                                 "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
+                                    "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
     else:
         quex_coding_name_str = { 1: "ASCII", 2: "UCS-2BE", 4: "UCS-4BE", 
-                                 "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
+                                    "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
 
 
     # -- determine whether the lexical analyser needs indentation counting
@@ -266,7 +264,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.options["inheritable"] != "only":
             txt += __mode_functions(prolog, "__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE", ["analyser_function"],
-                                    LexerClassName + "*")
+                                    "QuexAnalyser*")
     for mode in Modes:
         if mode.on_indentation_code_fragments() != []:
             txt += __mode_functions(prolog, "void", ["on_indentation"], 

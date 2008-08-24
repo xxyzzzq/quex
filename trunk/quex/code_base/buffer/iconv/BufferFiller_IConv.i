@@ -193,7 +193,6 @@ namespace quex {
          * The filling starts from its current position, thus the remaining bytes
          * to be translated are exactly the number of bytes in the buffer.              */
         QuexBufferFiller_IConv_BufferInfo* buffer = &me->raw_buffer.base;
-        const size_t FillLevel       = buffer->iterator - buffer->begin;
         const size_t RemainingBytesN = buffer->bytes_left_n;
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
         __quex_assert(me->raw_buffer.end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));

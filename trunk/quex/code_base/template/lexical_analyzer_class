@@ -230,15 +230,15 @@ namespace quex {
 //     
 //
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+    typedef void __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN                                                                \
     if( self._token_queue->is_empty() ) { CONTINUE; }                            \
     else {                                                                       \
-        /* since return happens voluntarily, no check for mode change will be */ \
-        /* necessary.                                                         */ \
-        self.__previous_mode_p = self.__current_mode_p;                          \
         return /* self._token_queue->top()->type_id() */;                        \
    }
 #else
+    typedef int __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN  return
 #endif
 

@@ -41,6 +41,7 @@ namespace quex {
     QuexBufferFiller_get_memory_size(QuexBufferFillerTypeEnum FillerType)
     {
         switch( FillerType ) {
+        default:         QUEX_ERROR_EXIT("No memory size for QUEX_AUTO.\n");
         case QUEX_PLAIN: return sizeof(BUFFER_FILLER_PLAIN);
         case QUEX_ICONV: return sizeof(BUFFER_FILLER_ICONV);
         }
@@ -307,7 +308,6 @@ namespace quex {
          * greater than normal (64 Bytes). After all, lexical analysis means
          * to go **mainly forward** and not backwards.  */
         __quex_assert(buffer != 0x0);
-        const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
         QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
 
@@ -373,7 +373,6 @@ namespace quex {
     {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
-        QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         /* Copying backward shall **only** happen when new content is to be loaded. In back
@@ -407,7 +406,7 @@ namespace quex {
 
         /* Limit 2:
          *     We cannot go before the first character in the stream. */
-        const size_t LimitBackwardDist_2 = buffer->_content_first_character_index;
+        const int    LimitBackwardDist_2 = (int)buffer->_content_first_character_index;
 
         /* Taking the minimum of all:*/
         const size_t Limit_1_and_2 = LimitBackwardDist_1 < LimitBackwardDist_2 ? LimitBackwardDist_1

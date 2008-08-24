@@ -2,8 +2,9 @@
 #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR_I
 #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR_I
 
+namespace quex { 
 inline void
-Accumulator::flush(const __QUEX_SETTING_TOKEN_CLASS_NAME::id_type TokenID)
+Accumulator::flush(const QUEX_TOKEN_ID_TYPE TokenID)
 {
     if( _accumulated_text.length() == 0 ) return;
 
@@ -52,4 +53,6 @@ Accumulator::add(const QUEX_CHARACTER_TYPE ToBeAppended)
 
     _accumulated_text += ToBeAppended; 
 }
+
+} // namespace quex
 #endif // __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR_I

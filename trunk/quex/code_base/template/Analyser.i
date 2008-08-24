@@ -38,7 +38,7 @@ namespace quex {
         __quex_assert(me->buffer._input_p == me->buffer._memory._front + 1);
     }
 
-    QUEX_INLINE bool 
+    QUEX_INLINE void
     QuexAnalyser_free_related_memory(QuexAnalyser* me)
     {
         QuexBuffer_deinstantiate(&me->buffer);

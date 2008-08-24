@@ -44,7 +44,7 @@ namespace quex {
     QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer);
 
-    QUEX_INLINE bool 
+    QUEX_INLINE void 
     QuexAnalyser_free_related_memory(QuexAnalyser* me);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

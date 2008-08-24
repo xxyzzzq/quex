@@ -3,7 +3,7 @@ from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
 #
-from quex.core_engine.generator.action_info import ActionInfo
+from   quex.core_engine.generator.action_info import ActionInfo
 
 def __nice(SM_ID): 
     return repr(SM_ID).replace("L", "")
@@ -13,8 +13,8 @@ def __nice(SM_ID):
 #
 
 __header_definitions_txt = """
-#include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/template/Analyser>
+#include <quex/code_base/buffer/Buffer>
 
 #ifdef CONTINUE
 #   undef CONTINUE
@@ -40,7 +40,7 @@ def __local_variable_definitions(VariableInfoList):
          
 
 __function_signature = """
-QUEX_INLINE __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
 $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyser* me) 
 {
     /* NOTE: Different modes correspond to different analyser functions. The analyser*/
@@ -51,7 +51,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnaly
 #      define self (*me)
 #   else
        using namespace quex;
-       QuexAnalyser& self = *me;
+       QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
 #   endif
 """
 
@@ -88,7 +88,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            local_variable_list.append(["quex::quex_mode&", name + " " * (L- len(name)), 
+            local_variable_list.append(["quex::QuexMode&", name + " " * (L- len(name)), 
                                         "QUEX_LEXER_CLASS::" + name]) 
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
@@ -229,28 +229,23 @@ $$JUMPS_TO_ACCEPTANCE_STATE$$
 __on_continue_reentry_preparation_str = """
   
 $$REENTRY_PREPARATION$$
-    /* (*) Common point for **restarting** lexical analysis.*/
-    /*     at each time when CONTINUE is called at the end of a pattern.*/
-    /**/
+    /* (*) Common point for **restarting** lexical analysis.
+     *     at each time when CONTINUE is called at the end of a pattern. */
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
-    /**/
-    /*  If a mode change happened, then the function must first return and*/
-    /*  indicate that another mode function is to be called. At this point, */
-    /*  we to force a 'return' on a mode change. */
-    /**/
-    /*  Pseudo Code: if( previous_mode != current_mode ) {*/
-    /*                   return 0;*/
-    /*               }*/
-    /* */
-    /*  When the analyzer returns, the caller function has to watch if a mode change*/
-    /*  occured. If not it can call this function again.*/
-    /**/
+    /*  If a mode change happened, then the function must first return and
+     *  indicate that another mode function is to be called. At this point, 
+     *  we to force a 'return' on a mode change. 
+     *
+     *  Pseudo Code: if( previous_mode != current_mode ) {
+     *                   return 0;
+     *               }
+     *
+     *  When the analyzer returns, the caller function has to watch if a mode change
+     *  occured. If not it can call this function again.                               */
 #   ifdef QUEX_OPTION_ASSERTS
-    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) {
-        fprintf(stderr, "Mode change without immediate return from the lexical analyser.");
-        exit(-1);
-    }
+    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
+        QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
 #   endif
     $$GOTO_START$$
 """
