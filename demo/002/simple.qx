@@ -58,6 +58,7 @@ token {
     NUMBER
     STRING
     ERROR_MISALIGNED_INDENTATION
+    EVENT_MODE_CHANGE
 }
 
 body {
@@ -167,7 +168,9 @@ mode PROGRAM :
     }
 
     {P_STRING_DELIMITER} {
-        self << STRING_READER;
+        self << STRING_READER; 
+        self.send(TKN_EVENT_MODE_CHANGE);
+        return;
     }
 }
 
@@ -194,7 +197,8 @@ mode STRING_READER :
 
     {P_STRING_DELIMITER} {
         /*........................................*/ self << PROGRAM;
-        RETURN;
+        self.send(TKN_EVENT_MODE_CHANGE);
+        return;
     }
 
     . {

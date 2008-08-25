@@ -3,6 +3,7 @@
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 #include <quex/code_base/template/count_common>
 
+namespace quex { 
 // NOTE: Quex is pretty intelligent in choosing the right function
 //       to count line and column numbers. If, for example, a pattern
 //       does not contain newlines, then it simply adds the LexemeLength
@@ -294,5 +295,7 @@ CounterWithIndentation::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consi
 #   endif
 
 }
+
+} // namespace quex 
 
 #endif // __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	

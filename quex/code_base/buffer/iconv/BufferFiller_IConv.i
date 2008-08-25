@@ -14,15 +14,17 @@
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                                        \
     __quex_assert( BI != 0x0 );                                               \
     __quex_assert((BI)->base.iterator >= (BI)->base.begin);                   \
-    __quex_assert((BI)->fill_level_n <= (BI)->base.size);                   \
-    __quex_assert((BI)->base.iterator - (BI)->base.begin <= (BI)->base.size); \
-    __quex_assert((BI)->base.bytes_left_n <= (BI)->base.size);                \
-    __quex_assert((BI)->base.iterator - (BI)->base.begin == (BI)->fill_level_n - (BI)->base.bytes_left_n);
+    __quex_assert((BI)->fill_level_n <= (BI)->base.size);                     \
+    __quex_assert((size_t)((BI)->base.iterator - (BI)->base.begin) <= (BI)->base.size); \
+    __quex_assert((BI)->base.bytes_left_n <= (BI)->base.size);                          \
+    __quex_assert((BI)->base.bytes_left_n <= (BI)->fill_level_n);                       \
+    __quex_assert(   (size_t)((BI)->base.iterator - (BI)->base.begin)                   \
+                  == (size_t)((BI)->fill_level_n  - (BI)->base.bytes_left_n));
 
-#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI)              \
-    __quex_assert( BI != 0x0 );                          \
-    __quex_assert((BI)->iterator >= (BI)->begin);            \
-    __quex_assert((BI)->iterator - (BI)->begin <= (BI)->size); \
+#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI)                              \
+    __quex_assert( BI != 0x0 );                                          \
+    __quex_assert((BI)->iterator >= (BI)->begin);                        \
+    __quex_assert((size_t)((BI)->iterator - (BI)->begin) <= (BI)->size); \
     __quex_assert((BI)->bytes_left_n <= (BI)->size);    
 #else
 #   define QUEX_ASSERT_BUFFER_INFO(BI)      /* empty */

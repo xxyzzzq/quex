@@ -15,6 +15,8 @@ mode MY_MODE_A {
 ...
    {P_SOMETHING} {
         self << MY_MODE_B;
+        self.send(TKN_EVENT_MODE_TRANSITION);
+        return;
    }
 ...
 }

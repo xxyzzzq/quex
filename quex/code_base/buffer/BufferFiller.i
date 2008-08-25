@@ -196,7 +196,7 @@ namespace quex {
          *     their characters from it. The 'stretch' [lexeme start, current_p] must be 
          *     contained in the new buffer (precisely in the fallback region). */
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        __quex_assert(Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
+        __quex_assert((int)Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
         __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(buffer));
         /* Copying forward shall **only** happen when new content is to be loaded. This is not the case
          * if EOF as reached and the _end_of_file_p lies inside the buffer. Thus the _input_p
@@ -259,7 +259,7 @@ namespace quex {
         /*           reads the _input_p.*/
         buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
 
-        __quex_assert( buffer->_end_of_file_p == 0x0 || LoadedN + FallBackN == buffer->_end_of_file_p - buffer->_memory._front - 1);
+        __quex_assert( buffer->_end_of_file_p == 0x0 || (int)(LoadedN + FallBackN) == buffer->_end_of_file_p - buffer->_memory._front - 1);
 
     }
 
@@ -383,7 +383,7 @@ namespace quex {
          * it is safe to say that _lexeme_start_p > _input_p (the lexeme starts
          * on a letter not the buffer limit). */
         __quex_assert(buffer->_lexeme_start_p > buffer->_input_p);
-        __quex_assert(buffer->_lexeme_start_p - buffer->_input_p < QuexBuffer_content_size(buffer));
+        __quex_assert((size_t)(buffer->_lexeme_start_p - buffer->_input_p) < QuexBuffer_content_size(buffer));
 
         const size_t IntendedBackwardDistance = (size_t)(ContentSize / 3);   
 
