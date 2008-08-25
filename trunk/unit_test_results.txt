@@ -1,6 +1,7 @@
+make: bug-1935701.exe ..................................................[MADE]
 ===============================================================================
 ENTER: TEST
-DATE:  Mon Jul  7 08:47:19 2008
+DATE:  Sun Aug 24 23:14:34 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -8,35 +9,36 @@ TITLE: Regression Tests on Fixed Bugs
  -- attardi:
 
     2001602 RE matching UTF8 l quote uno
-        bug-2001602.sh ..................................................[OK]
+        bug-2001602.sh ................................................[FAIL]
     2001787 RE Problem with inverted whitespace
-        bug-2001787.sh ..................................................[OK]
+        bug-2001787.sh ................................................[FAIL]
     2002070 Output buffer overflow
-        bug-2002070.sh ..................................................[OK]
+        bug-2002070.sh ................................................[FAIL]
     2002474 Segmentation Fault while UTF-8 Decoding
+        (missing 'GOOD/bug-2002474.sh.txt')
         bug-2002474.sh ........................................[NO GOOD FILE]
     2004927 UTF-8 RE Extra Comma Matched
-        bug-2004927.sh ..................................................[OK]
+        bug-2004927.sh ................................................[FAIL]
 
  -- fschaef:
 
     1952133 0.24.11 Crash in Buffer Handling with tiny buffer size
-        bug-1952133.sh 29 ...............................................[OK]
-                       30 ...............................................[OK]
-                       127 ..............................................[OK]
-                       128 ..............................................[OK]
-                       129 ..............................................[OK]
-                       2499 .............................................[OK]
-                       2500 .............................................[OK]
-                       2501 .............................................[OK]
-                       2502 .............................................[OK]
+        bug-1952133.sh 29 .............................................[FAIL]
+                       30 .............................................[FAIL]
+                       127 ............................................[FAIL]
+                       128 ............................................[FAIL]
+                       129 ............................................[FAIL]
+                       2499 ...........................................[FAIL]
+                       2500 ...........................................[FAIL]
+                       2501 ...........................................[FAIL]
+                       2502 ...........................................[FAIL]
     1952747 TKN_TERMINATION
         bug-1952747.sh ..................................................[OK]
 
  -- sphericalcow:
 
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh ..................................................[OK]
+        bug-1885304.sh ................................................[FAIL]
     1885846 Empty RE in define section
         bug-1885846.sh ..................................................[OK]
     1885855 P{ ...} syntax does not work outside of [
@@ -68,7 +70,7 @@ TITLE: Regression Tests on Fixed Bugs
     1892227 accepted as identifiers in def
         bug-1892227.sh ..................................................[OK]
     1892809
-        bug-1892809.sh ..................................................[OK]
+        bug-1892809.sh ................................................[FAIL]
     1893849 0.20.5 allows engine names that are not valid identifiers
         bug-1893849.sh ..................................................[OK]
     1893874 Missing colon in mode definition crashes 0.20.5
@@ -82,9 +84,9 @@ TITLE: Regression Tests on Fixed Bugs
     1894578 header block not added to -core-engine.cpp file in 0.20.6
         bug-1894578.sh ..................................................[OK]
     1895066
-        bug-1895066.sh ..................................................[OK]
+        bug-1895066.sh ................................................[FAIL]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
-        bug-1895500.sh ..................................................[OK]
+        bug-1895500.sh ................................................[FAIL]
     1898125 invalid argument for --token-offset can crash 0.21.4
         bug-1898125.sh ..................................................[OK]
     1900391 malformed --set-by-expression can crash 0.21.8
@@ -92,7 +94,7 @@ TITLE: Regression Tests on Fixed Bugs
     1902175 invalid escape in character set expression crashes 0.21.12
         bug-1902175.sh ..................................................[OK]
     1905768
-        bug-1905768.sh ..................................................[OK]
+        bug-1905768.sh ................................................[FAIL]
     1908092 0.23.5 uses --token-class without --token-class-file
         bug-1908092.sh ..................................................[OK]
     1908436 0.23.6 rule precedence reversed for identical patterns
@@ -105,15 +107,34 @@ TITLE: Regression Tests on Fixed Bugs
     1969629 0.25.4 token list with just TERMINATION treated empty
         bug-1969629.sh ..................................................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+ _____     _ _                  _
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
 
+Error: bug-2001602.sh 
+Error: bug-2001787.sh 
+Error: bug-2002070.sh 
+Error: bug-2004927.sh 
+Error: bug-1952133.sh 29
+Error: bug-1952133.sh 30
+Error: bug-1952133.sh 127
+Error: bug-1952133.sh 128
+Error: bug-1952133.sh 129
+Error: bug-1952133.sh 2499
+Error: bug-1952133.sh 2500
+Error: bug-1952133.sh 2501
+Error: bug-1952133.sh 2502
+Error: bug-1885304.sh 
+Error: bug-1892809.sh 
+Error: bug-1895066.sh 
+Error: bug-1895500.sh 
+Error: bug-1905768.sh 
+EXIT:  TEST
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Mon Jul  7 08:48:33 2008
+DATE:  Sun Aug 24 23:15:14 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -156,19 +177,19 @@ TITLE: Demo-Applications
  -- demo/003:
 
     Unicode Based Lexical Analyzis
-        003.sh BPC=2 ....................................................[OK]
-               BPC=2_NDEBUG .............................................[OK]
-               BPC=4 ....................................................[OK]
-               BPC=4_NDEBUG .............................................[OK]
-               BPC=wchar_t ..............................................[OK]
+        003.sh BPC=2 ..................................................[FAIL]
+               BPC=2_NDEBUG ...........................................[FAIL]
+               BPC=4 ..................................................[FAIL]
+               BPC=4_NDEBUG ...........................................[FAIL]
+               BPC=wchar_t ............................................[FAIL]
 
  -- demo/005:
 
     Including Files
-        005.sh 1 ........................................................[OK]
-               1_NDEBUG .................................................[OK]
-               2 ........................................................[OK]
-               2_NDEBUG .................................................[OK]
+        005.sh 1 ......................................................[FAIL]
+               1_NDEBUG ...............................................[FAIL]
+               2 ......................................................[FAIL]
+               2_NDEBUG ...............................................[FAIL]
 
  -- demo/006:
 
@@ -194,9 +215,19 @@ Error: other-compilers-sun.sh 002
 Error: other-compilers-sun.sh 003
 Error: other-compilers-sun.sh 005
 Error: other-compilers-sun.sh 006
+Error: 003.sh BPC=2
+Error: 003.sh BPC=2_NDEBUG
+Error: 003.sh BPC=4
+Error: 003.sh BPC=4_NDEBUG
+Error: 003.sh BPC=wchar_t
+Error: 005.sh 1
+Error: 005.sh 1_NDEBUG
+Error: 005.sh 2
+Error: 005.sh 2_NDEBUG
+EXIT:  demo/TEST
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Mon Jul  7 08:50:32 2008
+DATE:  Sun Aug 24 23:16:11 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -209,16 +240,77 @@ TITLE: Miscellaneous Basic Tests
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/TEST
+make: BufferFiller_backward_copy-32.exe ................................[MADE]
+make: BufferFiller_backward_copy.exe ...................................[MADE]
+make: BufferFiller_forward_copy-32.exe .................................[MADE]
+make: BufferFiller_forward_copy.exe ....................................[MADE]
+===============================================================================
+ENTER: quex/code_base/buffer/TEST
+DATE:  Sun Aug 24 23:16:11 2008
+TITLE: <no file 'ADM/title.txt'>
+-------------------------------------------------------------------------------
+
+ -- Backward:
+
+    Copy Region (BPC=1);
+        BufferFiller_backward_copy.exe Normal ...........................[OK]
+                                       StartOfStream ....................[OK]
+    Copy Region (BPC=4);
+        BufferFiller_backward_copy-32.exe Normal ........................[OK]
+                                          StartOfStream .................[OK]
+
+ -- Forward:
+
+    Copy Fallback Region (BPC=1);
+        BufferFiller_forward_copy.exe ...................................[OK]
+    Copy Fallback Region (BPC=4);
+        BufferFiller_forward_copy-32.exe ................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
+EXIT:  quex/code_base/buffer/TEST
+make: n-beat.exe .......................................................[MADE]
+make: one-beat.exe .....................................................[MADE]
+make: seek_character_index-zikzak.exe ..................................[MADE]
+make: seek_character_index.exe .........................................[MADE]
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Mon Jul  7 08:48:33 2008
+DATE:  Sun Aug 24 23:16:11 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
- -- Converting Stream in N Tiny Beats
-        n-beat ..........................................................[OK]
- -- Converting Stream in One Beat
-        one-beat ........................................................[OK]
+
+ -- Seek:
+
+    Plain search
+        seek_character_index.exe Forward ................................[OK]
+                                 Backward ...............................[OK]
+    Total Zik-Zak
+        seek_character_index-zikzak.exe Fixed ...........................[OK]
+                                        Dynamic .........................[OK]
+
+ -- read_characters:
+
+    Raw buffer size varries (UTF-8)
+        one-beat.exe 6 ..................................................[OK]
+                     7 ..................................................[OK]
+                     8 ..................................................[OK]
+                     9 ..................................................[OK]
+    User buffer size varries (UTF-8)
+        n-beat.exe 3 ....................................................[OK]
+                   4 ....................................................[OK]
+                   5 ....................................................[OK]
+                   6 ....................................................[OK]
+                   8 ....................................................[OK]
+                   9 ....................................................[OK]
+                   1 ....................................................[OK]
+                   2 ....................................................[OK]
+                   7 ....................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -226,23 +318,57 @@ TITLE: Input Buffers Based on the IConv - Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/code_base/buffer/iconv/TEST
+make: BufferFiller_backward_load-1.exe .................................[MADE]
+make: BufferFiller_backward_load-2.exe .................................[MADE]
+make: BufferFiller_backward_load-4.exe .................................[MADE]
+make: BufferFiller_forward_load-1-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-1-fb1.exe ..............................[MADE]
+make: BufferFiller_forward_load-1-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb1.exe ..............................[MADE]
+make: BufferFiller_forward_load-2-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb0.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb1.exe ..............................[MADE]
+make: BufferFiller_forward_load-4-fb5.exe ..............................[MADE]
+make: BufferFiller_forward_load-error.exe ..............................[MADE]
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Mon Jul  7 08:48:33 2008
-TITLE: Input Buffers
-
+DATE:  Sun Aug 24 23:16:12 2008
+TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
- -- Backwards Iteration
-        test-backward-get BLC=0 .........................................[OK]
-                          BLC=1 .........................................[OK]
-                          BLC=0xFF ......................................[OK]
 
- -- Forward Iteration:
+ -- Load Backward:
 
-    Multiple Loads.
-        test-forward-get BLC=0 ..........................................[OK]
-                         BLC=1 ..........................................[OK]
-                         BLC=0xFF .......................................[OK]
+    Character=1 Byte(s), Fallback=0
+        BufferFiller_backward_load-1.exe ................................[OK]
+    Character=2 Byte(s), Fallback=0
+        BufferFiller_backward_load-2.exe ................................[OK]
+    Character=4 Byte(s), Fallback=0
+        BufferFiller_backward_load-4.exe ................................[OK]
+
+ -- Load Forward:
+
+    Character=1 Byte(s), Fallback=0
+        BufferFiller_forward_load-1-fb0.exe .............................[OK]
+    Character=1 Byte(s), Fallback=1
+        BufferFiller_forward_load-1-fb1.exe .............................[OK]
+    Character=1 Byte(s), Fallback=5
+        BufferFiller_forward_load-1-fb5.exe .............................[OK]
+    Character=2 Byte(s), Fallback=0
+        BufferFiller_forward_load-2-fb0.exe .............................[OK]
+    Character=2 Byte(s), Fallback=1
+        BufferFiller_forward_load-2-fb1.exe .............................[OK]
+    Character=2 Byte(s), Fallback=5
+        BufferFiller_forward_load-2-fb5.exe .............................[OK]
+    Character=4 Byte(s), Fallback=0
+        BufferFiller_forward_load-4-fb0.exe .............................[OK]
+    Character=4 Byte(s), Fallback=1
+        BufferFiller_forward_load-4-fb1.exe .............................[OK]
+    Character=4 Byte(s), Fallback=5
+        BufferFiller_forward_load-4-fb5.exe .............................[OK]
+    With Error in Stream (Character=4 Byte(s))
+        BufferFiller_forward_load-error.exe .............................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -250,9 +376,12 @@ TITLE: Input Buffers
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/code_base/buffer/plain/TEST
+make: test-simple ......................................................[MADE]
+make: test-simple-2 ....................................................[MADE]
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Mon Jul  7 08:48:34 2008
+DATE:  Sun Aug 24 23:16:12 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -270,9 +399,10 @@ TITLE: Lexical Analyzer Class Template
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/code_base/template/TEST
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Mon Jul  7 08:48:35 2008
+DATE:  Sun Aug 24 23:16:12 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -303,9 +433,10 @@ TITLE: Core Functionalities
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/TEST
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Mon Jul  7 08:49:27 2008
+DATE:  Sun Aug 24 23:16:14 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -314,83 +445,106 @@ TITLE: Code Generation for Lexical Analyzer
  -- Buffer Reload:
 
     Backwards;
-        test-backward_loading.py No_NDEBUG ..............................[OK]
-                                 NDEBUG .................................[OK]
+        test-backward_loading.py Cpp_ASSERTS ............................[OK]
+                                 Cpp ....................................[OK]
+                                 ANSI-C-ASSERTS .........................[OK]
+                                 ANSI-C .................................[OK]
     Forward Position Adaption
-        test-position_adaption.py No_NDEBUG .............................[OK]
-                                  NDEBUG ................................[OK]
+        test-position_adaption.py Cpp_ASSERTS ...........................[OK]
+                                  Cpp ...................................[OK]
+                                  ANSI-C-ASSERTS ........................[OK]
+                                  ANSI-C ................................[OK]
     No Backward Reload -- Precondition at Border
-        test-no-backward-reloading.py No_NDEBUG .........................[OK]
-                                      NDEBUG ............................[OK]
+        test-no-backward-reloading.py Cpp_ASSERTS .......................[OK]
+                                      Cpp ...............................[OK]
+                                      ANSI-C-ASSERTS ....................[OK]
+                                      ANSI-C ............................[OK]
 
  -- CONTINUE:
 
     (special use case)
-        test-continue-without-return-2.py PlainMemory ...................[OK]
-                                          QuexBuffer ....................[OK]
+        test-continue-without-return-2.py ANSI-C-PlainMemory ............[OK]
+                                          ANSI-C ........................[OK]
+                                          Cpp ...........................[OK]
     Mode Changes
-        test-mode-changes.py PlainMemory ................................[OK]
-                             QuexBuffer .................................[OK]
+        test-mode-changes.py ANSI-C-PlainMemory .........................[OK]
+                             ANSI-C .....................................[OK]
+                             Cpp ........................................[OK]
     Reentry analysis without return from function
-        test-continue-without-return.py PlainMemory .....................[OK]
-                                        QuexBuffer ......................[OK]
+        test-continue-without-return.py ANSI-C-PlainMemory ..............[OK]
+                                        ANSI-C ..........................[OK]
+                                        Cpp .............................[OK]
 
  -- Post Conditions:
 
     Part 1
-        test-post-conditions.py PlainMemory .............................[OK]
-                                QuexBuffer ..............................[OK]
+        test-post-conditions.py ANSI-C-PlainMemory ......................[OK]
+                                ANSI-C ..................................[OK]
+                                Cpp .....................................[OK]
     Part 2
-        test-post-conditions-2.py PlainMemory ...........................[OK]
-                                  QuexBuffer ............................[OK]
+        test-post-conditions-2.py ANSI-C-PlainMemory ....................[OK]
+                                  ANSI-C ................................[OK]
+                                  Cpp ...................................[OK]
     Part 3
-        test-post-conditions-3.py PlainMemory ...........................[OK]
-                                  QuexBuffer ............................[OK]
+        test-post-conditions-3.py ANSI-C-PlainMemory ....................[OK]
+                                  ANSI-C ................................[OK]
+                                  Cpp ...................................[OK]
 
  -- Pre Conditions:
 
     Multiple Identical Pre-Conditions
-        test-pre-conditions-3.py PlainMemory ............................[OK]
-                                 QuexBuffer .............................[OK]
+        test-pre-conditions-3.py ANSI-C-PlainMemory .....................[OK]
+                                 ANSI-C .................................[OK]
+                                 Cpp ....................................[OK]
     Part 1
-        test-pre-conditions.py PlainMemory ..............................[OK]
-                               QuexBuffer ...............................[OK]
+        test-pre-conditions.py ANSI-C-PlainMemory .......................[OK]
+                               ANSI-C ...................................[OK]
+                               Cpp ......................................[OK]
     Part 2
-        test-pre-conditions-2.py PlainMemory ............................[OK]
-                                 QuexBuffer .............................[OK]
+        test-pre-conditions-2.py ANSI-C-PlainMemory .....................[OK]
+                                 ANSI-C .................................[OK]
+                                 Cpp ....................................[OK]
 
  -- Pre- and Post- Conditions:
 
     Simple
-        test-pre-post-condition.py PlainMemory ..........................[OK]
-                                   QuexBuffer ...........................[OK]
+        test-pre-post-condition.py ANSI-C-PlainMemory ...................[OK]
+                                   ANSI-C ...............................[OK]
+                                   Cpp ..................................[OK]
 
  -- Pseudo Ambgiguous Post Condition:
 
     Part I
-        test-pseudo_ambiguous_post_conditions.py PlainMemory ............[OK]
-                                                 QuexBuffer .............[OK]
+        test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory .....[OK]
+                                                 ANSI-C .................[OK]
+                                                 Cpp ....................[OK]
     Part II
-        test-pseudo_ambiguous_post_conditions-2.py PlainMemory ..........[OK]
-                                                   QuexBuffer ...........[OK]
+        test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory ...[OK]
+                                                   ANSI-C ...............[OK]
+                                                   Cpp ..................[OK]
 
  -- Simple:
 
     Begin of Line (BOL), End of Line (EOL)
-        test-bol-eol.py PlainMemory .....................................[OK]
-                        QuexBuffer ......................................[OK]
+        test-bol-eol.py ANSI-C-PlainMemory ..............................[OK]
+                        ANSI-C ..........................................[OK]
+                        Cpp .............................................[OK]
     Keywords 'for', 'forest', 'forester', and 'formidable'
-        test-simple-5.py PlainMemory ....................................[OK]
-                         QuexBuffer .....................................[OK]
+        test-simple-5.py ANSI-C-PlainMemory .............................[OK]
+                         ANSI-C .........................................[OK]
+                         Cpp ............................................[OK]
     Maximum Length Match
-        test-simple-2.py PlainMemory ....................................[OK]
-                         QuexBuffer .....................................[OK]
+        test-simple-2.py ANSI-C-PlainMemory .............................[OK]
+                         ANSI-C .........................................[OK]
+                         Cpp ............................................[OK]
     Special Case '.' (drop out on valid target state)
-        test-simple-3.py PlainMemory ....................................[OK]
-                         QuexBuffer .....................................[OK]
+        test-simple-3.py ANSI-C-PlainMemory .............................[OK]
+                         ANSI-C .........................................[OK]
+                         Cpp ............................................[OK]
     Tiny Expressions
-        test-simple.py PlainMemory ......................................[OK]
-                       QuexBuffer .......................................[OK]
+        test-simple.py ANSI-C-PlainMemory ...............................[OK]
+                       ANSI-C ...........................................[OK]
+                       Cpp ..............................................[OK]
 
  -- Single State:
 
@@ -405,9 +559,10 @@ TITLE: Code Generation for Lexical Analyzer
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/generator/TEST
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Mon Jul  7 08:49:32 2008
+DATE:  Sun Aug 24 23:17:23 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -467,9 +622,10 @@ TITLE: Regular Expression Parsing
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/regular_expression/TEST
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Mon Jul  7 08:49:37 2008
+DATE:  Sun Aug 24 23:17:28 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -565,9 +721,10 @@ TITLE: State Machine Operations
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/core_engine/state_machine/TEST
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Mon Jul  7 08:49:37 2008
+DATE:  Sun Aug 24 23:17:32 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -588,9 +745,10 @@ TITLE: Frank-Rene Schaefers Little Python Library
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/frs_py/TEST
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Mon Jul  7 08:49:53 2008
+DATE:  Sun Aug 24 23:17:32 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -611,9 +769,10 @@ TITLE: Character Set Queries
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/input/TEST
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Mon Jul  7 08:49:54 2008
+DATE:  Sun Aug 24 23:17:46 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -634,11 +793,13 @@ TITLE: <no file 'ADM/title.txt'>
 | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
  \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
+EXIT:  quex/output/graphviz/TEST
 ===============================================================================
 SUMMARY:
-.//TEST .................................................................[OK]
+.//TEST ...............................................................[FAIL]
 ./demo/TEST ...........................................................[FAIL]
 ./quex/TEST .............................................................[OK]
+./quex/code_base/buffer/TEST ............................................[OK]
 ./quex/code_base/buffer/iconv/TEST ......................................[OK]
 ./quex/code_base/buffer/plain/TEST ......................................[OK]
 ./quex/code_base/template/TEST ..........................................[OK]
@@ -649,4 +810,10 @@ SUMMARY:
 ./quex/frs_py/TEST ......................................................[OK]
 ./quex/input/TEST .......................................................[OK]
 ./quex/output/graphviz/TEST .............................................[OK]
+===============================================================================
+The following tests have no entry in their 'GOOD/' directory:
+
+  TEST:
+    bug-2002474.sh 
+
 ===============================================================================

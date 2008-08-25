@@ -2,6 +2,7 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 #
@@ -37,8 +38,8 @@ COMPILER = g++
 # -- compiler
 CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)      \
-	 -D___QUEX_UNIT_TESTING___ \
-     -DQUEX_OPTION_ACTIVATE_ASSERTS	
+	 #-DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
+	 #-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 # -- linker
 LD         = $(COMPILER) 
@@ -51,8 +52,8 @@ DYNAMIC_LD = $(COMPILER) -shared
 # -- application
 $(APPLICATION_NAME): ./$(APPLICATION_NAME).o $(ENGINE_NAME).o $(GENERATED_MODE_OBJS)
 	$(LD) ./$(APPLICATION_NAME).o $(ENGINE_NAME).o   \
-	       $(GENERATED_MODE_OBJS)                    \
-               -o $(APPLICATION_NAME) 
+	      $(GENERATED_MODE_OBJS)                     \
+          -o $(APPLICATION_NAME) 
 
 # -- libraries
 $(LIBRARY_NAME).a:
@@ -64,20 +65,18 @@ $(LIBRARY_NAME).so:
 # -- engine and object files
 $(APPLICATION_NAME).o: $(APPLICATION_NAME).cpp $(ENGINE_SOURCES)
 #       # require: $(ENGINE_SOURCES) for header files
-	$(CC)    $(APPLICATION_NAME).cpp  \
-              -o $(APPLICATION_NAME).o
+	$(CC) $(APPLICATION_NAME).cpp -o $(APPLICATION_NAME).o
 
 $(ENGINE_NAME).o: $(ENGINE_SOURCES)
-	$(CC)    $(ENGINE_NAME).cpp       \
-              -o $(ENGINE_NAME).o
+	$(CC) $(ENGINE_NAME).cpp -o $(ENGINE_NAME).o
 
 %.o: %.cpp
 	$(CC) $< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES)
+$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex --mode-files $(MODE_FILES)    \
 	     --engine     $(ENGINE_NAME)   \
-		 --token-queue \
+		 --token-queue                 \
 		 --string-accumulator
 
 

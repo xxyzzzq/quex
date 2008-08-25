@@ -33,7 +33,7 @@ CLASS::__debug_print_transition(QuexMode* Source, QuexMode* Target)
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     std::cerr << "column = " << column_number_at_begin() << std::endl;
 #       endif
-    std::cerr << "FromMode: " << Source->name << " ToMode: " << Target.Name << std::endl;
+    std::cerr << "FromMode: " << Source->name << " ToMode: " << Target->name << std::endl;
 #   endif
 }
 

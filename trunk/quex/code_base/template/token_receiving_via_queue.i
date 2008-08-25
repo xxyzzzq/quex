@@ -19,13 +19,6 @@ CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME** result_pp)
     //    Token-ID = '$$TOKEN_CLASS$$::ID_UNITIALIZED' is returned in 
     //               case that no  token could be read.
 {
-    // The framework / constructor **should** ensure that at this point the two
-    // pointers are identical. Since this function is called very often the
-    // assignment of safety (prev=current) is not done. Instead, we only check
-    // (as long as NDEBUG is not defined) that the framework assigns the variables
-    // propperly.
-    __quex_assert( self.__previous_mode_p == self.__current_mode_p );
-    
     // (i) tokens are in queue --> take next token from stack
     if( _token_queue->is_empty() == false ) {
         // DEBUG    

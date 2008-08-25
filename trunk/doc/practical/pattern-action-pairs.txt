@@ -60,8 +60,11 @@ and one does not return to the user, thus it is followed by an empty pair of
 curly brackets. The pattern `P\_IDENTIFIER` creates a token that contains
 the string that was matched.  `P\_NUMBER` also stores a number that
 corresponds the lexeme that was matched.  The pattern` 
-  P\_STRING\_DELIMITER` does not send a token, but initiates a mode transition
-to the mode `STRING\_READER`.
+  P\_STRING\_DELIMITER` initiates a mode transition
+to the mode `STRING\_READER`. However, since we are working with a token queue
+it is necessary to send a dummy token `TKN_EVENT_MODE_CHANGE` and return.
+The return is necessary, so that the analyser function pointer can be reset
+by the analyser.
 
 
 .The `PROGRAM` mode.
@@ -85,6 +88,8 @@ mode PROGRAM :
     }
     {P_STRING_DELIMITER} {
         self << STRING_READER;
+        self.send(TKN_EVENT_MODE_CHANGE);
+        return;
     }
 }
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,7 +138,8 @@ mode STRING_READER :
 
     {P_STRING_DELIMITER} {
         /*.........................................*/ self << PROGRAM;
-        RETURN;
+        self.send(TKN_EVENT_MODE_CHANGE);
+        return;
     }
 
     . {

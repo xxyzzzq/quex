@@ -116,7 +116,7 @@ namespace quex {
     QUEX_ERROR_EXIT(const char* Msg)
     {
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
-        throw std::range_error(Msg);
+        throw std::runtime_error(Msg);
 #       else
         __QUEX_STD_fprintf(stderr, Msg);
         exit(-1);

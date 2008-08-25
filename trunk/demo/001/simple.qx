@@ -36,7 +36,7 @@ mode END_OF_FILE :
 <inheritable: only>  
 {    
     <<EOF>> {
-	self.send(quex::token::ID_TERMINATION);
+        self.send(quex::token::ID_TERMINATION);
         RETURN;
     }
 }
@@ -62,6 +62,7 @@ mode PROGRAM :
     {P_STRING_DELIMITER} {
         self.send(TKN_QUOTE);
         self << STRING_READER;
+        RETURN;
     }
 }
 
@@ -79,7 +80,7 @@ mode STRING_READER :
     {P_BACKSLASHED_STRING_DELIMITER} { self.accumulator.add(Lexeme); }
     {P_BACKSLASHED_BACKSLASH}        { self.accumulator.add(Lexeme); }
 
-    {P_STRING_DELIMITER}             { self << PROGRAM; }
+    {P_STRING_DELIMITER}             { self << PROGRAM; RETURN; }
 
     <<FAIL>> {
         self.accumulator.add(Lexeme);
