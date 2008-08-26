@@ -26,17 +26,14 @@ CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME** result_pp)
         return;
     }
 
-    QuexAnalyser::current_analyser_function(this);
+    do { 
+        QuexAnalyser::current_analyser_function(this);
 
-    // In case a mode change happend inside the pattern actions, the function is forced
-    // to return (see end of analyzer function at REENTRY label). If the tokenstack is
-    // non-empty, we return to the caller (spare one check). If its empty the analyzer
-    // function (which has recently been setup) is called again.
-#   ifdef QUEX_OPTION_ASSERTS
-    if( _token_queue->is_empty() ) {
-        throw std::runtime_error("Empty token stack after return from analyser function.");
-    }
-#   endif 
+        // In case a mode change happend inside the pattern actions, the function is forced
+        // to return (see end of analyzer function at REENTRY label). If the tokenstack is
+        // non-empty, we return to the caller (spare one check). If its empty the analyzer
+        // function (which has recently been setup) is called again.
+    } while ( _token_queue->is_empty() );
 
     *result_pp = _token_queue->quick_pop();
     return;

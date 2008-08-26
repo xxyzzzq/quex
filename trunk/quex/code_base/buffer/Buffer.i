@@ -71,6 +71,9 @@ namespace quex {
          * QuexBufferMemory_init(...) by hand later.                                     */
         if( filler != 0x0 ) { 
             QuexBufferMemory_init(&(me->_memory), MemoryManager_get_BufferMemory(Size), Size);      
+#           ifdef QUEX_OPTION_ASSERTS
+            __QUEX_STD_memset(me->_memory._front + 1, 0xFF, Size - 2);
+#           endif 
         } else { 
             QuexBufferMemory_init(&(me->_memory), 0, 0);      
         }
@@ -90,16 +93,15 @@ namespace quex {
         me->filler = filler;
 
         if( filler != 0x0 ) {
-#           ifdef QUEX_OPTION_ASSERTS
-            __QUEX_STD_memset(me->_memory._front, 0, Size);
-#           endif 
             /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
              * assumes, that the user fills/has filled it with whatever his little heart desired. */
             const size_t LoadedN = me->filler->read_characters(me->filler, 
-                                                               QuexBuffer_content_front(me), 
+                                                               me->_memory._front + 1, 
                                                                QuexBuffer_content_size(me));
-            if( LoadedN != QuexBuffer_content_size(me) )  
-                me->_end_of_file_p = QuexBuffer_content_front(me) + LoadedN;
+            if( LoadedN != QuexBuffer_content_size(me) ) {
+                me->_end_of_file_p  = me->_memory._front + 1 + LoadedN;
+                *me->_end_of_file_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
+            }
         }
     }
 

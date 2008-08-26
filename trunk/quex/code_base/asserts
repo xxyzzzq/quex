@@ -9,7 +9,9 @@
 #      undef  QUEX_OPTION_ASSERTS
 #   endif
 #else
+#   ifndef QUEX_OPTION_ASSERTS
 #      define QUEX_OPTION_ASSERTS
+#   endif
 #endif
 
 #ifdef QUEX_OPTION_ASSERTS
