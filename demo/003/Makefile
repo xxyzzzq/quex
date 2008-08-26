@@ -11,6 +11,7 @@ endif
 ifndef BYTES_PER_CHARACTER
     BYTES_PER_CHARACTER = 2
 endif
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 # -- INPUT
@@ -62,7 +63,7 @@ $(LIBRARY_NAME).so:
 %.o: %.cpp $(ENGINE_SOURCES)
 	$(CC) $< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES)
+$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME)          \
 	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
 	     --iconv \

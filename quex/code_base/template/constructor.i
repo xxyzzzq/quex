@@ -22,7 +22,7 @@ CLASS::CLASS(const std::string&       Filename,
     // prefer FILE* based buffers, because we can turn low-level buffering off.
     // ownership of FILE* id passed to the input strategy of the buffer
     std::FILE* fh = std::fopen(Filename.c_str(), "r");
-    if( fh == NULL ) throw std::runtime_error("Error on attempt to open specified file.");
+    if( fh == NULL ) QUEX_ERROR_EXIT("Error on attempt to open specified file.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
     __constructor_core(fh, BFT, InputCodingName);
@@ -46,7 +46,7 @@ CLASS::CLASS(std::istream*            p_input_stream,
     , counter(this)
 #   endif
 {
-    if( p_input_stream == NULL ) throw std::runtime_error("Error: received NULL as pointer to input stream.");
+    if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
     __constructor_core(p_input_stream, BFT, InputCodingName);
 }
 
@@ -66,7 +66,7 @@ CLASS::CLASS(std::FILE* fh,
     , counter(this)
 #   endif
 {
-    if( fh == NULL ) throw std::runtime_error("Error: received NULL as a file handle.");
+    if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
     __constructor_core(fh, BFT, InputCodingName);

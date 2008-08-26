@@ -266,9 +266,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
-        CLASS(const std::string& Filename,  const char* IConvInputCodingName = 0x0, QuexBufferFillerTypeEnum ICT=QUEX_PLAIN);
-        CLASS(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0, QuexBufferFillerTypeEnum ICT=QUEX_PLAIN);
-        CLASS(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0, QuexBufferFillerTypeEnum ICT=QUEX_PLAIN);
+        CLASS(const std::string& Filename,  const char* IConvInputCodingName = 0x0, QuexBufferFillerTypeEnum ICT=QUEX_AUTO);
+        CLASS(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0, QuexBufferFillerTypeEnum ICT=QUEX_AUTO);
+        CLASS(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0, QuexBufferFillerTypeEnum ICT=QUEX_AUTO);
 
         virtual ~CLASS();
         //
@@ -441,6 +441,22 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "## errors in your code--and if you find one in the lexical analyser, then please,\n";
         std::cout << "## report it at http://sourceforge.net/tracker/?group_id=168259&atid=846112\n";
 #       endif
+        QuexBufferFillerTypeEnum buffer_filler_type = BFT;
+        if( IANA_InputCodingName == 0x0 ) {
+            if( buffer_filler_type != QUEX_AUTO && buffer_filler_type != QUEX_PLAIN ) {
+                QUEX_ERROR_EXIT("Input coding is left to '0x0' which means plain character encoding.\n"
+                                "However, the buffer filler type is chosen to something different.\n");
+            } else { 
+                buffer_filler_type = BFT;
+            }
+        } else {
+            if( buffer_filler_type == QUEX_PLAIN ) {
+                QUEX_ERROR_EXIT("Input coding is specified but also the buffer filler type 'plain'.\n"
+                                "The buffer filler type plain cannot handle character encodings.\n");
+            } else if( buffer_filler_type == QUEX_AUTO ) {
+                buffer_filler_type = QUEX_ICONV;
+            }
+        }
 
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new TokenQueue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
@@ -454,7 +470,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
         QuexAnalyser_init((QuexAnalyser*)this,
                           __current_mode_p->analyser_function,
                           input_handle,
-                          BFT, IANA_InputCodingName, 
+                          buffer_filler_type, IANA_InputCodingName, 
                           QUEX_SETTING_BUFFER_SIZE,
                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
