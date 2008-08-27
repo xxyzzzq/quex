@@ -34,18 +34,23 @@ namespace quex {
      */
     {
         QuexBufferFiller* buffer_filler = 0x0;
+        QuexBufferFillerTypeEnum filler_type = FillerType;
 
         if( input_handle != 0x0 ) {
-            switch( FillerType ) {
+            if( filler_type == QUEX_AUTO ) {
+                if( IANA_InputCodingName == 0x0 ) filler_type = QUEX_PLAIN;
+                else                              filler_type = QUEX_ICONV;
+            }
+            switch( filler_type ) {
             case QUEX_AUTO:
                 QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
             case QUEX_PLAIN: 
-                buffer_filler = MemoryManager_get_BufferFiller(FillerType);
+                buffer_filler = MemoryManager_get_BufferFiller(filler_type);
                 QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
                 break;
 
             case QUEX_ICONV: 
-                buffer_filler = MemoryManager_get_BufferFiller(FillerType);
+                buffer_filler = MemoryManager_get_BufferFiller(filler_type);
                 QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
                                             IANA_InputCodingName, /* Internal Coding: Default */0x0,
                                             TranslationBufferMemorySize);
@@ -99,8 +104,7 @@ namespace quex {
                                                                me->_memory._front + 1, 
                                                                QuexBuffer_content_size(me));
             if( LoadedN != QuexBuffer_content_size(me) ) {
-                me->_end_of_file_p  = me->_memory._front + 1 + LoadedN;
-                *me->_end_of_file_p = QUEX_SETTING_BUFFER_LIMIT_CODE;
+                QuexBuffer_end_of_file_set(me, me->_memory._front + 1 + LoadedN);
             }
         }
     }

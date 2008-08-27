@@ -9,7 +9,7 @@ using namespace std;
 int main(int argc, char** argv) 
 {
     // (*) create token
-    quex::token    Token;
+    quex::Token    Token;
     // (*) create the lexical analyser
     quex::Simple*  qlex = new quex::Simple(argv[1], "UTF-8");
 

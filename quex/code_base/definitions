@@ -107,6 +107,10 @@ namespace quex {
         QUEX_ICONV,
     } QuexBufferFillerTypeEnum;
 
+#   ifndef     QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING
+#       define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)0x0)
+#   endif
+
     struct  __QuexAnalyser_tag;
     typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
 

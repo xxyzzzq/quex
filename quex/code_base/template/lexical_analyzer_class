@@ -7,9 +7,10 @@
 #include<map>
 #include<fstream>
 #include<cassert>
+#include<cstdio>    // provides: FILE*
+
 #include<quex/code_base/compatibility/inttypes.h>
 #include<quex/code_base/asserts>
-#include<cstdio>    // provides: FILE*
 
 #define QUEX_VERSION  "$$QUEX_VERSION$$"
 // OPTIONS: ____________________________________________________________________
@@ -166,7 +167,7 @@ typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;
 //   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
 //   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
 //      e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
-const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "$$CORE_ENGINE_CHARACTER_CODING$$";
+#define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"$$CORE_ENGINE_CHARACTER_CODING$$")
 
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"

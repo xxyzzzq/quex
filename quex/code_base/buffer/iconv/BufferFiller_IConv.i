@@ -79,7 +79,8 @@ namespace quex {
                                 const char*   FromCoding,   const char* ToCoding,
                                 size_t        RawBufferSize)
     { 
-        const char* to_coding = 0x0;
+        const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
+
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
 
         __QuexBufferFiller_init_functions(&me->base,
@@ -99,17 +100,6 @@ namespace quex {
         me->raw_buffer.base.bytes_left_n  = 0;  /* --> trigger reload                       */
 
         /* Initialize the conversion operations                                             */
-        if( ToCoding != 0x0 ) {
-            to_coding = ToCoding;
-        } else { 
-            switch( sizeof(QUEX_CHARACTER_TYPE) ) {
-            default: 
-                QUEX_ERROR_EXIT("If character size is not 1, 2, or 4 bytes. Then a target coding must be specified.\n");
-            case 1: to_coding = "ASCII"; break;
-            case 2: to_coding = "UCS2"; break;
-            case 4: to_coding = "UCS4"; break;
-            }
-        }
         me->iconv_handle = iconv_open(to_coding, FromCoding);
         if( me->iconv_handle == (iconv_t)-1 ) {
             char tmp[128];
