@@ -55,21 +55,21 @@ IncludeStack::push(InputHandle*             new_input_handle_p,
 inline bool
 IncludeStack::pop() 
 {
-    if( _stack.empty() ) {
-        QUEX_ERROR_EXIT("IncludeStack::pop() but current input handle was not 'included' using this stack.\n");
-    }
+    /* Not included? return 'false' to indicate we're on the top level */
+    if( _stack.empty() ) return false; 
 
     memento*  m = &(_stack.back());
 
-    // (1) Reset the lexical analyser to the state it was before the include
-    m->map_to_lexical_analyzer(_the_lexer);
+    // (1) Free the related memory that is no longer used
+    QuexAnalyser_free_related_memory((QuexAnalyser*)_the_lexer);
 
-    // (2) Free the related memory that is no longer used
-    QuexAnalyser_free_related_memory(&m->analyser_core);
+    // (2) Reset the lexical analyser to the state it was before the include
+    m->map_to_lexical_analyzer(_the_lexer);
 
     // (3) Forget about the memento
     _stack.pop_back();
 
+    /* Return to including file succesful */
     return true;
 }
 

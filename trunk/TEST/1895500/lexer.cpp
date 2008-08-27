@@ -10,7 +10,7 @@ int
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::token        Token;
+    quex::Token        Token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::IndigoLexer * qlex = new quex::IndigoLexer(argc == 1 ? "example.dat" : argv[1], "UTF-32LE");

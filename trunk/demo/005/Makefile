@@ -6,6 +6,7 @@
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 # -- INPUT
@@ -41,7 +42,7 @@ $(APPLICATION): $(APPLICATION).o \
 %.o: %.cpp $(ENGINE_SOURCES)
 	$(CC) $< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES)
+$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-queue
 
 # (*) HELPERS __________________________________________________________________

@@ -13,11 +13,12 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<map>
 #include<fstream>
 #include<cassert>
-#include<quex/code_base/compatibility/inttypes.h>
-#include<quex/code_base/asserts>
 #include<cstdio>    // provides: FILE*
 
-#define QUEX_VERSION  "0.30.2"
+#include<quex/code_base/compatibility/inttypes.h>
+#include<quex/code_base/asserts>
+
+#define QUEX_VERSION  "0.30.5"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -107,11 +108,6 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 // #define QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
 
-// #define __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
-//
-#ifdef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED_DISABLED
-#   undef __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
-#endif
 //   If one mode requires indentation support, then the lexical analyser
 //   class must be setup for indentation counting. The following flag is
 //   defined or undefined by the lexical analyser generator quex.
@@ -133,8 +129,12 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #endif
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#    ifndef     QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE
-#        define QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE ((size_t)65536)
+#    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
+#        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
+#    endif
+#else
+#    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
+#        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)0)
 #    endif
 #endif
 
@@ -142,12 +142,13 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //   Begin of line pre-condition introduces an extra flag in the buffer
 //   structure. Only out-comment this in case of tough memory restrictions,
 //   if no begin of line pre-condition is required.
-#define    __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#ifdef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
-#   undef __QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+#ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
+#   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
 namespace quex {
+    template <class QUEX_CHARACTER_TYPE> class QuexSimple;
     class Simple;
 
 const int LEX_ID_ONE_AND_ONLY = 1;
@@ -173,55 +174,32 @@ typedef uint8_t   QUEX_CHARACTER_TYPE;
 //   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
 //   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
 //      e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
-const char QUEX_SETTING_CORE_ENGINE_CHARACTER_CODING[] = "ASCII";
-
-// NOTE: The original design of the core engine was independent of quex's global
-//       mode oriented design. The author thinks this is a good idea, because then
-//       the analyzer functions can still used easily in isolation from the rest
-//       of the engine. They can be a starting point for an even more improved
-//       post-hand coded lexical analyzer or for embedded systems where memory
-//       resrictions are tough. THUS: We communicate the class name to the analyzer
-//       functions via a macro and NOT via traits or anything like that.
-typedef quex::Simple  QUEX_LEXER_CLASS;
-#define __QUEX_CORE_OPTION_RETURN_ON_MODE_CHANGE
+#define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"ASCII")
 
 #include "Simple-token_ids"
-#include "quex/code_base/token"
+#include "quex/code_base/Token"
 
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-    typedef void QUEX_ANALYSER_RETURN_TYPE;
-#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-#else
-    typedef quex::token::id_type QUEX_ANALYSER_RETURN_TYPE;
-#endif
-
-#ifdef  __QUEX_CORE_OPTION_PLAIN_MEMORY_BASED
-#   include<quex/code_base/core_engine/definitions-plain-memory.h>
-#else
-#   ifdef  __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#       include<quex/code_base/buffer/iconv/fixed_size_character_stream>
-#   endif
-#   include<quex/code_base/buffer/plain/fixed_size_character_stream>
-#   include<quex/code_base/buffer/buffer>
-#   include<quex/code_base/core_engine/definitions-quex-buffer.h>
-#endif
+#include<quex/code_base/buffer/Buffer>
+#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/plain/BufferFiller_Plain>
 
 // Quex/User
 #define CLASS                            Simple
-#define __QUEX_SETTING_TOKEN_CLASS_NAME  token
+#define __QUEX_SETTING_TOKEN_CLASS_NAME  Token
+
+#include <quex/code_base/template/QuexMode>
+
+#include <quex/code_base/template/Analyser>
 
 #include <quex/code_base/template/Counter>
-
 namespace quex { 
-    class quex_mode;
-
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    typedef CounterWithIndentation  CounterType;
+    typedef CounterWithIndentation CounterType;
 #elif    defined(QUEX_OPTION_LINE_NUMBER_COUNTING) \
        | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-    typedef Counter                 CounterType;
+    typedef Counter                CounterType;
 #else
-    typedef CounterPseudo           CounterType;
+    typedef CounterPseudo          CounterType;
 #endif
 }
 
@@ -229,7 +207,7 @@ namespace quex {
 #   include <quex/code_base/template/Accumulator>
 #endif
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   include <quex/code_base/token_queue>
+#   include <quex/code_base/TokenQueue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/template/PostCategorizer>
@@ -260,120 +238,92 @@ namespace quex {
 //     
 //
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+    typedef void __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN                                                                \
     if( self._token_queue->is_empty() ) { CONTINUE; }                            \
     else {                                                                       \
-        /* since return happens voluntarily, no check for mode change will be */ \
-        /* necessary.                                                         */ \
-        self.__previous_mode_p = self.__current_mode_p;                          \
         return /* self._token_queue->top()->type_id() */;                        \
    }
 #else
+    typedef int __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN  return
 #endif
 
 
+// START:
 
+// :END
 
 // User defined header content. _________________________________________________
 //
 // This is pasted after the definitions, such that the user can make use of them.
+// START:
 
 
+// :END
 
+#include <quex/code_base/temporary_macros_on>
 namespace quex {
-
-    struct quex_mode {  
-        int          id;
-        const char*  name;
-        Simple* the_lexer;
-
-        QUEX_ANALYSER_RETURN_TYPE (*analyser_function)(Simple*);
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
-        void (*on_indentation)(Simple*, const int Indentation);
-#endif
-        void (*on_entry)(Simple*, const quex_mode* FromMode);
-        void (*on_exit)(Simple*, const quex_mode* ToMode);
-#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
-        bool (*has_base)(const quex_mode* Mode);
-        bool (*has_entry_from)(const quex_mode* Mode);
-        bool (*has_exit_to)(const quex_mode* Mode);
-#endif
-    };
     
-    extern QUEX_ANALYSER_RETURN_TYPE
-    Simple_uncallable_analyser_function(Simple*);
-    extern void
-    Simple_on_indentation_null_function(Simple*, const int);
-    extern void
-    Simple_on_entry_exit_null_function(Simple*, const quex_mode*);
-
-    extern     QUEX_ANALYSER_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(Simple*);
+    extern     __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-    extern     bool Simple_ONE_AND_ONLY_has_base(const quex_mode*);
-    extern     bool Simple_ONE_AND_ONLY_has_entry_from(const quex_mode*);
-    extern     bool Simple_ONE_AND_ONLY_has_exit_to(const quex_mode*);
+    extern     bool Simple_ONE_AND_ONLY_has_base(const QuexMode*);
+    extern     bool Simple_ONE_AND_ONLY_has_entry_from(const QuexMode*);
+    extern     bool Simple_ONE_AND_ONLY_has_exit_to(const QuexMode*);
 #endif
 
 
 
-    class Simple :
-        protected QUEX_CORE_ANALYSER_STRUCT {
+    class CLASS :
+        protected QuexAnalyser {
 
-        /* DISABLED */ Simple();
-        /* DISABLED */ Simple(const Simple&);
+        /* DISABLED */ CLASS();
+        /* DISABLED */ CLASS(const CLASS&);
 
     public:
-        Simple(const std::string& Filename,  const char* IConvInputCodingName = 0x0);
-        Simple(std::istream* p_input_stream, const char* IConvInputCodingName = 0x0);
-        Simple(std::FILE* input_fh,          const char* IConvInputCodingName = 0x0);
 
-        virtual ~Simple();
+        virtual ~CLASS();
         //
         // -- token stream: read next token
-#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-        token::id_type   get_token();
-#else
-        token::id_type   get_token(token*  result_p);
-        void                       get_token(token** result_pp);
-#endif   
+#       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+        QUEX_TOKEN_ID_TYPE   get_token();
+#       else
+        QUEX_TOKEN_ID_TYPE   get_token(Token*  result_p);
+        void                 get_token(Token** result_pp);
+#       endif   
         //
         // (*) Mode handling
         //
         //     -- modes: read access
-        quex_mode&    mode();
+        QuexMode&     mode();
         const int     mode_id() const;
         const char*   mode_name() const;
         //
         //     -- modes: changing lexical analysis mode
-        void        set_mode_brutally(const int        LexerMode);
-        void        set_mode_brutally(const quex_mode& Mode);
+        void        set_mode_brutally(const int       LexerMode);
+        void        set_mode_brutally(const QuexMode& Mode);
         //
         void        operator<<(const int MODE_ID);               // not to be used in concatination
-        void        operator<<(/* NOT const*/ quex_mode& Mode);  // not to be used in concatination
+        void        operator<<(/* NOT const*/ QuexMode& Mode);  // not to be used in concatination
         //
         void        pop_mode();
         void        pop_drop_mode();
-        void        push_mode(quex_mode& new_mode);
+        void        push_mode(QuexMode& new_mode);
         //
-        void        enter_mode(/* NOT const*/ quex_mode& TargetMode);
+        void        enter_mode(/* NOT const*/ QuexMode& TargetMode);
         //
         //     -- map: mode id to mode and vice versa
-        quex_mode&  map_mode_id_to_mode(const int        ModeID);       
-        const int   map_mode_to_mode_id(const quex_mode& Mode) const;
+        QuexMode&   map_mode_id_to_mode(const int        ModeID);       
+        const int   map_mode_to_mode_id(const QuexMode& Mode) const;
 
-        // (*) buffers
-        template <class InputHandle> 
-        quex::buffer<QUEX_CHARACTER_TYPE>* create_buffer(InputHandle* input_handle, 
-                                                         const char*  IConvInputCodingName = 0x0);
-          
         // (*) Token sending
         void        send(); /* empty function, for uniformity (see token sending via singleton) */
-        void        send(const token& That);
-        void        send(const token::id_type TokenID);
-        void        send_n(const int N, const token::id_type TokenID);
+        void        send(const Token& That);
+        void        send(const QUEX_TOKEN_ID_TYPE TokenID);
+        void        send_n(const int N, const QUEX_TOKEN_ID_TYPE TokenID);
         template <typename ContentT> 
-        void        send(const token::id_type TokenID, ContentT Content);
+        void        send(const QUEX_TOKEN_ID_TYPE TokenID, ContentT Content);
 
 
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -397,8 +347,8 @@ namespace quex {
     private:
         // (*) Helper
         //      -- put whole pattern back into the 'stream to be lexed'
-        void  move_forward(const size_t);
-        void  move_backward(const size_t);
+        bool  move_forward(const size_t);
+        bool  move_backward(const size_t);
 
     public:
         // handle with extreme care:
@@ -408,21 +358,15 @@ namespace quex {
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
         //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
         //      to quex's start mode.)
-        quex_mode*  mode_db[1+1];  
+        QuexMode*  mode_db[1+1];  
 
     public:
-        static quex_mode  ONE_AND_ONLY;
+        static QuexMode  ONE_AND_ONLY;
 
 
     private:
-        // -- keeping track of the currently active mode
-        //    Inside analyzer function of a mode, it is possible that the analyzer
-        //    does not return immediately after a mode has been set. I.e. it calls
-        //    CONTINUE. In this case, it needs to be checked wether the return has
-        //    to be forced. The caller, can then call the newly setup analyzer function
-        //    from where the current one has been called --- see get_token().
-        quex_mode*   __current_mode_p;
-        quex_mode*   __previous_mode_p;
+        QuexMode*   __current_mode_p;
+
         // -- with the quex core engine(s) each mode has a dedicated analyser function.
         //    (with the flex core engine, modes were modelled as start conditions
         //     of a single engine)
@@ -431,7 +375,7 @@ namespace quex {
         //
     private:
         // (*) mode stack allows for pushing and popping of lexical analysis modes
-        std::vector<quex_mode*>   _mode_stack;
+        std::vector<QuexMode*>   _mode_stack;
 
         // (*) The Token Queue ___________________________________________________________
         //
@@ -446,19 +390,19 @@ namespace quex {
         //
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     private:
-        token_queue<token>*   _token_queue;
+        TokenQueue<Token>*   _token_queue;
 #       else
     public:
-        token                 the_token;
+        Token                the_token;
 #       endif
     public:
         // (*) Who and what am I ? _______________________________________________________
         Simple&   self;
 
     public:
-#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        IncludeStack  include_stack;
-#   endif  // QUEX_OPTION_INCLUDE_STACK_SUPPORT 
+#       ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+        IncludeStack       include_stack;
+#       endif 
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
         void virtual on_include_exit() {}
@@ -470,18 +414,18 @@ namespace quex {
 #       endif
     private:
         CounterType        counter;
-
-#       ifdef QUEX_OPTION_POST_CATEGORIZER
     public:
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
         PostCategorizer    post_categorizer;
 #       endif
 
+    private:
         // (*) All Modes are Friends _____________________________________________________
-        friend     QUEX_ANALYSER_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(Simple*);
+        friend     __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-        friend     bool Simple_ONE_AND_ONLY_has_base(const quex_mode*);
-        friend     bool Simple_ONE_AND_ONLY_has_entry_from(const quex_mode*);
-        friend     bool Simple_ONE_AND_ONLY_has_exit_to(const quex_mode*);
+        friend     bool Simple_ONE_AND_ONLY_has_base(const QuexMode*);
+        friend     bool Simple_ONE_AND_ONLY_has_entry_from(const QuexMode*);
+        friend     bool Simple_ONE_AND_ONLY_has_exit_to(const QuexMode*);
 #endif
 
   
@@ -489,37 +433,52 @@ namespace quex {
 
         // (*) User's Lexer Class Body Extenstion ________________________________________
 
-
-    private:
-        void __debug_print_transition(quex_mode* Source, quex_mode* Target);
-
-        // (*) Common core of all constructors ___________________________________________
-        template <class InputHandleP> 
-        void     __constructor_core(InputHandleP, const char* IConvInputCodingName);
-
-#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-        // (*) Translation buffer ________________________________________________________
-        // Iconv requires an intermediate buffer to read data into, before it can trans-
-        // late it into a target character coding format. However, if there are more than
-        // one input buffer, they could all use the same iconv translation buffer, since
-        // they do not translate at the same time.
-        uint8_t   iconv_translation_buffer[QUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE];
-#endif
-#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
-        friend class IncludeStack;
-#endif
-    };
-
-    template <class InputHandleP> inline void
-    CLASS::__constructor_core(InputHandleP input_handle, const char* IConvInputCodingName) 
-    {
-        QUEX_CORE_BUFFER_TYPE* tmp = this->create_buffer(input_handle, IConvInputCodingName);
-        QUEX_CORE_ANALYSER_STRUCT_init(this, 0, tmp, __current_mode_analyser_function_p);
-
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
-        _token_queue = new token_queue<token>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+#       ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+        friend class       IncludeStack;
 #       endif
 
+    private:
+        void __debug_print_transition(QuexMode* Source, QuexMode* Target);
+
+        // (*) Common core of all constructors ___________________________________________
+        template <class InputHandleT> 
+        void     __constructor_core(InputHandleT*, 
+                                    QuexBufferFillerTypeEnum, const char* IConvInputCodingName);
+    };
+ 
+    template <class InputHandleT> inline void
+    CLASS::__constructor_core(InputHandleT* input_handle, 
+                              QuexBufferFillerTypeEnum BFT, const char* IANA_InputCodingName) 
+    {
+#       ifdef QUEX_OPTION_ASSERTS
+        std::cout << "## You are running a lexical analyser generated by quex in 'paranoid' mode.\n";
+        std::cout << "## This is very good, in a way that any tiny misbehavior will cause a comment\n";
+        std::cout << "## and a program exit. However, the paranoia is a heavy load on speed performance!\n";
+        std::cout << "## To disable it, please, compile with the following compile option:\n";
+        std::cout << "## \"-DQUEX_OPTION_ASSERTS_DISABLED\".\n";
+        std::cout << "## The lexical analyser is very low-level and the smallest error\n";
+        std::cout << "## can have desastrous consequences. Leaving the asserts helps you to find subtle\n";
+        std::cout << "## errors in your code--and if you find one in the lexical analyser, then please,\n";
+        std::cout << "## report it at http://sourceforge.net/tracker/?group_id=168259&atid=846112\n";
+#       endif
+        QuexBufferFillerTypeEnum buffer_filler_type = BFT;
+        if( IANA_InputCodingName == 0x0 ) {
+                QUEX_ERROR_EXIT("Input coding is left to '0x0' which means plain character encoding.\n"
+                                "However, the buffer filler type is chosen to something different.\n");
+            } else { 
+                buffer_filler_type = BFT;
+            }
+        } else {
+            if( buffer_filler_type == QUEX_PLAIN ) {
+                QUEX_ERROR_EXIT("Input coding is specified but also the buffer filler type 'plain'.\n"
+                                "The buffer filler type plain cannot handle character encodings.\n");
+                buffer_filler_type = QUEX_ICONV;
+            }
+        }
+
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+        _token_queue = new TokenQueue<Token>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+#       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
         __quex_assert(LEX_ID_ONE_AND_ONLY <= 1);
@@ -528,10 +487,10 @@ namespace quex {
         ONE_AND_ONLY.name = "ONE_AND_ONLY";
         ONE_AND_ONLY.analyser_function = Simple_ONE_AND_ONLY_analyser_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-        ONE_AND_ONLY.on_indentation = Simple_on_indentation_null_function;
+        ONE_AND_ONLY.on_indentation = QuexMode_on_indentation_null_function;
 #    endif
-        ONE_AND_ONLY.on_entry       = Simple_on_entry_exit_null_function;
-        ONE_AND_ONLY.on_exit        = Simple_on_entry_exit_null_function;
+        ONE_AND_ONLY.on_entry       = QuexMode_on_entry_exit_null_function;
+        ONE_AND_ONLY.on_exit        = QuexMode_on_entry_exit_null_function;
 #    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
         ONE_AND_ONLY.has_base       = Simple_ONE_AND_ONLY_has_base;
         ONE_AND_ONLY.has_entry_from = Simple_ONE_AND_ONLY_has_entry_from;
@@ -542,9 +501,12 @@ namespace quex {
 
         set_mode_brutally(LEX_ID_ONE_AND_ONLY);
 
-        __previous_mode_p = __current_mode_p;  // required for detection of mode changes inside
-        //                                     // pattern actions
-        __continue_analysis_after_adapting_mode_function_p_f = false;
+        QuexAnalyser_init((QuexAnalyser*)this,
+                          __current_mode_p->analyser_function,
+                          input_handle,
+                          buffer_filler_type, IANA_InputCodingName, 
+                          QUEX_SETTING_BUFFER_SIZE,
+                          QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
 
     }   
@@ -553,131 +515,103 @@ namespace quex {
     CLASS::version() const
     { 
     }
-
-#   define __QUEX_SETTING_DERIVED_CLASS_NAME    Simple
-#   define __QUEX_SETTING_MAX_MODE_CLASS_N      1
-#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID LEX_ID_ONE_AND_ONLY
-
-#   include <quex/code_base/template/constructor.i>
-#   include <quex/code_base/template/Counter.i>
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#      include <quex/code_base/template/CounterWithIndentation.i>
-#   endif
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-#       include <quex/code_base/template/Accumulator.i>
-#   endif
-
-#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#      include <quex/code_base/template/token_receiving_via_queue.i>
-#      include <quex/code_base/template/token_sending_via_queue.i>
-#   else
-#      include <quex/code_base/template/token_receiving_via_singleton.i>
-#      include <quex/code_base/template/token_sending_via_singleton.i>
-#   endif
-#   include <quex/code_base/template/mode_handling.i>
-#   ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
-#      include <quex/code_base/template/IncludeStack.i>
-#   endif
-#   include <quex/code_base/template/misc.i>
-
-#   undef __QUEX_SETTING_DERIVED_CLASS_NAME
-#   undef __QUEX_SETTING_MAX_MODE_CLASS_N
-#   undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
-#   undef __QUEX_SETTING_TOKEN_CLASS_NAME
-#   undef CLASS
-
 }
 
-#endif // __INCLUDE_GUARD__QUEX__SIMPLE
+#include <quex/code_base/temporary_macros_off>
 
-#ifndef __QUEX_ENGINE_HEADER_DEFINITIONS
-#   if    defined(__GNUC__)        && ((__GNUC__ > 2) || (__GNUC__ == 2 && __GNUC_MINOR__ >= 3))
-#       if ! defined(__QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED)
-#           define __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
-#       endif
-#   endif
-#   ifdef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#define __QUEX_SETTING_DERIVED_CLASS_NAME    Simple
+#define __QUEX_SETTING_MAX_MODE_CLASS_N      1
+#define __QUEX_SETTING_INITIAL_LEXER_MODE_ID LEX_ID_ONE_AND_ONLY
 
-        typedef  void*    QUEX_GOTO_LABEL_TYPE;
-#       define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       &&TERMINAL_DEFAULT
-#       define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (0x0)
-#       define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
-#       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
-#       define QUEX_GOTO_drop_out_state_index()          goto *drop_out_state_index;
-#       define QUEX_GOTO_last_acceptance()               goto *last_acceptance;
-
-#   else
-        typedef  uint32_t QUEX_GOTO_LABEL_TYPE;
-#       define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (-1)
-#       define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (-1)
-#       define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
-#       define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
-#       define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;
-#       define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
-#   endif
-
-#   include "Simple"
-#   define __QUEX_ENGINE_HEADER_DEFINITIONS
-
-#   ifdef CONTINUE
-#      undef CONTINUE
-#   endif
-#   define CONTINUE  goto __REENTRY_PREPARATION;
-
+#include <quex/code_base/template/constructor.i>
+#include <quex/code_base/template/Counter.i>
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   include <quex/code_base/template/CounterWithIndentation.i>
+#endif
+#ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#    include <quex/code_base/template/Accumulator.i>
 #endif
 
-static bool 
-ONE_AND_ONLY_buffer_reload_forward(QUEX_CORE_BUFFER_TYPE* buffer, 
-                               QUEX_CHARACTER_POSITION* last_acceptance_input_position
-                               )
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   include <quex/code_base/template/token_receiving_via_queue.i>
+#   include <quex/code_base/template/token_sending_via_queue.i>
+#else
+#   include <quex/code_base/template/token_receiving_via_singleton.i>
+#   include <quex/code_base/template/token_sending_via_singleton.i>
+#endif
+#include <quex/code_base/template/mode_handling.i>
+#ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#   include <quex/code_base/template/IncludeStack.i>
+#endif
+#include <quex/code_base/template/misc.i>
+
+#undef __QUEX_SETTING_DERIVED_CLASS_NAME
+#undef __QUEX_SETTING_MAX_MODE_CLASS_N
+#undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#undef __QUEX_SETTING_TOKEN_CLASS_NAME
+#undef CLASS
+
+#include <quex/code_base/template/Analyser.i>
+
+#endif // __INCLUDE_GUARD__QUEX__SIMPLE
+#include "Simple"
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+#define QUEX_LEXER_CLASS Simple
+
+#include <quex/code_base/template/Analyser>
+#include <quex/code_base/buffer/Buffer>
+
+#ifdef CONTINUE
+#   undef CONTINUE
+#endif
+#define CONTINUE  goto __REENTRY_PREPARATION;
+#include <quex/code_base/temporary_macros_on>
+
+QUEX_INLINE bool 
+Simple_ONE_AND_ONLY_buffer_reload_forward(QuexBuffer* buffer, 
+                                             QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
+                                             )
 {
-    const size_t LoadedByteN = QUEX_BUFFER_LOAD_FORWARD();
+    if( buffer->filler == 0x0 ) return false;
+    const size_t LoadedByteN = QuexBufferFiller_load_forward(buffer);
     if( LoadedByteN == 0 ) return false;
 
     if( *last_acceptance_input_position != 0x0 ) { 
         *last_acceptance_input_position -= LoadedByteN;
-        // QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); 
+        /* QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); */
     }                                                                  
                                                                           
                 
     return true;
 }
 
-static bool 
-ONE_AND_ONLY_buffer_reload_backward(QUEX_CORE_BUFFER_TYPE* buffer)
+__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me) 
 {
-    const size_t LoadedByteN = QUEX_BUFFER_LOAD_BACKWARD();
-    if( LoadedByteN == 0 ) return false;
-    
-    /* Backward lexing happens in two cases:
-     *
-     *  (1) When checking for a pre-condition. In this case, no dedicated acceptance
-     *      is involved. No acceptance positions are considered.
-     *  (2) When tracing back to get the end of a core pattern in pseudo-ambigous
-     *      post conditions. Then, no acceptance positions are involved, because
-     *      the start of the lexeme shall not drop before the begin of the buffer 
-     *      and the end of the core pattern, is of course, after the start of the 
-     *      lexeme. => there will be no reload backwards. */
-    return true;
-}
-
-QUEX_ANALYSER_RETURN_TYPE
-quex::Simple_ONE_AND_ONLY_analyser_function(QUEX_LEXER_CLASS* me) 
-{
-    // NOTE: Different modes correspond to different analyser functions. The analyser
-    //       functions are all located inside the main class as static functions. That
-    //       means, they are something like 'globals'. They receive a pointer to the 
-    //       lexical analyser, since static member do not have access to the 'this' pointer.
-    QUEX_LEXER_CLASS& self = *me;
+    /* NOTE: Different modes correspond to different analyser functions. The analyser*/
+    /*       functions are all located inside the main class as static functions. That*/
+    /*       means, they are something like 'globals'. They receive a pointer to the */
+    /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
+#   if defined (__QUEX_SETTING_PLAIN_C)
+#      define self (*me)
+#   else
+       using namespace quex;
+       QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
+#   endif
     /* me = pointer to state of the lexical analyser */
-    quex::quex_mode&        ONE_AND_ONLY = QUEX_LEXER_CLASS::ONE_AND_ONLY;
-    QUEX_GOTO_LABEL_TYPE    last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
-    QUEX_CHARACTER_POSITION last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
-    QUEX_CHARACTER_TYPE     input = (QUEX_CHARACTER_TYPE)(0x00);
+    quex::QuexMode&              ONE_AND_ONLY = QUEX_LEXER_CLASS::ONE_AND_ONLY;
+    QUEX_GOTO_LABEL_TYPE         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    QUEX_CHARACTER_POSITION_TYPE last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
+    QUEX_CHARACTER_TYPE          input = (QUEX_CHARACTER_TYPE)(0x00);
+#   ifdef QUEX_OPTION_ASSERTS
+    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;
+#   endif
 __REENTRY:
-    QUEX_DEBUG_LABEL_PASS("__REENTRY");
-    QUEX_CORE_MARK_LEXEME_START();
-    QUEX_UNDO_PREPARE_LEXEME_OBJECT();
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY");
+    QuexBuffer_mark_lexeme_start(&me->buffer);
+    QuexBuffer_undo_terminating_zero_for_lexeme(&me->buffer);
     /* state machine */
     /* init-state = 249L
      * 00249() <~ (5, 16), (7, 32), (10, 47), (13, 65), (16, 82), (19, 101), (22, 112), (25, 118), (28, 124), (35, 141), (41, 158)
@@ -802,9 +736,9 @@ __REENTRY:
      * 
      */
 STATE_249:
-    QUEX_DEBUG_LABEL_PASS("STATE_249");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249");
 
-    QUEX_BUFFER_GET(input);
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 33) {
             if( input < 13) {
@@ -842,7 +776,7 @@ STATE_249:
             } else {
                 if( input < 65) {
                     if( input == 59) {
-                        QUEX_BUFFER_INCREMENT();
+                        QuexBuffer_input_p_increment(&(me->buffer));
                         goto TERMINAL_22_DIRECT;    /* ';' */
                     } else {
                         goto STATE_249_DROP_OUT_DIRECT;    /* ['<', '@'] */
@@ -893,14 +827,14 @@ STATE_249:
             } else {
                 if( input < 125) {
                     if( input == 123) {
-                        QUEX_BUFFER_INCREMENT();
+                        QuexBuffer_input_p_increment(&(me->buffer));
                         goto TERMINAL_25_DIRECT;    /* '{' */
                     } else {
                         goto STATE_249_DROP_OUT_DIRECT;    /* '|' */
                     }
                 } else {
                     if( input == 125) {
-                        QUEX_BUFFER_INCREMENT();
+                        QuexBuffer_input_p_increment(&(me->buffer));
                         goto TERMINAL_28_DIRECT;    /* '}' */
                     } else {
                         goto STATE_249_DROP_OUT_DIRECT;    /* ['~', oo] */
@@ -911,39 +845,39 @@ STATE_249:
     }
 
 STATE_249_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_249_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_249_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_249_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_DROP_OUT_DIRECT");
         QUEX_GOTO_last_acceptance();
 
     }
 
-    if( QUEX_END_OF_FILE() ) {
+    if( QuexBuffer_is_end_of_file(&(me->buffer)) ) {
         /* NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state */
         goto TERMINAL_END_OF_STREAM;
     }
-        QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_249_INPUT;
-}
+        QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_249_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 STATE_249_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_249_INPUT");
-    QUEX_BUFFER_INCREMENT();
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_249_INPUT");
+    QuexBuffer_input_p_increment(&(me->buffer));
     goto STATE_249;
 STATE_257:
-    QUEX_DEBUG_LABEL_PASS("STATE_257");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257");
 
 STATE_257_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_257_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 97) {
         if( input < 91) {
             if( input < 65) {
@@ -983,35 +917,35 @@ STATE_257_INPUT:
     }
 
 STATE_257_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_257_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_257_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_257_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_257_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_257_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_257_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_259:
-    QUEX_DEBUG_LABEL_PASS("STATE_259");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259");
 
 STATE_259_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_259_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 48) {
             goto STATE_259_DROP_OUT;    /* [-oo, '/'] */
     } else {
@@ -1023,35 +957,35 @@ STATE_259_INPUT:
     }
 
 STATE_259_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_259_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_259_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_259_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_259_DROP_OUT_DIRECT");
             goto TERMINAL_35_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "35");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "35");
     QUEX_SET_last_acceptance(35);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_259_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_259_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_260:
-    QUEX_DEBUG_LABEL_PASS("STATE_260");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260");
 
 STATE_260_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_260_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1087,35 +1021,35 @@ STATE_260_INPUT:
     }
 
 STATE_260_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_260_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_260_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_260_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_260_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_260_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_260_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_261:
-    QUEX_DEBUG_LABEL_PASS("STATE_261");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261");
 
 STATE_261_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_261_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1151,35 +1085,35 @@ STATE_261_INPUT:
     }
 
 STATE_261_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_261_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_261_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_261_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_261_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_261_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_261_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_262:
-    QUEX_DEBUG_LABEL_PASS("STATE_262");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262");
 
 STATE_262_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_262_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1215,35 +1149,35 @@ STATE_262_INPUT:
     }
 
 STATE_262_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_262_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_262_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_262_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_262_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_262_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_262_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_263:
-    QUEX_DEBUG_LABEL_PASS("STATE_263");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263");
 
 STATE_263_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_263_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1279,35 +1213,35 @@ STATE_263_INPUT:
     }
 
 STATE_263_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_263_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_263_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_263_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_263_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_263_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_263_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_264:
-    QUEX_DEBUG_LABEL_PASS("STATE_264");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264");
 
 STATE_264_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_264_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1343,35 +1277,35 @@ STATE_264_INPUT:
     }
 
 STATE_264_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_264_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_264_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_264_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_264_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_264_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_264_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_265:
-    QUEX_DEBUG_LABEL_PASS("STATE_265");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265");
 
 STATE_265_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_265_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 65) {
                 goto STATE_265_DROP_OUT;    /* [-oo, '@'] */
@@ -1399,35 +1333,35 @@ STATE_265_INPUT:
     }
 
 STATE_265_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_265_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_265_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_265_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_265_DROP_OUT_DIRECT");
             goto TERMINAL_7_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "7");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "7");
     QUEX_SET_last_acceptance(7);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_265_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_265_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_266:
-    QUEX_DEBUG_LABEL_PASS("STATE_266");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266");
 
 STATE_266_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_266_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1463,35 +1397,35 @@ STATE_266_INPUT:
     }
 
 STATE_266_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_266_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_266_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_266_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_266_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_266_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_266_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_267:
-    QUEX_DEBUG_LABEL_PASS("STATE_267");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267");
 
 STATE_267_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_267_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 65) {
                 goto STATE_267_DROP_OUT;    /* [-oo, '@'] */
@@ -1519,35 +1453,35 @@ STATE_267_INPUT:
     }
 
 STATE_267_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_267_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_267_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_267_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_267_DROP_OUT_DIRECT");
             goto TERMINAL_16_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "16");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "16");
     QUEX_SET_last_acceptance(16);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_267_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_267_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_268:
-    QUEX_DEBUG_LABEL_PASS("STATE_268");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268");
 
 STATE_268_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_268_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1583,35 +1517,35 @@ STATE_268_INPUT:
     }
 
 STATE_268_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_268_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_268_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_268_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_268_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_268_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_268_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_269:
-    QUEX_DEBUG_LABEL_PASS("STATE_269");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269");
 
 STATE_269_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_269_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 65) {
                 goto STATE_269_DROP_OUT;    /* [-oo, '@'] */
@@ -1639,35 +1573,35 @@ STATE_269_INPUT:
     }
 
 STATE_269_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_269_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_269_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_269_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_269_DROP_OUT_DIRECT");
             goto TERMINAL_10_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "10");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "10");
     QUEX_SET_last_acceptance(10);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_269_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_269_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_270:
-    QUEX_DEBUG_LABEL_PASS("STATE_270");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270");
 
 STATE_270_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_270_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1703,35 +1637,35 @@ STATE_270_INPUT:
     }
 
 STATE_270_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_270_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_270_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_270_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_270_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_270_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_270_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_271:
-    QUEX_DEBUG_LABEL_PASS("STATE_271");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271");
 
 STATE_271_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_271_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1767,35 +1701,35 @@ STATE_271_INPUT:
     }
 
 STATE_271_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_271_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_271_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_271_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_271_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_271_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_271_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_272:
-    QUEX_DEBUG_LABEL_PASS("STATE_272");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272");
 
 STATE_272_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_272_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1831,35 +1765,35 @@ STATE_272_INPUT:
     }
 
 STATE_272_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_272_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_272_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_272_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_272_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_272_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_272_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_273:
-    QUEX_DEBUG_LABEL_PASS("STATE_273");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273");
 
 STATE_273_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_273_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -1895,35 +1829,35 @@ STATE_273_INPUT:
     }
 
 STATE_273_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_273_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_273_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_273_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_273_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_273_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_273_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_274:
-    QUEX_DEBUG_LABEL_PASS("STATE_274");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274");
 
 STATE_274_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_274_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 65) {
                 goto STATE_274_DROP_OUT;    /* [-oo, '@'] */
@@ -1951,35 +1885,35 @@ STATE_274_INPUT:
     }
 
 STATE_274_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_274_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_274_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_274_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_274_DROP_OUT_DIRECT");
             goto TERMINAL_13_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "13");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "13");
     QUEX_SET_last_acceptance(13);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_274_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_274_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_275:
-    QUEX_DEBUG_LABEL_PASS("STATE_275");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275");
 
 STATE_275_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_275_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2015,35 +1949,35 @@ STATE_275_INPUT:
     }
 
 STATE_275_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_275_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_275_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_275_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_275_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_275_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_275_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_276:
-    QUEX_DEBUG_LABEL_PASS("STATE_276");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276");
 
 STATE_276_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_276_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2079,35 +2013,35 @@ STATE_276_INPUT:
     }
 
 STATE_276_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_276_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_276_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_276_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_276_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_276_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_276_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_277:
-    QUEX_DEBUG_LABEL_PASS("STATE_277");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277");
 
 STATE_277_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_277_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2143,35 +2077,35 @@ STATE_277_INPUT:
     }
 
 STATE_277_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_277_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_277_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_277_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_277_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_277_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_277_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_278:
-    QUEX_DEBUG_LABEL_PASS("STATE_278");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278");
 
 STATE_278_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_278_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2207,35 +2141,35 @@ STATE_278_INPUT:
     }
 
 STATE_278_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_278_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_278_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_278_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_278_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_278_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_278_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_279:
-    QUEX_DEBUG_LABEL_PASS("STATE_279");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_279");
 
 STATE_279_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_279_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_279_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 65) {
                 goto STATE_279_DROP_OUT;    /* [-oo, '@'] */
@@ -2263,35 +2197,35 @@ STATE_279_INPUT:
     }
 
 STATE_279_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_279_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_279_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_279_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_279_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_279_DROP_OUT_DIRECT");
             goto TERMINAL_19_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "19");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "19");
     QUEX_SET_last_acceptance(19);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_279_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_279_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_250:
-    QUEX_DEBUG_LABEL_PASS("STATE_250");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_250");
 
 STATE_250_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_250_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_250_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2327,35 +2261,35 @@ STATE_250_INPUT:
     }
 
 STATE_250_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_250_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_250_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_250_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_250_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_250_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_250_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_250_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_251:
-    QUEX_DEBUG_LABEL_PASS("STATE_251");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251");
 
 STATE_251_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_251_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 13) {
         if( input < 9) {
                 goto STATE_251_DROP_OUT;    /* [-oo, \8] */
@@ -2383,35 +2317,35 @@ STATE_251_INPUT:
     }
 
 STATE_251_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_251_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_251_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_251_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_251_DROP_OUT_DIRECT");
             goto TERMINAL_5_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "5");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "5");
     QUEX_SET_last_acceptance(5);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_251_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_251_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_252:
-    QUEX_DEBUG_LABEL_PASS("STATE_252");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_252");
 
 STATE_252_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_252_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_252_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2447,35 +2381,35 @@ STATE_252_INPUT:
     }
 
 STATE_252_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_252_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_252_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_252_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_252_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_252_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_252_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_252_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_254:
-    QUEX_DEBUG_LABEL_PASS("STATE_254");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254");
 
 STATE_254_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_254_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 96) {
         if( input < 91) {
             if( input < 65) {
@@ -2511,35 +2445,35 @@ STATE_254_INPUT:
     }
 
 STATE_254_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_254_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_254_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_254_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_254_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_254_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_254_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
 
 STATE_255:
-    QUEX_DEBUG_LABEL_PASS("STATE_255");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_255");
 
 STATE_255_INPUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_255_INPUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_255_INPUT");
 
-    QUEX_BUFFER_INCREMENT();
-    QUEX_BUFFER_GET(input);
+    QuexBuffer_input_p_increment(&(me->buffer));
+    input = QuexBuffer_input_get(&(me->buffer));
     if( input < 95) {
         if( input < 65) {
                 goto STATE_255_DROP_OUT;    /* [-oo, '@'] */
@@ -2567,48 +2501,48 @@ STATE_255_INPUT:
     }
 
 STATE_255_DROP_OUT:
-    QUEX_DEBUG_LABEL_PASS("STATE_255_DROP_OUT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_255_DROP_OUT");
     if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {
 STATE_255_DROP_OUT_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("STATE_255_DROP_OUT_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: STATE_255_DROP_OUT_DIRECT");
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_ASSIGNMENT("ACCEPTANCE", "41");
+        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
-    QUEX_BUFFER_TELL_ADR(last_acceptance_input_position);
+    last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
-    QUEX_DEBUG_LABEL_PASS("FORWARD_BUFFER_RELOAD");
-if( ONE_AND_ONLY_buffer_reload_forward(QUEX_THE_BUFFER(), &last_acceptance_input_position) ) {
-   goto STATE_255_INPUT;
-}
+    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
+    if( Simple_ONE_AND_ONLY_buffer_reload_forward(&me->buffer, &last_acceptance_input_position) ) {
+       goto STATE_255_INPUT;
+    }
 
-QUEX_DEBUG_LABEL_PASS("BUFFER_RELOAD_FAILED");
-QUEX_GOTO_last_acceptance();
-
-
+    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");
+    QUEX_GOTO_last_acceptance();
 
 
-  // (*) Terminal states _______________________________________________________
-  //
-  // Acceptance terminal states, i.e. the 'winner patterns'. This means
-  // that the last input dropped out of a state where the longest matching
-  // pattern was according to the terminal state. The terminal states are 
-  // numbered after the pattern id.
-  //
-#define Lexeme       QUEX_DEFINITION_Lexeme       
-#define LexemeBegin  QUEX_DEFINITION_LexemeBegin  
-#define LexemeEnd    QUEX_DEFINITION_LexemeEnd    
-#define LexemeL      QUEX_DEFINITION_LexemeL      
+
+
+  /* (*) Terminal states _______________________________________________________*/
+  /**/
+  /* Acceptance terminal states, i.e. the 'winner patterns'. This means*/
+  /* that the last input dropped out of a state where the longest matching*/
+  /* pattern was according to the terminal state. The terminal states are */
+  /* numbered after the pattern id.*/
+  /**/
+#define Lexeme       (me->buffer._lexeme_start_p)
+#define LexemeBegin  (me->buffer._lexeme_start_p)
+#define LexemeEnd    (me->buffer._input_p)
+#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
 TERMINAL_35:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_35");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_35");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_35_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_35_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_35_DIRECT");
 
-    QUEX_PREPARE_LEXEME_OBJECT();
+    QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);
     {
         {
         self.counter.__shift_end_values_to_start_values();
@@ -2620,7 +2554,7 @@ TERMINAL_35_DIRECT:
         #else
         self.send(atoi((char*)Lexeme)); return TKN_NUMBER;
         #endif
-#line 2032 "Simple-core-engine.cpp"
+#line 2001 "Simple-core-engine.cpp"
         
         }
     }
@@ -2628,14 +2562,14 @@ TERMINAL_35_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_5:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_5");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_5");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_5_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_5_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_5_DIRECT");
 
-    QUEX_PREPARE_LEXEME_OBJECT();
+    QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);
     {
         {
         self.counter.__shift_end_values_to_start_values();
@@ -2647,12 +2581,12 @@ TERMINAL_5_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_7:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_7");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_7");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_7_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_7_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_7_DIRECT");
 
     {
         {
@@ -2665,7 +2599,7 @@ TERMINAL_7_DIRECT:
         #else
         self.send(); return TKN_STRUCT;
         #endif
-#line 2077 "Simple-core-engine.cpp"
+#line 2046 "Simple-core-engine.cpp"
         
         }
     }
@@ -2673,14 +2607,14 @@ TERMINAL_7_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_41:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_41");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_41");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_41_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_41_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_41_DIRECT");
 
-    QUEX_PREPARE_LEXEME_OBJECT();
+    QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);
     {
         {
         self.counter.__shift_end_values_to_start_values();
@@ -2688,7 +2622,7 @@ TERMINAL_41_DIRECT:
         
         #line 28 "dos_lf_2.qx"
         self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 2100 "Simple-core-engine.cpp"
+#line 2069 "Simple-core-engine.cpp"
         
         }
     }
@@ -2696,12 +2630,12 @@ TERMINAL_41_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_10:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_10");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_10_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_10_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_10_DIRECT");
 
     {
         {
@@ -2714,7 +2648,7 @@ TERMINAL_10_DIRECT:
         #else
         self.send(); return TKN_TYPE_INT;
         #endif
-#line 2126 "Simple-core-engine.cpp"
+#line 2095 "Simple-core-engine.cpp"
         
         }
     }
@@ -2722,12 +2656,12 @@ TERMINAL_10_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_13:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_13");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_13");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_13_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_13_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_13_DIRECT");
 
     {
         {
@@ -2740,7 +2674,7 @@ TERMINAL_13_DIRECT:
         #else
         self.send(); return TKN_TYPE_DOUBLE;
         #endif
-#line 2152 "Simple-core-engine.cpp"
+#line 2121 "Simple-core-engine.cpp"
         
         }
     }
@@ -2748,12 +2682,12 @@ TERMINAL_13_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_16:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_16");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_16_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_16_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_16_DIRECT");
 
     {
         {
@@ -2766,7 +2700,7 @@ TERMINAL_16_DIRECT:
         #else
         self.send(); return TKN_SEND;
         #endif
-#line 2178 "Simple-core-engine.cpp"
+#line 2147 "Simple-core-engine.cpp"
         
         }
     }
@@ -2774,12 +2708,12 @@ TERMINAL_16_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_19:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_19");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_19");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_19_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_19_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_19_DIRECT");
 
     {
         {
@@ -2792,7 +2726,7 @@ TERMINAL_19_DIRECT:
         #else
         self.send(); return TKN_EXPECT;
         #endif
-#line 2204 "Simple-core-engine.cpp"
+#line 2173 "Simple-core-engine.cpp"
         
         }
     }
@@ -2800,12 +2734,12 @@ TERMINAL_19_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_22:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_22");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_22");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_22_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_22_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_22_DIRECT");
 
     {
         {
@@ -2818,7 +2752,7 @@ TERMINAL_22_DIRECT:
         #else
         self.send(); return TKN_SEMICOLON;
         #endif
-#line 2230 "Simple-core-engine.cpp"
+#line 2199 "Simple-core-engine.cpp"
         
         }
     }
@@ -2826,12 +2760,12 @@ TERMINAL_22_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_25:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_25");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_25_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_25_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_25_DIRECT");
 
     {
         {
@@ -2844,7 +2778,7 @@ TERMINAL_25_DIRECT:
         #else
         self.send(); return TKN_BRACKET_OPEN;
         #endif
-#line 2256 "Simple-core-engine.cpp"
+#line 2225 "Simple-core-engine.cpp"
         
         }
     }
@@ -2852,12 +2786,12 @@ TERMINAL_25_DIRECT:
     goto __REENTRY_PREPARATION;
 
 TERMINAL_28:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_28");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_28");
 
-    QUEX_BUFFER_SEEK_ADR(last_acceptance_input_position);
+    QuexBuffer_seek_memory_adr(&(me->buffer), last_acceptance_input_position);
 
 TERMINAL_28_DIRECT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_28_DIRECT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_28_DIRECT");
 
     {
         {
@@ -2870,7 +2804,7 @@ TERMINAL_28_DIRECT:
         #else
         self.send(); return TKN_BRACKET_CLOSE;
         #endif
-#line 2282 "Simple-core-engine.cpp"
+#line 2251 "Simple-core-engine.cpp"
         
         }
     }
@@ -2880,7 +2814,7 @@ TERMINAL_28_DIRECT:
 
 
 TERMINAL_END_OF_STREAM:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_END_OF_STREAM");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_END_OF_STREAM");
 
                 {
                     {
@@ -2892,7 +2826,7 @@ TERMINAL_END_OF_STREAM:
         #else
         self.send(); return TKN_TERMINATION;
         #endif
-#line 2304 "Simple-core-engine.cpp"
+#line 2273 "Simple-core-engine.cpp"
         
         }
                 }
@@ -2904,18 +2838,18 @@ TERMINAL_END_OF_STREAM:
 #endif
 
 TERMINAL_DEFAULT:
-    QUEX_DEBUG_LABEL_PASS("TERMINAL_DEFAULT");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_DEFAULT");
 
-if( QUEX_END_OF_FILE() ) {
+if( QuexBuffer_is_end_of_file(&(me->buffer)) ) {
 
-    QUEX_BUFFER_DECREMENT();
+    QuexBuffer_input_p_decrement(&(me->buffer));
 }
 
 else {
-    /* Step over nomatching character */    QUEX_BUFFER_INCREMENT();
+    /* Step over nomatching character */    QuexBuffer_input_p_increment(&(me->buffer));
 }
 
-                QUEX_PREPARE_LEXEME_OBJECT();
+                QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);
                 {
                     {
         self.counter.__shift_end_values_to_start_values();
@@ -2938,8 +2872,8 @@ else {
 #undef LexemeL
 #ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
 __TERMINAL_ROUTER: {
-        //  if last_acceptance => goto correspondent acceptance terminal state
-        //  else               => execute defaul action
+        /*  if last_acceptance => goto correspondent acceptance terminal state*/
+        /*  else               => execute defaul action*/
         switch( last_acceptance ) {
             case 35: goto TERMINAL_35;
             case 5: goto TERMINAL_5;
@@ -2956,65 +2890,58 @@ __TERMINAL_ROUTER: {
             default: goto TERMINAL_DEFAULT;; /* nothing matched */
         }
     }
-#endif // __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#endif /* __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED*/
 
   
 __REENTRY_PREPARATION:
-    QUEX_DEBUG_LABEL_PASS("__REENTRY_PREPARATION");
+    QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY_PREPARATION");
 
-    // (*) Common point for **restarting** lexical analysis.
-    //     at each time when CONTINUE is called at the end of a pattern.
-    //
+    /* (*) Common point for **restarting** lexical analysis.
+     *     at each time when CONTINUE is called at the end of a pattern. */
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 
-    //
-    //  If a mode change happened, then the function must first return and
-    //  indicate that another mode function is to be called. At this point, 
-    //  we to force a 'return' on a mode change. 
-    //
-    //  Pseudo Code: if( previous_mode != current_mode ) {
-    //                   return 0;
-    //               }
-    // 
-    //  When the analyzer returns, the caller function has to watch if a mode change
-    //  occured. If not it can call this function again.
-    //
-    __QUEX_CORE_OPTION_RETURN_ON_DETECTED_MODE_CHANGE
+    /*  If a mode change happened, then the function must first return and
+     *  indicate that another mode function is to be called. At this point, 
+     *  we to force a 'return' on a mode change. 
+     *
+     *  Pseudo Code: if( previous_mode != current_mode ) {
+     *                   return 0;
+     *               }
+     *
+     *  When the analyzer returns, the caller function has to watch if a mode change
+     *  occured. If not it can call this function again.                               */
+#   ifdef QUEX_OPTION_ASSERTS
+    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
+        QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+#   endif
     goto __REENTRY;
 
-    // prevent compiler warning 'unused variable': use variables once in a part of the code
-    // that is never reached (and deleted by the compiler anyway).
+    /* prevent compiler warning 'unused variable': use variables once in a part of the code*/
+    /* that is never reached (and deleted by the compiler anyway).*/
     if( 0 == 1 ) {
         int unused = 0;
         unused = unused + ONE_AND_ONLY.id;
     }
 }
+#include <quex/code_base/temporary_macros_off>
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
 #include"Simple"
 namespace quex {
-        quex_mode  Simple::ONE_AND_ONLY;
+        QuexMode  Simple::ONE_AND_ONLY;
 #define self  (*me)
 
-    QUEX_ANALYSER_RETURN_TYPE 
-    Simple_uncallable_analyser_function(Simple* me)
-    { __quex_assert(0); return (QUEX_ANALYSER_RETURN_TYPE)(0); }
-
-    void 
-    Simple_on_indentation_null_function(Simple*, const int)
-    {}
-    
-    void 
-    Simple_on_entry_exit_null_function(Simple*, const quex_mode*)
-    {}
-
     void
-    Simple_ONE_AND_ONLY_on_entry(Simple* me, const quex_mode* FromMode) {
+    Simple_ONE_AND_ONLY_on_entry(Simple* me, const QuexMode* FromMode) {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_entry_from(FromMode));
 #endif
 
     }
+
     void
-    Simple_ONE_AND_ONLY_on_exit(Simple* me, const quex_mode* ToMode)  {
+    Simple_ONE_AND_ONLY_on_exit(Simple* me, const QuexMode* ToMode)  {
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 __quex_assert(me->ONE_AND_ONLY.has_exit_to(ToMode));
 #endif
@@ -3030,15 +2957,15 @@ __quex_assert(Indentation >= 0);
 
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
-    Simple_ONE_AND_ONLY_has_base(const quex_mode* Mode) {
+    Simple_ONE_AND_ONLY_has_base(const QuexMode* Mode) {
     return false;
     }
     bool
-    Simple_ONE_AND_ONLY_has_entry_from(const quex_mode* Mode) {
+    Simple_ONE_AND_ONLY_has_entry_from(const QuexMode* Mode) {
     return true; // default
     }
     bool
-    Simple_ONE_AND_ONLY_has_exit_to(const quex_mode* Mode) {
+    Simple_ONE_AND_ONLY_has_exit_to(const QuexMode* Mode) {
     return true; // default
     }
 #endif    
@@ -3057,22 +2984,22 @@ __quex_assert(Indentation >= 0);
 
 #include<cstdio> // for: 'std::sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
-#include "quex/code_base/token"
+#include "quex/code_base/Token"
 
 
 namespace quex {
-const quex::token::id_type TKN_BRACKET_CLOSE = 10000;
-const quex::token::id_type TKN_BRACKET_OPEN  = 10001;
-const quex::token::id_type TKN_EXPECT        = 10002;
-const quex::token::id_type TKN_IDENTIFIER    = 10003;
-const quex::token::id_type TKN_NUMBER        = 10004;
-const quex::token::id_type TKN_SEMICOLON     = 10005;
-const quex::token::id_type TKN_SEND          = 10006;
-const quex::token::id_type TKN_STRUCT        = 10007;
-const quex::token::id_type TKN_TERMINATION   = 0;
-const quex::token::id_type TKN_TYPE_DOUBLE   = 10008;
-const quex::token::id_type TKN_TYPE_INT      = 10009;
-const quex::token::id_type TKN_UNINITIALIZED = 1;
+const QUEX_TOKEN_ID_TYPE TKN_BRACKET_CLOSE = 10000;
+const QUEX_TOKEN_ID_TYPE TKN_BRACKET_OPEN  = 10001;
+const QUEX_TOKEN_ID_TYPE TKN_EXPECT        = 10002;
+const QUEX_TOKEN_ID_TYPE TKN_IDENTIFIER    = 10003;
+const QUEX_TOKEN_ID_TYPE TKN_NUMBER        = 10004;
+const QUEX_TOKEN_ID_TYPE TKN_SEMICOLON     = 10005;
+const QUEX_TOKEN_ID_TYPE TKN_SEND          = 10006;
+const QUEX_TOKEN_ID_TYPE TKN_STRUCT        = 10007;
+const QUEX_TOKEN_ID_TYPE TKN_TERMINATION   = 0;
+const QUEX_TOKEN_ID_TYPE TKN_TYPE_DOUBLE   = 10008;
+const QUEX_TOKEN_ID_TYPE TKN_TYPE_INT      = 10009;
+const QUEX_TOKEN_ID_TYPE TKN_UNINITIALIZED = 1;
 } // namespace quex
 
 
@@ -3080,15 +3007,15 @@ namespace quex {
 
 
     inline const std::string&
-    token::map_id_to_name(const token::id_type TokenID)
+    Token::map_id_to_name(const QUEX_TOKEN_ID_TYPE TokenID)
     {
        static bool virginity_f = true;
-       static std::map<token::id_type, std::string>  db;
+       static std::map<QUEX_TOKEN_ID_TYPE, std::string>  db;
        static std::string  error_string("");
        static std::string  uninitialized_string("<UNINITIALIZED>");
        static std::string  termination_string("<TERMINATION>");
        
-       // NOTE: In general no assumptions can be made that the token::id_type
+       // NOTE: In general no assumptions can be made that the QUEX_TOKEN_ID_TYPE
        //       is an integer. Thus, no switch statement is used. 
        if( virginity_f ) {
            virginity_f = false;
@@ -3110,7 +3037,7 @@ namespace quex {
 
        if     ( TokenID == TKN_TERMINATION )   return termination_string;
        else if( TokenID == TKN_UNINITIALIZED ) return uninitialized_string;
-       std::map<token::id_type, std::string>::const_iterator it = db.find(TokenID);
+       std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];
@@ -3120,22 +3047,5 @@ namespace quex {
        }
     }
 
-
-// NOT YET:
-//   template <token::id_type TokenT>
-//   struct token_trait;
-//
-//    template<> struct token_trait <TKN_UNINITIALIZED> { typedef None type; };
-//    template<> struct token_trait <TKN_BRACKET_CLOSE> { typedef None type; };
-//    template<> struct token_trait <TKN_TYPE_INT>      { typedef None type; };
-//    template<> struct token_trait <TKN_STRUCT>        { typedef None type; };
-//    template<> struct token_trait <TKN_SEMICOLON>     { typedef None type; };
-//    template<> struct token_trait <TKN_BRACKET_OPEN>  { typedef None type; };
-//    template<> struct token_trait <TKN_NUMBER>        { typedef None type; };
-//    template<> struct token_trait <TKN_SEND>          { typedef None type; };
-//    template<> struct token_trait <TKN_TYPE_DOUBLE>   { typedef None type; };
-//    template<> struct token_trait <TKN_EXPECT>        { typedef None type; };
-//    template<> struct token_trait <TKN_TERMINATION>   { typedef None type; };
-//    template<> struct token_trait <TKN_IDENTIFIER>    { typedef None type; };
 
 }

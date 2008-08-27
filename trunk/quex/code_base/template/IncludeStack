@@ -27,14 +27,14 @@ namespace quex {
         template <class InputHandle> 
         void   push(InputHandle*             new_input_handle_p, 
                     const QuexMode&          mode, 
-                    QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
-                    const char*              IANA_CodingName /* = 0x0 */);
+                    QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
+                    const char*              IANA_CodingName = 0x0);
         
         template <class InputHandle> 
         void   push(InputHandle*            new_input_handle_p, 
-                   const int                MODE_ID /* = -1 */, 
-                   QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
-                   const char*              IANA_CodingName /* = 0x0 */);
+                   const int                MODE_ID         = -1, 
+                   QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
+                   const char*              IANA_CodingName = 0x0);
         bool   pop();
 
     private:
