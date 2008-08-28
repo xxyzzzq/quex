@@ -6,11 +6,23 @@
 #include<quex/code_base/compatibility/inttypes.h>
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
-#ifndef QUEX_TOKEN_ID_TYPE
+#ifndef    QUEX_TOKEN_ID_TYPE
 #   define QUEX_TOKEN_ID_TYPE  uint32_t
 #endif
-#ifndef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N 
-#   define QUEX_SETTING_BUFFER_MIN_FALLBACK_N   256
+#ifdef QUEX_SETTING_BUFFER_MIN_FALLBACK_N 
+    /* QUEX_SETTING_BUFFER_MIN_FALLBACK_N remains as desired */
+#else
+#   if defined (QUEX_SETTING_BUFFER_SIZE) 
+#      if   QUEX_SETTING_BUFFER_SIZE >= 1024
+#         define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (256)
+#      elif QUEX_SETTING_BUFFER_SIZE >= 8
+#         define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (size_t)((float)(QUEX_SETTING_BUFFER_SIZE)/16.0)
+#      else
+#         define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
+#      endif
+#   else   
+#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N     (0) 
+#   endif
 #endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

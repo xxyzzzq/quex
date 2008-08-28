@@ -29,16 +29,16 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //
 // -- Line Number / Column Number Counting:
 //    Turning counting off may result in engine speed-up.
-#ifndef QUEX_OPTION_LINE_NUMBER_COUNTING            
+#ifndef    QUEX_OPTION_LINE_NUMBER_COUNTING            
 #define    QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
-#ifdef QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
+#ifdef    QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
 #   undef QUEX_OPTION_LINE_NUMBER_COUNTING
 #endif
-#ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING          
+#ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
 #define    QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 #endif
-#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
+#ifdef    QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
 #   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #endif
 
@@ -83,15 +83,18 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #define    QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
-#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
+#ifdef    QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
 #   undef QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
 
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
 #   define QUEX_SETTING_BUFFER_LIMIT_CODE     (0x0)
 #endif
+
+/* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
+ *       pre-processor comparisons.                                       */
 #ifndef     QUEX_SETTING_BUFFER_SIZE
-#    define QUEX_SETTING_BUFFER_SIZE  ((size_t)65536)
+#    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
 #endif
 #ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
 #    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
@@ -112,20 +115,20 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //   class must be setup for indentation counting. The following flag is
 //   defined or undefined by the lexical analyser generator quex.
 // #define __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-//
+  
 //   Quex can determine whether certain handlers are not used at all.
 //   If so, computation time can be spared and quex comments the following
 //   options out.
 // #define __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-#ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
+#ifdef    __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
 #endif
 // #define __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-#ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
+#ifdef    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 #endif
 // #define __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
+#ifdef    __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
 #   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #endif
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
@@ -138,12 +141,11 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #    endif
 #endif
 
-// 
 //   Begin of line pre-condition introduces an extra flag in the buffer
 //   structure. Only out-comment this in case of tough memory restrictions,
 //   if no begin of line pre-condition is required.
 #define    __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
+#ifdef     __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
 #   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 

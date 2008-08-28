@@ -162,9 +162,9 @@ namespace quex {
 
         __quex_assert(buffer->_input_p >= buffer->_lexeme_start_p);
         /* (*) Double check on consistency  
-         *     -- 'load_forward()' should only be called, if the '_input_p' reached a border.  
-         *        Since we know from above, that we did not reach end of file, it can be assumed  
-         *        that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
+         *     'load_forward()' should only be called, if the '_input_p' reached a border.  
+         *     Since we know from above, that we did not reach end of file, it can be assumed  
+         *     that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
         __quex_assert(buffer->_end_of_file_p == 0x0);
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         /* (*) Suppose: No one has touched the input stream since last load!  
