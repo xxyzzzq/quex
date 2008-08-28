@@ -4,12 +4,12 @@
 
 
 /* By default ASSERTS are enabled ! */
-#ifdef        QUEX_OPTION_ASSERTS_DISABLED 
+#if           defined(QUEX_OPTION_ASSERTS_DISABLED) || defined(NDEBUG)
 #   ifdef     QUEX_OPTION_ASSERTS
 #      undef  QUEX_OPTION_ASSERTS
 #   endif
 #else
-#   ifndef QUEX_OPTION_ASSERTS
+#   ifndef    QUEX_OPTION_ASSERTS
 #      define QUEX_OPTION_ASSERTS
 #   endif
 #endif

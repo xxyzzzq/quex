@@ -2,10 +2,10 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
-COMPILER     = g++   # icpc # g++ 
-COMPILER_V   = 4.3.1 # 10.1 # 4.3.1
+COMPILER     = g++    # icpc # g++ 
+COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -ggdb # -O3    # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \

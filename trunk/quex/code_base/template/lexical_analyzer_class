@@ -6,11 +6,8 @@
 #include<vector> 
 #include<map>
 #include<fstream>
-#include<cassert>
-#include<cstdio>    // provides: FILE*
 
-#include<quex/code_base/compatibility/inttypes.h>
-#include<quex/code_base/asserts>
+#include<quex/code_base/definitions>
 
 #define QUEX_VERSION  "$$QUEX_VERSION$$"
 // OPTIONS: ____________________________________________________________________
@@ -23,16 +20,16 @@
 //
 // -- Line Number / Column Number Counting:
 //    Turning counting off may result in engine speed-up.
-#ifndef QUEX_OPTION_LINE_NUMBER_COUNTING            
+#ifndef    QUEX_OPTION_LINE_NUMBER_COUNTING            
 $$SWITCH$$ QUEX_OPTION_LINE_NUMBER_COUNTING         
 #endif
-#ifdef QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
+#ifdef    QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
 #   undef QUEX_OPTION_LINE_NUMBER_COUNTING
 #endif
-#ifndef QUEX_OPTION_COLUMN_NUMBER_COUNTING          
+#ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
 $$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING       
 #endif
-#ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
+#ifdef    QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
 #   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #endif
 
@@ -77,15 +74,18 @@ $$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
-#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
+#ifdef    QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
 #   undef QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #endif
 
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
 #   define QUEX_SETTING_BUFFER_LIMIT_CODE     ($$BUFFER_LIMIT_CODE$$)
 #endif
+
+/* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
+ *       pre-processor comparisons.                                       */
 #ifndef     QUEX_SETTING_BUFFER_SIZE
-#    define QUEX_SETTING_BUFFER_SIZE  ((size_t)65536)
+#    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
 #endif
 #ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
 #    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
@@ -106,20 +106,20 @@ $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
 //   class must be setup for indentation counting. The following flag is
 //   defined or undefined by the lexical analyser generator quex.
 $$SWITCH$$ __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-//
+  
 //   Quex can determine whether certain handlers are not used at all.
 //   If so, computation time can be spared and quex comments the following
 //   options out.
 $$SWITCH$$ __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-#ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
+#ifdef    __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
 #endif
 $$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-#ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
+#ifdef    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 #endif
 $$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
+#ifdef    __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
 #   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #endif
 #ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
@@ -132,12 +132,11 @@ $$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
 #    endif
 #endif
 
-// 
 //   Begin of line pre-condition introduces an extra flag in the buffer
 //   structure. Only out-comment this in case of tough memory restrictions,
 //   if no begin of line pre-condition is required.
 $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
+#ifdef     __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
 #   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
@@ -232,14 +231,12 @@ namespace quex {
 //
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
 #   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-    typedef void __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN                                                                \
     if( self._token_queue->is_empty() ) { CONTINUE; }                            \
     else {                                                                       \
         return /* self._token_queue->top()->type_id() */;                        \
    }
 #else
-    typedef int __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN  return
 #endif
 
@@ -522,4 +519,7 @@ $$CONSTRUCTOR_EXTENSTION$$
 
 #include <quex/code_base/template/Analyser.i>
 
+#if defined(QUEX_OPTION_ASSERTS) && defined (QUEX_OPTION_ASSERTS_DISABLED)
+#    error "Ambiguous configuration options."
+#endif
 #endif // __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
