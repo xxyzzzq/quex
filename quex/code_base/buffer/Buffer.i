@@ -60,6 +60,9 @@ namespace quex {
         } else { 
             QuexBuffer_init(me, BufferMemorySize, 0x0);
         } 
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
     QUEX_INLINE void
@@ -100,13 +103,36 @@ namespace quex {
         if( filler != 0x0 ) {
             /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
              * assumes, that the user fills/has filled it with whatever his little heart desired. */
-            const size_t LoadedN = me->filler->read_characters(me->filler, 
-                                                               me->_memory._front + 1, 
-                                                               QuexBuffer_content_size(me));
-            if( LoadedN != QuexBuffer_content_size(me) ) {
-                QuexBuffer_end_of_file_set(me, me->_memory._front + 1 + LoadedN);
-            }
+            QuexBufferFiller_initial_load(me);
         }
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+    }
+
+    QUEX_INLINE void
+    QuexBuffer_reset(QuexBuffer* me)
+    {
+        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
+        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
+        /* NOTE: The terminating zero is stored in the first character **after** the  
+         *       lexeme (matching character sequence). The begin of line pre-condition  
+         *       is concerned with the last character in the lexeme, which is the one  
+         *       before the 'char_covered_by_terminating_zero'.                          */
+        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
+#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
+#       endif
+
+        if( me->_content_first_character_index != 0 ) {
+            __quex_assert(me->filler != 0x0);
+            me->filler->seek_character_index(me->filler, 0);
+            me->_content_first_character_index = 0;
+            QuexBufferFiller_initial_load(me);
+        }
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
     QUEX_INLINE void
@@ -118,28 +144,12 @@ namespace quex {
         QuexBufferMemory_init(&me->_memory, UserMemory, UserMemorySize); 
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
+        me->_end_of_file_p  = 0x0;
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
-    QUEX_INLINE void
-    QuexBuffer_reset(QuexBuffer* me)
-    {
-        QUEX_CHARACTER_TYPE*  buffer_front       = me->_memory._front;
-        size_t                buffer_memory_size = me->_memory._back - buffer_front + 1;
-        QuexBufferFiller*     filler             = me->filler;
-        /* Perform an initialization as if the buffer was not using a buffer filler.
-         * This re-initiates the memory, so we stored the info and restore it afterwards. */
-        QuexBuffer_init(me, 0, 0x0);
-        QuexBuffer_setup_memory(me, buffer_front, buffer_memory_size);
-
-        /* Make sure, that the buffer filler is equally set up propperly. */
-        me->filler = filler;
-        if( me->_content_first_character_index != 0 ) {
-            me->filler->seek_character_index(me->filler, 0);
-            me->filler->read_characters(me->filler, 
-                                       buffer_front + 1, 
-                                       buffer_memory_size - 2);
-        }
-    }
 
     QUEX_INLINE void
     QuexBuffer_input_p_increment(QuexBuffer* buffer)
@@ -199,6 +209,11 @@ namespace quex {
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+#       ifdef QUEX_OPTION_ASSERTS
+        if( *me->_input_p == QUEX_SETTING_BUFFER_LIMIT_CODE )
+            __quex_assert(   me->_input_p == me->_end_of_file_p 
+                          || me->_input_p == me->_memory._back || me->_input_p == me->_memory._front);
+#       endif
         return *(me->_input_p); 
     }
 
@@ -248,31 +263,35 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_end_of_file_set(QuexBuffer* me, QUEX_CHARACTER_TYPE* Position)
     {
-        __quex_assert(Position > me->_memory._front);
-        __quex_assert(Position <= me->_memory._back);
         /* NOTE: The content starts at _front[1], since _front[0] contains 
          *       the buffer limit code. */
         me->_end_of_file_p    = Position;
         *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+
+        /* Not yet: QUEX_BUFFER_ASSERT_CONSISTENCY(me) -- pointers may still have to be adapted. */
     }
 
     QUEX_INLINE void
     QuexBuffer_end_of_file_unset(QuexBuffer* buffer)
     {
-        __quex_assert(buffer->_end_of_file_p <= buffer->_memory._back);
+        /* If the end of file pointer is to be 'unset' me must assume that the storage as been
+         * overidden with something useful. Avoid setting _end_of_file_p = 0x0 while the 
+         * position pointed to still contains the buffer limit code.                             */
         buffer->_end_of_file_p = 0x0;
+        /* Not yet: QUEX_BUFFER_ASSERT_CONSISTENCY(me) -- pointers may still have to be adapted. */
     }
 
     QUEX_INLINE bool 
     QuexBuffer_is_end_of_file(QuexBuffer* buffer)
     { 
-        __quex_assert(buffer->_input_p != 0x0);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         return buffer->_input_p == buffer->_end_of_file_p;
     }
 
     QUEX_INLINE bool                  
     QuexBuffer_is_begin_of_file(QuexBuffer* buffer)
     { 
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         if     ( buffer->_input_p != buffer->_memory._front )  return false;
         else if( buffer->_content_first_character_index != 0 ) return false;
         return true;
@@ -299,6 +318,7 @@ namespace quex {
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #      endif
 
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     }
     
     QUEX_INLINE bool  
@@ -321,6 +341,8 @@ namespace quex {
 #      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #      endif
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     }
 
     QUEX_INLINE void 
@@ -358,6 +380,24 @@ namespace quex {
     QUEX_INLINE size_t          
     QuexBufferMemory_size(QuexBufferMemory* me)
     { return me->_back - me->_front + 1; }
+
+#ifdef QUEX_OPTION_ASSERTS
+    QUEX_INLINE void
+    QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QuexBuffer* buffer)
+    {
+        QUEX_CHARACTER_TYPE* iterator = buffer->_memory._front + 1;
+        QUEX_CHARACTER_TYPE* End      = buffer->_memory._back;
+
+        if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
+        if( buffer->_end_of_file_p != 0x0 ) End = buffer->_end_of_file_p;
+        for(; iterator != End; ++iterator) {
+            if( *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ) 
+                QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.\n");
+        }
+    }
+#else
+    /* Defined as empty macro. See header 'quex/code_base/buffer/Buffer' */
+#endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

@@ -5,7 +5,7 @@
 COMPILER     = g++    # icpc # g++ 
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -ggdb # -O3    # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 # -ggdb # -O3    # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 
 # (*) SETUP ____________________________________________________________________
 SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
@@ -25,6 +25,7 @@ SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # -- INPUT
 MODE_FILES       = c.qx
@@ -49,11 +50,10 @@ PROFILE_USE      = -fbranch-probabilities
 CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
 	 $(SETUP) \
-	 -DNDEBUG \
 	 -DQUEX_BENCHMARK_SERIOUS \
-     -DQUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE=2 \
      -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \
-     #-DQUEX_OPTION_ACTIVATE_ASSERTS	\
+	 -DNDEBUG \
+     -DQUEX_OPTION_ASSERTS_DISABLED	\
      #-DQUEX_SETTING_BUFFER_SIZE=64 \
 	 # -D__QUEX_OPTION_UNIT_TEST \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
@@ -92,7 +92,7 @@ lexer-lc: $(OBJECT_FILES_LC)
         -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
 		$< -o $@
 
-$(ENGINE_SOURCES): $(MODE_FILES)
+$(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
 
 # (*) HELPERS __________________________________________________________________

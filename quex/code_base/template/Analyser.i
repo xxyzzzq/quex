@@ -47,8 +47,6 @@ namespace quex {
     QUEX_INLINE void
     QuexAnalyser_reset(QuexAnalyser* me)
     {
-        /* Perform an initialization as if the buffer was not using a buffer filler.
-         * This re-initiates the memory, so we stored the info and restore it afterwards. */
         QuexBuffer_reset(&me->buffer);
     }
 
