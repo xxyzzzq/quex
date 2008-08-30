@@ -17,12 +17,12 @@ namespace quex {
     QUEX_INLINE void   __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
     QUEX_INLINE void   __QuexBufferFiller_forward_asserts(QuexBuffer*);
     QUEX_INLINE size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
-                                                                               const size_t Distance_LexemeStart_to_InputP);
+                                                                       const size_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*, 
-                                                                         const size_t DesiredLoadN,
-                                                                         const size_t LoadedN,
-                                                                         const size_t FallBackN, 
-                                                                         const size_t Distance_LexemeStart_to_InputP);
+                                                                 const size_t DesiredLoadN,
+                                                                 const size_t LoadedN,
+                                                                 const size_t FallBackN, 
+                                                                 const size_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE size_t __QuexBufferFiller_backward_copy_backup_region(QuexBuffer*);
     QUEX_INLINE void   __QuexBufferFiller_backward_adapt_pointers(QuexBuffer*, 
                                                                           const size_t BackwardDistance);
@@ -78,6 +78,26 @@ namespace quex {
         me->_destroy             = destroy;
     }
 
+    QUEX_INLINE void
+    QuexBufferFiller_initial_load(QuexBuffer* buffer)
+    {
+        const size_t         ContentSize  = QuexBuffer_content_size(buffer);
+        QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
+
+        /* Assume: Buffer initialization happens independently */
+        __quex_assert(buffer->_content_first_character_index == 0);
+        __quex_assert(buffer->_input_p                       == ContentFront);   
+        __quex_assert(buffer->_lexeme_start_p                == ContentFront);
+
+        const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, ContentFront, ContentSize);
+
+        /* If end of file has been reached, then the 'end of file' pointer needs to be set*/
+        if( LoadedN != ContentSize ) QuexBuffer_end_of_file_set(buffer, ContentFront + LoadedN);
+        else                         QuexBuffer_end_of_file_unset(buffer);
+
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
+    } 
+
     QUEX_INLINE size_t
     QuexBufferFiller_load_forward(QuexBuffer* buffer)
     {
@@ -88,10 +108,10 @@ namespace quex {
         __quex_assert(me->tell_character_index != 0x0);
         __quex_assert(me->seek_character_index != 0x0);
         __quex_assert(me->read_characters != 0x0);
-        size_t        ContentSize = QuexBuffer_content_size(buffer);
+        size_t       ContentSize = QuexBuffer_content_size(buffer);
 
         /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
-         * spans the whole buffer content, then nothing can be loaded into it. */
+         * spans the whole buffer content, then nothing can be loaded into it.                      */
         const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
         if( Distance_LexemeStart_to_InputP >= ContentSize ) { 
             __QuexBufferFiller_on_overflow(buffer, /* Forward */ true);
@@ -116,10 +136,10 @@ namespace quex {
          *              new data into the buffer can happen.
          *
          * RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
-         *          '-1'     if forward loading was not possible (end of file)*/
+         *          '-1'     if forward loading was not possible (end of file)                      */
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
 
-        /* (*) Check for the three possibilities mentioned above*/
+        /* (*) Check for the three possibilities mentioned above */
         if     ( buffer->_input_p == buffer->_memory._front ) { return 0; }      /* (1)*/
         else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }      /* (2)*/
         else if( buffer->_input_p != buffer->_memory._back  ) {                     
@@ -148,6 +168,7 @@ namespace quex {
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
 
         /* NOTE: Return value is used for adaptions of memory addresses. It happens that the*/
         /*       address offset is equal to DesiredLoadN; see function __forward_adapt_pointers().*/
@@ -364,6 +385,8 @@ namespace quex {
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
+
         return BackwardDistance;
     }
 

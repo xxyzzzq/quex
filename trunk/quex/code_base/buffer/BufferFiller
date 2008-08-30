@@ -43,8 +43,9 @@ namespace quex {
                                       void         (*destroy)(QuexBufferFiller*));
     QUEX_INLINE void    QuexBufferFiller_destroy(QuexBufferFiller*); 
 
-    QUEX_INLINE size_t  QuexBufferFiller_load_backward(QuexBuffer*);
+    QUEX_INLINE void    QuexBufferFiller_initial_load(QuexBuffer*);
     QUEX_INLINE size_t  QuexBufferFiller_load_forward(QuexBuffer*);
+    QUEX_INLINE size_t  QuexBufferFiller_load_backward(QuexBuffer*);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex

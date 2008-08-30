@@ -9,8 +9,6 @@ namespace quex {
         // assignment of safety (prev=current) is not done. Instead, we only check
         // (as long as NDEBUG is not defined) that the framework assigns the variables
         // propperly.
-        __quex_assert( self.__previous_mode_p == self.__current_mode_p );
-
         return QuexAnalyser::current_analyser_function(this);
     }
 }

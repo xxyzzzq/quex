@@ -102,7 +102,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 
             token_n += 1;
         // } while( TokenP->type_id() != quex::TKN_TERMINATION );
-        } while( token_id != quex::TKN_TERMINATION );
+        } while( (unsigned)token_id != quex::TKN_TERMINATION );
         // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n
 
         __PRINT_END();
@@ -122,7 +122,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
     //              clock(), comparision) * RepetitionN
     
     cout << "//Benchmark (including overhead)\n";
-    cout << "//    TokenN: " << (token_n-1) / *repetition_n << endl;
+    cout << "//    TokenN: " << (int)((token_n-1) / *repetition_n) << endl;
     return report(StartTime, *repetition_n, FileSize, /* CharacterSize = 1 */ 1);
 }
 

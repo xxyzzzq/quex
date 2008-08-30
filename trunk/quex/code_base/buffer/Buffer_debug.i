@@ -25,11 +25,17 @@ namespace quex {
         QuexBufferFiller* me = buffer->filler;
         __quex_assert(me != 0x0);
 
+        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)buffer->_content_first_character_index);
         __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->tell_character_index(me));
-        __QUEX_STD_printf("_end_of_file_p (offset)  = %08X\n",     (int)(buffer->_end_of_file_p  - buffer->_memory._front));
-        __QUEX_STD_printf("_input_p (offset)        = %08X\n",     (int)(buffer->_input_p      - buffer->_memory._front));
+        if( buffer->_end_of_file_p == 0x0 )
+            __QUEX_STD_printf("_end_of_file_p (offset)  = <0x0>\n");
+        else
+            __QUEX_STD_printf("_end_of_file_p (offset)  = %08X\n", 
+                              (int)(buffer->_end_of_file_p  - buffer->_memory._front));
+        __QUEX_STD_printf("_input_p (offset)        = %08X\n",     (int)(buffer->_input_p        - buffer->_memory._front));
         __QUEX_STD_printf("_lexeme_start_p (offset) = %08X\n",     (int)(buffer->_lexeme_start_p - buffer->_memory._front));
+        __QUEX_STD_printf("_back (offset)           = %08X\n",     (int)(buffer->_memory._back   - buffer->_memory._front));
     }
 
     QUEX_INLINE void 
