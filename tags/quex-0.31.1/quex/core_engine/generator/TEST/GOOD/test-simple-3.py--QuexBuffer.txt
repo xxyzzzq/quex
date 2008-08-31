@@ -1,0 +1,22 @@
+(*) Lexical Analyser Patterns:
+                   . --> .
+## (1) code generation
+## (2) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION -ggdb ##
+## (3) running the test
+(*) test string: 
+'aber-hallo'
+(*) result:
+                  .  'a'
+                  .  'b'
+                  .  'e'
+                  .  'r'
+                  .  '-'
+                  .  'h'
+                  .  'a'
+                  .  'l'
+                  .  'l'
+                  .  'o'
+  ''
+
+## (4) cleaning up
