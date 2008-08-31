@@ -116,7 +116,7 @@ namespace quex {
     typedef enum { 
         QUEX_AUTO,
         QUEX_PLAIN,
-        QUEX_ICONV,
+        QUEX_ICONV
     } QuexBufferFillerTypeEnum;
 
 #   ifndef     QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING

@@ -23,7 +23,7 @@ APPLICATION      = lexer
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb
+COMPILER = g++ -ggdb -Wall
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      -DQUEX_OPTION_ACTIVATE_ASSERTS	

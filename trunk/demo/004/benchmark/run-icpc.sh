@@ -2,8 +2,8 @@ stamp=`date +%Yy%mm%dd-%Hh%M`
 output="result-$stamp.dat"
 #
 COMPILER=icpc
-COMPILER_V=10.1
-COMPILER_DIR=/home/compilers/intel-cpp/bin/
+COMPILER_V=10.1.018
+COMPILER_DIR=/opt/intel/cc/10.1.018/bin
 #
 cd ..
 source $COMPILER_DIR/iccvars.sh
