@@ -56,15 +56,15 @@ test_program_db = {
         QuexAnalyser   lexer_state;
         int            success_f = 0;
         char           TestString[] = "\0$$TEST_STRING$$\0";
-        const size_t   L            = strlen(TestString+1);
+        const size_t   MemorySize   = strlen(TestString+1) + 2;
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 0x0,
                           QUEX_PLAIN, 0x0,
                           $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
-        QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)TestString, L); 
+        QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)TestString, MemorySize); 
         /**/
-        printf("(*) test string: \\n'%s'\\n", TestString);
+        printf("(*) test string: \\n'%s'\\n", TestString + 1);
         printf("(*) result:\\n");
         do {
             success_f = lexer_state.current_analyser_function(&lexer_state);

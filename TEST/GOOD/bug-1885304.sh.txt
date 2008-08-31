@@ -12,13 +12,26 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #include<vector> 
 #include<map>
 #include<fstream>
-#include<cassert>
-#include<cstdio>    // provides: FILE*
 
-#include<quex/code_base/compatibility/inttypes.h>
-#include<quex/code_base/asserts>
+// IConv Coding Name for the internally used character coding. 
+// -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
+// -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
+//    e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
+// Coding must be defined before the inclusion of 'definitions' since this file will
+// otherwise define a default value
+#define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"ASCII")
 
-#define QUEX_VERSION  "0.30.5"
+#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+// #define QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#endif
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
+#       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#   endif
+#endif
+#include<quex/code_base/definitions>
+
+#define QUEX_VERSION  "0.31.1"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -96,17 +109,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #ifndef     QUEX_SETTING_BUFFER_SIZE
 #    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
 #endif
-#ifndef     QUEX_SETTING_BUFFER_FALLBACK_SIZE
-#    define QUEX_SETTING_BUFFER_FALLBACK_SIZE  ((size_t)10)
-#endif
-#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-// #define QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#endif
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
-#       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
-#   endif
-#endif
+
 #ifndef  QUEX_OPTION_STRING_ACCUMULATOR
 // #define QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
@@ -172,12 +175,6 @@ const int LEX_ID_ONE_AND_ONLY = 1;
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
 typedef uint8_t   QUEX_CHARACTER_TYPE;        
-// IConv Coding Name for the internally used character coding. 
-//   -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
-//   -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
-//      e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
-#define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"ASCII")
-
 #include "Simple-token_ids"
 #include "quex/code_base/Token"
 
@@ -241,14 +238,12 @@ namespace quex {
 //
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
 #   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-    typedef void __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN                                                                \
     if( self._token_queue->is_empty() ) { CONTINUE; }                            \
     else {                                                                       \
         return /* self._token_queue->top()->type_id() */;                        \
    }
 #else
-    typedef int __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;  
 #   define RETURN  return
 #endif
 
@@ -555,6 +550,9 @@ namespace quex {
 
 #include <quex/code_base/template/Analyser.i>
 
+#if defined(QUEX_OPTION_ASSERTS) && defined (QUEX_OPTION_ASSERTS_DISABLED)
+#    error "Ambiguous configuration options."
+#endif
 #endif // __INCLUDE_GUARD__QUEX__SIMPLE
 #include "Simple"
 #if ! defined(__QUEX_SETTING_PLAIN_C)
