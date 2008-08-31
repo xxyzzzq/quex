@@ -68,7 +68,7 @@ all: lexer lexer-lc
 
 lexer: $(OBJECT_FILES)
 	echo $(OBJECT_FILES)
-	$(LD) $(OBJECT_FILES)  -o $@ -lgcov
+	$(LD) $(OBJECT_FILES)  -o $@ # -lgcov
 
 lexer-lc: $(OBJECT_FILES_LC)
 	$(LD) $(OBJECT_FILES_LC) -o $@ # -lgcov
