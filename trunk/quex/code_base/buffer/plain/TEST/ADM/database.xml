@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.06" date="Sun Aug 31 06:20:58 2008">
+<test-database execution-time-sec="0.07" date="Sun Aug 31 11:14:40 2008">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
         <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -31,11 +31,11 @@
                <choice name="" result="OK" time-sec="0.00" crc="811198168"/>
             </choice-list>
         </test>
-        <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.01"> 
+        <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_forward_load-4-fb0.exe" info-request-time="1220156456L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="-396853177"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-396853177"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
@@ -52,11 +52,11 @@
                <choice name="" result="OK" time-sec="0.00" crc="2016591838"/>
             </choice-list>
         </test>
-        <test title="Character=4 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1220156457L"/>
+        <test title="With Error in Stream (Character=4 Byte(s))" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1220156458L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1146948856"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1418030292"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -73,25 +73,25 @@
                <choice name="" result="OK" time-sec="0.00" crc="-986272934"/>
             </choice-list>
         </test>
-        <test title="Character=1 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.00"> 
+        <test title="Character=1 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.02"> 
             <application file-name="BufferFiller_forward_load-1-fb1.exe" info-request-time="1220156453L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-613799360"/>
+               <choice name="" result="OK" time-sec="0.02" crc="-613799360"/>
             </choice-list>
         </test>
-        <test title="Character=2 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.01"> 
+        <test title="Character=2 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_forward_load-2-fb1.exe" info-request-time="1220156455L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="736895487"/>
+               <choice name="" result="OK" time-sec="0.00" crc="736895487"/>
             </choice-list>
         </test>
-        <test title="With Error in Stream (Character=4 Byte(s))" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1220156458L"/>
+        <test title="Character=4 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1220156457L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1418030292"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1146948856"/>
             </choice-list>
         </test>
     </group>

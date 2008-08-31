@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.03" date="Sun Aug 31 06:20:48 2008">
+<test-database execution-time-sec="0.02" date="Sun Aug 31 11:14:38 2008">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
         <test title="Copy Region (BPC=1);" make-required="True" time-sum-sec="0.01"> 
@@ -14,7 +14,7 @@
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="Normal" result="OK" time-sec="0.00" crc="143833723"/>
-               <choice name="StartOfStream" result="OK" time-sec="0.01" crc="-2067482385"/>
+               <choice name="StartOfStream" result="OK" time-sec="0.00" crc="-2067482385"/>
             </choice-list>
         </test>
     </group>
