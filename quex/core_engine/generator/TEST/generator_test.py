@@ -55,18 +55,14 @@ test_program_db = {
     {
         QuexAnalyser   lexer_state;
         int            success_f = 0;
-        char           TestString[] = "$$TEST_STRING$$";
-        const size_t   L            = strlen(TestString);
-        const size_t   MemorySize   = $$BUFFER_SIZE$$ > L + 2 ? $$BUFFER_SIZE$$ : L + 2;
-        char*          tmp          = malloc(MemorySize);
-
-        memcpy(tmp+1, TestString, L);
+        char           TestString[] = "\0$$TEST_STRING$$\0";
+        const size_t   L            = strlen(TestString+1);
 
         QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 0x0,
                           QUEX_PLAIN, 0x0,
                           $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
-        QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)tmp, MemorySize); 
+        QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)TestString, L); 
         /**/
         printf("(*) test string: \\n'%s'\\n", TestString);
         printf("(*) result:\\n");
@@ -220,6 +216,8 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="ANSI-C-
         print "Dictionary Creation:\n" + repr(x)
 
     if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
+
+    if BufferType == "ANSI-C-PlainMemory": QuexBufferFallbackN = max(0, len(TestStr) - 3) 
     common_str = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
     common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
     if BufferType in ["ANSI-C", "ANSI-C-PlainMemory"]:

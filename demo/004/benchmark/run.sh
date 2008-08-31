@@ -1,7 +1,11 @@
 stamp=`date +%Yy%mm%dd-%Hh%M`
-output="result-$stamp.dat"
+if [[ $1 != "HWUT-TEST" ]]; then
+    output="result-$stamp.dat"
+else
+    output="tmp.dat"
+fi
 cd ..
-make clean; make OPTIMIZATION='-O3'
+make clean; make OPTIMIZATION='-O3' >& /dev/null
 cd benchmark
 ../lexer-lc many-tiny-tokens.c            > $output
 ../lexer-lc single-large-token.c         >> $output
@@ -12,7 +16,7 @@ cd benchmark
 ../lexer linux-2.6.22.17-kernel-dir.c >> $output
 
 cd ..
-make clean; make OPTIMIZATION='-Os'
+make clean; make OPTIMIZATION='-Os' >& /dev/null
 cd benchmark
 ../lexer-lc many-tiny-tokens.c           >> $output
 ../lexer-lc single-large-token.c         >> $output

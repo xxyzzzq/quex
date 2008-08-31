@@ -106,7 +106,7 @@ namespace quex {
         QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
 
         /*_________________________________________________________________________________*/
-        char tmp[ContentSize+4];
+        char* tmp = (char*)__QUEX_ALLOCATE_MEMORY(ContentSize + 4);
         /* tmp[0]                 = outer border*/
         /* tmp[1]                 = buffer limit*/
         /* tmp[2...ContentSize+1] = ContentFront[0...ContentSize-1]*/
@@ -136,6 +136,7 @@ namespace quex {
         /* std::cout << " = 0x" << std::hex << int(*buffer->_input_p) << std::dec */
         __QUEX_STD_printf("\n");
         QuexBuffer_show_content(buffer);
+        __QUEX_FREE_MEMORY(tmp);
     }
 
     QUEX_INLINE void  
