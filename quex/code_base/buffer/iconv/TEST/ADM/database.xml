@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.08" date="Sun Aug 31 06:20:50 2008">
+<test-database execution-time-sec="0.07" date="Sun Aug 31 11:14:39 2008">
     <last-used-diff-display-program name=""/>
     <group name="Seek">
         <test title="Total Zik-Zak" make-required="True" time-sum-sec="0.02"> 
@@ -14,12 +14,12 @@
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="Forward" result="OK" time-sec="0.00" crc="-2124477716"/>
-               <choice name="Backward" result="OK" time-sec="0.00" crc="-123182608"/>
+               <choice name="Backward" result="OK" time-sec="0.01" crc="-123182608"/>
             </choice-list>
         </test>
     </group>
     <group name="read_characters">
-        <test title="Raw buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.02"> 
+        <test title="Raw buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.01"> 
             <application file-name="one-beat.exe" info-request-time="1220156449L"/>
             <make-procedure success="True" />
             <choice-list number="4">
@@ -29,7 +29,7 @@
                <choice name="9" result="OK" time-sec="0.00" crc="400097149"/>
             </choice-list>
         </test>
-        <test title="User buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.04"> 
+        <test title="User buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.03"> 
             <application file-name="n-beat.exe" info-request-time="1220156448L"/>
             <make-procedure success="True" />
             <choice-list number="9">
