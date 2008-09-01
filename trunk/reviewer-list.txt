@@ -1,0 +1,9 @@
+# Kleiner Schutzt gegen Email Addressen Sammler / Spammer:
+#   Erstes Wort inverse--> Benutername, bei ist Aerobase, punkt steht
+#   Punkt als Satzzeichen.
+#
+# [platform]  [responsible]
+
+windows       gnejh bei cowfriendly punkt org
+osx           gnejh bei cowfriendly punkt org
+
