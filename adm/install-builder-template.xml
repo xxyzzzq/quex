@@ -41,6 +41,27 @@
                 <folder>
                     <description>Program Files</description>
                     <destination>${installdir}</destination>
+                    <name>programfilesOSX</name>
+                    <platforms>osx</platforms>
+                    <actionList>
+                        <addEnvironmentVariable>
+                            <name>QUEX_PATH</name>
+                            <scope>system</scope>
+                            <value>${installdir}/${product_shortname}-${product_version}/</value>
+                        </addEnvironmentVariable>
+                        <addDirectoryToPath>
+                            <path>${installdir}/${product_shortname}-${product_version}/</path>
+                        </addDirectoryToPath>
+                    </actionList>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>$$DISTRIBUTION_ROOT_DIR$$</origin>
+                        </distributionDirectory>
+                    </distributionFileList>
+                </folder>
+                <folder>
+                    <description>Program Files</description>
+                    <destination>${installdir}</destination>
                     <name>programfileslinux</name>
                     <platforms>linux</platforms>
                     <actionList>

@@ -23,6 +23,29 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
 #   endif
 #endif
+
+// CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
+//                 a character. This is independent of the coding (ASCII, WinArabic, ...)
+//
+// Both character types are clearly related, because they are supposed to relate to the 
+// same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
+// belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
+// accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
+//
+// NOTE: If in parallel another engine is built with other bytes per character settings,
+//       then the engines will also include their own header with their own definition
+//       of QUEX_CHARACTER_TYPE. Thus there is no danger at all. 
+//       Templatifying the lexer would be possible, but the author has in mind to bring out
+//       a 'pure C' version of the quex generated engine. Thus templating would make this 
+//       goal harder achievable.
+#include<quex/code_base/compatibility/inttypes.h>
+typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;        
+
+// TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it wont
+//                    override the QUEX_TOKEN_ID_TYPE.)
+#include "$$TOKEN_ID_DEFINITION_FILE$$"
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
+
 #include<quex/code_base/definitions>
 
 #define QUEX_VERSION  "$$QUEX_VERSION$$"
@@ -32,7 +55,6 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 // double underline '__' at the beginning can be turned off in the created 
 // engine. Options that do start with '__' configure the machine for the
 // specified behavior. Such options are better not touched.
-//
 //
 // -- Line Number / Column Number Counting:
 //    Turning counting off may result in engine speed-up.
@@ -152,24 +174,6 @@ namespace quex {
 
 $$LEX_ID_DEFINITIONS$$
 }    
-
-// CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
-//                 a character. This is independent of the coding (ASCII, WinArabic, ...)
-//
-// Both character types are clearly related, because they are supposed to relate to the 
-// same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
-// belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
-// accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
-//
-// NOTE: If in parallel another engine is built with other bytes per character settings,
-//       then the engines will also include their own header with their own definition
-//       of QUEX_CHARACTER_TYPE. Thus there is no danger at all. 
-//       Templatifying the lexer would be possible, but the author has in mind to bring out
-//       a 'pure C' version of the quex generated engine. Thus templating would make this 
-//       goal harder achievable.
-typedef $$QUEX_CHARACTER_TYPE$$  QUEX_CHARACTER_TYPE;        
-#include "$$TOKEN_ID_DEFINITION_FILE$$"
-#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 #include<quex/code_base/buffer/Buffer>
 #include<quex/code_base/buffer/iconv/BufferFiller_IConv>

@@ -8,6 +8,7 @@
 ###########################################################################
 #rm `find ./quex -name "*.pyc"`
 #rm `find ./quex -name "*~"`
+cd ~/prj/quex/trunk
 orig_directory=`pwd`
 directory=`basename $orig_directory`
 
@@ -70,7 +71,7 @@ tar cf quex-$1.tar ./quex-$1
 zip -r quex-$1.zip ./quex-$1
 
 # -- create xml file for the install builder
-$QUEX_PATH/make_install_builder_script.py `pwd`/quex-$1 $1
+$QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml RPM
