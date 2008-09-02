@@ -1,16 +1,16 @@
-<test-database execution-time-sec="0.02" date="Sun Aug 31 11:14:38 2008">
+<test-database execution-time-sec="0.04" date="Mon Sep  1 21:09:06 2008">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
-        <test title="Copy Region (BPC=1);" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_backward_copy.exe" info-request-time="1220156446L"/>
+        <test title="Copy Region (BPC=1);" make-required="True" time-sum-sec="0.03"> 
+            <application file-name="BufferFiller_backward_copy.exe" info-request-time="1220296144L"/>
             <make-procedure success="True" />
             <choice-list number="2">
-               <choice name="Normal" result="OK" time-sec="0.00" crc="2052776727"/>
+               <choice name="Normal" result="OK" time-sec="0.03" crc="2052776727"/>
                <choice name="StartOfStream" result="OK" time-sec="0.00" crc="746179138"/>
             </choice-list>
         </test>
         <test title="Copy Region (BPC=4);" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="BufferFiller_backward_copy-32.exe" info-request-time="1220156446L"/>
+            <application file-name="BufferFiller_backward_copy-32.exe" info-request-time="1220296144L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="Normal" result="OK" time-sec="0.00" crc="143833723"/>
@@ -20,14 +20,14 @@
     </group>
     <group name="Forward">
         <test title="Copy Fallback Region (BPC=4);" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_copy-32.exe" info-request-time="1220156447L"/>
+            <application file-name="BufferFiller_forward_copy-32.exe" info-request-time="1220296145L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-899106991"/>
             </choice-list>
         </test>
         <test title="Copy Fallback Region (BPC=1);" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_copy.exe" info-request-time="1220156448L"/>
+            <application file-name="BufferFiller_forward_copy.exe" info-request-time="1220296145L"/>
             <make-procedure success="True" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="1928750566"/>

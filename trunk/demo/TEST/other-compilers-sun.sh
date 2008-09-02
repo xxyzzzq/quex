@@ -5,4 +5,5 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 export TOOLPATH=/opt/sun/sunstudio
+echo "##" $1
 source core.sh $1 DEBUG COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC
