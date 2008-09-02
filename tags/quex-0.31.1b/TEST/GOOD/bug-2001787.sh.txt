@@ -1,0 +1,18 @@
+** Please note, that '.' in an RE stands for 'anything but newline'   **
+** Thus, it does not match newline, and the lexer triggers on newline **
+** to the default terminal.                                           **
+Call to quex
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+Compiling
+,------------------------------------------------------------------------------------
+| [START]
+URL 'http://www.dog.com/get?q=food' 
+<TERMINATION> '' 
+| [END] number of token = 2
+`------------------------------------------------------------------------------------
+rm -rf Simple-core-engine.cpp
+rm -rf Simple-token_ids
+rm -rf Simple.cpp
+rm -rf Simple
+rm -rf a.out
