@@ -74,8 +74,9 @@ zip -r quex-$1.zip ./quex-$1
 $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml RPM
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml DEB
+/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
+/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
+/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
 
 
 # -- compress the tar file
