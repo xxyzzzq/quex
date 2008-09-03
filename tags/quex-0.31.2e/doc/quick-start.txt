@@ -1,0 +1,54 @@
+The purpose of this chapter is to show a tiny application that does use
+lexical analysis in order to implement a very tiny scripting language. This
+scripting language allows to set variables, print their content and compute
+the sinus and cosinus of numbers. There are mainly four sections. First,
+patterns are defined. Second, token names are specified. Third, it is
+determined what patterns produce what tokens. Forth, a little programs needs
+to be discussed that uses the produced lexical analyser and implements the
+minimalist scripting language. All source code related to this example can be
+found in the directory \$(QUEX\_PATH){\tt /TEST/000/}.  This directory is best
+copied to a user directory for this introduction.
+
+So, first, let us define a pattern file. In the quick-start example most
+patterns are defined directly in the mode definition. However, pattern
+definitions inside modes cannot contain whitespace, so we need to 
+define a pattern macro for that. Let us store 
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+define {
+  P_WHITESPACE  [ \t\n]
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+in at the head of the file. 
+
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  mode ONE_AND_ONLY { 
+
+    <<EOF>>     => TKN_TERMINATION;
+
+    "set"       => TKN_TIMEOUT;
+    "print"     => TKN_ADDRESS;
+    "sin"       => TKN_SEND;
+    "cos"       => TKN_SEND;
+    ";"         => TKN_SEMICOLON;
+    [0-9]+      => TKN_NUMBER(atoi(yytext));
+    [_a-zA-Z]+  => TKN_IDENTIFIER(yytext);
+    {P_WHITESPACE} { }
+  }
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TIMEOUT;
+ADDRESS;
+SEND;
+EXPECT;
+SEMICOLON;
+NUMBER;
+IDENTIFIER;
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
