@@ -66,10 +66,7 @@ tar xf quex-$1.tar
 rm quex-$1.tar 
 mv trunk quex-$1
 
-echo "-- Create tar and zip file"
-tar cf quex-$1.tar ./quex-$1
-zip -r quex-$1.zip ./quex-$1
-
+echo "Create installers"
 # -- create xml file for the install builder
 $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
@@ -77,12 +74,32 @@ $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
+cd /opt/installbuilder-5.4.11/output
+zip -r quex-$1*osx-installer.app.zip quex-$1*osx-installer.app
+cd /tmp
 
+
+echo "-- Create tar and zip file"
+tar cf quex-$1.tar ./quex-$1
+zip -r quex-$1.zip ./quex-$1
 
 # -- compress the tar file
 echo "-- Further compress .tar --> 7z and gzip"
 7z   a  quex-$1.tar.7z quex-$1.tar
 gzip -9 quex-$1.tar
+
+# -- collect all created packages
+rm -rf /tmp/quex-packages
+mkdir /tmp/quex-packages
+mv quex-$1.tar.7z /tmp/quex-packages
+mv quex-$1.tar.gz /tmp/quex-packages
+mv quex-$1.zip    /tmp/quex-packages
+#
+mv quex_$1*.deb                  /tmp/quex-packages
+mv quex-$1*.rpm                  /tmp/quex-packages
+mv quex-$1*windows-installer.exe /tmp/quex-packages
+mv quex-$1*linux-installer.bin   /tmp/quex-packages
+mv quex-$1*osx-installer.zip     /tmp/quex-packages
 
 # (*) clean up
 rm $input $output
