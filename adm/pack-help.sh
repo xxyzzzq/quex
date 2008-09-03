@@ -76,7 +76,7 @@ $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
 cd $INSTALLBUILDER_OUT
-zip -r quex-$1*osx-installer.app.zip quex-$1*osx-installer.app
+zip -r quex-$1-osx-installer.app.zip quex-$1-osx-installer.app
 cd /tmp
 
 
@@ -103,7 +103,7 @@ mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1*osx-installer.zip     /tmp/quex-packages
 
 # (*) clean up
-rm $input $output
+#rm $input $output
 
 echo "-- Files are ready in /tmp"
 cd $orig_directory
