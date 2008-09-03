@@ -1,0 +1,12 @@
+This chapter discussed the major features of quex. To the knowledge of the
+author of this text, at the time of this writing, there is no lexical analyser
+generator that matches these features. Moreover, once one gets used to think
+in terms of 'sending tokens', 'mode-transitions', and once one gets used to
+define modes that implement standard behavior for other modes using
+inheritance, then it becomes hard to get back to the cumbersome thinking of
+plain lex or flex. The little overhead required to learn new concepts comes
+with the great advantage of being able to design the lexical analysis process
+in a very natural way footnote:[Well, at least 'natural' to the author of this
+  text.].
+
+

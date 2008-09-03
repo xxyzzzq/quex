@@ -1,0 +1,138 @@
+// -*- C++ -*- vim: set syntax=cpp:
+start = PROGRAM
+
+header { 
+#include<stdio.h>
+}
+define {
+    // Pattern definitions for example application
+    P_WHITESPACE          [ \t\n]+
+    P_IDENTIFIER          [_a-zA-Z][_a-zA-Z0-9]*
+    P_NUMBER              [0-9]+
+    //
+    // String: 
+    //    Quote " followe by either \" or something different from " and then a final "
+    P_STRING              "\""(\\"\""|[^"])*"\""
+}
+
+token {
+    AMPERSANT
+    ASSIGN_DIV
+    ASSIGN_MINUS
+    ASSIGN_MULT
+    ASSIGN_PLUS
+    BRACKET_C
+    BRACKET_C
+    BRACKET_O
+    BRACKET_O
+    BREAK
+    CATCH
+    CLASS
+    COLON
+    CONST
+    CONTINUE
+    CORNER_BRACKET_C
+    CORNER_BRACKET_O
+    CURLY_BRACKET_C
+    CURLY_BRACKET_O
+    DIV
+    DO
+    DOUBLE_COLON
+    ELSE
+    EQ
+    FOR
+    FRIEND
+    GREATER
+    GR_EQ
+    IDENTIFIER
+    IF
+    LESS
+    LE_EQ
+    MINUS
+    MULT
+    MUTUAL
+    NOT
+    NOT_EQ
+    NUMBER
+    NAMESPACE
+    OP_ASSIGNMENT
+    PLUS
+    PRIVATE
+    PROTECTED
+    PUBLIC
+    QUOTE
+    SEMICOLON
+    STRING
+    STRUCT
+    SWITCH
+    TEMPLATE
+    THROW
+    TRY
+    USING
+    WHILE
+}
+
+mode PROGRAM :
+{
+    <<EOF>>       { 
+        std::printf("This is the end and looks good. Buffer Size = %i\n", QUEX_SETTING_BUFFER_SIZE); 
+        self.send(TKN_TERMINATION); 
+    }
+
+    "("           => TKN_BRACKET_O;
+    ")"           => TKN_BRACKET_C;
+    "<"           => TKN_LESS;
+    ">"           => TKN_GREATER;
+    "["           => TKN_CORNER_BRACKET_O;
+    "]"           => TKN_CORNER_BRACKET_C;
+    "{"           => TKN_CURLY_BRACKET_O;
+    "}"           => TKN_CURLY_BRACKET_C;
+    "="           => TKN_OP_ASSIGNMENT;
+    "+"           => TKN_PLUS;
+    "-"           => TKN_MINUS;
+    "*"           => TKN_MULT;
+    "/"           => TKN_DIV;
+    "+="          => TKN_ASSIGN_PLUS;
+    "-="          => TKN_ASSIGN_MINUS;
+    "*="          => TKN_ASSIGN_MULT;
+    "/="          => TKN_ASSIGN_DIV;
+    "=="          => TKN_EQ;
+    "!="          => TKN_NOT_EQ;
+    ">="          => TKN_GR_EQ;
+    "<="          => TKN_LE_EQ;
+    "!"           => TKN_NOT;
+    "&"           => TKN_AMPERSANT;
+    "::"          => TKN_DOUBLE_COLON;
+    ":"           => TKN_COLON;
+    namespace     => TKN_NAMESPACE;
+    using         => TKN_USING;
+    class         => TKN_CLASS;
+    struct        => TKN_STRUCT;
+    template      => TKN_TEMPLATE;
+    "public:"     => TKN_PUBLIC;
+    "private:"    => TKN_PRIVATE;
+    "protected:"  => TKN_PROTECTED;
+    friend        => TKN_FRIEND;
+    const         => TKN_CONST;
+    mutual        => TKN_MUTUAL;
+    if            => TKN_IF;
+    else          => TKN_ELSE;
+    switch        => TKN_SWITCH;
+    for           => TKN_FOR;
+    do            => TKN_DO;
+    while         => TKN_WHILE;
+    break         => TKN_BREAK;
+    continue      => TKN_CONTINUE;
+    throw         => TKN_THROW;
+    try           => TKN_TRY;
+    catch         => TKN_CATCH;
+    ";"           => TKN_SEMICOLON;
+    "."           => TKN_DOT;
+    "/*"([^*]|("*"[^/]))*"*/"  => TKN_COMMENT;
+    "//"[^\n]*"\n"  => TKN_COMMENT;
+    {P_IDENTIFIER}  => TKN_IDENTIFIER;
+    {P_NUMBER}      => TKN_NUMBER;
+    {P_WHITESPACE}  { }
+    {P_STRING}      => TKN_STRING;
+}
+
