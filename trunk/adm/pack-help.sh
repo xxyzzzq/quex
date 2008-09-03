@@ -68,13 +68,14 @@ mv trunk quex-$1
 
 echo "Create installers"
 # -- create xml file for the install builder
+INSTALLBUILDER_OUT=/opt/installbuilder-5.4.11/output
 $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
 /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
-cd /opt/installbuilder-5.4.11/output
+cd $INSTALLBUILDER_OUT
 zip -r quex-$1*osx-installer.app.zip quex-$1*osx-installer.app
 cd /tmp
 
@@ -95,11 +96,11 @@ mv quex-$1.tar.7z /tmp/quex-packages
 mv quex-$1.tar.gz /tmp/quex-packages
 mv quex-$1.zip    /tmp/quex-packages
 #
-mv quex_$1*.deb                  /tmp/quex-packages
-mv quex-$1*.rpm                  /tmp/quex-packages
-mv quex-$1*windows-installer.exe /tmp/quex-packages
-mv quex-$1*linux-installer.bin   /tmp/quex-packages
-mv quex-$1*osx-installer.zip     /tmp/quex-packages
+mv $INSTALLBUILDER_OUT/quex_$1*.deb                  /tmp/quex-packages
+mv $INSTALLBUILDER_OUT/quex-$1*.rpm                  /tmp/quex-packages
+mv $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe /tmp/quex-packages
+mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
+mv $INSTALLBUILDER_OUT/quex-$1*osx-installer.zip     /tmp/quex-packages
 
 # (*) clean up
 rm $input $output
