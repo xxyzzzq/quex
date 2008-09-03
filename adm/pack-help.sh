@@ -100,7 +100,7 @@ mv $INSTALLBUILDER_OUT/quex_$1*.deb                  /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1*.rpm                  /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
-mv $INSTALLBUILDER_OUT/quex-$1*osx-installer.zip     /tmp/quex-packages
+mv $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip     /tmp/quex-packages
 
 # (*) clean up
 #rm $input $output
