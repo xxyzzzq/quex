@@ -1,0 +1,38 @@
+\documentclass{scrbook}
+
+\input{../../header}
+
+\font\twelvehelvetica=phvr at 11pt
+\font\rm=phvr at 11pt
+\font\fourteenhelvetica=phvr at 14pt
+\font\it=phvro at 11pt
+\font\tt=cmtt12 at 12pt
+\font\bf=phvb at 11pt
+
+\def\quex{{que{\raise 0.27ex \hbox{$\chi$}}}}
+\def\Quex{{Que{\raise 0.27ex \hbox{$\chi$}}}}
+
+\title{\bf \Huge {Que{\raise 0.5ex \hbox{$\chi$}}} \\ 
+       \huge A Mode Oriented Lexical Analyser Generator \\
+       Version 0.9.0}
+
+\author{\fourteenhelvetica Frank-Ren\'{e} Sch\"{a}fer\\
+        frank\_r\_schaefer@gmx.net}
+
+\renewcommand{\baselinestretch}{1.05}
+
+\begin{document}
+\sf
+  \mysection{Patterns}
+            {intro}
+     \mysubsection{Context Free Regular Expressions}
+                  {context-free}     
+	\mysubsubsection{Pitfalls}
+                        {context-free-pitfalls}	
+			
+     \mysubsection{Pre- and Post-Conditions}
+                  {context-dependent}     
+
+	\mysubsubsection{Pitfalls}
+                        {context-dependent-pitfalls}	
+\end{document}		  
