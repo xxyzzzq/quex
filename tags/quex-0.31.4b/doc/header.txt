@@ -1,0 +1,52 @@
+\usepackage{listings}
+\usepackage{color}
+
+\newcommand{\fig}[1]{figure \ref{#1}}
+\newcommand{\Fig}[1]{Figure \ref{#1}}
+
+\begin{latexonly}
+\setlength{\textwidth}{15.5cm}
+\setlength{\evensidemargin}{0.2cm}   %%% printer drivers automatically add
+\setlength{\oddsidemargin}{0.2cm}    %%% 2.54 cm  to each margin
+\setlength{\topmargin}{0cm}
+\setlength{\headsep}{1cm}
+\setlength{\headheight}{0cm}
+\setlength{\textheight}{21.5cm}
+\end{latexonly}
+
+[[def\Quex{{\sf que$\chi$}]]
+.def\quex{{\sf que$\chi$}
+image:[]
+%%\def\quex{{\sf que{{$\chi$}} }
+%%\def\Quex{{\sf Que{{$\chi$}} }
+\newcommand{\SaferTeX}{\c{S}\"{a}fer\TeX}
+
+\def\pattern#1{{\tt #1}}
+\def\myref#1{(section \ref{#1}, \pageref{#1})}
+\def\definition#1{\hbox{\parindent=0pt\hskip 1cm \vbox{\hsize=13cm \vskip 0.3cm#1 \vskip0.3cm}}}
+\def\TODO#1{\hbox{\parindent=0pt\hskip 1cm \vbox{\hsize=13cm \vskip 0.3cm \bf TODO: \sf #1 \vskip0.3cm}}}
+
+\lstset{language=C++, frame=single, numbers=none}
+
+
+\newcommand{\mychapter}[2]{
+        \chapter{#1}
+        \label{sec:#2}
+        \input{#2}
+}
+\newcommand{\mysection}[2]{
+        \section{#1}
+        \label{sec:#2}
+        \input{#2}
+}
+\newcommand{\mysubsection}[2]{
+        \subsection{#1}
+        \label{sec:#2}
+        \input{#2}
+}
+\newcommand{\mysubsubsection}[2]{
+        \subsubsection{#1}
+        \label{sec:#2}
+        \input{#2}
+}
+

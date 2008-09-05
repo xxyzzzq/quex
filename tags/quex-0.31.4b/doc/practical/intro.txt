@@ -1,0 +1,58 @@
+This practical examples guides through the phases of creating a lexical
+analyser using quex. The files of this example can be found in the directory
+`demo/001/` of the quex distribution. The file `simple.qx` contains
+the description of the lexical analyzer, `lexer.cpp` contains a lexical
+analyzer application, and a `Makefile` allows the convinient creation of
+the whole lexical analyzer application. Copy-pasting this example may be a good
+starting point for the work with quex. A good approach is to devide the development
+of a lexical analyzer into the two steps of _design_ and _implementation_. 
+The first step consists of three minor activities:
+
+///////////////////////////////////////////////////
+[[% {fig:process]]
+.% {Activities for Lexical Analysis Design
+image::% {figures/process[]
+///////////////////////////////////////////////////
+
+Definition of Patterns:: 
+
+  Patterns can be defined directly on the
+  pattern action pair line, but it is much more intuitive to define patterns
+  in terms of regular expressions \cite{} in a separate data section. Those
+  patterns act like constants that allow to understand quickly for what a
+  pattern/action pair stands. Using a name `$${NOT_NEWLINE}+$$` is simply
+  visually more appealing than writing `$$[^\n]+$$`}. Those patterns
+  can be defined very easily in terms of regular expressions.
+  
+Definition of Token-IDs:: 
+
+  We finally want to send tokens and those tokens must have identifiers. For
+  this reason, the user needs to specify names of tokens in a token section, so
+  that quex can create ids for them.
+  
+Definition of Modes:: 
+
+  This is best done with a drawing program or by hand on paper. One should be
+  clear about how lexer modes are named, how they relate to each other and what
+  transitions are possible. This design will be the basis for the later coding
+  of modes.
+  
+
+Once, these simple steps are accomplished the implementation of modes in terms
+of pattern-action pairs can be started.  The example discussed in this section
+develops the following files that are required for generating a lexical
+analyser:
+
+*`simple.qx`*:: 
+
+    which contains all information quex needs to create
+    a lexical analyzer. 
+
+*`lexer.cpp`*:: 
+
+    which uses the created lexical analyser in a 
+    mini example application.
+
+To follow the explanations of this chapter the directory `demo/001`
+is best copied into a user domain for further examination and modifications.
+
