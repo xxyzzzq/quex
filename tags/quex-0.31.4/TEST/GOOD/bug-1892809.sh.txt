@@ -1,0 +1,25 @@
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error.qx:11:warning: Token id 'TKN_A' defined implicitly.
+error.qx:12:warning: Token id 'TKN_B' defined implicitly.
+error.qx:13:warning: Token id 'TKN_C' defined implicitly.
+error.qx:14:warning: Token id 'TKN_D' defined implicitly.
+error.qx:15:warning: Token id 'TKN_E' defined implicitly.
+error.qx:16:warning: Token id 'TKN_F' defined implicitly.
+warning: no initial mode defined via 'start'
+warning: using mode 'X' as initial mode
+(1)
+,------------------------------------------------------------------------------------
+| [START]
+D
+E
+F
+<TERMINATION>
+| [END] number of token = 4
+`------------------------------------------------------------------------------------
+(2)
+,------------------------------------------------------------------------------------
+| [START]
+<TERMINATION>
+| [END] number of token = 1
+`------------------------------------------------------------------------------------
