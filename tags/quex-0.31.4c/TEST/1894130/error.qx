@@ -1,0 +1,32 @@
+token {
+A
+}
+
+start = MODE
+
+mode MODE : XXX A
+{
+<<EOF>> => TKN_TERMINATION;
+}
+
+mode A : B
+{
+<<EOF>> => TKN_TERMINATION;
+}
+
+mode B : C {
+<<EOF>> => TKN_TERMINATION;
+}
+
+mode C : D {
+<<EOF>> => TKN_TERMINATION;
+}
+
+mode D : MODE {
+<<EOF>> => TKN_TERMINATION;
+}
+
+mode XXX {
+<<EOF>> => TKN_TERMINATION;
+}
+
