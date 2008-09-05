@@ -101,9 +101,22 @@ mv $INSTALLBUILDER_OUT/quex-$1*.rpm                  /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
 mv $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip     /tmp/quex-packages
+# -- create the batch file for sftp
+script_file=/tmp/quex-packages/sftp-frs.sourceforge.net.sh
+echo "cd uploads"         >  $scriptfile
+echo "put quex-$1.tar.7z" >> $scriptfile
+echo "put quex-$1.tar.gz" >> $scriptfile
+echo "put quex-$1.zip   " >> $scriptfile
+echo "put quex_$1*.deb  " >> $scriptfile
+echo "put quex-$1*.rpm  " >> $scriptfile
+echo "put quex-$1*windows-installer.exe " >> $scriptfile
+echo "put quex-$1*linux-installer.bin   " >> $scriptfile
+echo "put quex-$1-osx-installer.app.zip " >> $scriptfile
+cd /tmp
+
 
 # (*) clean up
-#rm $input $output
+rm $input $output
 
 echo "-- Files are ready in /tmp"
 cd $orig_directory

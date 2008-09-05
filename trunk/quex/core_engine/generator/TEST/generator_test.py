@@ -220,9 +220,12 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, BufferType="ANSI-C-
     if BufferType == "ANSI-C-PlainMemory": QuexBufferFallbackN = max(0, len(TestStr) - 3) 
     common_str = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
     common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
+    print "##", BufferType
     if BufferType in ["ANSI-C", "ANSI-C-PlainMemory"]:
         extension = ".c"
-        compiler  = "gcc -ansi"
+        # The '-Wvariadic-macros' shall remind us that we do not want those, because some compilers
+        # do not swallow them!
+        compiler  = "gcc -ansi -Wvariadic-macros"
         test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
                         "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
     else:

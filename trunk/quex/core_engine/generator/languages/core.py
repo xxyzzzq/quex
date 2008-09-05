@@ -95,10 +95,10 @@ db["C++"] = {
     "$terminal-code":     cpp.__terminal_states,      
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value:
-                          "QUEX_DEBUG_PRINT(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
+                          "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
                           "%s = %s;\n" % (variable, value),
     "$set-last_acceptance": lambda value:
-                          "QUEX_DEBUG_PRINT(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
+                          "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
                           "QUEX_SET_last_acceptance(%s);\n" % value,
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #

@@ -44,6 +44,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //       Templatifying the lexer would be possible, but the author has in mind to bring out
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
+#include<quex/code_base/compatibility/inttypes.h>
 typedef uint8_t   QUEX_CHARACTER_TYPE;        
 
 // TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it wont
@@ -53,7 +54,7 @@ typedef uint8_t   QUEX_CHARACTER_TYPE;
 
 #include<quex/code_base/definitions>
 
-#define QUEX_VERSION  "0.31.1"
+#define QUEX_VERSION  "0.31.3"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -151,11 +152,11 @@ typedef uint8_t   QUEX_CHARACTER_TYPE;
 #ifdef    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 #endif
-// #define __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#ifdef    __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
-#   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+// #define QUEX_OPTION_ENABLE_ICONV
+#ifdef    QUEX_OPTION_ENABLE_ICONV_DISABLED
+#   undef QUEX_OPTION_ENABLE_ICONV
 #endif
-#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#ifdef QUEX_OPTION_ENABLE_ICONV
 #    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
 #    endif
@@ -182,8 +183,10 @@ const int LEX_ID_ONE_AND_ONLY = 1;
 }    
 
 #include<quex/code_base/buffer/Buffer>
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
 #include<quex/code_base/buffer/plain/BufferFiller_Plain>
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include<quex/code_base/buffer/iconv/BufferFiller_IConv>
+#endif
 
 // Quex/User
 #define CLASS                            Simple
@@ -435,6 +438,7 @@ namespace quex {
 
 #       ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
         friend class       IncludeStack;
+        friend class       IncludeStack::memento;
 #       endif
 
     private:
@@ -472,7 +476,12 @@ namespace quex {
             if( buffer_filler_type == QUEX_PLAIN ) {
                 QUEX_ERROR_EXIT("Input coding is specified but also the buffer filler type 'plain'.\n"
                                 "The buffer filler type plain cannot handle character encodings.\n");
+#               ifdef QUEX_OPTION_ENABLE_ICONV
                 buffer_filler_type = QUEX_ICONV;
+#               else
+                                "Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                                "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+#               endif
             }
         }
 
@@ -927,7 +936,7 @@ STATE_257_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -967,7 +976,7 @@ STATE_259_DROP_OUT_DIRECT:
             goto TERMINAL_35_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "35");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "35");
     QUEX_SET_last_acceptance(35);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1031,7 +1040,7 @@ STATE_260_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1095,7 +1104,7 @@ STATE_261_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1159,7 +1168,7 @@ STATE_262_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1223,7 +1232,7 @@ STATE_263_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1287,7 +1296,7 @@ STATE_264_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1343,7 +1352,7 @@ STATE_265_DROP_OUT_DIRECT:
             goto TERMINAL_7_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "7");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "7");
     QUEX_SET_last_acceptance(7);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1407,7 +1416,7 @@ STATE_266_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1463,7 +1472,7 @@ STATE_267_DROP_OUT_DIRECT:
             goto TERMINAL_16_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "16");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "16");
     QUEX_SET_last_acceptance(16);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1527,7 +1536,7 @@ STATE_268_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1583,7 +1592,7 @@ STATE_269_DROP_OUT_DIRECT:
             goto TERMINAL_10_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "10");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "10");
     QUEX_SET_last_acceptance(10);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1647,7 +1656,7 @@ STATE_270_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1711,7 +1720,7 @@ STATE_271_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1775,7 +1784,7 @@ STATE_272_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1839,7 +1848,7 @@ STATE_273_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1895,7 +1904,7 @@ STATE_274_DROP_OUT_DIRECT:
             goto TERMINAL_13_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "13");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "13");
     QUEX_SET_last_acceptance(13);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -1959,7 +1968,7 @@ STATE_275_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2023,7 +2032,7 @@ STATE_276_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2087,7 +2096,7 @@ STATE_277_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2151,7 +2160,7 @@ STATE_278_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2207,7 +2216,7 @@ STATE_279_DROP_OUT_DIRECT:
             goto TERMINAL_19_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "19");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "19");
     QUEX_SET_last_acceptance(19);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2271,7 +2280,7 @@ STATE_250_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2327,7 +2336,7 @@ STATE_251_DROP_OUT_DIRECT:
             goto TERMINAL_5_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "5");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "5");
     QUEX_SET_last_acceptance(5);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2391,7 +2400,7 @@ STATE_252_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2455,7 +2464,7 @@ STATE_254_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     
@@ -2511,7 +2520,7 @@ STATE_255_DROP_OUT_DIRECT:
             goto TERMINAL_41_DIRECT;
     }
 
-        QUEX_DEBUG_PRINT(&me->buffer, "ACCEPTANCE: %s", "41");
+        QUEX_DEBUG_PRINT2(&me->buffer, "ACCEPTANCE: %s", "41");
     QUEX_SET_last_acceptance(41);
     last_acceptance_input_position = QuexBuffer_tell_memory_adr(&(me->buffer));
     

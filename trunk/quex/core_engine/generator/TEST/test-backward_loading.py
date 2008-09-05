@@ -12,6 +12,8 @@ if "--hwut-info" in sys.argv:
 
 if sys.argv[1].find("ASSERTS") != -1: ASSERT_str = "-DQUEX_OPTION_ASSERTS"
 else:                                 ASSERT_str = ""
+if sys.argv[1].find("ANSI-C") != -1: BufferType = "ANSI-C"
+else:                                BufferType = "Cpp"
 
 
 pattern_action_pair_list = [
@@ -27,7 +29,7 @@ pattern_action_pair_list = [
 test_str = "   0xxxxxxalola 0xxxxxxxa"
 
 
-generator_test.do(pattern_action_pair_list, test_str, {}, BufferType="Cpp", 
+generator_test.do(pattern_action_pair_list, test_str, {}, BufferType=BufferType, 
                   QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
                   AssertsActionvation_str=ASSERT_str)
     

@@ -146,11 +146,11 @@ $$SWITCH$$ __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 #ifdef    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
 #   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
 #endif
-$$SWITCH$$ __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
-#ifdef    __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED_DISABLED
-#   undef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+$$SWITCH$$ QUEX_OPTION_ENABLE_ICONV
+#ifdef    QUEX_OPTION_ENABLE_ICONV_DISABLED
+#   undef QUEX_OPTION_ENABLE_ICONV
 #endif
-#ifdef __QUEX_CORE_OPTION_ICONV_BUFFERS_ENABLED
+#ifdef QUEX_OPTION_ENABLE_ICONV
 #    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
 #    endif
@@ -176,8 +176,10 @@ $$LEX_ID_DEFINITIONS$$
 }    
 
 #include<quex/code_base/buffer/Buffer>
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
 #include<quex/code_base/buffer/plain/BufferFiller_Plain>
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include<quex/code_base/buffer/iconv/BufferFiller_IConv>
+#endif
 
 // Quex/User
 #define CLASS                            $$LEXER_CLASS_NAME$$
@@ -417,6 +419,7 @@ $$LEXER_CLASS_FRIENDS$$
 $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
         friend class       IncludeStack;
+        friend class       IncludeStack::memento;
 #       endif
 
     private:
@@ -456,7 +459,13 @@ $$CLASS_BODY_EXTENSION$$
                 QUEX_ERROR_EXIT("Input coding is specified but also the buffer filler type 'plain'.\n"
                                 "The buffer filler type plain cannot handle character encodings.\n");
             } else if( buffer_filler_type == QUEX_AUTO ) {
+#               ifdef QUEX_OPTION_ENABLE_ICONV
                 buffer_filler_type = QUEX_ICONV;
+#               else
+                QUEX_ERROR_EXIT("Warning: Use of buffer filler type QUEX_AUTO resulted in QUEX_ICONV\n" \
+                                "Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                                "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+#               endif
             }
         }
 
