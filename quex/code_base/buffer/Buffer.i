@@ -7,7 +7,9 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
-#include <quex/code_base/buffer/iconv/BufferFiller_IConv>
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include <quex/code_base/buffer/iconv/BufferFiller_IConv>
+#endif
 #include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>
@@ -50,10 +52,15 @@ namespace quex {
                 break;
 
             case QUEX_ICONV: 
+#               ifdef QUEX_OPTION_ENABLE_ICONV
                 buffer_filler = MemoryManager_get_BufferFiller(filler_type);
                 QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
                                             IANA_InputCodingName, /* Internal Coding: Default */0x0,
                                             TranslationBufferMemorySize);
+#               else
+                QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                                "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+#               endif
                 break;
             }
             QuexBuffer_init(me, BufferMemorySize, buffer_filler);
@@ -179,7 +186,7 @@ namespace quex {
     QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        QUEX_DEBUG_PRINT(buffer, "TELL: %i", (int)buffer->_input_p);
+        QUEX_DEBUG_PRINT2(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
         return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_content_first_character_index);

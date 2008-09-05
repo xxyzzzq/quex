@@ -7,8 +7,9 @@
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
-#include <quex/code_base/buffer/iconv/BufferFiller_IConv>
-
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include <quex/code_base/buffer/iconv/BufferFiller_IConv>
+#endif
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <stdexcept>
 namespace quex { 
@@ -43,7 +44,14 @@ namespace quex {
         switch( FillerType ) {
         default:         QUEX_ERROR_EXIT("No memory size for QUEX_AUTO.\n");
         case QUEX_PLAIN: return sizeof(BUFFER_FILLER_PLAIN);
-        case QUEX_ICONV: return sizeof(BUFFER_FILLER_ICONV);
+        case QUEX_ICONV: 
+#           ifdef QUEX_OPTION_ENABLE_ICONV
+            return sizeof(BUFFER_FILLER_ICONV);
+#           else
+            QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                            "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+            return -1;
+#           endif
         }
     }
 #   undef BUFFER_FILLER_PLAIN 

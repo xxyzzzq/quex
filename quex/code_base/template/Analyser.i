@@ -81,6 +81,8 @@ namespace quex {
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
-#include <quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include <quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#endif
 
 #endif /* __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL_I__ */
