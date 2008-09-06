@@ -17,7 +17,7 @@ all: $(X).cpp
 
 $(X).cpp: simple.qx
 	@echo "Call to quex"
-	@quex -i $< -o $(X) -b 2 --iconv --token-queue
+	@quex -i $< -o $(X) -b 2 --iconv 
 
 
 clean:

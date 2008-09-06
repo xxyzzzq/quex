@@ -115,9 +115,10 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
 
     txt += __local_variable_definitions(local_variable_list)
-    txt += "#   ifdef QUEX_OPTION_ASSERTS\n"
+    txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
+    txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
     txt += "    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;\n"
-    txt += "#   endif\n"
+    txt += "#endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
 
@@ -201,9 +202,9 @@ $$SPECIFIC_TERMINAL_STATES$$
 $$TERMINAL_END_OF_STREAM-DEF$$
 $$END_OF_STREAM_ACTION$$
 #ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-        return /*TKN_TERMINATION*/;
+        return /*__QUEX_TOKEN_ID_TERMINATION*/;
 #else
-        return TKN_TERMINATION;
+        return __QUEX_TOKEN_ID_TERMINATION;
 #endif
 
 $$TERMINAL_DEFAULT-DEF$$
@@ -243,10 +244,22 @@ $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
      *
      *  When the analyzer returns, the caller function has to watch if a mode change
      *  occured. If not it can call this function again.                               */
-#   ifdef QUEX_OPTION_ASSERTS
+#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+    || defined(QUEX_OPTION_ASSERTS)
     if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
-        QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+#endif
+    { 
+#if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
+#   ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+       return /*__QUEX_TOKEN_ID_UNINITIALIZED*/;
+#   else
+       return __QUEX_TOKEN_ID_UNINITIALIZED;
 #   endif
+#elif defined(QUEX_OPTION_ASSERTS)
+       QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+#endif
+    }
+
     $$GOTO_START$$
 """
 

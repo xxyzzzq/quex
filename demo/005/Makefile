@@ -43,7 +43,7 @@ $(APPLICATION): $(APPLICATION).o \
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-queue
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
 
 # (*) HELPERS __________________________________________________________________
 #

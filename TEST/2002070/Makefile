@@ -13,7 +13,7 @@ all: $(X).cpp text.345
 
 $(X).cpp: simple.qx
 	@echo "Call to quex"
-	@quex -i $< -o $(X) -b wchar_t --iconv --token-queue
+	@quex -i $< -o $(X) -b wchar_t --iconv 
 
 text.345: 
 	@echo "Unpacking text.345"

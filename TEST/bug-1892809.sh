@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx --engine Simple --token-queue
+quex -i error.qx --engine Simple 
 g++ -I./ -I$QUEX_PATH Simple.cpp Simple-core-engine.cpp lexer.cpp -o Simplicism
 echo "(1)"
 ./Simplicism example.txt

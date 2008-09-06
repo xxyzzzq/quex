@@ -66,8 +66,7 @@ $(LIBRARY_NAME).so:
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME)          \
 	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
-	     --iconv \
-		 --token-queue
+	     --iconv 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
