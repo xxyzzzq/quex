@@ -97,7 +97,7 @@ def validate(setup, command_line, argv):
         for option in command_line_options:
             if command_line.search(option):
                 error_msg("Command line option '%s' is ignored.\n" % option + \
-                          "Last version of Quex supporting this option is version %s. Please, visit\n" % version + \
+                          "Last version of Quex supporting this option is version %s. Please, visit\n" % depreciated_since_version + \
                           "http://quex.sourceforge.net for download---Or use a more advanced approach.\n" + \
                           comment)
                           

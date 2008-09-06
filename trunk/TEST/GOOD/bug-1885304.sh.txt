@@ -1,7 +1,3 @@
-command line: Since version 0.25.9, the token queue is by default turned off. If you want to
-command line: use this feature further, please specify the '--token-queue' command line flag.
-command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
-command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
 warning: no initial mode defined via 'start'
 warning: using mode 'ONE_AND_ONLY' as initial mode
 // -*- C++ -*-   vim: set syntax=cpp:
@@ -22,7 +18,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 #define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"ASCII")
 
 #ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE_DISABLED
-// #define QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#define    QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #endif
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
@@ -134,7 +130,7 @@ typedef uint8_t   QUEX_CHARACTER_TYPE;
 #endif
 
 #ifndef  QUEX_OPTION_STRING_ACCUMULATOR
-// #define QUEX_OPTION_STRING_ACCUMULATOR
+#define    QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
 
 //   If one mode requires indentation support, then the lexical analyser
