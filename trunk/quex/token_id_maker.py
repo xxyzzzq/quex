@@ -45,8 +45,18 @@ file_str = \
 
 #include<cstdio> // for: 'std::sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
-#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
+/* Definition of essential token identifiers that the analyser engine requires. */
+#if defined(__QUEX_TOKEN_ID_TERMINATION) || defined(__QUEX_TOKEN_ID_UNINITIALIZED)
+#    error \"Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/descriptions' shall **not** be included before this file.\"
+#endif
+/* Note, we can very well refer in macros to things that are defined below. */
+#define __QUEX_TOKEN_ID_TERMINATION    (quex::$$TOKEN_PREFIX$$TERMINATION)
+#define __QUEX_TOKEN_ID_UNINITIALIZED  (quex::$$TOKEN_PREFIX$$UNINITIALIZED)
+
+/* The token class definition file can only be included after the two token identifiers have
+ * been defined. Otherwise, it would rely on default values. */
+#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 $$TOKEN_ID_DEFINITIONS$$
 
@@ -77,8 +87,8 @@ func_str = \
            $$TOKEN_ID_CASES$$
        }
 
-       if     ( TokenID == $$TOKEN_PREFIX$$TERMINATION )   return termination_string;
-       else if( TokenID == $$TOKEN_PREFIX$$UNINITIALIZED ) return uninitialized_string;
+       if     ( TokenID == __QUEX_TOKEN_ID_TERMINATION ) return termination_string;
+       else if( TokenID == __QUEX_TOKEN_ID_UNINITIALIZED ) return uninitialized_string;
        std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
@@ -116,6 +126,7 @@ def do(global_setup):
             lexer_mode.token_id_db[token_info.name] = token_info
 
 def output(global_setup):
+    global file_str
     assert lexer_mode.token_id_db.has_key("TERMINATION"), \
            "TERMINATION token id must be defined by setup or user."
     assert lexer_mode.token_id_db.has_key("UNINITIALIZED"), \
@@ -187,24 +198,19 @@ def output(global_setup):
                                                                           space(token_name),
                                                                           token_name)
     
-    txt = blue_print(func_str, [["$$TOKEN_ID_CASES$$", db_build_txt],
-                                ["$$TOKEN_PREFIX$$",   setup.token_prefix]])
-
-
     t = time.localtime()
     date_str = "%iy%im%id_%ih%02im%02is" % (t[0], t[1], t[2], t[3], t[4], t[5])
 
-    # -- storage classes for different types
-    # TODO: "struct data_x { type0, type1 }", the redefine the previous
-    #       to 'typedef data_x  type;"
+    
+    file_str = file_str.replace("$$CONTENT$$", func_str)
     content = blue_print(file_str,
-                         [["$$CONTENT$$",                     txt],
-                          ["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
+                         [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", setup.token_class_file],
-                          ["$$DATE_IG$$",                     date_str]])
-
-    content = content.replace("$$TOKEN_CLASS$$", setup.token_class)
+                          ["$$DATE_IG$$",                     date_str],
+                          ["$$TOKEN_ID_CASES$$",              db_build_txt],
+                          ["$$TOKEN_PREFIX$$",                setup.token_prefix],
+                          ["$$TOKEN_CLASS$$",                 setup.token_class]])
 
     fh = open(setup.output_file, "wb")
     if os.linesep == "\n": content = content.replace("\n", os.linesep)

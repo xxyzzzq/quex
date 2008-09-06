@@ -21,7 +21,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 // otherwise define a default value
 #define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"ASCII")
 
-#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE_DISABLED
 // #define QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #endif
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
@@ -54,7 +54,7 @@ typedef uint8_t   QUEX_CHARACTER_TYPE;
 
 #include<quex/code_base/definitions>
 
-#define QUEX_VERSION  "0.31.3"
+#define QUEX_VERSION  "0.31.4e"
 // OPTIONS: ____________________________________________________________________
 //
 // Activate/Deactivate Options via comment/uncomment. Options without a 
@@ -97,6 +97,7 @@ typedef uint8_t   QUEX_CHARACTER_TYPE;
 #endif
 #ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING_DISABLED
 #   undef QUEX_OPTION_DEBUG_TOKEN_SENDING
+#endif
 #endif
 #ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
 // #define QUEX_OPTION_DEBUG_MODE_TRANSITIONS
@@ -617,9 +618,9 @@ Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me)
     QUEX_GOTO_LABEL_TYPE         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
     QUEX_CHARACTER_POSITION_TYPE last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
     QUEX_CHARACTER_TYPE          input = (QUEX_CHARACTER_TYPE)(0x00);
-#   ifdef QUEX_OPTION_ASSERTS
+    || defined(QUEX_OPTION_ASSERTS)
     me->DEBUG_analyser_function_at_entry = me->current_analyser_function;
-#   endif
+#endif
 __REENTRY:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: __REENTRY");
     QuexBuffer_mark_lexeme_start(&me->buffer);
@@ -2566,7 +2567,7 @@ TERMINAL_35_DIRECT:
         #else
         self.send(atoi((char*)Lexeme)); return TKN_NUMBER;
         #endif
-#line 2001 "Simple-core-engine.cpp"
+#line 2002 "Simple-core-engine.cpp"
         
         }
     }
@@ -2611,7 +2612,7 @@ TERMINAL_7_DIRECT:
         #else
         self.send(); return TKN_STRUCT;
         #endif
-#line 2046 "Simple-core-engine.cpp"
+#line 2047 "Simple-core-engine.cpp"
         
         }
     }
@@ -2634,7 +2635,7 @@ TERMINAL_41_DIRECT:
         
         #line 28 "dos_lf_2.qx"
         self.send(TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 2069 "Simple-core-engine.cpp"
+#line 2070 "Simple-core-engine.cpp"
         
         }
     }
@@ -2660,7 +2661,7 @@ TERMINAL_10_DIRECT:
         #else
         self.send(); return TKN_TYPE_INT;
         #endif
-#line 2095 "Simple-core-engine.cpp"
+#line 2096 "Simple-core-engine.cpp"
         
         }
     }
@@ -2686,7 +2687,7 @@ TERMINAL_13_DIRECT:
         #else
         self.send(); return TKN_TYPE_DOUBLE;
         #endif
-#line 2121 "Simple-core-engine.cpp"
+#line 2122 "Simple-core-engine.cpp"
         
         }
     }
@@ -2712,7 +2713,7 @@ TERMINAL_16_DIRECT:
         #else
         self.send(); return TKN_SEND;
         #endif
-#line 2147 "Simple-core-engine.cpp"
+#line 2148 "Simple-core-engine.cpp"
         
         }
     }
@@ -2738,7 +2739,7 @@ TERMINAL_19_DIRECT:
         #else
         self.send(); return TKN_EXPECT;
         #endif
-#line 2173 "Simple-core-engine.cpp"
+#line 2174 "Simple-core-engine.cpp"
         
         }
     }
@@ -2764,7 +2765,7 @@ TERMINAL_22_DIRECT:
         #else
         self.send(); return TKN_SEMICOLON;
         #endif
-#line 2199 "Simple-core-engine.cpp"
+#line 2200 "Simple-core-engine.cpp"
         
         }
     }
@@ -2790,7 +2791,7 @@ TERMINAL_25_DIRECT:
         #else
         self.send(); return TKN_BRACKET_OPEN;
         #endif
-#line 2225 "Simple-core-engine.cpp"
+#line 2226 "Simple-core-engine.cpp"
         
         }
     }
@@ -2816,7 +2817,7 @@ TERMINAL_28_DIRECT:
         #else
         self.send(); return TKN_BRACKET_CLOSE;
         #endif
-#line 2251 "Simple-core-engine.cpp"
+#line 2252 "Simple-core-engine.cpp"
         
         }
     }
@@ -2838,15 +2839,15 @@ TERMINAL_END_OF_STREAM:
         #else
         self.send(); return TKN_TERMINATION;
         #endif
-#line 2273 "Simple-core-engine.cpp"
+#line 2274 "Simple-core-engine.cpp"
         
         }
                 }
 
 #ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-        return /*TKN_TERMINATION*/;
+        return /*__QUEX_TOKEN_ID_TERMINATION*/;
 #else
-        return TKN_TERMINATION;
+        return __QUEX_TOKEN_ID_TERMINATION;
 #endif
 
 TERMINAL_DEFAULT:
@@ -2868,9 +2869,9 @@ else {
         self.counter.count(Lexeme, LexemeEnd);
         self.send(TKN_TERMINATION);
         #ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-            return /*TKN_TKN_TERMINATION*/;
+            return /*__QUEX_TOKEN_ID_TERMINATION*/;
         #else
-            return TKN_TERMINATION;
+            return __QUEX_TOKEN_ID_TERMINATION;
         #endif
         
         }
@@ -2922,10 +2923,19 @@ __REENTRY_PREPARATION:
      *
      *  When the analyzer returns, the caller function has to watch if a mode change
      *  occured. If not it can call this function again.                               */
-#   ifdef QUEX_OPTION_ASSERTS
     if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
-        QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+#endif
+    { 
+#   ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
+       return /*__QUEX_TOKEN_ID_UNINITIALIZED*/;
+#   else
+       return __QUEX_TOKEN_ID_UNINITIALIZED;
 #   endif
+#elif defined(QUEX_OPTION_ASSERTS)
+       QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+#endif
+    }
+
     goto __REENTRY;
 
     /* prevent compiler warning 'unused variable': use variables once in a part of the code*/
@@ -2996,8 +3006,18 @@ __quex_assert(Indentation >= 0);
 
 #include<cstdio> // for: 'std::sprintf'
 #include<map>    // for: 'token-id' <-> 'name map'
-#include "quex/code_base/Token"
 
+/* Definition of essential token identifiers that the analyser engine requires. */
+#if defined(__QUEX_TOKEN_ID_TERMINATION) || defined(__QUEX_TOKEN_ID_UNINITIALIZED)
+#    error "Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/descriptions' shall **not** be included before this file."
+#endif
+/* Note, we can very well refer in macros to things that are defined below. */
+#define __QUEX_TOKEN_ID_TERMINATION    (quex::TKN_TERMINATION)
+#define __QUEX_TOKEN_ID_UNINITIALIZED  (quex::TKN_UNINITIALIZED)
+
+/* The token class definition file can only be included after the two token identifiers have
+ * been defined. Otherwise, it would rely on default values. */
+#include "quex/code_base/Token"
 
 namespace quex {
 const QUEX_TOKEN_ID_TYPE TKN_BRACKET_CLOSE = 10000;
@@ -3047,8 +3067,8 @@ namespace quex {
            db[TKN_IDENTIFIER]    = std::string("IDENTIFIER");
        }
 
-       if     ( TokenID == TKN_TERMINATION )   return termination_string;
-       else if( TokenID == TKN_UNINITIALIZED ) return uninitialized_string;
+       if     ( TokenID == __QUEX_TOKEN_ID_TERMINATION ) return termination_string;
+       else if( TokenID == __QUEX_TOKEN_ID_UNINITIALIZED ) return uninitialized_string;
        std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {

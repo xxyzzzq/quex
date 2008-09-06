@@ -54,6 +54,7 @@ CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
      -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \
 	 -DNDEBUG \
      -DQUEX_OPTION_ASSERTS_DISABLED	\
+	 -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED \
      #-DQUEX_SETTING_BUFFER_SIZE=64 \
 	 # -D__QUEX_OPTION_UNIT_TEST \
      # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
@@ -93,7 +94,7 @@ lexer-lc: $(OBJECT_FILES_LC)
 		$< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 --no-token-queue --no-string-accumulator
 
 # (*) HELPERS __________________________________________________________________
 clean:	

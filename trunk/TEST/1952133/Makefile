@@ -52,7 +52,7 @@ $(APPLICATION): $(APPLICATION).o \
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES)
-	@quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-queue >& tmp.txt
+	@quex -i $(MODE_FILES) --engine $(ENGINE_NAME)  >& tmp.txt
 
 
 # (*) HELPERS __________________________________________________________________

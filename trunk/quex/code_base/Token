@@ -27,18 +27,13 @@ namespace quex {
     class Token {
     public:
         // Quex Token Policy: _____________________________________________________
-        static const QUEX_TOKEN_ID_TYPE ID_UNINITIALIZED = -1;  // token-id for 'uninitialized'	
-        static const QUEX_TOKEN_ID_TYPE ID_TERMINATION   = 0;   // token-id for 'termination'	
-        // NOTE: Returning '0' is almost standard for this token! Think trice,
-        //       before choosing a difrent value! You might run into trouble with
-        //       your parser generator.
         static const std::string&  map_id_to_name(QUEX_TOKEN_ID_TYPE);
         //_________________________________________________________________________
 
     private:
         typedef std::basic_string<QUEX_CHARACTER_TYPE> __string;
 
-        QUEX_TOKEN_ID_TYPE     _id;
+        QUEX_TOKEN_ID_TYPE _id;
         __string           _text;
         int                _number;
 

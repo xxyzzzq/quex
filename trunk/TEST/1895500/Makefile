@@ -11,7 +11,7 @@ all: $(X).cpp
 
 
 $(X).cpp: indigo.qx
-	quex -i indigo.qx -o $(X) -b 4 --iconv --token-queue
+	quex -i indigo.qx -o $(X) -b 4 --iconv 
 
 
 clean:

@@ -9,6 +9,14 @@ namespace quex {
         // assignment of safety (prev=current) is not done. Instead, we only check
         // (as long as NDEBUG is not defined) that the framework assigns the variables
         // propperly.
+#       if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
         return QuexAnalyser::current_analyser_function(this);
+#       else
+        QUEX_TOKEN_ID_TYPE token_id = __QUEX_TOKEN_ID_TERMINATION;
+        do {
+            token_id = QuexAnalyser::current_analyser_function(this);
+        } while( token_id == __QUEX_TOKEN_ID_UNINITIALIZED );
+        return token_id;
+#       endif
     }
 }

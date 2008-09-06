@@ -19,7 +19,8 @@ namespace quex {
     struct __QuexAnalyser_tag {
         QuexBuffer                   buffer;
         QUEX_ANALYSER_FUNCTION_TYPE  current_analyser_function;
-#       ifdef QUEX_OPTION_ASSERTS
+#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
+    || defined(QUEX_OPTION_ASSERTS)
         /* When a mode change happens and the user does not 'return' but 'CONTINUE'
          * an error must be logged, since the following characters are still swallowed
          * by the current function and not the new one. For this one needs to return and

@@ -12,6 +12,8 @@ SETUP_INFO = {
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
+    "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],                
+    "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "enable_iconv_f":                 [["--iconv"],                          FLAG],
     "byte_order":                     [["--endian"],                         "<system>"],
     "input_application_version_id":   [["--version-id"],                     "0.0.0-pre-release"],
@@ -22,7 +24,6 @@ SETUP_INFO = {
     "input_lexer_class_friends":      [["--friend-class"],                   LIST],
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
     "input_token_class_file":         [["--token-class-file"],               "", "quex/code_base/Token"],
-    "input_token_sending_via_queue_f": [["--token-queue"],                   FLAG],
     "input_token_class_name":         [["--token-class"],                    "", "Token"],
     "input_token_counter_offset":     [["--token-offset"],                   "10000"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
@@ -35,20 +36,21 @@ SETUP_INFO = {
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
-    "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],
     #
     "version_information":            [["--version", "-v"],                  FLAG],
     "help":                           [["--help", "-h"],                     FLAG],
     #______________________________________________________________________________________________________
-    "begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECIATED
-    "end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECIATED
-    "flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECIATED
-    "input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECIATED 
-    "input_token_id_db":              [["-t", "--token-id-db"],     LIST],                    # DEPRECIATED
-    "leave_temporary_files_f":        [["--leave-tmp-files"],       FLAG],                    # DEPRECIATED
-    "plain_memory_f":                 [["--plain-memory"],          FLAG],                    # DEPRECIATED
-    "std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECIATED
-    "yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECIATED
+    "begin_of_stream_code":           [["--begin-of-stream"],       "0x19"],                  # DEPRECATED
+    "end_of_stream_code":             [["--end-of-stream"],         "0x1A"],                  # DEPRECATED
+    "flex_engine_f":                  [["--flex-engine"],           FLAG],                    # DEPRECATED
+    "input_pattern_file":             [["-p", "--pattern-file"],    ""],                      # DEPRECATED 
+    "input_token_id_db":              [["-t", "--token-id-db"],     LIST],                    # DEPRECATED
+    "leave_temporary_files_f":        [["--leave-tmp-files"],       FLAG],                    # DEPRECATED
+    "plain_memory_f":                 [["--plain-memory"],          FLAG],                    # DEPRECATED
+    "std_istream_support_f":          [["--istream-support"],       FLAG],                    # DEPRECATED
+    "yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECATED
+    "input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
+    "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -84,6 +86,14 @@ DEPRECATED = {
      ("Since the mentioned version, there is no need for end of stream and end of stream\n" + \
       "characters anymore. Options '--end-of-stream' and '--begin-of-stream' are no longer\n" + \
       "supported.", "0.25.2"),
+  "input_token_sending_via_queue_f":
+     ("The token queue was temporarily turned off by default since 0.31.5 the token queue is again\n" + \
+      "turned on by default, since the lexical analysers can be described much more natural. If you\n" + \
+      "want to disable the token queue, please, use '--no-token-queue', or '--ntq'.", "0.31.5"),
+  "string_accumulator_f":
+     ("The string accumulator was temporarily turned off by default since 0.31.5 the it is again\n" + \
+      "turned on by default. If you want to disable the token queue, please, use '--no-string-accumulator',\n" + \
+      "or '--nsacc'.", "0.31.5")
 }
  
 

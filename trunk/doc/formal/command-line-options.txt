@@ -22,11 +22,10 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 	    _number_ = Number where the numeric values for the token-ids start
 	    to count. DEFAULT = `"10000"`
 
-`--token-queue`::
+`--no-token-queue`::
 
-        Enables the sending of tokens via a queue. Note, this can be a little
-        slower than commicating tokens via a single global token structure. 
-        However, it may allow more elegant solutions in particular cases.
+        Disables the sending of tokens via a queue. Note, this can be a little
+        faster than commicating tokens via a token queue. 
 
 `--token-id-termination` _number_::
         
@@ -74,9 +73,9 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 	    analyzer should be created with this option set. DEFAULT = `<disabled>`, which means
         that mode transition check is enabled.
 
-`--string-accumulator`, `--sacc`::
+`--no-string-accumulator`, `--nsacc`::
 
-        Turns the string accumulator option on. This allows to use the string 
+        Turns the string accumulator option off. This disallows the use of the string 
         accumulator to accumulate lexemes. See class 'quex::Accumulator'.
 
 `--post-categorizer`::

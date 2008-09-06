@@ -50,10 +50,15 @@ feature of quex:
 
 - `demo\003` implements a lexical analyzer handling Unicode.
 
-- `demo\004` shows a lexical analyzer for C\+\+. This directory shall contain
-  a benchmarking system in order to compare quex generated engines with others.
+- `demo\004` contains a setup to generate a lexical analyser for the 'C' language.
+             Additionally, it contains a benchmark suite by means of which the 
+             generated analyser can be measured in terms of code sizes in bytes
+             and computation time in terms of CPU clock cycles.
 
 - `demo\005` explains how to do lexical analysis with files that include other files.
+
+- `demo\006` contains an example tha treats _pseudo ambiguous post contexts_ which are
+             difficult to deal with by means of traditional lexical analyser generators.
 
 The author of this document suggests that the user might have a look at these
 sample applications first before continuing with the remainder of this text. 
