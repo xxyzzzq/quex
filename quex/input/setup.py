@@ -87,11 +87,11 @@ DEPRECATED = {
       "characters anymore. Options '--end-of-stream' and '--begin-of-stream' are no longer\n" + \
       "supported.", "0.25.2"),
   "input_token_sending_via_queue_f":
-     ("The token queue was temporarily turned off by default since 0.31.5 the token queue is again\n" + \
+     ("The token queue was temporarily turned off by default. Since 0.31.5 the token queue is again\n" + \
       "turned on by default, since the lexical analysers can be described much more natural. If you\n" + \
       "want to disable the token queue, please, use '--no-token-queue', or '--ntq'.", "0.31.5"),
   "string_accumulator_f":
-     ("The string accumulator was temporarily turned off by default since 0.31.5 the it is again\n" + \
+     ("The string accumulator was temporarily turned off by default. Since 0.31.5 the it is again\n" + \
       "turned on by default. If you want to disable the token queue, please, use '--no-string-accumulator',\n" + \
       "or '--nsacc'.", "0.31.5")
 }
