@@ -1,0 +1,15 @@
+** Please note, that '.' in an RE stands for 'anything but newline'   **
+** Thus, it does not match newline, and the lexer triggers on newline **
+** to the default terminal.                                           **
+Call to quex
+command line: Command line option '--token-queue' is ignored.
+command line: Last version of Quex supporting this option is version 0.31.5. Please, visit
+command line: http://quex.sourceforge.net for download---Or use a more advanced approach.
+command line: The token queue was temporarily turned off by default. Since 0.31.5 the token queue is again
+command line: turned on by default, since the lexical analysers can be described much more natural. If you
+command line: want to disable the token queue, please, use '--no-token-queue', or '--ntq'.
+rm -rf Simple-core-engine.cpp
+rm -rf Simple-token_ids
+rm -rf Simple.cpp
+rm -rf Simple
+rm -rf a.out
