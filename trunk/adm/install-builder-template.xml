@@ -50,8 +50,16 @@
                             <value>${installdir}/${product_shortname}-${product_version}/</value>
                         </addEnvironmentVariable>
                         <addDirectoryToPath>
-                            <path>${installdir}/${product_shortname}-${product_version}/</path>
+                            <path>${installdir}</path>
                         </addDirectoryToPath>
+                        <createSymLink>
+                            <linkName>${installdir}/${product_shortname}-${product_version}/quex-exe.py</linkName>
+                            <target>/${installdir}/quex</target>
+                        </createSymLink>
+                        <changePermissions>
+                            <files>/${installdir}/quex</files>
+                            <permissions>755</permissions>
+                        </changePermissions>
                     </actionList>
                     <distributionFileList>
                         <distributionDirectory>
@@ -77,6 +85,10 @@
                             <linkName>${installdir}/${product_shortname}-${product_version}/quex-exe.py</linkName>
                             <target>/usr/local/bin/quex</target>
                         </createSymLink>
+                        <changePermissions>
+                            <files>/usr/local/bin/quex</files>
+                            <permissions>755</permissions>
+                        </changePermissions>
                     </actionList>
                     <distributionFileList>
                         <distributionDirectory>

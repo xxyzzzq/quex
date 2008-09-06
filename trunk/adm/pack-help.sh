@@ -12,6 +12,8 @@ cd ~/prj/quex/trunk
 orig_directory=`pwd`
 directory=`basename $orig_directory`
 
+INSTALLBUILDER_OUT=/opt/installbuilder-5.4.11/output
+
 # (*) Update the version information inside the application
 echo "-- Update Version Information"
 awk -v version="'$1'" ' ! /^QUEX_VERSION/ { print; } /^QUEX_VERSION/ { print "QUEX_VERSION =",version; }' \
@@ -27,13 +29,13 @@ cd $QUEX_PATH
 cd ..
 
 find trunk/quex $directory/demo  -type f  > $input
-echo "trunk/LPGL.txt" >> $input
-echo "trunk/COPYRIGHT.txt" >> $input
-echo "trunk/README" >> $input
+echo "trunk/LPGL.txt"              >> $input
+echo "trunk/COPYRIGHT.txt"         >> $input
+echo "trunk/README"                >> $input
 echo "trunk/unit_test_results.txt" >> $input
-echo "trunk/quex-exe.py" >> $input
-echo "trunk/quex.bat" >> $input
-echo "trunk/__init__.py" >> $input
+echo "trunk/quex-exe.py"           >> $input
+echo "trunk/quex.bat"              >> $input
+echo "trunk/__init__.py"           >> $input
 
 
 # -- filter out all files that are not directly required for 
@@ -48,8 +50,8 @@ awk ' ! /\~$/ { print; }'      $input > $output; cp $output $input
 awk ' ! /\.bak$/ { print; }'   $input > $output; cp $output $input
 awk ' ! /\.htm$/ { print; }'   $input > $output; cp $output $input
 awk ' ! /\.html$/ { print; }'  $input > $output; cp $output $input
-awk ' ! /\.swo$/ { print; }'  $input > $output; cp $output $input
-awk ' ! /\.swp$/ { print; }'  $input > $output; cp $output $input
+awk ' ! /\.swo$/ { print; }'   $input > $output; cp $output $input
+awk ' ! /\.swp$/ { print; }'   $input > $output; cp $output $input
 awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
 
 # (*) create packages: .tar.7z, .tar.gz
@@ -66,67 +68,84 @@ tar xf quex-$1.tar
 rm quex-$1.tar 
 mv trunk quex-$1
 
-echo "Create installers"
-# -- create xml file for the install builder
-INSTALLBUILDER_OUT=/opt/installbuilder-5.4.11/output
-$QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
-/opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
-cd $INSTALLBUILDER_OUT
-zip -r quex-$1-osx-installer.app.zip quex-$1-osx-installer.app
-cd /tmp
+function create_packages() 
+{
+    echo "Create installers for $1"
+
+    # -- create xml file for the install builder
+    $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
+    cd $INSTALLBUILDER_OUT
+    zip -r quex-$1-osx-installer.app.zip quex-$1-osx-installer.app
+
+    cd /tmp
+    echo "-- Create tar and zip file"
+    tar cf quex-$1.tar ./quex-$1
+    zip -r quex-$1.zip ./quex-$1
+
+    # -- compress the tar file
+    echo "-- Further compress .tar --> 7z and gzip"
+    7z   a  quex-$1.tar.7z quex-$1.tar
+    gzip -9 quex-$1.tar
+}
+
+function collect_packages() 
+{
+    rm -rf /tmp/quex-packages
+    mkdir /tmp/quex-packages
+    mv quex-$1.tar.7z /tmp/quex-packages
+    mv quex-$1.tar.gz /tmp/quex-packages
+    mv quex-$1.zip    /tmp/quex-packages
+    #
+    mv $INSTALLBUILDER_OUT/quex_$1*.deb                  /tmp/quex-packages
+    mv $INSTALLBUILDER_OUT/quex-$1*.rpm                  /tmp/quex-packages
+    mv $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe /tmp/quex-packages
+    mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
+    mv $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip     /tmp/quex-packages
+    # -- create the batch file for sftp
+    scriptfile=/tmp/quex-packages/sftp-frs.sourceforge.net.sh
+    echo "cd uploads"         >  $scriptfile
+    echo "put quex-$1.tar.7z" >> $scriptfile
+    echo "put quex-$1.tar.gz" >> $scriptfile
+    echo "put quex-$1.zip   " >> $scriptfile
+    echo "put quex_$1-0_i386.deb  " >> $scriptfile
+    echo "put quex-$1-0.i386.rpm  " >> $scriptfile
+    echo "put quex-$1-windows-installer.exe " >> $scriptfile
+    echo "put quex-$1-linux-installer.bin   " >> $scriptfile
+    echo "put quex-$1-osx-installer.app.zip " >> $scriptfile
+}
+
+function repository_update() {
+    # make sure that the new version information is checked in
+    echo "-- Update repository / Create tag for $1"
+    cd $QUEX_PATH
+    svn commit -m "Version Info / Prepare Release $1"
+
+    # branch on sourceforge subversion
+    svn copy https://quex.svn.sourceforge.net/svnroot/quex/trunk \
+             https://quex.svn.sourceforge.net/svnroot/quex/tags/quex-$1 \
+             -m "Release $1"
+}
+
+function clean_up() {
+    # (*) clean up
+    cd /tmp
+    rm $input $output
+
+    echo "-- Files are ready in /tmp"
+    cd $orig_directory
+}
 
 
-echo "-- Create tar and zip file"
-tar cf quex-$1.tar ./quex-$1
-zip -r quex-$1.zip ./quex-$1
+create_packages $1
 
-# -- compress the tar file
-echo "-- Further compress .tar --> 7z and gzip"
-7z   a  quex-$1.tar.7z quex-$1.tar
-gzip -9 quex-$1.tar
+collect_packages $1
 
-# -- collect all created packages
-rm -rf /tmp/quex-packages
-mkdir /tmp/quex-packages
-mv quex-$1.tar.7z /tmp/quex-packages
-mv quex-$1.tar.gz /tmp/quex-packages
-mv quex-$1.zip    /tmp/quex-packages
-#
-mv $INSTALLBUILDER_OUT/quex_$1*.deb                  /tmp/quex-packages
-mv $INSTALLBUILDER_OUT/quex-$1*.rpm                  /tmp/quex-packages
-mv $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe /tmp/quex-packages
-mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
-mv $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip     /tmp/quex-packages
-# -- create the batch file for sftp
-script_file=/tmp/quex-packages/sftp-frs.sourceforge.net.sh
-echo "cd uploads"         >  $scriptfile
-echo "put quex-$1.tar.7z" >> $scriptfile
-echo "put quex-$1.tar.gz" >> $scriptfile
-echo "put quex-$1.zip   " >> $scriptfile
-echo "put quex_$1*.deb  " >> $scriptfile
-echo "put quex-$1*.rpm  " >> $scriptfile
-echo "put quex-$1*windows-installer.exe " >> $scriptfile
-echo "put quex-$1*linux-installer.bin   " >> $scriptfile
-echo "put quex-$1-osx-installer.app.zip " >> $scriptfile
-cd /tmp
+repository_update $1
 
-
-# (*) clean up
-rm $input $output
-
-echo "-- Files are ready in /tmp"
-cd $orig_directory
-
-# (*) make sure that the new version information is checked in
-echo "-- Update repository / Create tag for $1"
-svn commit -m "Version Info / Prepare Release $1"
-
-# (*) branch on sourceforge subversion
-svn copy https://quex.svn.sourceforge.net/svnroot/quex/trunk \
-         https://quex.svn.sourceforge.net/svnroot/quex/tags/quex-$1 \
-         -m "Release $1"
+clean_up
 
