@@ -7,8 +7,6 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx -o Simple
+quex -numeric --set-by-expression '[:alnum:]'
 
-# cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism
 cd $tmp
