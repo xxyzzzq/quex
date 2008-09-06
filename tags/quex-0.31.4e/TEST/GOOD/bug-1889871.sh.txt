@@ -1,0 +1,6 @@
+command line: Since version 0.25.9, the token queue is by default turned off. If you want to
+command line: use this feature further, please specify the '--token-queue' command line flag.
+command line: Since version 0.25.9, the accumulator is by default turned off. If you want to
+command line: use this feature further, please specify the '--string-accumulator' or '--sacc' command line flag.
+error.qx:2:error: Regular expression parsing:
+error.qx:2:error: Character range: '-' requires a character following '-'.

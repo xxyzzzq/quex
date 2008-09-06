@@ -1,0 +1,180 @@
+The conversion of a non-deterministic finite automaton (NFA) to a deterministic
+finite automaton (DFA) brings the advantage that at a particular point in time the state
+machine is in one particular state---not in multiple states as with the NFA. This not only reduces
+complexity, but also decreases memory requirements (to store state indices and
+	pattern match-management) and computation time of the resulting lexical
+analyser. The key to do so is to combine states that the NFA takes simultaneously
+into a single state. Whenever a state in the NFA triggers on the same  character
+to more than one state, the states that are reached by this trigger are combined
+into one single state. The process relies on two sub-processes described in this section:
+1) construction of a so called epsilon closure, and 2) determining unique state combinations
+for the range of all triggers. 
+
+The core idea of this process is to find all possible super states of the NFA, i.e. 
+the state combinations that can exist at a particular point in time. Then trigger
+sets have to be found that trigger the transition from one state combination to 
+the other. The state combinations can then be 'renamed' as a single state and
+it is sure that the resulting state machine is deterministic. By requesting
+that the acceptance state of a combined state is acceptance as soon as one
+of its 'member states' is acceptance the entire mechanism of the NFA is preserved.
+
+
+[[fig:epsilon-closure]]
+.The $\epsilon$-closure.
+image::figures/epsilon-closure.pdf[]
+
+The notion of $\epsilon$-triggers enabled a very efficient method to
+sequentialize, parallelize and repeat state machines. As soon as a state
+machine contains an $\epsilon$-trigger it becomes a NFA. If a state A transits
+on an $\epsilon$ trigger to a state B, then the state machine is in state A
+{\it and} B simultaneously as soon as A is reached, because an
+$\epsilon$-trigger does not require any input. This is one reason why the
+result of those operations is an NFA. In order to help with the $\epsilon$-transitions
+the $\epsilon$-closure is defined:
+
+\definition{An {\bf Epsilon Closure} of a state $n$ is the aggregation of all
+    states that can be reached from $n$ via an epsilon transition.}
+
+Consequently, when treating a state, one first collects all states that can
+immediately be reached via $\epsilon$-transition into a new state. This is
+shown in figure <<fig:epsilon-closure, style=ref>>. This new state $n0$ contains all transitions of all
+states of the $\epsilon$-closure. It is supposed to be equivalent to the 
+super state of the NFA which is at the same time in all of the states of the epsilon closure.
+Note, however, even though state 23 in the
+figure is part of the $\epsilon$-closure, as a target state it is kept isolated
+refrerred with its 'maiden name' rather then as part of $n0$
+ %%
+ \footnote{From a super state point of view, state 23 which is reached through
+     the recursion from itself, is not the same as the state 23 being entered
+	 from state 0. Also, $n0$ as being a 'super state ' does not belong to
+	 the same 'world' as the original states.}. 
+
+[[fig:NFA-to-DFA]]
+.Transscription of a state set into a single state of an DFA.
+image::figures/NFA-to-DFA-transitions.pdf[]
+
+The next step consist in finding state combinations and the trigger sets by which
+they are reached from the new state $n0$. Figure <<fig:NFA-to-DFA, style=ref>> shows an example
+of a state $n0$ where some characters trigger to multiple states at the same
+time. This means, that the state machine would be in more than one state at the
+same time, and can, therefore, not be a DFA. On the other hand, one can definitely
+say that {\it one particular character} triggers {\it one state combination}. 
+Combining the states of each character trigger to a state combination, again allows
+the one-to-one (injective) mapping from a trigger to a state---and the conditions
+for a DFA are met. The search of a distinct trigger map consist of the following:
+
+\definition{A {\bf distinct trigger map} from a state $n$ is based on target
+    state combinations that are reached by exactly the same trigger. A set of
+	target states can be combined, if there is at least one common trigger
+	(character code point) by which they are reached from state $n$.  When
+	all target state combinations are found, they can be 'renamed' as
+	single states, and the trigger map describes a one-to-one mapping from
+	incoming characters to target states.}
+
+[[fig:NFA-to-DFA-ranges]]    
+.Combinations of follow-up states displayed against the code points of a characters set--similar to a time history.
+image::figures/NFA-to-DFA-trigger-history.pdf[]
+
+Traditionally \cite{}, \cite{} the detection of suiteable state combinations 
+considers each single character of the trigger map isolated.  This works fine, as long as the
+code set does not exceed the oldtimer 8-bit ASCII character set. Each state in
+the NFA requires then 255 checks.  For a Unicode-based lexical analyser this behaves
+significantly different. Unicode 5.0 currently has $10FFFF, i.e. decimal 1.114.111,
+code points -- not to speak about code points for private usage.
+Consequently about 140.000 times checks would have to be performed for each state in the state machine.
+In order to avoid such a caste in calculation time, the author of quex developed a
+different algorithm based on character ranges as shown in figure <<fig:NFA-to-DFA-ranges, style=ref>>. 
+The algorithm identifies state combinations which are related to certain overlapping ranges
+of characters. 
+
+As mentioned in \ref{sec:character-range-representation}, the quex engine
+relies on a description of triggers in terms of number ranges.  Instead of
+checking each character, the algorithm considers the numeric ranges `R_{A,B}`
+in which a state `A` triggers to state `B`. If a range `R_{A,B}` and `R_{A,B}`
+intersect, then `B` and `C` are states which are entered simultaneously in the
+NFA. Thus, they have to be combined in the DFA. For each set of target state
+combination the intersection of all trigger ranges gives the range on what the
+combination is triggered. It can now be 'renamed', i.e.  a new state can be
+created that is triggered based on any character that fall into the
+intersection. 
+
+The computation of intersections between all possible target states can also be
+simplified.  Again, the line-up of the ranges on the time line comes handy
+(figure <<fig:NFA-to-ranges, style=ref>>).  This time line is
+implemented by 'begin-trigger-target-state' and 'and-trigger-target-state'
+commands that appear at certain code points. Finding intersecting ranges then
+consists only in walking down the timeline, adding and removing target states
+on any such sommand, and storing the intersecting domains together with the
+target state combinations. With this approach it is possible to compute
+most suiteable lexical analyzers in the frame of few seconds on present day
+computing machines.
+
+Now, that multiple states are combined into one state, the question remains about the
+acceptance type of the combined state? The answer becomes simple, though, considering that we try to
+match patterns and that a pattern match relates to an acceptance state:
+
+-  If no state in the state combination is an acceptance state, than the 
+      state representing the combination {\it is not an} acceptance state.
+-  If at least one state in the state combination {\it is an} acceptance state, than 
+      the state representing the combination is an acceptance state. This is 
+      so, since a pattern that matched through one path is not dismissed
+      because another path does not match. For example, the regular
+      expression $$if|ignore$$ matches on $$if$$, i.e. the 'first path'
+      as soon as the $$f$$ comes in, even though, the second path expects a $$g$$ and
+      would be non-acceptance. 
+      Since it is only required that one pattern matches, the acceptance 
+      of the first path is sufficient. 
+-  If two patterns in a combinatino trigger acceptance, this does not pose
+      an exception since there exists preference rules that trigger if two
+      patterns match on the same number of characters \myref{}.
+
+
+The transformation from NFA to DFA is a process that is not only applied during
+the construction of state machines for isolated patterns, but also on the state
+machine that combines all patterns to be matched. In this case, the information
+about the origins have all to be kept. This includes the information about the
+original state. If a non-acceptance state from pattern X is combined with an
+acceptance state from pattern Y, we want to be sure, that the lexical analyser
+does not notify that X matched. A correct way to determine the winner pattern
+is to consider the origins that were acceptance states, determine the most priviledged
+pattern that matches (see section \ref{priviledged-patterns}) and this is the
+winner.
+
+The following very important assumption has to hold for the process
+of converting a set of state machines, i.e. a NFA, into a single state
+machine, i.e. a DFA:
+
+\definition{
+Let $P_{a, b}$ be the set of paths from a state $A$ to a state $B$
+in a state machine (constituting a parallel branch of the NFA). 
+Let $S_{DFA}(A)$ be the set of states that contain $A$ in the resulting
+DFA, and let $S_{DFA}(B)$ be the set of states that contain $B$ in the
+resulting DFA. For the DFA to uniquely represent the NFA, one must
+assume the set of path $P^*(S_{DFA}(A),\,S_{DFA}(B))$ is equal to
+the original one, i.e.
+%%
+\begin{center}
+            $P^*(S_{DFA}(A),\,S_{DFA}(B))$ = $P_{a, b}$
+\end{center}
+}
+
+A direct consequence of this is that if a state X in a pattern can only be
+reached over a state Y, then in the resulting state machine this holds equally.
+The following algorithm demonstrates in pseudo-code the process of constructing
+a DFA that corresponds to an NFA. It can be applied for single patterns, as
+well as for the combined state machine that represents the lexical analyser.
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+state-set-worklist = { [ init-state ] }
+
+while worklist not empty:
+    new worklist = empty
+    for each state-set in worklist:
+        ec = epsilon-closure of state-set
+	new-worklist = distinct-target-state-combinations of ec
+	set triggers for ec
+
+    worklist = new-worklist	
+
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
