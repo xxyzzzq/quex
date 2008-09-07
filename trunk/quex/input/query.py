@@ -30,6 +30,17 @@ def get_supported_command_line_option_description():
         txt += "\n"
     return txt
 
+def search_and_validate(CL, Option):
+
+    if CL.search(Option) == False: return False
+
+    # Validate command line
+    ufos = CL.unidentified_options(OPTION_DB.keys())
+    if ufos != []:
+        error_msg("Unidentified option(s) = " +  repr(ufos) + "\n" + \
+                  get_supported_command_line_option_description())
+    return True
+
 
 def do(ARGV):
     """Performs a query based on the given command line arguments.
@@ -39,11 +50,11 @@ def do(ARGV):
     cl = GetPot(ARGV)
 
     try:
-        if   cl.search("--property"):          __handle_property(cl)
-        elif cl.search("--set-by-property"):   __handle_set_by_property(cl)
-        elif cl.search("--set-by-expression"): __handle_set_by_expression(cl)
-        elif cl.search("--property-match"):    __handle_property_match(cl)
-        else:                                  return False
+        if   search_and_validate(cl, "--property"):          __handle_property(cl)
+        elif search_and_validate(cl, "--set-by-property"):   __handle_set_by_property(cl)
+        elif search_and_validate(cl, "--set-by-expression"): __handle_set_by_expression(cl)
+        elif search_and_validate(cl, "--property-match"):    __handle_property_match(cl)
+        else:                                                return False
         return True
 
     except RegularExpressionException, x:
