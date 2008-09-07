@@ -51,6 +51,12 @@ context of usages of tokens, however, imposes that it complies to some policies:
               RETURN;
         }
 
+   - It must provide a member function that tells about the token's via
+     a function with the following signature
+     +
+     QUEX_TOKEN_ID_TYPE type_id();
+       
+
 As long as these conventions are respected the user created token class will
 interoperate with the framework smoothly. The inner structure of the token
 class can be freely implemented according to the programmer's optimization
