@@ -68,9 +68,9 @@ created:
 Once the engine sources are built by quex, an
 example application can be built that uses the lexical analyser.  The source
 code for the example is specified in file '`lexer.cpp`'. The content
-of this file is shown in figure \ref{ref:sample-application}.
+of this file is shown in figure <<fig-sample-application,,>>.
 
-[[ref:sample-application]]
+[[fig-sample-application]]
 .A sample application using the generated lexical analyser` tiny\_lexer`.
 [cpp]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

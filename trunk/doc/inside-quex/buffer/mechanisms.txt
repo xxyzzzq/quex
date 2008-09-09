@@ -1,6 +1,6 @@
 The buffer implementation in quex takes advantage of the mechanism of
 lexical analysis, and manages to keep the overhead of buffering extremely low.
-This works as shown in figure <<fig:algorithm, style=ref>>. First of all, some content of the
+This works as shown in figure <<fig-algorithm, style=ref>>. First of all, some content of the
 information stream in stored in a fixed chunk of memory, the buffer. During the
 lexical analysis one basically iterates through this chunk. Whenever a new
 input character is required to determine a state transition, the pointer to the
@@ -12,7 +12,7 @@ the begin of the file, or the end of the file. The trick here is that the
 transition checks of any state will drop if those characters occur. In
 any other case the business can continue as usual.
 
-[[fig:algorithm]]
+[[fig-algorithm]]
 .Interaction of buffer and the lexical analyser state machine.
 image::figures/algorzthm.pdf[]
 

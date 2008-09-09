@@ -7,9 +7,9 @@ deterministic automaton from the set of state machines for each pattern.  This
 process is described in the following sections.
 
 It was already discussed that information about acceptance
-\myref{sec:basics/pattern-matching}, storing of input
-positions\myref{sec:inside-quex/intro/post-conditions} and dependence on
-pre-conditions \myref{sec:inside-quex/intro/pre-conditions} need to be stored
+section <<sec-basics-pattern-matching>>, storing of input
+positionssection <<sec-inside-quex-intro-post-conditions>> and dependence on
+pre-conditions section <<sec-inside-quex-intro-pre-conditions>> need to be stored
 as hidden state variables\cite{} inside the states of the isolated pattern
 state machines. Those informations need to be maintained when the states
 dissolve into the 'super state machine' that contains all patterns. This happens

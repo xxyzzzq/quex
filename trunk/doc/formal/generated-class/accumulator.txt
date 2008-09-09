@@ -1,6 +1,6 @@
 The `accumulator` is a member that allows to stock strings to communicate
 them between pattern-actions. In the practical example in section
-\ref{sec:practical/intro} the string contained in string delimiter marks is
+<<sec-practical-intro>> the string contained in string delimiter marks is
 accumulated until the `on\_exit` handler was activated, i.e. the` 
     STRING\_READER` mode is left. Insider the handler, the string is flushed
     into a token with a specific id `TKN\_STRING`.  The accumulator

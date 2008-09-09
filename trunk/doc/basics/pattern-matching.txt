@@ -1,7 +1,7 @@
 Pattern matching can be described by a finite state automaton where
 incoming characters play the role of triggers. Each incoming character, i.e.
 trigger, determines wether the state machine transits into a new state or it
-remains in the same state. Consider figure <<fig:pattern-state-machines, , style=ref>>
+remains in the same state. Consider figure <<fig-pattern-state-machines, Example, style=ref>>
 that depicts a state machine to match a floating point number. In its initial
 state it waits for a digit (the `START` state). If no digit arrives, the
 state machine goes into the `FAILED` state. It can be said for sure, that
@@ -16,7 +16,7 @@ character from the 'else' set (non-expected characters) lets the machine
 still transit into an `ACCEPTANCE` state, since enough characters have
 arrived to judge that it is a number. 
 
-[[fig:pattern-state-machine]]
+[[fig-pattern-state-machine]]
 .A state machine to detect a floating point number pattern.
 image::figures/pattern-state-machine.png[]
 

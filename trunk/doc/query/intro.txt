@@ -9,8 +9,8 @@ would be as follows:
 [cpp]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 define {
-    LATIN_ID_START   [: intersection(\P{ID_Start}, \P{Script=Latin}) :]
-    GREEK_ID_START   [: intersection(\P{ID_Start}, \P{Script=Greek}) :]
+    LATIN_ID_START   [: intersection(\P{ID_Start},    \P{Script=Latin}) :]
+    GREEK_ID_START   [: intersection(\P{ID_Start},    \P{Script=Greek}) :]
     LATIN_ID_CONT    [: intersection(\P{ID_Continue}, \P{Script=Latin}) :]
     GREEK_ID_CONT    [: intersection(\P{ID_Continue}, \P{Script=Greek}) :]
 
@@ -24,11 +24,11 @@ characters than one actually intended. If one mentions greek and latin
 characters one usually thinks about lower and upper case letters from 
 a to z and α to ω. However, the set of characters that are included 
 in `Script=Latin` is much larger than that--and so is the set of characters
-in `Script=Greek`. Figure <<fig:..>> displays the set of characters 
+in `Script=Greek`. Figure <<fig-screenshot-character-set-query>> displays the set of characters 
 for the character set specified by `GREEK_ID_CONT`.
 
+[[fig-screenshot-character-set-query]]
 .Example query for greek identifier characters.
-[[fig_lexical_analyser]]
 image::figures/screenshot-character-set-query.png[]
 
 As can be seen in the screenshot, the character set that is actually

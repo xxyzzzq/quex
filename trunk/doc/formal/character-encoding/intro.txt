@@ -12,7 +12,7 @@ For lex, for example, the definition of character ranges such as
 only the two bytes around the '-' where the characters might actually be
 represented by more than one byte.
 
-[[fig:character-encoding]]
+[[fig-character-encoding]]
 .Character encodings involved in quex's generation process.}
 image::figures/character-encoding.png[]
 
@@ -23,7 +23,7 @@ buffer handling. This way `quex` is able to analyze character streams of
 all the hundreds of character encodings that iconv supports. It is essential to
 understand that there are _three_ different places where character
 encodings are involved in the lexical analyzer generation. As shown in figure
-<<fig:character-encodings, style=ref>> these are the following:
+<<fig-character-encodings, ,style=ref>> these are the following:
 
 Lexical Analyzer Description:: 
 

@@ -1,3 +1,4 @@
+// vim: set syntax=asciidoc:
 With the rise of the Python programming language the use of indentation as
 scope delimiter has become popular. Indeed, it maybe the most efficient method
 to delimit scope with the least amount of additional characters
@@ -5,7 +6,7 @@ to delimit scope with the least amount of additional characters
 provides a convinient mechanism to handle indentations which runs quasi in
 paralell to the pattern matching: _indentation events_.  
 
-Figure <<fig:indentation-principle, style=ref>> displays in an example the principle of
+Figure <<fig-indentation-principle, style=ref>> displays in an example the principle of
 indentation events. Whenever the lexical analyser reaches the first
 non-whitespace in a line, an indentation event (indicated as a little star in
 the figure) is triggered. The lexical analyser engine then calls a user
@@ -15,7 +16,7 @@ user's indentation handler as arguments. The indentation handler, then, can
 then keep track of indentation blocks or whatever his little heart desires.
 
 
-[[fig:indentation-principle]]
+[[fig-indentation-principle]]
 .Principle of Indentation Events.
 image::figures/indentation.png[]
 
@@ -63,10 +64,11 @@ else are very hard to find and require a lot of insight into the actual
 process of lexical analysis. Using the '`on\_indentation`' event
 handler ends up in a much clearer and safer design. For more information
 about the pre-condition newline pitfall see section
-\ref{sec:formal/patterns/context-dependent-pitfalls}, page
-\pageref{formal/patterns/context-dependent-pitfalls}.
+// \ref{sec-formal/patterns/context-dependent-pitfalls}, page
+// \pageref{formal/patterns/context-dependent-pitfalls}.
+<<formal-patterns-context-dependent-pitfalls,,>>.
 
-{\bf Caveat:} 
+*Caveat:*
 
 Note, that if a pattern contains more than one newline then
 only the indentation event concerning the last newline ist triggered! Imagine

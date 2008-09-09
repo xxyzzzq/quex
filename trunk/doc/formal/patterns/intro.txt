@@ -1,4 +1,4 @@
-Section \ref{sec:practical/patterns} already discussed the format of the
+Section <<sec-practical-patterns>> already discussed the format of the
 pattern file. In this section, it is described how to specify patterns by means
 of regular expressions. The regular expression syntax follows the scheme of
 what is usually called _traditional UNIX syntax_ \cite{}, includes elements of
