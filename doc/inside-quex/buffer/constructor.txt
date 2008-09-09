@@ -8,7 +8,7 @@ template:
 - `int BLC`: The character code to designate 'buffer limit'.
 - `class OverflowPolicy`: A class implementing two functions:` 
     forward`' and `backward`' to deal with the unlike event of buffer
-    overflow (see section \ref{sec:buffer/overflow}).
+    overflow (see section <<sec-buffer-overflow>>).
 
 
 Those are the parameters to the class`basic\_buffer`. The header, though,

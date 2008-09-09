@@ -44,7 +44,7 @@ of the $\epsilon$-transition this can be achieved by the following steps:
       via $\epsilon$-transition.
 
 
-Figure <<fig:pattern-repeat-kleene-closure, style=ref>> shows the example of a
+Figure <<fig-pattern-repeat-kleene-closure, style=ref>> shows the example of a
 Kleene-Closure for the pattern `$$[A-Z]+":"$$`}, which would match a C-style
 label. The other forms of repetitition are closely related to that. The one or
 arbitrary repetition $$R+$$ can be achieved by mounting the same state
@@ -53,7 +53,7 @@ at least once. Similarly minimum repetitions are achieved by mounting the state
 machines N times in front of the Kleene-Closure, where N is the minimum number
 of times the pattern has to be matched. 
 
-[[fig:pattern-repeat-kleene-closure]]
+[[fig-pattern-repeat-kleene-closure]]
 .Pattern repetion by Kleene Closure.
 image::figures/pattern-repeat-kleene-closure.pdf[]
 

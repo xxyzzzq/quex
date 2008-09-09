@@ -3,12 +3,12 @@ pattern for _whitespace_, consisting of space, tabulator and newline.
 There are two bracket types for opening and closing brackets, an assignment
 operator `=`, the two keywords `if` and `struct`, identifiers
 consisting of letters from A-Z in capital and lower-case, floating point
-numbers and string delimeters. The listing in figure <<fig:pattern-code>>
+numbers and string delimeters. The listing in figure <<fig-pattern-code>>
 shows the content of the `define` section in `simple.qx` describing all required
 patterns in terms of regular expressions.
 
 
-[[fig:pattern-code]]
+[[fig-pattern-code]]
 .Definition of pattern shorthands in a `define`-section.
 [cpp]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

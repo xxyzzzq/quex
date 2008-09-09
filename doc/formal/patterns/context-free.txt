@@ -64,7 +64,7 @@ Context free regular expressions match against an input independent on what
        The NULL character is also used aa buffer limitting character!
        Same as with the code for 'begin-of-file' and 'end-of-file', if these codes
        are used inside regular expressions, their values have to be re-assigned.
-       See section <<sec:formal/command-line-options>> for specifying a different
+       See section <<sec-formal-command-line-options>> for specifying a different
        value for the buffer limit code.
 
 `\U11A0FF`:: 
@@ -108,14 +108,14 @@ Context free regular expressions match against an input independent on what
      the code of the character with the given _General Category_ \cite{}. This is 
      a shortcut for `$$\P{General_Category=X}$$`. Note, that these expressions 
      cannot be used inside quoted strings. For possible settings of the 
-     General_Category property, see section <<sec:formal-unicode-properties>>.
+     General_Category property, see section <<sec-formal-unicode-properties>>.
 
 
 Any character specified as character code, i.e. using `\`, `\x`, `\X`, or `\U`
 are considered to be unicode code points. For applications in english spoken
 cultures this is identical to the ASCII encoding. For details about unicode
 code tables consider the standard \cite{Unicode50}. Section
-<<formal/ucs-properties>> is dedicated to an introduction to Unicode
+<<sec-formal-ucs-properties>> is dedicated to an introduction to Unicode
 properties.
 
 Two special rules have to appear isolatedly, out of the context of regular
@@ -187,5 +187,5 @@ Much of the syntax is directly based on POSIX extended regular expressions \cite
 `$++{++NAME}`:: 
 
     the expansion of the defined pattern "NAME". Pattern names can
-    be defined in `define` sections (see section <<sec:practical/patterns>>).
+    be defined in `define` sections (see section <<sec-practical-patterns>>).
 

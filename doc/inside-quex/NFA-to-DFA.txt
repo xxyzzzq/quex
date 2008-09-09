@@ -19,7 +19,7 @@ that the acceptance state of a combined state is acceptance as soon as one
 of its 'member states' is acceptance the entire mechanism of the NFA is preserved.
 
 
-[[fig:epsilon-closure]]
+[[fig-epsilon-closure]]
 .The $\epsilon$-closure.
 image::figures/epsilon-closure.pdf[]
 
@@ -37,7 +37,7 @@ the $\epsilon$-closure is defined:
 
 Consequently, when treating a state, one first collects all states that can
 immediately be reached via $\epsilon$-transition into a new state. This is
-shown in figure <<fig:epsilon-closure, style=ref>>. This new state $n0$ contains all transitions of all
+shown in figure <<fig-epsilon-closure, style=ref>>. This new state $n0$ contains all transitions of all
 states of the $\epsilon$-closure. It is supposed to be equivalent to the 
 super state of the NFA which is at the same time in all of the states of the epsilon closure.
 Note, however, even though state 23 in the
@@ -49,12 +49,12 @@ refrerred with its 'maiden name' rather then as part of $n0$
 	 from state 0. Also, $n0$ as being a 'super state ' does not belong to
 	 the same 'world' as the original states.}. 
 
-[[fig:NFA-to-DFA]]
+[[fig-NFA-to-DFA]]
 .Transscription of a state set into a single state of an DFA.
 image::figures/NFA-to-DFA-transitions.pdf[]
 
 The next step consist in finding state combinations and the trigger sets by which
-they are reached from the new state $n0$. Figure <<fig:NFA-to-DFA, style=ref>> shows an example
+they are reached from the new state $n0$. Figure <<fig-NFA-to-DFA, style=ref>> shows an example
 of a state $n0$ where some characters trigger to multiple states at the same
 time. This means, that the state machine would be in more than one state at the
 same time, and can, therefore, not be a DFA. On the other hand, one can definitely
@@ -71,7 +71,7 @@ for a DFA are met. The search of a distinct trigger map consist of the following
 	single states, and the trigger map describes a one-to-one mapping from
 	incoming characters to target states.}
 
-[[fig:NFA-to-DFA-ranges]]    
+[[fig-NFA-to-DFA-ranges]]    
 .Combinations of follow-up states displayed against the code points of a characters set--similar to a time history.
 image::figures/NFA-to-DFA-trigger-history.pdf[]
 
@@ -83,11 +83,11 @@ significantly different. Unicode 5.0 currently has $10FFFF, i.e. decimal 1.114.1
 code points -- not to speak about code points for private usage.
 Consequently about 140.000 times checks would have to be performed for each state in the state machine.
 In order to avoid such a caste in calculation time, the author of quex developed a
-different algorithm based on character ranges as shown in figure <<fig:NFA-to-DFA-ranges, style=ref>>. 
+different algorithm based on character ranges as shown in figure <<fig-NFA-to-DFA-ranges, style=ref>>. 
 The algorithm identifies state combinations which are related to certain overlapping ranges
 of characters. 
 
-As mentioned in \ref{sec:character-range-representation}, the quex engine
+As mentioned in <<sec-character-range-representation>>, the quex engine
 relies on a description of triggers in terms of number ranges.  Instead of
 checking each character, the algorithm considers the numeric ranges `R_{A,B}`
 in which a state `A` triggers to state `B`. If a range `R_{A,B}` and `R_{A,B}`
@@ -100,7 +100,7 @@ intersection.
 
 The computation of intersections between all possible target states can also be
 simplified.  Again, the line-up of the ranges on the time line comes handy
-(figure <<fig:NFA-to-ranges, style=ref>>).  This time line is
+(figure <<fig-NFA-to-ranges, style=ref>>).  This time line is
 implemented by 'begin-trigger-target-state' and 'and-trigger-target-state'
 commands that appear at certain code points. Finding intersecting ranges then
 consists only in walking down the timeline, adding and removing target states

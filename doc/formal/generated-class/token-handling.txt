@@ -1,4 +1,4 @@
-Section \ref{sec:basics/token-queue} elaborated on the idea that the lexical
+Section <<sec-basics-token-queue>> elaborated on the idea that the lexical
 analyser communicates tokens to the user. In the quex generated lexical
 analyser the tokens are stored in a token-queue before they are delivered to
 the caller of `get\_token()`. Inside the pattern-action the `send`
@@ -18,7 +18,8 @@ lexical analyzer should only find out for what a string in the input stream
 stands for. It should not interpret it, but leave the interpretation to the
 user or the parser.
 
-Figure <<fig:token-queue, style=ref>>, page \pageref{fig:token-queue},
+Figure <<fig-token-queue, style=ref>>, 
+// page \pageref{fig-token-queue},
 displayed a sequence diagram depicting the communication of tokens.
 Using the `send` function group the writer of pattern-action pairs does
 not need to care about the `get\_token()` function call. He sends tokens

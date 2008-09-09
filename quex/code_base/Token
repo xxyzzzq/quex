@@ -20,7 +20,13 @@
 
 #include<iostream>
 #include<string>
-#include <quex/code_base/definitions>
+
+/* Do not include <quex/code_base/definitions> at this point, since it defines the
+ * token id type, if it is not defined. */
+#include<quex/code_base/asserts>
+#include<quex/code_base/compatibility/inttypes.h>
+
+#define QUEX_TOKEN_ID_TYPE uint32_t
 
 namespace quex {
 

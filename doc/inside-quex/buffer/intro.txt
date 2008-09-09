@@ -14,11 +14,11 @@ comes handy is: _a buffer in the system memory_. A buffer loads a larger
 blocks of data and keeps them ready-to-read until its content is read completely. Then
 it loads the next larger block of data.
 
-[[fig:basic-buffer]]
+[[fig-basic-buffer]]
 .Structure of quex's buffer.
 image::figures/basic-buffer.pdf[]
 
-The structure of quexs buffer is shown in figure <<fig:basic-buffer, style=ref>>. The buffer itself
+The structure of quexs buffer is shown in figure <<fig-basic-buffer, style=ref>>. The buffer itself
 is not more than a continous chunk of memory. It has two places to store
 border characters. One is located at the front to store 'begin of buffer' or 'begin of
 file'. The other is located at the end to store 'end of buffer' or 'end of file'.

@@ -9,7 +9,7 @@ of a lexical analyzer into the two steps of _design_ and _implementation_.
 The first step consists of three minor activities:
 
 ///////////////////////////////////////////////////
-[[% {fig:process]]
+[[% {fig-process]]
 .% {Activities for Lexical Analysis Design
 image::% {figures/process[]
 ///////////////////////////////////////////////////

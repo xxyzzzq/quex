@@ -1,3 +1,4 @@
+[[formal-patterns-context-dependent-pitfalls]]
 A somehow subtle pitfall is related to the begin-of-line pre-condition.
 When using the '^' sign at the beginning of a line it is tempting to
 sing "don't worry, be happy ... this matches at _any_ begin of line"--well, it

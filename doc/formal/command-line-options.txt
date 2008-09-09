@@ -1,3 +1,4 @@
+[[sec-formal-command-line-options]]
 This section lists the command line options to control the behavior of the
 generated lexical analyzer.  Numbers following these options can be either
 decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
@@ -6,9 +7,9 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 `-i`, `--mode-files` _file-list_::
         
 	    _file-list_ = list of files of the file containing mode definitions
-	    (see sections \ref{sec:practical/modes},
-	     \ref{sec:practical/pattern-action-pairs}, and
-	     \ref{sec:formal/generated-class/mode-handling}). DEFAULT = `<empty>`
+	    (see sections <<sec-practical-modes>>,
+	     <<sec-practical-pattern-action-pairs>>, and
+	     <<sec-formal-generated-class-mode-handling>>). DEFAULT = `<empty>`
 
 `--token-prefix` _name_::
 	
@@ -30,7 +31,10 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 `--token-id-termination` _number_::
         
 	    _number_ = Token identifier for the event of 'end of token stream'.
-	    DEFAULT = `"0"`.
+	    DEFAULT = `"0"`. Note, that the termination token id can always be referred to 
+        via `__QUEX_TOKEN_ID_TERMINATION`. One does not have to specify it just in order
+        to be able to know its value. Consider also the comments on the token for 
+        'uninitialized'.
 
 `--token-id-uninitialized` _number_::
         
@@ -38,7 +42,13 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         initialized.  Any token that arives the user 'by purpose' should not
         contain this identifier.  It is basically a means for debuggin in order
         to check wether tokens slip through due to whatever erroneous behavior.
-        DEFAULT = `"1"`.
+        DEFAULT = `"1"`. 
+        +
+        This option is close to meaningless under normal conditions. One can always
+       refer to the unitiliazed token id via `__QUEX_TOKEN_ID_UNINITIALIZED`. In
+       certain cases, though, it might make sense to ensure this id to have a certain
+       value. This would be the case, if someone would like to code more than just the
+       token id in the token id variable.
 
 `--version-id` _name_::
 
@@ -50,7 +60,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         
 	    _filename_ = Name of the file that contains an alternative definition
 	    of the numerical values for the token-ids (see also section
-	    \ref{sec:formal/macro}). DEFAULT = `<empty>`
+	    <<sec-formal-macro>>). DEFAULT = `<empty>`
 
 `-o`, `--engine` _name_::
         
@@ -90,7 +100,7 @@ following command line options can be used.
 `--derived-class` _name_::
         
 	   `name` = If specified, name of the derived class that the user intends to provide
-	    (see section \ref{sec:formal/derivation}). Note, specifying this option
+	    (see section <<sec-formal-derivation>>). Note, specifying this option
 	     signalizes that the user wants to derive from the generated class. If this
 	     is not desired, this option, and the following, have to be left out. DEFAULT = `<empty>`
         

@@ -42,10 +42,10 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .Characters for unicode property `Block=Ethiopic`.
 image::figures/screenshot-block-ethiopic.png[]
 
-and the result is displayed in figure <<fig:screenshot-block-ethiopic.png>>.
+and the result is displayed in figure <<fig-screenshot-block-ethiopic.png>>.
 Naturally, sets specified with a simple property setting are not precisely
 what the user desires. To apply complex operations of character set, quex
-provides character set operations <<sec:formal/patterns/operations>>. Again,
+provides character set operations <<sec-formal/patterns/operations>>. Again,
 it is essential to know what character sets these expressions expand. Thus,
    quex provides a functionality to investigate set expressions with the
    command line option `--set-by-expression`. The following call

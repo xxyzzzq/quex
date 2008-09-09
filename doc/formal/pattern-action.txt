@@ -14,8 +14,9 @@ embraced by curly brackets.
   until the _matching closing curly bracket_ that terminates the action.
 
 Examples for pattern-action pairs have been given enough in section
-\ref{sec:practical/pattern-action-pairs}, page
-\pageref{sec:practical/pattern-action-pairs}.  There are a few important
+<<sec-practical-pattern-action-pairs>>, page
+// \ pageref{sec-practical-pattern-action-pairs}.  
+There are a few important
 variables to know for coding the action for a pattern match:
 
 - `self`: Use the reference `self.` + `member\_name` in order to access a member of
