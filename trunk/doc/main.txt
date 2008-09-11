@@ -62,6 +62,9 @@ include::practical/modes.txt[]
 === Pattern-Action Pairs
 include::practical/pattern-action-pairs.txt[]
 
+=== Skippers
+include::practical/skipper.txt[]
+
 === Calling Queχ
 include::practical/calling-quex.txt[]
 

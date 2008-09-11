@@ -28,12 +28,17 @@ $$DELIMITER_REMAINDER_TEST$$
     goto REENTRY_PREPARATION; /* End of range reached. */
  
 $$SKIPPER$$_DROP_OUT:
-   $$RELOAD$$;
-   if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ ) {
+    /* When loading new content it is always taken care that the beginning of the lexeme
+     * is not 'shifted' out of the buffer. In the case of skipping, we do not care about
+     * the lexeme at all, so do not restrict the load procedure and set the lexeme start
+     * to the actual input position.                                                    */
+    QuexBuffer_mark_lexeme_start(&me->buffer); 
+    $$RELOAD$$;
+    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ ) {
        $$MISSING_CLOSING_DELIMITER$$
-   }
-   content_end = QuexBuffer_content_end(&me->buffer);
-   $$SKIPPER$$_RESTART;
+    }
+    content_end = QuexBuffer_content_end(&me->buffer);
+    $$SKIPPER$$_RESTART;
 """
 
 def get_range_skipper(EndSequence, LanguageDB, MissingClosingDelimiterAction=""):
