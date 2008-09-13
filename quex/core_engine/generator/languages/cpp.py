@@ -34,11 +34,11 @@ def __local_variable_definitions(VariableInfoList):
     for info in VariableInfoList:
         type  = info[0]
         name  = info[1]
+        if len(info) > 3: name += "[%s]" % repr(info[3])
         value = info[2]
         txt += "    %s%s %s = %s;\n" % (type, " " * (L-len(type)), name, value)
     return txt
          
-
 __function_signature = """
 __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
 $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyser* me) 
@@ -53,6 +53,21 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnaly
        using namespace quex;
        QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
 #   endif
+"""
+
+comment_on_post_context_position_init_str = """
+    /* Post context positions do not have to be reset or initialized. If a state
+     * is reached which is associated with 'end of post context' it is clear what
+     * post context is meant. This results from the ways the state machine is 
+     * constructed. A post context positions live time looks like the following:
+     *
+     * (1)   unitialized (don't care)
+     * (1.b) on buffer reload it may, or may not be adapted (don't care)
+     * (2)   when a post context begin state is passed, the it is **SET** (now: take care)
+     * (2.b) on buffer reload it **is adapted**.
+     * (3)   when a terminal state of the post context is reached (which can only be reached
+     *       for that particular post context, then the post context position is used
+     *       to reset the input position.                                              */
 """
 
 
@@ -92,7 +107,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
                                         "QUEX_LEXER_CLASS::" + name]) 
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
-    txt += __load_procedure(PostConditionedStateMachineID_List)
     txt += signature
     txt  = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
 
@@ -101,20 +115,17 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     local_variable_list.extend(
             [ ["QUEX_GOTO_LABEL_TYPE",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION_TYPE", "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
-              ["QUEX_CHARACTER_TYPE",         "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
+              ["QUEX_CHARACTER_POSITION_TYPE", "post_context_start_position",    "(QUEX_CHARACTER_TYPE*)(0x00)", 
+                                                                                 len(PostConditionedStateMachineID_List)],
+              ["QUEX_CHARACTER_TYPE",          "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
             ])
               
-    # -- post-condition position: store position of original pattern
-    for state_machine_id in PostConditionedStateMachineID_List:
-         local_variable_list.append(["QUEX_CHARACTER_POSITION_TYPE",
-                                     "last_acceptance_%s_input_position" % __nice(state_machine_id),
-                                     "(QUEX_CHARACTER_POSITION_TYPE)(0x00)"])
-
     # -- pre-condition fulfillment flags                
     for pre_context_sm_id in PreConditionIDList:
         local_variable_list.append(["int", "pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), "0"])
 
     txt += __local_variable_definitions(local_variable_list)
+    txt += comment_on_post_context_position_init_str
     txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
     txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
     txt += "    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;\n"
@@ -148,42 +159,6 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     txt += "#include <quex/code_base/temporary_macros_off>\n"
     return txt
-
-
-__buffer_reload_str = """
-QUEX_INLINE bool 
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_buffer_reload_forward(QuexBuffer* buffer, 
-                                             QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position
-                                             $$LAST_ACCEPTANCE_POSITIONS$$)
-{
-    if( buffer->filler == 0x0 ) return false;
-    const size_t LoadedByteN = QuexBufferFiller_load_forward(buffer);
-    if( LoadedByteN == 0 ) return false;
-
-    if( *last_acceptance_input_position != 0x0 ) { 
-        *last_acceptance_input_position -= LoadedByteN;
-        /* QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); */
-    }                                                                  
-                                                                          
-$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$                
-    return true;
-}
-"""
-
-def __load_procedure(PostConditionedStateMachineID_List):
-    # Reload requires to adapt the positions of pointers.
-    # Pointers point to memory and do not refer to stream positions.
-    # thus, they need to be adapted according to the loaded number of bytes
-    adapt_txt = ""
-    argument_list = ""
-    for state_machine_id in PostConditionedStateMachineID_List:
-        variable_name  = "last_acceptance_%s_input_position" % state_machine_id 
-        adapt_txt     += "       *%s -= (LoadedByteN); \\\n"  % variable_name
-        argument_list += ", QUEX_CHARACTER_POSITION_TYPE* %s"         % variable_name
-
-    return blue_print(__buffer_reload_str,
-                  [["$$QUEX_SUBTRACT_OFFSET_TO_LAST_ACCEPTANCE_??_POSITIONS$$", adapt_txt],
-                   ["$$LAST_ACCEPTANCE_POSITIONS$$", argument_list]])
 
 __terminal_state_str  = """
   /* (*) Terminal states _______________________________________________________*/
@@ -234,6 +209,7 @@ $$REENTRY_PREPARATION$$
      *     at each time when CONTINUE is called at the end of a pattern. */
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
+$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     /*  If a mode change happened, then the function must first return and
      *  indicate that another mode function is to be called. At this point, 
      *  we to force a 'return' on a mode change. 
@@ -284,8 +260,10 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
 
     return txt
 
-def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, 
-                      LanguageDB, DirectlyReachedTerminalID_List):
+def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB):
+    state_machine                  = SMD.sm()
+    DirectlyReachedTerminalID_List = SMD.directly_reached_terminal_id_list()
+
     txt = ""
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
@@ -318,10 +296,13 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
                __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
     elif state_machine.core().post_context_id() != -1L: 
+        post_condition_index = SMD.get_post_context_index(state_machine_id)
         # Post Contexted Patterns:
         txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
         # -- have a dedicated register from where they store the end of the core pattern.
-        variable = "last_acceptance_%s_input_position" % __nice(state_machine_id)
+        variable = "post_context_start_position[%i]" % index 
+        txt += "    " + LanguageDB["$comment"]("post context index '%i' == state machine '%i'" % \
+                                               (post_condition_index, __nice(state_machine_id)))
         txt += "    " + LanguageDB["$input/seek_position"](variable) + "\n"
 
     else:
@@ -339,18 +320,20 @@ def get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF
 
     return txt
 
-def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStreamAction, 
-                      SupportBeginOfLineF, PreConditionIDList, LanguageDB, 
-                      DirectlyReachedTerminalID_List):
+def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction, 
+                      SupportBeginOfLineF, PreConditionIDList, LanguageDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
     """      
+    assert SMD.__class__.__name__ == "StateMachineDecorator"
+    sm = SMD.sm()
+    PostConditionedStateMachineID_List = SMD.post_contexted_sm_id_list()
+    DirectlyReachedTerminalID_List     = SMD.directly_reached_terminal_id_list()
 
     # (*) specific terminal states of patterns (entered from acceptance states)
     txt = ""
     for state_machine_id, pattern_action_info in action_db.items():
-        txt += get_terminal_code(state_machine_id, pattern_action_info, SupportBeginOfLineF, 
-                                 LanguageDB, DirectlyReachedTerminalID_List)
+        txt += get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOfLineF, LanguageDB)
     specific_terminal_states_str = txt
 
     # (*) general terminal state (entered from non-acceptance state)    
@@ -414,14 +397,15 @@ def __terminal_states(StateMachineName, sm, action_db, DefaultAction, EndOfStrea
                       ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]("$terminal-DEFAULT")],
                       ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
                       ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]("$terminal-DEFAULT")],
-                      ["$$STATE_MACHINE_NAME$$",           StateMachineName],
+                      ["$$STATE_MACHINE_NAME$$",           SMD.name()],
                       ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],
                       ])
 
     txt += blue_print(__on_continue_reentry_preparation_str,
-                      [["$$REENTRY_PREPARATION$$",                   LanguageDB["$label-def"]("$re-start")],
-                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$", delete_pre_context_flags_str],
-                       ["$$GOTO_START$$",                            LanguageDB["$goto"]("$start")],
+                      [["$$REENTRY_PREPARATION$$",                    LanguageDB["$label-def"]("$re-start")],
+                       ["$$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$",  delete_pre_context_flags_str],
+                       ["$$GOTO_START$$",                             LanguageDB["$goto"]("$start")],
+                       ["$$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$", comment_on_post_context_position_init_str],
                        ])
 
     return txt

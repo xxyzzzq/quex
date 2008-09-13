@@ -2,18 +2,18 @@ from quex.core_engine.generator.languages.core import __nice
 from quex.input.setup import setup as Setup
 LanguageDB = Setup.language_db
 
-def do(State, StateIdx, SM):
+def do(State, StateIdx, SMD):
     assert State.__class__.__name__ == "State"
-    assert SM.__class__.__name__    == "StateMachineDecorator"
+    assert SMD.__class__.__name__   == "StateMachineDecorator"
     
-    mode = SM.mode()
-    if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SM.sm())
+    mode = SMD.mode()
+    if   mode == "ForwardLexing":                  return forward_lexing(State, StateIdx, SMD)
     elif mode == "BackwardLexing":                 return backward_lexing(State)
     elif mode == "BackwardInputPositionDetection": return backward_lexing_find_core_pattern(State)
     else:
         assert False, "This part of the code should never be reached"
 
-def forward_lexing(State, StateIdx, SM, ForceF=False):
+def forward_lexing(State, StateIdx, SMD, ForceF=False):
     """Forward Lexing:
 
        (1) If a the end of a core pattern of a post contexted pattern is reached, then
@@ -25,7 +25,8 @@ def forward_lexing(State, StateIdx, SM, ForceF=False):
            => use 'get_acceptance_detector()' in order to get a sequence of 'if-else'
               blocks that determine acceptance. 
     """
-    assert SM.__class__.__name__ == "StateMachine"
+    assert SMD.__class__.__name__ == "StateMachineDecorator"
+    SM = SMD.sm()
 
     OriginList = State.origins().get_list()
 
@@ -38,8 +39,10 @@ def forward_lexing(State, StateIdx, SM, ForceF=False):
         if origin.is_end_of_post_contexted_core_pattern():
             assert origin.is_acceptance() == False
             # store current input position, to be restored when post condition really matches
-            variable = "last_acceptance_%s_input_position" % __nice(origin.state_machine_id)
-            txt += "    " + LanguageDB["$input/tell_position"](variable) + "\n"
+            post_context_index = SMD.get_post_context_index(origin.state_machine_id)
+            txt += "    " + LanguageDB["$comment"]("post context index '%i' == state machine '%i'" % \
+                                                   (post_condition_index, __nice(origin.state_machine_id)))
+            txt += "    " + LanguageDB["$input/tell_position"]("post_context_start_position[%i]\n" % post_context_index)
 
         elif origin.is_acceptance():
             contains_acceptance_f = True

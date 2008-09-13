@@ -35,6 +35,7 @@ label_db = \
     "$input":                 lambda StateIdx:    "STATE_%s_INPUT"    % __nice(StateIdx),
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
     "$start":                 lambda NoThing:     "__REENTRY",
+    "$skipper":               lambda StateIdx:    "SKIPPER_%s"        % __nice(StateIdx),
 }
 #________________________________________________________________________________
 # C++
@@ -97,9 +98,9 @@ db["C++"] = {
     "$assignment":        lambda variable, value:
                           "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
                           "%s = %s;\n" % (variable, value),
-    "$set-last_acceptance": lambda value:
-                          "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
-                          "QUEX_SET_last_acceptance(%s);\n" % value,
+    "$set-last_acceptance":  lambda value:
+                             "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
+                             "QUEX_SET_last_acceptance(%s);\n" % value,
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #
     "$header-definitions":   cpp.__header_definitions,

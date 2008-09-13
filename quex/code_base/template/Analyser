@@ -45,6 +45,12 @@ namespace quex {
     QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer);
 
+    QUEX_INLINE bool 
+    QuexAnalyser_buffer_reload_forward(QuexBuffer* buffer, 
+                                       QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position,
+                                       QUEX_CHARACTER_POSITION_TYPE* post_context_start_position,
+                                       const size_t                  PostContextN);
+
     QUEX_INLINE void 
     QuexAnalyser_free_related_memory(QuexAnalyser* me);
 

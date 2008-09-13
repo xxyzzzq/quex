@@ -11,11 +11,11 @@ LanguageDB = Setup.language_db
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
-def do(state, StateIdx, SM, InitStateF=False):
+def do(state, StateIdx, SMD, InitStateF=False):
     """Produces code for all state transitions. Programming language is determined
        by 'Language'.
     """    
-    assert SM.__class__.__name__ == "StateMachineDecorator"
+    assert SMD.__class__.__name__ == "StateMachineDecorator"
 
     # (*) check that no epsilon transition triggers to a real state                   
     if __DEBUG_CHECK_ACTIVE_F:
@@ -23,8 +23,8 @@ def do(state, StateIdx, SM, InitStateF=False):
                "epsilon transition contained target states: state machine was not made a DFA!\n" + \
                "epsilon target states = " + repr(state.transitions().get_epsilon_target_state_index_list())
 
-    if SM.dead_end_state_db().has_key(StateIdx):
-        return transition.do_dead_end_router(state, StateIdx, SM.backward_lexing_f())
+    if SMD.dead_end_state_db().has_key(StateIdx):
+        return transition.do_dead_end_router(state, StateIdx, SMD.backward_lexing_f())
        
     TriggerMap = state.transitions().get_trigger_map()
     assert TriggerMap != []  # Only dead end states have empty trigger maps.
@@ -36,18 +36,18 @@ def do(state, StateIdx, SM, InitStateF=False):
     #       pointer needs to be incremented.
     txt = ""
     # note down information about success, if state is an acceptance state
-    txt += input_block(StateIdx, InitStateF, SM.backward_lexing_f())
+    txt += input_block(StateIdx, InitStateF, SMD.backward_lexing_f())
 
-    txt += acceptance_info.do(state, StateIdx, SM)
+    txt += acceptance_info.do(state, StateIdx, SMD)
 
-    txt += transition_block.do(state, StateIdx, InitStateF, SM)
+    txt += transition_block.do(state, StateIdx, InitStateF, SMD)
 
-    txt += drop_out.do(state, StateIdx, SM, InitStateF) 
+    txt += drop_out.do(state, StateIdx, SMD, InitStateF) 
 
     # Define the entry of the init state after the init state itself. This is so,
     # since the init state does not require an increment on the first beat. Later on,
     # when other states enter here, they need to increase/decrease the input pointer.
-    if not SM.backward_lexing_f():
+    if not SMD.backward_lexing_f():
         if InitStateF:
             txt += LanguageDB["$label-def"]("$input", StateIdx)
             txt += "    " + LanguageDB["$input/increment"] + "\n"

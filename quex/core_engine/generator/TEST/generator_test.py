@@ -36,6 +36,7 @@ typedef int QUEX_TOKEN_ID_TYPE;
 $$TEST_CASE$$
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/template/Analyser>
+#include <quex/code_base/template/Analyser.i>
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     using namespace quex;
 #endif
