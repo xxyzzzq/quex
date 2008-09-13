@@ -2,7 +2,7 @@ from   quex.input.setup import setup as Setup
 import quex.core_engine.generator.acceptance_info  as acceptance_info
 LanguageDB = Setup.language_db
 
-def do(state, StateIdx, SM, InitStateF):
+def do(state, StateIdx, SMD, InitStateF):
     """There are two reasons for drop out:
        
           (1) A buffer limit code has been reached.
@@ -13,7 +13,7 @@ def do(state, StateIdx, SM, InitStateF):
        If a buffer limit code is reached, a buffer reload needs to be initiated. If
        the character drops over the edge, then a terminal state needs to be targeted.
     """
-    assert SM.__class__.__name__ == "StateMachineDecorator"
+    assert SMD.__class__.__name__ == "StateMachineDecorator"
 
     TriggerMap = state.transitions().get_trigger_map()
 
@@ -22,37 +22,37 @@ def do(state, StateIdx, SM, InitStateF):
     txt += "    " + LanguageDB["$if not BLC"]
     # -- if it's clear that it's not a buffer limit code, then jump directly
     txt += LanguageDB["$label-def"]("$drop-out-direct", StateIdx)
-    txt += "        " + get_drop_out_goto_string(state, StateIdx, SM.sm(), SM.backward_lexing_f()) + "\n" 
+    txt += "        " + get_drop_out_goto_string(state, StateIdx, SMD.sm(), SMD.backward_lexing_f()) + "\n" 
     txt += "    " + LanguageDB["$endif"] + "\n"
 
     # -- in case of the init state, the end of file has to be checked.
     #    (there is no 'begin of file' action in a lexical analyzer when stepping backwards)
-    if InitStateF and SM.backward_lexing_f() == False:
+    if InitStateF and SMD.backward_lexing_f() == False:
         txt += "    " + LanguageDB["$if EOF"]
         comment = "NO CHECK 'last_acceptance != -1' --- first state can **never** be an acceptance state" 
         txt += "        " + LanguageDB["$comment"](comment) + "\n"
         txt += "        " + LanguageDB["$goto"]("$terminal-EOF") + "\n"
         txt += "    " + LanguageDB["$endif"]
 
-    BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SM.backward_input_position_detection_f()
+    BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SMD.backward_input_position_detection_f()
     if BufferReloadRequiredOnDropOutF:
-        if SM.backward_lexing_f():
-            txt += __reload_backward(StateIdx, SM)
+        if SMD.backward_lexing_f():
+            txt += __reload_backward(StateIdx, SMD)
         else:
             # In case that it cannot load anything, it still needs to know where to jump to.
-            txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SM.sm(), ForceF=True)
-            txt += __reload_forward(StateIdx, SM)
+            txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SMD, ForceF=True)
+            txt += __reload_forward(StateIdx, SMD)
 
     return txt + "\n"
 
-def __reload_forward(StateIndex, SM): 
-    arg_list = ""
-    for state_machine_id in SM.post_contexted_sm_id_list():
-        arg_list += ", &last_acceptance_%s_input_position" % state_machine_id
+def __reload_forward(StateIndex, SMD): 
+    assert SMD.__class__.__name__ == "StateMachineDecorator"
+
     txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n'
-    txt += "    if( $$QUEX_ANALYZER_STRUCT_NAME$$_%s_buffer_reload_forward(&me->buffer, &last_acceptance_input_position%s) ) {\n" % \
-            (SM.name(), arg_list)
-    txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
+    txt += "    if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "                                           (QUEX_CHARACTER_POSITION_TYPE*)post_context_start_position, %i) ) {\n" % \
+                                                       len(SMD.post_contexted_sm_id_list())
+    txt += "        " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += "    " + LanguageDB["$endif"]                              + "\n"
     txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
     txt += "    " + LanguageDB["$goto-last_acceptance"]               + "\n"

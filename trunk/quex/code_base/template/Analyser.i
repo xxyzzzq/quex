@@ -59,8 +59,8 @@ namespace quex {
     {
         if( buffer->filler == 0x0 ) return false;
 
-        const size_t LoadedByteN = QuexBufferFiller_load_backward(buffer);
-        if( LoadedByteN == 0 ) return false;
+        const size_t LoadedCharacterN = QuexBufferFiller_load_backward(buffer);
+        if( LoadedCharacterN == 0 ) return false;
         
         /* Backward lexing happens in two cases:
          *
@@ -73,6 +73,33 @@ namespace quex {
          *      lexeme. => there will be no reload backwards. */
         return true;
     }
+
+    QUEX_INLINE bool 
+    QuexAnalyser_buffer_reload_forward(QuexBuffer* buffer, 
+                                       QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position,
+                                       QUEX_CHARACTER_POSITION_TYPE* post_context_start_position,
+                                       const size_t                  PostContextN)
+    {
+        QUEX_CHARACTER_POSITION_TYPE* iterator = 0x0;
+        QUEX_CHARACTER_POSITION_TYPE* End = post_context_start_position + PostContextN;
+
+        if( buffer->filler == 0x0 ) return false;
+        const size_t LoadedCharacterN = QuexBufferFiller_load_forward(buffer);
+        if( LoadedCharacterN == 0 ) return false;
+
+        if( *last_acceptance_input_position != 0x0 ) { 
+            *last_acceptance_input_position -= LoadedCharacterN;
+            /* QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); */
+        }                                                                  
+        for(iterator = post_context_start_position; iterator != End; ++iterator) {
+            /* NOTE: When the post_context_start_position is still undefined the following operation may
+             *       underflow. But, do not care, once it is **assigned** to a meaningful value, it won't */
+            *iterator -= LoadedCharacterN;
+        }
+                                                                              
+        return true;
+    }
+
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex 

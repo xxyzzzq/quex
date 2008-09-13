@@ -1,6 +1,7 @@
 import quex.core_engine.generator.languages.core      as languages
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
 import quex.core_engine.generator.input_position_backward_detector   as backward_detector
+from   quex.core_engine.generator.state_machine_decorator  import StateMachineDecorator
 from   quex.input.setup import setup as Setup
 #
 from quex.core_engine.generator.base import GeneratorBase
@@ -35,25 +36,24 @@ class Generator(GeneratorBase):
         if self.print_state_machine_f: 
             txt += LanguageDB["$ml-comment"](self.sm.get_string(NormalizeF=False)) + "\n"
 
-        msg, directly_reached_terminal_id_list = \
-                state_machine_coder.do(self.sm, 
-                                       StateMachineName                = self.state_machine_name, 
-                                       BackwardLexingF                 = False,
-                                       BackwardInputPositionDetectionF = False,
-                                       PostConditionID_List            = self.post_contexted_sm_id_list) 
+        decorated_state_machine = StateMachineDecorator(self.sm, 
+                                                        self.state_machine_name, 
+                                                        self.post_contexted_sm_id_list, 
+                                                        BackwardLexingF=False, 
+                                                        BackwardInputPositionDetectionF=False)
+
+        msg = state_machine_coder.do(decorated_state_machine)
         txt += msg
 
         
         #  -- terminal states: execution of pattern actions  
-        txt += LanguageDB["$terminal-code"](self.state_machine_name, 
-                                            self.sm, 
+        txt += LanguageDB["$terminal-code"](decorated_state_machine,
                                             self.action_db, 
                                             self.default_action, 
                                             self.end_of_stream_action, 
                                             self.begin_of_line_condition_f, 
                                             self.pre_context_sm_id_list,
-                                            self.language_db,
-                                            directly_reached_terminal_id_list) 
+                                            self.language_db) 
 
         return txt
 
@@ -66,11 +66,14 @@ class Generator(GeneratorBase):
         if self.print_state_machine_f: 
             txt += LanguageDB["$ml-comment"](self.pre_context_sm.get_string(NormalizeF=False)) + "\n"
 
-        msg, dummy = state_machine_coder.do(self.pre_context_sm, 
-                                            StateMachineName = self.state_machine_name,
-                                            BackwardLexingF                 = True,
-                                            BackwardInputPositionDetectionF = False,
-                                            PostConditionID_List            = [])
+        decorated_state_machine = StateMachineDecorator(self.pre_context_sm, 
+                                                        self.state_machine_name, 
+                                                        PostContextSM_ID=[],
+                                                        BackwardLexingF=True, 
+                                                        BackwardInputPositionDetectionF=False)
+
+        msg = state_machine_coder.do(decorated_state_machine)
+
         txt += msg
 
         txt += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
