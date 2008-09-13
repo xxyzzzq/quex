@@ -32,11 +32,20 @@ def __local_variable_definitions(VariableInfoList):
     txt = ""
     L = max(map(lambda info: len(info[0]), VariableInfoList))
     for info in VariableInfoList:
-        type  = info[0]
-        name  = info[1]
-        if len(info) > 3: name += "[%s]" % repr(info[3])
-        value = info[2]
-        txt += "    %s%s %s = %s;\n" % (type, " " * (L-len(type)), name, value)
+        if len(info) > 3: 
+            if info[3] != 0:
+                type = info[0]
+                name = info[1] + "[%s]" % repr(info[3])
+                value = "/* uninitialized */"
+            else:
+                type = info[0] + "*"
+                name = info[1] 
+                value = "= 0x0"
+        else:
+            type  = info[0]
+            name  = info[1] 
+            value = "= " + info[2]
+        txt += "    %s%s %s %s;\n" % (type, " " * (L-len(type)), name, value)
     return txt
          
 __function_signature = """
@@ -300,9 +309,9 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         # Post Contexted Patterns:
         txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
         # -- have a dedicated register from where they store the end of the core pattern.
-        variable = "post_context_start_position[%i]" % index 
-        txt += "    " + LanguageDB["$comment"]("post context index '%i' == state machine '%i'" % \
-                                               (post_condition_index, __nice(state_machine_id)))
+        variable = "post_context_start_position[%s]" % __nice(post_condition_index) 
+        txt += "    " + LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
+                                               (__nice(post_condition_index), __nice(state_machine_id))) + "\n"
         txt += "    " + LanguageDB["$input/seek_position"](variable) + "\n"
 
     else:
