@@ -143,7 +143,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += LanguageDB["$label-def"]("$start")
 
     # -- entry to the actual function body
-    txt += "    QuexBuffer_mark_lexeme_start(&me->buffer);\n"
+    txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
     txt += "    QuexBuffer_undo_terminating_zero_for_lexeme(&me->buffer);\n";
     
     txt += function_body

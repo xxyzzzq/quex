@@ -267,6 +267,20 @@ namespace quex {
         return QuexBufferMemory_size(&(me->_memory)) - 2;
     }
 
+    QUEX_INLINE QUEX_CHARACTER_TYPE*  
+    QuexBuffer_text_end(QuexBuffer* me)
+    {
+        /* Returns a pointer to the position after the last text content inside the buffer. */
+        if( me->_end_of_file_p != 0 ) return me->_end_of_file_p;
+        else                          return me->_memory._back;   
+    }
+
+    QUEX_INLINE size_t
+    QuexBuffer_distance_input_to_end_of_content(QuexBuffer* me)
+    {
+        return QuexBuffer_text_end(me) - me->_input_p;
+    }
+
     QUEX_INLINE void
     QuexBuffer_end_of_file_set(QuexBuffer* me, QUEX_CHARACTER_TYPE* Position)
     {

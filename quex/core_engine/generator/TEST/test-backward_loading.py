@@ -29,7 +29,7 @@ pattern_action_pair_list = [
 test_str = "   0xxxxxxalola 0xxxxxxxa"
 
 
-generator_test.do(pattern_action_pair_list, test_str, {}, BufferType=BufferType, 
+generator_test.do(pattern_action_pair_list, test_str, {}, Language=BufferType, 
                   QuexBufferSize=11, QuexBufferFallbackN=2, ShowBufferLoadsF=True,
                   AssertsActionvation_str=ASSERT_str)
     
