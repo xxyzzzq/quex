@@ -2,7 +2,7 @@ from copy import deepcopy
 import quex.core_engine.state_machine.dead_end_analysis as dead_end_analysis
 
 class StateMachineDecorator:
-    def __init__(self, SM, Name, PostConditionID_List, 
+    def __init__(self, SM, Name, PostContextSM_ID_List, 
                  BackwardLexingF, BackwardInputPositionDetectionF):
         assert SM.__class__.__name__ == "StateMachine"
         assert Name != ""
@@ -10,12 +10,12 @@ class StateMachineDecorator:
         assert type(BackwardLexingF) == bool
         assert not BackwardInputPositionDetectionF or BackwardLexingF == True, \
                "BackwardInputPositionDetectionF can only be set if BackwardLexingF is set."
-        assert type(PostConditionID_List) == list
+        assert type(PostContextSM_ID_List) == list
         if BackwardInputPositionDetectionF: assert BackwardLexingF
 
         self.__name                   = Name
         self.__state_machine          = SM
-        self.__post_condition_id_list = deepcopy(PostConditionID_List)
+        self.__post_condition_id_list = deepcopy(PostContextSM_ID_List)
         self.__post_condition_id_list.sort()
 
         self.__mode = "ForwardLexing"

@@ -45,15 +45,18 @@ def do(state, StateIdx, SMD, InitStateF):
 
     return txt + "\n"
 
+def get_forward_load_procedure(StateIndex, PostContextN):
+    txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n'
+    txt += "    if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "                                           post_context_start_position, %i) ) {\n" % PostContextN
+    txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
+    txt += "    " + LanguageDB["$endif"]                         + "\n"
+    return txt
+
 def __reload_forward(StateIndex, SMD): 
     assert SMD.__class__.__name__ == "StateMachineDecorator"
 
-    txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n'
-    txt += "    if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
-    txt += "                                           (QUEX_CHARACTER_POSITION_TYPE*)post_context_start_position, %i) ) {\n" % \
-                                                       len(SMD.post_contexted_sm_id_list())
-    txt += "        " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
-    txt += "    " + LanguageDB["$endif"]                              + "\n"
+    txt  = get_forward_load_procedure(StateIndex, len(SMD.post_contexted_sm_id_list()))
     txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
     txt += "    " + LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt

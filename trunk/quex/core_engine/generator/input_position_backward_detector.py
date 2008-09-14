@@ -9,7 +9,8 @@
 #
 ################################################################################
 import quex.core_engine.generator.state_machine_coder as state_machine_coder
-from quex.frs_py.string_handling import blue_print
+from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+from   quex.frs_py.string_handling import blue_print
 
 function_str = """
 #include <quex/code_base/temporary_macros_on>
@@ -25,11 +26,13 @@ $$FUNCTION_BODY$$
 
 def do(sm, LanguageDB, PrintStateMachineF):
 
-    function_body, directly_reached_terminal_id_list = \
-              state_machine_coder.do(sm, LanguageDB, 
-                                     BackwardLexingF                 = True,
-                                     BackwardInputPositionDetectionF = True,
-                                     PostConditionID_List            = [])
+    decorated_state_machine = StateMachineDecorator(sm, 
+                                                    "BACKWARD_DETECTOR_" + repr(sm.get_id()),
+                                                    PostContextSM_ID_List = [], 
+                                                    BackwardLexingF=True, 
+                                                    BackwardInputPositionDetectionF=True)
+
+    function_body = state_machine_coder.do(decorated_state_machine)
 
     sm_str = "    " + LanguageDB["$comment"]("state machine") + "\n"
     if PrintStateMachineF: 
@@ -41,7 +44,7 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body += LanguageDB["$input/increment"] + "\n"
 
     variables_txt = LanguageDB["$local-variable-defs"](
-            [["QUEX_CHARACTER_TYPE",         "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
+            [["QUEX_CHARACTER_TYPE",          "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
              ["QUEX_CHARACTER_POSITION_TYPE", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
 
     return blue_print(function_str, 

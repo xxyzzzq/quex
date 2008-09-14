@@ -80,6 +80,7 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
+    "$mark-lexeme-start":   "QuexBuffer_mark_lexeme_start(&(me->buffer));",
     "$input/increment":     "QuexBuffer_input_p_increment(&(me->buffer));",
     "$input/decrement":     "QuexBuffer_input_p_decrement(&(me->buffer));",
     "$input/get":           "input = QuexBuffer_input_get(&(me->buffer));",

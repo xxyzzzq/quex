@@ -96,6 +96,7 @@ namespace quex {
     QUEX_INLINE void                  QuexBuffer_store_last_character_of_lexeme_for_next_run(QuexBuffer*);
     QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_content_front(QuexBuffer*);
     QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_content_back(QuexBuffer*);
+    QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_text_end(QuexBuffer*);
     QUEX_INLINE size_t                QuexBuffer_content_size(QuexBuffer*);
 
     QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(QuexBuffer*);

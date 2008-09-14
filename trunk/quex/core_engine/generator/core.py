@@ -68,7 +68,7 @@ class Generator(GeneratorBase):
 
         decorated_state_machine = StateMachineDecorator(self.pre_context_sm, 
                                                         self.state_machine_name, 
-                                                        PostContextSM_ID=[],
+                                                        PostContextSM_ID_List=[],
                                                         BackwardLexingF=True, 
                                                         BackwardInputPositionDetectionF=False)
 
