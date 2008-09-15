@@ -215,7 +215,7 @@ namespace quex {
     QuexBuffer_input_get(QuexBuffer* me)
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
 #       ifdef QUEX_OPTION_ASSERTS
         if( *me->_input_p == QUEX_SETTING_BUFFER_LIMIT_CODE )
             __quex_assert(   me->_input_p == me->_end_of_file_p 

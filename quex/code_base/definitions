@@ -187,18 +187,17 @@ namespace quex {
 #endif
 
 #ifdef QUEX_OPTION_ASSERTS
-#    define  QUEX_BUFFER_ASSERT_CONSISTENCY(B)                                            \
+
+/* NOTE: In some cases, we cannot make the assumption that the end of the content text
+ *       is terminated by the buffer limit code. Skippers set the content of this cell
+ *       temporarily to another value for the sake of speed efficiency. Thus, it is 
+ *       distinguished between 'light' and normal consistency.                           */
+#    define  QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(B)                                      \
      {                                                                                    \
-         /* NOTE: No assumptions can be made in general on the relation between    */     \
-         /*       _input_p and _lexeme_start_p, since for forwards lexing          */     \
-         /*       _input_p comes before _lexeme_start_p, wherelse for back-        */     \
-         /*       ward lexing this is vice versa.                                  */     \
-         /*       See "code_base/core_engine/definitions-quex-buffer.h"            */     \
          __quex_assert( (B) != 0x0 );                                                     \
          if( (*B)._memory._front != 0 || (*B)._memory._back != 0x0 ) {                    \
              __quex_assert((*B)._memory._front < (*B)._memory._back);                     \
              __quex_assert(*((*B)._memory._front) == QUEX_SETTING_BUFFER_LIMIT_CODE );    \
-             __quex_assert(*((*B)._memory._back)  == QUEX_SETTING_BUFFER_LIMIT_CODE );    \
              __quex_assert((*B)._input_p          >= (*B)._memory._front);                \
              __quex_assert((*B)._lexeme_start_p   >= (*B)._memory._front);                \
              if( (*B)._end_of_file_p == 0x0 ) {                                           \
@@ -211,11 +210,26 @@ namespace quex {
                  __quex_assert((*B)._end_of_file_p  >= (*B)._memory._front + 1);          \
                  __quex_assert((*B)._end_of_file_p  <= (*B)._memory._back);               \
                  /**/                                                                     \
+             }                                                                            \
+         }                                                                                \
+     }
+#    define  QUEX_BUFFER_ASSERT_CONSISTENCY(B)                                            \
+     QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(B)                                              \
+     {                                                                                    \
+         /* NOTE: No assumptions can be made in general on the relation between    */     \
+         /*       _input_p and _lexeme_start_p, since for forwards lexing          */     \
+         /*       _input_p comes before _lexeme_start_p, wherelse for back-        */     \
+         /*       ward lexing this is vice versa.                                  */     \
+         /*       See "code_base/core_engine/definitions-quex-buffer.h"            */     \
+         if( (*B)._memory._front != 0 || (*B)._memory._back != 0x0 ) {                    \
+             __quex_assert(*((*B)._memory._back)  == QUEX_SETTING_BUFFER_LIMIT_CODE );    \
+             if( (*B)._end_of_file_p != 0x0 ) {                                           \
                  __quex_assert(*(*B)._end_of_file_p == QUEX_SETTING_BUFFER_LIMIT_CODE);   \
              }                                                                            \
          }                                                                                \
      }
 #else
+#   define  QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(B)  /* empty */
 #   define  QUEX_BUFFER_ASSERT_CONSISTENCY(B)  /* empty */
 #endif
 
