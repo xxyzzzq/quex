@@ -31,15 +31,25 @@ $$DELIMITER_REMAINDER_TEST$$
     $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
  
 $$SKIPPER_DROP_OUT$$
-    /* When loading new content it is always taken care that the beginning of the lexeme
-     * is not 'shifted' out of the buffer. In the case of skipping, we do not care about
-     * the lexeme at all, so do not restrict the load procedure and set the lexeme start
-     * to the actual input position.                                                    */
+    /* -- When loading new content it is always taken care that the beginning of the lexeme
+     *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
+     *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
+     *    to the actual input position.                                                    */
+    /* -- HOWEVER: See above, the reload procedure may be called while the input_p is not 
+     *    pointing to the buffer border. Trick: 
+     *    (1) We set the lexeme start to the current input_p. 
+     *        The lexeme start is subject to appropriate pointer adaptions while loading. 
+     *        Thus, the 'real' position of the input_p remains available via lexeme start pointer.
+     *    (2) The input_p is set to a buffer border (so that all pre-conditions for load are met).
+     *    (3) Load
+     *    (4) Set the input_p to the lexeme start pointer.                                 */
     $$MARK_LEXEME_START$$
+    me->buffer._input_p = content_end;
 $$RELOAD$$
     if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ ) {
        $$MISSING_CLOSING_DELIMITER$$
     }
+    me->buffer._input_p = me->buffer._lexeme_start_p;
     content_end = QuexBuffer_text_end(&me->buffer);
     $$GOTO_SKIPPER_RESTART$$
 """

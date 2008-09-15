@@ -40,26 +40,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     except RegularExpressionException, x:
         print "Dictionary Creation:\n" + repr(x)
 
-    if QuexBufferFallbackN == -1: QuexBufferFallbackN = QuexBufferSize - 3
-
-    if Language == "ANSI-C-PlainMemory": QuexBufferFallbackN = max(0, len(TestStr) - 3) 
-    common_str = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
-    common_str = common_str.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
-    if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
-        extension = ".c"
-        # The '-Wvariadic-macros' shall remind us that we do not want those, because some compilers
-        # do not swallow them!
-        compiler  = "gcc -ansi -Wvariadic-macros"
-        test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
-                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
-    else:
-        extension = ".cpp"
-        compiler  = "g++"
-        test_case_str = "/* #define __QUEX_SETTING_PLAIN_C */\n" + \
-                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
-
-    common_str = common_str.replace("$$TEST_CASE$$", test_case_str)
-    
     test_program = create_main_function(Language, TestStr, QuexBufferSize)
 
     state_machine_code = create_state_machine_function(PatternActionPairList, 
@@ -79,14 +59,28 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
                              "#define __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER\n" + \
                              state_machine_code
 
+    source_code =   create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN, BufferLimitCode) \
+                  + state_machine_code \
+                  + test_program
+
+    compile_and_run(Language, source_code, AssertsActionvation_str)
+
+
+def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
+    print "## (*) compiling generated engine code and test"    
+    if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
+        extension = ".c"
+        # The '-Wvariadic-macros' shall remind us that we do not want use variadic macroes.
+        # Because, some compilers do not swallow them!
+        compiler  = "gcc -ansi -Wvariadic-macros"
+    else:
+        extension = ".cpp"
+        compiler  = "g++"
+
     fd, filename_tmp = mkstemp(extension, "tmp-", dir=os.getcwd())
-    os.write(fd, common_str)
-    os.write(fd, state_machine_code)
-    os.write(fd, test_program) 
+    os.write(fd, SourceCode) 
     os.close(fd)    
-
-
-    print "## (2) compiling generated engine code and test"    
+    
     os.system("mv -f %s tmp%s" % (filename_tmp, extension)); filename_tmp = "./tmp%s" % extension # DEBUG
 
     # NOTE: QUEX_OPTION_ASSERTS is defined by AssertsActionvation_str (or not)
@@ -101,7 +95,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
     os.system(compile_str)
     sys.stdout.flush()
 
-    print "## (3) running the test"
+    print "## (*) running the test"
     try:
         fh_out = open(filename_tmp + ".out", "w")
         subprocess.call("./%s.exe" % filename_tmp, stdout=fh_out)
@@ -127,6 +121,26 @@ def create_main_function(Language, TestStr, QuexBufferSize):
     txt = txt.replace("$$TEST_STRING$$",       test_str)
 
     return txt
+
+def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFallbackN=-1, BufferLimitCode=0):
+    # Determine the 'fallback' region size in the buffer
+    if QuexBufferFallbackN == -1: 
+        QuexBufferFallbackN = QuexBufferSize - 3
+    if Language == "ANSI-C-PlainMemory": 
+        QuexBufferFallbackN = max(0, len(TestStr) - 3) 
+
+    # Parameterize the common declarations
+    txt = test_program_common_declarations.replace("$$BUFFER_FALLBACK_N$$", repr(QuexBufferFallbackN))
+    txt = txt.replace("$$BUFFER_LIMIT_CODE$$", repr(BufferLimitCode))
+
+    if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
+        test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
+                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
+    else:
+        test_case_str = "/* #define __QUEX_SETTING_PLAIN_C */\n" + \
+                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
+
+    return txt.replace("$$TEST_CASE$$", test_case_str)
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
