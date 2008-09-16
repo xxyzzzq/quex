@@ -1,4 +1,4 @@
-<history date="Tue Sep  9 08:26:58 2008" element-n="298">
+<history date="Wed Sep 10 08:07:08 2008" element-n="302">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -550,6 +550,12 @@
         <crc-error time="06:26:03" application="test-skip-simple.py" choice="ANSI-C-PlainMemory" database-crc="350626106" real-crc="1454671696"/>
         <crc-error time="06:26:04" application="test-skip-simple.py" choice="ANSI-C" database-crc="350626106" real-crc="1454671696"/>
         <test-runs-today n="5" ok-n="3" fail-n="2" else-n="0" last-run="oll korrekt" last-time="06:26:58"/>
+    </day>
+    <day year="2008" month="09" day="10">
+        <crc-error time="06:05:40" application="test-skip-simple-2.py" choice="DL=2" database-crc="1454671696" real-crc="1521845028"/>
+        <crc-error time="06:06:11" application="test-skip-simple-2.py" choice="DL=3" database-crc="1830957181" real-crc="1521845028"/>
+        <crc-error time="06:06:13" application="test-skip-simple-2.py" choice="DL=4" database-crc="-1332361939" real-crc="1521845028"/>
+        <test-runs-today n="10" ok-n="6" fail-n="4" else-n="0" last-run="oll korrekt" last-time="06:07:08"/>
     </day>
     <day year="2008" month="09" day="12">
         <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="23:01:04"/>

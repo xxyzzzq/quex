@@ -19,17 +19,29 @@ $$SKIPPER_ENTRY$$
 
 $$SKIPPER_RESTART$$
     *content_end = SkipDelimiter$$SKIPPER_INDEX$$[0];       /* Overwrite BufferLimitCode (BLC).  */
-    while( QuexBuffer_input_get(&me->buffer) != SkipDelimiter$$SKIPPER_INDEX$$[0] )
-        QuexBuffer_input_p_increment(&me->buffer); /* Now, BLC cannot occur. See above. */
+    $$WHILE_1_PLUS_1_EQUAL_2$$
+        $$INPUT_GET$$ 
+        $$IF_INPUT_EQUAL_DELIMITER_0$$
+            $$BREAK$$
+        $$ENDIF$$
+        $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
+    $$END_WHILE$$
     *content_end = QUEX_SETTING_BUFFER_LIMIT_CODE; /* Reset BLC.                        */
 
-    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ - 1 ) 
+    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) <= $$DELIMITER_LENGTH$$ - 1 ) 
         $$GOTO_SKIPPER_DROP_OUT$$
 
     /* BLC will cause a mismatch, and drop out after RESTART                            */
 $$DELIMITER_REMAINDER_TEST$$            
-    $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
- 
+    {
+        /* 'input_p' points to a delimiter character which cannot be the buffer limit code.
+         * Thus, we are not standing on '_end_of_file_p' or '_memory._back'. Thus, we can
+         * increment the 'input_p' without exceeding the borders.                       */
+        if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) > 0 ) {
+             $$INPUT_P_INCREMENT$$ 
+        }
+        $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
+    }
 $$SKIPPER_DROP_OUT$$
     /* -- When loading new content it is always taken care that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
@@ -73,7 +85,7 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
 
     # Determine the check for the tail of the delimiter
     if len(EndSequence) == 1: 
-        delimiter_remainder_test_str = "    " + LanguageDB["$comment"]("Oll Korrekt, delimiter has only length '1'")
+        delimiter_remainder_test_str = "    " + LanguageDB["$comment"]("No further check. Delimiter has length '1'")
     else:
         txt = ""
         i = 0
@@ -87,18 +99,25 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
         delimiter_remainder_test_str = txt
 
     code_str = blue_print(range_skipper_template,
-                          [["$$DELIMITER$$",                 delimiter_str],
-                           ["$$DELIMITER_LENGTH$$",          delimiter_length_str],
-                           ["$$DELIMITER_COMMENT$$",         delimiter_comment_str],
-                           ["$$SKIPPER_ENTRY$$",             LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$SKIPPER_RESTART$$",           LanguageDB["$label-def"]("$input", skipper_index)],
-                           ["$$SKIPPER_DROP_OUT$$",          LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                           ["$$GOTO_SKIPPER_DROP_OUT$$",     LanguageDB["$goto"]("$drop-out", skipper_index)],
-                           ["$$GOTO_SKIPPER_RESTART$$",      LanguageDB["$goto"]("$input", skipper_index)],
-                           ["$$GOTO_REENTRY_PREPARATION$$",  LanguageDB["$goto"]("$re-start")],
-                           ["$$MARK_LEXEME_START$$",         LanguageDB["$mark-lexeme-start"]],
-                           ["$$RELOAD$$",                    get_forward_load_procedure(skipper_index, PostContextN)],
-                           ["$$DELIMITER_REMAINDER_TEST$$",  delimiter_remainder_test_str],
+                          [["$$DELIMITER$$",                  delimiter_str],
+                           ["$$DELIMITER_LENGTH$$",           delimiter_length_str],
+                           ["$$DELIMITER_COMMENT$$",          delimiter_comment_str],
+                           ["$$WHILE_1_PLUS_1_EQUAL_2$$",     LanguageDB["$loop-start-endless"]],
+                           ["$$END_WHILE$$",                  LanguageDB["$loop-end"]],
+                           ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
+                           ["$$INPUT_GET$$",                  LanguageDB["$input/get"]],
+                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
+                           ["$$BREAK$$",                      LanguageDB["$break"]],
+                           ["$$ENDIF$$",                      LanguageDB["$endif"]],
+                           ["$$SKIPPER_ENTRY$$",              LanguageDB["$label-def"]("$entry", skipper_index)],
+                           ["$$SKIPPER_RESTART$$",            LanguageDB["$label-def"]("$input", skipper_index)],
+                           ["$$SKIPPER_DROP_OUT$$",           LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                           ["$$GOTO_SKIPPER_DROP_OUT$$",      LanguageDB["$goto"]("$drop-out", skipper_index)],
+                           ["$$GOTO_SKIPPER_RESTART$$",       LanguageDB["$goto"]("$input", skipper_index)],
+                           ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
+                           ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
+                           ["$$RELOAD$$",                     get_forward_load_procedure(skipper_index, PostContextN)],
+                           ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
                            ["$$MISSING_CLOSING_DELIMITER$$", MissingClosingDelimiterAction]])
 
     code_str = code_str.replace("$$SKIPPER_INDEX$$", __nice(skipper_index))

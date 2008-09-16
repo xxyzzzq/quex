@@ -10,8 +10,10 @@ from quex.frs_py.string_handling import blue_print
 from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #
-from   quex.core_engine.generator.action_info   import ActionInfo
+from   quex.core_engine.generator.languages.core import db
+from   quex.core_engine.generator.action_info    import ActionInfo
 import quex.core_engine.generator.core          as generator
+import quex.core_engine.generator.skip_code     as skip_code
 import quex.core_engine.regular_expression.core as regex
 
 
@@ -65,7 +67,6 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
 
     compile_and_run(Language, source_code, AssertsActionvation_str)
 
-
 def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     print "## (*) compiling generated engine code and test"    
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
@@ -88,7 +89,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-ggdb " + \
-                  "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
                   #"" #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
@@ -108,7 +109,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     print "## (4) cleaning up"
     # os.remove(filename_tmp)
 
-def create_main_function(Language, TestStr, QuexBufferSize):
+def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
     global plain_memory_based_test_program
     global quex_buffer_based_test_program
     global test_program_common
@@ -119,6 +120,8 @@ def create_main_function(Language, TestStr, QuexBufferSize):
     txt = test_program_db[Language]
     txt = txt.replace("$$BUFFER_SIZE$$",       repr(QuexBufferSize))
     txt = txt.replace("$$TEST_STRING$$",       test_str)
+    if CommentTestStrF: txt = txt.replace("$$COMMENT$$", "##")
+    else:               txt = txt.replace("$$COMMENT$$", "")
 
     return txt
 
@@ -176,6 +179,33 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     return txt
 
+def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, CommentTestStrF=False):
+    reached_str  = '    printf("next letter: <%c>\\n", (char)(*(me->buffer._input_p)));\n'
+    reached_str += '    return true;\n'
+    end_str      = '    printf("end\\n");'
+    end_str     += '    return false;\n'
+
+    txt  = "#define QUEX_CHARACTER_TYPE uint8_t\n"
+    txt += "#define QUEX_TOKEN_ID_TYPE  bool\n"  
+    if Language != "Cpp": txt += "#define __QUEX_SETTING_PLAIN_C\n"
+    txt += "#include <quex/code_base/template/Analyser>\n"
+    txt += "#include <quex/code_base/template/Analyser.i>\n"
+    txt += "\n"
+    if Language == "Cpp": txt += "using namespace quex;\n"
+    txt += "bool  Mr_UnitTest_analyser_function(QuexAnalyser* me)\n"
+    txt += "{\n"
+    txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position    = 0x0;\n"
+    txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
+    txt += "    QUEX_CHARACTER_TYPE           input                          = 0x0;\n"
+    txt += skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str)
+    txt += "__REENTRY_PREPARATION:\n"
+    txt += "    " + reached_str
+    txt += "}\n"
+
+    txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
+
+    return txt
+
 def action(PatternName): 
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
@@ -227,7 +257,7 @@ test_program_db = {
         /**/
         QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)TestString, MemorySize); 
         /**/
-        printf("(*) test string: \\n'%s'\\n", TestString + 1);
+        printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
         printf("(*) result:\\n");
         do {
             success_f = lexer_state.current_analyser_function(&lexer_state);
@@ -258,7 +288,7 @@ test_program_db = {
                           QUEX_PLAIN, 0x0,
                           $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
         do {
             success_f = lexer_state.current_analyser_function(&lexer_state);
@@ -288,7 +318,7 @@ test_program_db = {
                           QUEX_PLAIN, 0x0,
                           $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
-        printf("(*) test string: \\n'$$TEST_STRING$$'\\n");
+        printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
         do {
             success_f = lexer_state.current_analyser_function(&lexer_state);
