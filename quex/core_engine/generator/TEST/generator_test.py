@@ -179,11 +179,29 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     return txt
 
-def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, CommentTestStrF=False):
-    reached_str  = '    printf("next letter: <%c>\\n", (char)(*(me->buffer._input_p)));\n'
+def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
+    assert QuexBufferSize >= len(EndSequence) + 2
+
+    if ShowPositionF:
+        reached_str  = '    printf("next letter: <%c> position: %04X\\n", (char)(*(me->buffer._input_p)),\n'
+        reached_str += '           (int)(me->buffer._input_p - me->buffer._memory._front));\n'
+    else:
+        reached_str  = '    printf("next letter: <%c>\\n", (char)(*(me->buffer._input_p)));\n'
     reached_str += '    return true;\n'
+
     end_str      = '    printf("end\\n");'
     end_str     += '    return false;\n'
+
+    # Initial reload is normally detected by the initial state. Here, we have no initial state,
+    # so let us do it by hand.
+    reenter_str  = "    if( me->buffer._input_p == QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n"
+    reenter_str += "        if( ! QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
+    reenter_str += "                                                  post_context_start_position, 0) ) {\n"
+    reenter_str += end_str
+    reenter_str += "        }\n"
+    reenter_str += "    }\n"
+    reenter_str += reached_str
+
 
     txt  = "#define QUEX_CHARACTER_TYPE uint8_t\n"
     txt += "#define QUEX_TOKEN_ID_TYPE  bool\n"  
@@ -199,7 +217,7 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     txt += "    QUEX_CHARACTER_TYPE           input                          = 0x0;\n"
     txt += skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str)
     txt += "__REENTRY_PREPARATION:\n"
-    txt += "    " + reached_str
+    txt += reenter_str
     txt += "}\n"
 
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)

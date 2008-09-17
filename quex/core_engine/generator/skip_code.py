@@ -14,6 +14,8 @@ range_skipper_template = """
     QUEX_CHARACTER_TYPE*        content_end = QuexBuffer_text_end(&me->buffer);
 
 $$SKIPPER_ENTRY$$
+    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+    __quex_assert(QuexBuffer_content_size(&me->buffer) >= $$DELIMITER_LENGTH$$ );
     if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ ) 
         $$GOTO_SKIPPER_DROP_OUT$$;
 
@@ -28,7 +30,7 @@ $$SKIPPER_RESTART$$
     $$END_WHILE$$
     *content_end = QUEX_SETTING_BUFFER_LIMIT_CODE; /* Reset BLC.                        */
 
-    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) <= $$DELIMITER_LENGTH$$ - 1 ) 
+    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ - 1 ) 
         $$GOTO_SKIPPER_DROP_OUT$$
 
     /* BLC will cause a mismatch, and drop out after RESTART                            */
@@ -37,9 +39,10 @@ $$DELIMITER_REMAINDER_TEST$$
         /* 'input_p' points to a delimiter character which cannot be the buffer limit code.
          * Thus, we are not standing on '_end_of_file_p' or '_memory._back'. Thus, we can
          * increment the 'input_p' without exceeding the borders.                       */
-        if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) > 0 ) {
-             $$INPUT_P_INCREMENT$$ 
-        }
+        $$INPUT_P_INCREMENT$$ 
+        /* NOTE: The initial state does not increment the input_p. When it detects that
+         * it is located on a buffer border, it automatically triggers a reload. No 
+         * need here to reload the buffer. */
         $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
     }
 $$SKIPPER_DROP_OUT$$
@@ -55,15 +58,22 @@ $$SKIPPER_DROP_OUT$$
      *    (2) The input_p is set to a buffer border (so that all pre-conditions for load are met).
      *    (3) Load
      *    (4) Set the input_p to the lexeme start pointer.                                 */
+    QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     $$MARK_LEXEME_START$$
     me->buffer._input_p = content_end;
-$$RELOAD$$
-    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ ) {
-       $$MISSING_CLOSING_DELIMITER$$
+    if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
+                                           post_context_start_position, $$POST_CONTEXT_N$$) ) {
+
+        if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) >= $$DELIMITER_LENGTH$$ ) {
+            me->buffer._input_p = me->buffer._lexeme_start_p;
+            content_end = QuexBuffer_text_end(&me->buffer);
+            QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+            $$GOTO_SKIPPER_RESTART$$
+        }
+
     }
     me->buffer._input_p = me->buffer._lexeme_start_p;
-    content_end = QuexBuffer_text_end(&me->buffer);
-    $$GOTO_SKIPPER_RESTART$$
+    $$MISSING_CLOSING_DELIMITER$$
 """
 
 def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelimiterAction=""):
@@ -116,7 +126,7 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
                            ["$$GOTO_SKIPPER_RESTART$$",       LanguageDB["$goto"]("$input", skipper_index)],
                            ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                            ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
-                           ["$$RELOAD$$",                     get_forward_load_procedure(skipper_index, PostContextN)],
+                           ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
                            ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
                            ["$$MISSING_CLOSING_DELIMITER$$", MissingClosingDelimiterAction]])
 
