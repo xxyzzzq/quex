@@ -278,6 +278,7 @@ namespace quex {
     QUEX_INLINE size_t
     QuexBuffer_distance_input_to_end_of_content(QuexBuffer* me)
     {
+        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
         return QuexBuffer_text_end(me) - me->_input_p;
     }
 
