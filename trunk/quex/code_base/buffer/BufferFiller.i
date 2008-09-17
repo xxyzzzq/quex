@@ -483,7 +483,7 @@ namespace quex {
         if(    me->_on_overflow == 0x0
             || me->_on_overflow(buffer, ForwardF) == false ) {
             QUEX_ERROR_EXIT("Distance between lexeme start and current pointer exceeds buffer size.\n"
-                            "(tried to load buffer in backward direction)");
+                            "(tried to load buffer)");
         }
     }
 
