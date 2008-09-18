@@ -38,10 +38,10 @@ compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, Q
 
 TestStr  = SEP + "hijklmnop" + SEP + "qrstuvw" + SEP + "xyz" + SEP
 
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+#compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 TestStr  = "a" + SEP + "h" + SEP + SEP + SEP
 
-compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+#compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 
