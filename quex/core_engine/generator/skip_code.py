@@ -11,12 +11,13 @@ from   quex.core_engine.generator.languages.core import __nice
 range_skipper_template = """
     $$DELIMITER_COMMENT$$
     const QUEX_CHARACTER_TYPE   SkipDelimiter$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
+    const size_t                SkipDelimiter$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
     QUEX_CHARACTER_TYPE*        content_end = QuexBuffer_text_end(&me->buffer);
 
 $$SKIPPER_ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-    __quex_assert(QuexBuffer_content_size(&me->buffer) >= $$DELIMITER_LENGTH$$ );
-    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ ) 
+    __quex_assert(QuexBuffer_content_size(&me->buffer) >= SkipDelimiter$$SKIPPER_INDEX$$L );
+    if( QuexBuffer_distance_input_to_text_end(&me->buffer) < SkipDelimiter$$SKIPPER_INDEX$$L ) 
         $$GOTO_SKIPPER_DROP_OUT$$;
 
 $$SKIPPER_RESTART$$
@@ -29,9 +30,6 @@ $$SKIPPER_RESTART$$
         $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$END_WHILE$$
     *content_end = QUEX_SETTING_BUFFER_LIMIT_CODE; /* Reset BLC.                        */
-
-    if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) < $$DELIMITER_LENGTH$$ - 1 ) 
-        $$GOTO_SKIPPER_DROP_OUT$$
 
     /* BLC will cause a mismatch, and drop out after RESTART                            */
 $$DELIMITER_REMAINDER_TEST$$            
@@ -64,8 +62,8 @@ $$SKIPPER_DROP_OUT$$
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
                                            post_context_start_position, $$POST_CONTEXT_N$$) ) {
 
-        if( QuexBuffer_distance_input_to_end_of_content(&me->buffer) >= $$DELIMITER_LENGTH$$ ) {
-            me->buffer._input_p = me->buffer._lexeme_start_p;
+        me->buffer._input_p = me->buffer._lexeme_start_p;
+        if( QuexBuffer_distance_input_to_text_end(&me->buffer) >= SkipDelimiter$$SKIPPER_INDEX$$L ) {
             content_end = QuexBuffer_text_end(&me->buffer);
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             $$GOTO_SKIPPER_RESTART$$
@@ -95,9 +93,13 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
 
     # Determine the check for the tail of the delimiter
     if len(EndSequence) == 1: 
-        delimiter_remainder_test_str = "    " + LanguageDB["$comment"]("No further check. Delimiter has length '1'")
+        txt  = "    if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0  )\n"
+        txt += "        $$GOTO_SKIPPER_DROP_OUT$$\n"
+        txt += "    " + LanguageDB["$comment"]("No further check. Delimiter has length '1'")
+        delimiter_remainder_test_str = txt
     else:
-        txt = ""
+        txt  = "    if( QuexBuffer_distance_input_to_text_end(&me->buffer) < SkipDelimiter$$SKIPPER_INDEX$$L )\n"
+        txt += "        $$GOTO_SKIPPER_DROP_OUT$$\n"
         i = 0
         for letter in EndSequence[1:]:
             i += 1
@@ -122,7 +124,6 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
                            ["$$SKIPPER_ENTRY$$",              LanguageDB["$label-def"]("$entry", skipper_index)],
                            ["$$SKIPPER_RESTART$$",            LanguageDB["$label-def"]("$input", skipper_index)],
                            ["$$SKIPPER_DROP_OUT$$",           LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                           ["$$GOTO_SKIPPER_DROP_OUT$$",      LanguageDB["$goto"]("$drop-out", skipper_index)],
                            ["$$GOTO_SKIPPER_RESTART$$",       LanguageDB["$goto"]("$input", skipper_index)],
                            ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                            ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
@@ -130,7 +131,10 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
                            ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
                            ["$$MISSING_CLOSING_DELIMITER$$", MissingClosingDelimiterAction]])
 
-    code_str = code_str.replace("$$SKIPPER_INDEX$$", __nice(skipper_index))
+    code_str = blue_print(code_str,
+                          [["$$SKIPPER_INDEX$$",    __nice(skipper_index)],
+                           ["$$GOTO_SKIPPER_DROP_OUT$$",      LanguageDB["$goto"]("$drop-out", skipper_index)]])
+                          
             
 
     return code_str
