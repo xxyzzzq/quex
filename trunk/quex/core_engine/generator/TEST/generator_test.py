@@ -89,8 +89,8 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-ggdb " + \
-                  ""# "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
-                  #"" #"-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+                  "" #"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
+                  #"" "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
     print compile_str + "##" # DEBUG
     os.system(compile_str)
@@ -197,9 +197,11 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     reenter_str  = "    if( me->buffer._input_p == content_end ) {\n"
     reenter_str += "        QuexBuffer_mark_lexeme_start(&me->buffer);\n"
     reenter_str += "        if( ! QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
-    reenter_str += "                                                  post_context_start_position, 0) ) {\n"
+    reenter_str += "                                                  post_context_start_position, 0)\n"
+    reenter_str += "            || me->buffer._input_p == me->buffer._end_of_file_p - 1 ) {"
     reenter_str += end_str
     reenter_str += "        }\n"
+    reenter_str += "        QuexBuffer_input_p_increment(&me->buffer); /* first state does not increment */\n"
     reenter_str += "    }\n"
     reenter_str += reached_str
 

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.27" date="Wed Sep 10 08:20:34 2008">
+<test-database execution-time-sec="0.33" date="Fri Sep 19 08:06:19 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.05"> 
@@ -7,16 +7,16 @@
                <choice name="" result="OK" time-sec="0.05" crc="1051370365"/>
             </choice-list>
         </test>
-        <test title="Inverse" make-required="True" time-sum-sec="0.03"> 
+        <test title="Inverse" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1218803931L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.03" crc="1433382430"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1433382430"/>
             </choice-list>
         </test>
-        <test title="Difference" make-required="True" time-sum-sec="0.04"> 
+        <test title="Difference" make-required="True" time-sum-sec="0.09"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1218803931L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="2115164504"/>
+               <choice name="" result="OK" time-sec="0.09" crc="2115164504"/>
             </choice-list>
         </test>
         <test title="Intersection" make-required="True" time-sum-sec="0.04"> 

@@ -164,7 +164,7 @@ namespace quex {
         __quex_assert(FallBackN < ContentSize);
         /*___________________________________________________________________________________*/
         /* (2) Load new content*/
-        const size_t DesiredLoadN = ContentSize - FallBackN;
+        const size_t         DesiredLoadN = ContentSize - FallBackN;
         QUEX_CHARACTER_TYPE* new_content_begin = buffer->_memory._front + 1 + FallBackN;
         const size_t         LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
 

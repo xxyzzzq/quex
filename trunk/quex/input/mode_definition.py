@@ -200,7 +200,6 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
         fh.seek(position)
         error_msg("End of file reached while parsing action code for pattern.", fh)
 
-
 def check_for_event_specification(word, fh, new_mode, Setup, PatternIdx):
 
     if word == "on_entry":
