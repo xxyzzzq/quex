@@ -1,4 +1,4 @@
-<history date="Wed Sep 17 07:21:53 2008" element-n="304">
+<history date="Fri Sep 19 08:07:46 2008" element-n="314">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -566,5 +566,17 @@
     <day year="2008" month="09" day="17">
         <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:15:51"/>
         <crc-error time="05:21:35" application="test-skip-simple-2.py" choice="DL=1" database-crc="1521845028" real-crc="384383897"/>
+    </day>
+    <day year="2008" month="09" day="19">
+        <crc-error time="04:56:30" application="test-skip-simple.py" choice="ANSI-C" database-crc="1454671696" real-crc="-1090631127"/>
+        <crc-error time="04:56:32" application="test-skip-simple.py" choice="Cpp" database-crc="1454671696" real-crc="-1090631127"/>
+        <crc-error time="04:57:03" application="test-skip-simple-2.py" choice="DL=2" database-crc="1521845028" real-crc="2098906281"/>
+        <crc-error time="04:57:05" application="test-skip-simple-2.py" choice="DL=3" database-crc="1521845028" real-crc="2098906281"/>
+        <crc-error time="04:57:06" application="test-skip-simple-2.py" choice="DL=4" database-crc="1521845028" real-crc="2098906281"/>
+        <crc-error time="05:47:31" application="test-skip-simple-3.py" choice="DL=3" database-crc="1625391776" real-crc="-407893639"/>
+        <crc-error time="05:47:41" application="test-skip-simple-3.py" choice="DL=1" database-crc="-407893639" real-crc="1625391776"/>
+        <crc-error time="05:47:43" application="test-skip-simple-3.py" choice="DL=2" database-crc="820535339" real-crc="1625391776"/>
+        <crc-error time="05:47:47" application="test-skip-simple-3.py" choice="DL=4" database-crc="576758720" real-crc="1625391776"/>
+        <test-runs-today n="6" ok-n="3" fail-n="1" else-n="2" last-run="oll korrekt" last-time="06:07:46"/>
     </day>
 </history>

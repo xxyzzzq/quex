@@ -9,6 +9,7 @@ from   generator_test import create_main_function, \
 if "--hwut-info" in sys.argv:
     print "Plain Range Skipping: Varrying DelimiterLength, BufferSize = DelimiterLength + 2"
     print "CHOICES: DL=1, DL=2, DL=3, DL=4;"
+    print "SAME;"
     sys.exit(0)
 
 if len(sys.argv) < 2 or not (sys.argv[1] in ["DL=1", "DL=2", "DL=3", "DL=4"]): 
@@ -38,10 +39,10 @@ compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, Q
 
 TestStr  = SEP + "hijklmnop" + SEP + "qrstuvw" + SEP + "xyz" + SEP
 
-#compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 TestStr  = "a" + SEP + "h" + SEP + SEP + SEP
 
-#compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
+compile_and_run(Language, create_skipper_code(Language, TestStr, end_sequence, QuexBufferSize, CommentTestStrF=True))
 
 

@@ -177,7 +177,6 @@ namespace quex {
 #  else
 
 #    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)                   \
-            QUEX_DEBUG_PRINT(Filler->client, "LOAD BUFFER " Msg); \
             BufferFiller_x_show_content(Filler); /* empty */
 
 #  endif /* ! __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
