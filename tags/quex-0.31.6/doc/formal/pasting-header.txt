@@ -1,0 +1,6 @@
+It is sometimes necessary to provide header file information or macro
+definitions to the pattern-action pairs or event handlers. To do this
+quex allows to specify a `header`. This keyword has to appear
+outside any mode definition. It is followed by an opening curly bracket,
+the code to be pasted and a matching closing curly bracket.
+

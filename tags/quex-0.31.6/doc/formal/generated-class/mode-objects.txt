@@ -1,0 +1,31 @@
+Modes themselves are implemented as objects of classes which are derived from
+the base class `quex\_mode`.  Those mode objects have member functions
+that provide information about the modes and possible transitions:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    bool  has_base(const quex_mode& Mode,       bool PrintErrorMsgF = false) const; 
+    bool  has_entry_from(const quex_mode& Mode, bool PrintErrorMsgF = false) const;  
+    bool  has_exit_to(const quex_mode& Mode,    bool PrintErrorMsgF = false) const;
+    const int     ID; \\
+    const string  Name; \\
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first three member functions allow to get information about the relation
+to other modes. If the flag `PringErrorMsgF` is set than the function will
+print an error message to the standard error output in case that the condition
+is not matched. This comes very handy when using these functions in `assert`s or
+during debugging. The functions can be applied on a given mode object or
+inside the `on\_entry` and `on\_exit` functions with the `this`
+pointer.  In a pattern action pair, for example, one might write
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     if( PROGRAM.has_base(self.mode()) )
+         cerr << "mode not a base of PROGRAM: " << self.mode_name() << endl;      
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For the end-user these functions are not really relevant, since quex
+itself introduces `assert`s on mode transitions and provides convienient member
+functions in the lexical analyser class to access information about the
+current mode.

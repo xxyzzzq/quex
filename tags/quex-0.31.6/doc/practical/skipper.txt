@@ -1,0 +1,18 @@
+In order to skip partions of the input without considering its content, quex provides
+the ability to define so called 'skippers'. Skippers can be used, for example, to
+skip whitespaces  and skip comments. Of course, most of the skippers can also be 
+defined as patterns that have no action related to it. However, there are great 
+advantages of skippers over their implementation as a 'skipping pattern'.
+
+First of all, skippers perform faster, since they only compare against the
+closing delimiter while swallowing the input file. Second, they may reduce the
+required buffer size. Normally, the buffer size has to be in the range of the
+size of the largest possible token. This would include 'skipping' patterns,
+such as patterns eating the '/*' - '*/' type of comments. The requirements
+of skippers with respect to buffer size is very simple: the buffer size
+needs to be greater or equal the length of the largest delimiter 
+(begining or terminating) plus the two obligatory bytes carrying the buffer 
+limit characters at the beginning and the end of the buffer.
+A third advantage of skippers is the ability to implemented the 'nested
+skipper' type, allowing nested comments. This type of skippers cannot be implemented as a 
+regular expression.

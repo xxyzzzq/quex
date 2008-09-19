@@ -1,0 +1,66 @@
+Additionally to the specification of the pattern to be matched 
+quex allows to define conditions on the boundary of the pattern.
+This happens through pre- and post-conditions. First, the trivial
+pre- and post-conditions for begin of line and end of line are discussed.
+Then it is shown how to specify whole regular expressions to express
+conditions on the surroundings of the pattern to be matched. The traditional
+characters to condition begin and end of line are:
+
+`^R`:: 
+
+   an  regular expression `R`, but only at the beginning of a line. This condition
+   holds whenever the scan starts at the beginning of the character stream or
+	right after a newline character. This shortcut scans only for a single 
+	newline character '\verb|\|' (hexadecimal $0A$) backwards, independent
+	on how the particular operating system codes the newline. In this case, 
+	there is no harm coming from different conventions of newline.
+
+`R$`:: 
+
+    a regular expression R, but only at the end of a line and _not_ at the end of the
+    file. Note, that the meaning of this shortcut can be adapted according to the 
+    target operating system. Some operating systems, such as DOS and Windows, code
+    a newline as a sequence '\r\n' (hexadecimal 0D, 0A), i.e.
+    as two characters. If you want to use this feature on those systems, you need 
+    to specify the `--DOS` option on the command line (or in your makefile).
+    Otherwise, `$` will scan only for the newline character (hexadecimal 0A). 
+     +
+    Note, that for the trivial end-of-line post condition the newline coding
+    convention is essential.  If newline is coded as 0D, 0A then the
+    first 0D would discard a pattern that was supposed to be followed by
+    0A only.
+     +
+    Note, that if the '$' shall trigger at the end of the file, it might be 
+    advantageous to add a newline at the end of the file by default.
+
+For more sophisticated case 'real' regular expressions can be defined to handle
+pre- and post-conditions. Note, that pre- and post-conditions can only appear
+at the front and rear of the core pattern. Let `R` be the core regular expression,
+`Q` the regular expression of the pre-condition, and `S` the regular expression
+for the post-condition.
+
+`R/S`::
+
+   matches an `R`, but only if it is followed by an `S`. If the pattern
+   matches the input is set to the place where `R`. The part that is
+   matched by `S` is available for the next pattern to be matched.  `R`
+   is post-conditioned.  Note, that the case where the end of `R` matches
+   the beginning of `S` cannot be treated by Version 0.9.0\footnote{The
+       reason for this lies in the nature of state machines. Flex has the exact
+           same problem. To avoid this some type of 'step back from the end of
+           the post-condition' must be implemented.}.
+		 
+`Q/R/`:: 
+
+   matches `R` from the current position, but only if it is preceeded by a
+`Q`. Practically, this means that quex goes backwards in order to determine
+if the pre-condition `Q` has matched and then forward to see if `R` has
+matched. `R` is pre-conditioned.  Note, with pre-conditions there is no
+trailing context problem as with post-conditions above.
+                  
+`Q/R/S`:: 
+
+    matches `R` from the current position, but only if the preceeding
+    stream matches a `Q` and the following stream matches an `S`.
+    `R` is pre- and post-conditioned.
+
