@@ -27,14 +27,12 @@ def do():
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
     """
-
     LexerClassName = Setup.output_engine_name
+
     # NOTE: The generated header file that contains the lexical analyser class includes
     #       the file "code_base/code_base/definitions-quex-buffer.h". But the analyser
     #       functions also need 'connection' to the lexer class, so we include the header
     #       of the generated lexical analyser at this place.
-    QuexEngineHeaderDefinitionFile = Setup.output_file_stem 
-
     lexer_mode.token_id_db["TERMINATION"]   = TokenInfo("TERMINATION",   ID=Setup.token_id_termination)
     lexer_mode.token_id_db["UNINITIALIZED"] = TokenInfo("UNINITIALIZED", ID=Setup.token_id_uninitialized)
 
@@ -42,9 +40,7 @@ def do():
 
     # (*) get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
-    mode_list = filter(lambda mode: mode.options["inheritable"] != "only", 
-                       mode_db.values())
-
+    mode_list      = filter(lambda mode: mode.options["inheritable"] != "only", mode_db.values())
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
     # (2) implement the 'quex' core class from a template
@@ -61,33 +57,10 @@ def do():
     inheritance_info_str = "[dominating inheritance level] [pattern index] [pattern]\n"
     analyzer_code = ""
     for mode in mode_list:        
-        # -- some modes only define event handlers that are inherited
-        if not mode.has_matches(): continue
-
-        # -- 'end of stream' action
-        end_of_stream_action = action_code_formatter.do(mode, mode.on_end_of_stream_code_fragments(), Setup, 
-                                                        "on_end_of_stream", None, EOF_ActionF=True)
-        # -- 'default' action (nothing matched)
-        default_action = action_code_formatter.do(mode, mode.on_failure_code_fragments(), Setup, 
-                                                  "on_failure", None, Default_ActionF=True)
-
-        # -- adapt pattern-action pair information so that it can be treated
-        #    by the code generator.
-        pattern_action_pair_info_list = mode.pattern_action_pairs().values()
-        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list)
-
         # accumulate inheritance information for comment
-        inheritance_info_str += dummy + "\n"
-
-        analyzer_code += generator.do(pattern_action_pair_list, 
-                                      DefaultAction                  = default_action, 
-                                      EndOfStreamAction              = end_of_stream_action,
-                                      PrintStateMachineF             = True,
-                                      StateMachineName               = mode.name,
-                                      AnalyserStateClassName         = Setup.output_engine_name,
-                                      StandAloneAnalyserF            = False, 
-                                      QuexEngineHeaderDefinitionFile = QuexEngineHeaderDefinitionFile,
-                                      ModeNameList                   = mode_name_list)
+        x, y = get_code_for_mode(mode, mode_name_list) 
+        analyzer_code        += x
+        inheritance_info_str += y + "\n"
         
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "wb")
@@ -110,6 +83,35 @@ def do():
     ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + ".cpp", "C")
 
     ## TODO: inheritance_info_str <<Feature Request: 1948456>>
+
+def get_code_for_mode(Mode, ModeNameList):
+
+    # -- some modes only define event handlers that are inherited
+    if not Mode.has_matches(): return "", ""
+
+    # -- 'end of stream' action
+    end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), Setup, 
+                                                    "on_end_of_stream", None, EOF_ActionF=True)
+    # -- 'default' action (nothing matched)
+    default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), Setup, 
+                                              "on_failure", None, Default_ActionF=True)
+
+    # -- adapt pattern-action pair information so that it can be treated
+    #    by the code generator.
+    pattern_action_pair_info_list   = Mode.pattern_action_pairs().values()
+    dummy, pattern_action_pair_list = get_generator_input(Mode, pattern_action_pair_info_list)
+
+    analyzer_code = generator.do(pattern_action_pair_list, 
+                                 DefaultAction                  = default_action, 
+                                 EndOfStreamAction              = end_of_stream_action,
+                                 PrintStateMachineF             = True,
+                                 StateMachineName               = Mode.name,
+                                 AnalyserStateClassName         = Setup.output_engine_name,
+                                 StandAloneAnalyserF            = False, 
+                                 QuexEngineHeaderDefinitionFile = Setup.output_file_stem,
+                                 ModeNameList                   = ModeNameList)
+
+    return analyzer_code, dummy
     
 def get_generator_input(Mode, match_info_list):
     """The module 'quex.core_engine.generator.core' produces the code for the 

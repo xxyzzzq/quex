@@ -1,7 +1,7 @@
-<test-database execution-time-sec="0.07" date="Fri Sep 19 08:06:11 2008">
+<test-database execution-time-sec="0.08" date="Thu Sep 25 08:25:58 2008">
     <last-used-diff-display-program name=""/>
     <group name="Seek">
-        <test title="Total Zik-Zak" make-required="True" time-sum-sec="0.02"> 
+        <test title="Total Zik-Zak" make-required="True" time-sum-sec="0.03"> 
             <application file-name="seek_character_index-zikzak.exe" info-request-time="1221804370L"/>
             <make-procedure success="True" />
             <choice-list number="2">
