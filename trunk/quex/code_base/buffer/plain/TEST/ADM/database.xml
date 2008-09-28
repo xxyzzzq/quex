@@ -1,11 +1,11 @@
-<test-database execution-time-sec="0.06" date="Thu Sep 25 08:25:59 2008">
+<test-database execution-time-sec="0.06" date="Sun Sep 28 11:29:00 2008">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
-        <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.01"> 
+        <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_backward_load-4.exe" info-request-time="1221804372L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="-93227443"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-93227443"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -80,18 +80,18 @@
                <choice name="" result="OK" time-sec="0.00" crc="-613799360"/>
             </choice-list>
         </test>
-        <test title="Character=2 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.01"> 
+        <test title="Character=2 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_forward_load-2-fb1.exe" info-request-time="1221804375L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="736895487"/>
+               <choice name="" result="OK" time-sec="0.00" crc="736895487"/>
             </choice-list>
         </test>
-        <test title="With Error in Stream (Character=4 Byte(s))" make-required="True" time-sum-sec="0.00"> 
+        <test title="With Error in Stream (Character=4 Byte(s))" make-required="True" time-sum-sec="0.02"> 
             <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1221804378L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1418030292"/>
+               <choice name="" result="OK" time-sec="0.02" crc="1418030292"/>
             </choice-list>
         </test>
     </group>

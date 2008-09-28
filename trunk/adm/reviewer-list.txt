@@ -8,5 +8,6 @@ windows       cowfriendly org       hjeng              hj
 osx           cowfriendly org       hjeng              hj
 deb           users sourceforge net alejandro_ar       aa
 solaris       users sourceforge net alejandro_ar       aa
+freebsd       gmail com             martin.miller7     mm
 
 # [Release]   [windows]  [osx]   [deb]  [solaris]

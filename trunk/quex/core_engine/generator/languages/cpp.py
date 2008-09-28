@@ -419,3 +419,14 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
 
     return txt
     
+
+def __frame_of_all(Code, HeaderFile, LexerClassName):
+    return "#include \"%s\"\n" % HeaderFile                 + \
+           "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
+           "namespace quex {\n"                             + \
+           "#endif\n"                                       + \
+           "#define QUEX_LEXER_CLASS %s\n" % LexerClassName + \
+           Code                                             + \
+           "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
+           "} // namespace quex\n"                          + \
+           "#endif\n" 

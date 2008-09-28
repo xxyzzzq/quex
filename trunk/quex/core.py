@@ -64,15 +64,7 @@ def do():
         
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "wb")
-    analyzer_code = "#include \"%s\"\n" % Setup.output_file_stem + \
-                    "#if ! defined(__QUEX_SETTING_PLAIN_C)\n" + \
-                    "namespace quex {\n" + \
-                    "#endif\n" + \
-                    "#define QUEX_LEXER_CLASS %s\n" % Setup.output_engine_name + \
-                    analyzer_code + \
-                    "#if ! defined(__QUEX_SETTING_PLAIN_C)\n" + \
-                    "} // namespace quex\n" + \
-                    "#endif\n" 
+    analyzer_code = generator.frame_this(analyzer_code)
     
     if os.linesep == "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
