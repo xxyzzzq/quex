@@ -156,3 +156,6 @@ def do(PatternActionPair_List, DefaultAction,
                      DefaultAction, EndOfStreamAction, ModeNameList, 
                      PrintStateMachineF, StandAloneAnalyserF).do()
     
+def frame_this(Code):
+    return Setup.language_db["$frame"](Code, Setup.output_file_stem, Setup.output_engine_name)
+

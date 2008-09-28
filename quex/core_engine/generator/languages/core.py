@@ -105,6 +105,7 @@ db["C++"] = {
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #
     "$header-definitions":   cpp.__header_definitions,
+    "$frame":                cpp.__frame_of_all,
     }
 
 #________________________________________________________________________________

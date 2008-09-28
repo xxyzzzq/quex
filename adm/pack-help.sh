@@ -1,75 +1,88 @@
 # PURPOSE: Creating a release of Quex
 #   $1  version of the quex release
 #
-# (C) 2007 Frank-Rene Schaefer  fschaef@users.sourceforge.net
+# (C) 2005-2008 Frank-Rene Schaefer  fschaef@users.sourceforge.net
 # 
 # ABSOLUTELY NO WARRANTY
 #
 ###########################################################################
-#rm `find ./quex -name "*.pyc"`
-#rm `find ./quex -name "*~"`
+
 cd ~/prj/quex/trunk
 orig_directory=`pwd`
 directory=`basename $orig_directory`
 
 INSTALLBUILDER_OUT=/opt/installbuilder-5.4.11/output
 
-# (*) Update the version information inside the application
-echo "-- Update Version Information"
-awk -v version="'$1'" ' ! /^QUEX_VERSION/ { print; } /^QUEX_VERSION/ { print "QUEX_VERSION =",version; }' \
-    ./quex/DEFINITIONS.py > tmp-DEFINITIONS.txt
-mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py
-
-# (*) Collect the list of files under concern
-echo "-- Collect files for distribution"
+# Temporary file for building a distribution file list
 input=/tmp/file-list-in.txt
 output=/tmp/file-list-out.txt
 
-cd $QUEX_PATH
-cd ..
 
-find trunk/quex $directory/demo  -type f  > $input
-echo "trunk/LPGL.txt"              >> $input
-echo "trunk/COPYRIGHT.txt"         >> $input
-echo "trunk/README"                >> $input
-echo "trunk/unit_test_results.txt" >> $input
-echo "trunk/quex-exe.py"           >> $input
-echo "trunk/quex.bat"              >> $input
-echo "trunk/__init__.py"           >> $input
+function update_version_information()
+{
+    # (*) Update the version information inside the application
+    cd $QUEX_PATH
+
+    echo "-- Update Version Information"
+    awk -v version="'$1'" ' ! /^QUEX_VERSION/ { print; } /^QUEX_VERSION/ { print "QUEX_VERSION =",version; }' \
+        ./quex/DEFINITIONS.py > tmp-DEFINITIONS.txt
+    mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py
+}
+
+function collect_distribution_file_list()
+{
+    cd $QUEX_PATH
+    cd ..
+
+    # (*) Collect the list of files under concern
+    echo "-- Collect files for distribution"
+
+    find trunk/quex $directory/demo  -type f  > $input
+
+    echo "trunk/LPGL.txt"              >> $input
+    echo "trunk/COPYRIGHT.txt"         >> $input
+    echo "trunk/README"                >> $input
+    echo "trunk/unit_test_results.txt" >> $input
+    echo "trunk/quex-exe.py"           >> $input
+    echo "trunk/quex.bat"              >> $input
+    echo "trunk/__init__.py"           >> $input
 
 
-# -- filter out all files that are not directly required for 
-#    a working application.
-echo "-- Filter out redundant files"
-awk ' ! /\/\.svn/ { print; }'  $input > $output; cp $output $input
-awk ' ! /\/TEST\// { print; }' $input > $output; cp $output $input
-awk ' ! /\.o$/ { print; }'     $input > $output; cp $output $input
-awk ' ! /\.pyc$/ { print; }'   $input > $output; cp $output $input
-awk ' ! /\.pdf$/ { print; }'   $input > $output; cp $output $input
-awk ' ! /\~$/ { print; }'      $input > $output; cp $output $input
-awk ' ! /\.bak$/ { print; }'   $input > $output; cp $output $input
-awk ' ! /\.htm$/ { print; }'   $input > $output; cp $output $input
-awk ' ! /\.html$/ { print; }'  $input > $output; cp $output $input
-awk ' ! /\.swo$/ { print; }'   $input > $output; cp $output $input
-awk ' ! /\.swp$/ { print; }'   $input > $output; cp $output $input
-awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
+    # -- filter out all files that are not directly required for 
+    #    a working application.
+    echo "-- Filter out redundant files"
+    awk ' ! /\/\.svn/ { print; }'  $input > $output; cp $output $input
+    awk ' ! /\/TEST\// { print; }' $input > $output; cp $output $input
+    awk ' ! /\.o$/ { print; }'     $input > $output; cp $output $input
+    awk ' ! /\.pyc$/ { print; }'   $input > $output; cp $output $input
+    awk ' ! /\.pdf$/ { print; }'   $input > $output; cp $output $input
+    awk ' ! /\~$/ { print; }'      $input > $output; cp $output $input
+    awk ' ! /\.bak$/ { print; }'   $input > $output; cp $output $input
+    awk ' ! /\.htm$/ { print; }'   $input > $output; cp $output $input
+    awk ' ! /\.html$/ { print; }'  $input > $output; cp $output $input
+    awk ' ! /\.swo$/ { print; }'   $input > $output; cp $output $input
+    awk ' ! /\.swp$/ { print; }'   $input > $output; cp $output $input
+    awk ' ! /trunk\/quex\/data_base\/misc\// { print; }'  $input > $output; cp $output $input
 
-# (*) create packages: .tar.7z, .tar.gz
+    # (*) create packages: .tar.7z, .tar.gz
 
-# -- create tar file for ./trunk
-echo "-- Snapshot"
-tar cf /tmp/quex-$1.tar `cat $output`
-echo `ls -lh /tmp/quex-$1.tar`
+    # -- create tar file for ./trunk
+    echo "-- Snapshot"
+    tar cf /tmp/quex-$1.tar `cat $output`
+    echo `ls -lh /tmp/quex-$1.tar`
 
-# -- change base directory from ./trunk to ./quex-$version
-echo "-- Place snapshot in temporary directory"
-cd /tmp/
-tar xf quex-$1.tar
-rm quex-$1.tar 
-mv trunk quex-$1
+    # -- change base directory from ./trunk to ./quex-$version
+    echo "-- Place snapshot in temporary directory"
+    cd /tmp/
+    tar xf quex-$1.tar
+    rm quex-$1.tar 
+    mv trunk quex-$1
+}
 
 function create_packages() 
 {
+    cd /tmp
+
     echo "Create installers for $1"
 
     # -- create xml file for the install builder
@@ -79,10 +92,12 @@ function create_packages()
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml freebsd
+    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml solaris-intel
+
     cd $INSTALLBUILDER_OUT
     zip -r quex-$1-osx-installer.app.zip quex-$1-osx-installer.app
 
-    cd /tmp
     echo "-- Create tar and zip file"
     tar cf quex-$1.tar ./quex-$1
     zip -r quex-$1.zip ./quex-$1
@@ -97,15 +112,19 @@ function collect_packages()
 {
     rm -rf /tmp/quex-packages
     mkdir /tmp/quex-packages
-    mv quex-$1.tar.7z /tmp/quex-packages
-    mv quex-$1.tar.gz /tmp/quex-packages
-    mv quex-$1.zip    /tmp/quex-packages
-    #
-    mv $INSTALLBUILDER_OUT/quex_$1*.deb                  /tmp/quex-packages
-    mv $INSTALLBUILDER_OUT/quex-$1*.rpm                  /tmp/quex-packages
-    mv $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe /tmp/quex-packages
-    mv $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin   /tmp/quex-packages
-    mv $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip     /tmp/quex-packages
+
+    mv /tmp/quex-$1.tar.7z \
+       /tmp/quex-$1.tar.gz \
+       /tmp/quex-$1.zip    \
+       $INSTALLBUILDER_OUT/quex_$1*.deb                         \
+       $INSTALLBUILDER_OUT/quex-$1*.rpm                         \
+       $INSTALLBUILDER_OUT/quex-$1*windows-installer.exe        \
+       $INSTALLBUILDER_OUT/quex-$1*linux-installer.bin          \
+       $INSTALLBUILDER_OUT/quex-$1-osx-installer.app.zip        \
+       $INSTALLBUILDER_OUT/quex-$1-freebsd-installer.bin        \
+       $INSTALLBUILDER_OUT/quex-$1-solaris-intel-installer.bin  \
+       /tmp/quex-packages
+
     # -- create the batch file for sftp
     scriptfile=/tmp/quex-packages/sftp-frs.sourceforge.net.sh
     echo "cd uploads"         >  $scriptfile
@@ -117,12 +136,15 @@ function collect_packages()
     echo "put quex-$1-windows-installer.exe " >> $scriptfile
     echo "put quex-$1-linux-installer.bin   " >> $scriptfile
     echo "put quex-$1-osx-installer.app.zip " >> $scriptfile
+    echo "put quex-$1-freebsd-installer.app.zip " >> $scriptfile
+    echo "put quex-$1-solaris-intel-installer.app.zip " >> $scriptfile
 }
 
 function repository_update() {
+    cd $QUEX_PATH
+
     # make sure that the new version information is checked in
     echo "-- Update repository / Create tag for $1"
-    cd $QUEX_PATH
     svn commit -m "Version Info / Prepare Release $1"
 
     # branch on sourceforge subversion
@@ -132,14 +154,19 @@ function repository_update() {
 }
 
 function clean_up() {
-    # (*) clean up
     cd /tmp
+
+    # (*) clean up
     rm $input $output
 
-    echo "-- Files are ready in /tmp"
     cd $orig_directory
+
+    echo "Prepared all files in directory /tmp/quex-packages"
 }
 
+update_version_information $1
+
+collect_distribution_file_list $1
 
 create_packages $1
 
