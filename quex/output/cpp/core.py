@@ -183,8 +183,7 @@ def write_mode_class_implementation(Modes, Setup):
     txt += mode_class_member_functions_txt
     txt += "} // END: namespace quex\n"
 
-    txt = \
-         blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
+    txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
                           ["$$TOKEN_CLASS$$",              TokenClassName],
                           ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
     

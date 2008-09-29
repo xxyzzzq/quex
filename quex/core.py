@@ -62,11 +62,11 @@ def do():
         analyzer_code        += x
         inheritance_info_str += y + "\n"
         
+    analyzer_code = generator.frame_this(analyzer_code)
+
     # write code to a header file
     fh = open(LexerClassName + "-core-engine.cpp", "wb")
-    analyzer_code = generator.frame_this(analyzer_code)
-    
-    if os.linesep == "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
+    if os.linesep != "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()
 
@@ -90,8 +90,7 @@ def get_code_for_mode(Mode, ModeNameList):
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    pattern_action_pair_info_list   = Mode.pattern_action_pairs().values()
-    dummy, pattern_action_pair_list = get_generator_input(Mode, pattern_action_pair_info_list)
+    dummy, pattern_action_pair_list = get_generator_input(Mode)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
                                  DefaultAction                  = default_action, 
@@ -105,7 +104,7 @@ def get_code_for_mode(Mode, ModeNameList):
 
     return analyzer_code, dummy
     
-def get_generator_input(Mode, match_info_list):
+def get_generator_input(Mode):
     """The module 'quex.core_engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
        adapts the mode information to this format. Additional code is added 
@@ -115,6 +114,8 @@ def get_generator_input(Mode, match_info_list):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
+    pattern_action_pair_info_list = Mode.pattern_action_pairs().values()
+
     # (*) sort the patterns:
     #
     #     -- The order of the patterns determine the sequence of the creation of the 
@@ -145,10 +146,6 @@ def get_generator_input(Mode, match_info_list):
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine
 
-        # counting the columns,
-        # counting the newlines: here one might have analysis about the pattern
-        #                        preceeding and only doing the check if the pattern
-        #                        potentially contains newlines.
         action = action_code_formatter.do(Mode, pattern_info.action, Setup, safe_pattern_str,
                                           pattern_state_machine)
 
