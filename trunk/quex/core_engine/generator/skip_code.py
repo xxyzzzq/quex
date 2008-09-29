@@ -14,13 +14,13 @@ range_skipper_template = """
     const size_t                SkipDelimiter$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
     QUEX_CHARACTER_TYPE*        content_end = QuexBuffer_text_end(&me->buffer);
 
-$$SKIPPER_ENTRY$$
+$$ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QuexBuffer_content_size(&me->buffer) >= SkipDelimiter$$SKIPPER_INDEX$$L );
     if( QuexBuffer_distance_input_to_text_end(&me->buffer) < SkipDelimiter$$SKIPPER_INDEX$$L ) 
-        $$GOTO_SKIPPER_DROP_OUT$$;
+        $$GOTO_DROP_OUT$$;
 
-$$SKIPPER_RESTART$$
+$$RESTART$$
     *content_end = SkipDelimiter$$SKIPPER_INDEX$$[0];       /* Overwrite BufferLimitCode (BLC).  */
     $$WHILE_1_PLUS_1_EQUAL_2$$
         $$INPUT_GET$$ 
@@ -43,7 +43,7 @@ $$DELIMITER_REMAINDER_TEST$$
          * need here to reload the buffer. */
         $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
     }
-$$SKIPPER_DROP_OUT$$
+$$DROP_OUT$$
     /* -- When loading new content it is always taken care that the beginning of the lexeme
      *    is not 'shifted' out of the buffer. In the case of skipping, we do not care about
      *    the lexeme at all, so do not restrict the load procedure and set the lexeme start
@@ -66,7 +66,7 @@ $$SKIPPER_DROP_OUT$$
         if( QuexBuffer_distance_input_to_text_end(&me->buffer) >= SkipDelimiter$$SKIPPER_INDEX$$L ) {
             content_end = QuexBuffer_text_end(&me->buffer);
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-            $$GOTO_SKIPPER_RESTART$$
+            $$GOTO_RESTART$$
         }
 
     }
@@ -94,12 +94,12 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
     # Determine the check for the tail of the delimiter
     if len(EndSequence) == 1: 
         txt  = "    if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0  )\n"
-        txt += "        $$GOTO_SKIPPER_DROP_OUT$$\n"
+        txt += "        $$GOTO_DROP_OUT$$\n"
         txt += "    " + LanguageDB["$comment"]("No further check. Delimiter has length '1'")
         delimiter_remainder_test_str = txt
     else:
         txt  = "    if( QuexBuffer_distance_input_to_text_end(&me->buffer) < SkipDelimiter$$SKIPPER_INDEX$$L )\n"
-        txt += "        $$GOTO_SKIPPER_DROP_OUT$$\n"
+        txt += "        $$GOTO_DROP_OUT$$\n"
         i = 0
         for letter in EndSequence[1:]:
             i += 1
@@ -121,21 +121,19 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
                            ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
                            ["$$BREAK$$",                      LanguageDB["$break"]],
                            ["$$ENDIF$$",                      LanguageDB["$endif"]],
-                           ["$$SKIPPER_ENTRY$$",              LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$SKIPPER_RESTART$$",            LanguageDB["$label-def"]("$input", skipper_index)],
-                           ["$$SKIPPER_DROP_OUT$$",           LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                           ["$$GOTO_SKIPPER_RESTART$$",       LanguageDB["$goto"]("$input", skipper_index)],
+                           ["$$ENTRY$$",                      LanguageDB["$label-def"]("$entry", skipper_index)],
+                           ["$$RESTART$$",                    LanguageDB["$label-def"]("$input", skipper_index)],
+                           ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                           ["$$GOTO_RESTART$$",               LanguageDB["$goto"]("$input", skipper_index)],
                            ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                            ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
                            ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
                            ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
-                           ["$$MISSING_CLOSING_DELIMITER$$", MissingClosingDelimiterAction]])
+                           ["$$MISSING_CLOSING_DELIMITER$$",  MissingClosingDelimiterAction]])
 
     code_str = blue_print(code_str,
-                          [["$$SKIPPER_INDEX$$",    __nice(skipper_index)],
-                           ["$$GOTO_SKIPPER_DROP_OUT$$",      LanguageDB["$goto"]("$drop-out", skipper_index)]])
-                          
-            
+                          [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
+                           ["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
     return code_str
 
