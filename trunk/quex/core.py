@@ -114,7 +114,7 @@ def get_generator_input(Mode):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
-    pattern_action_pair_info_list = Mode.pattern_action_pairs().values()
+    match_info_list = Mode.pattern_action_pairs().values()
 
     # (*) sort the patterns:
     #
