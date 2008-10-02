@@ -51,8 +51,8 @@ file_str = \
 #    error \"Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/descriptions' shall **not** be included before this file.\"
 #endif
 /* Note, we can very well refer in macros to things that are defined below. */
-#define __QUEX_TOKEN_ID_TERMINATION    (quex::$$TOKEN_PREFIX$$TERMINATION)
-#define __QUEX_TOKEN_ID_UNINITIALIZED  (quex::$$TOKEN_PREFIX$$UNINITIALIZED)
+#define __QUEX_TOKEN_ID_TERMINATION    (::quex::$$TOKEN_PREFIX$$TERMINATION)
+#define __QUEX_TOKEN_ID_UNINITIALIZED  (::quex::$$TOKEN_PREFIX$$UNINITIALIZED)
 
 /* The token class definition file can only be included after the two token identifiers have
  * been defined. Otherwise, it would rely on default values. */

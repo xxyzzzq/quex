@@ -76,8 +76,10 @@ CLASS::CLASS(std::FILE* fh,
 inline
 CLASS::~CLASS() 
 {
+    QuexAnalyser_free_related_memory(this);
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     delete _token_queue;
 #   endif
 }
+
 } // namespace quex
