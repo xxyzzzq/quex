@@ -175,10 +175,7 @@ def do_plot():
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
-        pattern_action_pair_info_list = mode.pattern_action_pairs().values()
-
-        # -- pattern-action pairs
-        dummy, pattern_action_pair_list = get_generator_input(mode, pattern_action_pair_info_list)
+        dummy, pattern_action_pair_list = get_generator_input(mode)
 
         plotter = plot_generator.Generator(pattern_action_pair_list, 
                                            StateMachineName = mode.name,

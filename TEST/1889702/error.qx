@@ -1,5 +1,5 @@
 mode BASE {
-"a" => TKN_A;
+"a" => QUEX_TKN_A;
 }
 mode DERIVED : BASE {
 on_exit { foo(); }

@@ -2,5 +2,5 @@ token {
 A#A
 }
 mode START {
-"b" => TKN_B;
+"b" => QUEX_TKN_B;
 }

@@ -47,20 +47,20 @@ mode PROGRAM :
 <entry: STRING_READER>
 <exit:  STRING_READER>
 {
-    "{"         { self.send(TKN_CURLY_BRACKET_O); RETURN; }
-    "}"         => TKN_CURLY_BRACKET_C;
-    "="         => TKN_OP_ASSIGNMENT;
-    "struct"    => TKN_STRUCT;
-    if          => TKN_IF;
-    ";"         => TKN_SEMICOLON;
+    "{"         { self.send(QUEX_TKN_CURLY_BRACKET_O); RETURN; }
+    "}"         => QUEX_TKN_CURLY_BRACKET_C;
+    "="         => QUEX_TKN_OP_ASSIGNMENT;
+    "struct"    => QUEX_TKN_STRUCT;
+    if          => QUEX_TKN_IF;
+    ";"         => QUEX_TKN_SEMICOLON;
 
-    [a-z]+      { self.send(TKN_IDENTIFIER, Lexeme); }
-    {P_NUMBER}  => TKN_NUMBER(atoi((const char*)Lexeme));
+    [a-z]+      { self.send(QUEX_TKN_IDENTIFIER, Lexeme); }
+    {P_NUMBER}  => QUEX_TKN_NUMBER(atoi((const char*)Lexeme));
 
     [ \t\n]     { }
 
     {P_STRING_DELIMITER} {
-        self.send(TKN_QUOTE);
+        self.send(QUEX_TKN_QUOTE);
         self << STRING_READER;
         RETURN;
     }
@@ -73,8 +73,8 @@ mode STRING_READER :
 {
     on_entry { self.accumulator.clear(); }
     on_exit  { 
-        self.accumulator.flush(TKN_STRING); 
-        self.send(TKN_QUOTE);
+        self.accumulator.flush(QUEX_TKN_STRING); 
+        self.send(QUEX_TKN_QUOTE);
     }
 
     {P_BACKSLASHED_STRING_DELIMITER} { self.accumulator.add(Lexeme); }

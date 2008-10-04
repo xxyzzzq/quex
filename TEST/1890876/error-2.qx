@@ -3,5 +3,5 @@ B "b"
 C {B
 }
 mode START {
-{B} => TKN_A;
+{B} => QUEX_TKN_A;
 }

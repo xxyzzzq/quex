@@ -3,6 +3,6 @@ WS \P{White_Space}
 }
 
 mode X {
-  {WS} => TKN_WS;
+  {WS} => QUEX_TKN_WS;
 }
 

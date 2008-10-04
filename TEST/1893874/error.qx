@@ -1,5 +1,5 @@
 mode MODE
 <inheritable: only>
 {
-<<EOF>> => TKN_TERMINATION;
+<<EOF>> => QUEX_TKN_TERMINATION;
 }

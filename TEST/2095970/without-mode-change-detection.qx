@@ -8,10 +8,10 @@ token {
 start = MODULE
 
 mode MODULE {
-    <<EOF>> => TKN_TERMINATION;
+    <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { 
         self << STRING; 
-        self.send(TKN_EVENT_MODE_CHANGE); 
+        self.send(QUEX_TKN_EVENT_MODE_CHANGE); 
 #       if defined(QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE)
         return; 
 #       else
@@ -23,14 +23,14 @@ mode MODULE {
 mode STRING {
     on_entry { self.accumulator.clear(); }
     on_exit {
-       self.accumulator.flush(TKN_STRING_LITERAL);
+       self.accumulator.flush(QUEX_TKN_STRING_LITERAL);
        // the \" pattern will catch the token id and return it to the user.
     }
-    <<EOF>> => TKN_TERMINATION;
+    <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { 
         self << MODULE; 
 #       if defined(QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE)
-        self.send(TKN_EVENT_MODE_CHANGE); 
+        self.send(QUEX_TKN_EVENT_MODE_CHANGE); 
         return;                           // token is in queue, no catch necessary
 #       else
         // mode change is swallowed here, not necessary anyway

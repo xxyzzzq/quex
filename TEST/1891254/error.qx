@@ -2,6 +2,6 @@ define {
 QUESTION ?
 }
 mode X { 
-    {QUESTION}  => TKN_A();
+    {QUESTION}  => QUEX_TKN_A();
 
 }

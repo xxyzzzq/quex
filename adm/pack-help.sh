@@ -27,6 +27,8 @@ function update_version_information()
     awk -v version="'$1'" ' ! /^QUEX_VERSION/ { print; } /^QUEX_VERSION/ { print "QUEX_VERSION =",version; }' \
         ./quex/DEFINITIONS.py > tmp-DEFINITIONS.txt
     mv tmp-DEFINITIONS.txt ./quex/DEFINITIONS.py
+
+    hwut i > unit_test_results.txt
 }
 
 function collect_distribution_file_list()

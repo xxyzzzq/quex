@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	qlex->get_token(&Token);
 
 	// (*) check against 'termination'
-	if (Token.type_id() == quex::TKN_TERMINATION)
+	if (Token.type_id() == QUEX_TKN_TERMINATION)
 	  break;
 	// (*) print out token information
 	cout << Token << endl;

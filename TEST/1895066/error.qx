@@ -5,5 +5,5 @@ header {
 #include "foo"
 }
 mode MODE {
-"a" => TKN_A;
+"a" => QUEX_TKN_A;
 }

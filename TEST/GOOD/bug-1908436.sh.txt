@@ -1,5 +1,5 @@
-error.qx:2:warning: Token id 'TKN_B' defined implicitly.
-error.qx:3:warning: Token id 'TKN_A' defined implicitly.
-error.qx:5:warning: Token id 'TKN_C' defined implicitly.
+error.qx:2:warning: Token id 'QUEX_TKN_B' defined implicitly.
+error.qx:3:warning: Token id 'QUEX_TKN_A' defined implicitly.
+error.qx:5:warning: Token id 'QUEX_TKN_C' defined implicitly.
 error.qx:6:warning: Pattern has been defined twice.
 error.qx:4:error: First defined here.
