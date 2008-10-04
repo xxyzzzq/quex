@@ -22,7 +22,7 @@ user does not care. He simply receives a sequence of tokens through this
 function until a token arrives with the the token-id 
 
 ----------------------------------------------------------
- quex::TKN_TERMINATION
+ QUEX_TKN_TERMINATION
 ----------------------------------------------------------
 
 Note, that `TKN_` represents the token prefix. If the user decides to modify

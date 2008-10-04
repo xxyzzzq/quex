@@ -3,5 +3,5 @@ TERMINATION
 }
 start = START
 mode START {
-"a" => TKN_TERMINATION;
+"a" => QUEX_TKN_TERMINATION;
 }

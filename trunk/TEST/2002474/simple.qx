@@ -12,10 +12,10 @@ token {
 mode ONE_AND_ONLY
 {
   // Order is relevant
-  on_end_of_stream => TKN_TERMINATION;
+  on_end_of_stream => QUEX_TKN_TERMINATION;
   on_failure     { std::cerr << "unknown character: " << *Lexeme << std::endl; }
   [ \t\r\n]+  { }
 
-  {P_TOK}        => TKN_TOK(Lexeme);
-  .              => TKN_NONE(Lexeme);
+  {P_TOK}        => QUEX_TKN_TOK(Lexeme);
+  .              => QUEX_TKN_NONE(Lexeme);
 }

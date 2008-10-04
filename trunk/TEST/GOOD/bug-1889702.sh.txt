@@ -1,5 +1,5 @@
 (1)
-error.qx:2:warning: Token id 'TKN_A' defined implicitly.
+error.qx:2:warning: Token id 'QUEX_TKN_A' defined implicitly.
 warning: no initial mode defined via 'start'
 warning: using mode 'BASE' as initial mode
 

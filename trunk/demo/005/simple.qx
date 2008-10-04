@@ -10,14 +10,14 @@ token {
 
 mode ONE_AND_ONLY
 {
-    <<EOF>>     => TKN_TERMINATION;
+    <<EOF>>     => QUEX_TKN_TERMINATION;
 
-    "("         => TKN_BRACKET_OPEN;
-    ")"         => TKN_BRACKET_CLOSE;
+    "("         => QUEX_TKN_BRACKET_OPEN;
+    ")"         => QUEX_TKN_BRACKET_CLOSE;
     //
-    "include"   => TKN_INCLUDE;
+    "include"   => QUEX_TKN_INCLUDE;
     //
-    ([_a-zA-Z]|("/"|"."|"'"))+  => TKN_IDENTIFIER(Lexeme); 
+    ([_a-zA-Z]|("/"|"."|"'"))+  => QUEX_TKN_IDENTIFIER(Lexeme); 
     [ \t\r\n]+                  { }
 }
 

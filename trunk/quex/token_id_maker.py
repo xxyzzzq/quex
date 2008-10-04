@@ -51,8 +51,8 @@ file_str = \
 #    error \"Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/descriptions' shall **not** be included before this file.\"
 #endif
 /* Note, we can very well refer in macros to things that are defined below. */
-#define __QUEX_TOKEN_ID_TERMINATION    (::quex::$$TOKEN_PREFIX$$TERMINATION)
-#define __QUEX_TOKEN_ID_UNINITIALIZED  (::quex::$$TOKEN_PREFIX$$UNINITIALIZED)
+#define __QUEX_TOKEN_ID_TERMINATION    ($$TOKEN_PREFIX$$TERMINATION)
+#define __QUEX_TOKEN_ID_UNINITIALIZED  ($$TOKEN_PREFIX$$UNINITIALIZED)
 
 /* The token class definition file can only be included after the two token identifiers have
  * been defined. Otherwise, it would rely on default values. */
@@ -172,7 +172,8 @@ def output(global_setup):
         return " " * (L - len(Name))
 
     # -- define values for the token ids
-    token_id_txt  = "namespace quex {\n"  
+    # NO LONGER: token_id_txt  = "namespace quex {\n"  
+    token_id_txt = ""
     if setup.input_foreign_token_id_file != "":
         token_id_txt += "#include\"%s\"\n" % setup.input_foreign_token_id_file
 
@@ -185,10 +186,10 @@ def output(global_setup):
             token_info = lexer_mode.token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
-            token_id_txt += "const QUEX_TOKEN_ID_TYPE %s%s %s= %i;\n" % (setup.token_prefix,
-                                                                         token_name, space(token_name), 
-                                                                         token_info.number)
-    token_id_txt += "} // namespace quex\n" 
+            token_id_txt += "#define %s%s %s((QUEX_TOKEN_ID_TYPE)%i)\n" % (setup.token_prefix,
+                                                                            token_name, space(token_name), 
+                                                                            token_info.number)
+    # NO LONGER: token_id_txt += "} // namespace quex\n" 
 
     # -- define the function for token names
     db_build_txt = ""

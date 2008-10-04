@@ -7,6 +7,6 @@ define {
 }
 start = START
 mode START {
-  {P_ID}  => TKN_ID;
-  <<EOF>> => TKN_TERMINATION;
+  {P_ID}  => QUEX_TKN_ID;
+  <<EOF>> => QUEX_TKN_TERMINATION;
 }

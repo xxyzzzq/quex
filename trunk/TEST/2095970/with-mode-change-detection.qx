@@ -8,16 +8,16 @@ token {
 start = MODULE
 
 mode MODULE {
-    <<EOF>> => TKN_TERMINATION;
+    <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { self << STRING; }
 }
 
 mode STRING {
     on_entry { self.accumulator.clear(); }
     on_exit {
-       self.accumulator.flush(TKN_STRING_LITERAL);
+       self.accumulator.flush(QUEX_TKN_STRING_LITERAL);
     }
-    <<EOF>> => TKN_TERMINATION;
+    <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { 
         self << MODULE; 
 #       if ! defined(QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE)

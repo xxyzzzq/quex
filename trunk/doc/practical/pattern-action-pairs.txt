@@ -17,7 +17,7 @@ curly brackets.  Inside the brackets a special token is sent, a token with the
 id:
 
 -------------------------------------------
-          quex::TKN_TERMINATION
+          QUEX_TKN_TERMINATION
 -------------------------------------------
 
 telling that lexical analysis is over. Note, that in quex one uses the
@@ -39,7 +39,7 @@ mode END_OF_FILE :
 <inheritable: only>  
 {
     <<EOF>> {
-        self.send(quex::TKN_TERMINATION);
+        self.send(QUEX_TKN_TERMINATION);
         RETURN;
     }
 }

@@ -28,7 +28,7 @@ SETUP_INFO = {
     "input_token_counter_offset":     [["--token-offset"],                   "10000"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
     "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
-    "input_token_id_prefix":          [["--token-prefix"],                   "TKN_"],
+    "input_token_id_prefix":          [["--token-prefix"],                   "QUEX_TKN_"],
     "input_user_token_id_file":       [["--user-token-id-file"],             ""],  # disables token-id file generation!
     "no_mode_transition_check_f":     [["--no-mode-transition-check"],       FLAG],
     "output_debug_f":                 [["--debug"],                          FLAG],

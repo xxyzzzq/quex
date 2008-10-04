@@ -71,7 +71,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 {
     using namespace std;
     //quex::token*   TokenP;
-    int token_id = quex::TKN_TERMINATION;
+    int token_id = QUEX_TKN_TERMINATION;
     //
     // -- repeat the experiment, so that it takes at least 20 seconds
     const clock_t  StartTime = clock();
@@ -101,8 +101,8 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
             // __PRINT_TOKEN(TokenP, qlex);  /* No Operation, see above */
 
             token_n += 1;
-        // } while( TokenP->type_id() != quex::TKN_TERMINATION );
-        } while( (unsigned)token_id != quex::TKN_TERMINATION );
+        // } while( TokenP->type_id() != QUEX_TKN_TERMINATION );
+        } while( (unsigned)token_id != QUEX_TKN_TERMINATION );
         // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n
 
         __PRINT_END();

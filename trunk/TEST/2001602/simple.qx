@@ -10,8 +10,8 @@ NONE
 
 mode ONE_AND_ONLY
 {
-<<EOF>> => TKN_TERMINATION;
+<<EOF>> => QUEX_TKN_TERMINATION;
 
-{P_WORD} => TKN_WORD(Lexeme);
-. => TKN_NONE(Lexeme);
+{P_WORD} => QUEX_TKN_WORD(Lexeme);
+. => QUEX_TKN_NONE(Lexeme);
 }

@@ -8,10 +8,10 @@ define {
 }
 
 mode X {
-    {A} => TKN_A();
-    {B} => TKN_B();
-    {C} => TKN_C();
-    {D} => TKN_D();
-    {E} => TKN_E();
-    {F} => TKN_F();
+    {A} => QUEX_TKN_A();
+    {B} => QUEX_TKN_B();
+    {C} => QUEX_TKN_C();
+    {D} => QUEX_TKN_D();
+    {E} => QUEX_TKN_E();
+    {F} => QUEX_TKN_F();
 }

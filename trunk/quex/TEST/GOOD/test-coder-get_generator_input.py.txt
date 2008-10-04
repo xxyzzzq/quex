@@ -1,13 +1,13 @@
 /*
-** 10  0 [_a-zA-Z]+
-**  8  0 [ \t\n]+
+**  0  0 [_a-zA-Z]+
+**  0  1 [ \t\n]+
 */
 
 self.pattern           = '[_a-zA-Z]+'
 self.action            = 'std::cout << "IDENTIFIER" << std::endl;\n'
 self.filename          = ''
 self.line_n            = -1
-self.inheritance_level = 10
+self.inheritance_level = 0
 self.pattern_index     = 0
 self.priority_mark_f   = False
 self.deletion_f        = False
@@ -16,8 +16,8 @@ self.pattern           = '[ \\t\\n]+'
 self.action            = 'std::cout << "WHITESPACE" << std::endl;\n'
 self.filename          = ''
 self.line_n            = -1
-self.inheritance_level = 8
-self.pattern_index     = 0
+self.inheritance_level = 0
+self.pattern_index     = 1
 self.priority_mark_f   = False
 self.deletion_f        = False
 

@@ -37,11 +37,11 @@ main(int argc, char** argv)
         default: 
             break;
 
-        case quex::TKN_INCLUDE: 
+        case QUEX_TKN_INCLUDE: 
             {
                 qlex->get_token(&Token);
                 cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
-                if( Token.type_id() != quex::TKN_IDENTIFIER ) {
+                if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
                     cout << "found 'include' without a subsequent filename. hm?\n";
                     break;
                 }
@@ -56,7 +56,7 @@ main(int argc, char** argv)
                 break;
                 
             }
-        case quex::TKN_TERMINATION:
+        case QUEX_TKN_TERMINATION:
             if( qlex->include_stack.pop() == false ) continue_lexing_f = false;
             else                                     cout << "<< return from include\n";
             break;

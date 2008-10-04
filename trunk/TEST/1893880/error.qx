@@ -5,8 +5,8 @@ start = MODE
 mode MODE :
 <inheritable: only>
 {
-<<EOF>> => TKN_TERMINATION;
+<<EOF>> => QUEX_TKN_TERMINATION;
 }
 mode ANOTHER_MODE {
-<<EOF>> => TKN_TERMINATION;
+<<EOF>> => QUEX_TKN_TERMINATION;
 }
