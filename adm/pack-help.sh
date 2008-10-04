@@ -101,6 +101,7 @@ function create_packages()
     zip -r quex-$1-osx-installer.app.zip quex-$1-osx-installer.app
 
     echo "-- Create tar and zip file"
+    cd /tmp
     tar cf quex-$1.tar ./quex-$1
     zip -r quex-$1.zip ./quex-$1
 
