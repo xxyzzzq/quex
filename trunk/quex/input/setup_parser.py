@@ -1,6 +1,7 @@
 from   quex.DEFINITIONS import *
 from   copy import copy
 import sys
+import os
 
 from   quex.GetPot                 import GetPot
 from   quex.frs_py.file_in         import open_file_or_die, error_msg, is_identifier
@@ -44,10 +45,12 @@ def do(argv):
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
     setup.QUEX_TEMPLATE_DB_DIR  = QUEX_TEMPLATE_DB_DIR
             
-    setup.output_file_stem     = setup.output_engine_name
-    setup.output_token_id_file = setup.output_engine_name + "-token_ids"
-    setup.output_header_file   = setup.output_engine_name + "-internal.h"
-    setup.output_code_file     = setup.output_engine_name + ".cpp"
+    # (*) Output files
+    setup.output_file_stem        = __prepare_file_name(setup, "")
+    setup.output_token_id_file    = __prepare_file_name(setup, "-token_ids")
+    setup.output_header_file      = __prepare_file_name(setup, "-internal.h")
+    setup.output_code_file        = __prepare_file_name(setup, ".cpp")
+    setup.output_core_engine_file = __prepare_file_name(setup, "-core-engine.cpp")
 
     setup.buffer_limit_code    = __get_integer(setup.buffer_limit_code, "--buffer-limit")
     setup.control_character_code_list = [setup.buffer_limit_code]
@@ -74,6 +77,14 @@ def do(argv):
 def validate(setup, command_line, argv):
     """Does a consistency check for setup and the command line.
     """
+    setup.output_directory = os.path.normpath(setup.output_directory)
+    if setup.output_directory != "":
+        # Check, if the output directory exists
+        if os.access(setup.output_directory, os.F_OK) == False:
+            error_msg("The directory %s was specified for output, but does not exists." % setup.output_directory)
+        if os.access(setup.output_directory, os.W_OK) == False:
+            error_msg("The directory %s was specified for output, but is not writeable." % setup.output_directory)
+
     # if the mode is 'plotting', then check wether a graphic format is speicified
     for plot_option in SETUP_INFO["plot_graphic_format"][0]:
         if plot_option in argv and setup.plot_graphic_format == "":
@@ -215,6 +226,11 @@ def __get_integer(code, option_name):
         return int(code)
     except:
         error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
+
+def __prepare_file_name(Setup, Suffix):
+    FileName = Setup.output_engine_name + Suffix
+    if Setup.output_directory == "": return FileName
+    else:                            return os.path.normpath(Setup.output_directory + "/" + FileName)
 
 def __get_supported_command_line_option_description(NormalModeOptions):
     txt = "OPTIONS:\n"

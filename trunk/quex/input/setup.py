@@ -36,6 +36,7 @@ SETUP_INFO = {
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "plot_graphic_format":            [["--plot"],                           ""],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
+    "output_directory":               [["--output-directory", "--odir"],     ""],
     #
     "version_information":            [["--version", "-v"],                  FLAG],
     "help":                           [["--help", "-h"],                     FLAG],

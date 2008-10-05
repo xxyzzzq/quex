@@ -27,8 +27,6 @@ def do():
        a separate state machine that is stuck into a virtual function
        of a class derived from class 'quex_mode'.
     """
-    LexerClassName = Setup.output_engine_name
-
     # NOTE: The generated header file that contains the lexical analyser class includes
     #       the file "code_base/code_base/definitions-quex-buffer.h". But the analyser
     #       functions also need 'connection' to the lexer class, so we include the header
@@ -45,8 +43,6 @@ def do():
 
     # (2) implement the 'quex' core class from a template
     #
-    # -- create a file for the creation of the mode class code
-    Setup.tmp_mode_class_implementation_file = Setup.output_code_file
     # -- do the coding of the class framework
     quex_class_out.do(mode_db, Setup)
 
@@ -65,14 +61,14 @@ def do():
     analyzer_code = generator.frame_this(analyzer_code)
 
     # write code to a header file
-    fh = open(LexerClassName + "-core-engine.cpp", "wb")
+    fh = open(Setup.output_core_engine_file, "wb")
     if os.linesep != "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()
 
-    ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName, "C")
-    ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + "-core-engine.cpp", "C")
-    ReferencedCodeFragment_straighten_open_line_pragmas(LexerClassName + ".cpp", "C")
+    ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
+    ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
+    ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
     ## TODO: inheritance_info_str <<Feature Request: 1948456>>
 
