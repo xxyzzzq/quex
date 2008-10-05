@@ -22,7 +22,7 @@ def do(Modes, setup):
     VersionID                   = setup.input_application_version_id
     QuexVersionID               = setup.QUEX_VERSION
     DerivedClassHeaderFileName  = setup.input_derived_class_file
-    ModeClassImplementationFile = setup.tmp_mode_class_implementation_file
+    ModeClassImplementationFile = setup.output_code_file
 
 
     # -- determine whether the lexical analyser needs indentation counting

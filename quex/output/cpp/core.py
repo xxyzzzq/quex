@@ -147,7 +147,6 @@ def write_engine_header(Modes, Setup):
                 ["$$TOKEN_CLASS$$",                      Setup.input_token_class_name],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.input_token_class_file.replace("//","/")],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
-                ["$$QUEX_OUTPUT_FILESTEM$$",             Setup.output_file_stem],
                 ["$$QUEX_CHARACTER_TYPE$$",              quex_character_type_str],
                 ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
@@ -166,7 +165,7 @@ def write_mode_class_implementation(Modes, Setup):
     OutputFilestem              = Setup.output_file_stem
     DerivedClassName            = Setup.input_derived_class_name
     DerivedClassHeaderFileName  = Setup.input_derived_class_file
-    ModeClassImplementationFile = Setup.tmp_mode_class_implementation_file
+    ModeClassImplementationFile = Setup.output_code_file
 
     if DerivedClassHeaderFileName != "": txt = "#include<" + DerivedClassHeaderFileName +">\n"
     else:                                txt = "#include\"" + OutputFilestem +"\"\n"
