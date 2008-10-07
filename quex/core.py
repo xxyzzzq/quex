@@ -130,7 +130,7 @@ def get_generator_input(Mode):
     def pattern_precedence(A, B):
         tmp = - cmp(A.inheritance_level, B.inheritance_level)
         if tmp != 0: return tmp
-        else:        return cmp(A.pattern_index, B.pattern_index)
+        else:        return cmp(A.pattern_index(), B.pattern_index())
         
     match_info_list.sort(pattern_precedence)
 
@@ -151,7 +151,7 @@ def get_generator_input(Mode):
 
         try:
             inheritance_info_str += "** %2i %2i %s\n" % (pattern_info.inheritance_level, 
-                                                         pattern_info.pattern_index,
+                                                         pattern_info.pattern_index(),
                                                          safe_pattern_str)
         except:    
             error_msg("pattern_info object =\n  " + repr(pattern_info).replace("\n", "\n  "), 

@@ -1,9 +1,10 @@
 from   quex.frs_py.file_in          import *
 from   quex.token_id_maker          import TokenInfo
 from   quex.exception               import RegularExpressionException
-import quex.lexer_mode                          as lexer_mode
-import quex.input.regular_expression            as regular_expression
-import quex.input.code_fragment                 as code_fragment
+import quex.lexer_mode                as lexer_mode
+import quex.input.regular_expression  as regular_expression
+import quex.input.code_fragment       as code_fragment
+import quex.core_engine.state_machine.index as index
 
 def parse(fh, Setup):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
@@ -26,11 +27,8 @@ def parse(fh, Setup):
         parse_mode_option_list(new_mode, fh)
 
     # (*) read in pattern-action pairs and events
-    pattern_i = -1
-    while 1 + 1 == 2:
-        pattern_i += 1
-        if not parse_mode_element(Setup, new_mode, fh, pattern_i): break
-
+    while parse_mode_element(Setup, new_mode, fh): 
+        pass
 
     # (*) check for modes w/o pattern definitions
     if not new_mode.has_event_handler() and new_mode.own_matches() == {}:
@@ -103,7 +101,7 @@ def parse_mode_option(fh, new_mode):
                                         NestedF=(identifier=="skip-nesting-range"))
 
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
-        new_mode.add_match(opener_str, value, opener_sm, )
+        new_mode.add_match(opener_str, value, opener_sm)
 
     else:
         value, i = read_until_letter(fh, [">"], Verbose=1)
@@ -129,7 +127,7 @@ def parse_mode_option(fh, new_mode):
 
     return True
 
-def parse_mode_element(Setup, new_mode, fh, pattern_i):
+def parse_mode_element(Setup, new_mode, fh):
     """Returns: False, if a closing '}' has been found.
                 True, else.
     """
@@ -148,7 +146,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
             return False
 
         # -- check for 'on_entry', 'on_exit', ...
-        result = check_for_event_specification(word, fh, new_mode, Setup, pattern_i)
+        result = check_for_event_specification(word, fh, new_mode, Setup)
         if result == True: 
             return True # all work has been done in check_for_event_specification()
         else:
@@ -166,7 +164,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
         position    = fh.tell()
         description = "start of mode element: code fragment for '%s'" % pattern
 
-        parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, pattern_i)
+        parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine)
 
     except EndOfStreamException:
         fh.seek(position)
@@ -174,7 +172,7 @@ def parse_mode_element(Setup, new_mode, fh, pattern_i):
 
     return True
 
-def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, PatternIdx):
+def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
 
     position = fh.tell()
     try:
@@ -183,7 +181,7 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
             
         code_obj = code_fragment.parse(fh, "regular expression", Setup, ErrorOnFailureF=False) 
         if code_obj != None:
-            new_mode.add_match(pattern, code_obj, pattern_state_machine, PatternIdx)
+            new_mode.add_match(pattern, code_obj, pattern_state_machine)
             return
 
         fh.seek(position)
@@ -191,11 +189,11 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
         if word == "PRIORITY-MARK":
             # This mark 'lowers' the priority of a pattern to the priority of the current
             # pattern index (important for inherited patterns, that have higher precedence).
-            new_mode.add_match_priority(pattern, pattern_state_machine, PatternIdx, fh)
+            new_mode.add_match_priority(pattern, pattern_state_machine, index.get(), fh)
 
         elif word == "DELETION":
             # This mark deletes any pattern that was inherited with the same 'name'
-            new_mode.add_match_deletion(pattern, pattern_state_machine, PatternIdx, fh)
+            new_mode.add_match_deletion(pattern, pattern_state_machine, fh)
             
         else:
             error_msg("missing token '{', 'PRIORITY-MARK', 'DELETE', or '=>' after '%s'.\n" % pattern + \
@@ -205,7 +203,7 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine, Patte
         fh.seek(position)
         error_msg("End of file reached while parsing action code for pattern.", fh)
 
-def check_for_event_specification(word, fh, new_mode, Setup, PatternIdx):
+def check_for_event_specification(word, fh, new_mode, Setup):
 
     if word == "on_entry":
         # Event: enter into mode
