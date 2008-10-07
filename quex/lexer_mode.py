@@ -125,20 +125,35 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
     fh.write(new_content)
     fh.close()
 
+class Skipper:
+    def __init__(self, Pattern, TriggerSet):
+        self.__pattern_str = Pattern
+        self.__trigger_set = TriggerSet
+
+class RangeSkipper:
+    def __init__(self, OpenPattern, OpenSM, ClosePattern, CloseSM, NestedF):
+        self.__open_pattern_str  = OpenPattern
+        self.__open_sm           = OpenSM
+        self.__close_pattern_str = ClosePattern
+        self.__close_sm          = CloseSM
+        self.__nested_f          = NestedF
+
     
 class Match:
-    def __init__(self, Pattern, CodeFragment, PatternStateMachine, PatternIdx,
+    def __init__(self, Pattern, CodeFragment_or_Skipper, PatternStateMachine, PatternIdx,
                  PriorityMarkF=False, DeletionF=False, IL = None):
 
-        assert CodeFragment.__class__ == ReferencedCodeFragment \
-               or CodeFragment == None, \
+        assert    CodeFragment_or_Skipper.__class__ == ReferencedCodeFragment \
+               or CodeFragment_or_Skipper.__class__ == Skipper                \
+               or CodeFragment_or_Skipper.__class__ == RangeSkipper           \
+               or CodeFragment_or_Skipper == None,                            \
                "code fragment type = " + CodeFragment.__class__.__name__ 
         assert PatternStateMachine.__class__.__name__ == "StateMachine" \
                or PatternStateMachine == None
 
         self.pattern               = Pattern
         self.pattern_state_machine = PatternStateMachine
-        self.action                = CodeFragment
+        self.action                = CodeFragment_or_Skipper
         # depth of inheritance where the pattern occurs
         self.inheritance_level = IL
         # position in the list where the pattern occured in the mode itself
@@ -165,7 +180,6 @@ class Match:
         txt += "self.priority_mark_f   = " + repr(self.priority_mark_f) + "\n"
         txt += "self.deletion_f        = " + repr(self.deletion_f) + "\n"
         return txt
-
 
 class LexMode:
     def __init__(self, Name, Filename, LineN):

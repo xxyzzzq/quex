@@ -83,22 +83,27 @@ def parse_mode_option(fh, new_mode):
         # to a specified set of characters. A useful application is most probably
         # the whitespace skipper '[ \t\n]'. The skipper definition allows quex to
         # implement a very effective way to skip these regions.
-        trigger_set = regular_expression.parse_character_set(fh)
+        pattern, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
         skip_whitespace(fh)
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
 
-        value = trigger_set
+        value = lexer_mode.Skipper(pattern, trigger_set)
 
     elif identifier in ["skip-range", "skip-nesting-range"]:
-        pattern_sm0 = regular_expression.parse_character_string(fh)
+        # The opening delimiter of the 'skipper'
+        opener_str, opener_sm = regular_expression.parse(fh)
         skip_whitespace(fh)
-        pattern_sm1 = regular_expression.parse_character_string(fh)
+        closer_str, closer_sm = regular_expression.parse_character_string(fh, PatternStringF=True)
         skip_whitespace(fh)
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        value = [pattern_sm0, pattern_sm1]
+        value = lexer_mode.RangeSkipper(opener_str, opener_sm, closer_sm, closer_sm, 
+                                        NestedF=(identifier=="skip-nesting-range"))
+
+        # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
+        new_mode.add_match(opener_str, value, opener_sm, )
 
     else:
         value, i = read_until_letter(fh, [">"], Verbose=1)
