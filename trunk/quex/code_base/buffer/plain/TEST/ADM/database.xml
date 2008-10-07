@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.05" date="Sat Oct  4 06:18:19 2008">
+<test-database execution-time-sec="0.05" date="Mon Oct  6 21:31:47 2008">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
         <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -52,11 +52,11 @@
                <choice name="" result="OK" time-sec="0.00" crc="2016591838"/>
             </choice-list>
         </test>
-        <test title="Character=4 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.01"> 
+        <test title="Character=4 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="1146948856"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1146948856"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -66,11 +66,11 @@
                <choice name="" result="OK" time-sec="0.00" crc="512405397"/>
             </choice-list>
         </test>
-        <test title="Character=2 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
+        <test title="Character=2 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.01"> 
             <application file-name="BufferFiller_forward_load-2-fb5.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-986272934"/>
+               <choice name="" result="OK" time-sec="0.01" crc="-986272934"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=1" make-required="True" time-sum-sec="0.00"> 

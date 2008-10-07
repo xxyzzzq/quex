@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.84" date="Sat Oct  4 06:20:04 2008">
+<test-database execution-time-sec="3.84" date="Mon Oct  6 21:33:31 2008">
     <last-used-diff-display-program name=""/>
     <group name="DFA">
         <test title="Get Trigger Map (intervals --> target states)" make-required="True" time-sum-sec="0.03"> 
@@ -48,11 +48,11 @@
         </test>
     </group>
     <group name="Plot">
-        <test title="Get graphviz string of state machine." make-required="True" time-sum-sec="0.08"> 
+        <test title="Get graphviz string of state machine." make-required="True" time-sum-sec="0.10"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1223017234L"/>
             <choice-list number="2">
-               <choice name="1" result="OK" time-sec="0.04" crc="173145892"/>
-               <choice name="2" result="OK" time-sec="0.04" crc="-163746669"/>
+               <choice name="1" result="OK" time-sec="0.06" crc="173145892"/>
+               <choice name="2" result="OK" time-sec="0.03" crc="-163746669"/>
             </choice-list>
         </test>
     </group>
@@ -63,30 +63,30 @@
                <choice name="" result="OK" time-sec="0.11" crc="-881596759"/>
             </choice-list>
         </test>
-        <test title="Newlines" make-required="True" time-sum-sec="1.24"> 
+        <test title="Newlines" make-required="True" time-sum-sec="1.28"> 
             <application file-name="test-count_newline_n.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.24" crc="-569165163"/>
+               <choice name="" result="OK" time-sec="1.28" crc="-569165163"/>
             </choice-list>
         </test>
-        <test title="Characters" make-required="True" time-sum-sec="0.86"> 
+        <test title="Characters" make-required="True" time-sum-sec="0.80"> 
             <application file-name="test-count_character_n.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.86" crc="-1541697818"/>
+               <choice name="" result="OK" time-sec="0.80" crc="-1541697818"/>
             </choice-list>
         </test>
     </group>
     <group name="Pseudo Ambigous Post Condition">
-        <test title="Replace Drop-Out with Adjacent Target" make-required="True" time-sum-sec="0.06"> 
+        <test title="Replace Drop-Out with Adjacent Target" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-StateInfo-replace_drop_out_with_adjacent_target.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="-694476263"/>
+               <choice name="" result="OK" time-sec="0.05" crc="-694476263"/>
             </choice-list>
         </test>
-        <test title="The Philosophical Cut" make-required="True" time-sum-sec="0.26"> 
+        <test title="The Philosophical Cut" make-required="True" time-sum-sec="0.27"> 
             <application file-name="test-ambiguous_post_condition-philosophical_cut.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.26" crc="991104131"/>
+               <choice name="" result="OK" time-sec="0.27" crc="991104131"/>
             </choice-list>
         </test>
     </group>
@@ -105,16 +105,16 @@
                <choice name="" result="OK" time-sec="0.04" crc="-2028065037"/>
             </choice-list>
         </test>
-        <test title="Inverse" make-required="True" time-sum-sec="0.04"> 
+        <test title="Inverse" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-StateMachine-inverse.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="111483634"/>
+               <choice name="" result="OK" time-sec="0.05" crc="111483634"/>
             </choice-list>
         </test>
-        <test title="Repetitions Kleene closure 0 or arbitrary repetitions" make-required="True" time-sum-sec="0.04"> 
+        <test title="Repetitions Kleene closure 0 or arbitrary repetitions" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-repeat-pure.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="1893595141"/>
+               <choice name="" result="OK" time-sec="0.05" crc="1893595141"/>
             </choice-list>
         </test>
         <test title="Repetition with min and max repetition numbers" make-required="True" time-sum-sec="0.05"> 
@@ -123,10 +123,10 @@
                <choice name="" result="OK" time-sec="0.05" crc="-901142520"/>
             </choice-list>
         </test>
-        <test title="Paralell" make-required="True" time-sum-sec="0.06"> 
+        <test title="Paralell" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-parallelize.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="-1321345312"/>
+               <choice name="" result="OK" time-sec="0.05" crc="-1321345312"/>
             </choice-list>
         </test>
         <test title="Append Post Condition" make-required="True" time-sum-sec="0.05"> 

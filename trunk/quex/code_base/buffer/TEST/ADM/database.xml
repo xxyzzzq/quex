@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.06" date="Sat Oct  4 06:18:18 2008">
+<test-database execution-time-sec="0.06" date="Mon Oct  6 21:31:45 2008">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
         <test title="Copy Region (BPC=1);" make-required="True" time-sum-sec="0.04"> 
@@ -19,18 +19,18 @@
         </test>
     </group>
     <group name="Forward">
-        <test title="Copy Fallback Region (BPC=4);" make-required="True" time-sum-sec="0.01"> 
+        <test title="Copy Fallback Region (BPC=4);" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_forward_copy-32.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="-899106991"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-899106991"/>
             </choice-list>
         </test>
-        <test title="Copy Fallback Region (BPC=1);" make-required="True" time-sum-sec="0.01"> 
+        <test title="Copy Fallback Region (BPC=1);" make-required="True" time-sum-sec="0.00"> 
             <application file-name="BufferFiller_forward_copy.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="1928750566"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1928750566"/>
             </choice-list>
         </test>
     </group>

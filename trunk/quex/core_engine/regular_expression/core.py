@@ -47,8 +47,8 @@ import quex.core_engine.regular_expression.snap_character_string      as snap_ch
 import quex.core_engine.state_machine.sequentialize           as sequentialize
 import quex.core_engine.state_machine.parallelize             as parallelize
 import quex.core_engine.state_machine.repeat                  as repeat
-import quex.core_engine.state_machine.setup_post_context    as setup_post_context
-import quex.core_engine.state_machine.setup_pre_context     as setup_pre_context
+import quex.core_engine.state_machine.setup_post_context      as setup_post_context
+import quex.core_engine.state_machine.setup_pre_context       as setup_pre_context
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft

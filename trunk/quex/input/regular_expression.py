@@ -36,7 +36,7 @@ def parse(fh):
     return regular_expression, pattern_state_machine
 
 
-def parse_character_set(Txt_or_File):
+def parse_character_set(Txt_or_File, PatternStringF=False):
 
     if Txt_or_File.__class__ in [file, StringIO]:
         sh       = Txt_or_File
@@ -45,6 +45,8 @@ def parse_character_set(Txt_or_File):
     else:
         sh     = StringIO(Txt_or_File)
         sh_ref = -1
+
+    start_position = sh.tell()
 
     try:
         # -- parse regular expression, build state machine
@@ -63,9 +65,16 @@ def parse_character_set(Txt_or_File):
         if sh_ref != -1: sh_ref.seek(position)
         error_msg("End of character set expression reached while parsing.", sh_ref)
 
+    if PatternStringF:
+        assert sh.__class__ != StringIO
+        end_position = fh.tell()
+        fh.seek(start_position)
+        regular_expression = fh.read(end_position - start_position)
+        return regular_expression, state_machine
+
     return character_set
 
-def parse_character_string(Txt_or_File):
+def parse_character_string(Txt_or_File, PatternStringF=False):
 
     if Txt_or_File.__class__ in [file, StringIO]:
         sh       = Txt_or_File
@@ -74,6 +83,8 @@ def parse_character_string(Txt_or_File):
     else:
         sh     = StringIO(Txt_or_File)
         sh_ref = -1
+
+    start_position = sh.tell()
 
     try:
         # -- parse regular expression, build state machine
@@ -92,6 +103,13 @@ def parse_character_string(Txt_or_File):
     except EndOfStreamException:
         if sh_ref != -1: sh_ref.seek(position)
         error_msg("End of character string reached while parsing.", sh_ref)
+
+    if PatternStringF:
+        assert sh.__class__ != StringIO
+        end_position = fh.tell()
+        fh.seek(start_position)
+        regular_expression = fh.read(end_position - start_position)
+        return regular_expression, state_machine
 
     return state_machine
 
