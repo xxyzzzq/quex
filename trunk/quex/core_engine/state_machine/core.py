@@ -102,7 +102,6 @@ class State:
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
         return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap)
 
-
 class StateMachineCoreInfo:
     def __init__(self, ID, 
                  PreContextSM=None, 

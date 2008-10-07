@@ -140,7 +140,7 @@ class RangeSkipper:
 
     
 class Match:
-    def __init__(self, Pattern, CodeFragment_or_Skipper, PatternStateMachine, PatternIdx,
+    def __init__(self, Pattern, CodeFragment_or_Skipper, PatternStateMachine, PatternIdx=None,
                  PriorityMarkF=False, DeletionF=False, IL = None):
 
         assert    CodeFragment_or_Skipper.__class__ == ReferencedCodeFragment \
@@ -157,9 +157,9 @@ class Match:
         # depth of inheritance where the pattern occurs
         self.inheritance_level = IL
         # position in the list where the pattern occured in the mode itself
-        self.pattern_index     = PatternIdx
         # a pattern may have the sole function to determine a priority
-        self.priority_mark_f   = PriorityMarkF
+        self.priority_mark_f             = PriorityMarkF
+        self.priority_mark_pattern_index = PatternIdx
         # a pattern may have the sole function to delete all inherited patterns of with same structure
         self.deletion_f        = DeletionF
 
@@ -176,10 +176,14 @@ class Match:
         txt += "self.filename          = " + repr(self.action.filename) + "\n"
         txt += "self.line_n            = " + repr(self.action.line_n) + "\n"
         txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
-        txt += "self.pattern_index     = " + repr(self.pattern_index) + "\n"
+        txt += "self.pattern_index     = " + repr(self.pattern_state_machine.core().id()) + "\n"
         txt += "self.priority_mark_f   = " + repr(self.priority_mark_f) + "\n"
         txt += "self.deletion_f        = " + repr(self.deletion_f) + "\n"
         return txt
+
+    def pattern_index(self):
+        assert self.priority_mark_f == False
+        return self.pattern_state_machine.get_id()
 
 class LexMode:
     def __init__(self, Name, Filename, LineN):
@@ -262,13 +266,13 @@ class LexMode:
     def own_matches(self):
         return self.__matches
 
-    def add_match(self, Pattern, CodeFragment, PatternStateMachine, PatternIdx):
+    def add_match(self, Pattern, CodeFragment, PatternStateMachine):
         if self.__matches.has_key(Pattern):
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only the last definition is considered.", 
                       CodeFragment.filename, CodeFragment.line_n, DontExitF=True)
 
-        self.__matches[Pattern] = Match(Pattern, CodeFragment, PatternStateMachine, PatternIdx)
+        self.__matches[Pattern] = Match(Pattern, CodeFragment, PatternStateMachine)
 
     def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, fh):
         if self.__matches.has_key(Pattern):
@@ -278,13 +282,12 @@ class LexMode:
         self.__matches[Pattern] = Match(Pattern, None, PatternStateMachine, PatternIdx, 
                                         PriorityMarkF=True)
 
-    def add_match_deletion(self, Pattern, PatternStateMachine, PatternIdx, fh):
+    def add_match_deletion(self, Pattern, PatternStateMachine, fh):
         if self.__matches.has_key(Pattern):
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", fh)
 
-        self.__matches[pattern] = Match(pattern, None, pattern_state_machine, PatternIdx, 
-                                        DeletionF = True)
+        self.__matches[pattern] = Match(pattern, None, pattern_state_machine, DeletionF=True)
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.
@@ -378,7 +381,7 @@ class LexMode:
                     #     takes everything from the base mode pattern,
                     #     but adapts the priority, i.e. inheritance level index and pattern index
                     resolved_matches[inherited_pattern] = copy(inherited_match)
-                    resolved_matches[inherited_pattern].pattern_index = own_match.pattern_index
+                    resolved_matches[inherited_pattern].pattern_state_machine.core().set_id(own_match.priority_mark_pattern_index)
                     resolved_matches[inherited_pattern].inheritance_level = Depth
 
                 elif own_match.deletion_f == False:
