@@ -9,19 +9,20 @@ mode BASE :
         RETURN;
     }
     " "         {}
-    "some"      => QUEX_TKN_SOME;
-    [a-zA-Z]+   => QUEX_TKN_IDENTIFIER(Lexeme);
-    "more"      => QUEX_TKN_MORE;
-    "things"    => QUEX_TKN_THINGS;
+    "one"      => QUEX_TKN_ONE;
+    [a-zA-Z]+  => QUEX_TKN_IDENTIFIER(Lexeme);
+    "two"      => QUEX_TKN_TWO;
+    "nothing"  => QUEX_TKN_THINGS;
 }
 
 
 mode DERIVED : BASE
+<skip_range: "/*" "*/">
 {
-    "things"  DELETION
+    "nothing"  DELETION
 
-    "read"     => QUEX_TKN_READ;
+    "always"   => QUEX_TKN_ALWAYS;
     [a-zA-Z]+  PRIORITY-MARK
-    "write"    => QUEX_TKN_WRITE;
+    "never"    => QUEX_TKN_NEVER;
 }
 
