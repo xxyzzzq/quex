@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.05" date="Mon Oct  6 21:31:47 2008">
+<test-database execution-time-sec="0.06" date="Wed Oct  8 07:07:55 2008">
     <last-used-diff-display-program name=""/>
     <group name="Load Backward">
         <test title="Character=4 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -52,11 +52,11 @@
                <choice name="" result="OK" time-sec="0.00" crc="2016591838"/>
             </choice-list>
         </test>
-        <test title="Character=4 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1223017232L"/>
+        <test title="With Error in Stream (Character=4 Byte(s))" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1146948856"/>
+               <choice name="" result="OK" time-sec="0.01" crc="1418030292"/>
             </choice-list>
         </test>
         <test title="Character=1 Byte(s), Fallback=0" make-required="True" time-sum-sec="0.00"> 
@@ -87,11 +87,11 @@
                <choice name="" result="OK" time-sec="0.00" crc="736895487"/>
             </choice-list>
         </test>
-        <test title="With Error in Stream (Character=4 Byte(s))" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="BufferFiller_forward_load-error.exe" info-request-time="1223017232L"/>
+        <test title="Character=4 Byte(s), Fallback=5" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="BufferFiller_forward_load-4-fb5.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1418030292"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1146948856"/>
             </choice-list>
         </test>
     </group>

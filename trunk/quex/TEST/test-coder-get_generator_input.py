@@ -28,7 +28,7 @@ for pattern, action in pattern_action_pair_list:
     i += 1
     mode.add_match(pattern, 
                    ReferencedCodeFragment("std::cout << \"%s\" << std::endl;\n" % action, "", -1), 
-                   regex.do(pattern, {}, -1), i)
+                   regex.do(pattern, {}, -1))
 
 # This is brutal!
 quex.input.setup.setup.output_debug_f                = False
