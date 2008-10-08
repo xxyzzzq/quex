@@ -81,6 +81,9 @@ def parse_mode_option(fh, new_mode):
         # to a specified set of characters. A useful application is most probably
         # the whitespace skipper '[ \t\n]'. The skipper definition allows quex to
         # implement a very effective way to skip these regions.
+        skip_whitespace(fh)
+        if fh.read(1) != "[":
+            error_msg("A simple skipper can only be specified by a character set and must start with a [-bracket.")
         pattern, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
         skip_whitespace(fh)
         if fh.read(1) != ">":
@@ -88,10 +91,13 @@ def parse_mode_option(fh, new_mode):
 
         value = lexer_mode.Skipper(pattern, trigger_set)
 
-    elif identifier in ["skip-range", "skip-nesting-range"]:
+    elif identifier in ["skip_range", "skip_nesting_range"]:
         # The opening delimiter of the 'skipper'
+        skip_whitespace(fh)
         opener_str, opener_sm = regular_expression.parse(fh)
         skip_whitespace(fh)
+        if fh.read(1) != "\"":
+            error_msg("closing pattern forn skipper can only be a string and must start with a quote like \".")
         closer_str, closer_sm = regular_expression.parse_character_string(fh, PatternStringF=True)
         skip_whitespace(fh)
         if fh.read(1) != ">":
@@ -112,8 +118,8 @@ def parse_mode_option(fh, new_mode):
 
     # Does the specified option actually exist?
     if not lexer_mode.mode_option_info_db.has_key(identifier):
-        error_msg("tried to set option '%s' which does not exist!\n" % Option + \
-                  "options are %s" % repr(mode_option_info_db.keys()), fh)
+        error_msg("tried to set option '%s' which does not exist!\n" % identifier + \
+                  "options are %s" % repr(lexer_mode.mode_option_info_db.keys()), fh)
 
     # Is the option of the appropriate value?
     option_info = lexer_mode.mode_option_info_db[identifier]
@@ -189,7 +195,10 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
         if word == "PRIORITY-MARK":
             # This mark 'lowers' the priority of a pattern to the priority of the current
             # pattern index (important for inherited patterns, that have higher precedence).
-            new_mode.add_match_priority(pattern, pattern_state_machine, index.get(), fh)
+            # The parser already constructed a state machine for the pattern that is to
+            # be assigned a new priority. Since, this machine is not used, let us just
+            # use its id.
+            new_mode.add_match_priority(pattern, pattern_state_machine, pattern_state_machine.get_id(), fh)
 
         elif word == "DELETION":
             # This mark deletes any pattern that was inherited with the same 'name'

@@ -84,7 +84,10 @@ def is_identifier(identifier):
     return True
 
 def read_identifier(fh):
-    txt = ""
+    txt = fh.read(1)
+    if txt == "": return ""
+    if is_identifier_start(txt) == False: fh.seek(-1, 1); return ""
+
     while 1 + 1 == 2:
         tmp = fh.read(1)
         if tmp == "": return txt

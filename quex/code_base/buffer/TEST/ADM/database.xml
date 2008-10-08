@@ -1,19 +1,19 @@
-<test-database execution-time-sec="0.06" date="Wed Oct  8 07:07:54 2008">
+<test-database execution-time-sec="0.08" date="Wed Oct  8 21:08:23 2008">
     <last-used-diff-display-program name=""/>
     <group name="Backward">
-        <test title="Copy Region (BPC=1);" make-required="True" time-sum-sec="0.03"> 
+        <test title="Copy Region (BPC=1);" make-required="True" time-sum-sec="0.06"> 
             <application file-name="BufferFiller_backward_copy.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="2">
                <choice name="Normal" result="OK" time-sec="0.03" crc="2052776727"/>
-               <choice name="StartOfStream" result="OK" time-sec="0.01" crc="746179138"/>
+               <choice name="StartOfStream" result="OK" time-sec="0.04" crc="746179138"/>
             </choice-list>
         </test>
         <test title="Copy Region (BPC=4);" make-required="True" time-sum-sec="0.01"> 
             <application file-name="BufferFiller_backward_copy-32.exe" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="2">
-               <choice name="Normal" result="OK" time-sec="0.01" crc="143833723"/>
+               <choice name="Normal" result="OK" time-sec="0.00" crc="143833723"/>
                <choice name="StartOfStream" result="OK" time-sec="0.01" crc="-2067482385"/>
             </choice-list>
         </test>

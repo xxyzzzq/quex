@@ -6,6 +6,7 @@ from   quex.exception               import RegularExpressionException
 import quex.lexer_mode              as lexer_mode
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.regular_expression.character_set_expression as charset_expression
+import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 
 def parse(fh):
 
@@ -67,9 +68,9 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
 
     if PatternStringF:
         assert sh.__class__ != StringIO
-        end_position = fh.tell()
-        fh.seek(start_position)
-        regular_expression = fh.read(end_position - start_position)
+        end_position = sh.tell()
+        sh.seek(start_position)
+        regular_expression = sh.read(end_position - start_position)
         return regular_expression, state_machine
 
     return character_set
@@ -90,11 +91,10 @@ def parse_character_string(Txt_or_File, PatternStringF=False):
         # -- parse regular expression, build state machine
         state_machine = snap_character_string.do(sh)
         state_machine = regex.__clean_and_validate(state_machine, 
-                                                   Setup.end_of_stream_code, 
                                                    Setup.buffer_limit_code, 
                                                    AllowNothingIsFineF=False)
 
-        if character_set == None:
+        if state_machine == None:
             error_msg("No valid regular character string expression detected.", sh_ref)
 
     except RegularExpressionException, x:
@@ -106,9 +106,9 @@ def parse_character_string(Txt_or_File, PatternStringF=False):
 
     if PatternStringF:
         assert sh.__class__ != StringIO
-        end_position = fh.tell()
-        fh.seek(start_position)
-        regular_expression = fh.read(end_position - start_position)
+        end_position = sh.tell()
+        sh.seek(start_position)
+        regular_expression = sh.read(end_position - start_position)
         return regular_expression, state_machine
 
     return state_machine
