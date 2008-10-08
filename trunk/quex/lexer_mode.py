@@ -568,8 +568,8 @@ mode_option_info_db = {
    "restrict":          OptionInfo("list", ["exit", "entry"]),
    # -- a mode can have 'skippers' that effectivels skip ranges that are out of interest.
    "skip":              OptionInfo("list"), # "multiple: RE-character-set
-   "skip-range":        OptionInfo("list"), # "multiple: RE-character-string RE-character-string
-   "skip-nested-range": OptionInfo("list"), # "multiple: RE-character-string RE-character-string
+   "skip_range":        OptionInfo("list"), # "multiple: RE-character-string RE-character-string
+   "skip_nested_range": OptionInfo("list"), # "multiple: RE-character-string RE-character-string
 }
 
 #-----------------------------------------------------------------------------------------
