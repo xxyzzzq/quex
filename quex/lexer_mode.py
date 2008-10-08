@@ -287,7 +287,7 @@ class LexMode:
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", fh)
 
-        self.__matches[pattern] = Match(pattern, None, pattern_state_machine, DeletionF=True)
+        self.__matches[Pattern] = Match(Pattern, None, PatternStateMachine, DeletionF=True)
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.

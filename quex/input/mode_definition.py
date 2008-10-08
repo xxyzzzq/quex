@@ -196,7 +196,7 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
             new_mode.add_match_deletion(pattern, pattern_state_machine, fh)
             
         else:
-            error_msg("missing token '{', 'PRIORITY-MARK', 'DELETE', or '=>' after '%s'.\n" % pattern + \
+            error_msg("missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
                       "found: '%s'" % word, fh)
 
     except EndOfStreamException:
