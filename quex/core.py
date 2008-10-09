@@ -78,10 +78,10 @@ def get_code_for_mode(Mode, ModeNameList):
     if not Mode.has_matches(): return "", ""
 
     # -- 'end of stream' action
-    end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), Setup, 
+    end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
     # -- 'default' action (nothing matched)
-    default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), Setup, 
+    default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 
                                               "on_failure", None, Default_ActionF=True)
 
     # -- adapt pattern-action pair information so that it can be treated
@@ -142,7 +142,7 @@ def get_generator_input(Mode):
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine
 
-        action = action_code_formatter.do(Mode, pattern_info.action, Setup, safe_pattern_str,
+        action = action_code_formatter.do(Mode, pattern_info.action, safe_pattern_str,
                                           pattern_state_machine)
 
         action_info = ActionInfo(pattern_state_machine, action)
