@@ -1,16 +1,24 @@
 import quex.core_engine.state_machine.character_counter as pattern_analyzer
-from quex.core_engine.interval_handling import NumberSet
+import quex.core_engine.generator.skip_code             as skip_code_generator
+from   quex.core_engine.interval_handling import NumberSet
+from   quex.input.setup                   import setup as Setup
 
-def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateMachine, 
-       Default_ActionF=False, EOF_ActionF=False):
+def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
+       PostContextN, Default_ActionF=False, EOF_ActionF=False):
+    assert Mode.__class__.__name__                == "Mode"
+    assert type(SafePatternStr)                   == str
+    assert PatternStateMachine.__class__.__name__ == "StateMachine"
+    assert type(PostContextN)                     == int
+    assert type(Default_ActionF)                  == bool
+    assert type(EOF_ActionF)                      == bool
 
     if type(CodeFragment_or_CodeFragments) == list:
         assert Default_ActionF or EOF_ActionF, \
-               "Action code formatting: Multipled Code Fragments can only be specified for default or\n" + \
+               "Action code formatting: Multiple Code Fragments can only be specified for default or\n" + \
                "end of stream action."
-        CodeFragementList = CodeFragment_or_CodeFragments
+        CodeFragmentList = CodeFragment_or_CodeFragments
     else:
-        CodeFragment = CodeFragment_or_CodeFragments
+        CodeFragmentList = [ CodeFragment_or_CodeFragments ]
 
     txt = "{\n"
 
@@ -34,23 +42,33 @@ def do(Mode, CodeFragment_or_CodeFragments, Setup, SafePatternStr, PatternStateM
         txt += '#endif\n'
         
     # -- THE action code as specified by the user
-    if not Default_ActionF and not EOF_ActionF: 
-        txt += CodeFragment.get("C")
-    else:                       
-        if CodeFragementList != []:
-            for code_info in CodeFragementList:
-                txt += code_info.get("C")
-        else:
-            txt += "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
-            txt += "#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID\n"
-            txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
-            txt += "#else\n"
-            txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
-            txt += "#endif\n"
+    txt += get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF, PostContextN)
 
     txt += "\n}"
 
     return txt
+
+def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF, PostContextN):
+    txt = ""
+    if (Default_ActionF or EOF_ActionF) and  CodeFragmentList == []:
+        txt += "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
+        txt += "#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID\n"
+        txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
+        txt += "#else\n"
+        txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
+        txt += "#endif\n"
+        return txt
+
+    for code_info in CodeFragmentList:
+        if code_info.__class__.__name__ in ["RangeSkipper"]:
+            txt += skip_code_generator.do(code_info, PostContextN)
+        else:
+            txt += code_info.get("C")
+
+    txt += "\n}"
+
+    return txt
+
 
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 

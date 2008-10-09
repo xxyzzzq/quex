@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
+from   quex.input.setup import setup as Setup
 import quex.core_engine.state_machine.index as sm_index
 import quex.core_engine.utf8 as utf8
 from   quex.frs_py.string_handling               import blue_print
@@ -73,6 +74,16 @@ $$DROP_OUT$$
     me->buffer._input_p = me->buffer._lexeme_start_p;
     $$MISSING_CLOSING_DELIMITER$$
 """
+
+def do(SkipperDescriptor, PostContextN):
+    LanguageDB = Setup.language_db
+    skipper_class = SkipperDescriptor.__class__.__name__
+    assert skipper_class in ["RangeSkipper"]
+
+    if skipper_class == "RangeSkipper":
+        return get_range_skipper(SkipperDescriptor.get_end_sequence(), LanguageDB, PostContextN)
+    else:
+        assert False, "Nomansland"
 
 def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelimiterAction=""):
     assert EndSequence.__class__  == list
