@@ -547,6 +547,17 @@ class LexMode:
                 
         self.consistency_check_done_f = True
 
+    def get_number_of_post_conditioned_patterns(self):
+        """NOTE: The number of post conditions determines the size of an array. However,
+                 the analyser, later one determines it again and then it is correct. But,
+                 still keep in mind that this number is 'crucial'!
+        """
+        pattern_action_pairs = self.pattern_action_pairs()
+        post_condition_n = 0
+        for match in pattern_action_pairs.values():
+            if match.pattern_state_machine.core().post_context_id() != -1L:
+                post_condition_n += 1
+        return post_condition_n
 
 #-----------------------------------------------------------------------------------------
 # mode option information/format: 
