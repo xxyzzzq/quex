@@ -29,6 +29,20 @@ def do(sh):
 
     # Only \" is a special character '"', any other backslashed character
     # remains as the sequence 'backslash' + character
+    for char_code in get_character_code_sequence(sh):
+        state_idx = result.add_transition(state_idx, char_code)
+
+    # when the last state has trigger it is supposed to end up in 'acceptance'
+    result.states[state_idx].set_acceptance()
+    return result
+
+def get_character_code_sequence(sh):
+    assert     sh.__class__.__name__ == "StringIO" \
+            or sh.__class__.__name__ == "file"
+
+    # Only \" is a special character '"', any other backslashed character
+    # remains as the sequence 'backslash' + character
+    sequence = []
     while 1 + 1 == 2:
         char_code = utf8.__read_one_utf8_code_from_stream(sh)
         if char_code == 0xFF:
@@ -42,8 +56,7 @@ def do(sh):
         elif char_code == ord('"'):
             break
 
-        state_idx = result.add_transition(state_idx, char_code)
+        sequence.append(char_code)
 
-    # when the last state has trigger it is supposed to end up in 'acceptance'
-    result.states[state_idx].set_acceptance()
-    return result
+    return sequence
+

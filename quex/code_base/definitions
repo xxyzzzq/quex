@@ -161,7 +161,7 @@ namespace quex {
 
 #   define QUEX_DEBUG_PRINT2(Buffer, FormatStr, Arg)  \
            __QUEX_PRINT_SOURCE_POSITION(Buffer)       \
-           __QUEX_STD_fprintf(stdout, FormatStr "\n")
+           __QUEX_STD_fprintf(stdout, FormatStr "\n", Arg)
 
 #   define QUEX_DEBUG_PRINT_INPUT(Buffer, Character)                       \
            __QUEX_PRINT_SOURCE_POSITION(Buffer)                            \

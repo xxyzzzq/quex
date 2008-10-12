@@ -142,8 +142,11 @@ def get_generator_input(Mode):
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine
 
-        action = action_code_formatter.do(Mode, pattern_info.action, safe_pattern_str,
-                                          pattern_state_machine)
+        if pattern_info.action.__class__.__name__ == "RangeSkipper":
+            action = pattern_info.action  # Later on, we will notice that the action is a skipper ...
+        else:
+            action = action_code_formatter.do(Mode, pattern_info.action, safe_pattern_str,
+                    pattern_state_machine)
 
         action_info = ActionInfo(pattern_state_machine, action)
 

@@ -8,21 +8,29 @@ mode BASE :
         self.send(quex::token::ID_TERMINATION);
         RETURN;
     }
-    " "         {}
-    "one"      => QUEX_TKN_ONE;
-    [a-zA-Z]+  => QUEX_TKN_IDENTIFIER(Lexeme);
-    "two"      => QUEX_TKN_TWO;
-    "nothing"  => QUEX_TKN_THINGS;
+    [ \t\n]     {}
+    "."         => QUEX_TKN_PERIOD;
+    ","         => QUEX_TKN_PERIOD;
+    "Fischer's" => QUEX_TKN_FISCHERS;
+    [a-z]+      => QUEX_TKN_FISCHES(Lexeme);
+    "Fritz"     => QUEX_TKN_FRITZ;
+    [A-Z][a-z]+ => QUEX_TKN_FISCH(Lexeme);
+    "Nothing"   => QUEX_TKN_NOTHING;
 }
 
 
 mode DERIVED : BASE
 <skip_range: "/*" "*/">
 {
-    "nothing"  DELETION
+    "Nothing"     DELETION
 
-    "always"   => QUEX_TKN_ALWAYS;
-    [a-zA-Z]+  PRIORITY-MARK
-    "never"    => QUEX_TKN_NEVER;
+    "grabs"       => QUEX_TKN_GRABS;
+    "Swordfish"   => QUEX_TKN_SWORDFISH;
+    [a-z]+        PRIORITY-MARK
+    "hunts"       => QUEX_TKN_FOOLS_AROUND;
+    "Trouts"      => QUEX_TKN_TROUTS;
+    [A-Z][a-z]+   PRIORITY-MARK
+    "catches"     => QUEX_TKN_FOOLS_AROUND;
+    "Sharks"      => QUEX_TKN_SOMETHING_IMPOSSIBLE;
 }
 

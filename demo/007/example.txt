@@ -1,4 +1,4 @@
-one two nothing never always identifier
+Fischer's Fritz grabs Swordfish.
 /*
  * General relativity is a theory of gravitation developed by Einstein in the
  * years 1907–1915. The development of general relativity began with the
@@ -14,4 +14,5 @@ one two nothing never always identifier
  * Einstein first proposed that spacetime is curved. In 1915, he devised the
  * Einstein field equations which relate the curvature of spacetime with the
  * mass, energy, and momentum within it.                                          */
-one two nothing never always identifier
+Fischer's Fritz /* comment */hunts/**/ /**/Trouts/**/. /* comment */
+Fischer's /*Fritz*/ Fritz catches /**/Sharks.

@@ -56,7 +56,7 @@ def get_forward_load_procedure(StateIndex, PostContextN):
 def __reload_forward(StateIndex, SMD): 
     assert SMD.__class__.__name__ == "StateMachineDecorator"
 
-    txt  = get_forward_load_procedure(StateIndex, len(SMD.post_contexted_sm_id_list()))
+    txt  = get_forward_load_procedure(StateIndex, SMD.post_contexted_sm_n())
     txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
     txt += "    " + LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt
