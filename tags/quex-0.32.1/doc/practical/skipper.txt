@@ -1,0 +1,22 @@
+In order to skip partions of the input without considering its content, quex provides
+the ability to define so called 'skippers'. Skippers can be used, for example, to
+skip whitespaces  and skip comments. Of course, most of the skippers can also be 
+defined as patterns that have no action related to it. However, there are great 
+advantages of skippers over their implementation as a 'skipping pattern':
+
+- Skippers perform much faster than usual regular expressions. Their implementation
+  is adapted to the buffer handling and reduces comparisons to a minimum.
+
+- Skippers reduce the minimum required buffer size. For example, comments in C programs
+  can become very lengthy. If they were to be parsed by the general engine, then they
+  would require that the buffer size is as big as the largest thinkable comment. Skippers
+  do not suffer this constraint. A buffer of the size of five characters may suffice to 
+  parse a range of arbitrary size.
+
+- The _nested_ skipper is a feature that can not be achieved by regular expressions since it
+  implies recursion. A nested skipper, can for example be used to parse a region of 
+  closing and opening '{' brackets down the the '}' which matches the current level.
+
+This shows, that skippers are a very powerful tool to reduce computation time
+and memory constraints of the created lexical analyser. Additionally, they add clarity
+to the code that describes the analyser.
