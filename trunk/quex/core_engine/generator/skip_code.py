@@ -81,9 +81,12 @@ def do(SkipperDescriptor, PostContextN):
     assert skipper_class in ["RangeSkipper"]
 
     if skipper_class == "RangeSkipper":
-        return get_range_skipper(SkipperDescriptor.get_end_sequence(), LanguageDB, PostContextN)
+        return "{\n" \
+                + LanguageDB["$comment"]("Range skipper state") \
+                + get_range_skipper(SkipperDescriptor.get_closing_sequence(), LanguageDB, PostContextN) \
+                + "\n}\n"
     else:
-        assert False, "Nomansland"
+        assert None
 
 def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelimiterAction=""):
     assert EndSequence.__class__  == list

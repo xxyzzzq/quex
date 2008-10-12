@@ -278,7 +278,10 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     state_machine        = pattern_action_info.pattern_state_machine()
     action_code_orig     = pattern_action_info.action_code()
     #
-    action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
+    if pattern_action_info.action_type() != "RangeSkipper":
+        action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
+    else:
+        action_code = pattern_action_info.action_code().get_code(SMD.post_contexted_sm_n())
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 

@@ -19,6 +19,8 @@
 ################################################################################
 import sys
 import os
+
+import quex.core_engine.generator.skip_code as skip_code
 from string              import upper, lower, split
 from copy                import copy
 from quex.frs_py.file_in import error_msg
@@ -131,14 +133,33 @@ class Skipper:
         self.__trigger_set = TriggerSet
 
 class RangeSkipper:
-    def __init__(self, OpenPattern, OpenSM, ClosePattern, CloseSM, NestedF):
-        self.__open_pattern_str  = OpenPattern
-        self.__open_sm           = OpenSM
-        self.__close_pattern_str = ClosePattern
-        self.__close_sm          = CloseSM
-        self.__nested_f          = NestedF
+    def __init__(self, ClosingSequence, OpeningSequence=None):
+        """NOTE: The Opening sequence is 'webbed' into the mode's state machine. As
+                 soon as it 'wins' the analyser enters the skipper section where 
+                 the characters are skipped with warp speed.
 
-    
+           Skippers that do not support nested ranges do not need to know the OpeningSequence,
+           since-as mentioned-it is webbed into the state machine. Thus, the OpeningSequence
+           is not 'None' if and only if the the skipper treats a nested range.
+        """
+        assert map(type, ClosingSequence) == [int] * len(ClosingSequence)
+        assert OpeningSequence == None or map(type, OpeningSequence) == [int] * len(ClosingSequence) 
+        self.__opening_sequence = OpeningSequence
+        self.__closing_sequence = ClosingSequence
+
+    def is_nested_range_skipper(self):
+        return self.__opening_sequence
+
+    def get_opening_sequence(self):
+        return self.__opening_sequence
+
+    def get_closing_sequence(self):
+        return self.__closing_sequence
+
+    def get_code(self, PostConditionN):
+        return skip_code.do(self, PostConditionN)
+
+
 class Match:
     def __init__(self, Pattern, CodeFragment_or_Skipper, PatternStateMachine, PatternIdx=None,
                  PriorityMarkF=False, DeletionF=False, IL = None):
@@ -547,17 +568,17 @@ class LexMode:
                 
         self.consistency_check_done_f = True
 
-    def get_number_of_post_conditioned_patterns(self):
-        """NOTE: The number of post conditions determines the size of an array. However,
-                 the analyser, later one determines it again and then it is correct. But,
-                 still keep in mind that this number is 'crucial'!
-        """
-        pattern_action_pairs = self.pattern_action_pairs()
-        post_condition_n = 0
-        for match in pattern_action_pairs.values():
-            if match.pattern_state_machine.core().post_context_id() != -1L:
-                post_condition_n += 1
-        return post_condition_n
+    #def get_number_of_post_conditioned_patterns(self):
+    #    """NOTE: The number of post conditions determines the size of an array. However,
+    #             the analyser, later one determines it again and then it is correct. But,
+    #             still keep in mind that this number is 'crucial'!
+    #    """
+    #    pattern_action_pairs = self.pattern_action_pairs()
+    #    post_condition_n = 0
+    #    for match in pattern_action_pairs.values():
+    #        if match.pattern_state_machine.core().post_context_id() != -1L:
+    #            post_condition_n += 1
+    #    return post_condition_n
 
 #-----------------------------------------------------------------------------------------
 # mode option information/format: 

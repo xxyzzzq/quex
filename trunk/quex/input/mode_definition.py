@@ -5,6 +5,7 @@ import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
 import quex.core_engine.state_machine.index as index
+import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 
 def parse(fh, Setup):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
@@ -68,46 +69,50 @@ def parse_mode_option(fh, new_mode):
 
     identifier = read_identifier(fh).strip()
 
-    if identifier == "":
-        error_msg("missing identifer after start of mode option '<'", fh)
-
+    if identifier == "":  error_msg("missing identifer after start of mode option '<'", fh)
+    skip_whitespace(fh)
+    if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
     skip_whitespace(fh)
 
-    if fh.read(1) != ":": 
-        error_msg("missing ':' after option name '%s'" % identifier, fh)
-
-    elif identifier == "skip":
+    if identifier == "skip":
+        error_msg("skip is not yet supported.", fh)
         # A skipper 'eats' characters at the beginning of a pattern that belong
         # to a specified set of characters. A useful application is most probably
         # the whitespace skipper '[ \t\n]'. The skipper definition allows quex to
         # implement a very effective way to skip these regions.
-        skip_whitespace(fh)
         if fh.read(1) != "[":
             error_msg("A simple skipper can only be specified by a character set and must start with a [-bracket.")
         pattern, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
         skip_whitespace(fh)
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
+        return True
 
-        value = lexer_mode.Skipper(pattern, trigger_set)
+    elif identifier == "skip_range":
+        # A non-nesting skipper can contain a full fledged regular expression as opener,
+        # since it only effects the trigger. Not so the nested range skipper-see below.
 
-    elif identifier in ["skip_range", "skip_nesting_range"]:
-        # The opening delimiter of the 'skipper'
+        # -- opener
         skip_whitespace(fh)
         opener_str, opener_sm = regular_expression.parse(fh)
         skip_whitespace(fh)
+
+        # -- closer
         if fh.read(1) != "\"":
-            error_msg("closing pattern forn skipper can only be a string and must start with a quote like \".")
-        closer_str, closer_sm = regular_expression.parse_character_string(fh, PatternStringF=True)
+            error_msg("closing pattern for skip_range can only be a string and must start with a quote like \".", fh)
+        closer_sequence = snap_character_string.get_character_code_sequence(fh)
         skip_whitespace(fh)
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        value = lexer_mode.RangeSkipper(opener_str, opener_sm, closer_sm, closer_sm, 
-                                        NestedF=(identifier=="skip-nesting-range"))
+        skipper = lexer_mode.RangeSkipper(closer_sequence)  # 'opener' is webbed into general state machine
 
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
-        new_mode.add_match(opener_str, value, opener_sm)
+        new_mode.add_match(opener_str, skipper, opener_sm)
+        return True
+        
+    elif identifier == "skip_nesting_range":
+        error_msg("skip_nesting_range is not yet supported.", fh)
 
     else:
         value, i = read_until_letter(fh, [">"], Verbose=1)

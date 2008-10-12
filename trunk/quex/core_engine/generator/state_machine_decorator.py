@@ -54,6 +54,9 @@ class StateMachineDecorator:
     def post_contexted_sm_id_list(self):
         return self.__post_condition_id_list
 
+    def post_contexted_sm_n(self):
+        return len(self.post_contexted_sm_id_list())
+
     def get_post_context_index(self, PostContextSM_ID):
         assert PostContextSM_ID in self.__post_condition_id_list, \
                "Error: request of post context state machine id which does not exist."

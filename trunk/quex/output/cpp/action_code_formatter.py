@@ -4,11 +4,10 @@ from   quex.core_engine.interval_handling import NumberSet
 from   quex.input.setup                   import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
-       PostContextN, Default_ActionF=False, EOF_ActionF=False):
-    assert Mode.__class__.__name__                == "Mode"
+       Default_ActionF=False, EOF_ActionF=False):
+    assert Mode.__class__.__name__                == "LexMode"
     assert type(SafePatternStr)                   == str
-    assert PatternStateMachine.__class__.__name__ == "StateMachine"
-    assert type(PostContextN)                     == int
+    assert PatternStateMachine.__class__.__name__ == "StateMachine" or PatternStateMachine == None
     assert type(Default_ActionF)                  == bool
     assert type(EOF_ActionF)                      == bool
 
@@ -42,13 +41,13 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         txt += '#endif\n'
         
     # -- THE action code as specified by the user
-    txt += get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF, PostContextN)
+    txt += get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF)
 
     txt += "\n}"
 
     return txt
 
-def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF, PostContextN):
+def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF):
     txt = ""
     if (Default_ActionF or EOF_ActionF) and  CodeFragmentList == []:
         txt += "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
@@ -60,12 +59,7 @@ def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF, Pos
         return txt
 
     for code_info in CodeFragmentList:
-        if code_info.__class__.__name__ in ["RangeSkipper"]:
-            txt += skip_code_generator.do(code_info, PostContextN)
-        else:
-            txt += code_info.get("C")
-
-    txt += "\n}"
+        txt += code_info.get("C")
 
     return txt
 
