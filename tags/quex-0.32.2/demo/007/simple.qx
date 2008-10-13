@@ -1,0 +1,36 @@
+// -*- C++ -*- vim: set syntax=cpp:
+start = DERIVED
+
+mode BASE :
+<inheritable: only>  
+{    
+    <<EOF>> {
+        self.send(quex::token::ID_TERMINATION);
+        RETURN;
+    }
+    [ \t\n]     {}
+    "."         => QUEX_TKN_PERIOD;
+    ","         => QUEX_TKN_PERIOD;
+    "Fischer's" => QUEX_TKN_FISCHERS;
+    [a-z]+      => QUEX_TKN_FISCHES(Lexeme);
+    "Fritz"     => QUEX_TKN_FRITZ;
+    [A-Z][a-z]+ => QUEX_TKN_FISCH(Lexeme);
+    "Nothing"   => QUEX_TKN_NOTHING;
+}
+
+
+mode DERIVED : BASE
+<skip_range: "/*" "*/">
+{
+    "Nothing"     DELETION
+
+    "grabs"       => QUEX_TKN_GRABS;
+    "Swordfish"   => QUEX_TKN_SWORDFISH;
+    [a-z]+        PRIORITY-MARK
+    "hunts"       => QUEX_TKN_FOOLS_AROUND;
+    "Trouts"      => QUEX_TKN_TROUTS;
+    [A-Z][a-z]+   PRIORITY-MARK
+    "catches"     => QUEX_TKN_FOOLS_AROUND;
+    "Sharks"      => QUEX_TKN_SOMETHING_IMPOSSIBLE;
+}
+
