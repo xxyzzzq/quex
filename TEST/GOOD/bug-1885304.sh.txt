@@ -2852,9 +2852,10 @@ TERMINAL_END_OF_STREAM:
 TERMINAL_DEFAULT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_DEFAULT");
 
+me->buffer._input_p = me->buffer._lexeme_start_p;
 if( QuexBuffer_is_end_of_file(&(me->buffer)) ) {
 
-    QuexBuffer_input_p_decrement(&(me->buffer));
+    /* Next increment will stop on EOF character. */
 }
 
 else {
