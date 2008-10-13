@@ -371,8 +371,12 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
     #                    HOWEVER, when end of file has been reached the 'current' pointer has to
     #                    be reset so that the initial state can drop out on the buffer limit code
     #                    and then transit to the end of file action.
-    default_action_str  = LanguageDB["$if EOF"] + "\n"
-    default_action_str += "    " + LanguageDB["$input/decrement"] + "\n"
+    # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
+    #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
+    #       soon as possible.
+    default_action_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
+    default_action_str += LanguageDB["$if EOF"] + "\n"
+    default_action_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
     default_action_str += LanguageDB["$endif"] + "\n"
     default_action_str += LanguageDB["$else"] + "\n"
     default_action_str += "    " + LanguageDB["$comment"]("Step over nomatching character")
