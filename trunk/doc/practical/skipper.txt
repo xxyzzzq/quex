@@ -18,5 +18,8 @@ advantages of skippers over their implementation as a 'skipping pattern':
   closing and opening '{' brackets down the the '}' which matches the current level.
 
 This shows, that skippers are a very powerful tool to reduce computation time
-and memory constraints of the created lexical analyser. Additionally, they add clarity
-to the code that describes the analyser.
+and memory constraints of the created lexical analyser. Additionally, they add
+clarity to the code that describes the analyser. When an end-of-file is reached
+before the range skipper ends, the normal end-of-file action is executed and
+the lexical analysis continues as normal-provided that the input is set
+appropriately (e.g. a return from an include occured).

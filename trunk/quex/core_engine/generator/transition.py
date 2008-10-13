@@ -18,12 +18,33 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
     """
         TargetStateIdx: != None: Index of the state to which 'goto' has to go.
                         == None: Drop Out. Goto a terminal state.
+        DSM == None: We are not concerned with the whole state machine and just want to
+                     create a nice binary-bracketing transition (e.g. for range skippers).
     """
     LanguageDB = Setup.language_db
-    assert DSM.__class__.__name__ == "StateMachineDecorator"
+    assert DSM == None            or DSM.__class__.__name__ == "StateMachineDecorator"
     assert TargetStateIdx == None or TargetStateIdx >= 0
 
-    if DSM.dead_end_state_db().has_key(TargetStateIdx):
+    if DSM == None or not DSM.dead_end_state_db().has_key(TargetStateIdx):
+        # (1) The target state is not mentioned to be a state void of further transitions.
+        if TargetStateIdx != None:   
+            # THE very normal transition to another state
+            return LanguageDB["$goto"]("$entry", TargetStateIdx)
+        else:
+            # NOTE: The normal drop out contains a check against the buffer limit code. This
+            #       check can be avoided, if one is sure that the current interval does not contain
+            #       a buffer limit code.
+            blc = Setup.buffer_limit_code
+            if type(blc) != int:
+                if len(blc) > 2 and blc[:2] == "0x": blc = int(blc, 16)
+                else:                                blc = int(blc)
+            if TriggerInterval.contains(blc):
+                return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)
+            else:
+                return LanguageDB["$goto"]("$drop-out-direct", CurrentStateIdx)
+    else:
+        # (2) The TargetStateIdx is mentioned to be a dead-end-state! That means, that there is
+        #     actually no 'transition body' in that state and it transits directly to a terminal.
         dead_end_target_state = DSM.dead_end_state_db()[TargetStateIdx]
         assert dead_end_target_state.is_acceptance(), \
                "NON-ACCEPTANCE dead end detected during code generation!\n" + \
@@ -37,11 +58,11 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
             # depend on pre-conditions, since it is not part of the 'main' lexical analyser
             # process.
             assert DSM.mode() == "ForwardLexing"
-            return LanguageDB["$goto"]("$entry", TargetStateIdx)       # router to terminal
+            return LanguageDB["$goto"]("$entry", TargetStateIdx)   # router to terminal
 
         elif DSM.mode() == "ForwardLexing":
             winner_origin = dead_end_target_state.origins().find_first_acceptance_origin()
-            assert type(winner_origin) != type(None) # see first assert in this block
+            assert type(winner_origin) != type(None)               # see first assert in this block
 
             terminal_id = winner_origin.state_machine_id
 
@@ -65,21 +86,6 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
         else:
             assert False, "Impossible lexing mode: '%s'" % DSM.mode()
     
-    # (*) A very normal transition to another state (maybe also a drop-out)
-    if   TargetStateIdx == None:   
-        # NOTE: The normal drop out contains a check against the buffer limit code. This
-        #       check can be avoided, if one is sure that the current interval does not contain
-        #       a buffer limit code.
-        blc = Setup.buffer_limit_code
-        if type(blc) != int:
-            if len(blc) > 2 and blc[:2] == "0x": blc = int(blc, 16)
-            else:                                blc = int(blc)
-        if TriggerInterval.contains(blc):
-            return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)
-        else:
-            return LanguageDB["$goto"]("$drop-out-direct", CurrentStateIdx)
-    else:
-        return LanguageDB["$goto"]("$entry", TargetStateIdx)
     
 
 def do_dead_end_router(State, StateIdx, BackwardLexingF):

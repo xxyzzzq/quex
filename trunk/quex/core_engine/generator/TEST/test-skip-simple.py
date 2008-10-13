@@ -16,7 +16,7 @@ if len(sys.argv) < 2 or not (sys.argv[1] in ["ANSI-C-PlainMemory", "ANSI-C", "Cp
     print "Language argument not acceptable, use --hwut-info"
     sys.exit(0)
 
-Language = sys.argv[1]
+Language     = sys.argv[1]
 end_sequence = map(ord, "*/")
 
 TestStr  = "abcdefg*/hijklmnop*/qrstuvw*/xyz*/ok"
