@@ -86,6 +86,8 @@ def parse_mode_option(fh, new_mode):
         skip_whitespace(fh)
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
+        if trigger_set.is_empty():
+            error_msg("Empty trigger set for skipper." % identifier, fh)
         return True
 
     elif identifier == "skip_range":

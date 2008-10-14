@@ -201,6 +201,7 @@ def get_simple_skipper(TriggerSet, PostContextN):
     """This function implements simple 'skipping' in the sense of passing by
        characters that belong to a given set of characters--the TriggerSet.
     """
+    assert not TriggerSet.is_empty()
     # Name the $$SKIPPER$$
     skipper_index = sm_index.get()
     transition_coder.do(skipper_index, TriggerSet, skipper_index)
