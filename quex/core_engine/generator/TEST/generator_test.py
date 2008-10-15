@@ -225,11 +225,15 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     return txt
 
 
-def create_trigger_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
+def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
 
-    return __get_skipper_code_framework(Language, TestStr, 
-                                        skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str),
-                                        QuexBufferSize, CommentTestStrF, ShowPositionF)
+    end_str  = '    printf("end\\n");'
+    end_str += '    return false;\n'
+
+    skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"], 0, end_str)
+
+    return __get_skipper_code_framework(Language, TestStr, skipper_code,
+                                        QuexBufferSize, CommentTestStrF=False, ShowPositionF=False, EndStr=end_str)
 
 def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
     assert QuexBufferSize >= len(EndSequence) + 2
@@ -237,8 +241,9 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    return __get_skipper_code_framework(Language, TestStr, 
-                                        skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str),
+    skipper_code = skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str)
+
+    return __get_skipper_code_framework(Language, TestStr, skipper_code,
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, end_str)
 
 

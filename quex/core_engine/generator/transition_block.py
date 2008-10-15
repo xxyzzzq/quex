@@ -6,32 +6,30 @@ LanguageDB = Setup.language_db
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent
 
 class __info:
-    def __init__(self, State, StateIdx, IsInitStateF, DSM):
-        assert DSM.__class__.__name__ == "StateMachineDecorator"
+    def __init__(self, StateIdx, IsInitStateF, DSM):
+        assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
 
-        self.state              = State
         self.state_index        = StateIdx
         self.is_init_state_f    = IsInitStateF
 
         self.dsm = DSM
 
-def do(state, StateIdx, InitStateF, DSM):
-
-    TriggerMap = state.transitions().get_trigger_map()
+def do(TriggerMap, StateIdx, InitStateF, DSM):
+    assert type(TriggerMap) == list
+    assert DSM == None or DSM.__class__.__name__ == "StateMachineDecorator"
     # If a state has no transitions, no new input needs to be eaten => no reload.
     #
     # NOTE: The only case where the buffer reload is not required are empty states,
     #       AND states during backward input position detection!
     #       Empty states do not exist any longer, the backward input position is
     #       essential though for pseudo ambiguous post contexts.
-    txt = ""
     assert TriggerMap != [] # states with empty trigger maps are 'dead end states'. those
     #                       # are not to be coded at this place.
 
-    info = __info(State=state, StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
+    info = __info(StateIdx=StateIdx, IsInitStateF=InitStateF, DSM=DSM)
 
     if len(TriggerMap) > 1:
-        txt = __get_code(TriggerMap, info)
+        return __get_code(TriggerMap, info) + "\n"
     else:
         # We can actually be sure, that the Buffer Limit Code is filtered
         # out, since this is the task of the regular expression parser.
@@ -40,9 +38,7 @@ def do(state, StateIdx, InitStateF, DSM):
         # covers all characters (see the discussion there).
         assert TriggerMap[0][0].begin == -sys.maxint
         assert TriggerMap[0][0].end   == sys.maxint
-        txt =  "    " + transition.do(StateIdx, TriggerMap[0][0], TriggerMap[0][1], DSM)
-
-    return txt + "\n"
+        return  "    " + transition.do(StateIdx, TriggerMap[0][0], TriggerMap[0][1], DSM) + "\n"
 
 def __get_code(TriggerMap, info):
     """Creates code for state transitions from this state. This function is very
@@ -109,8 +105,7 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #  for details about $transition, see the __transition() function of the
     #  respective language module.
     #
-    txt =  "    " + transition.do(info.state_index, interval, target_state_index, 
-                                  info.dsm)
+    txt =  "    " + transition.do(info.state_index, interval, target_state_index, info.dsm)
     txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 

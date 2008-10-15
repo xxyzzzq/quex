@@ -43,7 +43,7 @@ state.add_transition(NumberSet([Interval(250,260),  Interval(71,80), Interval(71
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
-function = "def example_func(input):\n" + transition_block.do(state, -1, False, dsm)
+function = "def example_func(input):\n" + transition_block.do(state.transitions().get_trigger_map(), -1, False, dsm)
 ##function = function.replace("_-1_", "_MINUS_1_")
 ##line_n = 0
 ##for line in function.split("\n"):
