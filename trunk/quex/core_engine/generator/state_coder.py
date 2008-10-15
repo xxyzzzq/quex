@@ -40,7 +40,7 @@ def do(state, StateIdx, SMD, InitStateF=False):
 
     txt += acceptance_info.do(state, StateIdx, SMD)
 
-    txt += transition_block.do(state, StateIdx, InitStateF, SMD)
+    txt += transition_block.do(TriggerMap, StateIdx, InitStateF, SMD)
 
     txt += drop_out.do(state, StateIdx, SMD, InitStateF) 
 

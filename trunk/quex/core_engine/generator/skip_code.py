@@ -8,7 +8,20 @@ import quex.core_engine.utf8 as utf8
 from   quex.frs_py.string_handling               import blue_print
 from   quex.core_engine.generator.drop_out       import get_forward_load_procedure
 from   quex.core_engine.generator.languages.core import __nice
-import quex.core_engine.generator.transition     as     transition_coder
+import quex.core_engine.generator.transition_block as transition_block
+
+def do(SkipperDescriptor, PostContextN):
+    LanguageDB = Setup.language_db
+    skipper_class = SkipperDescriptor.__class__.__name__
+    assert skipper_class in ["RangeSkipper"]
+
+    if skipper_class == "RangeSkipper":
+        return  "{\n" \
+                + LanguageDB["$comment"]("Range skipper state") \
+                + get_range_skipper(SkipperDescriptor.get_closing_sequence(), LanguageDB, PostContextN) \
+                + "\n}\n"
+    else:
+        assert None
 
 range_skipper_template = """
     $$DELIMITER_COMMENT$$
@@ -75,19 +88,6 @@ $$DROP_OUT$$
     me->buffer._input_p = me->buffer._lexeme_start_p;
     $$MISSING_CLOSING_DELIMITER$$
 """
-
-def do(SkipperDescriptor, PostContextN):
-    LanguageDB = Setup.language_db
-    skipper_class = SkipperDescriptor.__class__.__name__
-    assert skipper_class in ["RangeSkipper"]
-
-    if skipper_class == "RangeSkipper":
-        return  "{\n" \
-                + LanguageDB["$comment"]("Range skipper state") \
-                + get_range_skipper(SkipperDescriptor.get_closing_sequence(), LanguageDB, PostContextN) \
-                + "\n}\n"
-    else:
-        assert None
 
 def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelimiterAction=""):
     assert EndSequence.__class__  == list
@@ -193,36 +193,41 @@ $$DROP_OUT$$
         }
 
     }
-    $$GOTO_END_OF_FILE_TERMINAL$$
+    $$MISSING_CLOSING_DELIMITER$$
 }
 """
 
-def get_simple_skipper(TriggerSet, PostContextN):
+def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN, MissingClosingDelimiterAction):
     """This function implements simple 'skipping' in the sense of passing by
        characters that belong to a given set of characters--the TriggerSet.
     """
+    assert TriggerSet.__class__.__name__ == "NumberSet"
     assert not TriggerSet.is_empty()
-    # Name the $$SKIPPER$$
-    skipper_index = sm_index.get()
-    transition_coder.do(skipper_index, TriggerSet, skipper_index)
 
-    code_str = blue_print(skipper_template,
-                          [
-                           ["$$DELIMITER_COMMENT$$",          delimiter_comment_str],
-                           ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
-                           ["$$INPUT_GET$$",                  LanguageDB["$input/get"]],
-                           ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
-                           ["$$ENDIF$$",                      LanguageDB["$endif"]],
-                           ["$$ENTRY$$",                      LanguageDB["$label-def"]("$entry", skipper_index)],
-                           ["$$RESTART$$",                    LanguageDB["$label-def"]("$input", skipper_index)],
-                           ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                           ["$$GOTO_RESTART$$",               LanguageDB["$goto"]("$input", skipper_index)],
-                           ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
-                           ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
-                           ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
-                           ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
-                           ["$$GOTO_END_OF_FILE_TERMINAL$$",  LanguageDB["$goto"]("$terminal-eof")]
-                           ])
+    skipper_index = sm_index.get()
+    # Mini trigger map:  [ trigger set ] --> loop start
+    # That means: As long as characters of the trigger set appear, we go to the loop start.
+    trigger_map = []
+    for interval in TriggerSet.get_intervals():
+        trigger_map.append([interval, skipper_index]) 
+    iteration_code = transition_block.do(trigger_map, skipper_index, InitStateF=False, DSM=None)
+
+    return blue_print(skipper_template,
+                      [
+                       ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
+                       ["$$INPUT_GET$$",                  LanguageDB["$input/get"]],
+                       ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
+                       ["$$ENDIF$$",                      LanguageDB["$endif"]],
+                       ["$$ENTRY$$",                      LanguageDB["$label-def"]("$entry", skipper_index)],
+                       ["$$RESTART$$",                    LanguageDB["$label-def"]("$input", skipper_index)],
+                       ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
+                       ["$$GOTO_RESTART$$",               LanguageDB["$goto"]("$input", skipper_index)],
+                       ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
+                       ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
+                       ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
+                       ["$$ON_TRIGGER_SET_TO_LOOP_START$$", iteration_code],
+                       ["$$MISSING_CLOSING_DELIMITER$$",    MissingClosingDelimiterAction],
+                      ])
 
 def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferEndLimitCode,
                                  BufferReloadRequiredOnDropOutF=True):
