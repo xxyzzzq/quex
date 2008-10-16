@@ -9,6 +9,7 @@ from   quex.frs_py.string_handling               import blue_print
 from   quex.core_engine.generator.drop_out       import get_forward_load_procedure
 from   quex.core_engine.generator.languages.core import __nice
 import quex.core_engine.generator.transition_block as transition_block
+from   quex.core_engine.state_machine.transition_map import TransitionMap 
 
 def do(SkipperDescriptor, PostContextN):
     LanguageDB = Setup.language_db
@@ -33,7 +34,7 @@ $$ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QuexBuffer_content_size(&me->buffer) >= SkipDelimiter$$SKIPPER_INDEX$$L );
     if( QuexBuffer_distance_input_to_text_end(&me->buffer) < SkipDelimiter$$SKIPPER_INDEX$$L ) 
-        $$GOTO_DROP_OUT$$;
+        $$GOTO_DROP_OUT$$
 
 $$RESTART$$
     *content_end = SkipDelimiter$$SKIPPER_INDEX$$[0];       /* Overwrite BufferLimitCode (BLC).  */
@@ -152,15 +153,15 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
 
     return code_str
 
+
 skipper_template = """
 { 
     $$DELIMITER_COMMENT$$
 
-$$ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QuexBuffer_content_size(&me->buffer) >= 1);
     if( QuexBuffer_distance_input_to_text_end(&me->buffer) != 0 ) 
-        $$GOTO_DROP_OUT$$;
+        $$GOTO_DROP_OUT$$
 
     /* NOTE: For simple skippers the end of content does not have to be overwriten 
      *       with anything (as done for range skippers). This is so, because the abort
@@ -170,11 +171,7 @@ $$ENTRY$$
 $$LOOP_START$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$INPUT_GET$$ 
-    $$ON_TRIGGER_SET_TO_LOOP_START$$
-
-    /* Did we reach End of Content or just something that is not in set of chars to be skipped?  */
-    if( QuexBuffer_distance_input_to_text_end(&me->buffer) != 0 ) 
-        $$GOTO_REENTRY_PREPARATION$$                           
+$$ON_TRIGGER_SET_TO_LOOP_START$$
 
 $$DROP_OUT$$
     /* -- When loading new content it is always taken care that the beginning of the lexeme
@@ -189,11 +186,15 @@ $$DROP_OUT$$
 
         if( QuexBuffer_distance_input_to_text_end(&me->buffer) != 0 ) {
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-            $$GOTO_RESTART$$
+            $$GOTO_LOOP_START$$
         }
 
     }
     $$MISSING_CLOSING_DELIMITER$$
+
+$$DROP_OUT_DIRECT$$
+    /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis */
+    $$GOTO_REENTRY_PREPARATION$$                           
 }
 """
 
@@ -207,27 +208,33 @@ def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN, MissingClosi
     skipper_index = sm_index.get()
     # Mini trigger map:  [ trigger set ] --> loop start
     # That means: As long as characters of the trigger set appear, we go to the loop start.
-    trigger_map = []
-    for interval in TriggerSet.get_intervals():
-        trigger_map.append([interval, skipper_index]) 
-    iteration_code = transition_block.do(trigger_map, skipper_index, InitStateF=False, DSM=None)
+    transition_map = TransitionMap()
+    transition_map.add_transition(TriggerSet, skipper_index)
+    iteration_code = transition_block.do(transition_map.get_trigger_map(), skipper_index, InitStateF=False, DSM=None)
 
-    return blue_print(skipper_template,
+    comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
+
+    txt = blue_print(skipper_template,
                       [
+                       ["$$DELIMITER_COMMENT$$",          comment_str],
                        ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
                        ["$$INPUT_GET$$",                  LanguageDB["$input/get"]],
                        ["$$IF_INPUT_EQUAL_DELIMITER_0$$", LanguageDB["$if =="]("SkipDelimiter$$SKIPPER_INDEX$$[0]")],
                        ["$$ENDIF$$",                      LanguageDB["$endif"]],
-                       ["$$ENTRY$$",                      LanguageDB["$label-def"]("$entry", skipper_index)],
+                       ["$$LOOP_START$$",                 LanguageDB["$label-def"]("$entry", skipper_index)],
                        ["$$RESTART$$",                    LanguageDB["$label-def"]("$input", skipper_index)],
                        ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
-                       ["$$GOTO_RESTART$$",               LanguageDB["$goto"]("$input", skipper_index)],
+                       ["$$DROP_OUT_DIRECT$$",            LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
+                       ["$$GOTO_LOOP_START$$",            LanguageDB["$goto"]("$entry", skipper_index)],
                        ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                        ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
                        ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$", iteration_code],
                        ["$$MISSING_CLOSING_DELIMITER$$",    MissingClosingDelimiterAction],
                       ])
+
+    return blue_print(txt,
+                       [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
 def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferEndLimitCode,
                                  BufferReloadRequiredOnDropOutF=True):

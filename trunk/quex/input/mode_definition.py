@@ -82,12 +82,19 @@ def parse_mode_option(fh, new_mode):
         # implement a very effective way to skip these regions.
         if fh.read(1) != "[":
             error_msg("A simple skipper can only be specified by a character set and must start with a [-bracket.")
-        pattern, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
+        pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
         skip_whitespace(fh)
+
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'." % identifier, fh)
+
         if trigger_set.is_empty():
             error_msg("Empty trigger set for skipper." % identifier, fh)
+
+        new_mode.add_match(pattern_str, 
+                           ReferencedCodeFragment("", fh.name, -1)), 
+                           state_machine)
+
         return True
 
     elif identifier == "skip_range":

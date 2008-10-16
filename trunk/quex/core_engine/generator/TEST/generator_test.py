@@ -191,7 +191,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 
     # Initial reload is normally detected by the initial state. Here, we have no initial state,
     # so let us do it by hand.
-    reenter_str  = "    if( me->buffer._input_p == content_end ) {\n"
+    reenter_str  = "    if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0 ) {\n"
     reenter_str += "        QuexBuffer_mark_lexeme_start(&me->buffer);\n"
     reenter_str += "        if( ! QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
     reenter_str += "                                                  post_context_start_position, 0)\n"
