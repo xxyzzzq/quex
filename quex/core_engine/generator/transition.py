@@ -24,6 +24,7 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
     LanguageDB = Setup.language_db
     assert DSM == None            or DSM.__class__.__name__ == "StateMachineDecorator"
     assert TargetStateIdx == None or TargetStateIdx >= 0
+    assert TriggerInterval.__class__.__name__ == "Interval" or TriggerInterval == None
 
     if DSM == None or not DSM.dead_end_state_db().has_key(TargetStateIdx):
         # (1) The target state is not mentioned to be a state void of further transitions.
@@ -38,7 +39,7 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
             if type(blc) != int:
                 if len(blc) > 2 and blc[:2] == "0x": blc = int(blc, 16)
                 else:                                blc = int(blc)
-            if TriggerInterval.contains(blc):
+            if TriggerInterval == None or TriggerInterval.contains(blc):
                 return LanguageDB["$goto"]("$drop-out", CurrentStateIdx)
             else:
                 return LanguageDB["$goto"]("$drop-out-direct", CurrentStateIdx)

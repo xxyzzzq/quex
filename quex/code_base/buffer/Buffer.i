@@ -159,6 +159,14 @@ namespace quex {
 
 
     QUEX_INLINE void
+    QuexBuffer_input_p_add_offset(QuexBuffer* buffer, const size_t Offset)
+    { 
+        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
+        buffer->_input_p += Offset; 
+        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(buffer);
+    }
+
+    QUEX_INLINE void
     QuexBuffer_input_p_increment(QuexBuffer* buffer)
     { 
         ++(buffer->_input_p); 
@@ -222,6 +230,15 @@ namespace quex {
                           || me->_input_p == me->_memory._back || me->_input_p == me->_memory._front);
 #       endif
         return *(me->_input_p); 
+    }
+
+    QUEX_INLINE QUEX_CHARACTER_TYPE
+    QuexBuffer_input_get_offset(QuexBuffer* me, const size_t Offset)
+    {
+        QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
+        __quex_assert( me->_input_p + Offset > me->_memory._front );
+        __quex_assert( me->_input_p + Offset <= me->_memory._back );
+        return *(me->_input_p + Offset); 
     }
 
     QUEX_INLINE void

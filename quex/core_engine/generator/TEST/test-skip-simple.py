@@ -7,7 +7,7 @@ from   generator_test import create_main_function, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
-    print "Plain Range Skipping: DelimiterLength=2, Large Buffer"
+    print "Skip-Range: DelimiterLength=2, Large Buffer"
     print "CHOICES: ANSI-C-PlainMemory, ANSI-C, Cpp;"
     print "SAME;"
     sys.exit(0)

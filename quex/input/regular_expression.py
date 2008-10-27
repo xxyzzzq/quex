@@ -52,12 +52,13 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
     try:
         # -- parse regular expression, build state machine
         character_set = charset_expression.snap_set_expression(sh)
-        # -- character set is not supposed to contain buffer limit code
-        if character_set.contains(Setup.buffer_limit_code):
-            character_set.cut_interval(Interval(Setup.buffer_limit_code, Setup.buffer_limit_code))
 
         if character_set == None:
             error_msg("No valid regular character set expression detected.", sh_ref)
+
+        # -- character set is not supposed to contain buffer limit code
+        if character_set.contains(Setup.buffer_limit_code):
+            character_set.cut_interval(Interval(Setup.buffer_limit_code, Setup.buffer_limit_code))
 
     except RegularExpressionException, x:
         error_msg("Regular expression parsing:\n" + x.message, sh_ref)
@@ -71,7 +72,7 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
         end_position = sh.tell()
         sh.seek(start_position)
         regular_expression = sh.read(end_position - start_position)
-        return regular_expression, state_machine
+        return regular_expression, character_set
 
     return character_set
 

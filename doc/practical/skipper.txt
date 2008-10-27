@@ -22,4 +22,15 @@ and memory constraints of the created lexical analyser. Additionally, they add
 clarity to the code that describes the analyser. When an end-of-file is reached
 before the range skipper ends, the normal end-of-file action is executed and
 the lexical analysis continues as normal-provided that the input is set
-appropriately (e.g. a return from an include occured).
+appropriately (e.g. a return from an include occured). 
+
+Currently, there are two forms of skippers implemented:
+
+# _Character set skippers_ of the form ''<skip: [ \n\t]>'' which allows to skip 
+over wide ranges of characters that belong to a given character set defined in 
+'['- and ']'- brackets. The above example shows a skipper that eliminates whitespace
+in ASCII. 
+
+# _Range Skippers_ of the form ''<skip_range:  "/*" "*/">''. They allow to skip any
+content that is framed by a starting regular expression and an ending string. In the example
+above the skipper  skips over traditional C-Language comments.

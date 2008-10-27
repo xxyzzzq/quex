@@ -5,7 +5,8 @@ class ActionInfo:
     def __init__(self, PatternStateMachine, ActionCodeStr):
         assert PatternStateMachine != None
         assert type(ActionCodeStr) == str or \
-               ActionCodeStr.__class__.__name__ == "RangeSkipper"
+               ActionCodeStr.__class__.__name__ == "SkipperRange" or \
+               ActionCodeStr.__class__.__name__ == "SkipperCharacterSet"
 
         self.__pattern_state_machine = PatternStateMachine
         self.__action_code_str       = ActionCodeStr
@@ -14,7 +15,8 @@ class ActionInfo:
         return self.__pattern_state_machine
 
     def action_type(self):
-        return self.__action_code_str.__class__.__name__
+        if type(self.__action_code_str) == str: return "Code"
+        else:                                   return "Skipper"
 
     def action_code(self):
         return self.__action_code_str
@@ -24,7 +26,7 @@ class ActionInfo:
 
     def __contains(self, ObjectName, CommentDelimiters, IgnoreRegions=["\"", "\""]):
         assert type(CommentDelimiters) == list
-        assert self.__action_code_str.__class__.__name__ not in ["RangeSkipper"]
+        assert self.action_type() == "Code"
 
         for delimiter_info in CommentDelimiters:
             assert type(delimiter_info) == list, "Argument 'CommentDelimiters' must be of type [[]]"
