@@ -38,15 +38,24 @@ interval_end   = -1
 # initialize pseudo random generator: produces always the same numbers.
 random.seed(110270)   # must set the seed for randomness, otherwise system time
 #                     # is used which is no longer deterministic.
-for i in range(4000):
-    interval_end = interval_start + int(random.random() * 4) + 1
-    state.add_transition(Interval(interval_start, interval_end), long(i % 24))
+for i in range(6000):
+    interval_size      = int(random.random() * 3) + 1
+    target_state_index = long(random.random() * 5)
+    interval_end = interval_start + interval_size
+    state.add_transition(Interval(interval_start, interval_end), target_state_index)
     interval_start = interval_end
 
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
 dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
 function = "def example_func(input):\n" + transition_block.do(state.transitions().get_trigger_map(), -1, False, dsm)
+function = function.replace("_-1_", "_MINUS_1_")
+
+line_n = 0
+for line in function.split("\n"):
+    print "##%i" % line_n, line
+    line_n += 1
+
 exec(function)
 
 differences = []    
