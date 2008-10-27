@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Mon Oct 27 07:52:41 2008">
+<test-database execution-time-sec="0.00" date="Mon Oct 27 22:16:08 2008">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
         <test title="Backwards;" make-required="True" time-sum-sec="0.00"> 
@@ -198,15 +198,15 @@
     </group>
     <group name="Single State">
         <test title="Transition Code Generation" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-single-state-transitions.py" info-request-time="1224050717L"/>
+            <application file-name="test-single-state-transitions.py" info-request-time="1225090382L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="276539331"/>
+               <choice name="" result="OK" time-sec="0.00" crc="276539331"/>
             </choice-list>
         </test>
         <test title="Extensive Transition Code Generation" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="test-single-state-transitions-x.py" info-request-time="1224050748L"/>
+            <application file-name="test-single-state-transitions-x.py" info-request-time="1225142046L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time-sec="0.00" crc="-44469151"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-44469151"/>
             </choice-list>
         </test>
     </group>
