@@ -127,12 +127,22 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
     fh.write(new_content)
     fh.close()
 
-class Skipper:
-    def __init__(self, Pattern, TriggerSet):
-        self.__pattern_str = Pattern
+class SkipperCharacterSet:
+    def __init__(self, TriggerSet):
+        """NOTE: The Opening sequence is 'webbed' into the mode's state machine. As
+                 soon as it 'wins' the analyser enters the skipper section where 
+                 the characters are skipped with warp speed.
+        """
+        assert TriggerSet.__class__.__name__ == "NumberSet"
         self.__trigger_set = TriggerSet
 
-class RangeSkipper:
+    def get_character_set(self):
+        return self.__trigger_set
+
+    def get_code(self, PostConditionN):
+        return skip_code.do(self, PostConditionN)
+
+class SkipperRange:
     def __init__(self, ClosingSequence, OpeningSequence=None):
         """NOTE: The Opening sequence is 'webbed' into the mode's state machine. As
                  soon as it 'wins' the analyser enters the skipper section where 
@@ -165,8 +175,8 @@ class Match:
                  PriorityMarkF=False, DeletionF=False, IL = None):
 
         assert    CodeFragment_or_Skipper.__class__ == ReferencedCodeFragment \
-               or CodeFragment_or_Skipper.__class__ == Skipper                \
-               or CodeFragment_or_Skipper.__class__ == RangeSkipper           \
+               or CodeFragment_or_Skipper.__class__ == SkipperCharacterSet    \
+               or CodeFragment_or_Skipper.__class__ == SkipperRange           \
                or CodeFragment_or_Skipper == None,                            \
                "code fragment type = " + CodeFragment.__class__.__name__ 
         assert PatternStateMachine.__class__.__name__ == "StateMachine" \

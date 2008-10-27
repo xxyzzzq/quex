@@ -106,14 +106,65 @@ def __create_transition_code(TriggerMapEntry, info, IndentF=False):
     #  respective language module.
     #
     txt =  "    " + transition.do(info.state_index, interval, target_state_index, info.dsm)
-    txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
+    if interval != None:
+        txt += "    " + LanguageDB["$comment"](interval.get_utf8_string()) + "\n"
 
     if IndentF: 
         txt = txt[:-1].replace("\n", "\n    ") + "\n" # don't replace last '\n'
     return txt
+
+def __try_very_simplest_case(TriggerMap, info):
+    """Assume the following setup:
+
+           if( input == Char1 ) goto X;
+           if( input == Char2 ) goto X;
+               ...
+           if( input == CharN ) goto X;
+
+       If the input is equally distributed over the characters 1 to N then the
+       average number of comparisons for N = 3 will be 2,333. For N = 4, the 
+       everage number of comparisons will be 2,75. Binary bracketing requires
+       ld(N), so for N = 4 the number of comparisons is 2. Thus until N = 3
+       it is advantegous to compare step by step. This is what this function 
+       is trying to do. If it returns an empty string no such comparison is
+       created.
+    """
+    # return None
+    character_list            = []
+    common_target_state_index = -1
+    for trigger in TriggerMap:
+        interval           = trigger[0]
+        target_state_index = trigger[1]
+
+        if target_state_index == None: continue
+
+        # All must have the same target state
+        if common_target_state_index != -1 and common_target_state_index != target_state_index: 
+            return None
+
+        common_target_state_index = target_state_index
+        character_list.extend(range(interval.begin, interval.end))
+
+        # More than three characters does not make sense
+        if len(character_list) > 3: return None
+
+    if character_list == []: return None
+
+    txt = LanguageDB["$if in"](character_list)    
+    # TriggerInfo = [None, TargetStateIndex] because the interval does not matter.
+    txt += __create_transition_code([None, target_state_index], info, IndentF=True) 
+    txt += LanguageDB["$endif-else"]
+    txt += __create_transition_code([None, None], info, IndentF=True)
+    txt += LanguageDB["$end-else"]
+
+    return txt
+
         
 def __bracket_two_intervals(TriggerMap, info):
     assert len(TriggerMap) == 2
+
+    txt = __try_very_simplest_case(TriggerMap, info)
+    if txt != None: return txt
 
     first  = TriggerMap[0]
     second = TriggerMap[1]
@@ -142,6 +193,9 @@ def __bracket_two_intervals(TriggerMap, info):
 def __bracket_three_intervals(TriggerMap, info):
     assert len(TriggerMap) == 3
 
+    txt = __try_very_simplest_case(TriggerMap, info)
+    if txt != None: return txt
+
     # does one interval have the size '1'?
     size_one_map = [False, False, False]   # size_on_map[i] == True if interval 'i' has size '1'
     for i in range(len(TriggerMap)):
@@ -169,6 +223,9 @@ def __bracket_three_intervals(TriggerMap, info):
     return txt
 
 def __bracket_normally(MiddleTrigger_Idx, TriggerMap, info):
+
+    txt = __try_very_simplest_case(TriggerMap, info)
+    if txt != None: return txt
 
     middle = TriggerMap[MiddleTrigger_Idx]
     assert middle[0].begin >= 0, \

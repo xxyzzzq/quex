@@ -7,7 +7,7 @@ from   generator_test import create_main_function, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
-    print "Plain Range Skipping: Varrying DelimiterLength, Large Buffer"
+    print "Skip-Range: Varrying DelimiterLength, Large Buffer"
     print "CHOICES: DL=1, DL=2, DL=3, DL=4;"
     print "SAME;"
     sys.exit(0)

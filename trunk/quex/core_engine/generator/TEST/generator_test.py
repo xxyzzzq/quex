@@ -16,6 +16,8 @@ import quex.core_engine.generator.core          as generator
 import quex.core_engine.generator.skip_code     as skip_code
 import quex.core_engine.regular_expression.core as regex
 
+SHOW_TRANSITIONS_STR  = "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
+SHOW_BUFFER_LOADS_STR = "" # "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
 
 def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-PlainMemory", 
        QuexBufferSize=15, # DO NOT CHANGE!
@@ -89,8 +91,8 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
                   "-I./. -I$QUEX_PATH " + \
                   "-o %s.exe " % filename_tmp + \
                   "-ggdb " + \
-                  "" #"-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS " + \
-                  #"" "-D__QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS " 
+                  SHOW_TRANSITIONS_STR + " " + \
+                  SHOW_BUFFER_LOADS_STR
 
     print compile_str + "##" # DEBUG
     os.system(compile_str)
@@ -180,28 +182,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     return txt
 
 def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode, 
-                                 QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr):
-
-    if ShowPositionF:
-        reached_str  = '    printf("next letter: <%c> position: %04X\\n", (char)(*(me->buffer._input_p)),\n'
-        reached_str += '           (int)(me->buffer._input_p - me->buffer._memory._front));\n'
-    else:
-        reached_str  = '    printf("next letter: <%c>\\n", (char)(*(me->buffer._input_p)));\n'
-    reached_str += '    return true;\n'
-
-    # Initial reload is normally detected by the initial state. Here, we have no initial state,
-    # so let us do it by hand.
-    reenter_str  = "    if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0 ) {\n"
-    reenter_str += "        QuexBuffer_mark_lexeme_start(&me->buffer);\n"
-    reenter_str += "        if( ! QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
-    reenter_str += "                                                  post_context_start_position, 0)\n"
-    reenter_str += "            || me->buffer._input_p == me->buffer._end_of_file_p - 1 ) {"
-    reenter_str += EndStr
-    reenter_str += "        }\n"
-    reenter_str += "        QuexBuffer_input_p_increment(&me->buffer); /* first state does not increment */\n"
-    reenter_str += "    }\n"
-    reenter_str += reached_str
-
+                                 QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
     txt  = "#define QUEX_CHARACTER_TYPE uint8_t\n"
     txt += "#define QUEX_TOKEN_ID_TYPE  bool\n"  
@@ -210,16 +191,68 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#include <quex/code_base/template/Analyser.i>\n"
     txt += "\n"
     if Language == "Cpp": txt += "using namespace quex;\n"
+    txt += "\n"
+    txt += "bool\n"
+    txt += "show_next_character(QuexBuffer* buffer) {\n"
+    txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position    = 0x0;\n"
+    txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
+    txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) == 0 ) {\n"
+    txt += "        QuexBuffer_mark_lexeme_start(buffer);\n"
+    txt += "        if( QuexAnalyser_buffer_reload_forward(buffer, &last_acceptance_input_position,\n"
+    txt += "                                               post_context_start_position, 0) == 0 ) {\n"
+    txt += "            return false;\n"
+    txt += "        } else {\n"
+    txt += "            QuexBuffer_input_p_increment(buffer);\n"
+    txt += "        }\n"
+    txt += "    }\n"
+    txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) != 0 )\n"
+    if ShowPositionF:
+        txt += '    printf("next letter: <%c> position: %04X\\n", (char)(*(buffer->_input_p)),\n'
+        txt += '           (int)(buffer->_input_p - buffer->_memory._front));\n'
+    else:
+        txt += '    printf("next letter: <%c>\\n", (char)(*(buffer->_input_p)));\n'
+    txt += "    return true;\n"
+    txt += "}\n"
+    txt += "\n"
     txt += "bool  Mr_UnitTest_analyser_function(QuexAnalyser* me)\n"
     txt += "{\n"
     txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position    = 0x0;\n"
     txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
     txt += "    QUEX_CHARACTER_TYPE           input                          = 0x0;\n"
+    txt += "ENTRY:\n"
+    txt += "    /* Skip irrelevant characters */\n"
+    txt += "    while(1 + 1 == 2) {\n" 
+    txt += "        input = QuexBuffer_input_get(&me->buffer);\n"
+    if MarkerCharList != []:
+        for character in MarkerCharList:
+            txt += "        if( input == %i ) break;\n" % character
+    else:
+        txt += "    break;\n"
+    txt += "        if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0 ) {\n"
+    txt += "            QuexBuffer_mark_lexeme_start(&me->buffer);\n"
+    txt += "            if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "                                                   post_context_start_position, 0) == 0 )\n"
+    txt += "                goto TERMINAL_END_OF_STREAM;\n"
+    txt += "            QuexBuffer_input_p_increment(&me->buffer);\n"
+    txt += "        } else {\n"
+    txt += "            QuexBuffer_input_p_increment(&me->buffer);\n"
+    txt += "        }\n"
+    txt += "    }\n"
+    txt += "\n"
     txt += SkipperSourceCode
+    txt += "\n"
     txt += "__REENTRY_PREPARATION:\n"
-    txt += reenter_str
+    txt += "    /* Originally, the reentry preparation does not increment or do anything to _input_p\n"
+    txt += "     * Here, we use the chance to print the position where the skipper ended.\n"
+    txt += "     * If we are at the border and there is still stuff to load, then load it so we can\n"
+    txt += "     * see what the next character is coming in.                                          */"
+    txt += "    if( ! show_next_character(&me->buffer) ) goto TERMINAL_END_OF_STREAM;\n" 
+    txt += "    goto ENTRY;\n"
+    txt += "\n"
+    txt += "TERMINAL_END_OF_STREAM:\n"
+    txt += EndStr
     txt += "}\n"
-
+    txt += "\n"
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
@@ -230,10 +263,15 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"], 0, end_str)
+    skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"], 0)
 
+    marker_char_list = []
+    for interval in TriggerSet.get_intervals():
+        for char_code in range(interval.begin, interval.end):
+            marker_char_list.append(char_code)
     return __get_skipper_code_framework(Language, TestStr, skipper_code,
-                                        QuexBufferSize, CommentTestStrF=False, ShowPositionF=False, EndStr=end_str)
+                                        QuexBufferSize, CommentTestStrF=False, ShowPositionF=False, EndStr=end_str,
+                                        MarkerCharList=marker_char_list)
 
 def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, CommentTestStrF=False, ShowPositionF=False):
     assert QuexBufferSize >= len(EndSequence) + 2
@@ -244,7 +282,8 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     skipper_code = skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str)
 
     return __get_skipper_code_framework(Language, TestStr, skipper_code,
-                                        QuexBufferSize, CommentTestStrF, ShowPositionF, end_str)
+                                        QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
+                                        MarkerCharList=[]) # [EndSequence[0]])
 
 
 def action(PatternName): 

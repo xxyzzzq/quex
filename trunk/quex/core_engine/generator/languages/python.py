@@ -44,3 +44,15 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           LanguageDB                = None,
                           DropOutTargetStateID      = -1):
     return ""
+
+def __get_if_one_of_value_list(ValueList):
+    assert type(ValueList) == list
+    assert len(ValueList) > 0
+
+    txt = "if input in ["
+    for value in ValueList:
+        txt += "%i, " % value
+    txt += "]:\n"
+
+    return txt
+

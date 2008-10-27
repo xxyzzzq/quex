@@ -5,6 +5,7 @@ import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
 import quex.core_engine.state_machine.index as index
+from   quex.core_engine.state_machine.core  import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 
 def parse(fh, Setup):
@@ -75,13 +76,10 @@ def parse_mode_option(fh, new_mode):
     skip_whitespace(fh)
 
     if identifier == "skip":
-        error_msg("skip is not yet supported.", fh)
         # A skipper 'eats' characters at the beginning of a pattern that belong
         # to a specified set of characters. A useful application is most probably
         # the whitespace skipper '[ \t\n]'. The skipper definition allows quex to
         # implement a very effective way to skip these regions.
-        if fh.read(1) != "[":
-            error_msg("A simple skipper can only be specified by a character set and must start with a [-bracket.")
         pattern_str, trigger_set = regular_expression.parse_character_set(fh, PatternStringF=True)
         skip_whitespace(fh)
 
@@ -91,9 +89,14 @@ def parse_mode_option(fh, new_mode):
         if trigger_set.is_empty():
             error_msg("Empty trigger set for skipper." % identifier, fh)
 
-        new_mode.add_match(pattern_str, 
-                           ReferencedCodeFragment("", fh.name, -1)), 
-                           state_machine)
+        # TriggerSet skipping is implemented the following way: As soon as one element of the 
+        # trigger set appears, the state machine enters the 'trigger set skipper section'.
+        opener_sm = StateMachine()
+        opener_sm.add_transition(opener_sm.init_state_index, trigger_set, AcceptanceF=True)
+            
+        skipper = lexer_mode.SkipperCharacterSet(trigger_set) 
+ 
+        new_mode.add_match(pattern_str, skipper, opener_sm)
 
         return True
 
@@ -114,7 +117,7 @@ def parse_mode_option(fh, new_mode):
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        skipper = lexer_mode.RangeSkipper(closer_sequence)  # 'opener' is webbed into general state machine
+        skipper = lexer_mode.SkipperRange(closer_sequence)  # 'opener' is webbed into general state machine
 
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         new_mode.add_match(opener_str, skipper, opener_sm)

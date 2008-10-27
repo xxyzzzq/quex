@@ -7,26 +7,26 @@ from   generator_test import create_main_function, \
                              compile_and_run
 
 if "--hwut-info" in sys.argv:
-    print "Plain Range Skipping: Varrying DelimiterLength, BufferSize = DelimiterLength + 2"
-    print "CHOICES: DL=1, DL=2, DL=3, DL=4;"
+    print "Skip-Range: Varrying DelimiterLength, BufferSize = DelimiterLength + 2"
+    print "CHOICES: 1, 2, 3, 4;"
     print "SAME;"
     sys.exit(0)
 
-if len(sys.argv) < 2 or not (sys.argv[1] in ["DL=1", "DL=2", "DL=3", "DL=4"]): 
+if len(sys.argv) < 2 or not (sys.argv[1] in ["1", "2", "3", "4"]): 
     print "Delimiter length argument not acceptable, use --hwut-info"
     sys.exit(0)
 
 Language = "Cpp"
 DL = sys.argv[1]
-if   DL == "DL=1": SEP = "*"
-elif DL == "DL=2": SEP = "*/"
-elif DL == "DL=3": SEP = "*/*"
-elif DL == "DL=4": SEP = "*/*/"
+if   DL == "1": SEP = "*"
+elif DL == "2": SEP = "*/"
+elif DL == "3": SEP = "*/*"
+elif DL == "4": SEP = "*/*/"
 else:
     print "Delimiter length argument '%s' not acceptable, use --hwut-info" % DL
     sys.exit(0)
 
-QuexBufferSize = len(DL) + 2
+QuexBufferSize = int(DL) + 2
 
 end_sequence = map(ord, SEP)
 

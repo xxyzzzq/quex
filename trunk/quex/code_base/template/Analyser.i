@@ -84,6 +84,7 @@ namespace quex {
         QUEX_CHARACTER_POSITION_TYPE* End = post_context_start_position + PostContextN;
 
         if( buffer->filler == 0x0 ) return false;
+        if( buffer->_end_of_file_p != 0x0 ) return false;
         const size_t LoadedCharacterN = QuexBufferFiller_load_forward(buffer);
         if( LoadedCharacterN == 0 ) return false;
 

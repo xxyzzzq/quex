@@ -278,7 +278,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     state_machine        = pattern_action_info.pattern_state_machine()
     action_code_orig     = pattern_action_info.action_code()
     #
-    if pattern_action_info.action_type() != "RangeSkipper":
+    if pattern_action_info.action_type() != "Skipper":
         action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
     else:
         action_code = pattern_action_info.action_code().get_code(SMD.post_contexted_sm_n())
@@ -437,3 +437,13 @@ def __frame_of_all(Code, HeaderFile, LexerClassName):
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "} // namespace quex\n"                          + \
            "#endif\n" 
+
+def __get_if_one_of_value_list(ValueList):
+    assert type(ValueList) == list
+    assert len(ValueList) > 0
+    txt = "if( "
+    for value in ValueList:
+        txt += "input == %i || " % value
+
+    txt = txt[:-3] + ") {\n"
+    return txt

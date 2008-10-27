@@ -109,22 +109,6 @@ namespace quex {
     QUEX_INLINE size_t
     QuexBufferFiller_load_forward(QuexBuffer* buffer)
     {
-        QuexBufferFiller*  me = buffer->filler;
-        if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
-
-        __quex_assert(buffer != 0x0);
-        __quex_assert(me->tell_character_index != 0x0);
-        __quex_assert(me->seek_character_index != 0x0);
-        __quex_assert(me->read_characters != 0x0);
-        size_t       ContentSize = QuexBuffer_content_size(buffer);
-
-        /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
-         * spans the whole buffer content, then nothing can be loaded into it.                      */
-        const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
-        if( Distance_LexemeStart_to_InputP >= ContentSize ) { 
-            __QuexBufferFiller_on_overflow(buffer, /* Forward */ true);
-            return 0;
-        }
         /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
          *          as returned by 'get_forward()'. Its task is to load new content into the 
          *          buffer such that 'get_forward() can continue iterating. This means that the 
@@ -145,6 +129,29 @@ namespace quex {
          *
          * RETURNS: '>= 0'   number of characters that were loaded forward in the stream.
          *          '-1'     if forward loading was not possible (end of file)                      */
+        /* 
+         * NOTE: There is a seemingly dangerous case where the loading **just** fills the buffer to 
+         *       the limit. In this case no 'End Of File' is detected, no end of file pointer is set,
+         *       and as a consequence a new loading will happen later. This new loading, though,
+         *       will only copy the fallback-region. The 'LoadedN == 0' will cause the _end_of_file_p
+         *       to be set to the end of the copied fallback-region. And everything is fine.
+         */
+        QuexBufferFiller*  me = buffer->filler;
+        if( me == 0x0 ) return 0; /* This case it totally rational, if no filler has been specified */
+
+        __quex_assert(buffer != 0x0);
+        __quex_assert(me->tell_character_index != 0x0);
+        __quex_assert(me->seek_character_index != 0x0);
+        __quex_assert(me->read_characters != 0x0);
+        size_t       ContentSize = QuexBuffer_content_size(buffer);
+
+        /* Catch impossible scenario: If the stretch from _input_p to _lexeme_start_p 
+         * spans the whole buffer content, then nothing can be loaded into it.                      */
+        const size_t Distance_LexemeStart_to_InputP = buffer->_input_p - buffer->_lexeme_start_p;
+        if( Distance_LexemeStart_to_InputP >= ContentSize ) { 
+            __QuexBufferFiller_on_overflow(buffer, /* Forward */ true);
+            return 0;
+        }
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
 
         /* (*) Check for the three possibilities mentioned above */
@@ -153,6 +160,10 @@ namespace quex {
         else if( buffer->_input_p != buffer->_memory._back  ) {                     
             QUEX_ERROR_EXIT("Call to 'load_forward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
+        }
+        else if( buffer->_end_of_file_p != 0x0 ) { 
+            /* End of file has been reached before, we cannot load more.               */
+            return 0;                               
         }
         /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                        * (3)*/  
         __QuexBufferFiller_forward_asserts(buffer);
@@ -268,12 +279,14 @@ namespace quex {
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
         __quex_assert( buffer->_end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );
+        __quex_assert( DesiredLoadN != 0 );
 
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
         if( LoadedN != DesiredLoadN ) 
             QuexBuffer_end_of_file_set(buffer, ContentFront + FallBackN + LoadedN);
         else
             QuexBuffer_end_of_file_unset(buffer);
+
 
         /* (*) Character index of the first character in the content of the buffer  
          *     increases by content size - fallback indenpendently how many bytes  
