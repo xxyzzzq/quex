@@ -28,7 +28,7 @@ import quex.core_engine.generator.transition_block    as transition_block
 from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
 
 if "--hwut-info" in sys.argv:
-    print "Single State: Extensive Transition Code Generation"
+    print "Single State: Extensive Transition Code Generation II"
     sys.exit(0)
 
 # Create a large number of intervals with sizes 1 to 4. 
@@ -39,7 +39,7 @@ interval_end   = -1
 random.seed(110270)   # must set the seed for randomness, otherwise system time
 #                     # is used which is no longer deterministic.
 target_state_index = long(0)
-for i in range(4000):
+for i in range(1000):
     if random.random() > 0.75:
         interval_size      = int(random.random() * 3) + 1
         target_state_index = long(random.random() * 5)
@@ -51,7 +51,7 @@ for i in range(4000):
         target_state_index = long(random.random() * 5)
         for i in range(0, int(random.random() * 5) + 2):
             state.add_transition(Interval(interval_start, interval_start + 1), target_state_index)
-            interval_start += 20
+            interval_start += 1 + int(random.random() * 2)
 
 languages.db["Python"]["$goto"] = lambda x, y: "return %s" % repr(y)   
 
@@ -59,10 +59,10 @@ dsm = StateMachineDecorator(StateMachine(), "UnitTest", [], False, False)
 function = "def example_func(input):\n" + transition_block.do(state.transitions().get_trigger_map(), -1, False, dsm)
 function = function.replace("_-1_", "_MINUS_1_")
 
-line_n = 0
-for line in function.split("\n"):
-    print "##%i" % line_n, line
-    line_n += 1
+#line_n = 0
+#for line in function.split("\n"):
+#    print "##%i" % line_n, line
+#    line_n += 1
 
 exec(function)
 
