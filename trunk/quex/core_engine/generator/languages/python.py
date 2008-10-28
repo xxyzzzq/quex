@@ -45,7 +45,7 @@ def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
                           DropOutTargetStateID      = -1):
     return ""
 
-def __get_if_one_of_value_list(ValueList):
+def __get_if_in_character_set(ValueList):
     assert type(ValueList) == list
     assert len(ValueList) > 0
 
@@ -55,4 +55,13 @@ def __get_if_one_of_value_list(ValueList):
     txt += "]:\n"
 
     return txt
+
+def __get_if_in_interval(TriggerSet):
+    assert TriggerSet.__class__.__name__ == "Interval"
+    assert TriggerSet.size() >= 2
+
+    if TriggerSet.size() == 2:
+        return "if input == %i or input == %i:\n" % (TriggerSet.begin, TriggerSet.end - 1)
+    else:
+        return "if input >= %i and input < %i:\n" % (TriggerSet.begin, TriggerSet.end)
 
