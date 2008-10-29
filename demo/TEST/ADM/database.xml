@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Tue Oct 28 08:18:45 2008">
+<test-database execution-time-sec="0.00" date="Wed Oct 29 07:23:37 2008">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="0.00"> 
