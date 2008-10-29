@@ -3,6 +3,14 @@ if [[ $1 != "HWUT-TEST" ]]; then
     output="result-$stamp.dat"
 else
     output="tmp.dat"
+    rm -f tmp.dat
+    cd ..
+    make clean >& /dev/null; 
+    make lexer OPTIMIZATION='-O3' >& /dev/null
+    cd benchmark
+    ../lexer linux-2.6.22.17-kernel-dir.c > $output
+    make clean >& /dev/null; 
+    exit
 fi
 cd ..
 make clean; make OPTIMIZATION='-O3' >& /dev/null
