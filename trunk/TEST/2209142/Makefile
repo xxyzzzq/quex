@@ -33,12 +33,11 @@ GOOD:
 # (*) HELPERS __________________________________________________________________
 clean:	
 	@rm -f $(ENGINE_SOURCES)
-	@rm -f Simple.o
-	@rm -f Simple-core-engine.o
+	@rm -f Simple*
 	@rm -f lexer.o
 	@rm -f lexer
-	@rm -f token_ids
 	@rm -f *.bak
 	@rm -f tmp.txt
+	@rm -f good error
 	@echo "clean"
 

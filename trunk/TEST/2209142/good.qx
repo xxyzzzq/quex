@@ -2,7 +2,7 @@
 start = ALL
 
 mode COMMENTATOR {
-   "/*"([^*]+"*/")|("*"[^/]))*("*/"|"**/") => QUEX_TKN_COMMENT;
+   "/*"([^*]|[\r\n]|("*"+([^*/]|[\r\n])))*"*"+"/" => QUEX_TKN_COMMENT;
 }
 mode ALL : COMMENTATOR {
    [a-z]+                    => QUEX_TKN_IDENTIFIER(Lexeme);
