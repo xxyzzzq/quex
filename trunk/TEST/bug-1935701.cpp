@@ -1,9 +1,14 @@
+#define QUEX_CHARACTER_TYPE uint32_t
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/plain/fixed_size_character_stream>
+#include<quex/code_base/buffer/BufferFiller>
+#include<quex/code_base/buffer/plain/BufferFiller_Plain>
+#include<quex/code_base/buffer/plain/BufferFiller_Plain.i>
+#include<cstring>
 
 using namespace std;
+using namespace quex;
 
 int
 main(int argc, char** argv) 
@@ -29,44 +34,30 @@ main(int argc, char** argv)
             cout << "error file 'misc/bug-1935701-text.dat' not found.\n";
             return 0;
         }
-        quex::fixed_size_character_stream_plain<std::FILE, uint8_t>     is1(fh);
-        loaded_character_n = is1.read_characters(buffer, 512);
-        fclose(fh);
-        cout << "1 byte mode: loaded characters = " << loaded_character_n << "\n";
-        
-        fh = fopen("misc/bug-1935701-text.dat", "r");
-        quex::fixed_size_character_stream_plain<std::FILE, uint16_t>    is2(fh);
-        loaded_character_n = is2.read_characters((uint16_t*)buffer, 256);
-        fclose(fh);
-        cout << "2 byte mode: loaded characters = " << loaded_character_n << "\n";
-        
-        fh = fopen("misc/bug-1935701-text.dat", "r");
-        quex::fixed_size_character_stream_plain<std::FILE, uint32_t>    is3(fh);
-        loaded_character_n = is3.read_characters((uint32_t*)buffer, 128);
+
+        QuexBufferFiller_Plain<FILE>    is;
+        QuexBufferFiller_Plain_init<FILE>(&is, fh);
+        loaded_character_n = __BufferFiller_Plain_read_characters<FILE>((QuexBufferFiller*)&is, 
+                                                                        (QUEX_CHARACTER_TYPE*)buffer, 
+                                                                        (const size_t)128);
         fclose(fh);
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
+
     } else {
         fstream fh;
 
         fh.open("misc/bug-1935701-text.dat");
-        if( fh == 0x0 ) {
+        if( fh.bad() ) {
             cout << "error file 'misc/bug-1935701-text.dat' not found.\n";
             return 0;
         }
-        quex::fixed_size_character_stream_plain<std::istream, uint8_t>     is1(&fh);
-        loaded_character_n = is1.read_characters(buffer, 512);
-        fh.close();
-        cout << "1 byte mode: loaded characters = " << loaded_character_n << "\n";
         
-        fh.open("misc/bug-1935701-text.dat");
-        quex::fixed_size_character_stream_plain<std::istream, uint16_t>    is2(&fh);
-        loaded_character_n = is2.read_characters((uint16_t*)buffer, 256);
-        fh.close();
-        cout << "2 byte mode: loaded characters = " << loaded_character_n << "\n";
+        QuexBufferFiller_Plain<istream>    is;
+        QuexBufferFiller_Plain_init<istream>(&is, &fh);
+        loaded_character_n = __BufferFiller_Plain_read_characters<istream>((QuexBufferFiller*)&is, 
+                                                                           (QUEX_CHARACTER_TYPE*)buffer, 
+                                                                           (const size_t)128);
         
-        fh.open("misc/bug-1935701-text.dat");
-        quex::fixed_size_character_stream_plain<std::istream, uint32_t>    is3(&fh);
-        loaded_character_n = is3.read_characters((uint32_t*)buffer, 128);
         fh.close();
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
     }

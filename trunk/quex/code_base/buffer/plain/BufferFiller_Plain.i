@@ -13,6 +13,7 @@
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -129,4 +130,5 @@ namespace quex {
 
 #include <quex/code_base/temporary_macros_off>
 
+#include <quex/code_base/buffer/BufferFiller.i>
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_STRATEGY_PLAIN_I__ */

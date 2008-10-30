@@ -1,47 +1,47 @@
-<test-database execution-time-sec="0.44" date="Tue Oct 28 08:11:01 2008">
+<test-database execution-time-sec="0.09" date="Thu Oct 30 22:57:03 2008">
     <last-used-diff-display-program name=""/>
     <group name="Seek">
-        <test title="Total Zik-Zak" make-required="True" time-sum-sec="0.08"> 
-            <application file-name="seek_character_index-zikzak.exe" info-request-time="1225177859L"/>
+        <test title="Total Zik-Zak" make-required="True" time-sum-sec="0.02"> 
+            <application file-name="seek_character_index-zikzak.exe" info-request-time="1225402737L"/>
             <make-procedure success="True" />
             <choice-list number="2">
-               <choice name="Fixed" result="OK" time-sec="0.04" crc="2100878807"/>
-               <choice name="Dynamic" result="OK" time-sec="0.04" crc="2100878807"/>
+               <choice name="Fixed" result="OK" time-sec="0.02" crc="2100878807"/>
+               <choice name="Dynamic" result="OK" time-sec="0.01" crc="2100878807"/>
             </choice-list>
         </test>
-        <test title="Plain search" make-required="True" time-sum-sec="0.08"> 
-            <application file-name="seek_character_index.exe" info-request-time="1225177861L"/>
+        <test title="Plain search" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="seek_character_index.exe" info-request-time="1225402738L"/>
             <make-procedure success="True" />
             <choice-list number="2">
-               <choice name="Forward" result="OK" time-sec="0.06" crc="-2124477716"/>
-               <choice name="Backward" result="OK" time-sec="0.02" crc="-123182608"/>
+               <choice name="Forward" result="OK" time-sec="0.01" crc="-2124477716"/>
+               <choice name="Backward" result="OK" time-sec="0.00" crc="-123182608"/>
             </choice-list>
         </test>
     </group>
     <group name="read_characters">
-        <test title="Raw buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.08"> 
-            <application file-name="one-beat.exe" info-request-time="1225177858L"/>
+        <test title="Raw buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.02"> 
+            <application file-name="one-beat.exe" info-request-time="1225402736L"/>
             <make-procedure success="True" />
             <choice-list number="4">
-               <choice name="6" result="OK" time-sec="0.02" crc="400097149"/>
-               <choice name="7" result="OK" time-sec="0.02" crc="400097149"/>
-               <choice name="8" result="OK" time-sec="0.02" crc="400097149"/>
-               <choice name="9" result="OK" time-sec="0.02" crc="400097149"/>
+               <choice name="6" result="OK" time-sec="0.00" crc="400097149"/>
+               <choice name="7" result="OK" time-sec="0.01" crc="400097149"/>
+               <choice name="8" result="OK" time-sec="0.00" crc="400097149"/>
+               <choice name="9" result="OK" time-sec="0.01" crc="400097149"/>
             </choice-list>
         </test>
-        <test title="User buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.21"> 
-            <application file-name="n-beat.exe" info-request-time="1225177857L"/>
+        <test title="User buffer size varries (UTF-8)" make-required="True" time-sum-sec="0.04"> 
+            <application file-name="n-beat.exe" info-request-time="1225402735L"/>
             <make-procedure success="True" />
             <choice-list number="9">
-               <choice name="3" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="4" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="5" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="6" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="8" result="OK" time-sec="0.04" crc="174303693"/>
-               <choice name="9" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="1" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="2" result="OK" time-sec="0.02" crc="174303693"/>
-               <choice name="7" result="OK" time-sec="0.04" crc="174303693"/>
+               <choice name="3" result="OK" time-sec="0.00" crc="174303693"/>
+               <choice name="4" result="OK" time-sec="0.01" crc="174303693"/>
+               <choice name="5" result="OK" time-sec="0.00" crc="174303693"/>
+               <choice name="6" result="OK" time-sec="0.01" crc="174303693"/>
+               <choice name="8" result="OK" time-sec="0.00" crc="174303693"/>
+               <choice name="9" result="OK" time-sec="0.01" crc="174303693"/>
+               <choice name="1" result="OK" time-sec="0.00" crc="174303693"/>
+               <choice name="2" result="OK" time-sec="0.01" crc="174303693"/>
+               <choice name="7" result="OK" time-sec="0.00" crc="174303693"/>
             </choice-list>
         </test>
     </group>

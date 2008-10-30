@@ -22,8 +22,8 @@ final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutable
     //
     const double  TimePerChar    = TimePerRun  / CharN;
     const double  CCC            = TimePerChar / CycleTime;
-    const double  RefTimePerChar  = RefTimePerRun  / CharN;
-    const double  RefCCC          = RefTimePerChar / CycleTime;
+    const double  RefTimePerChar = RefTimePerRun  / CharN;
+    const double  RefCCC         = RefTimePerChar / CycleTime;
 
     double  TimePerToken = 0;
     double  CCT          = 0;
@@ -109,16 +109,14 @@ size_t
 count_token_n(std::FILE* fh)
 {
     using namespace std;
-    quex::c_lexer*  qlex = new quex::c_lexer(fh);
+    quex::c_lexer  qlex(fh);
     //quex::token*    TokenP;
     int token_id = QUEX_TKN_TERMINATION;
     int token_n = 0;
 
     // (*) loop until the 'termination' token arrives
     for(token_n=0; ; ++token_n) {
-        // qlex->get_token(&TokenP);
-        token_id = qlex->get_token();
-        // if( TokenP->type_id() == QUEX_TKN_TERMINATION ) break;
+        token_id = qlex.get_token();
         if( token_id == QUEX_TKN_TERMINATION ) break;
     } 
     cout << "// TokenN: " << token_n << " [1]"   << endl;
