@@ -97,7 +97,7 @@ token {
 
 mode PROGRAM :
 <skip:       [ \n\t]>
-// <skip_range: "/*" "*/">
+<skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {
     <<EOF>>       => QUEX_TKN_TERMINATION;
@@ -175,8 +175,8 @@ mode PROGRAM :
     {P_STRING}      => QUEX_TKN_STRING;
     {P_QUOTED_CHAR} => QUEX_TKN_QUOTED_CHAR;
 
-    // {P_WHITESPACE}            { }
-    "/*"([^*]|("*"[^/]))*"*/" { } // => QUEX_TKN_COMMENT;
-    // "//"[^\n]*"\n"            { } // => QUEX_TKN_COMMENT;
+    // {P_WHITESPACE}           { }
+    //"/*"([^*]|("*"[^/]))*"*/" { } // => QUEX_TKN_COMMENT;
+    // "//"[^\n]*"\n"           { } // => QUEX_TKN_COMMENT;
 }
 

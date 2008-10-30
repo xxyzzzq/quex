@@ -1,0 +1,44 @@
+# PURPOSE: Makefile Demo Application of Quex
+#
+# ABSOLUTELY NO WARRANTY
+#_______________________________________________________________________________
+.PHONY: clean ERROR GOOD
+
+ifndef QUEX_PATH
+    $(error The environment variable QUEX_PATH is not defined!)
+endif
+
+# (*) SETUP ____________________________________________________________________
+# -- INPUT
+# -- FILES PRODUCED BY QUEX
+#
+# (*) COMPILER SETTINGS ________________________________________________________
+CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb
+
+# (*) RULES ____________________________________________________________________
+# -- application
+error: lexer.cpp ERROR
+	$(CC) $< Simple.cpp Simple-core-engine.cpp -o $@ 
+
+ERROR:
+	@quex -i error.qx --engine Simple $(EXT_TOKEN_QUEUE_FLAG) >& tmp.txt
+
+good: lexer.cpp GOOD
+	$(CC) $< Simple.cpp Simple-core-engine.cpp -o $@ 
+
+GOOD:
+	@quex -i good.qx --engine Simple $(EXT_TOKEN_QUEUE_FLAG) >& tmp.txt
+
+
+# (*) HELPERS __________________________________________________________________
+clean:	
+	@rm -f $(ENGINE_SOURCES)
+	@rm -f Simple.o
+	@rm -f Simple-core-engine.o
+	@rm -f lexer.o
+	@rm -f lexer
+	@rm -f token_ids
+	@rm -f *.bak
+	@rm -f tmp.txt
+	@echo "clean"
+

@@ -58,12 +58,9 @@ void __PRINT_END()
     cout << "| [END] \n";
     cout << "`------------------------------------------------------------------------------------\n";
 }
-#define __PRINT_TOKEN(TokenP, qlex) \
-    cout << qlex->line_number() << ": " << ->type_id_name() << endl;
 #else 
 void __PRINT_START() { }
 void __PRINT_END() { }
-#define __PRINT_TOKEN(TokenP, qlex) /* empty */
 #endif
 
 double
@@ -84,7 +81,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
     size_t         token_n = 0;
     int            checksum_ref = -1;
     //
-    quex::c_lexer* qlex = new quex::c_lexer(fh);
+    quex::c_lexer  qlex(fh);
 
     do { 
         checksum       = 777;
@@ -93,12 +90,14 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
         
         do {  
             // qlex->get_token(&TokenP);
-            token_id = qlex->get_token();
+            token_id = qlex.get_token();
 
             // checksum = (checksum + TokenP->type_id()) % 0xFF; 
             checksum = (checksum + token_id) % 0xFF; 
 
-            // __PRINT_TOKEN(TokenP, qlex);  /* No Operation, see above */
+#           if ! defined(QUEX_BENCHMARK_SERIOUS)
+            cout << /*qlex.line_number() << ": " <<*/ quex::Token::map_id_to_name(token_id) << endl;
+#           endif
 
             token_n += 1;
         // } while( TokenP->type_id() != QUEX_TKN_TERMINATION );
@@ -115,7 +114,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
             cerr << "checksum:           " << checksum     << endl;
             throw std::runtime_error("Checksum failure");
         }
-        qlex->_reset();
+        qlex._reset();
     } while( clock() < MinExperimentTime );
     // Overhead:   Overhead-Intern
     //           + (assignment, increment by one, comparision * 2, _reset(),
