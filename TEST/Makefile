@@ -1,5 +1,6 @@
 TEST_FILES = bug-1935701.exe
 
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 DEBUGF = -ggdb \
 	 -D__QUEX_OPTION_UNIT_TEST \
@@ -15,8 +16,8 @@ all: $(TEST_FILES)
 hwut-info:
 	@echo $(TEST_FILES) ::SCRIPTS::
 
-%.exe: %.cpp 
-	g++ $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@
+%.exe: %.cpp  $(QUEX_CORE)
+	g++ -Wall $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@
 
 clean:
 	rm -f $(TEST_FILES)

@@ -68,7 +68,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 {
     using namespace std;
     //quex::token*   TokenP;
-    int token_id = QUEX_TKN_TERMINATION;
+    int            token_id = QUEX_TKN_TERMINATION;
     //
     // -- repeat the experiment, so that it takes at least 20 seconds
     const clock_t  StartTime = clock();
@@ -135,7 +135,7 @@ overhead(std::FILE* fh,
     double        repetition_n = 0.0;
     int           checksum = 0;
     //
-    quex::c_lexer* qlex = new quex::c_lexer(fh);
+    quex::c_lexer qlex(fh);
 
     checksum = 0; // here: prevent optimizing away of token_n --> out of loop
     while( repetition_n < RepetitionN ) { 
@@ -151,7 +151,7 @@ overhead(std::FILE* fh,
         
         checksum += token_n ^ clock();
 
-        qlex->_reset();
+        qlex._reset();
     }
     // Overhead:   Overhead-Intern
     //           + (assignment, increment by one, comparision * 2, _reset(),
