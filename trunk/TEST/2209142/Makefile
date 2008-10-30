@@ -16,6 +16,8 @@ endif
 CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb
 
 # (*) RULES ____________________________________________________________________
+all: error good
+
 # -- application
 error: lexer.cpp ERROR
 	$(CC) $< Simple.cpp Simple-core-engine.cpp -o $@ 
