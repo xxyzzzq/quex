@@ -1,16 +1,29 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 
 namespace quex { 
-    inline bool    
+    inline void    
     CLASS::move_forward(const size_t CharacterN)
     {
-        return QuexBuffer_move_forward(&this->buffer, CharacterN);
+        QuexBuffer_move_forward(&this->buffer, CharacterN);
     }
 
-    inline bool    
+    inline void    
     CLASS::move_backward(const size_t CharacterN)
     {
-        return QuexBuffer_move_backward(&this->buffer, CharacterN);
+        QuexBuffer_move_backward(&this->buffer, CharacterN);
+    }
+
+    
+    inline size_t  
+    CLASS::tell()
+    {
+        return QuexBuffer_tell(&this->buffer);
+    }
+
+    inline void    
+    CLASS::seek(const size_t CharacterIndex)
+    {
+        QuexBuffer_seek(&this->buffer, CharacterIndex);
     }
 
     inline void

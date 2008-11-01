@@ -15,23 +15,25 @@ namespace quex {
         /* -- 'Tell' returns the character index of the last character read. This corresponds   
          *    to the character index of the last character that is currently in the buffer.  */
         size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);
-        /* -- 'Seek' sets the input position for the next buffer-read-action.*/
+
+        /* -- 'Seek' sets the input position for the next buffer-read-action.
+         *    NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
+         *          stream to a particular position given by a character index. QuexBuffer_seek(..)
+         *          sets the _input_p to a particular position.                                      */
         void     (*seek_character_index)(struct __QuexBufferFiller_tag*, const size_t Index);
+
         /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)*/
         size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
                                     QUEX_CHARACTER_TYPE* memory, const size_t N);
 
-        /* void   register_begin_of_file() = 0;  
-         * void   seek_begin_of_file() = 0;     */
-
         /* -- User defined handler for the case that the distance from lexeme start  
          *    to lexeme end exceeds the buffer size.  */
-        bool  (*_on_overflow)(QuexBuffer*, bool ForwardF);
+        bool     (*_on_overflow)(QuexBuffer*, bool ForwardF);
 
         /* -- There are derived 'classes' from this one, but in the class we only store  
          *    a pointer to QuexBufferFiller. In order to be compatible with 'C' we store  
          *    the de-allocate and destruct procedure that is appropriate in a function pointer. */
-        void  (*_destroy)(struct __QuexBufferFiller_tag*);
+        void     (*_destroy)(struct __QuexBufferFiller_tag*);
     } QuexBufferFiller;
 
     QUEX_INLINE void 

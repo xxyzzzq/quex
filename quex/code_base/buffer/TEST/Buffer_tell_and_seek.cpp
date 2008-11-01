@@ -1,4 +1,4 @@
-#include <Buffer_test_common.i>
+#include <quex/code_base/buffer/TEST/Buffer_test_common.i>
 
 
 int

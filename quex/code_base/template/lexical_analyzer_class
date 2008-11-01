@@ -344,9 +344,10 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
     private:
         // (*) Helper
-        //      -- put whole pattern back into the 'stream to be lexed'
-        bool  move_forward(const size_t);
-        bool  move_backward(const size_t);
+        void    move_forward(const size_t);
+        void    move_backward(const size_t);
+        size_t  tell();
+        void    seek(const size_t);
 
     public:
         // handle with extreme care:
