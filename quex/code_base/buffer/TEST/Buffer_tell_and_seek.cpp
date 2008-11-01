@@ -11,18 +11,15 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Backward: Copy Region (BPC=%i);\n", sizeof(QUEX_CHARACTER_TYPE));
-        printf("CHOICES:  Normal, StartOfStream;\n");
+        printf("Tell and Seek: Bytes Per Character (BPC)=%i;\n", sizeof(QUEX_CHARACTER_TYPE));
         return 0;
     }
 
     using namespace quex;
 
     QuexBuffer           buffer;
-    size_t               SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7,};
-    size_t*              SeekIndicesEnd = SeekIndicesEnd + sizeof(SeekIndices) / sizeof(size_t);
-    QUEX_CHARACTER_TYPE  content[]     = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'} ; 
-    QUEX_CHARACTER_TYPE  memory[]      = { '|', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '|'}; 
+    size_t               SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7, 999 };
+    QUEX_CHARACTER_TYPE  memory[]      = { '|', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '|'}; 
     int                  memory_size   = 12;
     size_t               fallback_n    = 0;
 
@@ -38,7 +35,7 @@ main(int argc, char** argv)
            (int)(buffer._input_p - buffer._memory._front - 1), (char)*buffer._input_p);
     printf("lexeme start = %i (--> '%c')\n", 
            (int)(buffer._lexeme_start_p - buffer._memory._front - 1), (char)*buffer._lexeme_start_p);
-    for(size_t* it = SeekIndices; it != SeekIndicesEnd; ++it) {
+    for(size_t* it = SeekIndices; *it != 999; ++it) {
         /**/
         printf("------------------------------\n");
         /**/
