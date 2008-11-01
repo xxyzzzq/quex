@@ -1,11 +1,5 @@
-#include <quex/code_base/buffer/Buffer.i>
-#include <quex/code_base/buffer/BufferFiller.i>
-#include <quex/code_base/MemoryManager>
-#include <quex/code_base/buffer/Buffer_debug.i>
-#include <string.h>
+#include <Buffer_test_common.i>
 
-int cl_has(int argc, char** argv, const char* What)
-{ return argc > 1 && strcmp(argv[1], What) == 0; }
 
 int
 main(int argc, char** argv)
@@ -15,10 +9,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-    using namespace quex;
-
     QuexBuffer           buffer;
-    size_t               SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7, 999 };
     QUEX_CHARACTER_TYPE  memory[]      = { '|', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '|'}; 
     int                  memory_size   = 12;
     size_t               fallback_n    = 0;
@@ -31,23 +22,5 @@ main(int argc, char** argv)
 
     buffer._input_p = buffer._memory._front + 1;
 
-    printf("input_p      = %i (--> '%c')\t", 
-           (int)(buffer._input_p - buffer._memory._front - 1), (char)*buffer._input_p);
-    printf("lexeme start = %i (--> '%c')\n", 
-           (int)(buffer._lexeme_start_p - buffer._memory._front - 1), (char)*buffer._lexeme_start_p);
-    for(size_t* it = SeekIndices; *it != 999; ++it) {
-        /**/
-        printf("------------------------------\n");
-        /**/
-        printf("SEEK --> %i\n", (int)*it);
-        QuexBuffer_seek(&buffer, *it);
-        printf("input_p      = %i (--> '%c')\t", 
-               (int)(buffer._input_p - buffer._memory._front - 1),
-               (char)*buffer._input_p);
-        printf("lexeme start = %i (--> '%c')\n", 
-               (int)(buffer._lexeme_start_p - buffer._memory._front - 1),
-               (char)*buffer._lexeme_start_p);
-        printf("TELL:    %i", (int)QuexBuffer_tell(&buffer));
-        printf("\n");
-    }
+    test_seek_and_tell(&buffer);
 }
