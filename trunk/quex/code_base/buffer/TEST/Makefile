@@ -4,9 +4,11 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 TEST_FILES = \
 	       BufferFiller_forward_copy.exe \
 	       BufferFiller_backward_copy.exe \
+	       Buffer_move_forward.exe \
 	       Buffer_tell_and_seek.exe \
 	       BufferFiller_forward_copy-32.exe \
 	       BufferFiller_backward_copy-32.exe \
+	       Buffer_move_forward-32.exe \
 	       Buffer_tell_and_seek-32.exe 
 
 DEFS = \
