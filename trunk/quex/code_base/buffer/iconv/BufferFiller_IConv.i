@@ -316,6 +316,9 @@ namespace quex {
     __QuexBufferFiller_IConv_seek_character_index(QuexBufferFiller* alter_ego, 
                                               const size_t          Index)
     { 
+        /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
+         *       stream to a particular position given by a character index. QuexBuffer_seek(..)
+         *       sets the _input_p to a particular position.                                      */
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(QuexBufferFiller_IConv)* me         = (TEMPLATED(QuexBufferFiller_IConv)*)alter_ego;
         const size_t     BeginIndex = me->raw_buffer.begin_character_index;

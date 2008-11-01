@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Thu Oct 30 23:09:20 2008">
+<test-database execution-time-sec="0.00" date="Sat Nov  1 18:33:28 2008">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="0.00"> 
@@ -13,16 +13,16 @@
                <choice name="" result="OK" time-sec="0.00" crc="-891185254"/>
             </choice-list>
         </test>
-        <test title="2004927 UTF-8 RE Extra Comma Matched" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-2004927.sh" info-request-time="1223017235L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-750295770"/>
-            </choice-list>
-        </test>
         <test title="2002474 Segmentation Fault while UTF-8 Decoding" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-2002474.sh" info-request-time="1223930761L"/>
             <choice-list number="1">
                <choice name="" result="NO GOOD FILE" time-sec="0.00" crc="-962432016"/>
+            </choice-list>
+        </test>
+        <test title="2004927 UTF-8 RE Extra Comma Matched" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-2004927.sh" info-request-time="1223017235L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="-750295770"/>
             </choice-list>
         </test>
         <test title="2001787 RE Problem with inverted whitespace" make-required="True" time-sum-sec="0.00"> 
@@ -184,12 +184,6 @@
                <choice name="" result="OK" time-sec="0.00" crc="1827708159"/>
             </choice-list>
         </test>
-        <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1908436.sh" info-request-time="1223017237L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-1144183572"/>
-            </choice-list>
-        </test>
         <test title="1889089 Single state mode causes quex to crash" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1889089.sh" info-request-time="1223017235L"/>
             <choice-list number="1">
@@ -235,7 +229,7 @@
         <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1223017237L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="725243468"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1889366797"/>
             </choice-list>
         </test>
         <test title="1905768" make-required="True" time-sum-sec="0.00"> 
@@ -245,8 +239,8 @@
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1935701.exe" info-request-time="1225404547L"/>
-            <make-procedure success="True" />
+            <application file-name="bug-1935701.exe" info-request-time="1225546434L"/>
+            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="FILE" result="OK" time-sec="0.00" crc="-953317363"/>
                <choice name="fstream" result="OK" time-sec="0.00" crc="-953317363"/>
@@ -274,6 +268,12 @@
             <application file-name="bug-1892227.sh" info-request-time="1223017237L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="1038686624"/>
+            </choice-list>
+        </test>
+        <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1908436.sh" info-request-time="1223017237L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="-1144183572"/>
             </choice-list>
         </test>
         <test title="1890828 0.19.9 crashes trying to call error handler in several cases" make-required="True" time-sum-sec="0.00"> 

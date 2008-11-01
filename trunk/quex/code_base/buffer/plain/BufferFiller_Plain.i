@@ -77,6 +77,9 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) void 
     __BufferFiller_Plain_seek_character_index(QuexBufferFiller* alter_ego, const size_t CharacterIndex) 
     { 
+        /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
+         *       stream to a particular position given by a character index. QuexBuffer_seek(..)
+         *       sets the _input_p to a particular position.                                      */
         __quex_assert(alter_ego != 0x0); 
         /* The type cast is necessary, since the function signature needs to 
          * work with the first argument being of base class type. */

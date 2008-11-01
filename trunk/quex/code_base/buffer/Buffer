@@ -103,8 +103,10 @@ namespace quex {
     QUEX_INLINE void                          QuexBuffer_seek_memory_adr(QuexBuffer*, 
                                                                          QUEX_CHARACTER_POSITION_TYPE);
     
-    QUEX_INLINE bool  QuexBuffer_move_forward(QuexBuffer*, const size_t CharacterN);
-    QUEX_INLINE bool  QuexBuffer_move_backward(QuexBuffer*, const size_t CharacterN);
+    QUEX_INLINE void    QuexBuffer_move_forward(QuexBuffer*, const size_t CharacterN);
+    QUEX_INLINE void    QuexBuffer_move_backward(QuexBuffer*, const size_t CharacterN);
+    QUEX_INLINE size_t  QuexBuffer_tell(QuexBuffer*);
+    QUEX_INLINE void    QuexBuffer_seek(QuexBuffer*, const size_t CharacterIndex);
 
     QUEX_INLINE void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
     QUEX_INLINE void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);

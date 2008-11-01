@@ -336,7 +336,7 @@ namespace quex {
         return true;
     }
 
-    QUEX_INLINE bool  
+    QUEX_INLINE void  
     QuexBuffer_move_forward(QuexBuffer* me, const size_t CharacterN)
     {
        int delta = (int)CharacterN; 
@@ -344,23 +344,29 @@ namespace quex {
        __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1);
        
        while( delta > (me->_memory._back - me->_input_p) ) {
-           if( me->filler == 0x0 ) { return false; /* move beyond limits */ }
+           if( me->filler == 0x0 ) { 
+               delta = (me->_memory._back - me->_input_p);
+               break;
+           }
            delta -= (me->_memory._back - me->_input_p);
            me->_input_p        = me->_memory._back;
            me->_lexeme_start_p = me->_memory._back;
-           QuexBufferFiller_load_forward(me);
+           if( QuexBufferFiller_load_forward(me) == 0 ) {
+               delta = 0;
+               break;
+           }
        }
-       me->_input_p        += delta;
-       me->_lexeme_start_p += delta;
+       me->_input_p += delta;
+       me->_lexeme_start_p = me->_input_p;
        me->_character_at_lexeme_start = *(me->_lexeme_start_p);
 #      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #      endif
 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     }
     
-    QUEX_INLINE bool  
+    QUEX_INLINE void  
     QuexBuffer_move_backward(QuexBuffer* me, const size_t CharacterN)
     {
        int delta = (int)CharacterN; 
@@ -368,20 +374,55 @@ namespace quex {
        /* When going backward, anyway a non-zero width distance is left ahead. */
        
        while( delta > (me->_input_p - me->_memory._front - 1) ) {
-           if( me->filler == 0x0 ) { return false; /* move beyond limits */ }
+           if( me->filler == 0x0 ) { 
+               delta = me->_input_p - me->_memory._front - 1;
+               break;
+           }
            delta -= (me->_input_p - me->_memory._front - 1);
            me->_input_p        = me->_memory._front;
            me->_lexeme_start_p = me->_memory._front;
-           QuexBufferFiller_load_backward(me);
+           if( QuexBufferFiller_load_backward(me) == 0 ) {
+               delta = 0;
+               break;
+           }
        }
-       me->_input_p        -= delta;
-       me->_lexeme_start_p -= delta;
+       me->_input_p -= delta;
+       me->_lexeme_start_p = me->_input_p;
        me->_character_at_lexeme_start = *(me->_lexeme_start_p);
 #      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #      endif
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+    }
+
+
+    QUEX_INLINE size_t  
+    QuexBuffer_tell(QuexBuffer* me)
+    {
+        /* This function returns the character index that corresponds to the 
+         * current setting of the input pointer. Note, that the content starts
+         * at one position after the memory (buffer limitting char at _front.).         
+         */
+        const size_t DeltaToBufferBegin = me->_input_p - me->_memory._front - 1;
+        /* Adding the current offset of the content of the buffer in the stream. 
+         * If there is no filler, there is no stream, then there is also no offset. */
+        if( me->filler == 0x0 ) 
+            return DeltaToBufferBegin;
+        else
+            return DeltaToBufferBegin + me->_content_first_character_index;
+    }
+
+    QUEX_INLINE void    
+    QuexBuffer_seek(QuexBuffer* me, const size_t CharacterIndex)
+    {
+        /* This function sets the _input_p according to a character index of the
+         * input stream (if there is a stream). It is the inverse of 'tell()'.   */
+        const size_t CurrentCharacterIndex = QuexBuffer_tell(me);
+        if( CharacterIndex > CurrentCharacterIndex )
+            QuexBuffer_move_forward(me, CharacterIndex - CurrentCharacterIndex);
+        else
+            QuexBuffer_move_backward(me, CurrentCharacterIndex - CharacterIndex);
     }
 
     QUEX_INLINE void 
