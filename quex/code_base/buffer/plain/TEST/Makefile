@@ -1,6 +1,9 @@
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 TEST_FILES = \
+		   Buffer_move_forward-1-fb0.exe \
+		   Buffer_move_backward-1-fb0.exe \
+		   \
 	       BufferFiller_forward_load-1-fb0.exe \
 	       BufferFiller_forward_load-2-fb0.exe \
 	       BufferFiller_forward_load-4-fb0.exe \

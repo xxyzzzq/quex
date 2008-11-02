@@ -21,7 +21,6 @@ main(int argc, char** argv)
     QuexBufferFiller_Plain_init(&filler, fh);
     QuexBuffer_init(&buffer, 8, (QuexBufferFiller*)&filler);
 
-    
     do {
         printf("------------------------------------------------------------\n");
         QuexBuffer_show_byte_content(&buffer, 5);
