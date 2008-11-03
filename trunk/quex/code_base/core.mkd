@@ -26,6 +26,7 @@ QUEX_CORE = \
                 buffer/MemoryPositionMimiker \
                 buffer/Buffer_debug.i \
                 buffer/InputPolicy \
+                buffer/TEST/Buffer_test_common.i \
                 buffer/plain/BufferFiller_Plain \
                 buffer/plain/BufferFiller_Plain.i \
                 template/IncludeStack.i \

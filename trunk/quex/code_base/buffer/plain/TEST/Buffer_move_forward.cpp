@@ -11,11 +11,7 @@ main(int argc, char** argv)
         return 0;
     }
 
-
     QuexBuffer           buffer;
-    QUEX_CHARACTER_TYPE  memory[]      = { '|', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '|'}; 
-    int                  memory_size   = 12;
-    size_t               fallback_n    = 0;
     const size_t         StepSize      = atoi(argv[1]);
 
     FILE*                         fh = prepare_input(); /* Festgemauert ... */

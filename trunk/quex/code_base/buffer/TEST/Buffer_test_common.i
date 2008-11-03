@@ -5,12 +5,22 @@
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <string.h>
+#include <cstdio>
 
 using namespace quex;
+using namespace std;
 
 inline int 
 cl_has(int argc, char** argv, const char* What)
-{ return argc > 1 && strcmp(argv[1], What) == 0; }
+{ 
+    /* Ensure, that asserts and exceptions are printed in the output for the unit test. 
+     * This has nothing to do with the command line arguments, but its handled here at 
+     * a central place, so every unit test passes by here.                             */
+    stderr = stdout;
+
+    return argc > 1 && strcmp(argv[1], What) == 0; 
+}
+#define QUEX_DEFINED_FUNC_cl_has
 
 inline void 
 print_this(QuexBuffer* buffer)
@@ -37,7 +47,8 @@ inline void
 test_move_forward(QuexBuffer* buffer, size_t StepSize)
 {
     print_this(buffer);
-    while( QuexBuffer_distance_input_to_text_end(buffer) != 0 ) {
+    while( ! (QuexBuffer_distance_input_to_text_end(buffer) == 0 && 
+              (buffer->filler == 0x0 || buffer->_end_of_file_p != 0x0) ) ) {
         QuexBuffer_move_forward(buffer, StepSize);
         print_this(buffer);
     }
@@ -46,9 +57,9 @@ test_move_forward(QuexBuffer* buffer, size_t StepSize)
 }
 
 inline void 
-test_seek_and_tell(QuexBuffer* buffer)
+test_seek_and_tell(QuexBuffer* buffer, size_t* SeekIndices)
 {
-    size_t  SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7, 999 };
+    /* NOTE: SeekIndices must be terminated by '999' */
 
     print_this(buffer);
     for(size_t* it = SeekIndices; *it != 999; ++it) {

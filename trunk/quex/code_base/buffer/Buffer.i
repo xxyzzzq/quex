@@ -339,25 +339,43 @@ namespace quex {
     QUEX_INLINE void  
     QuexBuffer_move_forward(QuexBuffer* me, const size_t CharacterN)
     {
-       int delta = (int)CharacterN; 
        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-       __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1);
-       
-       while( delta > (me->_memory._back - me->_input_p) ) {
-           if( me->filler == 0x0 ) { 
-               delta = (me->_memory._back - me->_input_p);
-               break;
-           }
-           delta -= (me->_memory._back - me->_input_p);
-           me->_input_p        = me->_memory._back;
-           me->_lexeme_start_p = me->_memory._back;
-           if( QuexBufferFiller_load_forward(me) == 0 ) {
-               delta = 0;
-               break;
+       /* Why: __quex_assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N >= 1); ? fschaef 08y11m1d> */
+
+       if( CharacterN < QuexBuffer_distance_input_to_text_end(me) ) {
+           /* _input_p + CharacterN < text_end, thus no reload necessary. */
+           me->_input_p += CharacterN;
+       }
+       else {
+           /* _input_p + CharacterN >= text_end, thus we need to reload. */
+           if( me->filler == 0x0 || me->_end_of_file_p != 0x0 ) {
+               me->_input_p = QuexBuffer_text_end(me);  /* No reload possible */
+           } else {
+               /* Reload until delta is reachable inside buffer. */
+               int delta    = (int)CharacterN; 
+               int distance = QuexBuffer_distance_input_to_text_end(me);
+               do {
+                   delta -= distance;
+
+                   me->_input_p        = me->_memory._back; /* Prepare reload forward. */
+                   me->_lexeme_start_p = me->_input_p;
+                   if( QuexBufferFiller_load_forward(me) == 0 ) {
+                       me->_input_p = QuexBuffer_text_end(me);  /* No reload possible */
+                       break;
+                   } 
+                   /* After loading forward, we need to increment ... the way the game is to be played. */
+                   ++(me->_input_p);
+                   distance = QuexBuffer_distance_input_to_text_end(me);
+
+                   if( delta < distance ) {
+                       /* _input_p + delta < text_end, thus no further reload necessary. */
+                       me->_input_p += delta;
+                       break;
+                   }
+               } while( 1 + 1 == 2 );
            }
        }
-       me->_input_p += delta;
-       me->_lexeme_start_p = me->_input_p;
+       me->_lexeme_start_p            = me->_input_p;
        me->_character_at_lexeme_start = *(me->_lexeme_start_p);
 #      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
@@ -369,31 +387,48 @@ namespace quex {
     QUEX_INLINE void  
     QuexBuffer_move_backward(QuexBuffer* me, const size_t CharacterN)
     {
-       int delta = (int)CharacterN; 
        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+
        /* When going backward, anyway a non-zero width distance is left ahead. */
-       
-       while( delta > (me->_input_p - me->_memory._front - 1) ) {
-           if( me->filler == 0x0 ) { 
-               delta = me->_input_p - me->_memory._front - 1;
-               break;
-           }
-           delta -= (me->_input_p - me->_memory._front - 1);
-           me->_input_p        = me->_memory._front;
-           me->_lexeme_start_p = me->_memory._front;
-           if( QuexBufferFiller_load_backward(me) == 0 ) {
-               delta = 0;
-               break;
+       if( CharacterN < me->_input_p - QuexBuffer_content_front(me) ) {
+           /* _input_p - CharacterN < content_front, thus no reload necessary. */
+           me->_input_p -= CharacterN;
+       }
+       else {
+           /* _input_p - CharacterN < _front + 1 >= text_end, thus we need to reload. */
+           if( me->filler == 0x0 || me->_content_first_character_index == 0 ) { 
+               me->_input_p = QuexBuffer_content_front(me);
+           } else {
+               /* Reload until delta is reachable inside buffer. */
+               int delta    = (int)CharacterN; 
+               int distance = me->_input_p - QuexBuffer_content_front(me);
+               do {
+                   delta -= distance;
+
+                   me->_input_p        = me->_memory._front; /* Prepare reload backward. */
+                   me->_lexeme_start_p = me->_input_p + 1;
+                   if( QuexBufferFiller_load_backward(me) == 0 ) {
+                       me->_input_p = QuexBuffer_content_front(me); /* No reload possible */
+                       break;
+                   } 
+                   /* After loading forward, we need **not** to increment ... the way the game is to be played. */
+                   distance = me->_input_p - QuexBuffer_content_front(me);
+
+                   if( delta < distance ) {
+                       /* _input_p + delta < text_end, thus no further reload necessary. */
+                       me->_input_p -= delta;
+                       break;
+                   }
+               } while( 1 + 1 == 2 );
            }
        }
-       me->_input_p -= delta;
        me->_lexeme_start_p = me->_input_p;
        me->_character_at_lexeme_start = *(me->_lexeme_start_p);
 #      ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
        me->_character_before_lexeme_start = *(me->_lexeme_start_p - 1);
 #      endif
 
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+       QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     }
 
 
