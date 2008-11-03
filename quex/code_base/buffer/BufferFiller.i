@@ -205,15 +205,16 @@ namespace quex {
          *     'load_forward()' should only be called, if the '_input_p' reached a border.  
          *     Since we know from above, that we did not reach end of file, it can be assumed  
          *     that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
-        __quex_assert(buffer->_end_of_file_p == 0x0);
+        __quex_assert(buffer->_end_of_file_p == 0x0); /* Consider removin this constraint fschaef 08y11m2d */
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         /* (*) Suppose: No one has touched the input stream since last load!  
          *     The _input object simulates a stream of characters of constant width, independtly   
          *     of the character coding that is used. Thus, it is safe to compute the position at the  
          *     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.*/
-        const size_t CharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
-                                                    QuexBuffer_content_size(buffer));
-        __quex_assert( me->tell_character_index(me) == CharacterIndexAtEnd );
+        const size_t   ComputedCharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
+                                                     (QuexBuffer_text_end(buffer) - QuexBuffer_content_front(buffer)));
+        const size_t   RealCharacterIndexAtEnd     = me->tell_character_index(me);
+        __quex_assert( ComputedCharacterIndexAtEnd == RealCharacterIndexAtEnd );
 #       endif
     }
 
