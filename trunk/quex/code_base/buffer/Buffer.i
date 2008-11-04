@@ -157,7 +157,6 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
-
     QUEX_INLINE void
     QuexBuffer_input_p_add_offset(QuexBuffer* buffer, const size_t Offset)
     { 
@@ -390,7 +389,7 @@ namespace quex {
        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
 
        /* When going backward, anyway a non-zero width distance is left ahead. */
-       if( CharacterN < me->_input_p - QuexBuffer_content_front(me) ) {
+       if( CharacterN < (size_t)(me->_input_p - QuexBuffer_content_front(me)) ) {
            /* _input_p - CharacterN < content_front, thus no reload necessary. */
            me->_input_p -= CharacterN;
        }
