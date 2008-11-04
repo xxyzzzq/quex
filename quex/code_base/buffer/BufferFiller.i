@@ -173,6 +173,12 @@ namespace quex {
         __quex_assert(FallBackN < ContentSize);
         /*___________________________________________________________________________________*/
         /* (2) Load new content*/
+        /* NOTE: Due to backward loading the character index might not stand on the end of
+         *       the buffer. Thus a seek is necessary.                                       */
+        const size_t CharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
+                                                    (QuexBuffer_content_size(buffer)));
+        me->seek_character_index(me, CharacterIndexAtEnd);
+
         const size_t         DesiredLoadN = ContentSize - FallBackN;
         QUEX_CHARACTER_TYPE* new_content_begin = buffer->_memory._front + 1 + FallBackN;
         const size_t         LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
