@@ -2,6 +2,8 @@ include $(QUEX_PATH)/quex/code_base/core.mkd
 
 TEST_FILES = \
 		   Buffer_tell_and_seek-1-fb0.exe \
+		   Buffer_tell_and_seek-1-fb1.exe \
+		   Buffer_tell_and_seek-4-fb0.exe \
 		   \
 		   Buffer_move_forward-1-fb0.exe \
 		   Buffer_move_forward-1-fb1.exe \
