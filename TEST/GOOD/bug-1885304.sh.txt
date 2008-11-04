@@ -2824,7 +2824,7 @@ else {
 #undef LexemeBegin
 #undef LexemeEnd
 #undef LexemeL
-#ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
 __TERMINAL_ROUTER: {
         /*  if last_acceptance => goto correspondent acceptance terminal state*/
         /*  else               => execute defaul action*/
@@ -2844,7 +2844,7 @@ __TERMINAL_ROUTER: {
             default: goto TERMINAL_DEFAULT;; /* nothing matched */
         }
     }
-#endif /* __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED*/
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 
   
 __REENTRY_PREPARATION:
