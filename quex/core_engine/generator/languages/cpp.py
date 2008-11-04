@@ -199,7 +199,7 @@ $$DEFAULT_ACTION$$
 #undef LexemeBegin
 #undef LexemeEnd
 #undef LexemeL
-#ifndef __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED
+#ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
 __TERMINAL_ROUTER: {
         /*  if last_acceptance => goto correspondent acceptance terminal state*/
         /*  else               => execute defaul action*/
@@ -208,7 +208,7 @@ $$JUMPS_TO_ACCEPTANCE_STATE$$
             default: $$TERMINAL_DEFAULT-GOTO$$; /* nothing matched */
         }
     }
-#endif /* __QUEX_OPTION_GNU_C_GREATER_2_3_DETECTED*/
+#endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
 """
 
 __on_continue_reentry_preparation_str = """

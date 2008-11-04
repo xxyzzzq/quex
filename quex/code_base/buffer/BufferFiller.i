@@ -16,7 +16,6 @@ namespace quex {
 #endif
 
     QUEX_INLINE void   __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
-    QUEX_INLINE void   __QuexBufferFiller_forward_asserts(QuexBuffer*);
     QUEX_INLINE size_t __QuexBufferFiller_forward_copy_fallback_region(QuexBuffer*,
                                                                        const size_t Distance_LexemeStart_to_InputP);
     QUEX_INLINE void   __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*, 
@@ -166,7 +165,6 @@ namespace quex {
             return 0;                               
         }
         /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                        * (3)*/  
-        __QuexBufferFiller_forward_asserts(buffer);
 
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region*/
@@ -186,36 +184,22 @@ namespace quex {
                                                   Distance_LexemeStart_to_InputP);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
+        /* NOTE: During backward loading the rule does not hold that the stream position
+         *       corresponds to the last character in the buffer. The last character in the
+         *       buffer might be a copy from the front of the buffer. Thus, this constraint
+         *       only holds **after the forwad load**.                                       */
+#       ifdef QUEX_OPTION_ASSERTS
+        const size_t   ComputedCharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
+                                                     (QuexBuffer_text_end(buffer) - QuexBuffer_content_front(buffer)));
+        const size_t   RealCharacterIndexAtEnd     = buffer->filler->tell_character_index(buffer->filler);
+        __quex_assert( ComputedCharacterIndexAtEnd == RealCharacterIndexAtEnd );
+#       endif
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
 
         /* NOTE: Return value is used for adaptions of memory addresses. It happens that the*/
         /*       address offset is equal to DesiredLoadN; see function __forward_adapt_pointers().*/
         return DesiredLoadN; /* THUS NOT: LoadedN*/
-    }
-
-    QUEX_INLINE void
-    __QuexBufferFiller_forward_asserts(QuexBuffer* buffer)
-    {
-#       ifdef QUEX_OPTION_ASSERTS
-        QuexBufferFiller* me = buffer->filler;
-
-        __quex_assert(buffer->_input_p >= buffer->_lexeme_start_p);
-        /* (*) Double check on consistency  
-         *     'load_forward()' should only be called, if the '_input_p' reached a border.  
-         *     Since we know from above, that we did not reach end of file, it can be assumed  
-         *     that the _end_of_file_p == 0x0 (buffer does not contain EOF).*/
-        __quex_assert(buffer->_end_of_file_p == 0x0); /* Consider removin this constraint fschaef 08y11m2d */
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        /* (*) Suppose: No one has touched the input stream since last load!  
-         *     The _input object simulates a stream of characters of constant width, independtly   
-         *     of the character coding that is used. Thus, it is safe to compute the position at the  
-         *     end of the buffer by simple addition of 'content size' to 'buffer->_content_first_character_index'.*/
-        const size_t   ComputedCharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
-                                                     (QuexBuffer_text_end(buffer) - QuexBuffer_content_front(buffer)));
-        const size_t   RealCharacterIndexAtEnd     = me->tell_character_index(me);
-        __quex_assert( ComputedCharacterIndexAtEnd == RealCharacterIndexAtEnd );
-#       endif
     }
 
     QUEX_INLINE size_t
@@ -486,7 +470,6 @@ namespace quex {
 
         buffer->_input_p        += BackwardDistance + 1; 
         buffer->_lexeme_start_p += BackwardDistance;
-
     }
 
     QUEX_INLINE void
