@@ -13,7 +13,7 @@ main(int argc, char** argv)
     using namespace quex;
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "Seek: Plain search\n";
+        cout << "Stream Position Seek: Plain search\n";
         cout << "CHOICES: Forward, Backward;\n";
         return 0;
     }

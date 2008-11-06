@@ -30,13 +30,13 @@ show_this(const char* Name, QuexBuffer* buffer, QUEX_CHARACTER_TYPE* Pos, char A
     int                 utf8_char_str_length = 0;
     QUEX_CHARACTER_TYPE UC = *Pos;
 
-    if( UC == 0 ) { 
-        printf("%s= %i (--> '%c')%c", 
-               (char*)Name,
-               (int)(Pos - buffer->_memory._front - 1), 
-               (char)'\0', 
-               Appendix);
+    if( UC == '\0' ) { 
+        printf("%s= %i (--> '%c')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
+               (char)'\0', Appendix);
 
+    } else if( UC == '\n' ) { 
+        printf("%s= %i (--> '\\n')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
+               Appendix);
     } else {
         utf8_char_str_length = quex::unicode_to_utf8(UC, utf8_char_str);
         utf8_char_str[utf8_char_str_length] = '\0';
