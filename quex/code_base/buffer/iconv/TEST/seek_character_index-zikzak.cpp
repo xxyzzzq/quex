@@ -16,7 +16,7 @@ main(int argc, char** argv)
     assert(sizeof(QUEX_CHARACTER_TYPE) == 2);
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "Seek: Total Zik-Zak\n";
+        cout << "Stream Position Seek: Total Zik-Zak\n";
         cout << "CHOICES: Fixed, Dynamic;\n";
         return 0;
     }

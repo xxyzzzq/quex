@@ -29,7 +29,7 @@ class Setup:
         self.input_foreign_token_id_file = GlobalSetup.input_foreign_token_id_file
         
 file_str = \
-"""// -*- C++ -*-
+"""// -*- C++ -*- vim: set syntax=cpp:
 // PURPOSE: File containing definition of token-identifier and
 //          a function that maps token identifiers to a string
 //          name.
