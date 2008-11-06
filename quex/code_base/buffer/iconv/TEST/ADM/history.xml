@@ -1,4 +1,4 @@
-<history date="Thu Nov  6 08:25:54 2008" element-n="129">
+<history date="Thu Nov  6 08:27:38 2008" element-n="129">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -364,6 +364,6 @@
     </day>
     <day year="2008" month="11" day="06">
         <crc-error time="07:22:11" application="Buffer_move_forward.exe" choice="1" database-crc="518485371" real-crc="-2136207600"/>
-        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="07:25:54"/>
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="07:27:38"/>
     </day>
 </history>
