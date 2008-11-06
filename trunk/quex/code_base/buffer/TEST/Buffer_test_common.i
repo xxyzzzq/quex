@@ -4,6 +4,7 @@
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/Token>
 #include <string.h>
 #include <cstdio>
 
@@ -22,13 +23,37 @@ cl_has(int argc, char** argv, const char* What)
 }
 #define QUEX_DEFINED_FUNC_cl_has
 
+inline uint8_t* 
+show_this(const char* Name, QuexBuffer* buffer, QUEX_CHARACTER_TYPE* Pos, char Appendix)
+{
+    static uint8_t      utf8_char_str[7];
+    int                 utf8_char_str_length = 0;
+    QUEX_CHARACTER_TYPE UC = *Pos;
+
+    if( UC == 0 ) { 
+        printf("%s= %i (--> '%c')%c", 
+               (char*)Name,
+               (int)(Pos - buffer->_memory._front - 1), 
+               (char)'\0', 
+               Appendix);
+
+    } else {
+        utf8_char_str_length = quex::unicode_to_utf8(UC, utf8_char_str);
+        utf8_char_str[utf8_char_str_length] = '\0';
+        printf("%s= %i (--> '%s')%c", 
+               (char*)Name,
+               (int)(Pos - buffer->_memory._front - 1), 
+               (char*)utf8_char_str, 
+               Appendix);
+    }
+}
+
 inline void 
 print_this(QuexBuffer* buffer)
 {
-    printf("input_p      = %i (--> '%c')\t", 
-           (int)(buffer->_input_p - buffer->_memory._front - 1), (char)*buffer->_input_p);
-    printf("lexeme start = %i (--> '%c')\n", 
-           (int)(buffer->_lexeme_start_p - buffer->_memory._front - 1), (char)*buffer->_lexeme_start_p);
+
+    show_this("input_p      ",      buffer, buffer->_input_p, '\t');
+    show_this("lexeme start ", buffer, buffer->_lexeme_start_p, '\n');
 }
 
 inline void 
