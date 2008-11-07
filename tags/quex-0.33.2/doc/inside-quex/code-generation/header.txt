@@ -1,0 +1,79 @@
+Each character that is read from a character stream
+triggers a state transition inside the lexical analyser. This
+continues until the currently incoming character does not
+trigger any further transition. Following cases need to be
+distingushed:
+
+\begin{description}
+\item[\bf Mismatch] The lexical analyser never reached an acceptance state.
+                    No explicitly defined pattern has matched. If a default
+		    action is defined than it is executed at this point.
+
+\item[\bf Match] The lexical analyser reached an acceptance state, some time
+		 earlier---or is currently in it. The the action of the
+		 dominating pattern has to be executed.
+\end{description}
+
+If the current state is an acceptance state, then the id of the
+winning pattern and the position where it was reached has to be stored. If the
+current state represents the beginning of a post-condition, then one needs to
+store the current input position. If later on the post-condition finishes,
+then one can go back to it.
+
+What pattern actually wins in an acceptance state depends on two 
+issues. First, something that can be compiled into the code: the
+patterns priviledge. Seconds, something that has to be determined
+at run-time: dependence on a pre-condition flag. Note, that information
+about a post-conditioned pattern needs not to be stored, since
+the path to the acceptance state can only be reached through the
+state where the core pattern would have raised 'acceptance'.
+The header of the state transition code of a particular acceptance 
+state looks like the following: 
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  QUEX_LABEL__ENTRY_98:
+     QUEX_STREAM_TELL(last_acceptance_position); 
+
+     // (*) patterns that start now with the post-condition
+     QUEX_STREAM_TELL(last_acceptance_a_input_position);
+     QUEX_STREAM_TELL(last_acceptance_b_input_position);
+     QUEX_STREAM_TELL(last_acceptance_c_input_position);
+     ...
+
+     // (*) patterns that dominate, but under a pre-condition
+     if( pre_condition_i_fulfilled_f ) {
+	 last_acceptance = i;
+     } 
+     else if( pre_condition_j_fulfilled_f ) {
+	 last_acceptance = k;
+     }	 
+     else if( pre_condition_k_fulfilled_f ) {
+	 last_acceptance = l;
+     }	 
+     ...
+     else { 
+         last_acceptance = X;  // the dominating pattern
+     } 
+
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the state is not an acceptance state, then this header is simply empty.
+However, both types of states, acceptance and non-acceptance states share
+the following code fragment:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     // (*) get a character from the input stream as a trigger
+     QUEX_STREAM_GET(input);
+     
+     // ... it follows: the state transitions ...
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It simply reads the next character from the input stream. It is canned into
+a macro, so the user may adapt its underlying procedure to his way of representing
+the character stream (e.g. as a buffer, an object of`istream`, etc.).
+The code fragment for the state transition has to determine what trigger 
+triggered, and therefore what the subsequent state will be.
+
+
