@@ -2947,7 +2947,7 @@ __quex_assert(Indentation >= 0);
 #endif    
 #undef self
 } // END: namespace quex
-// -*- C++ -*-
+// -*- C++ -*- vim: set syntax=cpp:
 // PURPOSE: File containing definition of token-identifier and
 //          a function that maps token identifiers to a string
 //          name.

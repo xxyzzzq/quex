@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Tue Nov  4 23:08:39 2008
+DATE:  Fri Nov  7 23:02:03 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Tue Nov  4 08:34:16 2008
+DATE:  Fri Nov  7 22:47:16 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -212,6 +212,12 @@ TITLE: Demo-Applications
     Miscellaneous Features
         007.sh NDEBUG ...................................................[OK]
                DEBUG ....................................................[OK]
+
+ -- demo/008:
+
+    Interface to Bison/Yacc (Contributed by Marco Antonelli)
+        008.sh NDEBUG ...................................................[OK]
+               DEBUG ....................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -221,7 +227,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Tue Nov  4 08:34:16 2008
+DATE:  Fri Nov  7 22:47:16 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -236,7 +242,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Tue Nov  4 08:34:22 2008
+DATE:  Fri Nov  7 22:47:23 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -298,12 +304,27 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Tue Nov  4 08:34:25 2008
+DATE:  Fri Nov  7 23:01:43 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
 
- -- Seek:
+ -- Move by Offset:
+
+    Backward (BPC=4);
+        Buffer_move_backward.exe 1 ......................................[OK]
+                                 2 ......................................[OK]
+                                 3 ......................................[OK]
+                                 4 ......................................[OK]
+                                 5 ......................................[OK]
+    Forward (BPC=4);
+        Buffer_move_forward.exe 1 .......................................[OK]
+                                2 .......................................[OK]
+                                3 .......................................[OK]
+                                4 .......................................[OK]
+                                5 .......................................[OK]
+
+ -- Stream Position Seek:
 
     Plain search
         seek_character_index.exe Forward ................................[OK]
@@ -311,6 +332,11 @@ TITLE: Input Buffers Based on the IConv - Library
     Total Zik-Zak
         seek_character_index-zikzak.exe Fixed ...........................[OK]
                                         Dynamic .........................[OK]
+
+ -- Tell and Seek:
+
+    Bytes Per Character (BPC)=4;
+        Buffer_tell_and_seek.exe ........................................[OK]
 
  -- read_characters:
 
@@ -338,7 +364,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Tue Nov  4 08:34:38 2008
+DATE:  Fri Nov  7 22:47:39 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -430,7 +456,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Tue Nov  4 08:34:38 2008
+DATE:  Fri Nov  7 22:47:39 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -450,7 +476,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Tue Nov  4 08:34:39 2008
+DATE:  Fri Nov  7 22:47:39 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -483,7 +509,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Tue Nov  4 08:36:37 2008
+DATE:  Fri Nov  7 22:49:40 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -646,7 +672,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Tue Nov  4 08:36:42 2008
+DATE:  Fri Nov  7 22:49:45 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -708,7 +734,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Tue Nov  4 08:36:47 2008
+DATE:  Fri Nov  7 22:49:51 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -806,7 +832,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Tue Nov  4 08:36:47 2008
+DATE:  Fri Nov  7 22:49:51 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -829,7 +855,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Tue Nov  4 08:37:02 2008
+DATE:  Fri Nov  7 22:50:06 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -852,7 +878,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Tue Nov  4 08:37:03 2008
+DATE:  Fri Nov  7 22:50:07 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

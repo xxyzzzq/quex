@@ -26,7 +26,7 @@ PARSER_FILE		=	$(PARSER_NAME).ypp
 PARSER_SOURCES	=	$(PARSER_NAME).tab.cpp	\
 					$(PARSER_NAME).tab.hpp
 # -- OUTPUT
-APPLICATION     = calculator
+APPLICATION     = lexer
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
