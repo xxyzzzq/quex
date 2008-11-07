@@ -6,6 +6,7 @@ FILES = \
 		seek_character_index.exe \
 		seek_character_index-zikzak.exe \
 		Buffer_move_forward.exe \
+		Buffer_tell_and_seek.exe \
 		Buffer_move_backward.exe
 
 DEFS = -DQUEX_OPTION_ASSERTS \
