@@ -1,6 +1,8 @@
 #include <quex/code_base/buffer/TEST/Buffer_test_common.i>
-#include "test-helper.h"
+#include <quex/code_base/buffer/iconv/BufferFiller_IConv.i>
 
+using namespace std;
+using namespace quex;
 
 int
 main(int argc, char** argv)
@@ -10,13 +12,24 @@ main(int argc, char** argv)
         return 0;
     }
 
-    QuexBuffer                    buffer;
-    QuexBufferFiller_Plain<FILE>  filler;
-    FILE*                         fh = prepare_input(); /* Festgemauert ... */
-    size_t         SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 19, 4, 6, 20, 11, 0, 
-                                     23, 18, 12, 21, 17, 27, 16, 26, 14, 24, 10, 13, 1, 22, 999 };
+    QuexBuffer      buffer;
+    const int       RawMemorySize = 6;
+    const size_t    StepSize      = atoi(argv[1]);
+    char*           target_charset = (char*)"UCS-4LE";
+    const uint16_t  test = 0x4711;
 
-    QuexBufferFiller_Plain_init(&filler, fh);
+    /*
+    if( ((uint8_t*)test)[0] == 47 && ((uint8_t*)test)[1] == 1 ) {
+         target_charset = (char*)"UCS-4BE";
+    }
+    */
+
+    QuexBufferFiller_IConv<FILE> filler;
+    std::FILE*     fh = fopen("test.txt", "r");
+    size_t         SeekIndices[] = { 10, 4, 22, 8, 18, 11, 6, 2, 3, 15, 22, 17, 22, 21, 0, 20, 13, 1, 16, 12, 14, 9, 7, 5, 19, 999 };
+    assert( fh != 0x0 );
+
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
     QuexBuffer_init(&buffer, 5, (QuexBufferFiller*)&filler);
 
     test_seek_and_tell(&buffer, SeekIndices);
