@@ -1,6 +1,8 @@
 #include <quex/code_base/buffer/TEST/Buffer_test_common.i>
+#include <quex/code_base/buffer/iconv/BufferFiller_IConv.i>
 
-#include "test-helper.h"
+using namespace std;
+using namespace quex;
 
 int
 main(int argc, char** argv)
@@ -11,14 +13,23 @@ main(int argc, char** argv)
         return 0;
     }
 
+    QuexBuffer      buffer;
+    const int       RawMemorySize = 6;
+    const size_t    StepSize      = atoi(argv[1]);
+    char*           target_charset = (char*)"UCS-4LE";
+    const uint16_t  test = 0x4711;
 
-    QuexBuffer           buffer;
-    const size_t         StepSize      = atoi(argv[1]);
+    /*
+    if( ((uint8_t*)test)[0] == 47 && ((uint8_t*)test)[1] == 1 ) {
+         target_charset = (char*)"UCS-4BE";
+    }
+    */
 
-    FILE*                         fh = prepare_input(); /* Festgemauert ... */
-    QuexBufferFiller_Plain<FILE>  filler;
+    QuexBufferFiller_IConv<FILE> filler;
+    std::FILE*                   fh = fopen("test.txt", "r");
+    assert( fh != 0x0 );
 
-    QuexBufferFiller_Plain_init(&filler, fh);
+    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
     QuexBuffer_init(&buffer, 5, (QuexBufferFiller*)&filler);
 
     /* Read until the end of file is reached and set the _input_p to EOF */

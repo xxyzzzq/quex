@@ -27,9 +27,9 @@ main(int argc, char** argv)
 
     QuexBufferFiller_IConv<FILE> filler;
     std::FILE*                   fh = fopen("test.txt", "r");
+    assert( fh != 0x0 );
 
     QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
-
     QuexBuffer_init(&buffer, 5, (QuexBufferFiller*)&filler);
 
     test_move_forward(&buffer, StepSize); 
