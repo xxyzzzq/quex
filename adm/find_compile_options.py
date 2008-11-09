@@ -28,7 +28,7 @@ def add_finding(OptionName, FileName, LineN):
 
 def extract_options(Txt):
     global unique_option_db
-    global file
+    global file_name
 
     L = len(Txt)
     i = 0
@@ -36,7 +36,7 @@ def extract_options(Txt):
         i = Txt.find("QUEX_OPTION_", i)
         if i == -1: break
         end_i = find_end_of_macro(Txt, i, L)
-        add_finding(Txt[i:end_i], file, get_line_n(Txt, i))
+        add_finding(Txt[i:end_i], file_name, get_line_n(Txt, i))
         i += 1
 
     i = 0
@@ -44,7 +44,7 @@ def extract_options(Txt):
         i = Txt.find("QUEX_SETTING", i)
         if i == -1: break
         end_i = find_end_of_macro(Txt, i, L)
-        add_finding(Txt[i:end_i], file, get_line_n(Txt, i))
+        add_finding(Txt[i:end_i], file_name, get_line_n(Txt, i))
         i += 1
 
 def extension(Filename):
@@ -58,7 +58,8 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"]):
     for file in file_list:
         if extension(file) in forbidden: continue
         # print "--", file
-        fh = open(root + "/" + file)
+        file_name = root + "/" + file
+        fh        = open(file_name)
         extract_options(fh.read())
         fh.close()
 

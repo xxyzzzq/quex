@@ -21,7 +21,11 @@ make clean   >& /dev/null
 echo "make $arg1 $3 ##"
 make  $arg1 $3 >& /dev/null
 echo "executing ..."
-./lexer $args_to_lexer
+if [[ -z $application ]]; then
+    ./lexer $args_to_lexer
+else
+    $application $args_to_lexer
+fi
 echo "cleaning ..."
 make clean   >& /dev/null
 

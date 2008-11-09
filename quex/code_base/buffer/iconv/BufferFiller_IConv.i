@@ -171,7 +171,8 @@ namespace quex {
 #           ifdef QUEX_OPTION_ASSERTS
             /* '.bytes_left_n' is not always correct. '.iterator' points always directly 
               * behind the last written byte. */
-            __QUEX_STD_memset(user_buffer.iterator, 0xFF, 
+            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+            __QUEX_STD_memset((uint8_t*)(user_buffer.iterator), (uint8_t)0xFF, 
                               (user_buffer.begin + user_buffer.size) - user_buffer.iterator);
 #           endif
             return ConvertedCharN;
@@ -200,7 +201,8 @@ namespace quex {
         if( buffer->iterator != buffer->begin ) {
             /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
              * following is safe against overlaps.                                      */
-            __QUEX_STD_memmove(buffer->begin, buffer->iterator, RemainingBytesN);
+            /* Cast to uint8_t to avoid a spurious function overload */
+            __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), RemainingBytesN);
             /* Reset the position, so that new conversion get's the whole character.    */
             buffer->iterator = buffer->begin; 
         }
@@ -466,7 +468,8 @@ namespace quex {
         me->bytes_left_n = me->size;
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(Begin, 0xFF, SizeInBytes);
+        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+        __QUEX_STD_memset((uint8_t*)Begin, (uint8_t)0xFF, SizeInBytes);
 #       endif
     }
 

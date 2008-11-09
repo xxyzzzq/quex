@@ -36,6 +36,9 @@ namespace quex {
         typedef typename StdStreamType::pos_type   stream_position;
         typedef typename StdStreamType::off_type   stream_offset;
 
+        typedef typename StdStreamType::char_type  character_type;
+        static const size_t  CharacterSize = sizeof(typename StdStreamType::char_type);
+
         static stream_position tell(StdStreamType* me) { 
             return me->tellg(); 
         }
@@ -45,19 +48,23 @@ namespace quex {
 
         static size_t  load_bytes(StdStreamType* me, void* buffer_position, const size_t ByteNToRead) 
         { 
+            __quex_assert(CharacterSize != 0);
             /* std::fprintf(stdout, "tell 0 = %i\n", (long)(me->tellg()));*/
             const stream_position position_before = me->tellg();
-            me->read((typename StdStreamType::char_type*)buffer_position, ByteNToRead); 
+            
+            me->read((character_type*)buffer_position, ByteNToRead / CharacterSize);
+            
             const size_t Result = me->gcount();
+
             if( me->eof() && ! me->bad() ) {
                 me->clear();
                 me->seekg(position_before + (stream_offset)(Result));
             } else if( me->fail() ) {
                 throw std::runtime_error("Fatal error during stream reading.");
             }
-            /* const size_t Result = me->readsome((typename QUEX_CHARACTER_TYPE::char_type*)buffer_position, ByteNToRead); */
+
             /* std::fprintf(stdout, "tell 1 = %i, Result = %i\n", (long)(me->tellg()), Result);*/
-            return Result;
+            return Result * CharacterSize;
         }
     };
 
@@ -66,7 +73,7 @@ namespace quex {
 #   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE) \
            InputPolicy<IH_TYPE*>::tell((IH))
 #   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
-           InputPolicy<IH_TYPE*>::load_bytes((IH), (BUFFER), (BYTE_N))
+           InputPolicy<IH_TYPE*>::load_bytes((IH), (uint8_t*)(BUFFER), (BYTE_N))
 }
 #else
 /* In 'C' we only load from FILE*. So if you want to do something non-standard, then provide
@@ -75,8 +82,9 @@ namespace quex {
     __QUEX_STD_fseek((IH), (POS), SEEK_SET)
 #   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE)      \
     __QUEX_STD_ftell((IH))
+    /* NOTE: That cast to uint8_t* is essential to avoid a spurious overload!! */
 #   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
-    __QUEX_STD_fread((BUFFER), 1, (BYTE_N), (IH))
+    __QUEX_STD_fread((uint8_t*)(BUFFER), 1, (BYTE_N), (IH))
 #endif
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_INPUT_POLICY__ */
