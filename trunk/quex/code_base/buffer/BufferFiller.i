@@ -244,14 +244,16 @@ namespace quex {
         /*     used instead of memmove().*/
         QUEX_CHARACTER_TYPE*  source = QuexBuffer_content_back(buffer) - FallBackN + 1; /* end of content - fallback*/
         QUEX_CHARACTER_TYPE*  drain  = QuexBuffer_content_front(buffer);       
+        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
         if( drain + FallBackN >= source  ) {
-            __QUEX_STD_memmove(drain, source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
+            __QUEX_STD_memmove((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
         } else { 
-            __QUEX_STD_memcpy(drain, source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
+            __QUEX_STD_memcpy((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
         }
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(drain + FallBackN, (uint8_t)(0xFF), 
+        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+        __QUEX_STD_memset((uint8_t*)(drain + FallBackN), (uint8_t)(0xFF), 
                           (QuexBuffer_content_size(buffer) - FallBackN)*sizeof(QUEX_CHARACTER_TYPE)); 
 #       endif
 
@@ -455,7 +457,8 @@ namespace quex {
                            (ContentSize - BackwardDistance)*sizeof(QUEX_CHARACTER_TYPE));
 
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset(ContentFront, (uint8_t)(0xFF), BackwardDistance * sizeof(QUEX_CHARACTER_TYPE)); 
+        /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+        __QUEX_STD_memset((uint8_t*)ContentFront, (uint8_t)(0xFF), BackwardDistance * sizeof(QUEX_CHARACTER_TYPE)); 
 #       endif
         return BackwardDistance;
     }

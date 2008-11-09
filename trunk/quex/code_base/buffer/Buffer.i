@@ -87,7 +87,8 @@ namespace quex {
         if( filler != 0x0 ) { 
             QuexBufferMemory_init(&(me->_memory), MemoryManager_get_BufferMemory(Size), Size);      
 #           ifdef QUEX_OPTION_ASSERTS
-            __QUEX_STD_memset(me->_memory._front + 1, 0xFF, Size - 2);
+            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+            __QUEX_STD_memset((uint8_t*)(me->_memory._front + 1), 0xFF, Size - 2);
 #           endif 
         } else { 
             QuexBufferMemory_init(&(me->_memory), 0, 0);      
@@ -505,8 +506,14 @@ namespace quex {
         if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
         if( buffer->_end_of_file_p != 0x0 ) End = buffer->_end_of_file_p;
         for(; iterator != End; ++iterator) {
-            if( *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ) 
-                QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.\n");
+            if( *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
+                if( iterator == buffer->_memory._front + 1 ) {
+                    QUEX_ERROR_EXIT("Buffer limit code character appeared as first character in buffer.\n"
+                                    "This is most probably a load failure.");
+                } else {
+                    QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.\n");
+                }
+            }
         }
     }
 #else

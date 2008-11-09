@@ -6,7 +6,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 // STL (Std C++ Lib)
 #include<vector> 
 #include<map>
-#include<fstream>
+#include<istream>  // gets: istream and wistream
 
 // IConv Coding Name for the internally used character coding. 
 // -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
@@ -264,6 +264,10 @@ namespace quex {
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
+        CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
+        CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
+        CLASS(std::wistream*            p_input_stream, const char* IConvInputCodingName = 0x0, 
+        CLASS(std::FILE*                input_fh,       const char* IConvInputCodingName = 0x0, 
 
         virtual ~CLASS();
         //

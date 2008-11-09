@@ -192,7 +192,6 @@ def validate(setup, command_line, argv):
 
     __check_file_name(setup, "input_mode_files", "quex source file")
 
-
 def __check_file_name(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     CommandLineOption = SETUP_INFO[Candidate][0]
@@ -204,9 +203,6 @@ def __check_file_name(setup, Candidate, Name):
                           "Received '%s' for %s (%s)" % (value, Name, repr(CommandLineOption)[1:-1]))
     else:
         if value == "" or value[0] == "-": return
-
-
-    
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]

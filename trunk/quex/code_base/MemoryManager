@@ -14,7 +14,8 @@ namespace quex {
             QUEX_CHARACTER_TYPE* tmp = (QUEX_CHARACTER_TYPE*)\
                   __QUEX_ALLOCATE_MEMORY((size_t)(CharacterN * sizeof(QUEX_CHARACTER_TYPE)));
 #           ifdef QUEX_OPTION_ASSERTS
-            __QUEX_STD_memset(tmp, 0xFF, CharacterN * sizeof(QUEX_CHARACTER_TYPE));
+            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, CharacterN * sizeof(QUEX_CHARACTER_TYPE));
 #           endif
             return tmp;
         }
@@ -30,7 +31,8 @@ namespace quex {
         {
             uint8_t* tmp = __QUEX_ALLOCATE_MEMORY(ByteN);
 #           ifdef QUEX_OPTION_ASSERTS
-            __QUEX_STD_memset(tmp, 0xFF, ByteN);
+            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, ByteN);
 #           endif
             return tmp;
         }

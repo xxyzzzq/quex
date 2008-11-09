@@ -28,7 +28,7 @@ APPLICATION      = lexer
 COMPILER = g++ -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS
 CC = $(COMPILER) -c \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-     -DQUEX_OPTION_ACTIVATE_ASSERTS	
+     -DQUEX_OPTION_ASSERTS	
 	 # -no-deprecated -Wall \
 	 #  -fPIC \
 
