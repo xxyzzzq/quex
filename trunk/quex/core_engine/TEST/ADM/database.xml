@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.32" date="Sun Nov  9 21:32:23 2008">
+<test-database execution-time-sec="0.27" date="Sun Nov  9 22:27:01 2008">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.05"> 
@@ -7,10 +7,10 @@
                <choice name="" result="OK" time-sec="0.05" crc="1051370365"/>
             </choice-list>
         </test>
-        <test title="Inverse" make-required="True" time-sum-sec="0.06"> 
+        <test title="Inverse" make-required="True" time-sum-sec="0.03"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="1433382430"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1433382430"/>
             </choice-list>
         </test>
         <test title="Difference" make-required="True" time-sum-sec="0.04"> 
@@ -19,10 +19,10 @@
                <choice name="" result="OK" time-sec="0.04" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Intersection" make-required="True" time-sum-sec="0.05"> 
+        <test title="Intersection" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="892506273"/>
+               <choice name="" result="OK" time-sec="0.04" crc="892506273"/>
             </choice-list>
         </test>
         <test title="Union" make-required="True" time-sum-sec="0.04"> 

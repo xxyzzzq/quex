@@ -7,7 +7,8 @@ CLASS::CLASS(const std::string&       Filename,
 : 
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
+    __file_handle_allocated_by_constructor(0x0)
 #   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
     , include_stack(this)
 #   endif
@@ -35,7 +36,8 @@ CLASS::CLASS(std::istream*            p_input_stream,
 :
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
+    __file_handle_allocated_by_constructor(0x0)
 #   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
     , include_stack(this)
 #   endif
@@ -57,7 +59,8 @@ CLASS::CLASS(std::wistream*           p_input_stream,
 :
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
+    __file_handle_allocated_by_constructor(0x0)
 #   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
     , include_stack(this)
 #   endif
@@ -78,7 +81,8 @@ CLASS::CLASS(std::FILE* fh,
              const char*              InputCodingName /* = 0x0 */,
              QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */)
 : 
-    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this))
+    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
+    __file_handle_allocated_by_constructor(0x0)
 #   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
     , include_stack(this)
 #   endif
@@ -103,6 +107,9 @@ CLASS::~CLASS()
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     delete _token_queue;
 #   endif
+    if( __file_handle_allocated_by_constructor != 0x0 ) {
+        std::fclose(__file_handle_allocated_by_constructor); 
+    }
 }
 
 } // namespace quex
