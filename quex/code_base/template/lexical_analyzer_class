@@ -402,6 +402,10 @@ $$MODE_OBJECT_MEMBERS$$
         // (*) Who and what am I ? _______________________________________________________
         $$LEXER_DERIVED_CLASS_NAME$$&   self;
 
+    private:
+        // (*) Sometimes we just want to tell the filename, ... for destructor to close ..
+        FILE*    __file_handle_allocated_by_constructor;
+
     public:
 #       ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
         IncludeStack       include_stack;
@@ -441,6 +445,7 @@ $$CLASS_BODY_EXTENSION$$
         template <class InputHandleT> 
         void     __constructor_core(InputHandleT*, 
                                     QuexBufferFillerTypeEnum, const char* IConvInputCodingName);
+
     };
  
     template <class InputHandleT> inline void
