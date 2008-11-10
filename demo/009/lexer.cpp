@@ -85,3 +85,18 @@ get_stringstream_input()
     return new quex::tiny_lexer(&my_stream);
 }
 
+quex::tiny_lexer*
+get_memory_input()
+{
+    /* Normal Memory Based */
+    uint8_t buffer_memory[1024];
+    uint8_t content = "bonjour le monde hello world hallo welt";
+    cout << "memory:\n";
+    cout << "   Note this works only when engine is generated with -b 1 (or no -b)\n";
+    cout << "   and therefore QUEX_CHARACTER_TYPE == uint8_t.\n";
+    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(uint8_t));
+
+    quex::tiny_lexer* qlex = new quex::tiny_lexer(&my_stream);
+
+
+}
