@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.08" date="Sun Nov  9 22:26:34 2008">
+<test-database execution-time-sec="0.08" date="Mon Nov 10 07:53:53 2008">
     <last-used-diff-display-program name=""/>
     <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.08"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1223443782L"/>

@@ -27,6 +27,8 @@ CLASS::CLASS(const std::string&       Filename,
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
     __constructor_core(fh, BFT, InputCodingName);
+    // Recall, that this thing as to be deleted/closed
+    __file_handle_allocated_by_constructor = fh;
 }
 
 inline
