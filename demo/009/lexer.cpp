@@ -98,5 +98,6 @@ get_memory_input()
 
     quex::tiny_lexer* qlex = new quex::tiny_lexer(&my_stream);
 
+    quex::QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)Content, MemorySize); 
 
 }
