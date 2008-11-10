@@ -1,0 +1,40 @@
+## (*) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros  ./tmp.c -I./. -I$QUEX_PATH -o ./tmp.c.exe -ggdb ##
+## (*) running the test
+(*) test string: 
+'abcdefg*/hijklmnop*/qrstuvw*/xyz*/ok'
+(*) result:
+next letter: <h>
+next letter: <q>
+next letter: <x>
+next letter: <o>
+end
+  ''
+
+## (4) cleaning up
+## (*) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros  ./tmp.c -I./. -I$QUEX_PATH -o ./tmp.c.exe -ggdb ##
+## (*) running the test
+(*) test string: 
+'*/hijklmnop*/qrstuvw*/xyz*/'
+(*) result:
+next letter: <h>
+next letter: <q>
+next letter: <x>
+end
+  ''
+
+## (4) cleaning up
+## (*) compiling generated engine code and test
+gcc -ansi -Wvariadic-macros  ./tmp.c -I./. -I$QUEX_PATH -o ./tmp.c.exe -ggdb ##
+## (*) running the test
+(*) test string: 
+'a*/h*/*/*/'
+(*) result:
+next letter: <h>
+next letter: <*>
+next letter: <*>
+end
+  ''
+
+## (4) cleaning up
