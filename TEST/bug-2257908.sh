@@ -9,7 +9,7 @@ tmp=`pwd`
 
 cd $bug/ 
 file=`pwd`/error.qx
-../test_that_it_does_not_take_too_long.sh $file
+bash ../test_that_it_does_not_take_too_long.sh $file
 
 # cleansening
 rm -f lexer lexer-core-engine.cpp lexer.cpp lexer-token_ids
