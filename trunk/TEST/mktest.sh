@@ -1,3 +1,9 @@
+#! /usr/bin/env bash
+#
+# $1 bug id number
+# $2 submitter
+# $3 title
+#
 mkdir $1
 cat bug-template.sh | sed -e "s/BUG\_ID/$1/g" | sed -e "s/SUBMITTER/$2/g" | sed -s "s/TITLE/$3/g" > bug-$1.sh
 chmod u+x bug-$1.sh
