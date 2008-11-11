@@ -1,5 +1,6 @@
 from quex.core_engine.interval_handling import Interval, NumberSet
 
+__distance_db = {}
 def get_newline_n(state_machine):   
     """
        Counts the number of newlines that appear until the acceptance state. 
@@ -15,6 +16,8 @@ def get_newline_n(state_machine):
 
        NOTE: Only the core pattern is concerned---not the pre- or post-condition.
     """
+    global __distance_db
+    __distance_db.clear()
     return __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=ord('\n'))
 
 def get_character_n(state_machine):
@@ -32,6 +35,8 @@ def get_character_n(state_machine):
 
        NOTE: Only the core pattern is concerned---not the pre- or post-condition.
     """
+    global __distance_db
+    __distance_db.clear()
     return __dive(state_machine, state_machine.init_state_index, 0, [], CharacterToCount=-1)
 
 def contains_only_spaces(state_machine):
@@ -51,8 +56,6 @@ def contains_only_spaces(state_machine):
         if all_trigger_set.difference(NumberSet(ord(' '))).is_empty() == False: return False
 
     return True
-
-
 
 def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx, Character):
     """Path      = list of state indices
@@ -92,6 +95,9 @@ def __recursion_contains_critical_character(state_machine, Path, TargetStateIdx,
     return False
 
 def __recursion_with_critical_character_ahead(state_machine, state, PassedStateList, Character):
+    """Does any of the following target states close a recursion loop which contains the 
+       character to be counted?
+    """
 
     for follow_state_index in state.transitions().get_target_state_index_list():
 
@@ -103,7 +109,24 @@ def __recursion_with_critical_character_ahead(state_machine, state, PassedStateL
     return False
 
 def __dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
+    """Once the distance to the acceptance state is determined, we store it in a cache database.
+       Note, that the distance is only stored after all possible pathes starting from the state
+       have been investigated. Note also, that the distance to the acceptance state can be 
+       '-1' meaning that there are multiple pathes of different length, i.e. it cannot be
+       determined from the pattern how many characters appear in the lexeme that matches.
+    """
+    global __distance_db
+    if __distance_db.has_key(state_index): 
+        return __distance_db[state_index] + character_n
 
+    result = ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount)
+    if state_index not in passed_state_list:
+        __distance_db[state_index] = result - character_n
+
+    return result
+
+
+def ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
     state = state_machine.states[state_index]
 
     new_passed_state_list = passed_state_list + [ state_index ]
@@ -112,12 +135,13 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     if __recursion_with_critical_character_ahead(state_machine, state, new_passed_state_list, 
                                                  CharacterToCount):
         return -1
+
     # -- if no recursion is detected and the state is the end of a core exression
     #    of a post conditioned pattern, then this is it. No further investigation
     #    from this point on. The post condition state machine is not considered 
     #    for line number counting.
     if state.core().post_context_id() != -1L: return character_n
-    
+
     # trigger_map[target_state_index] = set that triggers to target state index
     trigger_dict = state.transitions().get_map()
     if trigger_dict == {}: return character_n
@@ -125,33 +149,42 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
     if state.is_acceptance():  prev_characters_found_n = character_n
     else:                      prev_characters_found_n = None
 
-    for follow_state_index in trigger_dict.keys():
+    for follow_state_index, trigger_set in trigger_dict.items():
 
         # -- do not follow recursive paths. note: this is only relevant for specified
         #    CharacterToCount != -1. Otherwise, recursions are broken up when detected ahead.
         if follow_state_index in new_passed_state_list: continue
             
-        increment = 0
-        trigger_set = trigger_dict[follow_state_index]
         if CharacterToCount == -1:
+            # (1.1) We are counting all characters, so we increment always.
             increment = 1
-        elif trigger_set.contains(CharacterToCount):
-            # -- if a transition contains character and also another possible trigger to the 
-            #    same target, then the number of characters is undefined.
-            if trigger_set.difference(Interval(CharacterToCount)).is_empty() == False: return -1
+        elif not trigger_set.contains(CharacterToCount):
+            # (2.1) The trigger set does not contain the character to be counted at all
+            #       Thus the number of occurences is deterministic and **no increment occurence counter**.
+            increment = 0
+        elif trigger_set.has_only_this_element(CharacterToCount):
+            # (2.2) The trigger set contains only the character to be counted.
+            #       Thus the number of occurences is deterministic and **increment occurence counter**.
             increment = 1
+        else:
+            # (2.3) The trigger set contains the character to be counted and also others. This
+            #       means that for the transition the number of occurences (zero or one) is not
+            #       determined by the pattern. Thus the number of occurences not deterministic.
+            return -1
 
         characters_found_n = __dive(state_machine, follow_state_index, character_n + increment, 
                                     new_passed_state_list, CharacterToCount)
 
-
         # -- if one path contains an undefined number of characters, then the whole pattern
         #    has an undefined number of characters.
-        if characters_found_n == -1: return -1
+        if characters_found_n == -1: 
+            return -1
+
         # -- if one path contains a different number of characters than another path
         #    then the number of characters is undefined.
         if prev_characters_found_n != None and \
-           prev_characters_found_n != characters_found_n: return -1
+           prev_characters_found_n != characters_found_n: 
+               return -1
 
         prev_characters_found_n = characters_found_n
 
