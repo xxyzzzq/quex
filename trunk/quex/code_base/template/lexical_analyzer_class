@@ -288,10 +288,11 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         virtual ~CLASS();
 
         /* Direct Access to Memory 
-        void                 _buffer_content_copy(uint8_t* Content, const size_t Size);
-        void                 _buffer_content_append(uint8_t* Content, const size_t Size);
-        QUEX_CHARACTER_TYPE* _buffer_content_get_pointer();
-        QUEX_CHARACTER_TYPE* _buffer_content_set_buffer_limit_code(const size_t CharacterIndex);
+        bool                  _buffer_copy(uint8_t* Content, const size_t Size);
+        bool                  _buffer_append(uint8_t* Content, const size_t Size);
+        QUEX_CHARACTER_TYPE*  _buffer_begin();
+        QUEX_CHARACTER_TYPE*  _buffer_end();
+        bool                  _buffer_set_terminator(const size_t CharacterIndex);
         */
         //
         // -- token stream: read next token

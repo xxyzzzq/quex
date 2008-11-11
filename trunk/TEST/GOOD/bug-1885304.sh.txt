@@ -270,6 +270,14 @@ namespace quex {
         CLASS(std::FILE*                input_fh,       const char* IConvInputCodingName = 0x0, 
 
         virtual ~CLASS();
+
+        /* Direct Access to Memory 
+        bool                  _buffer_copy(uint8_t* Content, const size_t Size);
+        bool                  _buffer_append(uint8_t* Content, const size_t Size);
+        QUEX_CHARACTER_TYPE*  _buffer_begin();
+        QUEX_CHARACTER_TYPE*  _buffer_end();
+        bool                  _buffer_set_terminator(const size_t CharacterIndex);
+        */
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE

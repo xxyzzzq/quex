@@ -1,9 +1,9 @@
-<test-database execution-time-sec="3.98" date="Mon Nov 10 07:56:26 2008">
+<test-database execution-time-sec="4.06" date="Tue Nov 11 08:23:01 2008">
     <last-used-diff-display-program name=""/>
-    <test title="State Machine Pattern Matching" make-required="True" time-sum-sec="0.08"> 
+    <test title="State Machine Pattern Matching" make-required="True" time-sum-sec="0.07"> 
         <application file-name="test-pattern-matching.py" info-request-time="1223017233L"/>
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.08" crc="-1248532212"/>
+           <choice name="" result="OK" time-sec="0.07" crc="-1248532212"/>
         </choice-list>
     </test>
     <group name="Backslashed Characters">
@@ -39,10 +39,10 @@
                <choice name="" result="OK" time-sec="0.03" crc="1815858266"/>
             </choice-list>
         </test>
-        <test title="Lonestanding characters" make-required="True" time-sum-sec="0.16"> 
+        <test title="Lonestanding characters" make-required="True" time-sum-sec="0.13"> 
             <application file-name="test-lonely-characters.py" info-request-time="1223017233L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.16" crc="95038993"/>
+               <choice name="" result="OK" time-sec="0.13" crc="95038993"/>
             </choice-list>
         </test>
     </group>
@@ -59,24 +59,18 @@
                <choice name="" result="OK" time-sec="0.13" crc="1016859185"/>
             </choice-list>
         </test>
-        <test title="Alternative Expressions" make-required="True" time-sum-sec="0.04"> 
+        <test title="Alternative Expressions" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-set-expressions.py" info-request-time="1223017233L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="918355889"/>
+               <choice name="" result="OK" time-sec="0.05" crc="918355889"/>
             </choice-list>
         </test>
     </group>
     <group name="Conditional Analysis">
-        <test title="Begin of Line '^', End of Line '$'" make-required="True" time-sum-sec="0.10"> 
+        <test title="Begin of Line '^', End of Line '$'" make-required="True" time-sum-sec="0.11"> 
             <application file-name="test-bol-eol.py" info-request-time="1223017233L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.10" crc="1219086633"/>
-            </choice-list>
-        </test>
-        <test title="pre- and post-conditions" make-required="True" time-sum-sec="0.11"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1223017233L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.11" crc="-723227016"/>
+               <choice name="" result="OK" time-sec="0.11" crc="1219086633"/>
             </choice-list>
         </test>
         <test title="pre conditions" make-required="True" time-sum-sec="0.09"> 
@@ -91,6 +85,12 @@
                <choice name="" result="OK" time-sec="0.08" crc="1479181746"/>
             </choice-list>
         </test>
+        <test title="pre- and post-conditions" make-required="True" time-sum-sec="0.12"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1223017233L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.12" crc="-723227016"/>
+            </choice-list>
+        </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" make-required="True" time-sum-sec="0.08"> 
             <application file-name="test-eol-carriage-return-newline.py" info-request-time="1223017233L"/>
             <choice-list number="1">
@@ -99,16 +99,16 @@
         </test>
     </group>
     <group name="Unicode properties">
-        <test title="Set Operations" make-required="True" time-sum-sec="1.33"> 
-            <application file-name="test-properties-2.py" info-request-time="1223017233L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.33" crc="1108933321"/>
-            </choice-list>
-        </test>
         <test title="Simple" make-required="True" time-sum-sec="1.38"> 
             <application file-name="test-properties.py" info-request-time="1223017233L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="1.38" crc="1815657902"/>
+            </choice-list>
+        </test>
+        <test title="Set Operations" make-required="True" time-sum-sec="1.42"> 
+            <application file-name="test-properties-2.py" info-request-time="1223017233L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="1.42" crc="1108933321"/>
             </choice-list>
         </test>
     </group>
