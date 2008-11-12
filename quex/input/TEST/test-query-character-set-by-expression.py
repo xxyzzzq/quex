@@ -8,7 +8,7 @@ import quex.input.query as query
 
 
 if "--hwut-info" in sys.argv:
-    print "Quex Queries: Character Sets for Property Settings"
+    print "Quex Queries: Character Sets for Property Settings II"
     sys.exit(0)
 
 
