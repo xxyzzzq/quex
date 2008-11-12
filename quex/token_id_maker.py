@@ -2,6 +2,8 @@
 import time
 import os
 import sys
+import re
+
 from GetPot import GetPot
 
 import quex.frs_py.file_in  as file_in
@@ -217,6 +219,48 @@ def output(global_setup):
     if os.linesep != "\n": content = content.replace("\n", os.linesep)
     fh.write(content)
     fh.close()
+
+def __parse_token_id_file(UserTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
+    """This function somehow interprets the user defined token id file--if there is
+       one. It does this in order to find the names of defined token ids. It does
+       some basic interpretation and include file following, but: **it is in no
+       way perfect**. Since its only purpose is to avoid warnings about token ids
+       that are not defined it is not essential that it may fail sometimes.
+
+       It is more like a nice feature that quex tries to find definitions on its own.
+       
+       Nevertheless, it should work in the large majority of cases.
+    """
+    include_re_obj = re.compile(IncludeRE)
+
+    # validate(...) ensured, that the file exists.
+    work_list    = [ UserTokenIdFile ] 
+    done_list    = []
+    unfound_list = []
+    while work_list != []:
+        fh = open(work_list.pop())
+        content = fh.read()
+        fh.close()
+
+        # delete any comment inside the file
+        for opener, closer in CommentDelimiterList:
+            content = file_in.delete_comment(content, opener, closer, LeaveNewlineDelimiter=True)
+
+        # add any found token id to the list
+        token_id_finding_list = file_in.extract_identifiers_with_specific_prefix(content, TokenPrefix)
+        for token_name, line_n in token_id_finding_list:
+            prefix_less_token_name = token_name[len(TokenPrefix):]
+            # NOTE: The line number might be wrong, because of the comment deletion
+            lexer_mode.token_id_db[prefix_less_token_name] = \
+                    TokenInfo(prefix_less_token_name, None, None, fh.name, line_n) 
+        
+        # find "#include" statements
+        include_file_list = include_re_obj.findall(content)
+        include_file_list = filter(lambda file: file not in done_list,    include_file_list)
+        include_file_list = filter(lambda file: os.access(file, os.F_OK), include_file_list)
+        work_list.extend(include_file_list)
+
+    print unfound_list
 
 
 if __name__ == "__main__":
