@@ -95,6 +95,50 @@ def read_identifier(fh):
         if is_identifier_continue(tmp): txt += tmp
         else:                           fh.seek(-1, 1); return txt
 
+def find_end_of_identifier(Txt, StartIdx, L):
+    for i in range(StartIdx, L):
+        if not is_identifier_continue(Txt[i]): return i
+    else:
+        return L
+
+def get_text_line_n(Txt, Pos):
+    line_n = 1
+    for i in range(0, Pos):
+        if Txt[i] == "\n": line_n += 1
+    return line_n
+
+def delete_comment(Content, Opener, Closer, LeaveNewlineDelimiter=False):
+    # delete comment lines in C++ form
+    new_content = ""
+    prev_i      = 0
+    while 1 + 1 == 2:
+        i = Content.find(Opener, prev_i)
+        if i == -1: 
+            new_content += Content[prev_i:]
+            break
+        new_content += Content[prev_i:i]
+        prev_i = i + len(Opener)
+        i = Content.find(Closer, prev_i)
+        if i == -1: break
+        if LeaveNewlineDelimiter:
+            new_content += "\n" * Content[prev_i:i+len(Closer)].count("\n")
+        prev_i = i + len(Closer)
+
+    return new_content
+
+def extract_identifiers_with_specific_prefix(Content, Prefix):
+    L = len(Content)
+    i = 0
+    finding_list = []
+    while 1 + 1 == 2:
+        i = Content.find(Prefix, i)
+        if i == -1: break
+        end_i = find_end_of_identifier(Content, i, L)
+        finding_list.append([Content[i:end_i], get_text_line_n(Content, i)])
+        i = end_i
+    return finding_list
+
+
 def read_until_whitespace(fh):
     txt = ""
     previous_tmp = ""
