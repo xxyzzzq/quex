@@ -1,0 +1,6 @@
+error.qx:12:error: circular inheritance detected:
+error.qx:12:error: mode 'A' is a base of mode 'D'.
+error.qx:12:error: mode 'D' is a base of mode 'C'.
+error.qx:12:error: mode 'C' is a base of mode 'B'.
+error.qx:12:error: mode 'B' is a base of mode 'A'.
+error.qx:12:error: 
