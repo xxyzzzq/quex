@@ -132,12 +132,14 @@ def extract_identifiers_with_specific_prefix(Content, Prefix):
     finding_list = []
     while 1 + 1 == 2:
         i = Content.find(Prefix, i)
+        # not found?
         if i == -1: break
+        # is it inside an identifier?
+        if i != 0 and is_identifier_start(Content[i-1]): i += 1; continue
         end_i = find_end_of_identifier(Content, i, L)
         finding_list.append([Content[i:end_i], get_text_line_n(Content, i)])
         i = end_i
     return finding_list
-
 
 def read_until_whitespace(fh):
     txt = ""

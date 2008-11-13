@@ -488,6 +488,18 @@ namespace quex {
 
         if(    me->_on_overflow == 0x0
             || me->_on_overflow(buffer, ForwardF) == false ) {
+            /* Print out the lexeme start, so that the user has a hint. */
+            /* char utf8_encoded_str[512]; */
+            /*
+               tmp += " '";
+            for(__string::iterator it = tmp2.begin(); it != tmp2.end() ; ++it) {
+                utf8_length = unicode_to_utf8(*it, utf8);
+                if( utf8_length < 0 || utf8_length > 6) continue;
+                utf8[utf8_length] = '\0';
+                tmp += std::string((const char*)utf8);        
+            }
+            tmp += "' "; 
+            */
             QUEX_ERROR_EXIT("Distance between lexeme start and current pointer exceeds buffer size.\n"
                             "(tried to load buffer)");
         }

@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Tue Nov 11 08:24:32 2008
+DATE:  Thu Nov 13 03:22:32 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -17,6 +17,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-2002474.sh ........................................[NO GOOD FILE]
     2004927 UTF-8 RE Extra Comma Matched
         bug-2004927.sh ..................................................[OK]
+    2272677 range_error / character count pre-determination
+        bug-2272677.sh ........................................[NO GOOD FILE]
 
  -- fschaef:
 
@@ -38,8 +40,10 @@ TITLE: Regression Tests on Fixed Bugs
 
  -- marcoantonelli:
 
+    2219383 Parse foreign token id file
+        feature-2219383.sh ..............................................[OK]
     2257908 Quex does not terminate lexer generation
-        bug-2257908.sh ........................................[NO GOOD FILE]
+        bug-2257908.sh ..................................................[OK]
 
  -- sphericalcow:
 
@@ -144,7 +148,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Tue Nov 11 08:20:53 2008
+DATE:  Thu Nov 13 03:18:05 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -232,12 +236,17 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Tue Nov 11 08:20:53 2008
+DATE:  Thu Nov 13 03:18:05 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ...............................[OK]
+
+ -- User defined token id file:
+
+    __parse_token_id_file
+        test-token_id_file-find_ids.py ..................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -247,7 +256,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Tue Nov 11 08:20:54 2008
+DATE:  Thu Nov 13 03:18:06 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -309,7 +318,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Tue Nov 11 08:20:55 2008
+DATE:  Thu Nov 13 03:18:07 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -369,7 +378,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Tue Nov 11 08:20:57 2008
+DATE:  Thu Nov 13 03:18:09 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -461,7 +470,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Tue Nov 11 08:20:57 2008
+DATE:  Thu Nov 13 03:18:09 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -481,7 +490,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Tue Nov 11 08:20:57 2008
+DATE:  Thu Nov 13 03:18:09 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -514,7 +523,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Tue Nov 11 08:22:56 2008
+DATE:  Thu Nov 13 03:20:05 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -677,7 +686,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Tue Nov 11 08:23:01 2008
+DATE:  Thu Nov 13 03:20:10 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -739,7 +748,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Tue Nov 11 08:23:06 2008
+DATE:  Thu Nov 13 03:20:14 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -837,13 +846,17 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Tue Nov 11 08:23:06 2008
+DATE:  Thu Nov 13 03:20:15 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
 
  -- File Input:
 
+    Function delete_comment(...)
+        test-delete_comment.py ..........................................[OK]
+    Function extract_identifiers_with_specific_prefix(...)
+        test-extract_identifiers_with_specific_prefix.py ................[OK]
     Function read_until_closing_bracket(...)
         test-read_until_closing_bracket.py ..............................[OK]
 
@@ -860,7 +873,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Tue Nov 11 08:23:21 2008
+DATE:  Thu Nov 13 03:20:33 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -868,6 +881,8 @@ TITLE: Character Set Queries
  -- Quex Queries:
 
     Character Sets for Property Settings
+        test-query-character-set.py .....................................[OK]
+    Character Sets for Property Settings II
         test-query-character-set-by-expression.py .......................[OK]
     Information about Properties
         test-query.py PropertyList ......................................[OK]
@@ -883,7 +898,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Tue Nov 11 08:23:23 2008
+DATE:  Thu Nov 13 03:20:35 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

@@ -98,7 +98,7 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
 
         # occasionally add token id automatically to database
         prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
-        if not lexer_mode.token_id_db.has_key(TokenIDStr):
+        if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
             msg = "Token id '%s' defined implicitly." % token_name
             if token_name in lexer_mode.token_id_db.keys():
                 msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Thu Nov 13 03:08:17 2008">
+<test-database execution-time-sec="0.00" date="Thu Nov 13 03:22:32 2008">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="0.00"> 
@@ -69,9 +69,9 @@
     </group>
     <group name="marcoantonelli">
         <test title="2219383 Parse foreign token id file" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="feature-2219383.sh" info-request-time="1226440878L"/>
+            <application file-name="feature-2219383.sh" info-request-time="1226542334L"/>
             <choice-list number="1">
-               <choice name="" result="NO GOOD FILE" time-sec="0.00" crc="983487435"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-328815406"/>
             </choice-list>
         </test>
         <test title="2257908 Quex does not terminate lexer generation" make-required="True" time-sum-sec="0.00"> 
@@ -124,12 +124,6 @@
             <application file-name="bug-1900391.sh" info-request-time="1223017235L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-1949253838"/>
-            </choice-list>
-        </test>
-        <test title="1892227 accepted as identifiers in def" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1892227.sh" info-request-time="1223017237L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1038686624"/>
             </choice-list>
         </test>
         <test title="1893874 Missing colon in mode definition crashes 0.20.5" make-required="True" time-sum-sec="0.00"> 
@@ -290,10 +284,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="2018568175"/>
             </choice-list>
         </test>
-        <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1894578.sh" info-request-time="1223962124L"/>
+        <test title="1892227 accepted as identifiers in def" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1892227.sh" info-request-time="1223017237L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1096694076"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1038686624"/>
             </choice-list>
         </test>
         <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.00"> 
@@ -312,6 +306,12 @@
             <application file-name="bug-1885846.sh" info-request-time="1223017238L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="2110266544"/>
+            </choice-list>
+        </test>
+        <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1894578.sh" info-request-time="1223962124L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="1096694076"/>
             </choice-list>
         </test>
     </group>
