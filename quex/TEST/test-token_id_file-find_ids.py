@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-from quex.token_id_maker import __parse_token_id_file
+from quex.token_id_maker import parse_token_id_file
 from quex.lexer_mode     import token_id_db
 
 
@@ -20,7 +20,7 @@ IncludeRE            = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
 def test(TokenIDFile, TokenPrefix):
     print "##-----------------------------------------------------------------"
     token_id_db.clear()
-    __parse_token_id_file(TokenIDFile, TokenPrefix, CommentDelimiterList, IncludeRE)
+    parse_token_id_file(TokenIDFile, TokenPrefix, CommentDelimiterList, IncludeRE)
     for key, token_info in token_id_db.items():
         print "%s:%i: %s" % (token_info.positions[0], token_info.positions[1], key)
 

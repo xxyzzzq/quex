@@ -188,6 +188,7 @@ def ____dive(state_machine, state_index, character_n, passed_state_list, Charact
 
         prev_characters_found_n = characters_found_n
 
-    return prev_characters_found_n
+    if prev_characters_found_n == None: return -1
+    else:                               return prev_characters_found_n
 
 

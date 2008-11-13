@@ -189,8 +189,8 @@ def output(global_setup):
             if token_info.number == None: 
                 token_info.number = i; i+= 1
             token_id_txt += "#define %s%s %s((QUEX_TOKEN_ID_TYPE)%i)\n" % (setup.token_prefix,
-                                                                            token_name, space(token_name), 
-                                                                            token_info.number)
+                                                                           token_name, space(token_name), 
+                                                                           token_info.number)
     # NO LONGER: token_id_txt += "} // namespace quex\n" 
 
     # -- define the function for token names
@@ -220,7 +220,7 @@ def output(global_setup):
     fh.write(content)
     fh.close()
 
-def __parse_token_id_file(UserTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
+def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
     """This function somehow interprets the user defined token id file--if there is
        one. It does this in order to find the names of defined token ids. It does
        some basic interpretation and include file following, but: **it is in no
@@ -234,7 +234,7 @@ def __parse_token_id_file(UserTokenIdFile, TokenPrefix, CommentDelimiterList, In
     include_re_obj = re.compile(IncludeRE)
 
     # validate(...) ensured, that the file exists.
-    work_list    = [ UserTokenIdFile ] 
+    work_list    = [ ForeignTokenIdFile ] 
     done_list    = []
     unfound_list = []
     while work_list != []:
@@ -259,9 +259,6 @@ def __parse_token_id_file(UserTokenIdFile, TokenPrefix, CommentDelimiterList, In
         include_file_list = filter(lambda file: file not in done_list,    include_file_list)
         include_file_list = filter(lambda file: os.access(file, os.F_OK), include_file_list)
         work_list.extend(include_file_list)
-
-    print unfound_list
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

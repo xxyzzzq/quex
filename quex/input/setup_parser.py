@@ -9,6 +9,7 @@ from   quex.frs_py.file_in         import open_file_or_die, error_msg, is_identi
                                           delete_comment
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
+from   quex.token_id_maker import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, DEPRECATED
 
@@ -65,13 +66,14 @@ def do(argv):
                                                      "--token-id-uninitialized")
     validate(setup, command_line, argv)
 
-    if setup.input_user_token_id_file != "": 
+    if setup.input_foreign_token_id_file != "": 
         CommentDelimiterList = [["//", "\n"], ["/*", "*/"]]
         # Regular expression to find '#include <something>' and extract the 'something'
         # in a 'group'. Note that '(' ')' cause the storage of parts of the match.
         IncludeRE            = "#[ \t]*include[ \t]*[\"<]([^\">]+)[\">]"
         #
-        __parse_token_id_file(setup.input_user_token_id_file, CommentDelimiterList, IncludeRE)
+        parse_token_id_file(setup.input_foreign_token_id_file, setup.input_token_id_prefix, 
+                            CommentDelimiterList, IncludeRE)
 
     # (*) Default values
     #     (Please, do not change this, otherwise no 'empty' options can be detected.)
@@ -210,13 +212,13 @@ def __check_file_name(setup, Candidate, Name):
             if name != "" and name[0] == "-": 
                 error_msg("Quex refuses to work with file names that start with '-' (minus).\n"  + \
                           "Received '%s' for %s (%s)" % (value, name, repr(CommandLineOption)[1:-1]))
-            if os.access(name, os.F_OK):
+            if os.access(name, os.F_OK) == False:
                 error_msg("File %s cannot be found.\n" % name)
     else:
         if value == "" or value[0] == "-": 
             return
-        if os.access(name, os.F_OK):
-            error_msg("File %s cannot be found.\n" % name)
+        if os.access(value, os.F_OK) == False:
+            error_msg("File %s cannot be found.\n" % value)
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
