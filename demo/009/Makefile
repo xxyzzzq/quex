@@ -27,6 +27,9 @@ all: lexer wlexer
 lexer: lexer.o tiny_lexer.o tiny_lexer-core-engine.o
 	$(LD) -o $@  lexer.o tiny_lexer.o tiny_lexer-core-engine.o 
           
+stdinlexer: stdinlexer.o tiny_lexer.o tiny_lexer-core-engine.o
+	$(LD) -o $@  stdinlexer.o tiny_lexer.o tiny_lexer-core-engine.o 
+          
 $(SOURCES): simple.qx $(QUEX_CORE)
 	quex -i simple.qx --engine tiny_lexer # CERTAINLY NOT: "-b wchar_t" 
 

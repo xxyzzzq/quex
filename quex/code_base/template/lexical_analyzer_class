@@ -276,6 +276,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
+        CLASS(QUEX_CHARACTER_TYPE* BufferMemory, const size_t Size);
         CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
         CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
@@ -287,13 +288,14 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
         virtual ~CLASS();
 
-        /* Direct Access to Memory 
-        bool                  _buffer_copy(uint8_t* Content, const size_t Size);
-        bool                  _buffer_append(uint8_t* Content, const size_t Size);
-        QUEX_CHARACTER_TYPE*  _buffer_begin();
-        QUEX_CHARACTER_TYPE*  _buffer_end();
-        bool                  _buffer_set_terminator(const size_t CharacterIndex);
-        */
+        /* Direct Access to Memory */
+        bool                  buffer_copy(QUEX_CHARACTER_TYPE* Content, const size_t Size);
+        bool                  buffer_append(QUEX_CHARACTER_TYPE* Content, const size_t Size);
+        QUEX_CHARACTER_TYPE*  buffer_begin();
+        QUEX_CHARACTER_TYPE*  buffer_end();
+        const size_t          buffer_size();
+        QUEX_CHARACTER_TYPE*  buffer_text_end();
+        
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
@@ -452,13 +454,25 @@ $$CLASS_BODY_EXTENSION$$
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleT> 
         void     __constructor_core(InputHandleT*, 
-                                    QuexBufferFillerTypeEnum, const char* IConvInputCodingName);
+                                    QuexBufferFillerTypeEnum, const char* IConvInputCodingName,
+                                    QUEX_CHARACTER_TYPE*      user_buffer    = 0x0,
+                                    const size_t              UserBufferSize = 0); 
 
     };
  
     template <class InputHandleT> inline void
-    CLASS::__constructor_core(InputHandleT* input_handle, 
-                              QuexBufferFillerTypeEnum BFT, const char* IANA_InputCodingName) 
+    CLASS::__constructor_core(InputHandleT*             input_handle, 
+                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName, 
+                              QUEX_CHARACTER_TYPE*      user_buffer    /* = 0x0 */,
+                              const size_t              UserBufferSize /* = 0 */) 
+    /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
+     *                     user intends to perform the lexical analysis directly on plain
+     *                     memory. In this case the optional arguments user_buffer and UserBufferSize
+     *                     must be defined.
+     *
+     * Under normal circumstances the user_buffer and UserBufferSize **must not** be defined by
+     * the user.
+     */
     {
 #       if defined(QUEX_OPTION_ASSERTS) && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         std::cout << "#####################################################################################\n";
@@ -516,6 +530,12 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
                           QUEX_SETTING_BUFFER_SIZE,
                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
+        if( input_handle == 0x0 ) {
+            __quex_assert(user_buffer != 0);
+            __quex_assert(UserBufferSize != 0);
+            QuexBufferMemory_init(&this->buffer._memory, user_buffer, UserBufferSize); 
+        }
+
 $$CONSTRUCTOR_EXTENSTION$$
     }   
 
@@ -554,6 +574,7 @@ $$CONSTRUCTOR_EXTENSTION$$
 #   include <quex/code_base/template/IncludeStack.i>
 #endif
 #include <quex/code_base/template/misc.i>
+#include <quex/code_base/template/buffer_access.i>
 
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N

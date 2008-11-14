@@ -115,6 +115,8 @@ namespace quex {
     QUEX_INLINE bool  QuexBuffer_is_end_of_file(QuexBuffer*);
     QUEX_INLINE bool  QuexBuffer_is_begin_of_file(QuexBuffer*);
 
+    QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory* me, 
+                                            QUEX_CHARACTER_TYPE* memory, size_t Size);
 #ifdef QUEX_OPTION_ASSERTS
     QUEX_INLINE void  QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QuexBuffer* buffer);
 #else

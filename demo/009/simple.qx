@@ -2,6 +2,7 @@
 token {
     HELLO
     WORLD
+    BYE
 }
 
 mode ONE_AND_ONLY :
@@ -11,6 +12,7 @@ mode ONE_AND_ONLY :
 
     "hello"|"bonjour"|"hallo" => QUEX_TKN_HELLO(Lexeme);
     "world"|"le monde"|"welt" => QUEX_TKN_WORLD(Lexeme);
+    "bye"                     => QUEX_TKN_BYE;
 }
 
 
