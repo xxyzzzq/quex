@@ -488,20 +488,44 @@ namespace quex {
 
         if(    me->_on_overflow == 0x0
             || me->_on_overflow(buffer, ForwardF) == false ) {
+
+#           ifdef QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE
             /* Print out the lexeme start, so that the user has a hint. */
-            /* char utf8_encoded_str[512]; */
-            /*
-               tmp += " '";
-            for(__string::iterator it = tmp2.begin(); it != tmp2.end() ; ++it) {
-                utf8_length = unicode_to_utf8(*it, utf8);
+            uint8_t               utf8_encoded_str[512]; 
+            static char           message[1024];
+            const size_t          MessageSize = 1024;
+            uint8_t*              WEnd        = utf8_encoded_str + 512 - 7;
+            uint8_t*              witerator   = utf8_encoded_str; 
+            QUEX_CHARACTER_TYPE*  End         = buffer->_memory._back; 
+            QUEX_CHARACTER_TYPE*  iterator    = buffer->_lexeme_start_p; 
+            int                   utf8_length = 0;
+            
+            for(; witerator < WEnd &&  iterator != End ; ++iterator) {
+                utf8_length = Quex_unicode_to_utf8(*iterator, witerator);
                 if( utf8_length < 0 || utf8_length > 6) continue;
-                utf8[utf8_length] = '\0';
-                tmp += std::string((const char*)utf8);        
+                witerator += utf8_length;
+                *witerator = '\0';
             }
-            tmp += "' "; 
-            */
+            message[0] = '\0';
+            /* No use of 'snprintf()' because not all systems seem to support it propperly. */
+            __QUEX_STD_strncat(message, 
+                               "Distance between lexeme start and current pointer exceeds buffer size.\n"
+                               "(tried to load buffer",
+                               MessageSize);
+            __QUEX_STD_strncat(message, ForwardF ? "forward)" : "backward)",                   MessageSize);
+            __QUEX_STD_strncat(message, "As a hint consider the beginning of the lexeme:\n[[", MessageSize);
+            __QUEX_STD_strncat(message, (char*)utf8_encoded_str,                               MessageSize);
+            __QUEX_STD_strncat(message, "]]\n",                                                MessageSize);
+
+            QUEX_ERROR_EXIT(message);
+#           else
             QUEX_ERROR_EXIT("Distance between lexeme start and current pointer exceeds buffer size.\n"
-                            "(tried to load buffer)");
+                            "(tried to load buffer forward). Please, compile with option\n\n"
+                            "    QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE\n\n"
+                            "in order to get a more informative output. Most likely, one of your patterns\n"
+                            "eats longer as you inteded it. Alternatively you might want to set the buffer\n"
+                            "size to a greate value or use skippers (<skip: [ \n\t]> for example.");
+#           endif /* QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE */
         }
     }
 
