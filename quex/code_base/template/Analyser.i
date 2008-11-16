@@ -10,13 +10,13 @@ namespace quex {
 #endif
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyser_init(QuexAnalyser* me,
-                      QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
-                      InputHandleT*                input_handle,
-                      QuexBufferFillerTypeEnum     InputCodingType,
-                      const char*                  IANA_InputCodingName, 
-                      const size_t                 BufferMemorySize,
-                      const size_t                 TranslationBufferMemorySize)
+    QuexAnalyser_construct(QuexAnalyser* me,
+                           QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                           InputHandleT*                input_handle,
+                           QuexBufferFillerTypeEnum     InputCodingType,
+                           const char*                  IANA_InputCodingName, 
+                           const size_t                 BufferMemorySize,
+                           const size_t                 TranslationBufferMemorySize)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
@@ -25,11 +25,11 @@ namespace quex {
      *                     QuexBufferMemory_init(analyse->buffer._memory, (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
-        QuexBuffer_instantiate(&me->buffer, 
-                               input_handle,
-                               InputCodingType, IANA_InputCodingName,
-                               BufferMemorySize,
-                               TranslationBufferMemorySize);
+        QuexBuffer_construct(&me->buffer, 
+                             input_handle,
+                             InputCodingType, IANA_InputCodingName,
+                             BufferMemorySize,
+                             TranslationBufferMemorySize);
 
         me->current_analyser_function = AnalyserFunction;
 
@@ -39,9 +39,9 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QuexAnalyser_free_related_memory(QuexAnalyser* me)
+    QuexAnalyser_destruct(QuexAnalyser* me)
     {
-        QuexBuffer_deinstantiate(&me->buffer);
+        QuexBuffer_destruct(&me->buffer);
     }
 
     QUEX_INLINE void

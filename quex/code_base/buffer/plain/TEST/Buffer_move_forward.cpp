@@ -18,7 +18,9 @@ main(int argc, char** argv)
     QuexBufferFiller_Plain<FILE>  filler;
 
     QuexBufferFiller_Plain_init(&filler, fh);
-    QuexBuffer_init(&buffer, 5, (QuexBufferFiller*)&filler);
+    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5),5 );      
+    QuexBuffer_init(&buffer);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

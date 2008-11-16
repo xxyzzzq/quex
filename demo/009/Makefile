@@ -21,7 +21,7 @@ CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(NDEBUG_F) -DQUEX_OPTION_ASSERTS
 LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
-all: lexer wlexer
+all: lexer stdinlexer wlexer
 
 # -- char application
 lexer: lexer.o tiny_lexer.o tiny_lexer-core-engine.o
@@ -50,5 +50,5 @@ clean:
 	rm -f $(SOURCES)
 	rm -f $(WSOURCES)
 	rm -f *.o
-	rm -f lexer wlexer
+	rm -f lexer stdinlexer wlexer
 	rm -f *.bak

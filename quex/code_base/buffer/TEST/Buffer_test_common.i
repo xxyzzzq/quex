@@ -37,7 +37,7 @@ show_this(const char* Name, QuexBuffer* buffer, QUEX_CHARACTER_TYPE* Pos, char A
         printf("%s= %i (--> '\\n')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
                Appendix);
     } else {
-        utf8_char_str_length = quex::unicode_to_utf8(UC, utf8_char_str);
+        utf8_char_str_length = quex::Quex_unicode_to_utf8(UC, utf8_char_str);
         utf8_char_str[utf8_char_str_length] = '\0';
         printf("%s= %i (--> '%s')%c", 
                (char*)Name,

@@ -30,7 +30,9 @@ main(int argc, char** argv)
     assert( fh != 0x0 );
 
     QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
-    QuexBuffer_init(&buffer, 5, (QuexBufferFiller*)&filler);
+    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
+    QuexBuffer_init(&buffer);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

@@ -331,9 +331,9 @@ test_program_db = {
         char           TestString[] = "\0$$TEST_STRING$$\0";
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, 0x0,
-                          QUEX_PLAIN, 0x0,
-                          $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, 0x0,
+                               QUEX_PLAIN, 0x0,
+                               $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)TestString, MemorySize); 
         /**/
@@ -364,9 +364,9 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, fh,
-                          QUEX_PLAIN, 0x0,
-                          $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, fh,
+                               QUEX_PLAIN, 0x0,
+                               $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
@@ -394,9 +394,9 @@ test_program_db = {
         /**/
         istringstream  istr("$$TEST_STRING$$");
 
-        QuexAnalyser_init(&lexer_state, Mr_UnitTest_analyser_function, &istr,
-                          QUEX_PLAIN, 0x0,
-                          $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr,
+                               QUEX_PLAIN, 0x0,
+                               $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
