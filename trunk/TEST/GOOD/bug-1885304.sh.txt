@@ -260,10 +260,10 @@ namespace quex {
     class CLASS :
         protected QuexAnalyser {
 
-        /* DISABLED */ CLASS();
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
+        CLASS();
         CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
         CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
         CLASS(std::wistream*            p_input_stream, const char* IConvInputCodingName = 0x0, 
@@ -271,13 +271,16 @@ namespace quex {
 
         virtual ~CLASS();
 
-        /* Direct Access to Memory 
-        bool                  _buffer_copy(uint8_t* Content, const size_t Size);
-        bool                  _buffer_append(uint8_t* Content, const size_t Size);
-        QUEX_CHARACTER_TYPE*  _buffer_begin();
-        QUEX_CHARACTER_TYPE*  _buffer_end();
-        bool                  _buffer_set_terminator(const size_t CharacterIndex);
-        */
+        /* Direct Access to Memory */
+        bool                  buffer_copy(QUEX_CHARACTER_TYPE* Content, const size_t Size);
+        bool                  buffer_append(QUEX_CHARACTER_TYPE* Content, const size_t Size);
+        void                  buffer_prepare(const size_t CharacterN);
+        QUEX_CHARACTER_TYPE*  buffer_begin();
+        QUEX_CHARACTER_TYPE*  buffer_end();
+        const size_t          buffer_size();
+        QUEX_CHARACTER_TYPE*  buffer_text_end();
+        const size_t          buffer_distance_to_text_end();
+        
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
@@ -448,8 +451,8 @@ namespace quex {
     };
  
     template <class InputHandleT> inline void
-    CLASS::__constructor_core(InputHandleT* input_handle, 
-                              QuexBufferFillerTypeEnum BFT, const char* IANA_InputCodingName) 
+    CLASS::__constructor_core(InputHandleT*             input_handle, 
+                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
     {
 #       if defined(QUEX_OPTION_ASSERTS) && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         std::cout << "#####################################################################################\n";
@@ -513,12 +516,12 @@ namespace quex {
 
         set_mode_brutally(LEX_ID_ONE_AND_ONLY);
 
-        QuexAnalyser_init((QuexAnalyser*)this,
-                          __current_mode_p->analyser_function,
-                          input_handle,
-                          buffer_filler_type, IANA_InputCodingName, 
-                          QUEX_SETTING_BUFFER_SIZE,
-                          QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        QuexAnalyser_construct((QuexAnalyser*)this,
+                              __current_mode_p->analyser_function,
+                              input_handle,
+                              buffer_filler_type, IANA_InputCodingName, 
+                              QUEX_SETTING_BUFFER_SIZE,
+                              QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
 
     }   
@@ -553,6 +556,7 @@ namespace quex {
 #   include <quex/code_base/template/IncludeStack.i>
 #endif
 #include <quex/code_base/template/misc.i>
+#include <quex/code_base/template/buffer_access.i>
 
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
