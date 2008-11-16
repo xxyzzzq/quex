@@ -31,13 +31,16 @@ namespace quex {
     typedef struct __QuexAnalyser_tag QuexAnalyser;
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyser_init(QuexAnalyser* me,
-                      QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
-                      InputHandleT*                input_handle,
-                      QuexBufferFillerTypeEnum     InputCodingType,
-                      const char*                  IANA_InputCodingName, 
-                      const size_t                 BufferMemorySize,
-                      const size_t                 TranslationBufferMemorySize);
+    QuexAnalyser_construct(QuexAnalyser* me,
+                           QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                           InputHandleT*                input_handle,
+                           QuexBufferFillerTypeEnum     InputCodingType,
+                           const char*                  IANA_InputCodingName, 
+                           const size_t                 BufferMemorySize,
+                           const size_t                 TranslationBufferMemorySize);
+
+    QUEX_INLINE void 
+    QuexAnalyser_destruct(QuexAnalyser* me);
 
     QUEX_INLINE void
     QuexAnalyser_reset(QuexAnalyser* me);
@@ -51,8 +54,6 @@ namespace quex {
                                        QUEX_CHARACTER_POSITION_TYPE* post_context_start_position,
                                        const size_t                  PostContextN);
 
-    QUEX_INLINE void 
-    QuexAnalyser_free_related_memory(QuexAnalyser* me);
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

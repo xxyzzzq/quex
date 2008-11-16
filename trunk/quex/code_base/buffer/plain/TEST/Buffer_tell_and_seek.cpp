@@ -17,7 +17,9 @@ main(int argc, char** argv)
                                      23, 18, 12, 21, 17, 27, 16, 26, 14, 24, 10, 13, 1, 22, 999 };
 
     QuexBufferFiller_Plain_init(&filler, fh);
-    QuexBuffer_init(&buffer, 5, (QuexBufferFiller*)&filler);
+    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
+    QuexBuffer_init(&buffer);
 
     test_seek_and_tell(&buffer, SeekIndices);
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

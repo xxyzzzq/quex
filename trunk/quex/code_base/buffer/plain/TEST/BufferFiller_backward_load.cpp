@@ -21,7 +21,9 @@ main(int argc, char** argv)
     fseek(fh, 15 * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
 
     QuexBufferFiller_Plain_init(&filler, fh);
-    QuexBuffer_init(&buffer, 12, (QuexBufferFiller*)&filler);
+    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(12), 12);      
+    QuexBuffer_init(&buffer);
 
     /* Simulate, as if we started at 0, and now reached '15' */
     buffer._content_first_character_index = 15;

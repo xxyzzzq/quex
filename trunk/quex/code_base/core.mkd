@@ -31,6 +31,7 @@ QUEX_CORE = \
                 buffer/plain/BufferFiller_Plain.i \
                 template/IncludeStack.i \
                 template/token_receiving_via_queue.i \
+                template/buffer_access.i \
                 template/dumpster.i \
                 template/Accumulator \
                 template/QuexMode \

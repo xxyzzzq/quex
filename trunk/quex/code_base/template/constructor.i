@@ -1,8 +1,9 @@
 // -*- C++ -*- vim:set syntax=cpp:
+#include <quex/code_base/buffer/Buffer.i>
 namespace quex { 
 
 inline
-CLASS::CLASS(QUEX_CHARACTER_TYPE* buffer, const size_t Size)
+CLASS::CLASS()
 : 
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
@@ -18,7 +19,9 @@ CLASS::CLASS(QUEX_CHARACTER_TYPE* buffer, const size_t Size)
     , counter(this)
 #   endif
 {
-    __constructor_core(0x0, QUEX_PLAIN, 0x0, buffer, Size);
+    CLASS::__constructor_core<FILE>(0x0, QUEX_PLAIN, 0x0);
+    QuexBuffer_setup_memory(&this->buffer, 
+                            MemoryManager_get_BufferMemory(QUEX_SETTING_BUFFER_SIZE), QUEX_SETTING_BUFFER_SIZE);      
 }
 
 inline
@@ -126,7 +129,7 @@ CLASS::CLASS(std::FILE* fh,
 inline
 CLASS::~CLASS() 
 {
-    QuexAnalyser_free_related_memory(this);
+    QuexAnalyser_destruct(this);
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     delete _token_queue;
 #   endif

@@ -1,5 +1,4 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 
@@ -18,15 +17,15 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE void QuexBuffer_init(QuexBuffer*  me, const size_t Size, struct __QuexBufferFiller_tag* filler); 
-    QUEX_INLINE void QuexBufferMemory_init(QuexBufferMemory* me, 
-                                           QUEX_CHARACTER_TYPE* memory, size_t Size);
+    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me); 
+    QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*    me, 
+                                            QUEX_CHARACTER_TYPE* memory, size_t Size);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBuffer_instantiate(QuexBuffer* me, InputHandleT* input_handle,
-                           QuexBufferFillerTypeEnum FillerType, const char* IANA_InputCodingName, 
-                           const size_t BufferMemorySize,
-                           const size_t TranslationBufferMemorySize)
+    QuexBuffer_construct(QuexBuffer*  me, InputHandleT*  input_handle,
+                         QuexBufferFillerTypeEnum  FillerType, const char*  IANA_InputCodingName, 
+                         const size_t  BufferMemorySize,
+                         const size_t  TranslationBufferMemorySize)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
@@ -35,8 +34,8 @@ namespace quex {
      *                     QuexBufferMemory_init(buffer->_memory, (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
-        QuexBufferFiller* buffer_filler = 0x0;
-        QuexBufferFillerTypeEnum filler_type = FillerType;
+        QuexBufferFiller*         buffer_filler = 0x0;
+        QuexBufferFillerTypeEnum  filler_type = FillerType;
 
         if( input_handle != 0x0 ) {
             if( filler_type == QUEX_AUTO ) {
@@ -46,6 +45,7 @@ namespace quex {
             switch( filler_type ) {
             case QUEX_AUTO:
                 QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
+
             case QUEX_PLAIN: 
                 buffer_filler = MemoryManager_get_BufferFiller(filler_type);
                 QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
@@ -63,37 +63,33 @@ namespace quex {
 #               endif
                 break;
             }
-            QuexBuffer_init(me, BufferMemorySize, buffer_filler);
-        } else { 
-            QuexBuffer_init(me, BufferMemorySize, 0x0);
-        } 
+            /* If filler == 0x0, then user wants to operate on plain memory, he has to call
+             * QuexBufferMemory_init(...) by hand later.                                     */
+            me->filler = buffer_filler;
+            QuexBufferMemory_init(&(me->_memory), MemoryManager_get_BufferMemory(BufferMemorySize), BufferMemorySize);      
 
+        } else { 
+            me->filler = 0x0;
+            QuexBufferMemory_init(&(me->_memory), 0, 0);      
+        } 
+        QuexBuffer_init(me);
+        
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
     QUEX_INLINE void
-    QuexBuffer_deinstantiate(QuexBuffer* me)
+    QuexBuffer_destruct(QuexBuffer* me)
     {
-        me->filler->_destroy(me->filler);
+        if( me->filler != 0x0 ) {
+            me->filler->_destroy(me->filler);
+        }
         MemoryManager_free_BufferMemory(me->_memory._front);
     }
 
     QUEX_INLINE void
-    QuexBuffer_init(QuexBuffer*  me, const size_t Size, struct __QuexBufferFiller_tag* filler)
+    QuexBuffer_init(QuexBuffer*  me)
     {
-        /* If filler == 0x0, then user wants to operate on plain memory, he has to call
-         * QuexBufferMemory_init(...) by hand later.                                     */
-        if( filler != 0x0 ) { 
-            QuexBufferMemory_init(&(me->_memory), MemoryManager_get_BufferMemory(Size), Size);      
-#           ifdef QUEX_OPTION_ASSERTS
-            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-            __QUEX_STD_memset((uint8_t*)(me->_memory._front + 1), 0xFF, Size - 2);
-#           endif 
-        } else { 
-            QuexBufferMemory_init(&(me->_memory), 0, 0);      
-        }
-
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
         /* NOTE: The terminating zero is stored in the first character **after** the  
@@ -106,9 +102,8 @@ namespace quex {
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
 #       endif
-        me->filler = filler;
 
-        if( filler != 0x0 ) {
+        if( me->filler != 0x0 ) {
             /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
              * assumes, that the user fills/has filled it with whatever his little heart desired. */
             QuexBufferFiller_initial_load(me);

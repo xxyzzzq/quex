@@ -44,12 +44,12 @@ namespace quex {
         _the_lexer->counter.init();
 
         // (2) initializing the new state of the lexer for reading the new input file/stream
-        QuexAnalyser_init((QuexAnalyser*)_the_lexer,
-                          _the_lexer->current_analyser_function,
-                          new_input_handle_p,
-                          BFT, IANA_CodingName, 
-                          QUEX_SETTING_BUFFER_SIZE,
-                          QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        QuexAnalyser_construct((QuexAnalyser*)_the_lexer,
+                               _the_lexer->current_analyser_function,
+                               new_input_handle_p,
+                               BFT, IANA_CodingName, 
+                               QUEX_SETTING_BUFFER_SIZE,
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
     }   
 
     inline bool
@@ -61,7 +61,7 @@ namespace quex {
         memento*  m = &(_stack.back());
 
         // (1) Free the related memory that is no longer used
-        QuexAnalyser_free_related_memory((QuexAnalyser*)_the_lexer);
+        QuexAnalyser_destruct((QuexAnalyser*)_the_lexer);
 
         // (2) Reset the lexical analyser to the state it was before the include
         m->map_to_lexical_analyzer(_the_lexer);
