@@ -5,7 +5,7 @@ from quex.frs_py.string_handling import blue_print
 # Python
 #    
 def __transition(CurrentStateIdx, StateIdx, 
-                 TargetStateIdx, BackwardLexingF=False, BufferReloadRequiredOnDropOutF=True, DeadEndStateDB={}):
+                 TargetStateIdx, BackwardLexingF=False, DeadEndStateDB={}):
     # NOTE: This is a very rudimental implementation of the __goto_state, see the cpp implementation
     #       for a complete implementation.
     UserDefinedStateMachineName = "unimportant"
@@ -38,7 +38,6 @@ def __label_definition(LabelName):
     return "# case " + LabelName + ":"
 
 def __state_drop_out_code(StateMachineName, CurrentStateIdx, BackwardLexingF,
-                          BufferReloadRequiredOnDropOutF,
                           CurrentStateIsAcceptanceF = None,
                           OriginList                = None,
                           LanguageDB                = None,

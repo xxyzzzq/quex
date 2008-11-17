@@ -8,14 +8,15 @@ import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.regular_expression.character_set_expression as charset_expression
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 
-def parse(fh):
+def parse(fh, AllowNothingIsFineF=False):
 
     start_position = fh.tell()
     try:
         # (*) parse regular expression, build state machine
         pattern_state_machine = regex.do(fh, lexer_mode.shorthand_db, 
                                          BufferLimitCode            = Setup.buffer_limit_code,
-                                         DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f)
+                                         DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f,
+                                         AllowNothingIsFineF        = AllowNothingIsFineF)
 
         # (*) error in regular expression?
         if pattern_state_machine == None:
