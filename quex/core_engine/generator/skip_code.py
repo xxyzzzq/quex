@@ -290,8 +290,7 @@ def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN):
     return blue_print(txt,
                        [["$$GOTO_DROP_OUT$$", LanguageDB["$goto"]("$drop-out", skipper_index)]])
 
-def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferEndLimitCode,
-                                 BufferReloadRequiredOnDropOutF=True):
+def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferEndLimitCode):
     assert StartSequence.__class__  == list
     assert len(StartSequence)       >= 1
     assert map(type, StartSequence) == [int] * len(StartSequence)
