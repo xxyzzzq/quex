@@ -3,7 +3,7 @@ token {
 	DUMMY
 }
 
-start = ONE_AND_ONLY
+start = ONE_AND_ONLY;
 
 mode ONE_AND_ONLY
 {

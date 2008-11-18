@@ -7,8 +7,12 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
+echo "Error Case:\n"
 quex -i error.qx -o Simple
 
+echo "Good Case:\n"
+quex -i test.qx -o Simple
+
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism
+rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids 
 cd $tmp

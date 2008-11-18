@@ -1,5 +1,5 @@
 // -*- C++ -*- vim: set syntax=cpp:
-start = PROGRAM
+start = PROGRAM;
 
 define {
     // Pattern definitions for example application

@@ -1,5 +1,5 @@
 
-start = ALL
+start = ALL;
 
 mode COMMENTATOR {
    "/*"([^*]|("*"[^/]))*"*/" => QUEX_TKN_COMMENT;

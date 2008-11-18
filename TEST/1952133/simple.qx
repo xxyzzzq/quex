@@ -1,5 +1,5 @@
 // -*- C++ -*- vim: set syntax=cpp:
-start = PROGRAM
+start = PROGRAM;
 
 header { 
 #include<stdio.h>

@@ -339,7 +339,6 @@ def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
         error_msg("cannot open file '%s'" % FileName)
         sys.exit(-1)
 
-
 def indented_open(Filename, Indentation = 3):
     """Opens a file but indents all the lines in it. In fact, a temporary
     file is created with all lines of the original file indented. The filehandle
@@ -378,7 +377,7 @@ def read_next_word(fh):
     return word
 
 def read_word_list(fh, EndMarkers, Verbose=False):
-    """reads whitespace separated words until the arrivel
+    """Reads whitespace separated words until the arrivel
     of a string mentioned in the array 'EndMarkers'. If
     the Verbose flag is set not only the list of found words
     is returned. Moreover the index of the end marker which
@@ -393,10 +392,13 @@ def read_word_list(fh, EndMarkers, Verbose=False):
             else:       return word_list
         word_list.append(word)
 
-def verify_next_word(fh, Compare, Quit=True):
+def verify_next_word(fh, Compare, Quit=True, Comment=""):
     word = read_next_word(fh)
     if word != Compare:
-        error_msg("missing token '%s'. found '%s'." % (Compare, word), fh)
+        txt = "Missing token '%s'. found '%s'." % (Compare, word)
+        if Comment != "": 
+            txt += "\n" + Comment
+        error_msg(txt, fh)
     return word
         
 def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix=""):

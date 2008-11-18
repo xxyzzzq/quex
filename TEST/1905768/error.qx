@@ -1,7 +1,7 @@
 token {
 STRING_LITERAL
 }
-start = MODULE
+start = MODULE;
 mode MODULE {
 <<EOF>> => QUEX_TKN_TERMINATION;
 
