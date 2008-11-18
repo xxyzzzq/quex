@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Thu Nov 13 03:22:32 2008
+DATE:  Tue Nov 18 19:30:13 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -17,8 +17,6 @@ TITLE: Regression Tests on Fixed Bugs
         bug-2002474.sh ........................................[NO GOOD FILE]
     2004927 UTF-8 RE Extra Comma Matched
         bug-2004927.sh ..................................................[OK]
-    2272677 range_error / character count pre-determination
-        bug-2272677.sh ........................................[NO GOOD FILE]
 
  -- fschaef:
 
@@ -37,6 +35,8 @@ TITLE: Regression Tests on Fixed Bugs
     2209142 0.33.1-pre-release
         bug-2209142.sh error ............................................[OK]
                        good .............................................[OK]
+    2277660 character count pre-determination
+        bug-2277660.sh ..................................................[OK]
 
  -- marcoantonelli:
 
@@ -44,6 +44,8 @@ TITLE: Regression Tests on Fixed Bugs
         feature-2219383.sh ..............................................[OK]
     2257908 Quex does not terminate lexer generation
         bug-2257908.sh ..................................................[OK]
+    2262537 (feature) Allow Nothing is fine in define section
+        feature-2262537.sh ..............................................[OK]
 
  -- sphericalcow:
 
@@ -148,7 +150,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Thu Nov 13 03:18:05 2008
+DATE:  Tue Nov 18 19:32:25 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -236,7 +238,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Thu Nov 13 03:18:05 2008
+DATE:  Tue Nov 18 19:32:25 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -256,7 +258,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Thu Nov 13 03:18:06 2008
+DATE:  Tue Nov 18 19:32:29 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -318,7 +320,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Thu Nov 13 03:18:07 2008
+DATE:  Tue Nov 18 19:32:30 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -378,7 +380,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Thu Nov 13 03:18:09 2008
+DATE:  Tue Nov 18 19:32:34 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -470,7 +472,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Thu Nov 13 03:18:09 2008
+DATE:  Tue Nov 18 19:32:34 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -490,7 +492,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Thu Nov 13 03:18:09 2008
+DATE:  Tue Nov 18 19:32:35 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -523,7 +525,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Thu Nov 13 03:20:05 2008
+DATE:  Tue Nov 18 19:34:36 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -686,7 +688,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Thu Nov 13 03:20:10 2008
+DATE:  Tue Nov 18 19:34:41 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -748,7 +750,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Thu Nov 13 03:20:14 2008
+DATE:  Tue Nov 18 19:34:46 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -846,7 +848,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Thu Nov 13 03:20:15 2008
+DATE:  Tue Nov 18 19:34:47 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -873,7 +875,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Thu Nov 13 03:20:33 2008
+DATE:  Tue Nov 18 19:35:07 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -898,7 +900,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Thu Nov 13 03:20:35 2008
+DATE:  Tue Nov 18 19:35:08 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
