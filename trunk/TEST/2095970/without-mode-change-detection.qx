@@ -5,7 +5,7 @@ token {
    EVENT_MODE_CHANGE
 }
 
-start = MODULE
+start = MODULE;
 
 mode MODULE {
     <<EOF>> => QUEX_TKN_TERMINATION;

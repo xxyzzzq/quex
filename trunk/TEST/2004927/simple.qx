@@ -1,8 +1,8 @@
-start = ONE_AND_ONLY
+start = ONE_AND_ONLY;
 
 define {
-P_EXPRESSION ([A-Za-z_]*[+\-]+[A-Za-z_]*)+
-P_THING [:alnum:]+
+    P_EXPRESSION ([A-Za-z_]*[+\-]+[A-Za-z_]*)+
+    P_THING [:alnum:]+
 }
 
 token {

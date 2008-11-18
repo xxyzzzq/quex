@@ -2,7 +2,7 @@ token {
 A
 }
 
-start = MODE
+start = MODE;
 
 mode MODE : XXX A
 {

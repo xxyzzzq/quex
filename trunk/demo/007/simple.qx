@@ -1,5 +1,5 @@
 // -*- C++ -*- vim: set syntax=cpp:
-start = DERIVED
+start = DERIVED;
 
 mode BASE :
 <inheritable: only>  
@@ -27,14 +27,14 @@ mode DERIVED : BASE
 <skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {
-    "Nothing"     DELETION
+    "Nothing"     DELETION;
 
     "grabs"       => QUEX_TKN_GRABS;
     "Swordfish"   => QUEX_TKN_SWORDFISH;
-    [a-z]+        PRIORITY-MARK
+    [a-z]+        PRIORITY-MARK;
     "hunts"       => QUEX_TKN_FOOLS_AROUND;
     "Trouts"      => QUEX_TKN_TROUTS;
-    [A-Z][a-z]+   PRIORITY-MARK
+    [A-Z][a-z]+   PRIORITY-MARK;
     "catches"     => QUEX_TKN_FOOLS_AROUND;
     "Sharks"      => QUEX_TKN_SOMETHING_IMPOSSIBLE;
 }

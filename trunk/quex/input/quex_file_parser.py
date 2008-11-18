@@ -262,7 +262,10 @@ def parse_initial_mode_definition(fh):
 
     verify_next_word(fh, "=")
     # specify the name of the intial lexical analyser mode
-    mode_name = read_next_word(fh)
+    skip_whitespace(fh)
+    mode_name = read_identifier(fh)
+    verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
+
     if lexer_mode.initial_mode.line_n != -1:
         error_msg("start mode defined more than once!", fh, DontExitF=True)
         error_msg("previously defined here",

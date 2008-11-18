@@ -1,7 +1,7 @@
 token {
 TERMINATION
 }
-start = START
+start = START;
 mode START {
 "a" => QUEX_TKN_TERMINATION;
 }

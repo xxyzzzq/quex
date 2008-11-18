@@ -1,4 +1,4 @@
-start = PROGRAM
+start = PROGRAM;
 
 header {
 #include <cstdlib>  // C++ adapted 'stdlib.h'

@@ -2,7 +2,7 @@ token {
     BAD
 }
 
-start = ONE
+start = ONE;
 
 define {
     NothingOrMoreX   X*

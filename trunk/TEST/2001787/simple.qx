@@ -1,4 +1,4 @@
-start = ONE_AND_ONLY
+start = ONE_AND_ONLY;
 
 define {
     P_URL "http://"[^ \n]+
