@@ -22,7 +22,7 @@ def __nice(SM_ID):
     
 db = {}
 
-label_db = \
+__label_db = \
 {
     "$terminal":              lambda TerminalIdx: "TERMINAL_%s"        % __nice(TerminalIdx),
     "$terminal-direct":       lambda TerminalIdx: "TERMINAL_%s_DIRECT" % __nice(TerminalIdx),
@@ -36,6 +36,38 @@ label_db = \
     "$re-start":              lambda NoThing:     "__REENTRY_PREPARATION",
     "$start":                 lambda NoThing:     "__REENTRY",
 }
+
+__label_printed_list_unique = {}
+__label_used_list_unique = {}
+def label_db_get(Type, Index, GotoTargetF=False):
+    global __label_printed_list_unique
+    global __label_used_list_unique
+    global __label_db
+    
+    label = __label_db[Type](Index)
+
+    if Type in ["$re-start", "$start"]: return label
+
+    # Keep track of any label. Labels which are not used as goto targets
+    # may be deleted later on.
+    if GotoTargetF: __label_used_list_unique[label]    = True
+    else:           __label_printed_list_unique[label] = True
+
+    return label
+
+def label_db_get_unused_label_list():
+    global __label_target_unique
+    global __label_printed_unique
+    global __label_db
+    
+    result = []
+
+    for label in __label_printed_list_unique:
+        if label not in __label_used_list_unique:
+            result.append(label)
+    return result
+
+
 #________________________________________________________________________________
 # C++
 #    
@@ -92,10 +124,11 @@ db["C++"] = {
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
-    "$goto":                lambda Type, Argument=None:  "goto %s;" % label_db[Type](Argument),
+    "$goto":                lambda Type, Argument=None:  "goto %s;" % label_db_get(Type, Argument, GotoTargetF=True),
+    "$label-pure":          lambda Label:                "%s:" % Label,
     "$label-def":           lambda Type, Argument=None:  
-                                "%s:\n"                                % label_db[Type](Argument) + \
-                                "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db[Type](Argument),
+                                "%s:\n"                             % label_db_get(Type, Argument) + \
+                                "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
     "$analyser-func":     cpp.__analyser_function,
     "$terminal-code":     cpp.__terminal_states,      
     "$compile-option":    lambda option: "#define %s\n" % option,

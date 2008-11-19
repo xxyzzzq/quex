@@ -25,7 +25,7 @@ def trim(Str):
     else:            return Str[i:]
 
 
-def blue_print(BluePrintStr, Replacements):
+def blue_print(BluePrintStr, Replacements, CommonStart="$"):
     """Takes a string acting as blue print and replaces all
        replacements of the form r in Replacements:
 
@@ -34,8 +34,8 @@ def blue_print(BluePrintStr, Replacements):
 
        Original pattern must start with '$'.
     """
-    # (*) sort the replacements so that long strings
-    #     are replaced first
+    # -- sort the replacements so that long strings
+    #    are replaced first
     Replacements.sort(lambda a, b: cmp(len(b[0]), len(a[0])))
 
     # -- the longest original
@@ -45,13 +45,13 @@ def blue_print(BluePrintStr, Replacements):
     result   = ""
     prev_end = 0
     while 1 + 1 == 2:
-        i = txt.find("$", prev_end)
+        i = txt.find(CommonStart, prev_end)
         if i == -1: 
             result += txt[prev_end:]
             return result
 
         for orig, replacement in Replacements:
-            assert orig[0] == "$"
+            assert orig[0] == CommonStart[0]
             if txt.find(orig, i, i + L) == i: 
                 result += txt[prev_end:i] + replacement
                 prev_end = i + len(orig)

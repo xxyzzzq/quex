@@ -58,6 +58,10 @@ def do():
         analyzer_code        += x
         inheritance_info_str += y + "\n"
         
+    # find unused labels
+    analyzer_code = generator.delete_unused_labels(analyzer_code)
+
+    # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)
 
     # write code to a header file

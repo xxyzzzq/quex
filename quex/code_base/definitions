@@ -20,6 +20,14 @@
     /* QUEX_SETTING_BUFFER_MIN_FALLBACK_N remains as desired */
 #else
 #   if defined (QUEX_SETTING_BUFFER_SIZE) 
+       /* If your compiler brings you here to this position, then this may be because
+        * you defined the QUEX_SETTING_BUFFER_SIZE with something different than just
+        * an integer number. Indeed something like
+        *
+        *   #define QUEX_SETTING_BUFFER_SIZE  (size_t)4096
+        *
+        * would be propper, but does not allow to do some math. So, please erase whatever
+        * is not a number in the definition (e.g. delete the '(size_t)' type cast.        */
 #      if   QUEX_SETTING_BUFFER_SIZE >= 1024
 #         define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (256)
 #      elif QUEX_SETTING_BUFFER_SIZE >= 8
