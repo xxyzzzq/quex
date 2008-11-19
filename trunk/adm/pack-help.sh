@@ -139,8 +139,8 @@ function collect_packages()
     echo "put quex-$1-windows-installer.exe " >> $scriptfile
     echo "put quex-$1-linux-installer.bin   " >> $scriptfile
     echo "put quex-$1-osx-installer.app.zip " >> $scriptfile
-    echo "put quex-$1-freebsd-installer.app.zip " >> $scriptfile
-    echo "put quex-$1-solaris-intel-installer.app.zip " >> $scriptfile
+    echo "put quex-$1-freebsd-installer.bin " >> $scriptfile
+    echo "put quex-$1-solaris-intel-installer.bin " >> $scriptfile
 }
 
 function repository_update() {

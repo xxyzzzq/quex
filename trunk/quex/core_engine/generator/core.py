@@ -3,6 +3,7 @@ import quex.core_engine.generator.state_machine_coder as state_machine_coder
 import quex.core_engine.generator.input_position_backward_detector   as backward_detector
 from   quex.core_engine.generator.state_machine_decorator  import StateMachineDecorator
 from   quex.input.setup import setup as Setup
+from   quex.frs_py.string_handling import blue_print
 #
 from quex.core_engine.generator.base import GeneratorBase
 
@@ -159,3 +160,22 @@ def do(PatternActionPair_List, DefaultAction,
 def frame_this(Code):
     return Setup.language_db["$frame"](Code, Setup.output_file_stem, Setup.output_engine_name)
 
+def delete_unused_labels(Code):
+    LanguageDB = Setup.language_db
+    label_list = languages.label_db_get_unused_label_list()
+
+    replacement_list_db = {}
+    for label in label_list:
+        original    = LanguageDB["$label-pure"](label)
+        replacement = LanguageDB["$ml-comment"](original)
+        first_letter = original[0]
+        if replacement_list_db.has_key(first_letter) == False:
+            replacement_list_db[first_letter] = [ [original, replacement] ]
+        else:
+            replacement_list_db[first_letter].append([original, replacement])
+
+    code = Code
+    for first_letter, replacement_list in replacement_list_db.items():
+        code = blue_print(code, replacement_list, first_letter)
+    return code
+        
