@@ -172,7 +172,7 @@ class SkipperRange:
 
 class Match:
     def __init__(self, Pattern, CodeFragment_or_Skipper, PatternStateMachine, PatternIdx=None,
-                 PriorityMarkF=False, DeletionF=False, IL = None):
+                 PriorityMarkF=False, DeletionF=False, IL = None, ModeName=""):
 
         assert    CodeFragment_or_Skipper.__class__ == ReferencedCodeFragment \
                or CodeFragment_or_Skipper.__class__ == SkipperCharacterSet    \
@@ -187,6 +187,7 @@ class Match:
         self.action                = CodeFragment_or_Skipper
         # depth of inheritance where the pattern occurs
         self.inheritance_level = IL
+        self.inheritance_mode_name = ModeName
         # position in the list where the pattern occured in the mode itself
         # a pattern may have the sole function to determine a priority
         self.priority_mark_f             = PriorityMarkF
@@ -414,12 +415,14 @@ class LexMode:
                     resolved_matches[inherited_pattern] = copy(inherited_match)
                     resolved_matches[inherited_pattern].pattern_state_machine.core().set_id(own_match.priority_mark_pattern_index)
                     resolved_matches[inherited_pattern].inheritance_level = Depth
+                    resolved_matches[inherited_pattern].inheritance_mode_name = self.name
 
                 elif own_match.deletion_f == False:
                     # (deletion lets the match being totally ignored)
                     # (2) own match overrides the inherited pattern completely
                     resolved_matches[inherited_pattern] = copy(own_match)
                     resolved_matches[inherited_pattern].inheritance_level = Depth
+                    resolved_matches[inherited_pattern].inheritance_mode_name = self.name
 
             else:
                 # (3) inherited pattern did not at all occur in the own matches list
@@ -437,6 +440,7 @@ class LexMode:
                 elif match.deletion_f == False:
                     resolved_matches[pattern] = copy(match)
                     resolved_matches[pattern].inheritance_level = Depth
+                    resolved_matches[pattern].inheritance_mode_name = self.name
 
             # "elif match.deletion_f == True:"      ... is not necessary, since these patterns
             # "     del resolved_matches[pattern]"      do not appear anyway

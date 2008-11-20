@@ -50,19 +50,23 @@ def do():
     token_id_maker.do(Setup) 
 
     # (3) implement the lexer mode-specific analyser functions
-    inheritance_info_str = "[dominating inheritance level] [pattern index] [pattern]\n"
+    inheritance_info_str  = "Information about what pattern 'comes' from what mode in the inheritance tree.\n\n"
+    inheritance_info_str += "[1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index\n\n"
     analyzer_code = ""
     for mode in mode_list:        
         # accumulate inheritance information for comment
         x, y = get_code_for_mode(mode, mode_name_list) 
         analyzer_code        += x
-        inheritance_info_str += y + "\n"
+        inheritance_info_str += "(%s)\n" % mode.name + y + "\n\n"
         
     # find unused labels
     analyzer_code = generator.delete_unused_labels(analyzer_code)
 
     # generate frame for analyser code
     analyzer_code = generator.frame_this(analyzer_code)
+
+    # Bring the info about the patterns first
+    analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file
     fh = open(Setup.output_core_engine_file, "wb")
@@ -73,8 +77,6 @@ def do():
     ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
     ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
     ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
-
-    ## TODO: inheritance_info_str <<Feature Request: 1948456>>
 
 def get_code_for_mode(Mode, ModeNameList):
 
@@ -90,7 +92,7 @@ def get_code_for_mode(Mode, ModeNameList):
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    dummy, pattern_action_pair_list = get_generator_input(Mode)
+    inheritance_info_str, pattern_action_pair_list = get_generator_input(Mode)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
                                  DefaultAction                  = default_action, 
@@ -102,7 +104,7 @@ def get_code_for_mode(Mode, ModeNameList):
                                  QuexEngineHeaderDefinitionFile = Setup.output_file_stem,
                                  ModeNameList                   = ModeNameList)
 
-    return analyzer_code, dummy
+    return analyzer_code, inheritance_info_str
     
 def get_generator_input(Mode):
     """The module 'quex.core_engine.generator.core' produces the code for the 
@@ -156,15 +158,10 @@ def get_generator_input(Mode):
 
         pattern_action_pair_list.append(action_info)
 
-        try:
-            inheritance_info_str += "** %2i %2i %s\n" % (pattern_info.inheritance_level, 
-                                                         pattern_info.pattern_index(),
-                                                         safe_pattern_str)
-        except:    
-            error_msg("pattern_info object =\n  " + repr(pattern_info).replace("\n", "\n  "), 
-                      "assert", 
-                      "get_generator_input()")
-
+        inheritance_info_str += " %s %s %2i %05i\n" % (safe_pattern_str,
+                                                       pattern_info.inheritance_mode_name,
+                                                       pattern_info.inheritance_level, 
+                                                       pattern_info.pattern_index())
     
     return inheritance_info_str, pattern_action_pair_list
 
