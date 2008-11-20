@@ -1,0 +1,33 @@
+    /* Information about what pattern 'comes' from what mode in the inheritance tree.
+     * 
+     * [1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index
+     * 
+     * (FOUR)
+     *  dfg ONE  3 00010
+     *  cde TWO  2 00019
+     *  bcd THREE  1 00025
+     *  abc FOUR  0 00028
+     * 
+     * 
+     * (THREE)
+     *  dfg ONE  2 00010
+     *  cde TWO  1 00019
+     *  abc THREE  0 00022
+     *  bcd THREE  0 00025
+     * 
+     * 
+     * (TWO)
+     *  dfg ONE  1 00010
+     *  abc TWO  0 00013
+     *  bcd TWO  0 00016
+     *  cde TWO  0 00019
+     * 
+     * 
+     * (ONE)
+     *  abc ONE  0 00001
+     *  bcd ONE  0 00004
+     *  cde ONE  0 00007
+     *  dfg ONE  0 00010
+     * 
+     * 
+     * 

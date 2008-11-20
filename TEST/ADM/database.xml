@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Thu Nov 20 06:14:03 2008">
+<test-database execution-time-sec="0.00" date="Thu Nov 20 07:45:08 2008">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="0.00"> 
@@ -33,6 +33,12 @@
         </test>
     </group>
     <group name="fschaef">
+        <test title="1948456 (feature) Inheritance Info" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="feature-1948456.sh" info-request-time="1227163481L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="1220392690"/>
+            </choice-list>
+        </test>
         <test title="1952747 TKN_TERMINATION" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1952747.sh" info-request-time="1223017237L"/>
             <choice-list number="1">
@@ -110,10 +116,10 @@
                <choice name="NoModeDetection_ErrorCase" result="OK" time-sec="0.00" crc="1466795843"/>
             </choice-list>
         </test>
-        <test title="1936707 0.24.10 --plot flag doesnt seem to work" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1936707.sh" info-request-time="1223017235L"/>
+        <test title="1892809" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1892809.sh" info-request-time="1223017235L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="804589560"/>
+               <choice name="" result="OK" time-sec="0.00" crc="2018568175"/>
             </choice-list>
         </test>
         <test title="2095970 (without token queue)" make-required="True" time-sum-sec="0.00"> 
@@ -172,6 +178,12 @@
             <application file-name="bug-1895066.sh" info-request-time="1223017237L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-2114967721"/>
+            </choice-list>
+        </test>
+        <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1908436.sh" info-request-time="1223017237L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="-1144183572"/>
             </choice-list>
         </test>
         <test title="1902175 invalid escape in character set expression crashes 0.21.12" make-required="True" time-sum-sec="0.00"> 
@@ -246,10 +258,10 @@
                <choice name="" result="OK" time-sec="0.00" crc="1343316621"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1887163.sh" info-request-time="1223017235L"/>
+        <test title="1885846 Empty RE in define section" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1885846.sh" info-request-time="1223017238L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-2036118939"/>
+               <choice name="" result="OK" time-sec="0.00" crc="2110266544"/>
             </choice-list>
         </test>
         <test title="1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6" make-required="True" time-sum-sec="0.00"> 
@@ -290,10 +302,16 @@
                <choice name="" result="OK" time-sec="0.00" crc="1628237482"/>
             </choice-list>
         </test>
-        <test title="1892809" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1892809.sh" info-request-time="1223017235L"/>
+        <test title="1936707 0.24.10 --plot flag doesnt seem to work" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1936707.sh" info-request-time="1223017235L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="2018568175"/>
+               <choice name="" result="OK" time-sec="0.00" crc="804589560"/>
+            </choice-list>
+        </test>
+        <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1894578.sh" info-request-time="1223962124L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="0.00" crc="1096694076"/>
             </choice-list>
         </test>
         <test title="1892227 accepted as identifiers in def" make-required="True" time-sum-sec="0.00"> 
@@ -302,28 +320,16 @@
                <choice name="" result="OK" time-sec="0.00" crc="1038686624"/>
             </choice-list>
         </test>
-        <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1908436.sh" info-request-time="1223017237L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-1144183572"/>
-            </choice-list>
-        </test>
         <test title="1890828 0.19.9 crashes trying to call error handler in several cases" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1890828.sh" info-request-time="1223017237L"/>
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-656582305"/>
             </choice-list>
         </test>
-        <test title="1885846 Empty RE in define section" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1885846.sh" info-request-time="1223017238L"/>
+        <test title="1887163 Single state mode causes quex to crash" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-1887163.sh" info-request-time="1223017235L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="2110266544"/>
-            </choice-list>
-        </test>
-        <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1894578.sh" info-request-time="1223962124L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1096694076"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-2036118939"/>
             </choice-list>
         </test>
     </group>
