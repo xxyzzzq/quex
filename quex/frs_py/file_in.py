@@ -126,6 +126,16 @@ def delete_comment(Content, Opener, Closer, LeaveNewlineDelimiter=False):
 
     return new_content
 
+def read_integer(fh):
+    pos = fh.tell()
+    tmp = fh.read(1)
+    txt = ""
+    while tmp.isdigit() or tmp in "abcdefABCDEF":
+        txt += tmp
+        tmp = fh.read(1)
+    fh.seek(-1, 1)
+    return txt
+
 def extract_identifiers_with_specific_prefix(Content, Prefix):
     L = len(Content)
     i = 0

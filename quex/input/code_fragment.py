@@ -70,11 +70,20 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
         skip_whitespace(fh)
         position = fh.tell()
 
+        character_code = read_character_code(fh)
+        if character_code != -1:
+            result.code  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
+            result.code += "self.send(0x%X); return;\n" % character_code
+            result.code += "#else\n"
+            result.code += "self.send(0x%X); return 0x%X;\n" % (character_code, character_code)
+            result.code += "#endif\n"
+            return result
+
         token_name = read_identifier(fh)
         position = fh.tell()
 
         if token_name == "":
-            error_msg("missing token identifier after '=>' shortcut.", fh)
+            error_msg("missing token identifier or character code after '=>' shortcut.", fh)
 
         dummy, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
         if bracket_i == -1 or (dummy != "" and dummy.isspace() == False): 
@@ -120,4 +129,46 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
     except EndOfStreamException:
         fh.seek(position)
         error_msg("End of file reached while parsing token shortcut.", fh)
+
+def read_character_code(fh):
+    return -1
+    pos = fh.tell()
+    
+    start = fh.read(1)
+    if start == "":  
+        seek(pos); return -1
+    if start == "'": 
+        # read an utf-8 char an get the token-id
+        # Example: '+'
+    if start == "U":
+        if fh.read(1) != "C": seek(pos); return -1
+        # read Unicode Name 
+        # Example: UC MATHEMATICAL_MONOSPACE_DIGIT_FIVE
+        skip_whitespace(fh)
+        ucs_name = read_identifier(fh)
+        if ucs_name == "": seek(pos); return -1
+    if start == "0":
+        base = fh.read(1)
+        if base not in ["x", "o", "b"] and base.isdigit() == False: 
+            error_msg("Number base '%s' is unknown, please use '0x' for hexidecimal,\n" + \ 
+                      "'0o' for octal, or '0b' for binary.", fh)
+        number_txt = read_integer(fh)
+        if number_txt = "":
+            error_msg("Missing integer number after '0%s'" % base, fh)
+        try: 
+            if   base == "x": character_code = int("0x" + number_txt, 16) 
+            elif base == "o": character_code = int("0o" + number_txt, 8) 
+            elif base == "b": 
+                for letter in number_txt:
+                    character_code = character_code << 1
+                    if   letter == 1:   character_code += 1
+                    elif letter != "0":
+                        error_msg("Letter '%s' not permitted in binary number (something start with '0b')", fh)
+            else:
+                # A normal integer number (starting with '0' though)
+                character_code = int(base + number_text)
+        except:
+            error_msg("The string '%s' is not appropriate for number base '%s'." % (number_txt, base), fh)
+
+        skip_whitespace(fh)
 
