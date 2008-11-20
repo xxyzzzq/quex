@@ -41,7 +41,6 @@ def search_and_validate(CL, Option):
                   get_supported_command_line_option_description())
     return True
 
-
 def do(ARGV):
     """Performs a query based on the given command line arguments.
        RETURNS: True if a query was performed.

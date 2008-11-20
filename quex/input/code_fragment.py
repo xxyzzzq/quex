@@ -2,6 +2,7 @@ from   quex.frs_py.file_in import *
 import quex.lexer_mode     as     lexer_mode
 from   quex.token_id_maker import TokenInfo
 from   quex.input.setup    import setup as Setup
+from   quex.core_engine.utf8 import __read_one_utf8_code_from_stream
 
 
 def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None, 
@@ -131,15 +132,26 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
         error_msg("End of file reached while parsing token shortcut.", fh)
 
 def read_character_code(fh):
-    return -1
+    # NOTE: This function is tested with the regeression test for feature request 2251359.
+    #       See directory $QUEX_PATH/TEST/2251359.
     pos = fh.tell()
     
     start = fh.read(1)
     if start == "":  
         seek(pos); return -1
-    if start == "'": 
+
+    elif start == "'": 
         # read an utf-8 char an get the token-id
         # Example: '+'
+        character_code = __read_one_utf8_code_from_stream(fh)
+        if character_code == 0xFF:
+            error_msg("Missing utf8-character for definition of character code by character.", fh)
+
+        elif fh.read(1) != '\'':
+            error_msg("Missing closing ' for definition of character code by character.", fh)
+
+        return character_code
+
     if start == "U":
         if fh.read(1) != "C": seek(pos); return -1
         # read Unicode Name 
@@ -147,6 +159,7 @@ def read_character_code(fh):
         skip_whitespace(fh)
         ucs_name = read_identifier(fh)
         if ucs_name == "": seek(pos); return -1
+
     if start == "0":
         base = fh.read(1)
         if base not in ["x", "o", "b"] and base.isdigit() == False: 
@@ -170,5 +183,15 @@ def read_character_code(fh):
         except:
             error_msg("The string '%s' is not appropriate for number base '%s'." % (number_txt, base), fh)
 
-        skip_whitespace(fh)
+        return character_code
+
+    else:
+        # All that remains is that it is a 'normal' integer
+        number_txt = read_integer(sh)
+
+        if number_txt = "":
+            error_msg("Missing integer number after '0%s'" % base, fh)
+        
+        try:    return int(number_txt)
+        except: error_msg("The string '%s' is not appropriate for number base '10'." % number_txt, fh)
 
