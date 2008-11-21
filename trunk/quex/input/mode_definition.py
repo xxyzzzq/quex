@@ -209,11 +209,6 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
 
         fh.seek(position)
         word = read_until_letter(fh, [";"])
-        if word == "":
-            error_msg("missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
-                      "found: '%s'. Note, that since quex version 0.33.5 it is required to add a ';'\n" % word + \
-                      "to the commands PRIORITY-MARK and DELETION.", fh)
-
         if word == "PRIORITY-MARK":
             # This mark 'lowers' the priority of a pattern to the priority of the current
             # pattern index (important for inherited patterns, that have higher precedence).
@@ -231,7 +226,10 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
             new_mode.add_match_deletion(pattern, pattern_state_machine, fh)
             
         else:
-            assert False, "This section should never be reached."
+            error_msg("missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
+                      "found: '%s'. Note, that since quex version 0.33.5 it is required to add a ';'\n" % word + \
+                      "to the commands PRIORITY-MARK and DELETION.", fh)
+
 
     except EndOfStreamException:
         fh.seek(position)

@@ -66,6 +66,8 @@ def do():
     analyzer_code = generator.frame_this(analyzer_code)
 
     # Bring the info about the patterns first
+    inheritance_info_str = inheritance_info_str.replace("*/", "* /")
+    inheritance_info_str = inheritance_info_str.replace("/*", "/ *")
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file

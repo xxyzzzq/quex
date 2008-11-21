@@ -570,6 +570,26 @@ namespace quex {
 #    error "Ambiguous configuration options."
 #endif
 #endif // __INCLUDE_GUARD__QUEX__SIMPLE
+    /* Information about what pattern 'comes' from what mode in the inheritance tree.
+     * 
+     * [1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index
+     * 
+     * (ONE_AND_ONLY)
+     *  [ \t\r\n]+ ONE_AND_ONLY  0 00005
+     *  \"struct\" ONE_AND_ONLY  0 00007
+     *  \"int\" ONE_AND_ONLY  0 00010
+     *  \"double\" ONE_AND_ONLY  0 00013
+     *  \"send\" ONE_AND_ONLY  0 00016
+     *  \"expect\" ONE_AND_ONLY  0 00019
+     *  \";\" ONE_AND_ONLY  0 00022
+     *  \"{\" ONE_AND_ONLY  0 00025
+     *  \"}\" ONE_AND_ONLY  0 00028
+     *  [0-9]+ ONE_AND_ONLY  0 00035
+     *  [_a-zA-Z]+ ONE_AND_ONLY  0 00041
+     * 
+     * 
+     * 
+     */
 #include "Simple"
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
@@ -2530,7 +2550,7 @@ TERMINAL_35_DIRECT:
         #else
         self.send(atoi((char*)Lexeme)); return QUEX_TKN_NUMBER;
         #endif
-#line 1968 "Simple-core-engine.cpp"
+#line 1988 "Simple-core-engine.cpp"
         
         }
     }
@@ -2575,7 +2595,7 @@ TERMINAL_7_DIRECT:
         #else
         self.send(); return QUEX_TKN_STRUCT;
         #endif
-#line 2013 "Simple-core-engine.cpp"
+#line 2033 "Simple-core-engine.cpp"
         
         }
     }
@@ -2598,7 +2618,7 @@ TERMINAL_41_DIRECT:
         
         #line 28 "dos_lf_2.qx"
         self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 2036 "Simple-core-engine.cpp"
+#line 2056 "Simple-core-engine.cpp"
         
         }
     }
@@ -2624,7 +2644,7 @@ TERMINAL_10_DIRECT:
         #else
         self.send(); return QUEX_TKN_TYPE_INT;
         #endif
-#line 2062 "Simple-core-engine.cpp"
+#line 2082 "Simple-core-engine.cpp"
         
         }
     }
@@ -2650,7 +2670,7 @@ TERMINAL_13_DIRECT:
         #else
         self.send(); return QUEX_TKN_TYPE_DOUBLE;
         #endif
-#line 2088 "Simple-core-engine.cpp"
+#line 2108 "Simple-core-engine.cpp"
         
         }
     }
@@ -2676,7 +2696,7 @@ TERMINAL_16_DIRECT:
         #else
         self.send(); return QUEX_TKN_SEND;
         #endif
-#line 2114 "Simple-core-engine.cpp"
+#line 2134 "Simple-core-engine.cpp"
         
         }
     }
@@ -2702,7 +2722,7 @@ TERMINAL_19_DIRECT:
         #else
         self.send(); return QUEX_TKN_EXPECT;
         #endif
-#line 2140 "Simple-core-engine.cpp"
+#line 2160 "Simple-core-engine.cpp"
         
         }
     }
@@ -2728,7 +2748,7 @@ TERMINAL_22_DIRECT:
         #else
         self.send(); return QUEX_TKN_SEMICOLON;
         #endif
-#line 2166 "Simple-core-engine.cpp"
+#line 2186 "Simple-core-engine.cpp"
         
         }
     }
@@ -2754,7 +2774,7 @@ TERMINAL_25_DIRECT:
         #else
         self.send(); return QUEX_TKN_BRACKET_OPEN;
         #endif
-#line 2192 "Simple-core-engine.cpp"
+#line 2212 "Simple-core-engine.cpp"
         
         }
     }
@@ -2780,7 +2800,7 @@ TERMINAL_28_DIRECT:
         #else
         self.send(); return QUEX_TKN_BRACKET_CLOSE;
         #endif
-#line 2218 "Simple-core-engine.cpp"
+#line 2238 "Simple-core-engine.cpp"
         
         }
     }
@@ -2802,7 +2822,7 @@ TERMINAL_END_OF_STREAM:
         #else
         self.send(); return QUEX_TKN_TERMINATION;
         #endif
-#line 2240 "Simple-core-engine.cpp"
+#line 2260 "Simple-core-engine.cpp"
         
         }
                 }

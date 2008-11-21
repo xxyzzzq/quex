@@ -1,6 +1,6 @@
 /*
-**  0  5 [_a-zA-Z]+
-**  0 11 [ \t\n]+
+ [_a-zA-Z]+ TEST  0 00005
+ [ \t\n]+ TEST  0 00011
 */
 
 self.pattern           = '[_a-zA-Z]+'

@@ -120,7 +120,7 @@ def __handle_set_by_property(cl):
         else:                value = None
 
         # -- get the property from the database
-        property = __get_property(fields[0])
+        property = __get_property(name)
         if property == None: 
             return True
 
