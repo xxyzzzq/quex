@@ -2,6 +2,7 @@ from   quex.frs_py.file_in import *
 import quex.lexer_mode     as     lexer_mode
 from   quex.token_id_maker import TokenInfo
 from   quex.input.setup    import setup as Setup
+from   quex.input.ucs_db_parser  import ucs_property_db
 from   quex.core_engine.utf8 import __read_one_utf8_code_from_stream
 
 
@@ -73,10 +74,15 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
 
         character_code = read_character_code(fh)
         if character_code != -1:
+            verify_next_word(fh, ";")
+            prefix_less_token_name = "UCS_0x%06X" % character_code
+            token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
+            lexer_mode.token_id_db[prefix_less_token_name] = \
+                    TokenInfo(prefix_less_token_name, character_code, None, fh.name, get_current_line_info_number(fh)) 
             result.code  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
-            result.code += "self.send(0x%X); return;\n" % character_code
+            result.code += "self.send(%s); return;\n" % token_id_str
             result.code += "#else\n"
-            result.code += "self.send(0x%X); return 0x%X;\n" % (character_code, character_code)
+            result.code += "self.send(%s); return %s;\n" % (token_id_str, token_id_str)
             result.code += "#endif\n"
             return result
 
@@ -159,38 +165,48 @@ def read_character_code(fh):
         skip_whitespace(fh)
         ucs_name = read_identifier(fh)
         if ucs_name == "": seek(pos); return -1
+        # Get the character set related to the given name. Note, the size of the set
+        # is supposed to be one.
+        character_code = ucs_property_db.get_character_set("Name", ucs_name)
+        if type(character_code) in [str, unicode]:
+            error_msg("%s does not identify a known unicode character." % ucs_name, fh) 
+        if type(character_code) not in [int, long]:
+            error_msg("%s relates to more than one character in unicode database." % ucs_name, fh) 
+        return character_code
 
-    if start == "0":
-        base = fh.read(1)
-        if base not in ["x", "o", "b"] and base.isdigit() == False: 
-            error_msg("Number base '%s' is unknown, please use '0x' for hexidecimal,\n" + \ 
+    second = fh.read(1)
+    if start == "0" and second.isdigit() == False:
+        base = second
+        if base not in ["x", "o", "b"]: 
+            error_msg("Number base '0%s' is unknown, please use '0x' for hexidecimal,\n" % base + \
                       "'0o' for octal, or '0b' for binary.", fh)
         number_txt = read_integer(fh)
-        if number_txt = "":
+        if number_txt == "":
             error_msg("Missing integer number after '0%s'" % base, fh)
         try: 
             if   base == "x": character_code = int("0x" + number_txt, 16) 
-            elif base == "o": character_code = int("0o" + number_txt, 8) 
+            elif base == "o": character_code = int(number_txt, 8) 
             elif base == "b": 
+                character_code = 0
                 for letter in number_txt:
                     character_code = character_code << 1
-                    if   letter == 1:   character_code += 1
+                    if   letter == "1":   character_code += 1
                     elif letter != "0":
-                        error_msg("Letter '%s' not permitted in binary number (something start with '0b')", fh)
+                        error_msg("Letter '%s' not permitted in binary number (something start with '0b')" % letter, fh)
             else:
                 # A normal integer number (starting with '0' though)
                 character_code = int(base + number_text)
         except:
-            error_msg("The string '%s' is not appropriate for number base '%s'." % (number_txt, base), fh)
+            error_msg("The string '%s' is not appropriate for number base '0%s'." % (number_txt, base), fh)
 
         return character_code
 
     else:
+        fh.seek(-2, 1)
         # All that remains is that it is a 'normal' integer
-        number_txt = read_integer(sh)
+        number_txt = read_integer(fh)
 
-        if number_txt = "":
-            error_msg("Missing integer number after '0%s'" % base, fh)
+        if number_txt == "": return -1
         
         try:    return int(number_txt)
         except: error_msg("The string '%s' is not appropriate for number base '10'." % number_txt, fh)
