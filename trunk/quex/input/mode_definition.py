@@ -7,6 +7,7 @@ import quex.input.code_fragment       as code_fragment
 import quex.core_engine.state_machine.index as index
 from   quex.core_engine.state_machine.core  import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
+from   quex.input.setup    import setup as Setup
 
 def parse(fh, Setup):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
@@ -29,7 +30,7 @@ def parse(fh, Setup):
         parse_mode_option_list(new_mode, fh)
 
     # (*) read in pattern-action pairs and events
-    while parse_mode_element(Setup, new_mode, fh): 
+    while parse_mode_element(new_mode, fh): 
         pass
 
     # (*) check for modes w/o pattern definitions
@@ -150,7 +151,7 @@ def parse_mode_option(fh, new_mode):
 
     return True
 
-def parse_mode_element(Setup, new_mode, fh):
+def parse_mode_element(new_mode, fh):
     """Returns: False, if a closing '}' has been found.
                 True, else.
     """
@@ -169,7 +170,7 @@ def parse_mode_element(Setup, new_mode, fh):
             return False
 
         # -- check for 'on_entry', 'on_exit', ...
-        result = check_for_event_specification(word, fh, new_mode, Setup)
+        result = check_for_event_specification(word, fh, new_mode)
         if result == True: 
             return True # all work has been done in check_for_event_specification()
         else:
@@ -187,7 +188,7 @@ def parse_mode_element(Setup, new_mode, fh):
         position    = fh.tell()
         description = "start of mode element: code fragment for '%s'" % pattern
 
-        parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine)
+        parse_action_code(new_mode, fh, pattern, pattern_state_machine)
 
     except EndOfStreamException:
         fh.seek(position)
@@ -195,14 +196,14 @@ def parse_mode_element(Setup, new_mode, fh):
 
     return True
 
-def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
+def parse_action_code(new_mode, fh, pattern, pattern_state_machine):
 
     position = fh.tell()
     try:
         skip_whitespace(fh)
         position = fh.tell()
             
-        code_obj = code_fragment.parse(fh, "regular expression", Setup, ErrorOnFailureF=False) 
+        code_obj = code_fragment.parse(fh, "regular expression", ErrorOnFailureF=False) 
         if code_obj != None:
             new_mode.add_match(pattern, code_obj, pattern_state_machine)
             return
@@ -235,35 +236,35 @@ def parse_action_code(new_mode, fh, Setup, pattern, pattern_state_machine):
         fh.seek(position)
         error_msg("End of file reached while parsing action code for pattern.", fh)
 
-def check_for_event_specification(word, fh, new_mode, Setup):
+def check_for_event_specification(word, fh, new_mode):
 
     if word == "on_entry":
         # Event: enter into mode
-        code_fragment.parse(fh, "%s::on_entry event handler" % new_mode.name, Setup, new_mode.on_entry)
+        code_fragment.parse(fh, "%s::on_entry event handler" % new_mode.name, new_mode.on_entry)
         return True
     
     elif word == "on_exit":
         # Event: exit from mode
-        code_fragment.parse(fh, "%s::on_exit event handler" % new_mode.name, Setup, new_mode.on_exit)
+        code_fragment.parse(fh, "%s::on_exit event handler" % new_mode.name, new_mode.on_exit)
         return True
 
     elif word == "on_match":
         # Event: exit from mode
-        code_fragment.parse(fh, "%s::on_match event handler" % new_mode.name, Setup, new_mode.on_match)
+        code_fragment.parse(fh, "%s::on_match event handler" % new_mode.name, new_mode.on_match)
         return True
 
     elif  word == "on_indentation":
         # Event: start of indentation, 
         #        first non-whitespace after whitespace
         code_fragment.parse(fh, "%s::on_indentation event handler" % new_mode.name, 
-                            Setup, new_mode.on_indentation)
+                            new_mode.on_indentation)
         return True
 
     elif word == "on_failure" or word == "<<FAIL>>":
         # Event: No pattern matched for current position.
         # NOTE: See 'on_end_of_stream' comments.
         code_fragment.parse(fh, "%s::on_failure event handler" % new_mode.name, 
-                            Setup, new_mode.on_failure)
+                            new_mode.on_failure)
         return True
 
     elif word == "on_end_of_stream" or word == "<<EOF>>": 
@@ -272,7 +273,7 @@ def check_for_event_specification(word, fh, new_mode, Setup):
         #       patterns are entered here, even if later versions of quex might dismiss
         #       those rule deefinitions in favor of consistent event handlers.
         code_fragment.parse(fh, "%s::on_end_of_stream event handler" % new_mode.name, 
-                            Setup, new_mode.on_end_of_stream)
+                            new_mode.on_end_of_stream)
         return True
 
     elif len(word) >= 3 and word[:3] == "on_":    

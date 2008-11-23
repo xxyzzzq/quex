@@ -1,4 +1,14 @@
 .PHONY: lexer
 
+CFLAGS = \
+	 -DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
+     -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED \
+     -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED \
+	 # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
+
 lexer:
-	g++ -I$(QUEX_PATH) lexer.cpp Simple*.cpp -ggdb -o lexer
+	quex -i $(INPUT) -o Simple
+	g++ -I$(QUEX_PATH) -I. \
+		$(CFLAGS) \
+		lexer.cpp Simple*.cpp \
+		-ggdb -o lexer
