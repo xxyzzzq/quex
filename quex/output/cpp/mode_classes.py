@@ -114,8 +114,6 @@ def  get_implementation_of_mode_functions(mode, Modes):
                       ])
     return txt
 
-
-
 def get_IsOneOfThoseCode(ThoseModes, Indentation="    ",
                          ConsiderDerivedClassesF=False):
     txt = Indentation

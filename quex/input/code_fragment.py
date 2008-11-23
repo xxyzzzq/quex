@@ -6,7 +6,7 @@ from   quex.input.ucs_db_parser  import ucs_property_db
 from   quex.core_engine.utf8 import __read_one_utf8_code_from_stream
 
 
-def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None, 
+def parse(fh, CodeFragmentName, code_fragment_carrier=None, 
           ErrorOnFailureF=True, AllowBriefTokenSenderF=True):
     """RETURNS: An object of class ReferencedCodeFragment containing
                 line number, filename, and the code fragment.
@@ -22,11 +22,11 @@ def parse(fh, CodeFragmentName, Setup, code_fragment_carrier=None,
 
     word = fh.read(2)
     if len(word) >= 1 and word[0] == "{":
-        fh.seek(-1,1) # unput the second character
+        fh.seek(-1, 1) # unput the second character
         return __parse_normal(fh, CodeFragmentName, code_fragment_carrier)
 
     elif AllowBriefTokenSenderF and word == "=>":
-        return __parse_brief_token_sender(fh, Setup, code_fragment_carrier)
+        return __parse_brief_token_sender(fh, code_fragment_carrier)
 
     elif not ErrorOnFailureF:
         fh.seek(-2,1)
@@ -62,7 +62,7 @@ def __parse_normal(fh, code_fragment_name, code_fragment_carrier):
 
     return result
 
-def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
+def __parse_brief_token_sender(fh, code_fragment_carrier):
     # shorthand for { self.send(TKN_SOMETHING); RETURN; }
     
     result = __prepare_code_fragment_carrier(fh, code_fragment_carrier)
@@ -72,66 +72,16 @@ def __parse_brief_token_sender(fh, Setup, code_fragment_carrier):
         skip_whitespace(fh)
         position = fh.tell()
 
-        character_code = read_character_code(fh)
-        if character_code != -1:
-            verify_next_word(fh, ";")
-            prefix_less_token_name = "UCS_0x%06X" % character_code
-            token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
-            lexer_mode.token_id_db[prefix_less_token_name] = \
-                    TokenInfo(prefix_less_token_name, character_code, None, fh.name, get_current_line_info_number(fh)) 
-            result.code  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
-            result.code += "self.send(%s); return;\n" % token_id_str
-            result.code += "#else\n"
-            result.code += "self.send(%s); return %s;\n" % (token_id_str, token_id_str)
-            result.code += "#endif\n"
-            return result
+        result.code = __parse_token_id_specification_by_character_code(fh)
+        if result.code != "": return result
 
-        token_name = read_identifier(fh)
-        position = fh.tell()
-
-        if token_name == "":
-            error_msg("missing token identifier or character code after '=>' shortcut.", fh)
-
-        dummy, bracket_i = read_until_letter(fh, ["(", ";"], Verbose=True)
-        if bracket_i == -1 or (dummy != "" and dummy.isspace() == False): 
-            error_msg("missing '(' or ';' at end of '=>' token sending statement.", fh)
-
-        token_constructor_args = ""
-        plain_token_constructor_args = ""
-        if bracket_i == 0:
-            plain_token_constructor_args = read_until_closing_bracket(fh, "(", ")")
-            # NOTE: empty brackets do not need a comma ...
-            plain_token_constructor_args = plain_token_constructor_args.strip()
-            if plain_token_constructor_args != "":
-                token_constructor_args = ", " + plain_token_constructor_args
-            verify_next_word(fh, ";")
-            
-        # after 'send' the token queue is filled and one can safely return
-        token_name = token_name.strip()
-        if token_name.find(Setup.input_token_id_prefix) != 0:
-            error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
-                      "found: '%s'" % token_name, fh)
-
-        # occasionally add token id automatically to database
-        prefix_less_token_name = token_name[len(Setup.input_token_id_prefix):]
-        if not lexer_mode.token_id_db.has_key(prefix_less_token_name):
-            msg = "Token id '%s' defined implicitly." % token_name
-            if token_name in lexer_mode.token_id_db.keys():
-                msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
-                       (Setup.input_token_id_prefix + token_name)
-                msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
-            error_msg(msg, fh, DontExitF=True)
-
-            lexer_mode.token_id_db[prefix_less_token_name] = \
-                    TokenInfo(prefix_less_token_name, None, None, fh.name, get_current_line_info_number(fh)) 
-
-        result.code  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
-        result.code += "self.send(%s%s); return;\n" % (token_name, token_constructor_args)
-        result.code += "#else\n"
-        result.code += "self.send(%s); return %s;\n" % (plain_token_constructor_args, token_name)
-        result.code += "#endif\n"
-
-        return result
+        identifier, arg_list_str = __parse_function_call(fh)
+        if identifier in ["GOTO", "GOSUB", "GOUP"]:
+            result.code = __create_mode_transition_and_token_sender(fh, identifier, arg_list_str)
+        else:
+            result.code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
+        if result.code != "": return result
+        else:                 return None
 
     except EndOfStreamException:
         fh.seek(position)
@@ -210,4 +160,114 @@ def read_character_code(fh):
         
         try:    return int(number_txt)
         except: error_msg("The string '%s' is not appropriate for number base '10'." % number_txt, fh)
+
+def __parse_function_call(fh):
+    position = fh.tell()
+    try:
+        skip_whitespace(fh)
+        identifier = read_identifier(fh)
+        skip_whitespace(fh)
+
+        tmp = fh.read(1)
+        if tmp not in ["(", ";"]:
+            error_msg("Missing '(' or ';' after '%s'." % identifier, fh)
+        if tmp == ";":
+            return identifier, ""  # No argument list, ";" arrived immediately
+
+        arg_list_str = read_until_closing_bracket(fh, "(", ")")
+        verify_next_word(fh, ";")
+            
+        return identifier, arg_list_str
+
+    except EndOfStreamException:
+        fh.seek(position)
+        error_msg("End of file reached while parsing token shortcut.", fh)
+
+def __parse_token_id_specification_by_character_code(fh):
+    character_code = read_character_code(fh)
+    if character_code == -1: return ""
+
+    verify_next_word(fh, ";")
+    prefix_less_token_name = "UCS_0x%06X" % character_code
+    token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
+    lexer_mode.token_id_db[prefix_less_token_name] = \
+            TokenInfo(prefix_less_token_name, character_code, None, fh.name, get_current_line_info_number(fh)) 
+    txt  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
+    txt += "self.send(%s); return;\n" % token_id_str
+    txt += "#else\n"
+    txt += "self.send(%s); return %s;\n" % (token_id_str, token_id_str)
+    txt += "#endif\n"
+    return txt
+
+def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
+    assert type(ArgListStr) == str
+
+    # after 'send' the token queue is filled and one can safely return
+    if TokenName.find(Setup.input_token_id_prefix) != 0:
+        error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
+                  "found: '%s'" % TokenName, fh)
+
+    # occasionally add token id automatically to database
+    prefix_less_TokenName = TokenName[len(Setup.input_token_id_prefix):]
+    if not lexer_mode.token_id_db.has_key(prefix_less_TokenName):
+        msg = "Token id '%s' defined implicitly." % TokenName
+        if TokenName in lexer_mode.token_id_db.keys():
+            msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
+                   (Setup.input_token_id_prefix + TokenName)
+            msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
+        error_msg(msg, fh, DontExitF=True)
+
+        lexer_mode.token_id_db[prefix_less_TokenName] = \
+                TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
+
+    tail = ArgListStr
+    if tail != "": tail = ", " + tail
+    txt  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
+    txt += "self.send(%s%s); return;\n" % (TokenName, tail)
+    txt += "#else\n"
+    txt += "self.send(%s); return %s;\n" % (ArgListStr, TokenName)
+    txt += "#endif\n"
+
+    return txt
+
+
+def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
+    assert Command in ["GOTO", "GOSUB", "GOUP"]
+    assert type(ArgListStr) == str
+
+    arg_list = ArgListStr.split(",")
+    arg_list = filter(lambda arg: arg != "", arg_list)
+    L = len(arg_list)
+    target_mode = None
+    token_name  = None
+    tail        = []
+    if Command in ["GOTO", "GOSUB"]:
+        if L < 1: 
+            error_msg("The %s mode short cut requires at least one argument: The target mode." % Command, fh)
+        target_mode = arg_list[0]
+        if L > 1: token_name = arg_list[1]
+        if L > 2: tail = arg_list[2:]
+    else: # Command == "GOUP"
+        if L > 0: token_name = arg_list[0]
+        if L > 1: tail = arg_list[1:]
+
+    mode_change_str = { "GOTO":  lambda Mode: "self << " + Mode + ";\n",
+                        "GOSUB": lambda Mode: "self.push_mode(" + Mode + ");\n",
+                        "GOUP":  lambda Mode: "self.pop_mode();\n"
+                      }[Command](target_mode)
+
+    tail_str = ""
+    for element in tail:
+        tail_str += ", " + element
+
+    if token_name != None: send_str = "self.send(%s%s); "% (token_name, tail_str)
+    else:                  send_str = "" 
+
+    txt  = mode_change_str
+    txt += "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
+    txt += send_str + "return;\n" 
+    txt += "#else\n"
+    txt += send_str + "return %s;\n" % token_name
+    txt += "#endif\n"
+    return txt
 
