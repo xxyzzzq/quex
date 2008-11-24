@@ -11,6 +11,8 @@ from   quex.core_engine.generator.languages.core import __nice
 import quex.core_engine.generator.transition_block as transition_block
 from   quex.core_engine.state_machine.transition_map import TransitionMap 
 
+
+
 def do(SkipperDescriptor, PostContextN):
     LanguageDB = Setup.language_db
     skipper_class = SkipperDescriptor.__class__.__name__
@@ -35,6 +37,7 @@ range_skipper_template = """
     const QUEX_CHARACTER_TYPE   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
     const size_t                Skipper$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
     QUEX_CHARACTER_TYPE*        text_end = QuexBuffer_text_end(&me->buffer);
+    $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
@@ -56,6 +59,13 @@ $$ENTRY$$
         $$IF_INPUT_EQUAL_DELIMITER_0$$
             $$BREAK$$
         $$ENDIF$$
+#       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+        else if( input == (QUEX_CHARACTER_TYPE)'\n' ) { 
+            ++(self._line_number_at_end);
+#           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+            $$LC_COUNT_COLUMN_N_POINTER_ASSIGNMENT$$
+#           endif
+        }
         $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
     $$END_WHILE$$
     *text_end = QUEX_SETTING_BUFFER_LIMIT_CODE; /* Reset BLC. */
@@ -109,6 +119,7 @@ $$DELIMITER_REMAINDER_TEST$$
         /* NOTE: The initial state does not increment the input_p. When it detects that
          * it is located on a buffer border, it automatically triggers a reload. No 
          * need here to reload the buffer. */
+        $$LC_COUNT_END_PROCEDURE$$
         $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
     }
 
@@ -131,6 +142,7 @@ $$DROP_OUT$$
         /* After reload, we need to increment _input_p. That's how the game is supposed to be played. 
          * But, we recovered from lexeme start pointer, and this one does not need to be incremented. */
         text_end = QuexBuffer_text_end(&me->buffer);
+        $$LC_COUNT_ADAPT_COLUMN_N$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
         $$GOTO_ENTRY$$
     }
@@ -170,6 +182,13 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
             txt += "    " + LanguageDB["$endif"]
         delimiter_remainder_test_str = txt
 
+    # Line and column number counting
+    lc_counter_new_line_detection_in_loop_enabled_f,
+    lc_counter_end_procedure,
+    lc_counter_column_n_position_from_where_to_count_assignment,
+    lc_counter_column_n_position_from_where_to_count_definition = \
+            __range_skipper_get_line_column_counter_code_fragments(EndSequence)
+
     code_str = blue_print(range_skipper_template,
                           [["$$DELIMITER$$",                  delimiter_str],
                            ["$$DELIMITER_LENGTH$$",           delimiter_length_str],
@@ -190,7 +209,11 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
                            ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
                            ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
                            ["$$SET_INPUT_P_BEHIND_DELIMITER$$", LanguageDB["$input/add"](len(EndSequence)-1)],
-                           ["$$MISSING_CLOSING_DELIMITER$$",  MissingClosingDelimiterAction]])
+                           ["$$MISSING_CLOSING_DELIMITER$$",  MissingClosingDelimiterAction]],
+                           ["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", lc_count_column_n_pointer_def],
+                           ["$$LC_COUNT_COLUMN_N_POINTER_ASSIGNMENT$$", lc_count_column_n_pointer_assignment],
+                           ["$$LC_COUNT_END_PROCEDURE$$",               lc_count_end_procedure],
+                           ["$$LC_COUNT_ADAPT_COLUMN_N$$",              lc_count_adapt_column_n])
 
     code_str = blue_print(code_str,
                           [["$$SKIPPER_INDEX$$", __nice(skipper_index)],
@@ -323,3 +346,41 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
         msg += "        " + LanguageDB["$endif"]
 
 
+def __range_skipper_get_line_column_counter_code_fragments(EndSequence):
+    """Line and Column Number Counting(Range Skipper):
+     
+         -- in loop if there appears a newline, then do:
+            increment line_n
+            set position from where to count column_n
+         -- at end of skipping do one of the following:
+            if end delimiter contains newline:
+               column_n = number of letters since last new line in end delimiter
+               increment line_n by number of newlines in end delimiter.
+               (NOTE: in this case the setting of the position from where to count
+                      the column_n can be omitted.)
+            else:
+               column_n = current_position - position from where to count column number.
+
+       NOTE: On reload we do count the column numbers and reset the column_p.
+    """
+    end_procedure = ""
+    if EndSequence.find("\n"):
+        column_n_position_from_where_to_count_definition = ""
+        if EndSequence.find("\n") == 0:
+            # Inside the skipped range, there cannot have been a newline
+            new_line_detection_in_loop_enabled_f = False
+        end_procedure = "self._line_number_at_end = %i; /* number of newlines in end delimiter */\n" % EndSequence.count("\n")
+    else:
+        column_n_position_from_where_to_count_definition = \
+        "QUEX_CHARACTER_TYPE* column_count_p_$$SKIPPER_INDEX$$ = _buffer->_input_p;\n"
+        column_n_position_from_where_to_count_assignment = \
+        "column_count_p_$$SKIPPER_INDEX$$ = _buffer->_input_p;\n"
+
+    end_procedure += "self._column_number_at_end += " + \
+                     "_buffer->input_p - column_count_p_$$SKIPPER_INDEX$$ " + \
+                     "+ Skipper$$SKIPPER_INDEX$$L;"
+
+    return new_line_detection_in_loop_enabled_f, \
+           column_n_position_from_where_to_count_definition, \
+           column_n_position_from_where_to_count_assignment, \
+           end_procedure
