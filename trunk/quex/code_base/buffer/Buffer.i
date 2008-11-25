@@ -188,7 +188,10 @@ namespace quex {
     QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE
     QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
-        QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
+        /* NOTE: We cannot check for general consistency here, because this function 
+         *       may be used by the range skippers, and they write possibly something on
+         *       the end of file pointer, that is different from the buffer limit code.
+         * NOT: QUEX_BUFFER_ASSERT_CONSISTENCY(buffer); */
         QUEX_DEBUG_PRINT2(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
