@@ -151,15 +151,19 @@ def read_character_code(fh):
 
         return character_code
 
-    else:
-        fh.seek(-2, 1)
+    elif start.isdigit():
+        fh.seek(-2, 1) # undo 'start' and 'second'
         # All that remains is that it is a 'normal' integer
         number_txt = read_integer(fh)
 
-        if number_txt == "": return -1
+        if number_txt == "": fh.seek(pos); return -1
         
         try:    return int(number_txt)
         except: error_msg("The string '%s' is not appropriate for number base '10'." % number_txt, fh)
+
+    else:
+        # Try to interpret it as something else ...
+        fh.seek(pos); return -1               
 
 def __parse_function_call(fh):
     position = fh.tell()
