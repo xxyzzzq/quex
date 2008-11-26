@@ -1,5 +1,6 @@
 import os
 import sys
+from   copy import deepcopy
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
 from   quex.input.setup import setup as Setup
@@ -99,6 +100,7 @@ $$LC_COUNT_IN_LOOP$$
         /* (2.1) */
         $$GOTO_DROP_OUT$$            
     }
+$$LC_COUNT_AT_LOOP_EXIT$$
     /* (2.2) Test the remaining delimiter, but note, that the check must restart at '_input_p + 1'
      *       if any later check fails.                                                              */
     $$INPUT_P_INCREMENT$$
@@ -342,6 +344,7 @@ range_skipper_lc_counter_in_loop = """
             ++(self.counter._line_number_at_end);
 #           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
             column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);
+            self.counter._column_number_at_end = 0;
 #           endif
         }
 #       endif
@@ -370,29 +373,46 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
       "#   endif\n" + \
       "    self.counter.__shift_end_values_to_start_values();\n" + \
       "#   endif\n"
-    in_loop             = ""
-    end_procedure       = ""
+    in_loop       = ""
+    end_procedure = ""
+    exit_loop     = ""
     new_line_detection_in_loop_enabled_f = True
-    try:    index = EndSequence.index("\n")
+
+    # Does the end delimiter contain a newline?
+    try:    index = EndSequence.index(ord("\n"))
     except: index = -1
     if index != -1:
         if index == 0:
             # Inside the skipped range, there cannot have been a newline
             new_line_detection_in_loop_enabled_f = False
+            exit_loop = "#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING\n" + \
+                        "        ++(self.counter._line_number_at_end); /* First limit character was the newline */\n" \
+                        "#       endif" 
+
+        # If the first character in the delimiter is newline, then it was counted alread, see above.
+        delimiter_newline_n = EndSequence[1:].count(ord("\n"))
+        if delimiter_newline_n != 0:
+            end_procedure += "#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING\n" + \
+                             "        self.counter._line_number_at_end += %i;\n" % delimiter_newline_n + \
+                             "#       endif\n"
+
+        # If delimiter contains newline, then the column number is identical to the distance
+        # of the last newline to the end of the delimiter.
+        dummy = deepcopy(EndSequence)
+        dummy.reverse()
+        delimiter_tail_n    = dummy.index(ord("\n")) + 1
+        if delimiter_tail_n != 0:
+            end_procedure += "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
+                             "        self.counter._column_number_at_end = %i;\n" % delimiter_tail_n + \
+                             "#       endif\n"
+    else:
         end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                        "        self.counter._line_number_at_end += %i; /* newlines in end delimiter */\n" \
-                                 % EndSequence.count("\n") + \
-                        "#       endif\n"
-    end_procedure += "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "        self.counter._column_number_at_end +=   QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
-                     "                                      - column_count_p_$$SKIPPER_INDEX$$\n" + \
-                     "                                      + Skipper$$SKIPPER_INDEX$$L;\n" + \
-                     "        std::cerr <<   QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
-                     "                     - column_count_p_$$SKIPPER_INDEX$$ << std::endl;\n" + \
-                     "#   endif\n"
+                        "        self.counter._column_number_at_end +=   QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
+                        "                                              - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                        "#   endif\n"
     before_reload  = "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-                     "    self.counter._column_number_at_end +=   QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
-                     "                                  - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                     "    self.counter._column_number_at_end +=  QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
+                     "                                         - column_count_p_$$SKIPPER_INDEX$$;\n" + \
                      "#   endif\n"
     after_reload   = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
                      "        column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n" + \
@@ -407,4 +427,5 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
                       ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
                       ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
                       ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
+                      ["$$LC_COUNT_AT_LOOP_EXIT$$",                exit_loop],
                       ])
