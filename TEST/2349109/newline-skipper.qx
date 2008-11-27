@@ -1,9 +1,8 @@
 start = X;
 
 mode X :
-<skip_range: "/*" "*/"> 
+<skip_range: [ \n\t]> 
 {
-    [ \n\t] {}
     1 => COL_1;
     2 => COL_2;
     3 => COL_3;
