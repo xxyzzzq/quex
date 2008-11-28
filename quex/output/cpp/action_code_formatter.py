@@ -1,5 +1,4 @@
 import quex.core_engine.state_machine.character_counter as pattern_analyzer
-import quex.core_engine.generator.skip_code             as skip_code_generator
 from   quex.core_engine.interval_handling import NumberSet
 from   quex.input.setup                   import setup as Setup
 
@@ -62,7 +61,6 @@ def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF):
         txt += code_info.get("C")
 
     return txt
-
 
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 

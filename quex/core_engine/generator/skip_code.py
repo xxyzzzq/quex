@@ -217,6 +217,7 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
 trigger_set_skipper_template = """
 { 
     $$DELIMITER_COMMENT$$
+$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
     QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
     __quex_assert(QuexBuffer_content_size(&me->buffer) >= 1);
@@ -230,6 +231,7 @@ trigger_set_skipper_template = """
      *       thus, no special character is to be set.                                   */
 $$LOOP_START$$
     $$INPUT_GET$$ 
+$$LC_COUNT_IN_LOOP$$
 $$ON_TRIGGER_SET_TO_LOOP_START$$
 $$LOOP_REENTRANCE$$
     $$INPUT_P_INCREMENT$$ /* Now, BLC cannot occur. See above. */
@@ -243,10 +245,12 @@ $$DROP_OUT$$
      * -- The input_p will at this point in time always point to the buffer border.        */
     if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0 ) {
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+$$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
         if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, $$POST_CONTEXT_N$$) ) {
 
+$$LC_COUNT_AFTER_RELOAD$$
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             QuexBuffer_input_p_increment(&me->buffer);
             $$GOTO_LOOP_START$$
@@ -280,7 +284,11 @@ def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN):
 
     comment_str = LanguageDB["$comment"]("Skip any character in " + TriggerSet.get_utf8_string())
 
-    txt = blue_print(trigger_set_skipper_template,
+    # Line and column number counting
+    code_str = __set_skipper_lc_counting_replacements(trigger_set_skipper_template, TriggerSet)
+
+    # The finishing touch
+    txt = blue_print(code_str,
                       [
                        ["$$DELIMITER_COMMENT$$",          comment_str],
                        ["$$INPUT_P_INCREMENT$$",          LanguageDB["$input/increment"]],
@@ -295,6 +303,7 @@ def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN):
                        ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
                        ["$$DROP_OUT_DIRECT$$",            LanguageDB["$label-def"]("$drop-out-direct", skipper_index)],
                        ["$$GOTO_LOOP_START$$",            LanguageDB["$goto"]("$entry", skipper_index)],
+                       ["$$SKIPPER_INDEX$$",              repr(skipper_index)],
                        ["$$GOTO_TERMINAL_EOF$$",          LanguageDB["$goto"]("$terminal-EOF")],
                        ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                        ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
@@ -338,9 +347,9 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
         msg += "        " + LanguageDB["$endif"]
 
 
-range_skipper_lc_counter_in_loop = """
+lc_counter_in_loop = """
 #       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-        else if( input == (QUEX_CHARACTER_TYPE)'\\n' ) { 
+        if( input == (QUEX_CHARACTER_TYPE)'\\n' ) { 
             ++(self.counter._line_number_at_end);
 #           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
             column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);
@@ -419,7 +428,7 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
                      "#       endif\n"
 
     if new_line_detection_in_loop_enabled_f:
-        in_loop = range_skipper_lc_counter_in_loop
+        in_loop = lc_counter_in_loop
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],
@@ -428,4 +437,61 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
                       ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
                       ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
                       ["$$LC_COUNT_AT_LOOP_EXIT$$",                exit_loop],
+                      ])
+
+
+def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
+    """Line and Column Number Counting(Range Skipper):
+     
+         -- in loop if there appears a newline, then do:
+            increment line_n
+            set position from where to count column_n
+         -- at end of skipping do one of the following:
+            if end delimiter contains newline:
+               column_n = number of letters since last new line in end delimiter
+               increment line_n by number of newlines in end delimiter.
+               (NOTE: in this case the setting of the position from where to count
+                      the column_n can be omitted.)
+            else:
+               column_n = current_position - position from where to count column number.
+
+       NOTE: On reload we do count the column numbers and reset the column_p.
+    """
+    variable_definition = \
+      "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
+      "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
+      "    QUEX_CHARACTER_POSITION_TYPE column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
+      "#   endif\n" + \
+      "    self.counter.__shift_end_values_to_start_values();\n" + \
+      "#   endif\n"
+    in_loop       = ""
+    end_procedure = ""
+    exit_loop     = ""
+    new_line_detection_in_loop_enabled_f = True
+
+    # Does the end delimiter contain a newline?
+    if CharacterSet.contains(ord("\n")):
+        in_loop = lc_counter_in_loop
+
+    end_procedure = "#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
+                    "        self.counter._column_number_at_end +=   QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
+                    "                                              - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                    "#       endif\n"
+    before_reload  = "#      ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
+                     "       self.counter._column_number_at_end +=  QuexBuffer_tell_memory_adr(&me->buffer)\n" + \
+                     "                                            - column_count_p_$$SKIPPER_INDEX$$;\n" + \
+                     "#      endif\n"
+    after_reload   = "#          ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
+                     "           column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n" + \
+                     "#          endif\n"
+
+    if new_line_detection_in_loop_enabled_f:
+        in_loop = lc_counter_in_loop
+
+    return blue_print(code_str,
+                     [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],
+                      ["$$LC_COUNT_IN_LOOP$$",                     in_loop],
+                      ["$$LC_COUNT_END_PROCEDURE$$",               end_procedure],
+                      ["$$LC_COUNT_BEFORE_RELOAD$$",               before_reload],
+                      ["$$LC_COUNT_AFTER_RELOAD$$",                after_reload],
                       ])
