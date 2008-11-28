@@ -1,7 +1,7 @@
 start = X;
 
 mode X :
-<skip_range: [ \n\t]> 
+<skip: [ \n\t]> 
 {
     1 => COL_1;
     2 => COL_2;
