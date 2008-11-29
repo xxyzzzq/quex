@@ -97,8 +97,8 @@ def get_code_for_mode(Mode, ModeNameList):
     inheritance_info_str, pattern_action_pair_list = get_generator_input(Mode)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
-                                 DefaultAction                  = default_action, 
-                                 EndOfStreamAction              = end_of_stream_action,
+                                 DefaultAction                  = ActionInfo(-1, default_action), 
+                                 EndOfStreamAction              = ActionInfo(-1, end_of_stream_action),
                                  PrintStateMachineF             = True,
                                  StateMachineName               = Mode.name,
                                  AnalyserStateClassName         = Setup.output_engine_name,

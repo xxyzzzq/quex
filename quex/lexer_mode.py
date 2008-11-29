@@ -41,7 +41,6 @@ class OptionInfo:
         if Type == "list" and Domain == -1: self.domain = []
         else:                               self.domain = Domain
 
-
 class LexMode:
     def __init__(self, Name, Filename, LineN):
         global mode_db
@@ -56,6 +55,10 @@ class LexMode:
         # (ii)  'virtual' patterns in the sense that their behavior can be
         #       overwritten.
         self.__matches = {}  # genuine patterns as specified in the mode declaration
+
+        self.__repriorization_db = {}  # patterns of the base class to be reprioritized
+        #                              # map: pattern --> new pattern index
+        self.__deletion_db       = {}  # patterns of the base class to be deleted
 
         self.__inheritance_resolved_f = False # inherited patterns are only valid, after the
         #                                     # function 'pattern_action_pairs()' has been
@@ -136,15 +139,17 @@ class LexMode:
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only this priority mark is considered.", fh)
 
-        self.__matches[Pattern] = PatternActionInfo(Pattern, None, PatternStateMachine, PatternIdx, 
-                                                    PriorityMarkF=True)
+        self.__repriorization_db[Pattern] = PatternIdx
+        ## self.__matches[Pattern] = PatternActionInfo(Pattern, None, PatternStateMachine, PatternIdx, 
+        ##                                            PriorityMarkF=True)
 
     def add_match_deletion(self, Pattern, PatternStateMachine, fh):
         if self.__matches.has_key(Pattern):
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", fh)
 
-        self.__matches[Pattern] = PatternActionInfo(Pattern, None, PatternStateMachine, DeletionF=True)
+        self.__deletion_db[Pattern] = True
+        ## self.__matches[Pattern] = PatternActionInfo(Pattern, None, PatternStateMachine, DeletionF=True)
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.
@@ -229,46 +234,34 @@ class LexMode:
 
         # -- loop over inherited patterns and add them to the list
         for inherited_pattern, inherited_match in inherited_matches.items():
-            if inherited_pattern in self.__matches.keys():
-                # -- own match with the same pattern as 'inherited_pattern'
-                own_match = self.__matches[inherited_pattern]
-
-                if own_match.priority_mark_f == True:
-                    # (1) pattern with 'PRIORITY-MARK':
-                    #     takes everything from the base mode pattern,
-                    #     but adapts the priority, i.e. inheritance level index and pattern index
-                    resolved_matches[inherited_pattern] = copy(inherited_match)
-                    resolved_matches[inherited_pattern].pattern_state_machine.core().set_id(own_match.priority_mark_pattern_index)
-                    resolved_matches[inherited_pattern].inheritance_level = Depth
-                    resolved_matches[inherited_pattern].inheritance_mode_name = self.name
-
-                elif own_match.deletion_f == False:
-                    # (deletion lets the match being totally ignored)
-                    # (2) own match overrides the inherited pattern completely
-                    resolved_matches[inherited_pattern] = copy(own_match)
-                    resolved_matches[inherited_pattern].inheritance_level = Depth
-                    resolved_matches[inherited_pattern].inheritance_mode_name = self.name
-
-            else:
-                # (3) inherited pattern did not at all occur in the own matches list
+            if   self.__deletion_db.has_key(inherited_pattern):
+                # totally ignore the pattern, do not absorb it into 'resolved matches'
+                pass
+            elif self.__repriorization_db.has_key(inherited_pattern):
+                # adapt the pattern index, this automatically adapts the priorization
                 resolved_matches[inherited_pattern] = copy(inherited_match)
+                new_id = self.__repriorization_db[inherited_pattern]
+                resolved_matches[inherited_pattern].pattern_state_machine.core().set_id(new_id)
+                resolved_matches[inherited_pattern].inheritance_level = Depth
+                resolved_matches[inherited_pattern].inheritance_mode_name = self.name
+            elif inherited_pattern not in self.__matches.keys():
+                # inherited pattern did not at all occur in the own matches list
+                resolved_matches[inherited_pattern] = copy(inherited_match)
+            else:
+                # own match overides the inherited pattern
+                resolved_matches[inherited_pattern] = copy(own_match)
+                resolved_matches[inherited_pattern].inheritance_level = Depth
+                resolved_matches[inherited_pattern].inheritance_mode_name = self.name
 
         # -- loop over own patterns and add what is not added yet
         #    (the priority marked patterns should now all be added. if
         #     a priority marked pattern in not present yet, it means that
         #     it was not mentioned in a base mode)
         for pattern, match in self.__matches.items():
-            if pattern not in resolved_matches.keys():
-                if match.priority_mark_f == True:
-                    error_msg("<%s>%s has a 'PRIORITY-MARK'\n" % (self.name, pattern) + \
-                              "but did not occur in any base mode.")
-                elif match.deletion_f == False:
-                    resolved_matches[pattern] = copy(match)
-                    resolved_matches[pattern].inheritance_level = Depth
-                    resolved_matches[pattern].inheritance_mode_name = self.name
-
-            # "elif match.deletion_f == True:"      ... is not necessary, since these patterns
-            # "     del resolved_matches[pattern]"      do not appear anyway
+            if resolved_matches.has_key(pattern): continue
+            resolved_matches[pattern] = copy(match)
+            resolved_matches[pattern].inheritance_level = Depth
+            resolved_matches[pattern].inheritance_mode_name = self.name
 
         return resolved_matches
 

@@ -135,49 +135,6 @@ class SkipperRange(ActionI):
         # Currently we only do it for 'C'
         return skip_code.do(self, PostConditionN)
 
-class PatternActionInfo:
-    def __init__(self, Pattern, Action, PatternStateMachine, PatternIdx=None,
-                 PriorityMarkF=False, DeletionF=False, IL = None, ModeName=""):
-
-        assert Action == None or issubclass(Action.__class__, ActionI)
-        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
-               or PatternStateMachine == None
-
-        self.pattern               = Pattern
-        self.pattern_state_machine = PatternStateMachine
-        self.action                = Action
-        # depth of inheritance where the pattern occurs
-        self.inheritance_level     = IL
-        self.inheritance_mode_name = ModeName
-        # position in the list where the pattern occured in the mode itself
-        # a pattern may have the sole function to determine a priority
-        self.priority_mark_f             = PriorityMarkF
-        self.priority_mark_pattern_index = PatternIdx
-        # a pattern may have the sole function to delete all inherited patterns of with same structure
-        self.deletion_f        = DeletionF
-
-        # The id counter is a means to determine at what position number the pattern
-        # occured. when writing the file to the output, the same sequence is to be maintained
-        # in order to maintain lexing priorities.
-        # (is this still necessary? fschaef)
-        # self.id                = get_unique_match_id()
-
-    def __repr__(self):         
-        txt = ""
-        txt += "self.pattern           = " + repr(self.pattern) + "\n"
-        txt += "self.action            = " + repr(self.action.code) + "\n"
-        txt += "self.filename          = " + repr(self.action.filename) + "\n"
-        txt += "self.line_n            = " + repr(self.action.line_n) + "\n"
-        txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
-        txt += "self.pattern_index     = " + repr(self.pattern_state_machine.core().id()) + "\n"
-        txt += "self.priority_mark_f   = " + repr(self.priority_mark_f) + "\n"
-        txt += "self.deletion_f        = " + repr(self.deletion_f) + "\n"
-        return txt
-
-    def pattern_index(self):
-        assert self.priority_mark_f == False
-        return self.pattern_state_machine.get_id()
-
 class ActionInfo:
     def __init__(self, PatternStateMachine, ActionCodeStr):
         assert PatternStateMachine != None
@@ -237,4 +194,33 @@ class ActionInfo:
         txt += "   " + txt1.replace("\n", "\n      ")
         return txt
         
+class PatternActionInfo:
+    def __init__(self, Pattern, Action, PatternStateMachine, PatternIdx=None,
+                 PriorityMarkF=False, DeletionF=False, IL = None, ModeName=""):
+
+        assert Action == None or issubclass(Action.__class__, ActionI)
+        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
+               or PatternStateMachine == None
+
+        self.pattern               = Pattern
+        self.pattern_state_machine = PatternStateMachine
+        self.action                = Action
+        # depth of inheritance where the pattern occurs
+        self.inheritance_level     = IL
+        self.inheritance_mode_name = ModeName
+
+    def __repr__(self):         
+        txt = ""
+        txt += "self.pattern           = " + repr(self.pattern) + "\n"
+        txt += "self.action            = " + repr(self.action.code) + "\n"
+        txt += "self.filename          = " + repr(self.action.filename) + "\n"
+        txt += "self.line_n            = " + repr(self.action.line_n) + "\n"
+        txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
+        txt += "self.pattern_index     = " + repr(self.pattern_state_machine.core().id()) + "\n"
+        txt += "self.priority_mark_f   = " + repr(self.priority_mark_f) + "\n"
+        txt += "self.deletion_f        = " + repr(self.deletion_f) + "\n"
+        return txt
+
+    def pattern_index(self):
+        return self.pattern_state_machine.get_id()
 
