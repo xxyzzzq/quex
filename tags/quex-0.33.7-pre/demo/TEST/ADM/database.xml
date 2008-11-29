@@ -1,0 +1,112 @@
+<test-database execution-time-sec="125.03" date="Sat Nov 29 21:06:22 2008">
+    <last-used-diff-display-program name=""/>
+    <group name="Other Compilers than g++">
+        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="20.18"> 
+            <application file-name="other-compilers-sun.sh" info-request-time="1223017231L"/>
+            <choice-list number="6">
+               <choice name="000" result="OK" time-sec="2.86" crc="-10986171"/>
+               <choice name="001" result="OK" time-sec="3.05" crc="-228378687"/>
+               <choice name="002" result="OK" time-sec="3.51" crc="1079837187"/>
+               <choice name="003" result="OK" time-sec="4.87" crc="1655230450"/>
+               <choice name="005" result="OK" time-sec="2.95" crc="918056733"/>
+               <choice name="006" result="OK" time-sec="2.94" crc="-1743718636"/>
+            </choice-list>
+        </test>
+        <test title="Intel's icpc" make-required="True" time-sum-sec="17.65"> 
+            <application file-name="other-compilers-intel.sh" info-request-time="1223017231L"/>
+            <choice-list number="6">
+               <choice name="000" result="OK" time-sec="3.43" crc="489948922"/>
+               <choice name="001" result="OK" time-sec="2.38" crc="167903718"/>
+               <choice name="002" result="OK" time-sec="2.83" crc="-1069225166"/>
+               <choice name="003" result="OK" time-sec="4.36" crc="-388582179"/>
+               <choice name="005" result="OK" time-sec="2.24" crc="910309292"/>
+               <choice name="006" result="OK" time-sec="2.40" crc="1476464169"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/000">
+        <test title="Single Mode Example" make-required="True" time-sum-sec="5.48"> 
+            <application file-name="000.sh" info-request-time="1223017231L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.64" crc="-1674132255"/>
+               <choice name="DEBUG" result="OK" time-sec="2.84" crc="-1134124828"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/001">
+        <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="5.82"> 
+            <application file-name="001.sh" info-request-time="1223494066L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.79" crc="-1299983864"/>
+               <choice name="DEBUG" result="OK" time-sec="3.02" crc="-1299983864"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/002">
+        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="6.82"> 
+            <application file-name="002.sh" info-request-time="1223017231L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="3.28" crc="-1031173828"/>
+               <choice name="DEBUG" result="OK" time-sec="3.53" crc="-1031173828"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/003">
+        <test title="Unicode Based Lexical Analyzis" make-required="True" time-sum-sec="24.28"> 
+            <application file-name="003.sh" info-request-time="1223017231L"/>
+            <choice-list number="5">
+               <choice name="BPC=2" result="OK" time-sec="5.00" crc="-717271771"/>
+               <choice name="BPC=2_NDEBUG" result="OK" time-sec="4.67" crc="-717271771"/>
+               <choice name="BPC=4" result="OK" time-sec="5.00" crc="-717271771"/>
+               <choice name="BPC=4_NDEBUG" result="OK" time-sec="4.58" crc="-717271771"/>
+               <choice name="BPC=wchar_t" result="OK" time-sec="5.04" crc="-717271771"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/004">
+        <test title="Benchmarking a C-Lexical Analyser" make-required="True" time-sum-sec="15.29"> 
+            <application file-name="004.sh" info-request-time="1223017231L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time-sec="15.29" crc="-2050672611"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/005">
+        <test title="Including Files" make-required="True" time-sum-sec="11.05"> 
+            <application file-name="005.sh" info-request-time="1223017231L"/>
+            <choice-list number="4">
+               <choice name="1" result="OK" time-sec="2.95" crc="-1625213566"/>
+               <choice name="1_NDEBUG" result="OK" time-sec="2.65" crc="-1736537714"/>
+               <choice name="2" result="OK" time-sec="2.74" crc="1700424799"/>
+               <choice name="2_NDEBUG" result="OK" time-sec="2.71" crc="1552010739"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/006">
+        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="6.04"> 
+            <application file-name="006.sh" info-request-time="1223017231L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.95" crc="2111894497"/>
+               <choice name="DEBUG" result="OK" time-sec="3.10" crc="189521074"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/007">
+        <test title="Miscellaneous Features" make-required="True" time-sum-sec="6.17"> 
+            <application file-name="007.sh" info-request-time="1223494098L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.86" crc="-884239353"/>
+               <choice name="DEBUG" result="OK" time-sec="3.31" crc="-884239353"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="demo/008">
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="6.25"> 
+            <application file-name="008.sh" info-request-time="1226093627L"/>
+            <choice-list number="2">
+               <choice name="NDEBUG" result="OK" time-sec="2.96" crc="1304621319"/>
+               <choice name="DEBUG" result="OK" time-sec="3.29" crc="1304621319"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>
