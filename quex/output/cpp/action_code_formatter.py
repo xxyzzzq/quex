@@ -22,7 +22,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 
     # -- special code to be executed on any match
     for code_info in Mode.on_match_code_fragments():
-        txt += code_info.get("C")
+        txt += code_info.get_code("C")
 
     if Mode.on_indentation.line_n != -1:
         # (*) counters for possible count of lines, columns and indentation
@@ -58,7 +58,7 @@ def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF):
         return txt
 
     for code_info in CodeFragmentList:
-        txt += code_info.get("C")
+        txt += code_info.get_code("C")
 
     return txt
 
