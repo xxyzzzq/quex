@@ -127,7 +127,7 @@ class Generator(GeneratorBase):
         return languages.replace_keywords(txt, LanguageDB, NoIndentF=True)
 
 def do(PatternActionPair_List, DefaultAction, 
-       EndOfStreamAction="", Language="C++", StateMachineName="",
+       EndOfStreamAction, Language="C++", StateMachineName="",
        PrintStateMachineF=False,
        AnalyserStateClassName="analyser_state",
        StandAloneAnalyserF=False,

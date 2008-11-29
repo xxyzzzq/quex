@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Wed Nov 26 22:52:58 2008
+DATE:  Sat Nov 29 20:44:14 2008
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -47,6 +47,8 @@ TITLE: Regression Tests on Fixed Bugs
                        good .............................................[OK]
     2277660 character count pre-determination
         bug-2277660.sh ..................................................[OK]
+    2349109 0.33.5 Line and Column number counts with Set skippers
+        bug-2349109.sh ........................................[NO GOOD FILE]
 
  -- marcoantonelli:
 
@@ -64,8 +66,6 @@ TITLE: Regression Tests on Fixed Bugs
         bug-2257908.sh ..................................................[OK]
     2262537 (feature) Allow Nothing is fine in define section
         feature-2262537.sh ..............................................[OK]
-    2276285 Memory leak when input file is not found
-        bug-2276285.sh ........................................[NO GOOD FILE]
 
  -- sphericalcow:
 
@@ -170,7 +170,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Wed Nov 26 22:55:15 2008
+DATE:  Sat Nov 29 21:06:22 2008
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Wed Nov 26 22:55:16 2008
+DATE:  Sat Nov 29 20:46:20 2008
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Wed Nov 26 22:55:20 2008
+DATE:  Sat Nov 29 20:46:25 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -340,7 +340,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Wed Nov 26 22:55:26 2008
+DATE:  Sat Nov 29 20:46:26 2008
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Wed Nov 26 22:55:40 2008
+DATE:  Sat Nov 29 20:46:30 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -492,7 +492,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Wed Nov 26 22:55:40 2008
+DATE:  Sat Nov 29 20:46:30 2008
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -512,7 +512,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Wed Nov 26 22:55:41 2008
+DATE:  Sat Nov 29 20:46:31 2008
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -545,7 +545,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Wed Nov 26 22:57:41 2008
+DATE:  Sat Nov 29 20:48:27 2008
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -708,7 +708,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Wed Nov 26 22:57:46 2008
+DATE:  Sat Nov 29 20:48:32 2008
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -770,7 +770,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Wed Nov 26 22:57:52 2008
+DATE:  Sat Nov 29 20:48:37 2008
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -868,7 +868,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Wed Nov 26 22:57:52 2008
+DATE:  Sat Nov 29 20:48:37 2008
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -895,7 +895,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Wed Nov 26 22:58:11 2008
+DATE:  Sat Nov 29 20:48:56 2008
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -920,7 +920,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Wed Nov 26 22:58:12 2008
+DATE:  Sat Nov 29 20:48:57 2008
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

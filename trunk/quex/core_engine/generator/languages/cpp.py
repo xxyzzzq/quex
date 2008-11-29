@@ -3,7 +3,6 @@ from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
 #
-from   quex.core_engine.generator.action_info import ActionInfo
 
 def __nice(SM_ID): 
     return repr(SM_ID).replace("L", "")
@@ -363,7 +362,7 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
 
     #  -- execute default pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str = __adorn_action_code(ActionInfo(-1, EndOfStreamAction), SupportBeginOfLineF,
+    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SupportBeginOfLineF,
                                                         IndentationOffset=16)
     # -- DEFAULT ACTION: Under 'normal' circumstances the default action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
@@ -381,7 +380,7 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
     default_action_str += "    " + LanguageDB["$comment"]("Step over nomatching character")
     default_action_str += "    " + LanguageDB["$input/increment"] + "\n"
     default_action_str += LanguageDB["$endif"] + "\n"
-    default_action_str += __adorn_action_code(ActionInfo(-1, DefaultAction), SupportBeginOfLineF,
+    default_action_str += __adorn_action_code(DefaultAction, SupportBeginOfLineF,
                                               IndentationOffset=16)
 
     # -- routing to states via switch statement
