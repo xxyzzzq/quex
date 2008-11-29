@@ -235,6 +235,7 @@ db["VisualBasic6"] = {
     }
 
 
+
 def replace_keywords(program_txt, LanguageDB, NoIndentF):
     """Replaces pseudo-code keywords with keywords of the given language."""
 

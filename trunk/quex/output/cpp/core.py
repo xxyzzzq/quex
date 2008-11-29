@@ -81,10 +81,10 @@ def write_engine_header(Modes, Setup):
         friends_str += "    friend class %s;\n" % friend
 
     # -- the class body extension
-    class_body_extension_str = lexer_mode.class_body.get()
+    class_body_extension_str = lexer_mode.class_body.get_code()
 
     # -- the class constructor extension
-    class_constructor_extension_str = lexer_mode.class_init.get()
+    class_constructor_extension_str = lexer_mode.class_init.get_code()
 
     fh = open_file_or_die(QuexClassHeaderFileTemplate)
     template_code_txt = fh.read()
@@ -150,7 +150,7 @@ def write_engine_header(Modes, Setup):
                 ["$$QUEX_CHARACTER_TYPE$$",              quex_character_type_str],
                 ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
-                ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get() + "\n"],
+                ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
 
     fh_out = open(QuexClassHeaderFileOutput, "wb")

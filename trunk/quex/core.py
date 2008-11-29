@@ -154,7 +154,7 @@ def get_generator_input(Mode):
             action = pattern_info.action  # Later on, we will notice that the action is a skipper ...
         else:
             action = action_code_formatter.do(Mode, pattern_info.action, safe_pattern_str,
-                    pattern_state_machine)
+                                              pattern_state_machine)
 
         action_info = ActionInfo(pattern_state_machine, action)
 

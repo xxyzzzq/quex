@@ -74,10 +74,10 @@ def do(Modes, setup):
         friends_str += "    friend class %s;\n" % friend
 
     # -- the class body extension
-    class_body_extension_str = lexer_mode.class_body.get()
+    class_body_extension_str = lexer_mode.class_body.get_code()
 
     # -- the class constructor extension
-    class_constructor_extension_str = lexer_mode.class_init.get()
+    class_constructor_extension_str = lexer_mode.class_init.get_code()
 
     fh = open_file_or_die(QuexClassHeaderFileTemplate)
     template_code_txt = fh.read()

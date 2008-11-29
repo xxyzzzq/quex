@@ -260,11 +260,11 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
     if SupportBeginOfLineF:
         txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
 
-    if action_info.contains_variable("Lexeme", ignored_code_regions):
+    if action_info.contains_Lexeme_variable(ignored_code_regions):
         txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
 
     txt += indentation + "{\n"
-    txt += indentation + "    " + action_info.action_code().replace("\n", "\n        ") + "\n"  
+    txt += indentation + "    " + action_info.get_code().replace("\n", "\n        ") + "\n"  
     txt += indentation + "}\n"
 
     return txt
@@ -276,12 +276,11 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     txt = ""
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
-    action_code_orig     = pattern_action_info.action_code()
     #
     if pattern_action_info.action_type() != "Skipper":
         action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
     else:
-        action_code = pattern_action_info.action_code().get_code(SMD.post_contexted_sm_n())
+        action_code = pattern_action_info.get_code().get_code("C", SMD.post_contexted_sm_n())
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 

@@ -8,7 +8,7 @@ import quex.input.setup
 import quex.core                                as coder
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
-from   quex.lexer_mode                 import Match, LexMode, ReferencedCodeFragment
+from   quex.lexer_mode                 import LexMode, ReferencedCodeFragment
 
 
 if "--hwut-info" in sys.argv:
