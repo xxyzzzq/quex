@@ -4,6 +4,13 @@ from   quex.input.setup                   import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
        Default_ActionF=False, EOF_ActionF=False):
+    """-- If there are multiple handlers for a single event they are combined
+    
+       -- Adding debug information printer (if desired)
+    
+       -- The task of this function is it to adorn the action code for each pattern with
+          code for line and column number counting.
+    """
     assert Mode.__class__.__name__                == "LexMode"
     assert type(SafePatternStr)                   == str
     assert PatternStateMachine.__class__.__name__ == "StateMachine" or PatternStateMachine == None
@@ -18,49 +25,43 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     else:
         CodeFragmentList = [ CodeFragment_or_CodeFragments ]
 
-    txt = "{\n"
+    on_every_match_code = ""
+    lc_count_code       = ""
+    debug_code          = ""
+    user_code           = ""
 
-    # -- special code to be executed on any match
+    # (*) Code to be performed on every match -- before the related action
     for code_info in Mode.on_match_code_fragments():
-        txt += code_info.get_code("C")
+        on_every_match_code += code_info.get_code()
 
+    # (*) Code to count line and column numbers
     if Mode.on_indentation.line_n != -1:
-        # (*) counters for possible count of lines, columns and indentation
-        txt += __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
+        lc_count_code = __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
 
     else:
-        # (*) counter to possibly count lines and colums (but no indentation)
-        txt += __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
+        lc_count_code = __get_line_and_column_counting(PatternStateMachine, EOF_ActionF)
 
-    # -- debug match display code
+    # (*) debug prints -- if desired
     if Setup.output_debug_f == True:
-        txt += '#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES\n'
+        txt  = '#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES\n'
         txt += '    std::cerr << "(" << self.line_number_at_begin() << ", " << self.column_number_at_begin()'
         txt += '<< ") %s: %s \'" << Lexeme << "\'\\n";\n' % (Mode.name, SafePatternStr)
         txt += '#endif\n'
+        debug_code = txt
         
-    # -- THE action code as specified by the user
-    txt += get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF)
+    # (*) THE user defined action to be performed in case of a match
+    for code_info in CodeFragmentList:
+        user_code += code_info.get_code()
 
+    txt  = "{\n"
+    txt += on_every_match_code
+    txt += lc_count_code
+    txt += debug_code
+    txt += user_code
     txt += "\n}"
 
-    return txt
+    return ReferencedCodeFragment(txt, "", 0, ForbidTerminatingZeroForLexemeF=)
 
-def get_source_code_fragment(CodeFragmentList, Default_ActionF, EOF_ActionF):
-    txt = ""
-    if (Default_ActionF or EOF_ActionF) and  CodeFragmentList == []:
-        txt += "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
-        txt += "#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID\n"
-        txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
-        txt += "#else\n"
-        txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
-        txt += "#endif\n"
-        return txt
-
-    for code_info in CodeFragmentList:
-        txt += code_info.get_code("C")
-
-    return txt
 
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 

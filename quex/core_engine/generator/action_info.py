@@ -4,21 +4,28 @@ from quex.frs_py.file_in import is_identifier_start, \
 import quex.core_engine.generator.skip_code as skip_code
 
 class ActionI:
-    def get_code(self, Language=None, PostConditionN=None):
+    def __init__(self, Code):
+        self.__code = Code
+
+    def get_code(self):
         """NOTE: The number of post conditions in the state machine may be necessary, because
            it determines the number of pointers that have to be adapted on reload. Some actions
            do reload (e.g. skippers).
         """
-        assert False, \
-               "Called to 'abstract' function of interface ActionI."
+        return self.__code
 
-    def contains_Lexeme_variable(self, CommentDelimiterList):
+    def require_terminating_zero_for_lexeme(self, CommentDelimiterList):
         """Example: 
                       CommentDelimiterList = [["/*", "*/"], ["//", "\n"], ["\"", "\""]]
         """ 
         assert type(CommentDelimiterList) == list
         assert map(type, CommentDelimiterList) == [list] * len(CommentDelimiterList)
         return False
+
+class GeneratedCodeFragment(ActionI):
+    def __init__(self, Code):
+        ActionI.__init__(self, Code)
+
 
 ReferencedCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________
@@ -47,22 +54,46 @@ ReferencedCodeFragment_OpenLinePragma = {
    }
 
 class ReferencedCodeFragment(ActionI):
-    def __init__(self, Code="", Filename="", LineN=-1):
-        self.code     = Code
+    def __init__(self, Code="", Filename="", LineN=-1, Language="C"):
         self.filename = Filename
         self.line_n   = LineN
 
-    def get_code(self, Language="C"):
-        txt = ""
-        if self.code == "": return ""
-
         if Language == "C":
-            txt += '\n#line %i "%s"\n' % (self.line_n, self.filename)
-            txt += self.code
+            txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
+            txt += Code
             if txt[-1] != "\n": txt = txt + "\n"
             txt += ReferencedCodeFragment_OpenLinePragma["C"][0] + "\n"
-        
-        return txt
+            code = txt
+        else:
+            code = Code
+        ActionI.__init__(self, code)
+
+    def require_terminating_zero_for_lexeme(self, CommentDelimiterList):
+        assert type(CommentDelimiterList) == list
+        ObjectName = "Lexeme"
+
+        for delimiter_info in CommentDelimiterList:
+            assert type(delimiter_info) == list, "Argument 'CommentDelimiters' must be of type [[]]"
+            assert len(delimiter_info) == 3, \
+                   "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
+                   "start of comment, end of comment, replacement string for comment."
+
+        txt = self.get_code()
+        L       = len(txt)
+        LO      = len(ObjectName)
+        found_i = -1
+        while 1 + 1 == 2:
+            # TODO: Implement the skip_whitespace() function for more general treatment of Comment
+            #       delimiters. Quotes for strings '"" shall then also be treate like comments.
+            found_i = txt.find(ObjectName, found_i + 1)
+
+            if found_i == -1: return False
+
+            # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
+            #       shall not trigger a treatment of 'Lexeme'.
+            if     (found_i == 0      or not is_identifier_start(txt[found_i - 1]))     \
+               and (found_i == L - LO or not is_identifier_continue(txt[found_i + LO])): 
+                   return True
 
 def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
     if Language not in ReferencedCodeFragment_OpenLinePragma.keys():
@@ -103,9 +134,9 @@ class SkipperCharacterSet(ActionI):
     def get_character_set(self):
         return self.__trigger_set
 
-    def get_code(self, Language, PostConditionN):
+    def get_code(self):
         # Currently we only do it for 'C'
-        return skip_code.do(self, PostConditionN)
+        return skip_code.do(self)
 
 class SkipperRange(ActionI):
     def __init__(self, ClosingSequence, OpeningSequence=None):
@@ -131,70 +162,39 @@ class SkipperRange(ActionI):
     def get_closing_sequence(self):
         return self.__closing_sequence
 
-    def get_code(self, Language, PostConditionN):
+    def get_code(self):
         # Currently we only do it for 'C'
-        return skip_code.do(self, PostConditionN)
+        return skip_code.do(self)
 
 class ActionInfo:
-    def __init__(self, PatternStateMachine, ActionCodeStr):
+    def __init__(self, PatternStateMachine, ActionCode_or_Str):
         assert PatternStateMachine != None
-        assert type(ActionCodeStr) == str or \
-               ActionCodeStr.__class__.__name__ == "SkipperRange" or \
-               ActionCodeStr.__class__.__name__ == "SkipperCharacterSet"
+        assert ActionCode_or_Str == None                        or \
+               type(ActionCode_or_Str) == str                   or \
+               issubclass(ActionCode_or_Str.__class__, ActionI)
 
         self.__pattern_state_machine = PatternStateMachine
-        self.__action_code_str       = ActionCodeStr
+        if type(ActionCode_or_Str) == str:
+            self.__action = ReferencedCodeFragment(ActionCode_or_Str, LineN=1)
+        else:
+            self.__action = ActionCode_or_Str
 
     def pattern_state_machine(self):
         return self.__pattern_state_machine
 
-    def action_type(self):
-        if type(self.__action_code_str) == str: return "Code"
-        else:                                   return "Skipper"
-
-    def get_code(self):
-        return self.__action_code_str
-
-    def contains_Lexeme_variable(self, CommentDelimiters):
-        return self.__contains("Lexeme", CommentDelimiters)
-
-    def __contains(self, ObjectName, CommentDelimiters):
-        assert type(CommentDelimiters) == list
-        assert self.action_type() == "Code"
-
-        for delimiter_info in CommentDelimiters:
-            assert type(delimiter_info) == list, "Argument 'CommentDelimiters' must be of type [[]]"
-            assert len(delimiter_info) == 3, \
-                   "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
-                   "start of comment, end of comment, replacement string for comment."
-
-        txt = self.__action_code_str
-        L       = len(txt)
-        LO      = len(ObjectName)
-        found_i = -1
-        while 1 + 1 == 2:
-            # TODO: Implement the skip_whitespace() function for more general treatment of Comment
-            #       delimiters. Quotes for strings '"" shall then also be treate like comments.
-            found_i = txt.find(ObjectName, found_i + 1)
-
-            if found_i == -1: return False
-
-            # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
-            #       shall not trigger a treatment of 'Lexeme'.
-            if     (found_i == 0      or not is_identifier_start(txt[found_i - 1]))     \
-               and (found_i == L - LO or not is_identifier_continue(txt[found_i + LO])): 
-                   return True
+    def action(self):
+        return self.__action
 
     def __repr__(self):
         txt0 = "state machine of pattern = \n" + repr(self.__pattern_state_machine)
-        txt1 = "action = \n" + self.__action_code_str
+        txt1 = "action = \n" + self.__action_.get_code()
         
         txt  = "ActionInfo:\n"
         txt += "   " + txt0.replace("\n", "\n      ") + "\n"
         txt += "   " + txt1.replace("\n", "\n      ")
         return txt
         
-class PatternActionInfo:
+class PatternActionInfo(ActionInfo):
     def __init__(self, Pattern, Action, PatternStateMachine, PatternIdx=None,
                  PriorityMarkF=False, DeletionF=False, IL = None, ModeName=""):
 
@@ -202,9 +202,9 @@ class PatternActionInfo:
         assert PatternStateMachine.__class__.__name__ == "StateMachine" \
                or PatternStateMachine == None
 
+        ActionInfo.__init__(self, PatternStateMachine, Action)
+
         self.pattern               = Pattern
-        self.pattern_state_machine = PatternStateMachine
-        self.action                = Action
         # depth of inheritance where the pattern occurs
         self.inheritance_level     = IL
         self.inheritance_mode_name = ModeName
@@ -212,15 +212,13 @@ class PatternActionInfo:
     def __repr__(self):         
         txt = ""
         txt += "self.pattern           = " + repr(self.pattern) + "\n"
-        txt += "self.action            = " + repr(self.action.code) + "\n"
+        txt += "self.action            = " + repr(self.action.get_code()) + "\n"
         txt += "self.filename          = " + repr(self.action.filename) + "\n"
         txt += "self.line_n            = " + repr(self.action.line_n) + "\n"
         txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
         txt += "self.pattern_index     = " + repr(self.pattern_state_machine.core().id()) + "\n"
-        txt += "self.priority_mark_f   = " + repr(self.priority_mark_f) + "\n"
-        txt += "self.deletion_f        = " + repr(self.deletion_f) + "\n"
         return txt
 
     def pattern_index(self):
-        return self.pattern_state_machine.get_id()
+        return self.pattern_state_machine().get_id()
 

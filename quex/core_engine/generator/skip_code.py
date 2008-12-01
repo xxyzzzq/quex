@@ -14,23 +14,31 @@ from   quex.core_engine.state_machine.transition_map import TransitionMap
 
 
 
-def do(SkipperDescriptor, PostContextN):
+def do(SkipperDescriptor):
     LanguageDB = Setup.language_db
     skipper_class = SkipperDescriptor.__class__.__name__
     assert skipper_class in ["SkipperRange", "SkipperCharacterSet"]
 
     if skipper_class == "SkipperRange":
-        return  "{\n" \
-                + LanguageDB["$comment"]("Range skipper state") \
-                + get_range_skipper(SkipperDescriptor.get_closing_sequence(), LanguageDB, PostContextN) \
-                + "\n}\n"
+        return  create_skip_range_code(SkipperDescriptor.get_closing_sequence())
     elif skipper_class == "SkipperCharacterSet":
-        return  "{\n" \
-                + LanguageDB["$comment"]("Character set skipper state") \
-                + get_character_set_skipper(SkipperDescriptor.get_character_set(), LanguageDB, PostContextN) \
-                + "\n}\n"
+        return  create_skip_code(SkipperDescriptor.get_character_set())
     else:
         assert None
+
+def create_skip_range_code(ClosingSequence):
+    LanguageDB = Setup.language_db
+    return  "{\n" \
+            + LanguageDB["$comment"]("Range skipper state")                           \
+            + get_range_skipper(SkipperDescriptor.get_closing_sequence(), LanguageDB) \
+            + "\n}\n"
+
+def create_skip_code(CharacterSet):
+    LanguageDB = Setup.language_db
+    return  "{\n" \
+            + LanguageDB["$comment"]("Character set skipper state") \
+            + get_character_set_skipper(CharacterSet, LanguageDB)   \
+            + "\n}\n"
 
 range_skipper_template = """
 {
@@ -132,7 +140,7 @@ $$DROP_OUT$$
     me->buffer._input_p = text_end;
 $$LC_COUNT_BEFORE_RELOAD$$
     if(    QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                              post_context_start_position, $$POST_CONTEXT_N$$) ) {
+                                              post_context_start_position, PostContextStartPositionN) ) {
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
         me->buffer._input_p = me->buffer._lexeme_start_p;
@@ -149,7 +157,7 @@ $$LC_COUNT_AFTER_RELOAD$$
 }
 """
 
-def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelimiterAction=""):
+def get_range_skipper(EndSequence, LanguageDB, MissingClosingDelimiterAction=""):
     assert EndSequence.__class__  == list
     assert len(EndSequence) >= 1
     assert map(type, EndSequence) == [int] * len(EndSequence)
@@ -197,7 +205,6 @@ def get_range_skipper(EndSequence, LanguageDB, PostContextN, MissingClosingDelim
                            ["$$GOTO_ENTRY$$",                 LanguageDB["$goto"]("$entry", skipper_index)],
                            ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                            ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
-                           ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
                            ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
                            ["$$SET_INPUT_P_BEHIND_DELIMITER$$", LanguageDB["$input/add"](len(EndSequence)-1)],
                            ["$$MISSING_CLOSING_DELIMITER$$",  MissingClosingDelimiterAction],
@@ -248,7 +255,7 @@ $$DROP_OUT$$
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
         if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                               post_context_start_position, $$POST_CONTEXT_N$$) ) {
+                                               post_context_start_position, PostContextStartPositionN) ) {
 
 $$LC_COUNT_AFTER_RELOAD$$
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
@@ -268,7 +275,7 @@ $$DROP_OUT_DIRECT$$
 }
 """
 
-def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN):
+def get_character_set_skipper(TriggerSet, LanguageDB):
     """This function implements simple 'skipping' in the sense of passing by
        characters that belong to a given set of characters--the TriggerSet.
     """
@@ -307,7 +314,6 @@ def get_character_set_skipper(TriggerSet, LanguageDB, PostContextN):
                        ["$$GOTO_TERMINAL_EOF$$",          LanguageDB["$goto"]("$terminal-EOF")],
                        ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
                        ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
-                       ["$$POST_CONTEXT_N$$",             repr(PostContextN)],
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$", iteration_code],
                       ])
 

@@ -86,3 +86,4 @@ mode STRING_READER :
         self.accumulator.add(Lexeme);
     }
 }
+

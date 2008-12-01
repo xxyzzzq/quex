@@ -86,9 +86,28 @@ def get_code_for_mode(Mode, ModeNameList):
     if not Mode.has_matches(): return "", ""
 
     # -- 'end of stream' action
+    if Mode.on_end_of_stream_code_fragments() == []:
+        txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
+        txt += "#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID\n"
+        txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
+        txt += "#else\n"
+        txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
+        txt += "#endif\n"
+        Mode.on_end_of_stream = ReferencedCodeFragment(txt, LineN=0)
+
     end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
     # -- 'default' action (nothing matched)
+
+    if Mode.on_failure_code_fragments() == []:
+        txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
+        txt += "#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID\n"
+        txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
+        txt += "#else\n"
+        txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
+        txt += "#endif\n"
+        Mode.on_failure = ReferencedCodeFragment(txt, LineN=0)
+
     default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 
                                               "on_failure", None, Default_ActionF=True)
 
@@ -145,18 +164,15 @@ def get_generator_input(Mode):
     inheritance_info_str     = ""
     pattern_action_pair_list = []
     for pattern_info in match_info_list:
-
-        pattern               = pattern_info.pattern
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
-        pattern_state_machine = pattern_info.pattern_state_machine
+        pattern_state_machine = pattern_info.pattern_state_machine()
 
-        if pattern_info.action.__class__.__name__ in ["SkipperCharacterSet", "SkipperRange"]:
-            action = pattern_info.action  # Later on, we will notice that the action is a skipper ...
-        else:
-            action = action_code_formatter.do(Mode, pattern_info.action, safe_pattern_str,
-                                              pattern_state_machine)
+        # Prepare the action code for the analyzer engine. For this purpose several things
+        # are be added to the user's code.
+        prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
+                                                   pattern_state_machine)
 
-        action_info = ActionInfo(pattern_state_machine, action)
+        action_info = ActionInfo(pattern_state_machine, prepared_action)
 
         pattern_action_pair_list.append(action_info)
 
@@ -166,6 +182,13 @@ def get_generator_input(Mode):
                                                        pattern_info.pattern_index())
     
     return inheritance_info_str, pattern_action_pair_list
+
+def __get_post_context_n(match_info_list):
+    n = 0
+    for info in MatchInfoList:
+        if info.pattern_state_machine().core().post_context_id() != -1L:
+            n += 1
+    return n
 
 def do_plot():
 
