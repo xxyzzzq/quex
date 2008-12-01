@@ -1,6 +1,7 @@
 import quex.core_engine.state_machine.character_counter as pattern_analyzer
-from   quex.core_engine.interval_handling import NumberSet
-from   quex.input.setup                   import setup as Setup
+from   quex.core_engine.interval_handling     import NumberSet
+from   quex.core_engine.generator.action_info import *
+from   quex.input.setup                       import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
        Default_ActionF=False, EOF_ActionF=False):
@@ -50,8 +51,11 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         debug_code = txt
         
     # (*) THE user defined action to be performed in case of a match
+    require_terminating_zero_preparation_f = False
     for code_info in CodeFragmentList:
         user_code += code_info.get_code()
+        if code_info.require_terminating_zero_f():
+            require_terminating_zero_preparation_f = True
 
     txt  = "{\n"
     txt += on_every_match_code
@@ -60,7 +64,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     txt += user_code
     txt += "\n}"
 
-    return ReferencedCodeFragment(txt, "", 0, ForbidTerminatingZeroForLexemeF=)
+    return GeneratedCodeFragment(txt, require_terminating_zero_preparation_f)
 
 
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):

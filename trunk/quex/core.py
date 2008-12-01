@@ -10,8 +10,8 @@ from   quex.frs_py.file_in import error_msg
 from   quex.input.setup import setup as Setup
 import quex.token_id_maker                      as token_id_maker
 import quex.lexer_mode                          as lexer_mode
-from   quex.lexer_mode                          import ReferencedCodeFragment_straighten_open_line_pragmas, \
-                                                       ReferencedCodeFragment
+from   quex.core_engine.generator.action_info   import ReferencedCodeFragment_straighten_open_line_pragmas, \
+                                                       GeneratedCodeFragment
 from quex.token_id_maker                        import TokenInfo
 
 import quex.core_engine.generator.core          as generator
@@ -93,7 +93,7 @@ def get_code_for_mode(Mode, ModeNameList):
         txt += "#else\n"
         txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
         txt += "#endif\n"
-        Mode.on_end_of_stream = ReferencedCodeFragment(txt, LineN=0)
+        Mode.on_end_of_stream = GeneratedCodeFragment(txt)
 
     end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
@@ -106,7 +106,7 @@ def get_code_for_mode(Mode, ModeNameList):
         txt += "#else\n"
         txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
         txt += "#endif\n"
-        Mode.on_failure = ReferencedCodeFragment(txt, LineN=0)
+        Mode.on_failure = GeneratedCodeFragment(txt)
 
     default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 
                                               "on_failure", None, Default_ActionF=True)

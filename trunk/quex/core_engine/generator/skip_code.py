@@ -30,7 +30,7 @@ def create_skip_range_code(ClosingSequence):
     LanguageDB = Setup.language_db
     return  "{\n" \
             + LanguageDB["$comment"]("Range skipper state")                           \
-            + get_range_skipper(SkipperDescriptor.get_closing_sequence(), LanguageDB) \
+            + get_range_skipper(ClosingSequence, LanguageDB) \
             + "\n}\n"
 
 def create_skip_code(CharacterSet):
