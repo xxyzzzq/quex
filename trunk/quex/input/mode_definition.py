@@ -95,9 +95,10 @@ def parse_mode_option(fh, new_mode):
         opener_sm = StateMachine()
         opener_sm.add_transition(opener_sm.init_state_index, trigger_set, AcceptanceF=True)
             
-        skipper = lexer_mode.SkipperCharacterSet(trigger_set) 
+        action = GeneratedCodeFragment(create_skip_code(trigger_set))
  
-        new_mode.add_match(pattern_str, skipper, opener_sm)
+        # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
+        new_mode.add_match(pattern_str, action, opener_sm)
 
         return True
 
@@ -118,10 +119,10 @@ def parse_mode_option(fh, new_mode):
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        skipper = lexer_mode.SkipperRange(closer_sequence)  # 'opener' is webbed into general state machine
+        action = GeneratedCodeFragment(create_skip_range_code(closer_sequence))
 
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
-        new_mode.add_match(opener_str, skipper, opener_sm)
+        new_mode.add_match(opener_str, action, opener_sm)
         return True
         
     elif identifier == "skip_nesting_range":

@@ -120,11 +120,13 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
 
+    PostContextN = len(PostConditionedStateMachineID_List)
     local_variable_list.extend(
             [ ["QUEX_GOTO_LABEL_TYPE",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
               ["QUEX_CHARACTER_POSITION_TYPE", "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
               ["QUEX_CHARACTER_POSITION_TYPE", "post_context_start_position",    "(QUEX_CHARACTER_TYPE*)(0x00)", 
-                                                                                 len(PostConditionedStateMachineID_List)],
+                                                                                 PostContextN],
+              ["const size_t",                 "PostContextStartPositionN",      "(size_t)" + repr(PostContextN)],
               ["QUEX_CHARACTER_TYPE",          "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
             ])
               
@@ -247,7 +249,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
     $$GOTO_START$$
 """
 
-def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4): 
+def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset=4): 
     indentation = " " * IndentationOffset 
     ignored_code_regions = [["//", "\n", "\n"],   # c++ comments
                             ["/*", "*/", ""],     # c comments
@@ -259,11 +261,13 @@ def __adorn_action_code(action_info, SupportBeginOfLineF, IndentationOffset=4):
     if SupportBeginOfLineF:
         txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
 
-    if action_info.contains_Lexeme_variable(ignored_code_regions):
+    if action_info.action().require_terminating_zero_for_lexeme(ignored_code_regions):
         txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
 
+    code_str = action_info.action().get_code()
+
     txt += indentation + "{\n"
-    txt += indentation + "    " + action_info.get_code().replace("\n", "\n        ") + "\n"  
+    txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  
     txt += indentation + "}\n"
 
     return txt
@@ -276,10 +280,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
     state_machine_id_str = __nice(state_machine_id)
     state_machine        = pattern_action_info.pattern_state_machine()
     #
-    if pattern_action_info.action_type() != "Skipper":
-        action_code = __adorn_action_code(pattern_action_info, SupportBeginOfLineF)
-    else:
-        action_code = pattern_action_info.get_code().get_code("C", SMD.post_contexted_sm_n())
+    action_code = __adorn_action_code(pattern_action_info, SMD, SupportBeginOfLineF)
         
     # (*) The 'normal' terminal state can also be reached by the terminal
     #     router and, thus, **must** restore the acceptance input position. This is so, 
@@ -362,7 +363,7 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
 
     #  -- execute default pattern action 
     #  -- goto initial state    
-    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SupportBeginOfLineF,
+    end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF,
                                                         IndentationOffset=16)
     # -- DEFAULT ACTION: Under 'normal' circumstances the default action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
@@ -377,10 +378,10 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
     default_action_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
     default_action_str += LanguageDB["$endif"] + "\n"
     default_action_str += LanguageDB["$else"] + "\n"
-    default_action_str += "    " + LanguageDB["$comment"]("Step over nomatching character")
+    default_action_str += "    " + LanguageDB["$comment"]("Step over nomatching character") + "\n"
     default_action_str += "    " + LanguageDB["$input/increment"] + "\n"
     default_action_str += LanguageDB["$endif"] + "\n"
-    default_action_str += __adorn_action_code(DefaultAction, SupportBeginOfLineF,
+    default_action_str += __adorn_action_code(DefaultAction, SMD, SupportBeginOfLineF,
                                               IndentationOffset=16)
 
     # -- routing to states via switch statement

@@ -140,8 +140,6 @@ class LexMode:
                       "Only this priority mark is considered.", fh)
 
         self.__repriorization_db[Pattern] = PatternIdx
-        ## self.__matches[Pattern] = PatternActionInfo(Pattern, None, PatternStateMachine, PatternIdx, 
-        ##                                            PriorityMarkF=True)
 
     def add_match_deletion(self, Pattern, PatternStateMachine, fh):
         if self.__matches.has_key(Pattern):
@@ -149,7 +147,6 @@ class LexMode:
                       "Deletion of pattern.", fh)
 
         self.__deletion_db[Pattern] = True
-        ## self.__matches[Pattern] = PatternActionInfo(Pattern, None, PatternStateMachine, DeletionF=True)
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.
@@ -241,7 +238,7 @@ class LexMode:
                 # adapt the pattern index, this automatically adapts the priorization
                 resolved_matches[inherited_pattern] = copy(inherited_match)
                 new_id = self.__repriorization_db[inherited_pattern]
-                resolved_matches[inherited_pattern].pattern_state_machine.core().set_id(new_id)
+                resolved_matches[inherited_pattern].pattern_state_machine().core().set_id(new_id)
                 resolved_matches[inherited_pattern].inheritance_level = Depth
                 resolved_matches[inherited_pattern].inheritance_mode_name = self.name
             elif inherited_pattern not in self.__matches.keys():

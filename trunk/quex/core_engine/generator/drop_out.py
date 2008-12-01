@@ -37,31 +37,29 @@ def do(state, StateIdx, SMD, InitStateF):
     BufferReloadRequiredOnDropOutF = TriggerMap != [] and not SMD.backward_input_position_detection_f()
     if BufferReloadRequiredOnDropOutF:
         if SMD.backward_lexing_f():
-            txt += __reload_backward(StateIdx, SMD)
+            txt += __reload_backward(StateIdx)
         else:
             # In case that it cannot load anything, it still needs to know where to jump to.
             txt += "    " + acceptance_info.forward_lexing(state, StateIdx, SMD, ForceF=True)
-            txt += __reload_forward(StateIdx, SMD)
+            txt += __reload_forward(StateIdx)
 
     return txt + "\n"
 
-def get_forward_load_procedure(StateIndex, PostContextN):
+def get_forward_load_procedure(StateIndex):
     txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");\n'
     txt += "    if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
-    txt += "                                           post_context_start_position, %i) ) {\n" % PostContextN
+    txt += "                                           post_context_start_position, PostContextStartPositionN) ) {\n"
     txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
     txt += "    " + LanguageDB["$endif"]                         + "\n"
     return txt
 
-def __reload_forward(StateIndex, SMD): 
-    assert SMD.__class__.__name__ == "StateMachineDecorator"
-
-    txt  = get_forward_load_procedure(StateIndex, SMD.post_contexted_sm_n())
+def __reload_forward(StateIndex): 
+    txt  = get_forward_load_procedure(StateIndex)
     txt += '    QUEX_DEBUG_PRINT(&me->buffer, "BUFFER_RELOAD_FAILED");\n'
     txt += "    " + LanguageDB["$goto-last_acceptance"]               + "\n"
     return txt
 
-def __reload_backward(StateIndex, SM): 
+def __reload_backward(StateIndex): 
     txt  = '    QUEX_DEBUG_PRINT(&me->buffer, "BACKWARD_BUFFER_RELOAD");\n'
     txt += "    if( QuexAnalyser_buffer_reload_backward(&me->buffer) ) {\n"
     txt += "       " + LanguageDB["$goto"]("$input", StateIndex) + "\n"
@@ -80,7 +78,7 @@ def __goto_distinct_terminal_direct(Origin):
 
 def get_drop_out_goto_string(state, StateIdx, SM, BackwardLexingF):
     assert state.__class__.__name__ == "State"
-    assert SM.__class__.__name__ == "StateMachine"
+    assert SM.__class__.__name__    == "StateMachine"
     LanguageDB = Setup.language_db
 
     if not BackwardLexingF:

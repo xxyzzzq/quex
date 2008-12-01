@@ -194,7 +194,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "\n"
     txt += "bool\n"
     txt += "show_next_character(QuexBuffer* buffer) {\n"
-    txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position    = 0x0;\n"
+    txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position = 0x0;\n"
     txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
     txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) == 0 ) {\n"
     txt += "        QuexBuffer_mark_lexeme_start(buffer);\n"
@@ -218,6 +218,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "{\n"
     txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position    = 0x0;\n"
     txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
+    txt += "    const size_t                  PostContextStartPositionN      = 0;\n"
     txt += "    QUEX_CHARACTER_TYPE           input                          = 0x0;\n"
     txt += "ENTRY:\n"
     txt += "    /* Skip irrelevant characters */\n"
@@ -263,7 +264,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"], 0)
+    skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"])
 
     marker_char_list = []
     for interval in TriggerSet.get_intervals():
@@ -279,7 +280,7 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     end_str  = '    printf("end\\n");'
     end_str += '    return false;\n'
 
-    skipper_code = skip_code.get_range_skipper(EndSequence, db["C++"], 0, end_str)
+    skipper_code = skip_code.get_range_skipper(EndSequence, db["C++"], end_str)
 
     return __get_skipper_code_framework(Language, TestStr, skipper_code,
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,

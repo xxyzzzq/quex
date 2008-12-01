@@ -29,8 +29,8 @@ COMPILER = g++
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
      -ggdb \
+	 # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 	 #-DQUEX_OPTION_DEBUG_MODE_TRANSITIONS \
-	 #-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 LD = $(COMPILER)
 
@@ -46,7 +46,7 @@ $(APPLICATION): $(APPLICATION).o \
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME)  
+	$(QUEX_PATH)/quex-exe.py -i $(MODE_FILES) --engine $(ENGINE_NAME)  
 
 # (*) HELPERS __________________________________________________________________
 clean:	
