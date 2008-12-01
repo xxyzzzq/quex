@@ -1,4 +1,5 @@
 from copy import copy
+from quex.frs_py.file_in         import is_identifier_start, is_identifier_continue
 from quex.frs_py.string_handling import blue_print
 
 import quex.core_engine.state_machine.index as index
@@ -251,9 +252,6 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 
 def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset=4): 
     indentation = " " * IndentationOffset 
-    ignored_code_regions = [["//", "\n", "\n"],   # c++ comments
-                            ["/*", "*/", ""],     # c comments
-                            ["\"", "\"", ""]]     # strings in quotes
     txt = ""
     # TODO: There could be a differenciation between a pattern that contains
     #       newline at the end, and those that do not. Then, there need not
@@ -261,7 +259,7 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     if SupportBeginOfLineF:
         txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
 
-    if action_info.action().require_terminating_zero_for_lexeme(ignored_code_regions):
+    if action_info.action().require_terminating_zero_f():
         txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
 
     code_str = action_info.action().get_code()
@@ -457,3 +455,31 @@ def __get_if_in_interval(TriggerSet):
         return "if( input >= %i && input < %i ) {\n" % (TriggerSet.begin, TriggerSet.end)
 
 
+def __require_terminating_zero_preparation(LanguageDB, CodeStr):
+    CommentDelimiterList = LanguageDB["$comment-delimiters"]
+    assert type(CommentDelimiterList) == list
+    ObjectName = "Lexeme"
+
+    for delimiter_info in CommentDelimiterList:
+        assert type(delimiter_info) == list, "Argument 'CommentDelimiters' must be of type [[]]"
+        assert len(delimiter_info) == 3, \
+               "Elements of argument CommentDelimiters must be arrays with three elements:\n" + \
+               "start of comment, end of comment, replacement string for comment.\n" + \
+               "received: " + repr(delimiter_info)
+
+    txt = CodeStr
+    L       = len(txt)
+    LO      = len(ObjectName)
+    found_i = -1
+    while 1 + 1 == 2:
+        # TODO: Implement the skip_whitespace() function for more general treatment of Comment
+        #       delimiters. Quotes for strings '"" shall then also be treate like comments.
+        found_i = txt.find(ObjectName, found_i + 1)
+
+        if found_i == -1: return False
+
+        # Note: The variable must be named 'exactly' like the given name. 'xLexeme' or 'Lexemey'
+        #       shall not trigger a treatment of 'Lexeme'.
+        if     (found_i == 0      or not is_identifier_start(txt[found_i - 1]))     \
+           and (found_i == L - LO or not is_identifier_continue(txt[found_i + LO])): 
+               return True

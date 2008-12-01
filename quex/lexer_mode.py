@@ -95,7 +95,7 @@ class LexMode:
 
     def has_event_handler(self):
         def __check(CodeFragment):
-            if     CodeFragment.line_n    == -1 and CodeFragment.code == "" \
+            if     CodeFragment.line_n   == -1 and CodeFragment.get_code() == "" \
                and CodeFragment.filename == "": return False
             else:                               return True
 
@@ -188,7 +188,7 @@ class LexMode:
         """Collect all event handlers with the given FragmentName from all base classes.
            Returns list of 'ReferencedCodeFragment'.
         """
-        if self.__dict__[FragmentName].line_n == -1:
+        if self.__dict__[FragmentName].get_code() == "":
             code_fragments = []
         else:      
             code_fragments = [ self.__dict__[FragmentName] ]

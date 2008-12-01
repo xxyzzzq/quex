@@ -72,7 +72,10 @@ def label_db_get_unused_label_list():
 # C++
 #    
 db["C++"] = {
+    "$language":      "C++",
+    "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
     "$MODUL$":        cpp,
+    "$require-terminating-zero-preparation": cpp.__require_terminating_zero_preparation,
     "$function_def":  "bool\n$$function_name$$(const int input)\n{\n", # still needed ?? fschaef 07y3m20d
     "$function_end":  "}\n",                                           # still needed ??
     "$if":            "if(",

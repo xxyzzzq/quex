@@ -4,6 +4,9 @@ from   quex.token_id_maker import TokenInfo
 from   quex.input.setup    import setup as Setup
 from   quex.input.ucs_db_parser  import ucs_property_db
 from   quex.core_engine.utf8 import __read_one_utf8_code_from_stream
+from   quex.core_engine.generator.action_info import *
+
+LanguageDB = Setup.language_db
 
 
 def parse(fh, CodeFragmentName, code_fragment_carrier=None, 
@@ -14,7 +17,7 @@ def parse(fh, CodeFragmentName, code_fragment_carrier=None,
                 None in case of failure.
     """
     assert Setup.__class__.__name__ == "something"
-    assert code_fragment_carrier.__class__ == lexer_mode.ReferencedCodeFragment \
+    assert code_fragment_carrier.__class__.__name__ == "ReferencedCodeFragment" \
            or code_fragment_carrier == None
 
     skip_whitespace(fh)
@@ -36,9 +39,9 @@ def parse(fh, CodeFragmentName, code_fragment_carrier=None,
 
 def __prepare_code_fragment_carrier(fh, carrier):
     if carrier == None:
-        result = lexer_mode.ReferencedCodeFragment()
+        result = ReferencedCodeFragment()
     else:
-        assert carrier.__class__ == lexer_mode.ReferencedCodeFragment \
+        assert carrier.__class__ == ReferencedCodeFragment \
 
         if carrier.line_n != -1:
             error_msg("%s defined twice" % code_fragment_name, fh, DontExitF=True)
@@ -58,7 +61,10 @@ def __prepare_code_fragment_carrier(fh, carrier):
 def __parse_normal(fh, code_fragment_name, code_fragment_carrier):
     result = __prepare_code_fragment_carrier(fh, code_fragment_carrier)
 
-    result.code = read_until_closing_bracket(fh, "{", "}")
+    code = read_until_closing_bracket(fh, "{", "}")
+    result.set_code(code)
+    if LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
+        result.set_require_terminating_zero_f()
 
     return result
 
@@ -72,16 +78,22 @@ def __parse_brief_token_sender(fh, code_fragment_carrier):
         skip_whitespace(fh)
         position = fh.tell()
 
-        result.code = __parse_token_id_specification_by_character_code(fh)
-        if result.code != "": return result
+        code = __parse_token_id_specification_by_character_code(fh)
+        if code != "": return result
 
         identifier, arg_list_str = __parse_function_call(fh)
         if identifier in ["GOTO", "GOSUB", "GOUP"]:
-            result.code = __create_mode_transition_and_token_sender(fh, identifier, arg_list_str)
+            code = __create_mode_transition_and_token_sender(fh, identifier, arg_list_str)
         else:
-            result.code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
-        if result.code != "": return result
-        else:                 return None
+            code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
+
+        if code != "": 
+            result.set_code(code)
+            if LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
+                result.set_require_terminating_zero_f()
+            return result
+        else:
+            return None
 
     except EndOfStreamException:
         fh.seek(position)
