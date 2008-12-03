@@ -9,7 +9,7 @@ import quex.core                                as coder
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
 from   quex.lexer_mode                          import LexMode 
-from   quex.core_engine.generator.action_info   import ReferencedCodeFragment
+from   quex.core_engine.generator.action_info   import CodeFragment
 
 
 if "--hwut-info" in sys.argv:
@@ -28,7 +28,7 @@ i = -1
 for pattern, action in pattern_action_pair_list:
     i += 1
     mode.add_match(pattern, 
-                   GeneratedCodeFragment("std::cout << \"%s\" << std::endl;\n" % action, "", -1), 
+                   CodeFragment("std::cout << \"%s\" << std::endl;\n" % action), 
                    regex.do(pattern, {}, -1))
 
 # This is brutal!

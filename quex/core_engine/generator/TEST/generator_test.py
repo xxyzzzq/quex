@@ -11,7 +11,7 @@ from quex.exception              import RegularExpressionException
 from quex.lexer_mode             import PatternShorthand
 #
 from   quex.core_engine.generator.languages.core import db
-from   quex.core_engine.generator.action_info    import ActionInfo
+from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
 import quex.core_engine.generator.core          as generator
 import quex.core_engine.generator.skip_code     as skip_code
 import quex.core_engine.regular_expression.core as regex
@@ -158,8 +158,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     # -- create default action that prints the name and the content of the token
     try:
         PatternActionPairList = map(lambda x: 
-                                    ActionInfo(regex.do(x[0], PatternDictionary, BufferLimitCode), 
-                                               action(x[1])),
+                                    PatternActionInfo(regex.do(x[0], PatternDictionary, BufferLimitCode), 
+                                                      CodeFragment(action(x[1]), RequireTerminatingZeroF=True)),
                                     PatternActionPairList)
     except RegularExpressionException, x:
         print "Regular expression parsing:\n" + x.message
@@ -173,8 +173,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     txt += generator.do(PatternActionPairList, 
                         StateMachineName       = "UnitTest",
-                        DefaultAction          = ActionInfo(-1, default_action), 
-                        EndOfStreamAction      = ActionInfo(-1, ""), 
+                        DefaultAction          = PatternActionInfo(None, default_action), 
+                        EndOfStreamAction      = PatternActionInfo(None, ""), 
                         PrintStateMachineF     = True,
                         AnalyserStateClassName = sm_name,
                         StandAloneAnalyserF    = True)

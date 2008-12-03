@@ -21,12 +21,12 @@ class ActionI:
         return self.__require_terminating_zero_f
 
 
-class GeneratedCodeFragment(ActionI):
-    def __init__(self, Code, RequireTerminatingZeroF=False):
+class CodeFragment(ActionI):
+    def __init__(self, Code="", RequireTerminatingZeroF=False):
         ActionI.__init__(self, Code, RequireTerminatingZeroF)
 
 
-ReferencedCodeFragment_OpenLinePragma = {
+UserCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________
 # Line pragmas allow to direct the 'virtual position' of a program in a file
 # that was generated to its origin. That is, if an error occurs in line in a 
@@ -52,26 +52,35 @@ ReferencedCodeFragment_OpenLinePragma = {
              ],
    }
 
-class ReferencedCodeFragment(ActionI):
-    def __init__(self, Code="", Filename="", LineN=-1, RequireTerminatingZeroF=False):
+class UserCodeFragment(ActionI):
+    def __init__(self, Code, Filename, LineN, LanguageDB=None, AddReferenceCodeF=False):
+        assert type(Code)       in [str, unicode]
+        assert type(LanguageDB) == dict or LanguageDB == None
+        assert type(Filename)   in [str, unicode]
+        assert type(LineN)      in [int, long, float]
+
         self.filename = Filename
         self.line_n   = LineN
 
         # No clue yet, how to deal with languages other than C/C++ here.
-        if Code != "":
+        if AddReferenceCodeF and Code != "":
             txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
             txt += Code
             if txt[-1] != "\n": txt = txt + "\n"
-            txt += ReferencedCodeFragment_OpenLinePragma["C"][0] + "\n"
+            txt += UserCodeFragment_OpenLinePragma["C"][0] + "\n"
             code = txt
         else:
             code = Code
 
-        ActionI.__init__(self, code, RequireTerminatingZeroF)
+        require_terminating_zero_f = False
+        if LanguageDB != None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
+            require_terminating_zero_f = True
+
+        ActionI.__init__(self, code, require_terminating_zero_f)
 
 
-def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
-    if Language not in ReferencedCodeFragment_OpenLinePragma.keys():
+def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
+    if Language not in UserCodeFragment_OpenLinePragma.keys():
         return
 
     try:    fh = open(filename)
@@ -80,7 +89,7 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     new_content = ""
     line_n      = 0
-    LinePragmaInfo = ReferencedCodeFragment_OpenLinePragma[Language]
+    LinePragmaInfo = UserCodeFragment_OpenLinePragma[Language]
     for line in fh.readlines():
         line_n += 1
         if line.find(LinePragmaInfo[0]) != -1:
@@ -97,19 +106,23 @@ def ReferencedCodeFragment_straighten_open_line_pragmas(filename, Language):
     fh.write(new_content)
     fh.close()
 
+class PatternActionInfo:
+    def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName=""):
 
-class ActionInfo:
-    def __init__(self, PatternStateMachine, ActionCode_or_Str):
-        assert PatternStateMachine != None
-        assert ActionCode_or_Str == None                        or \
-               type(ActionCode_or_Str) == str                   or \
-               issubclass(ActionCode_or_Str.__class__, ActionI)
+        assert Action == None or \
+               issubclass(Action.__class__, ActionI) or \
+               type(Action) in [str, unicode]
+        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
+               or PatternStateMachine == None
 
         self.__pattern_state_machine = PatternStateMachine
-        if type(ActionCode_or_Str) == str:
-            self.__action = ReferencedCodeFragment(ActionCode_or_Str, LineN=1, RequireTerminatingZeroF=True)
-        else:
-            self.__action = ActionCode_or_Str
+        if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
+        else:                              self.__action = Action
+
+        self.pattern               = Pattern
+        # depth of inheritance where the pattern occurs
+        self.inheritance_level     = IL
+        self.inheritance_mode_name = ModeName
 
     def pattern_state_machine(self):
         return self.__pattern_state_machine
@@ -117,40 +130,18 @@ class ActionInfo:
     def action(self):
         return self.__action
 
-    def __repr__(self):
-        txt0 = "state machine of pattern = \n" + repr(self.__pattern_state_machine)
-        txt1 = "action = \n" + self.__action_.get_code()
-        
-        txt  = "ActionInfo:\n"
-        txt += "   " + txt0.replace("\n", "\n      ") + "\n"
-        txt += "   " + txt1.replace("\n", "\n      ")
-        return txt
-        
-class PatternActionInfo(ActionInfo):
-    def __init__(self, Pattern, Action, PatternStateMachine, PatternIdx=None,
-                 PriorityMarkF=False, DeletionF=False, IL = None, ModeName=""):
-
-        assert Action == None or issubclass(Action.__class__, ActionI)
-        assert PatternStateMachine.__class__.__name__ == "StateMachine" \
-               or PatternStateMachine == None
-
-        ActionInfo.__init__(self, PatternStateMachine, Action)
-
-        self.pattern               = Pattern
-        # depth of inheritance where the pattern occurs
-        self.inheritance_level     = IL
-        self.inheritance_mode_name = ModeName
-
-    def __repr__(self):         
-        txt = ""
-        txt += "self.pattern           = " + repr(self.pattern) + "\n"
-        txt += "self.action            = " + repr(self.action.get_code()) + "\n"
-        txt += "self.filename          = " + repr(self.action.filename) + "\n"
-        txt += "self.line_n            = " + repr(self.action.line_n) + "\n"
-        txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
-        txt += "self.pattern_index     = " + repr(self.pattern_state_machine.core().id()) + "\n"
-        return txt
-
     def pattern_index(self):
         return self.pattern_state_machine().get_id()
+
+    def __repr__(self):         
+        txt  = ""
+        txt += "self.pattern           = " + repr(self.pattern) + "\n"
+        txt += "self.pattern_state_machine = \n" + repr(self.pattern_state_machine()).replace("\n", "\n      ")
+        txt += "self.action            = " + repr(self.action().get_code()) + "\n"
+        if self.action().__class__ == UserCodeFragment:
+            txt += "self.filename          = " + repr(self.action().filename) + "\n"
+            txt += "self.line_n            = " + repr(self.action().line_n) + "\n"
+        txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
+        txt += "self.pattern_index     = " + repr(self.pattern_state_machine().core().id()) + "\n"
+        return txt
 

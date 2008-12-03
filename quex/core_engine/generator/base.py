@@ -1,13 +1,13 @@
 from   quex.frs_py.file_in                        import error_msg
 import quex.core_engine.state_machine.parallelize as     parallelize
-from   quex.core_engine.generator.action_info     import ActionInfo
+from   quex.core_engine.generator.action_info     import PatternActionInfo
 import quex.core_engine.state_machine.nfa_to_dfa  as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft
 
 class GeneratorBase:
     def __init__(self, PatternActionPair_List, StateMachineName):
         assert type(PatternActionPair_List) == list
-        assert map(lambda elm: elm.__class__ == ActionInfo, PatternActionPair_List) \
+        assert map(lambda elm: elm.__class__ == PatternActionInfo, PatternActionPair_List) \
                == [ True ] * len(PatternActionPair_List)
 
         self.state_machine_name = StateMachineName
@@ -81,7 +81,7 @@ class GeneratorBase:
 
         # -- add empty actions for the pre-condition terminal states
         for pre_sm in self.pre_context_sm_list:
-            self.action_db[pre_sm.get_id()] = ActionInfo(pre_sm, "")
+            self.action_db[pre_sm.get_id()] = PatternActionInfo(pre_sm, "")
 
         return self.__get_combined_state_machine(self.pre_context_sm_list, 
                                                  FilterDominatedOriginsF=False)

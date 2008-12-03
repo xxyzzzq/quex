@@ -48,7 +48,7 @@ def write_engine_header(Modes, Setup):
     #    support must be provided.
     indentation_support_f = False
     for mode in Modes.values():
-        if mode.on_indentation.line_n != -1:
+        if mode.on_indentation.get_code() != "":
             indentation_support_f = True
             break
 
@@ -129,7 +129,7 @@ def write_engine_header(Modes, Setup):
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
                 ["$$CLASS_BODY_EXTENSION$$",         class_body_extension_str],
                 ["$$INCLUDE_GUARD_EXTENSION$$",      include_guard_extension],
-                ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.code],
+                ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.get_code()],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
                 ["$$LEXER_BUILD_VERSION$$",          VersionID],
                 ["$$LEXER_CLASS_FRIENDS$$",          friends_str],

@@ -36,7 +36,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
-    if Mode.on_indentation.line_n != -1:
+    if Mode.on_indentation.get_code() != "":
         lc_count_code = __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
 
     else:
@@ -64,7 +64,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     txt += user_code
     txt += "\n}"
 
-    return GeneratedCodeFragment(txt, require_terminating_zero_preparation_f)
+    return CodeFragment(txt, require_terminating_zero_preparation_f)
 
 
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):

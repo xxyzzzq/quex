@@ -22,6 +22,7 @@ import quex.lexer_mode               as lexer_mode
 import quex.input.mode_definition    as mode_definition
 import quex.input.regular_expression as regular_expression
 import quex.input.code_fragment      as code_fragment
+from   quex.core_engine.generator.action_info import UserCodeFragment
 
 
 def do(file_list, Setup):
@@ -96,7 +97,7 @@ def parse_section(fh, Setup):
         # (*) determine what is defined
         #
         #     -- 'mode { ... }'   => define a mode
-        #     -- 'start ='        => define the name of the initial mode
+        #     -- 'start = ...;'   => define the name of the initial mode
         #     -- 'header { ... }' => define code that is to be pasted on top
         #                            of the engine (e.g. "#include<...>")
         #     -- 'body { ... }'   => define code that is to be pasted in the class' body
@@ -111,15 +112,18 @@ def parse_section(fh, Setup):
             return
         
         elif word == "header":
-            code_fragment.parse(fh, "header", lexer_mode.header, AllowBriefTokenSenderF=False)        
+            fragment = code_fragment.parse(fh, "header", AllowBriefTokenSenderF=False)        
+            lexer_mode.header = fragment
             return
 
         elif word == "body":
-            code_fragment.parse(fh, "body", lexer_mode.class_body, AllowBriefTokenSenderF=False)        
+            fragment = code_fragment.parse(fh, "body", AllowBriefTokenSenderF=False)        
+            lexer_mode.class_body = fragment
             return
 
         elif word == "init":
-            code_fragment.parse(fh, "init", lexer_mode.class_init, AllowBriefTokenSenderF=False)
+            fragment = code_fragment.parse(fh, "init", AllowBriefTokenSenderF=False)
+            lexer_mode.class_init = fragment
             return
             
         elif word == "define":
@@ -266,13 +270,11 @@ def parse_initial_mode_definition(fh):
     mode_name = read_identifier(fh)
     verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
 
-    if lexer_mode.initial_mode.line_n != -1:
+    if lexer_mode.initial_mode.get_code() != "":
         error_msg("start mode defined more than once!", fh, DontExitF=True)
         error_msg("previously defined here",
                   lexer_mode.initial_mode.filename,
                   lexer_mode.initial_mode.line_n)
         
-    lexer_mode.initial_mode.code     = mode_name
-    lexer_mode.initial_mode.filename = fh.name
-    lexer_mode.initial_mode.line_n   = get_current_line_info_number(fh)
+    lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh), None)
 
