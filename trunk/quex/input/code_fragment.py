@@ -9,16 +9,16 @@ from   quex.core_engine.generator.action_info import *
 LanguageDB = Setup.language_db
 
 
-def parse(fh, CodeFragmentName, code_fragment_carrier=None, 
+def parse(fh, CodeFragmentName, 
           ErrorOnFailureF=True, AllowBriefTokenSenderF=True):
-    """RETURNS: An object of class ReferencedCodeFragment containing
+    """RETURNS: An object of class UserCodeFragment containing
                 line number, filename, and the code fragment.
 
                 None in case of failure.
     """
     assert Setup.__class__.__name__ == "something"
-    assert code_fragment_carrier.__class__.__name__ == "ReferencedCodeFragment" \
-           or code_fragment_carrier == None
+    assert type(ErrorOnFailureF)        == bool
+    assert type(AllowBriefTokenSenderF) == bool
 
     skip_whitespace(fh)
     position = fh.tell()
@@ -26,10 +26,10 @@ def parse(fh, CodeFragmentName, code_fragment_carrier=None,
     word = fh.read(2)
     if len(word) >= 1 and word[0] == "{":
         fh.seek(-1, 1) # unput the second character
-        return __parse_normal(fh, CodeFragmentName, code_fragment_carrier)
+        return __parse_normal(fh, CodeFragmentName)
 
     elif AllowBriefTokenSenderF and word == "=>":
-        return __parse_brief_token_sender(fh, code_fragment_carrier)
+        return __parse_brief_token_sender(fh)
 
     elif not ErrorOnFailureF:
         fh.seek(-2,1)
@@ -37,49 +37,22 @@ def parse(fh, CodeFragmentName, code_fragment_carrier=None,
     else:
         error_msg("missing code fragment after %s definition." % CodeFragmentName, fh)
 
-def __prepare_code_fragment_carrier(fh, carrier):
-    if carrier == None:
-        result = ReferencedCodeFragment()
-    else:
-        assert carrier.__class__ == ReferencedCodeFragment \
+def __parse_normal(fh, code_fragment_name):
+    line_n = get_current_line_info_number(fh) + 1
+    code   = read_until_closing_bracket(fh, "{", "}")
+    return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
 
-        if carrier.line_n != -1:
-            error_msg("%s defined twice" % code_fragment_name, fh, DontExitF=True)
-            error_msg("previously defined here", carrier.filename, carrier.line_n)
-        result = carrier
-
-    # step over all whitespace, such that the first line of the code fragment
-    # refers to the first non-whitespace line.
-    skip_whitespace(fh)
-
-    # set starting line number and filename
-    result.line_n   = get_current_line_info_number(fh) + 1
-    result.filename = fh.name
-
-    return result
-
-def __parse_normal(fh, code_fragment_name, code_fragment_carrier):
-    result = __prepare_code_fragment_carrier(fh, code_fragment_carrier)
-
-    code = read_until_closing_bracket(fh, "{", "}")
-    result.set_code(code)
-    if LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
-        result.set_require_terminating_zero_f()
-
-    return result
-
-def __parse_brief_token_sender(fh, code_fragment_carrier):
+def __parse_brief_token_sender(fh):
     # shorthand for { self.send(TKN_SOMETHING); RETURN; }
     
-    result = __prepare_code_fragment_carrier(fh, code_fragment_carrier)
-
     position = fh.tell()
+    line_n   = get_current_line_info_number(fh) + 1
     try: 
         skip_whitespace(fh)
         position = fh.tell()
 
         code = __parse_token_id_specification_by_character_code(fh)
-        if code != "": return result
+        if code != "": return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
 
         identifier, arg_list_str = __parse_function_call(fh)
         if identifier in ["GOTO", "GOSUB", "GOUP"]:
@@ -88,10 +61,7 @@ def __parse_brief_token_sender(fh, code_fragment_carrier):
             code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
 
         if code != "": 
-            result.set_code(code)
-            if LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
-                result.set_require_terminating_zero_f()
-            return result
+            return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
         else:
             return None
 

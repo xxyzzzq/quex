@@ -81,12 +81,12 @@ class LexMode:
         self.options["skip-range"]         = []
         self.options["skip-nesting-range"] = []
 
-        self.on_entry         = ReferencedCodeFragment()
-        self.on_exit          = ReferencedCodeFragment()
-        self.on_match         = ReferencedCodeFragment()
-        self.on_failure       = ReferencedCodeFragment()
-        self.on_end_of_stream = ReferencedCodeFragment()
-        self.on_indentation   = ReferencedCodeFragment()
+        self.on_entry         = CodeFragment()
+        self.on_exit          = CodeFragment()
+        self.on_match         = CodeFragment()
+        self.on_failure       = CodeFragment()
+        self.on_end_of_stream = CodeFragment()
+        self.on_indentation   = CodeFragment()
 
         # A flag indicating wether the mode has gone trough
         # consistency check.
@@ -94,17 +94,13 @@ class LexMode:
         self.inheritance_circularity_check_done_f = False
 
     def has_event_handler(self):
-        def __check(CodeFragment):
-            if     CodeFragment.line_n   == -1 and CodeFragment.get_code() == "" \
-               and CodeFragment.filename == "": return False
-            else:                               return True
-
-        if   __check(self.on_entry):         return True
-        elif __check(self.on_exit):          return True
-        elif __check(self.on_match):         return True
-        elif __check(self.on_failure):       return True
-        elif __check(self.on_end_of_stream): return True
-        elif __check(self.on_indentation):   return True
+        if   self.on_entry.get_code()         != "": return True
+        elif self.on_exit.get_code()          != "": return True
+        elif self.on_match.get_code()         != "": return True
+        elif self.on_failure.get_code()       != "": return True
+        elif self.on_end_of_stream.get_code() != "": return True
+        elif self.on_indentation.get_code()   != "": return True
+        else:                                        return False
 
     def has_pattern(self, PatternStr):
         return self.__matches.has_key(PatternStr)
@@ -132,7 +128,7 @@ class LexMode:
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
-        self.__matches[Pattern] = PatternActionInfo(Pattern, Action, PatternStateMachine)
+        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern)
 
     def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, fh):
         if self.__matches.has_key(Pattern):
@@ -150,43 +146,43 @@ class LexMode:
 
     def on_entry_code_fragments(self, Depth=0):
         """Collect all 'on_entry' event handlers from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         return self.__collect_fragments("on_entry")
 
     def on_exit_code_fragments(self, Depth=0):
         """Collect all 'on_exit' event handlers from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         return self.__collect_fragments("on_exit")
 
     def on_indentation_code_fragments(self, Depth=0):
         """Collect all 'on_indentation' event handlers from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         return self.__collect_fragments("on_indentation")
 
     def on_match_code_fragments(self, Depth=0):
         """Collect all 'on_match' event handlers from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         return self.__collect_fragments("on_match")
 
     def on_end_of_stream_code_fragments(self, Depth=0):
         """Collect all 'on_end_of_stream' event handlers from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         return self.__collect_fragments("on_end_of_stream")
 
     def on_failure_code_fragments(self, Depth=0):
         """Collect all 'on_failure' event handlers from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         return self.__collect_fragments("on_failure")
 
     def __collect_fragments(self, FragmentName, Depth=0):
         """Collect all event handlers with the given FragmentName from all base classes.
-           Returns list of 'ReferencedCodeFragment'.
+           Returns list of 'CodeFragment'.
         """
         if self.__dict__[FragmentName].get_code() == "":
             code_fragments = []
@@ -246,8 +242,8 @@ class LexMode:
                 resolved_matches[inherited_pattern] = copy(inherited_match)
             else:
                 # own match overides the inherited pattern
-                resolved_matches[inherited_pattern] = copy(own_match)
-                resolved_matches[inherited_pattern].inheritance_level = Depth
+                resolved_matches[inherited_pattern] = copy(inherited_match)
+                resolved_matches[inherited_pattern].inheritance_level     = Depth
                 resolved_matches[inherited_pattern].inheritance_mode_name = self.name
 
         # -- loop over own patterns and add what is not added yet
@@ -436,24 +432,24 @@ mode_option_info_db = {
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
 #-----------------------------------------------------------------------------------------
-initial_mode = ReferencedCodeFragment()
+initial_mode = CodeFragment()
 
 #-----------------------------------------------------------------------------------------
 # header: code fragment that is to be pasted before mode transitions
 #         and pattern action pairs (e.g. '#include<something>'
 #-----------------------------------------------------------------------------------------
-header = ReferencedCodeFragment()
+header = CodeFragment()
 
 #-----------------------------------------------------------------------------------------
 # class_body: code fragment that is to be pasted inside the class definition
 #             of the lexical analyser class.
 #-----------------------------------------------------------------------------------------
-class_body = ReferencedCodeFragment()
+class_body = CodeFragment()
 
 #-----------------------------------------------------------------------------------------
 # class_init: code fragment that is to be pasted inside the lexer class constructor
 #-----------------------------------------------------------------------------------------
-class_init = ReferencedCodeFragment()
+class_init = CodeFragment()
 
 
 class PatternShorthand:

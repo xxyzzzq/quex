@@ -2,6 +2,8 @@ import sys
 
 from   quex.frs_py.file_in import error_msg
 import quex.lexer_mode     as     lexer_mode
+from   quex.core_engine.generator.action_info import CodeFragment
+
 
 def do(Modes):
     """If consistency check fails due to a fatal error, then this functions
@@ -21,28 +23,26 @@ def do(Modes):
                   Prefix="consistency check")
 
     # -- is the initial mode defined
-    if lexer_mode.initial_mode.line_n == -1:
+    if lexer_mode.initial_mode.get_code() == "":
         # find first mode that can actually be applied
         for mode in Modes.values():
             if mode.options["inheritable"] != "only":
                 selected_mode = mode.name
                 break
             
-        lexer_mode.initial_mode.code     = selected_mode
-        lexer_mode.initial_mode.line_n   = 0
-        lexer_mode.initial_mode.filename = "automatical-selection-by-quex"
+        lexer_mode.initial_mode = CodeFragment(selected_mode)
         error_msg("no initial mode defined via 'start'\n" + \
                   "using mode '%s' as initial mode" % selected_mode, DontExitF=True,
                   Prefix="warning")
 
 
     # -- is the start mode applicable?
-    if Modes.has_key(lexer_mode.initial_mode.code) == False:
-        error_msg("Start mode '%s' has not been defined anywhere." % lexer_mode.initial_mode.code,
+    if Modes.has_key(lexer_mode.initial_mode.get_code()) == False:
+        error_msg("Start mode '%s' has not been defined anywhere." % lexer_mode.initial_mode.get_code(),
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
-    if Modes[lexer_mode.initial_mode.code].options["inheritable"] == "only":
-        error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.code,
+    if Modes[lexer_mode.initial_mode.get_code()].options["inheritable"] == "only":
+        error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.get_code(),
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
     # -- check for circular inheritance
@@ -52,12 +52,10 @@ def do(Modes):
     for mode in Modes.values():
         mode.consistency_check()
 
-
 def check_circular_inheritance(ModeDB):
     for mode in ModeDB.values():
         __search_circular_inheritance(ModeDB, mode, [])
         mode.inheritance_circularity_check_done_f = True
-
 
 def __search_circular_inheritance(ModeDB, mode, inheritance_path):
     

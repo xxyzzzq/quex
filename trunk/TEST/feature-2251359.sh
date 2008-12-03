@@ -19,5 +19,5 @@ else
 fi
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids
+rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids *.o
 cd $tmp

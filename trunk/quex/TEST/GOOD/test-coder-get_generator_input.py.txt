@@ -4,60 +4,54 @@
 */
 
 self.pattern           = '[_a-zA-Z]+'
-self.action            = 'std::cout << "IDENTIFIER" << std::endl;\n'
-self.filename          = ''
-self.line_n            = -1
+self.pattern_state_machine = 
+init-state = 0L
+      00000() <~ 
+            == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
+            <no epsilon>
+      00001(A, S) <~ 
+            == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
+            <no epsilon>
+      self.action            = 'std::cout << "IDENTIFIER" << std::endl;\n'
 self.inheritance_level = 0
 self.pattern_index     = 5L
-self.priority_mark_f   = False
-self.deletion_f        = False
 
 self.pattern           = '[ \\t\\n]+'
-self.action            = 'std::cout << "WHITESPACE" << std::endl;\n'
-self.filename          = ''
-self.line_n            = -1
+self.pattern_state_machine = 
+init-state = 0L
+      00000() <~ 
+            == ['\t', '\n'], ' ' ==> 00001
+            <no epsilon>
+      00001(A, S) <~ 
+            == ['\t', '\n'], ' ' ==> 00001
+            <no epsilon>
+      self.action            = 'std::cout << "WHITESPACE" << std::endl;\n'
 self.inheritance_level = 0
 self.pattern_index     = 11L
-self.priority_mark_f   = False
-self.deletion_f        = False
 
-ActionInfo:
-   state machine of pattern = 
-      init-state = 0L
+self.pattern           = ''
+self.pattern_state_machine = 
+init-state = 0L
       00000() <~ 
             == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
             <no epsilon>
       00001(A, S) <~ 
             == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
             <no epsilon>
-      
-   action = 
-      {
-      self.counter.__shift_end_values_to_start_values();
-      self.counter.count_NoNewline(LexemeL);
-      
-      #line -1 ""
-      std::cout << "IDENTIFIER" << std::endl;
-      /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
-      
-      }
-ActionInfo:
-   state machine of pattern = 
-      init-state = 0L
+      self.action            = '{\nself.counter.__shift_end_values_to_start_values();\nself.counter.count_NoNewline(LexemeL);\nstd::cout << "IDENTIFIER" << std::endl;\n\n}'
+self.inheritance_level = None
+self.pattern_index     = 5L
+
+self.pattern           = ''
+self.pattern_state_machine = 
+init-state = 0L
       00000() <~ 
             == ['\t', '\n'], ' ' ==> 00001
             <no epsilon>
       00001(A, S) <~ 
             == ['\t', '\n'], ' ' ==> 00001
             <no epsilon>
-      
-   action = 
-      {
-      self.counter.__shift_end_values_to_start_values();
-      self.counter.count(Lexeme, LexemeEnd);
-      
-      #line -1 ""
-      std::cout << "WHITESPACE" << std::endl;
-      /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
-      
-      }
+      self.action            = '{\nself.counter.__shift_end_values_to_start_values();\nself.counter.count(Lexeme, LexemeEnd);\nstd::cout << "WHITESPACE" << std::endl;\n\n}'
+self.inheritance_level = None
+self.pattern_index     = 11L
+

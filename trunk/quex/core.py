@@ -1,6 +1,3 @@
-# ActionInfo objects contain information about patterns and actions
-#            important to the code generator. They differ slightly from
-#            the 'Match' objects created for the 'LexMode' description.
 from copy import copy
 import os
 import sys
@@ -10,12 +7,12 @@ from   quex.frs_py.file_in import error_msg
 from   quex.input.setup import setup as Setup
 import quex.token_id_maker                      as token_id_maker
 import quex.lexer_mode                          as lexer_mode
-from   quex.core_engine.generator.action_info   import ReferencedCodeFragment_straighten_open_line_pragmas, \
-                                                       GeneratedCodeFragment
+from   quex.core_engine.generator.action_info   import UserCodeFragment_straighten_open_line_pragmas, \
+                                                       CodeFragment
 from quex.token_id_maker                        import TokenInfo
 
 import quex.core_engine.generator.core          as generator
-from   quex.core_engine.generator.action_info   import ActionInfo
+from   quex.core_engine.generator.action_info   import PatternActionInfo
 import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check
 import quex.output.cpp.core                     as quex_class_out
@@ -76,9 +73,9 @@ def do():
     fh.write(analyzer_code)
     fh.close()
 
-    ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
-    ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
-    ReferencedCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
+    UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
+    UserCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
+    UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
 
 def get_code_for_mode(Mode, ModeNameList):
 
@@ -93,7 +90,7 @@ def get_code_for_mode(Mode, ModeNameList):
         txt += "#else\n"
         txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
         txt += "#endif\n"
-        Mode.on_end_of_stream = GeneratedCodeFragment(txt)
+        Mode.on_end_of_stream = CodeFragment(txt)
 
     end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
@@ -106,7 +103,7 @@ def get_code_for_mode(Mode, ModeNameList):
         txt += "#else\n"
         txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
         txt += "#endif\n"
-        Mode.on_failure = GeneratedCodeFragment(txt)
+        Mode.on_failure = CodeFragment(txt)
 
     default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 
                                               "on_failure", None, Default_ActionF=True)
@@ -116,8 +113,8 @@ def get_code_for_mode(Mode, ModeNameList):
     inheritance_info_str, pattern_action_pair_list = get_generator_input(Mode)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
-                                 DefaultAction                  = ActionInfo(-1, default_action), 
-                                 EndOfStreamAction              = ActionInfo(-1, end_of_stream_action),
+                                 DefaultAction                  = PatternActionInfo(None, default_action), 
+                                 EndOfStreamAction              = PatternActionInfo(None, end_of_stream_action),
                                  PrintStateMachineF             = True,
                                  StateMachineName               = Mode.name,
                                  AnalyserStateClassName         = Setup.output_engine_name,
@@ -172,7 +169,7 @@ def get_generator_input(Mode):
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
                                                    pattern_state_machine)
 
-        action_info = ActionInfo(pattern_state_machine, prepared_action)
+        action_info = PatternActionInfo(pattern_state_machine, prepared_action)
 
         pattern_action_pair_list.append(action_info)
 

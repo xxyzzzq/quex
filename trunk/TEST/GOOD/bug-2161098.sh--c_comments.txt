@@ -35,8 +35,8 @@ g++ -I/home/fschaef/prj/quex/trunk -I./ Simple*.cpp lexer.cpp -ggdb -o lexer \
 #####################################################################################
 ## An Assert-Abortion might be an intended element of the experiment.
 1, 1: 1 '' 
-1, 4: 6 '' 
-1, 7: 11 '' 
+1, 6: 6 '' 
+1, 11: 11 '' 
 2, 2: 2 '' 
 3, 4: 3 '' 
 4, 4: 4 '' 

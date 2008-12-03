@@ -7,7 +7,7 @@ sys.path.append(os.environ["QUEX_PATH"])
 import quex.input.query as query
 import quex.output.graphviz.interface as plotter
 import quex.core_engine.regular_expression.core as regex
-from   quex.core_engine.generator.action_info   import ActionInfo
+from   quex.core_engine.generator.action_info   import PatternActionInfo
 
 if "--hwut-info" in sys.argv:
     print "Plot: Pre-Context."
@@ -15,7 +15,7 @@ if "--hwut-info" in sys.argv:
 
 
 sm = regex.do("[Hh]ello" "[Ww]orld/a((b+ee(fe)*)+(b+cd)?)/", {}, 0)
-pattern_action_pair_list = [ ActionInfo(sm, "Don't worry, be happy!") ]
+pattern_action_pair_list = [ PatternActionInfo(sm, "Don't worry, be happy!") ]
 
 my_plotter = plotter.Generator(pattern_action_pair_list, "test-plot", "fig")
 

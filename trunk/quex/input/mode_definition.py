@@ -4,7 +4,7 @@ from   quex.exception               import RegularExpressionException
 import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
-from   quex.core_engine.generator.action_info import GeneratedCodeFragment
+from   quex.core_engine.generator.action_info import CodeFragment
 from   quex.core_engine.generator.skip_code import create_skip_code, create_skip_range_code
 import quex.core_engine.state_machine.index as index
 from   quex.core_engine.state_machine.core  import StateMachine
@@ -97,7 +97,7 @@ def parse_mode_option(fh, new_mode):
         opener_sm = StateMachine()
         opener_sm.add_transition(opener_sm.init_state_index, trigger_set, AcceptanceF=True)
             
-        action = GeneratedCodeFragment(create_skip_code(trigger_set))
+        action = CodeFragment(create_skip_code(trigger_set))
  
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         new_mode.add_match(pattern_str, action, opener_sm)
@@ -121,7 +121,7 @@ def parse_mode_option(fh, new_mode):
         if fh.read(1) != ">":
             error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
 
-        action = GeneratedCodeFragment(create_skip_range_code(closer_sequence))
+        action = CodeFragment(create_skip_range_code(closer_sequence))
 
         # Enter the skipper as if the opener pattern was a normal pattern and the 'skipper' is the action.
         new_mode.add_match(opener_str, action, opener_sm)
@@ -185,7 +185,7 @@ def parse_mode_element(new_mode, fh):
                 previous = new_mode.get_match_object(pattern)
                 error_msg("Pattern has been defined twice.", fh, DontExitF=True)
                 error_msg("First defined here.", 
-                         previous.action.filename, previous.action.line_n)
+                         previous.action().filename, previous.action().line_n)
 
 
         position    = fh.tell()
@@ -243,31 +243,29 @@ def check_for_event_specification(word, fh, new_mode):
 
     if word == "on_entry":
         # Event: enter into mode
-        code_fragment.parse(fh, "%s::on_entry event handler" % new_mode.name, new_mode.on_entry)
+        new_mode.on_entry = code_fragment.parse(fh, "%s::on_entry event handler" % new_mode.name)
         return True
     
     elif word == "on_exit":
         # Event: exit from mode
-        code_fragment.parse(fh, "%s::on_exit event handler" % new_mode.name, new_mode.on_exit)
+        new_mode.on_exit = code_fragment.parse(fh, "%s::on_exit event handler" % new_mode.name)
         return True
 
     elif word == "on_match":
         # Event: exit from mode
-        code_fragment.parse(fh, "%s::on_match event handler" % new_mode.name, new_mode.on_match)
+        new_mode.on_match = code_fragment.parse(fh, "%s::on_match event handler" % new_mode.name)
         return True
 
     elif  word == "on_indentation":
         # Event: start of indentation, 
         #        first non-whitespace after whitespace
-        code_fragment.parse(fh, "%s::on_indentation event handler" % new_mode.name, 
-                            new_mode.on_indentation)
+        new_mode.on_indentation = code_fragment.parse(fh, "%s::on_indentation event handler" % new_mode.name)
         return True
 
     elif word == "on_failure" or word == "<<FAIL>>":
         # Event: No pattern matched for current position.
         # NOTE: See 'on_end_of_stream' comments.
-        code_fragment.parse(fh, "%s::on_failure event handler" % new_mode.name, 
-                            new_mode.on_failure)
+        new_mode.on_failure = code_fragment.parse(fh, "%s::on_failure event handler" % new_mode.name)
         return True
 
     elif word == "on_end_of_stream" or word == "<<EOF>>": 
@@ -275,8 +273,7 @@ def check_for_event_specification(word, fh, new_mode):
         # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
         #       patterns are entered here, even if later versions of quex might dismiss
         #       those rule deefinitions in favor of consistent event handlers.
-        code_fragment.parse(fh, "%s::on_end_of_stream event handler" % new_mode.name, 
-                            new_mode.on_end_of_stream)
+        new_mode.on_end_of_stream = code_fragment.parse(fh, "%s::on_end_of_stream event handler" % new_mode.name)
         return True
 
     elif len(word) >= 3 and word[:3] == "on_":    
