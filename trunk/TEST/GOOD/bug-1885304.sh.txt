@@ -621,6 +621,7 @@ Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me)
     QUEX_GOTO_LABEL_TYPE         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
     QUEX_CHARACTER_POSITION_TYPE last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
     QUEX_CHARACTER_POSITION_TYPE* post_context_start_position = 0x0;
+    const size_t                 PostContextStartPositionN = (size_t)0;
     QUEX_CHARACTER_TYPE          input = (QUEX_CHARACTER_TYPE)(0x00);
 
     /* Post context positions do not have to be reset or initialized. If a state
@@ -873,7 +874,7 @@ STATE_249_DROP_OUT_DIRECT:
     }
         QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_249_INPUT;
     }
 
@@ -941,7 +942,7 @@ STATE_257_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_257_INPUT;
     }
 
@@ -979,7 +980,7 @@ STATE_259_DROP_OUT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_259_INPUT;
     }
 
@@ -1044,7 +1045,7 @@ STATE_260_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_260_INPUT;
     }
 
@@ -1109,7 +1110,7 @@ STATE_261_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_261_INPUT;
     }
 
@@ -1174,7 +1175,7 @@ STATE_262_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_262_INPUT;
     }
 
@@ -1239,7 +1240,7 @@ STATE_263_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_263_INPUT;
     }
 
@@ -1304,7 +1305,7 @@ STATE_264_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_264_INPUT;
     }
 
@@ -1357,7 +1358,7 @@ STATE_265_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_265_INPUT;
     }
 
@@ -1422,7 +1423,7 @@ STATE_266_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_266_INPUT;
     }
 
@@ -1475,7 +1476,7 @@ STATE_267_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_267_INPUT;
     }
 
@@ -1540,7 +1541,7 @@ STATE_268_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_268_INPUT;
     }
 
@@ -1593,7 +1594,7 @@ STATE_269_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_269_INPUT;
     }
 
@@ -1658,7 +1659,7 @@ STATE_270_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_270_INPUT;
     }
 
@@ -1723,7 +1724,7 @@ STATE_271_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_271_INPUT;
     }
 
@@ -1788,7 +1789,7 @@ STATE_272_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_272_INPUT;
     }
 
@@ -1853,7 +1854,7 @@ STATE_273_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_273_INPUT;
     }
 
@@ -1906,7 +1907,7 @@ STATE_274_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_274_INPUT;
     }
 
@@ -1971,7 +1972,7 @@ STATE_275_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_275_INPUT;
     }
 
@@ -2036,7 +2037,7 @@ STATE_276_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_276_INPUT;
     }
 
@@ -2101,7 +2102,7 @@ STATE_277_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_277_INPUT;
     }
 
@@ -2166,7 +2167,7 @@ STATE_278_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_278_INPUT;
     }
 
@@ -2219,7 +2220,7 @@ STATE_279_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_279_INPUT;
     }
 
@@ -2284,7 +2285,7 @@ STATE_250_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_250_INPUT;
     }
 
@@ -2330,7 +2331,7 @@ STATE_251_DROP_OUT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_251_INPUT;
     }
 
@@ -2395,7 +2396,7 @@ STATE_252_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_252_INPUT;
     }
 
@@ -2460,7 +2461,7 @@ STATE_254_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_254_INPUT;
     }
 
@@ -2513,7 +2514,7 @@ STATE_255_DROP_OUT_DIRECT:
     
     QUEX_DEBUG_PRINT(&me->buffer, "FORWARD_BUFFER_RELOAD");
     if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
-                                           post_context_start_position, 0) ) {
+                                           post_context_start_position, PostContextStartPositionN) ) {
        goto STATE_255_INPUT;
     }
 
@@ -2550,7 +2551,7 @@ TERMINAL_35_DIRECT:
         #else
         self.send(atoi((char*)Lexeme)); return QUEX_TKN_NUMBER;
         #endif
-#line 1988 "Simple-core-engine.cpp"
+#line 1989 "Simple-core-engine.cpp"
         
         }
     }
@@ -2565,11 +2566,14 @@ TERMINAL_5:
 TERMINAL_5_DIRECT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_5_DIRECT");
 
-    QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);
     {
         {
         self.counter.__shift_end_values_to_start_values();
         self.counter.count(Lexeme, LexemeEnd);
+        
+        #line 18 "dos_lf_2.qx"
+         
+#line 2011 "Simple-core-engine.cpp"
         
         }
     }
@@ -2595,7 +2599,7 @@ TERMINAL_7_DIRECT:
         #else
         self.send(); return QUEX_TKN_STRUCT;
         #endif
-#line 2033 "Simple-core-engine.cpp"
+#line 2037 "Simple-core-engine.cpp"
         
         }
     }
@@ -2617,8 +2621,8 @@ TERMINAL_41_DIRECT:
         self.counter.count_NoNewline(LexemeL);
         
         #line 28 "dos_lf_2.qx"
-        self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 2056 "Simple-core-engine.cpp"
+         self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
+#line 2060 "Simple-core-engine.cpp"
         
         }
     }
@@ -2644,7 +2648,7 @@ TERMINAL_10_DIRECT:
         #else
         self.send(); return QUEX_TKN_TYPE_INT;
         #endif
-#line 2082 "Simple-core-engine.cpp"
+#line 2086 "Simple-core-engine.cpp"
         
         }
     }
@@ -2670,7 +2674,7 @@ TERMINAL_13_DIRECT:
         #else
         self.send(); return QUEX_TKN_TYPE_DOUBLE;
         #endif
-#line 2108 "Simple-core-engine.cpp"
+#line 2112 "Simple-core-engine.cpp"
         
         }
     }
@@ -2696,7 +2700,7 @@ TERMINAL_16_DIRECT:
         #else
         self.send(); return QUEX_TKN_SEND;
         #endif
-#line 2134 "Simple-core-engine.cpp"
+#line 2138 "Simple-core-engine.cpp"
         
         }
     }
@@ -2722,7 +2726,7 @@ TERMINAL_19_DIRECT:
         #else
         self.send(); return QUEX_TKN_EXPECT;
         #endif
-#line 2160 "Simple-core-engine.cpp"
+#line 2164 "Simple-core-engine.cpp"
         
         }
     }
@@ -2748,7 +2752,7 @@ TERMINAL_22_DIRECT:
         #else
         self.send(); return QUEX_TKN_SEMICOLON;
         #endif
-#line 2186 "Simple-core-engine.cpp"
+#line 2190 "Simple-core-engine.cpp"
         
         }
     }
@@ -2774,7 +2778,7 @@ TERMINAL_25_DIRECT:
         #else
         self.send(); return QUEX_TKN_BRACKET_OPEN;
         #endif
-#line 2212 "Simple-core-engine.cpp"
+#line 2216 "Simple-core-engine.cpp"
         
         }
     }
@@ -2800,7 +2804,7 @@ TERMINAL_28_DIRECT:
         #else
         self.send(); return QUEX_TKN_BRACKET_CLOSE;
         #endif
-#line 2238 "Simple-core-engine.cpp"
+#line 2242 "Simple-core-engine.cpp"
         
         }
     }
@@ -2822,7 +2826,7 @@ TERMINAL_END_OF_STREAM:
         #else
         self.send(); return QUEX_TKN_TERMINATION;
         #endif
-#line 2260 "Simple-core-engine.cpp"
+#line 2264 "Simple-core-engine.cpp"
         
         }
                 }
@@ -2843,10 +2847,10 @@ if( QuexBuffer_is_end_of_file(&me->buffer) ) {
 }
 
 else {
-    /* Step over nomatching character */    QuexBuffer_input_p_increment(&me->buffer);
+    /* Step over nomatching character */
+    QuexBuffer_input_p_increment(&me->buffer);
 }
 
-                QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);
                 {
                     {
         self.counter.__shift_end_values_to_start_values();
