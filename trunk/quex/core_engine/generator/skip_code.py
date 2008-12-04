@@ -257,9 +257,9 @@ $$LC_COUNT_BEFORE_RELOAD$$
         if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, PostContextStartPositionN) ) {
 
-$$LC_COUNT_AFTER_RELOAD$$
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
             QuexBuffer_input_p_increment(&me->buffer);
+$$LC_COUNT_AFTER_RELOAD$$
             $$GOTO_LOOP_START$$
         } else {
             $$GOTO_TERMINAL_EOF$$
@@ -267,6 +267,7 @@ $$LC_COUNT_AFTER_RELOAD$$
     }
 
 $$DROP_OUT_DIRECT$$
+$$LC_COUNT_END_PROCEDURE$$
     /* There was no buffer limit code, so no end of buffer or end of file --> continue analysis 
      * The character we just swallowed must be re-considered by the main state machine.
      * But, note that the initial state does not increment '_input_p'!
@@ -386,7 +387,6 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
       "    QUEX_CHARACTER_POSITION_TYPE column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
       "#   endif\n" + \
-      "    self.counter.__shift_end_values_to_start_values();\n" + \
       "#   endif\n"
     in_loop       = ""
     end_procedure = ""
@@ -468,12 +468,10 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
       "    QUEX_CHARACTER_POSITION_TYPE column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
       "#   endif\n" + \
-      "    self.counter.__shift_end_values_to_start_values();\n" + \
       "#   endif\n"
     in_loop       = ""
     end_procedure = ""
     exit_loop     = ""
-    new_line_detection_in_loop_enabled_f = True
 
     # Does the end delimiter contain a newline?
     if CharacterSet.contains(ord("\n")):
@@ -490,9 +488,6 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
     after_reload   = "#          ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
                      "           column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n" + \
                      "#          endif\n"
-
-    if new_line_detection_in_loop_enabled_f:
-        in_loop = lc_counter_in_loop
 
     return blue_print(code_str,
                      [["$$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$", variable_definition],

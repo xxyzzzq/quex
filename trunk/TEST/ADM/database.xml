@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Wed Dec  3 07:43:15 2008">
+<test-database execution-time-sec="0.00" date="Thu Dec  4 08:18:39 2008">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="0.00"> 
@@ -33,10 +33,11 @@
         </test>
     </group>
     <group name="fschaef">
-        <test title="2349109 0.33.5 Line and Column number counts with Set skippers" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-2349109.sh" info-request-time="1227768161L"/>
-            <choice-list number="1">
-               <choice name="" result="NO GOOD FILE" time-sec="0.00" crc="983487435"/>
+        <test title="2349109 0.33.5 Line and Column number counts with Set skippers;" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-2349109.sh" info-request-time="1228372914L"/>
+            <choice-list number="2">
+               <choice name="newline-skipper" result="OK" time-sec="0.00" crc="-1029870665"/>
+               <choice name="non-newline-skipper" result="OK" time-sec="0.00" crc="-1884335518"/>
             </choice-list>
         </test>
         <test title="1948456 (feature) Inheritance Info" make-required="True" time-sum-sec="0.00"> 

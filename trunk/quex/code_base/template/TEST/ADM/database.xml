@@ -1,11 +1,11 @@
-<test-database execution-time-sec="0.01" date="Wed Dec  3 06:43:10 2008">
+<test-database execution-time-sec="0.01" date="Thu Dec  4 07:58:49 2008">
     <last-used-diff-display-program name=""/>
     <group name="Count Line and Column">
-        <test title="Without Indentation Count" make-required="True" time-sum-sec="0.01"> 
+        <test title="Without Indentation Count" make-required="True" time-sum-sec="0.00"> 
             <application file-name="test-simple" info-request-time="1223017232L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.01" crc="821766212"/>
+               <choice name="" result="OK" time-sec="0.00" crc="821766212"/>
             </choice-list>
         </test>
         <test title="With Indentation" make-required="True" time-sum-sec="0.00"> 
