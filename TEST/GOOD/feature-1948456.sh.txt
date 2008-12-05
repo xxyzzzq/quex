@@ -4,23 +4,23 @@
      * 
      * (FOUR)
      *  dfg ONE  3 00010
-     *  cde TWO  2 00019
-     *  bcd THREE  1 00025
-     *  abc FOUR  0 00028
+     *  cde TWO  2 00007
+     *  bcd THREE  1 00004
+     *  abc FOUR  0 00001
      * 
      * 
      * (THREE)
      *  dfg ONE  2 00010
-     *  cde TWO  1 00019
-     *  abc THREE  0 00022
-     *  bcd THREE  0 00025
+     *  cde TWO  1 00007
+     *  abc THREE  0 00001
+     *  bcd THREE  0 00004
      * 
      * 
      * (TWO)
      *  dfg ONE  1 00010
-     *  abc TWO  0 00013
-     *  bcd TWO  0 00016
-     *  cde TWO  0 00019
+     *  abc TWO  0 00001
+     *  bcd TWO  0 00004
+     *  cde TWO  0 00007
      * 
      * 
      * (ONE)
