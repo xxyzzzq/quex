@@ -10,7 +10,7 @@ newline-skipper:
 		-DQUEX_SETTING_BUFFER_SIZE=4
 
 newline-skipper-utf8: 
-	quex -i newline-skipper-utf8.qx -o Simple --token-prefix COL_ --iconv
+	quex -i newline-skipper-utf8.qx -o Simple --token-prefix COL_ --iconv -b 2
 	g++ -I$(QUEX_PATH) -I./ lexer.cpp Simple*.cpp -ggdb -o lexer \
 		-DQUEX_OPTION_LINE_NUMBER_COUNTING \
 		-DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
