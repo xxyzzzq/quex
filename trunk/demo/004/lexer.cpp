@@ -1,8 +1,7 @@
 #include<fstream>    
 #include<iostream> 
 
-// (*) include lexical analyser header
-#include "c_lexer"
+BENCHMARK_SETTING_HEADER
 
 using namespace std;
 
@@ -81,7 +80,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
     size_t         token_n = 0;
     int            checksum_ref = -1;
     //
-    quex::c_lexer  qlex(fh);
+    BENCHMARK_SETTING_INIT
 
     do { 
         checksum       = 777;
@@ -89,8 +88,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
         __PRINT_START(); /* No Operation if QUEX_BENCHMARK_SERIOUS is defined */
         
         do {  
-            // qlex->get_token(&TokenP);
-            token_id = qlex.get_token();
+            BENCHMARK_SETTING_GET_TOKEN_ID;
 
             // checksum = (checksum + TokenP->type_id()) % 0xFF; 
             checksum = (checksum + token_id) % 0xFF; 
@@ -114,7 +112,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
             cerr << "checksum:           " << checksum     << endl;
             throw std::runtime_error("Checksum failure");
         }
-        qlex._reset();
+        BENCHMARK_SETTING_RESET
     } while( clock() < MinExperimentTime );
     // Overhead:   Overhead-Intern
     //           + (assignment, increment by one, comparision * 2, _reset(),
