@@ -16,9 +16,9 @@ P_INCLUDE_FILE1       "<"[^>]+">"
 P_INCLUDE_FILE2       "\""[^"]+"\""
 
 %%
-{P_WHITESPACE}            { }
-"/*"([^*]|("*"[^/]))*"*/" { } 
-"//"[^\n]*"\n"            { } 
+{P_WHITESPACE}                                 { }
+"/*"([^*]|[\r\n]|("*"+([^*/]|[\r\n])))*"*"+"/" { }
+"//"[^\n]*"\n"                                 { } 
 
 "#"[ \t]*"include"[ \t]*{P_INCLUDE_FILE2} return TKN_PP_INCLUDE;
 "#"[ \t]*"include"[ \t]*{P_INCLUDE_FILE1} return TKN_PP_INCLUDE;
@@ -95,76 +95,3 @@ continue      return TKN_CONTINUE;
 {P_QUOTED_CHAR} return TKN_QUOTED_CHAR;
 
 %%
-#include <ctime>
-#include <iostream>
-#include <stdexcept>
-
-double
-report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
-
-
-int
-main(int argc, char** argv)
-{
-    using namespace std;
-    //quex::token*   TokenP;
-    int            token_id = QUEX_TKN_TERMINATION;
-    //
-    // -- repeat the experiment, so that it takes at least 20 seconds
-    const clock_t  StartTime = clock();
-#   ifdef QUEX_BENCHMARK_SERIOUS
-    const clock_t  MinExperimentTime = 10 * CLOCKS_PER_SEC + StartTime;
-#   else
-    const clock_t  MinExperimentTime = StartTime;
-#   endif
-    int            checksum = 0;
-    size_t         token_n = 0;
-    int            checksum_ref = -1;
-    float          repetition_n = 0;
-    //
-    if ( argc > 1 ) yyin = fopen(argv[1], "r" );
-    else            yyin = fopen("example.txt", "r" );
-
-    const int FileSize = 0;
-
-    do { 
-        checksum      = 777;
-        repetition_n += 1.0f;
-        do {  
-            // qlex->get_token(&TokenP);
-            token_id = yylex();
-
-            // checksum = (checksum + TokenP->type_id()) % 0xFF; 
-            checksum = (checksum + token_id) % 0xFF; 
-
-#           if ! defined(QUEX_BENCHMARK_SERIOUS)
-//            cout << /*qlex.line_number() << ": " <<*/ quex::Token::map_id_to_name(token_id) << endl;
-#           endif
-
-            token_n += 1;
-        // } while( TokenP->type_id() != QUEX_TKN_TERMINATION );
-        } while( (unsigned)token_id != QUEX_TKN_TERMINATION );
-        // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n
-
-        if( checksum_ref == -1 ) { 
-            checksum_ref = checksum; 
-        }
-        else if( checksum != checksum_ref ) {
-            cerr << "run:                " << repetition_n << endl;
-            cerr << "checksum-reference: " << checksum_ref << endl;
-            cerr << "checksum:           " << checksum     << endl;
-            throw std::runtime_error("Checksum failure");
-        }
-        fseek(yyin, 0, SEEK_SET);
-        yyrestart(yyin);
-    } while( clock() < MinExperimentTime );
-    // Overhead:   Overhead-Intern
-    //           + (assignment, increment by one, comparision * 2, _reset(),
-    //              clock(), comparision) * RepetitionN
-    
-    cout << "//Benchmark (including overhead)\n";
-    cout << "//    TokenN: " << (int)((token_n-1) / repetition_n) << endl;
-    return report(StartTime, repetition_n, FileSize, /* CharacterSize = 1 */ 1);
-}
-
-

@@ -1,6 +1,13 @@
 #include<fstream>    
 #include<iostream> 
+#include<stdexcept>
+#include "configuration.h"
 
+#include "token-ids.h"
+#if defined(ANALYZER_GENERATOR_FLEX)
+#else
+#    include "c_lexer"
+#endif
 BENCHMARK_SETTING_HEADER
 
 using namespace std;
@@ -67,7 +74,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 {
     using namespace std;
     //quex::token*   TokenP;
-    int            token_id = QUEX_TKN_TERMINATION;
+    int            token_id = TKN_TERMINATION;
     //
     // -- repeat the experiment, so that it takes at least 20 seconds
     const clock_t  StartTime = clock();
@@ -98,8 +105,8 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 #           endif
 
             token_n += 1;
-        // } while( TokenP->type_id() != QUEX_TKN_TERMINATION );
-        } while( (unsigned)token_id != QUEX_TKN_TERMINATION );
+        // } while( TokenP->type_id() != TKN_TERMINATION );
+        } while( (unsigned)token_id != TKN_TERMINATION );
         // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n
 
         __PRINT_END();
@@ -133,7 +140,7 @@ overhead(std::FILE* fh,
     double        repetition_n = 0.0;
     int           checksum = 0;
     //
-    quex::c_lexer qlex(fh);
+    BENCHMARK_SETTING_INIT
 
     checksum = 0; // here: prevent optimizing away of token_n --> out of loop
     while( repetition_n < RepetitionN ) { 
@@ -149,7 +156,7 @@ overhead(std::FILE* fh,
         
         checksum += token_n ^ clock();
 
-        qlex._reset();
+        BENCHMARK_SETTING_RESET
     }
     // Overhead:   Overhead-Intern
     //           + (assignment, increment by one, comparision * 2, _reset(),

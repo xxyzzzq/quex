@@ -3,8 +3,8 @@ from quex.frs_py.file_in import is_identifier_start, \
 
 import quex.core_engine.generator.skip_code as skip_code
 
-class ActionI:
-    def __init__(self, Code, RequireTerminatingZeroF=False):
+class CodeFragment:
+    def __init__(self, Code="", RequireTerminatingZeroF=False):
         self.__code = Code
         self.__require_terminating_zero_f = RequireTerminatingZeroF
 
@@ -19,12 +19,6 @@ class ActionI:
 
     def require_terminating_zero_f(self):
         return self.__require_terminating_zero_f
-
-
-class CodeFragment(ActionI):
-    def __init__(self, Code="", RequireTerminatingZeroF=False):
-        ActionI.__init__(self, Code, RequireTerminatingZeroF)
-
 
 UserCodeFragment_OpenLinePragma = {
 #___________________________________________________________________________________
@@ -52,7 +46,7 @@ UserCodeFragment_OpenLinePragma = {
              ],
    }
 
-class UserCodeFragment(ActionI):
+class UserCodeFragment(CodeFragment):
     def __init__(self, Code, Filename, LineN, LanguageDB=None, AddReferenceCodeF=False):
         assert type(Code)       in [str, unicode]
         assert type(LanguageDB) == dict or LanguageDB == None
@@ -63,7 +57,7 @@ class UserCodeFragment(ActionI):
         self.line_n   = LineN
 
         # No clue yet, how to deal with languages other than C/C++ here.
-        if AddReferenceCodeF and Code != "":
+        if AddReferenceCodeF and Code.strip() != "":
             txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
             txt += Code
             if txt[-1] != "\n": txt = txt + "\n"
@@ -76,7 +70,7 @@ class UserCodeFragment(ActionI):
         if LanguageDB != None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
             require_terminating_zero_f = True
 
-        ActionI.__init__(self, code, require_terminating_zero_f)
+        CodeFragment.__init__(self, code, require_terminating_zero_f)
 
 
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
@@ -110,7 +104,7 @@ class PatternActionInfo:
     def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName=""):
 
         assert Action == None or \
-               issubclass(Action.__class__, ActionI) or \
+               issubclass(Action.__class__, CodeFragment) or \
                type(Action) in [str, unicode]
         assert PatternStateMachine.__class__.__name__ == "StateMachine" \
                or PatternStateMachine == None

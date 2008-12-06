@@ -10,7 +10,6 @@ GENERATOR    = Quex#  Quex, Flex
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \
-      -D'ANALYZER_GENERATOR="$(GENERATOR)"' \
       -D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="IntelCoreDuo"' \
       -D'CPU_CODE="T2400"' \
@@ -77,8 +76,10 @@ lexer: $(OBJECT_FILES)
 lexer-lc: $(OBJECT_FILES_LC)
 	$(LD) $(OBJECT_FILES_LC) -o $@ # -lgcov
 
-lexer-lex: lex.yy.c 
-	$(CC) -I./ lex.yy.c report.cpp -lfl -o lexer-lex
+lexer-flex: lex.yy.c 
+	$(CC) \
+          -DANALYZER_GENERATOR_FLEX \
+		  -I./ lex.yy.c lexer.cpp report.cpp -lfl -o lexer-flex 
 
 # -- application
 %.o: %.cpp c_lexer
@@ -100,14 +101,17 @@ lexer-lex: lex.yy.c
 		$< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 --no-token-queue --no-string-accumulator
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) \
+		 --token-offset 3 --no-token-queue \
+		 --no-string-accumulator --token-prefix TKN_ \
+         --foreign-token-id-file token-ids.h
 
 lex.yy.c: c.lex
 	flex c.lex 
 
 # (*) HELPERS __________________________________________________________________
 clean:	
-	rm -f lexer lexer-lc
+	rm -f lexer lexer-lc lexer-flex
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
 	rm -f lexer
