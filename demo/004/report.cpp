@@ -3,20 +3,24 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <c_lexer>
+#include <cstdio>
+#include <iostream>
 
 using namespace std;
 
 size_t    get_file_size(const char*, bool SilentF=false);
 void      print_date_string();
 size_t    count_token_n(std::FILE*);
-double     report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
+double    report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
 void      final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* Filename, 
                        size_t FileSize, size_t TokenN, double RepetitionN);
 
 void 
-final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* FileName, size_t FileSize, size_t TokenN, double RepetitionN)
+final_report(double      TimePerRun,              double      RefTimePerRun, 
+             const char* ThisExecutableName,      const char* FileName, 
+             size_t      FileSize, size_t TokenN, double      RepetitionN)
 {
+    using namespace std;
     const double  CharN          = (double)(FileSize) / (CHARACTER_SIZE);
     const double  CycleTime      = 1.0 / double(CPU_FREQ_MHZ) * 1e-6;
     //
@@ -37,15 +41,18 @@ final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutable
         TimePerToken    = TimePerRun     / double(TokenN);
         RefTimePerToken = RefTimePerRun  / double(TokenN);
     }
-    CCT    = TimePerToken / CycleTime;
+    // Clock Cycles per Token 
+    CCT    = TimePerToken    / CycleTime;
     RefCCT = RefTimePerToken / CycleTime;
 
     cout << "//Result:\n";
-    cout << "//   Time / Run:          " << (TimePerRun - RefTimePerRun)   << endl;
+    cout << "//   Time / Run:          " << (TimePerRun  - RefTimePerRun)  << endl;
     cout << "//   Time / Char:         " << (TimePerChar - RefTimePerChar) << endl;
     cout << "//   Clock Cycles / Char: " << (CCC - RefCCC)                 << endl;
     cout << "{" << endl;
+#   if defined(QUEX_BENCHMARK_QUEX)
     cout << "   quex_version    = {" << QUEX_VERSION << "}, " << endl;
+#   endif
     cout << "   cpu_name        = {" << CPU_NAME << "}, " << endl;
     cout << "   cpu_code        = {" << CPU_CODE << "}, " << endl;
     cout << "   cpu_freq_mhz    = {" << CPU_FREQ_MHZ << "}, " << endl;

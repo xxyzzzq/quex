@@ -6,9 +6,12 @@ COMPILER     = g++    # icpc # g++
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
 OPTIMIZATION = -O3 # -ggdb # -O3    # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+GENERATOR    = Quex#  Quex, Flex
 
 # (*) SETUP ____________________________________________________________________
-SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
+SETUP= \
+      -D'ANALYZER_GENERATOR="$(GENERATOR)"' \
+      -D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="IntelCoreDuo"' \
       -D'CPU_CODE="T2400"' \
       -D'CPU_FREQ_MHZ=((float)(1833.0))' \
@@ -18,7 +21,7 @@ SETUP=-D'EMAIL="fschaef@users.sourceforge.net"' \
 	  -D'CC_NAME="$(COMPILER)"' \
 	  -D'CC_VERSION="$(COMPILER_V)"' \
       -D'QUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE)' \
-	  -D'NOTE=""'
+	  -D'NOTE=""' 
 
 .PHONY: clean
 
@@ -74,6 +77,9 @@ lexer: $(OBJECT_FILES)
 lexer-lc: $(OBJECT_FILES_LC)
 	$(LD) $(OBJECT_FILES_LC) -o $@ # -lgcov
 
+lexer-lex: lex.yy.c 
+	$(CC) -I./ lex.yy.c report.cpp -lfl -o lexer-lex
+
 # -- application
 %.o: %.cpp c_lexer
 	$(CC) -c \
@@ -96,20 +102,21 @@ lexer-lc: $(OBJECT_FILES_LC)
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 3 --no-token-queue --no-string-accumulator
 
+lex.yy.c: c.lex
+	flex c.lex 
+
 # (*) HELPERS __________________________________________________________________
 clean:	
 	rm -f lexer lexer-lc
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_SOURCES)
-	rm -f $(ENGINE_NAME).o
-	rm -f $(ENGINE_NAME)-core-engine.o
-	rm -f lexer.o
-	rm -f report.o
 	rm -f lexer
 	rm -f token_ids
+	rm -f *.o
 	rm -f *.bak
 	rm -f *.asm
 	rm -f *.gcno 
 	rm -f *.gcda
 	rm -f *.gcov
+	rm -f lex.yy.c
 
