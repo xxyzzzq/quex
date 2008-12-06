@@ -5,8 +5,17 @@
 #include <unistd.h>
 #include <cstdio>
 #include <iostream>
+#include "configuration.h"
 
+#include "token-ids.h"
+#if defined(ANALYZER_GENERATOR_FLEX)
+#else
+#    include "c_lexer"
+#endif
+BENCHMARK_SETTING_HEADER
 using namespace std;
+
+#define QUOTE_THIS(NAME) #NAME
 
 size_t    get_file_size(const char*, bool SilentF=false);
 void      print_date_string();
@@ -14,6 +23,7 @@ size_t    count_token_n(std::FILE*);
 double    report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
 void      final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* Filename, 
                        size_t FileSize, size_t TokenN, double RepetitionN);
+
 
 void 
 final_report(double      TimePerRun,              double      RefTimePerRun, 
@@ -50,7 +60,9 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
     cout << "//   Time / Char:         " << (TimePerChar - RefTimePerChar) << endl;
     cout << "//   Clock Cycles / Char: " << (CCC - RefCCC)                 << endl;
     cout << "{" << endl;
-#   if defined(QUEX_BENCHMARK_QUEX)
+    cout << "   generator       = {" << QUOTE_THIS(ANALYZER_GENERATOR) << "}," << endl;
+#   if defined(ANALYZER_GENERATOR_FLEX)
+#   else
     cout << "   quex_version    = {" << QUEX_VERSION << "}, " << endl;
 #   endif
     cout << "   cpu_name        = {" << CPU_NAME << "}, " << endl;
@@ -115,16 +127,15 @@ report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterS
 size_t
 count_token_n(std::FILE* fh)
 {
-    using namespace std;
-    quex::c_lexer  qlex(fh);
-    //quex::token*    TokenP;
-    int token_id = QUEX_TKN_TERMINATION;
+    BENCHMARK_SETTING_INIT
+
+    int token_id = TKN_TERMINATION;
     int token_n = 0;
 
     // (*) loop until the 'termination' token arrives
     for(token_n=0; ; ++token_n) {
-        token_id = qlex.get_token();
-        if( token_id == QUEX_TKN_TERMINATION ) break;
+        BENCHMARK_SETTING_GET_TOKEN_ID
+        if( token_id == TKN_TERMINATION ) break;
     } 
     cout << "// TokenN: " << token_n << " [1]"   << endl;
     return token_n;

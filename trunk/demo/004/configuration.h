@@ -12,27 +12,26 @@
 #ifndef __INCLUDE_GUARD__QUEX__C_LEXER__CONFIGURATION__
 #define __INCLUDE_GUARD__QUEX__C_LEXER__CONFIGURATION__
 
-#if __BENCHMARK_SETTING_ANALYSER == "Quex"
+#if ANALYZER_GENERATOR_FLEX
 
 #   define BENCHMARK_SETTING_HEADER \
-           #include <c_lexer>
+           extern int    yylex();
+           extern FILE*  yyin;
+           extern void   yyrestart(FILE*);
+
+#   define BENCHMARK_SETTING_INIT           yyin = fh; yyrestart(yyin);
+#   define BENCHMARK_SETTING_GET_TOKEN_ID   token_id = yylex();
+#   define BENCHMARK_SETTING_RESET          fseek(yyin, 0, SEEK_SET); yyrestart(yyin);
+
+#else
+
+#   define BENCHMARK_SETTING_HEADER \
+           using namespace quex;
 
 #   define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh);
 #   define BENCHMARK_SETTING_GET_TOKEN_ID   token_id = qlex.get_token();
 #   define BENCHMARK_SETTING_RESET          qlex._reset();
 
-#elif __BENCHMARK_SETTING_ANALYSER == "Flex"
-
-#   define BENCHMARK_SETTING_HEADER \
-           int yylex();
-
-#   define BENCHMARK_SETTING_INIT           yyin = fh; yyrestart(yyin);
-#   define BENCHMARK_SETTING_GET_TOKEN_ID   (token_id = yylex())
-#   define BENCHMARK_SETTING_RESET          fseek(yyin, 0, SEEK_SET); yyrestart(yyin);
-
-#else
-
-#   error "Benchmark type '" __BENCHMARK_SETTING_ANALYSER "' is not supported."
 
 #endif
 

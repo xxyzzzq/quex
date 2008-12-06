@@ -251,6 +251,10 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 """
 
 def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset=4): 
+    code_str = action_info.action().get_code()
+    if code_str == "":
+        return ""
+
     indentation = " " * IndentationOffset 
     txt = ""
     # TODO: There could be a differenciation between a pattern that contains
@@ -261,8 +265,6 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
 
     if action_info.action().require_terminating_zero_f():
         txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
-
-    code_str = action_info.action().get_code()
 
     txt += indentation + "{\n"
     txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  
