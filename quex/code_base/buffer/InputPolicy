@@ -40,10 +40,11 @@ namespace quex {
         static const size_t  CharacterSize = sizeof(typename StdStreamType::char_type);
 
         static stream_position tell(StdStreamType* me) { 
-            return me->tellg(); 
+            return me->tellg() * CharacterSize; 
         }
         static void    seek(StdStreamType* me, const stream_position& Pos) { 
-            me->seekg(Pos); 
+            __quex_assert(Pos % CharacterSize == 0);
+            me->seekg(Pos / CharacterSize); 
         }
 
         static size_t  load_bytes(StdStreamType* me, void* buffer_position, const size_t ByteNToRead) 

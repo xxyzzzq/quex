@@ -204,6 +204,7 @@ namespace quex {
             fprintf(stderr, "Difference between computed and real character index at end:\n"); 
             fprintf(stderr, "  computed character index = %i\n", (int)ComputedCharacterIndexAtEnd); 
             fprintf(stderr, "  real character index     = %i\n", (int)RealCharacterIndexAtEnd); 
+            __quex_assert( ComputedCharacterIndexAtEnd == RealCharacterIndexAtEnd );
         }
 #       endif
 
@@ -266,7 +267,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    __QuexBufferFiller_forward_adapt_pointers(QuexBuffer* buffer, 
+    __QuexBufferFiller_forward_adapt_pointers(QuexBuffer*  buffer, 
                                               const size_t DesiredLoadN,
                                               const size_t LoadedN,
                                               const size_t FallBackN, 
@@ -298,7 +299,8 @@ namespace quex {
         /*           reads the _input_p.*/
         buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
 
-        __quex_assert( buffer->_end_of_file_p == 0x0 || (int)(LoadedN + FallBackN) == buffer->_end_of_file_p - buffer->_memory._front - 1);
+        __quex_assert(   buffer->_end_of_file_p == 0x0 
+                      || (int)(LoadedN + FallBackN) == buffer->_end_of_file_p - buffer->_memory._front - 1);
 
     }
 

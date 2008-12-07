@@ -70,8 +70,9 @@ namespace quex {
         * work with the first argument being of base class type. */
        TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
 
-        __quex_assert(me->ih != 0x0); 
-       return (QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT) - me->start_position) / sizeof(QUEX_CHARACTER_TYPE); 
+       __quex_assert(me->ih != 0x0); 
+       STREAM_POSITION_TYPE(InputHandleT)  current_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT); 
+       return (current_position - me->start_position) / sizeof(QUEX_CHARACTER_TYPE); 
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -101,28 +102,22 @@ namespace quex {
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
 
         __quex_assert(me->ih != 0x0); 
+#       ifdef QUEX_OPTION_ASSERTS
+        STREAM_POSITION_TYPE(InputHandleT) prev_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+#       endif
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
                                                           buffer_memory, N * sizeof(QUEX_CHARACTER_TYPE));
+
+        /* new position == previous position + number of bytes that we have been reading. */
+        __quex_assert((STREAM_OFFSET_TYPE(InputHandleT))(QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT) 
+                                                         - prev_position) 
+                      == (STREAM_OFFSET_TYPE(InputHandleT))ByteN);
 
         if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) {
             QUEX_ERROR_EXIT(
                 "Error: Plain character encoding: End of file cuts in the middle a multi-byte character.");
         }
         return ByteN / sizeof(QUEX_CHARACTER_TYPE); 
-    }
-
-    TEMPLATE_IN(InputHandleT) void 
-    __BufferFiller_Plain_mark_start_position(TEMPLATED(QuexBufferFiller_Plain)* me) 
-    { 
-       __quex_assert(me != 0x0); 
-       me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-    }
-
-    TEMPLATE_IN(InputHandleT) void 
-    __BufferFiller_Plain_reset_start_position(TEMPLATED(QuexBufferFiller_Plain)* me) 
-    {
-        __quex_assert(me != 0x0); 
-        QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->start_position);
     }
 
 #   undef TEMPLATED_CLASS

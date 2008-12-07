@@ -25,6 +25,11 @@ namespace quex {
      *                     QuexBufferMemory_init(analyse->buffer._memory, (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
+#       ifdef QUEX_OPTION_ASSERTS
+        /* Initialize everything to 0xFF which is most probably causing an error
+         * if a member variable is not initialized before it is used.             */
+        __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
+#       endif
         QuexBuffer_construct(&me->buffer, 
                              input_handle,
                              InputCodingType, IANA_InputCodingName,
