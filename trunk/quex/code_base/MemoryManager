@@ -23,7 +23,14 @@ namespace quex {
     QUEX_INLINE struct __QuexBufferFiller_tag*
         MemoryManager_get_BufferFiller(QuexBufferFillerTypeEnum FillerType)
         {
-            return (struct __QuexBufferFiller_tag*)__QUEX_ALLOCATE_MEMORY(QuexBufferFiller_get_memory_size(FillerType));
+            size_t     MemorySize = QuexBufferFiller_get_memory_size(FillerType);
+            uint8_t*   memory = __QUEX_ALLOCATE_MEMORY(MemorySize);
+#           ifdef QUEX_OPTION_ASSERTS
+            /* Initialize everything to 0xFF which is most probably causing an error
+             * if a member variable is not initialized before it is used.             */
+            __QUEX_STD_memset(memory, 0xFF, MemorySize);
+#           endif
+            return (struct __QuexBufferFiller_tag*)memory;
         }
 
     QUEX_INLINE uint8_t*
