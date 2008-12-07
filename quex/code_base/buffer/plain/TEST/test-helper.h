@@ -2,6 +2,7 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__PLAIN_TEST_HELPER_H__
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 #include <cstdio>
+#include <iostream>
 
 #ifndef QUEX_DEFINED_FUNC_cl_has
 static int cl_has(int argc, char** argv, const char* What)
