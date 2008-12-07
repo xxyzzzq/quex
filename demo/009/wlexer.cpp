@@ -6,7 +6,8 @@
 
 using namespace std;
 
-quex::tiny_wlexer*   get_wstringstream_input();
+quex::tiny_wlexer*  get_wstringstream_input();
+quex::tiny_wlexer*  get_wfile_input();
 
 
 int 
@@ -21,7 +22,9 @@ main(int argc, char** argv)
     if( argc < 2 ) {
         cout << "At least one command line argument required.\n";
         return -1;
-    } else if ( strcmp(argv[1], "wstringstream") == 0 ) {
+    } else if ( strcmp(argv[1], "FILE") == 0 ) {
+        qlex = get_wfile_input();
+    } else if ( strcmp(argv[1], "stringstream") == 0 ) {
         qlex = get_wstringstream_input();
     } else {
         cout << "Experiment " << argv[1] << " not supported by this application.\n";
@@ -45,6 +48,28 @@ main(int argc, char** argv)
     delete qlex;
 
     return 0;
+}
+
+quex::tiny_wlexer* 
+get_wfile_input()
+{
+    /* We write the file ourselves so that there is never an issue about alignment */
+    wchar_t   original[] = L"bonjour le monde hello world hallo welt";
+    uint8_t*  End        = (uint8_t*)(original + wcslen(original));
+    ofstream   ofile("wchar_t-example.txt");
+
+    /* Write the wchar_t byte by byte as we have it in memory */
+    for(uint8_t* p = (uint8_t*)original; p != End; ++p) ofile.put(*p);
+    /* Write a terminating zero of the size of wchar_t */
+    // for(size_t i=0; i<sizeof(wchar_t); ++i)                ofile.put('\0');
+    ofile.close();
+
+    /* Normal File Input */
+    cout << "FILE* (stdio.h):\n";
+    cout << "   Note this works only when engine is generated with -b wchar_t (or no -b)\n";
+    cout << "   and therefore QUEX_CHARACTER_TYPE == wchar_t.\n";
+    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(wchar_t));
+    return new quex::tiny_wlexer("wchar_t-example.txt");
 }
 
 quex::tiny_wlexer* 
