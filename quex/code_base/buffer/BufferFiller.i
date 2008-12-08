@@ -192,22 +192,6 @@ namespace quex {
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
-        /* NOTE: During backward loading the rule does not hold that the stream position
-         *       corresponds to the last character in the buffer. The last character in the
-         *       buffer might be a copy from the front of the buffer. Thus, this constraint
-         *       only holds **after the forward load**.                                       */
-#       ifdef QUEX_OPTION_ASSERTS
-        const size_t   ComputedCharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
-                                                     (QuexBuffer_text_end(buffer) - QuexBuffer_content_front(buffer)));
-        const size_t   RealCharacterIndexAtEnd     = (size_t)(buffer->filler->tell_character_index(buffer->filler));
-        if( ComputedCharacterIndexAtEnd != RealCharacterIndexAtEnd ) {
-            fprintf(stderr, "Difference between computed and real character index at end:\n"); 
-            fprintf(stderr, "  computed character index = %i\n", (int)ComputedCharacterIndexAtEnd); 
-            fprintf(stderr, "  real character index     = %i\n", (int)RealCharacterIndexAtEnd); 
-            __quex_assert( ComputedCharacterIndexAtEnd == RealCharacterIndexAtEnd );
-        }
-#       endif
-
         /* NOTE: Return value is used for adaptions of memory addresses. It happens that the*/
         /*       address offset is equal to DesiredLoadN; see function __forward_adapt_pointers().*/
         return DesiredLoadN; /* THUS NOT: LoadedN*/
@@ -299,8 +283,26 @@ namespace quex {
         /*           reads the _input_p.*/
         buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
 
+        /* Asserts */
         __quex_assert(   buffer->_end_of_file_p == 0x0 
                       || (int)(LoadedN + FallBackN) == buffer->_end_of_file_p - buffer->_memory._front - 1);
+
+#       ifdef QUEX_OPTION_ASSERTS
+        /* NOTE: During backward loading the rule does not hold that the stream position
+         *       corresponds to the last character in the buffer. The back part of the
+         *       buffer might be a copy from the front of the buffer. Thus, this constraint
+         *       only holds **after the forward load**.                                       */
+        const size_t   ComputedCharacterIndexAtEnd = (size_t)(buffer->_content_first_character_index + 
+                                                     (QuexBuffer_text_end(buffer) - QuexBuffer_content_front(buffer)));
+        const size_t   RealCharacterIndexAtEnd     = (size_t)(buffer->filler->tell_character_index(buffer->filler));
+        if( ComputedCharacterIndexAtEnd != RealCharacterIndexAtEnd ) {
+            fprintf(stderr, "Difference between computed and real character index at end:\n"); 
+            fprintf(stderr, "  computed character index = %i\n", (int)ComputedCharacterIndexAtEnd); 
+            fprintf(stderr, "  real character index     = %i\n", (int)RealCharacterIndexAtEnd); 
+            __quex_assert( ComputedCharacterIndexAtEnd == RealCharacterIndexAtEnd );
+        }
+#       endif
+
 
     }
 
