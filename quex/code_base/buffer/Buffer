@@ -59,6 +59,12 @@ namespace quex {
         /*     -- character index in the stream that corresponds to the character
          *        at the first character (see above: _front[1]) */
         size_t                _content_first_character_index;
+        /*     -- character index in the stream that corresponds to the character
+         *        after the last character in the buffer. This is necessary, because,
+         *        some weird (but popular) implementations of istream do not correlate
+         *        propperly between bytes transferred into a buffer and the increment 
+         *        of the stream position. */
+        size_t                _content_end_character_index;
         
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to

@@ -17,7 +17,7 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me); 
+    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me, bool OnlyResetF); 
     QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*    me, 
                                             QUEX_CHARACTER_TYPE* memory, size_t Size);
 
@@ -72,7 +72,7 @@ namespace quex {
             me->filler = 0x0;
             QuexBufferMemory_init(&(me->_memory), 0, 0);      
         } 
-        QuexBuffer_init(me);
+        QuexBuffer_init(me, /* OnlyResetF */ false);
         
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
@@ -88,7 +88,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QuexBuffer_init(QuexBuffer*  me)
+    QuexBuffer_init(QuexBuffer*  me, bool ResetF)
     {
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
@@ -99,14 +99,26 @@ namespace quex {
         me->_end_of_file_p                 = 0x0;
         me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)*/
         me->_content_first_character_index = 0;
+        me->_content_end_character_index   = 0;
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
 #       endif
 
-        if( me->filler != 0x0 ) {
-            /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
-             * assumes, that the user fills/has filled it with whatever his little heart desired. */
-            QuexBufferFiller_initial_load(me);
+        if( ResetF ) {
+            if( me->_content_first_character_index != 0 ) {
+                __quex_assert(me->filler != 0x0);
+                me->filler->seek_character_index(me->filler, 0);
+                me->_content_first_character_index = 0;
+                QuexBufferFiller_initial_load(me);
+                me->_content_end_character_index = me->filler->tell_character_index(me->filler);
+            }
+        } else {
+            if( me->filler != 0x0 ) {
+                /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
+                 * assumes, that the user fills/has filled it with whatever his little heart desired. */
+                QuexBufferFiller_initial_load(me);
+                me->_content_end_character_index = me->filler->tell_character_index(me->filler);
+            }
         }
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -116,26 +128,7 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_reset(QuexBuffer* me)
     {
-        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
-        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
-        /* NOTE: The terminating zero is stored in the first character **after** the  
-         *       lexeme (matching character sequence). The begin of line pre-condition  
-         *       is concerned with the last character in the lexeme, which is the one  
-         *       before the 'char_covered_by_terminating_zero'.                          */
-        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
-#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
-#       endif
-
-        if( me->_content_first_character_index != 0 ) {
-            __quex_assert(me->filler != 0x0);
-            me->filler->seek_character_index(me->filler, 0);
-            me->_content_first_character_index = 0;
-            QuexBufferFiller_initial_load(me);
-        }
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+        QuexBuffer_init(me, /* ResetF */ true);
     }
 
     QUEX_INLINE void
