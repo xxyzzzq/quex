@@ -54,6 +54,7 @@ QUEX_CORE = \
                 asserts \
                 definitions \
                 circular_queue \
+                StrangeStream_unit_tests \
                 temporary_macros_on \
                 temporary_macros_off)
 
