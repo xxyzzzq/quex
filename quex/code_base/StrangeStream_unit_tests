@@ -1,6 +1,11 @@
+#ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
+#define __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
 /* -*- C++ -*- vim: set syntax=cpp: 
  * (C) 2008 Frank-Rene Schaefer 
  * LPGL -- ABSOLUTELY NO WARRANTY */
+#include <sys/types.h>
+#include <iostream>
+#include <quex/code_base/compatibility/inttypes.h>
 
 namespace quex {
     template <class StdStreamType>
@@ -30,6 +35,7 @@ namespace quex {
          *
          */
         StdStreamType*   sh;
+        uint32_t             seed;
 
         typedef typename StdStreamType::pos_type   intern_stream_position;
         typedef typename StdStreamType::off_type   intern_stream_offset;
@@ -37,70 +43,79 @@ namespace quex {
         typedef typename StdStreamType::char_type  character_type;
         static const size_t                        CharacterSize = sizeof(typename StdStreamType::char_type);
 
-        typedef long stream_position;
-        typedef long stream_offset;
+        typedef uint32_t stream_position;
+        typedef uint32_t stream_offset;
+
+        intern_stream_position  __map_strange_to_real_position(stream_position Pos);
+        stream_position         __map_real_to_strange_position(intern_stream_position Pos);
 
     public:
         StrangeStream(StdStreamType*);
         stream_position tellg();
-        int             seekg(stream_position);
-        void            read(char* buffer, size_t Size);
+        void            seekg(stream_position);
+        void            read(character_type* buffer, size_t Size);
         size_t          gcount();
-    }
+    };
 
-#   define TEMPLATE_IN  template<class StdStreamType> inline
+#   define TEMPLATE_IN  template <class StdStreamType> inline
 #   define CLASS        StrangeStream<StdStreamType>
+
     TEMPLATE_IN
     CLASS::StrangeStream(StdStreamType* SH)
     {
-        sh = SH;
-        random_seed = 1;
+        sh   = SH;
+        seed = 17;
         /* open in _binary mode_ */
     }
 
-    TEMPLATE_IN stream_position
-    CLASS::__map_strange_to_real_position(stream_position Pos)
+    TEMPLATE_IN  typename CLASS::stream_position
+    StrangeStream<StdStreamType>::__map_real_to_strange_position(CLASS::intern_stream_position Pos)
     {
-        sh.seek(stream_position(0));
-        long strange_pos = 0;
-        long seed = 17;
-        for(long i=0; i < Pos ; ++i) {
-            delta = seed % 3 + 1; /* pseudo random increment */
-            seed  = (seed * seed * seed) % 65536;
-            strange_pos += delta;
-            if( strange_pos >= Pos ) return i;
-        }
-        return strange_pos;
-    }
-
-    TEMPLATE_IN stream_position
-    CLASS::__map_real_to_strange_position(stream_position Pos)
-    {
-        sh.seek(stream_position(0));
-        long strange_pos = 0;
-        long seed = 17;
-        for(long i=0; i < Pos; ++i) {
-            delta = seed % 3 + 1; /* pseudo random increment */
-            seed  = (seed * seed * seed) % 65536;
+        uint32_t seed = 17;
+        uint32_t strange_pos = 0;
+        for(uint32_t i=0; i < Pos; ++i) {
+            seed  = (seed * seed * seed) % (2 << 24);
+            uint32_t delta = seed % 3 + 1; /* pseudo random increment */
             strange_pos += delta;
         }
         return strange_pos;
     }
 
-    TEMPLATE_IN CLASS::stream_position
+    TEMPLATE_IN typename CLASS::intern_stream_position
+    CLASS::__map_strange_to_real_position(typename CLASS::stream_position Pos)
+    {
+        uint32_t strange_pos = 0;
+        uint32_t seed = 17;
+        for(uint32_t i=0; ; ++i) {
+            seed  = (seed * seed * seed) % (2 << 24);
+            uint32_t delta = seed % 3 + 1; /* pseudo random increment */
+            strange_pos += delta;
+            if( strange_pos > Pos ) return i;
+        }
+    }
+
+    TEMPLATE_IN typename CLASS::stream_position
     CLASS::tellg()
-    { return __map_real_to_strange_position(sh.tellg()); }
+    { return __map_real_to_strange_position(sh->tellg()); }
 
     TEMPLATE_IN void
-    CLASS::seekg(stream_position Position)
-    { sh.seek( __map_strange_to_real_position(Position)); }
+    CLASS::seekg(typename CLASS::stream_position Position)
+    { sh->seekg(__map_strange_to_real_position(Position)); }
 
     TEMPLATE_IN void   
-    CLASS::read(character_type* buffer, size_t Size)
+    CLASS::read(typename CLASS::character_type* buffer, size_t Size)
     {
         sh->read(buffer, Size);
+    }
+
+    TEMPLATE_IN size_t   
+    CLASS::gcount()
+    {
+        return sh->gcount();
     }
 #   undef TEMPLATE_IN
 #   undef CLASS
 
 }
+
+#endif // __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
