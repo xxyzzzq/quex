@@ -17,10 +17,8 @@ main(int argc, char** argv)
     using namespace quex;
 
     QuexBuffer           buffer;
-    QUEX_CHARACTER_TYPE  content[] =      { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'} ; 
-    QUEX_CHARACTER_TYPE  memory[]  = { '|', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '|'}; 
-    int                  memory_size  = 12;
-    size_t               fallback_n   = 0;
+    QUEX_CHARACTER_TYPE  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
+    int                  memory_size = 12;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
     stderr = stdout;
@@ -29,21 +27,24 @@ main(int argc, char** argv)
     printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QuexBuffer_init(&buffer, memory_size, 0x0);
-    QuexBufferMemory_init(&buffer._memory, memory, memory_size);
+    QuexBuffer_construct_wo_filler(&buffer, memory_size, 0, 0);
 
     buffer._input_p = buffer._memory._front;
-    if( cl_has(argc, argv, "Normal") ) 
-        buffer._content_first_character_index = memory_size + 1; /* load backward possible */
-    else                               
-        buffer._content_first_character_index = 0;               /* impossible, start of stream */
+
+    if( cl_has(argc, argv, "Normal") ) {
+        buffer._content_character_index_begin = memory_size + 1; /* load backward possible      */
+        buffer._content_character_index_end   = 2 * memory_size - 1; 
+    } else {                              
+        buffer._content_character_index_begin = 0;               /* impossible, start of stream */
+        buffer._content_character_index_end   = memory_size - 2; /* impossible, start of stream */
+    }
 
     /* We want to observe the standard error output in HWUT, so redirect to stdout */
     for(buffer._lexeme_start_p = buffer._memory._front + 1; 
         buffer._lexeme_start_p != buffer._memory._back; 
         ++(buffer._lexeme_start_p) ) { 
 
-        memcpy((char*)(memory+1), (char*)content, (memory_size-2)*sizeof(QUEX_CHARACTER_TYPE));
+        memcpy((char*)(buffer._memory._front+1), (char*)content, (memory_size-2)*sizeof(QUEX_CHARACTER_TYPE));
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 
@@ -55,7 +56,10 @@ main(int argc, char** argv)
 
         if( buffer._lexeme_start_p - buffer._input_p == memory_size - 2 ) 
             printf("##NOTE: The following break up is intended\n##");
-        fallback_n   = __QuexBufferFiller_backward_copy_backup_region(&buffer);
+        if( buffer._content_character_index_begin != 0 ) {
+            const size_t  BackwardDistance = __QuexBufferFiller_backward_compute_backward_distance(&buffer);
+            __QuexBufferFiller_backward_copy_backup_region(&buffer, BackwardDistance);
+        }
         QuexBuffer_show_content(&buffer);
         printf("\n");
     }

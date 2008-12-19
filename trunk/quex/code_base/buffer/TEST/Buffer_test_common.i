@@ -22,7 +22,7 @@ cl_has(int argc, char** argv, const char* What)
 }
 #define QUEX_DEFINED_FUNC_cl_has
 
-inline uint8_t* 
+inline void
 show_this(const char* Name, QuexBuffer* buffer, QUEX_CHARACTER_TYPE* Pos, char Appendix)
 {
     static uint8_t      utf8_char_str[7];

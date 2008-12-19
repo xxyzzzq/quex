@@ -26,7 +26,7 @@ namespace quex {
         __quex_assert(me != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)buffer->_content_first_character_index);
+        __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)buffer->_content_character_index_begin);
         __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->tell_character_index(me));
         if( buffer->_end_of_file_p == 0x0 )
             __QUEX_STD_printf("_end_of_file_p (offset)  = <0x0>\n");
@@ -52,7 +52,7 @@ namespace quex {
             return (QUEX_CHARACTER_TYPE)'?'; 
         else if( buffer->_end_of_file_p == C )       
             return (QUEX_CHARACTER_TYPE)']';
-        else if( buffer->_content_first_character_index == 0 && buffer->_memory._front == C )     
+        else if( buffer->_content_character_index_begin == 0 && buffer->_memory._front == C )     
             return (QUEX_CHARACTER_TYPE)'[';
         else
             return (QUEX_CHARACTER_TYPE)'|';

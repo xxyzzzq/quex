@@ -96,11 +96,12 @@ namespace quex {
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
         /* Assume: Buffer initialization happens independently */
-        __quex_assert(buffer->_content_first_character_index == 0);
+        __quex_assert(buffer->_content_character_index_begin == 0);
         __quex_assert(buffer->_input_p                       == ContentFront);   
         __quex_assert(buffer->_lexeme_start_p                == ContentFront);
 
         const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, ContentFront, ContentSize);
+        buffer->_content_character_index_end = (size_t)(buffer->filler->tell_character_index(buffer->filler));
 
         /* If end of file has been reached, then the 'end of file' pointer needs to be set*/
         if( LoadedN != ContentSize ) QuexBuffer_end_of_file_set(buffer, ContentFront + LoadedN);
@@ -178,40 +179,32 @@ namespace quex {
                                                                                         Distance_LexemeStart_to_InputP);
         const size_t  DesiredLoadN = ContentSize - FallBackN;
         __quex_assert(FallBackN < ContentSize);
-#       if defined(_MSC_VER) || defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
-        /* Due to a strange behavior in an implementation of istream of Microsoft,
-         * it cannot be relied on that the stream position increases by the number
-         * of bytes transferred into the buffer. Thus one needs to rely on the measured
-         * character position. See bug report 2395200 on htpp://sf.net/projects/quex   */
-        me->seek_character_index(me, buffer->_content_end_character_index - FallBackN);
-        buffer->_content_first_character_index = (size_t)(buffer->filler->tell_character_index(buffer->filler));
-
-        const size_t  LoadedN = me->read_characters(me, ContentFront, ContentSize);
-        
-        buffer->_content_end_character_index   = (size_t)(buffer->filler->tell_character_index(buffer->filler));
-#       else
         __QuexBufferFiller_forward_copy_fallback_region(buffer, FallBackN);
 
         /*___________________________________________________________________________________*/
         /* (2) Load new content*/
         /* NOTE: Due to backward loading the character index might not stand on the end of
          *       the buffer. Thus a seek is necessary.                                       */
-        me->seek_character_index(me, buffer->_content_end_character_index);
-        buffer->_content_first_character_index = buffer->_content_end_character_index - FallBackN;
+        me->seek_character_index(me, buffer->_content_character_index_end);
+        buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
         QUEX_CHARACTER_TYPE* new_content_begin = ContentFront + FallBackN;
         const size_t         LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
         
-        buffer->_content_end_character_index   =   buffer->_content_first_character_index
-                                                 + (QuexBuffer_text_end(buffer) - ContentFront);
-#       endif
-
-
         /*___________________________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
         __QuexBufferFiller_forward_adapt_pointers(buffer, 
                                                   DesiredLoadN, LoadedN, FallBackN, 
                                                   Distance_LexemeStart_to_InputP);
+
+        buffer->_content_character_index_end   =   buffer->_content_character_index_begin
+                                                 + (QuexBuffer_text_end(buffer) - ContentFront);
+
+        /* If the character index in the stream is different from 'old index + LoadedN'
+         * then this indicates a 'strange stream' where the stream position increment is
+         * not proportional to the number of loaded characters.                              */
+        if( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) - FallBackN != LoadedN ) 
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "LOAD FORWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -356,8 +349,8 @@ namespace quex {
          * greater than normal (64 Bytes). After all, lexical analysis means
          * to go **mainly forward** and not backwards.  */
         __quex_assert(buffer != 0x0);
-        QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
-        QUEX_CHARACTER_TYPE* ContentBack  = QuexBuffer_content_back(buffer);
+        QUEX_CHARACTER_TYPE*   ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_CHARACTER_TYPE*   ContentBack  = QuexBuffer_content_back(buffer);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(entry)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -369,7 +362,7 @@ namespace quex {
             QUEX_ERROR_EXIT("Call to 'load_backward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
         }
-        else if( buffer->_content_first_character_index == 0 ) { return 0; }  /* (2) */
+        else if( buffer->_content_character_index_begin == 0 ) { return 0; }  /* (2) */
         /*                                                                     * (3) */
         /* HERE: current_p == FRONT OF THE BUFFER!   
          *_______________________________________________________________________________*/
@@ -389,44 +382,34 @@ namespace quex {
          * It is not safe to assume that the character size is fixed. Thus it is up to  
          * the input strategy to determine the input position that belongs to a character  
          * position. */
-        const size_t  NewContentFirstCharacterIndex = buffer->_content_first_character_index - BackwardDistance;
-        __quex_assert( buffer->_content_first_character_index >= BackwardDistance );
-        if( BackwardDistance == 0 ) return 0;
+        const size_t  NewContentCharacterIndexBegin = buffer->_content_character_index_begin - BackwardDistance;
+        __quex_assert(BackwardDistance != 0); /* if "_index_begin != 0", then backward load must be. */
+        me->seek_character_index(me, NewContentCharacterIndexBegin);
+
         /*_______________________________________________________________________________
          * (3) Load content*/
-        me->seek_character_index(me, NewContentFirstCharacterIndex);
-        buffer->_content_first_character_index = NewContentFirstCharacterIndex;
-#       if defined(_MSC_VER) || defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
-        {
-            /* With the Microsoft implementation of istream, there is no guarantee that 
-             * the stream position increment corresponds to the byte number transferred into
-             * the buffer. Thus (and this is really a shame) one needs to even load the
-             * stuff that could otherwise just be copied, in order to get the correct end
-             * position of the content.                                                      */
-            me->read_characters(me, ContentFront, QuexBuffer_content_size(buffer));
-            buffer->_content_end_character_index = me->filler->tell_character_index(me->filler);
-        }
-#       else
-        {
-            __QuexBufferFiller_backward_copy_backup_region(buffer, BackwardDistance);
-#           ifdef QUEX_OPTION_ASSERTS
-            const size_t LoadedN = /* avoid unused variable in case '__quex_assert()' is deactivated*/
-#           endif
-            /* -- If file content < buffer size, then the start position of the stream to which  
-             *    the buffer refers is always 0 and no backward loading will ever happen.  
-             * -- If the file content >= buffer size, then backward loading must always fill  
-             *    the buffer. */
-            me->read_characters(me, ContentFront, BackwardDistance);
-            __quex_assert(LoadedN == (size_t)BackwardDistance);
+        buffer->_content_character_index_begin = NewContentCharacterIndexBegin;
+        __QuexBufferFiller_backward_copy_backup_region(buffer, BackwardDistance);
 
-            /* -- character index of begin of buffer = where we started reading new content*/
-            buffer->_content_end_character_index -= BackwardDistance;
-        }
-#       endif
+        const size_t LoadedN = /* avoid unused variable in case '__quex_assert()' is deactivated*/
+        /* -- If file content < buffer size, then the start position of the stream to which  
+         *    the buffer refers is always 0 and no backward loading will ever happen.  
+         * -- If the file content >= buffer size, then backward loading must always fill  
+         *    the buffer. */
+        me->read_characters(me, ContentFront, BackwardDistance);
+        __quex_assert(LoadedN == (size_t)BackwardDistance);
 
         /*________________________________________________________________________________
-         * (4) Adapt pointers*/
+         * (4) Adapt pointers */
         __QuexBufferFiller_backward_adapt_pointers(buffer, BackwardDistance);
+
+        buffer->_content_character_index_end =   buffer->_content_character_index_begin
+                                               + (QuexBuffer_text_end(buffer) - ContentFront);
+        /* If the character index in the stream is different from 'old index + LoadedN'
+         * then this indicates a 'strange stream' where the stream position increment is
+         * not proportional to the number of loaded characters.                              */
+        if( (size_t)(me->tell_character_index(me) - buffer->_content_character_index_begin) != LoadedN ) 
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(exit)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -443,16 +426,21 @@ namespace quex {
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         /* Copying backward shall **only** happen when new content is to be loaded. In back
-         * ward direction, this makes only sense if the lower border was reached. */
+         * ward direction, this makes only sense if the lower border was reached.         */
         __quex_assert(buffer->_input_p == buffer->_memory._front);
+        /* Also, if the lower border is the begin of file, then there is no sense in
+         * loading more in backward direction.                                            */
+        __quex_assert(buffer->_content_character_index_begin != 0);
         /* We need to make sure, that the lexeme start pointer remains inside the
          * buffer, so that we do not loose the reference. From current_p == buffer begin
          * it is safe to say that _lexeme_start_p > _input_p (the lexeme starts
-         * on a letter not the buffer limit). */
+         * on a letter not the buffer limit).                                             */
         __quex_assert(buffer->_lexeme_start_p > buffer->_input_p);
         __quex_assert((size_t)(buffer->_lexeme_start_p - buffer->_input_p) < QuexBuffer_content_size(buffer));
 
-        const size_t IntendedBackwardDistance = (size_t)(ContentSize / 3);   
+        const size_t IntendedBackwardDistance = ContentSize > (size_t)3 ? (size_t)(ContentSize / 3) 
+                                                :                         (size_t)1;   
+        /* IntendedBackwardDistance > 0 */
 
         /* Limit 1:
          *
@@ -464,23 +452,28 @@ namespace quex {
          *
          *     Lexeme start pointer L shall lie inside the buffer. Thus, it is required:
          *
-         *               backward distance + (C - L) < size
-         *           =>            backward distance < size - (C - L)
-         *          */
-        /*           (result is possitive, see __quex_assert(...) above) */
+         *               LimitBackwardDist_1 + (C - L) < size
+         *           =>            LimitBackwardDist_1 < size - (C - L)
+         *            
+         *           =>  LimitBackwardDist_1 > 0, see __quex_assert(...) above. */
         const size_t Distance_InputP_to_LexemeStart = (size_t)(buffer->_lexeme_start_p - buffer->_input_p);
-        const int    LimitBackwardDist_1 = ContentSize - Distance_InputP_to_LexemeStart; 
+        const int    LimitBackwardDist_1            = ContentSize - Distance_InputP_to_LexemeStart; 
 
         /* Limit 2:
-         *     We cannot go before the first character in the stream. */
-        const int    LimitBackwardDist_2 = (int)buffer->_content_first_character_index;
+         *     We cannot go before the first character in the stream. 
+         *         LimitBackwardDist_2 > 0, see __quex_assert(...) above. */
+        const int    LimitBackwardDist_2 = (int)buffer->_content_character_index_begin;
+
 
         /* Taking the minimum of all:*/
+        /*           Limit_1_and_2 = min(LimitBackwardDist_1 and _2) > 0 */
         const size_t Limit_1_and_2 = LimitBackwardDist_1 < LimitBackwardDist_2 ? LimitBackwardDist_1
                                      :                                           LimitBackwardDist_2;
 
         const size_t BackwardDistance = IntendedBackwardDistance < Limit_1_and_2 ?  IntendedBackwardDistance 
                                         :                                           Limit_1_and_2;
+
+        __quex_assert(BackwardDistance > 0);
         return BackwardDistance;
     }
 
@@ -563,6 +556,38 @@ namespace quex {
                             "size to a greate value or use skippers (<skip: [ \n\t]> for example.");
 #           endif /* QUEX_OPTION_INFORMATIVE_BUFFER_OVERFLOW_MESSAGE */
         }
+    }
+
+    QUEX_INLINE void 
+    __QuexBufferFiller_step_forward_n_characters(QuexBufferFiller* me,
+                                                 const size_t      ForwardN)
+    { 
+        /* STRATEGY: Starting from a certain point in the file we read characters
+         *           Convert one-by-one until we reach the given character index. 
+         *           This is, of course, incredibly inefficient but safe to work under
+         *           all circumstances. Fillers should only rely on this function
+         *           in case of no other alternative. Also, caching some information 
+         *           about what character index is located at what position may help
+         *           to increase speed.                                                */      
+        __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 1);
+
+#       ifdef QUEX_OPTION_ASSERTS
+        const size_t         TargetIndex = me->tell_character_index(me) + ForwardN;
+#       endif
+
+        /* START: We are now at character index 'CharacterIndex - remaining_character_n'.
+         * LOOP:  It remains to interpret 'remaining_character_n' number of characters. Since 
+         *        the interpretation is best done using a buffer, we do this in chunks.      */ 
+        size_t               remaining_character_n = ForwardN;
+        const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
+        QUEX_CHARACTER_TYPE  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+
+        for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
+            me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize);
+        if( remaining_character_n ) 
+            me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
+       
+        __quex_assert(me->tell_character_index(me) == TargetIndex);
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

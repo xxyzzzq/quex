@@ -50,6 +50,10 @@ namespace quex {
         /**/
         me->ih             = input_handle;
         me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+        me->_character_index = 0;
+#       ifdef QUEX_OPTION_ASSERTS
+        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+#       endif
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -71,8 +75,11 @@ namespace quex {
        TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
 
        __quex_assert(me->ih != 0x0); 
-       STREAM_POSITION_TYPE(InputHandleT)  current_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT); 
-       return (current_position - me->start_position) / sizeof(QUEX_CHARACTER_TYPE); 
+       /* Ensure, that the stream position is only influenced by
+        *    __read_characters(...) 
+        *    __seek_character_index(...)                                                          */
+       __quex_assert(me->_last_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
+       return me->_character_index;
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -89,7 +96,12 @@ namespace quex {
 
         long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_CHARACTER_TYPE) + me->start_position); 
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
+        me->_character_index       = CharacterIndex;
+#       ifdef QUEX_OPTION_ASSERTS
+        me->_last_stream_position  = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+#       endif
     }
+
 
     TEMPLATE_IN(InputHandleT) size_t   
     __BufferFiller_Plain_read_characters(QuexBufferFiller*   alter_ego,
@@ -102,22 +114,27 @@ namespace quex {
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
 
         __quex_assert(me->ih != 0x0); 
-#       ifdef QUEX_OPTION_ASSERTS
         STREAM_POSITION_TYPE(InputHandleT) prev_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-#       endif
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
                                                           buffer_memory, N * sizeof(QUEX_CHARACTER_TYPE));
 
         /* new position == previous position + number of bytes that we have been reading. */
-        __quex_assert((STREAM_OFFSET_TYPE(InputHandleT))(QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT) 
-                                                         - prev_position) 
-                      == (STREAM_OFFSET_TYPE(InputHandleT))ByteN);
+        STREAM_POSITION_TYPE(InputHandleT) new_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+        if( (new_position - prev_position) != (STREAM_OFFSET_TYPE(InputHandleT))ByteN ) {
+            QUEX_ERROR_EXIT(
+                "Error: Use Macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION.");
+        }
 
         if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) {
             QUEX_ERROR_EXIT(
                 "Error: Plain character encoding: End of file cuts in the middle a multi-byte character.");
         }
-        return ByteN / sizeof(QUEX_CHARACTER_TYPE); 
+        const size_t CharacterN = ByteN / sizeof(QUEX_CHARACTER_TYPE); 
+        me->_character_index += CharacterN;
+#       ifdef QUEX_OPTION_ASSERTS
+        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+#       endif
+        return CharacterN;
     }
 
 #   undef TEMPLATED_CLASS

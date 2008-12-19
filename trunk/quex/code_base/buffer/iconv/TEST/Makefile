@@ -22,11 +22,13 @@ hwut-info:
 	g++ -I$(QUEX_PATH) $(DEFS) \
         -DQUEX_CHARACTER_TYPE=uint32_t \
 		-ggdb  \
+		-Wall \
 		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV $< -o $@ 
 
 seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp $(QUEX_CORE)
 	g++ -I$(QUEX_PATH) $(DEFS) \
 		-ggdb  \
+		-Wall \
 		-DQUEX_CHARACTER_TYPE=uint16_t \
 		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV $< -o $@
 

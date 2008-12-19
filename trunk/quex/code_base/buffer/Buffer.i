@@ -26,52 +26,49 @@ namespace quex {
                          QuexBufferFillerTypeEnum  FillerType, const char*  IANA_InputCodingName, 
                          const size_t  BufferMemorySize,
                          const size_t  TranslationBufferMemorySize)
-    /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
-     *                     user intends to perform the lexical analysis directly on plain
-     *                     memory. In this case, the user needs to call the following function
-     *                     by hand in order to setup the memory:
-     *
-     *                     QuexBufferMemory_init(buffer->_memory, (uint8_t*)MyMemoryP, MyMemorySize); 
-     */
     {
+        /* Constructs a buffer object with a filler, i.e. something that reads data from a
+         * stream, maybe converts it, and fille the buffer memory.                          */
         QuexBufferFiller*         buffer_filler = 0x0;
         QuexBufferFillerTypeEnum  filler_type = FillerType;
 
-        if( input_handle != 0x0 ) {
-            if( filler_type == QUEX_AUTO ) {
-                if( IANA_InputCodingName == 0x0 ) filler_type = QUEX_PLAIN;
-                else                              filler_type = QUEX_ICONV;
-            }
-            switch( filler_type ) {
-            case QUEX_AUTO:
-                QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
+        __quex_assert( input_handle != 0x0 );
 
-            case QUEX_PLAIN: 
-                buffer_filler = MemoryManager_get_BufferFiller(filler_type);
-                QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
-                break;
+        if( filler_type == QUEX_AUTO ) {
+            if( IANA_InputCodingName == 0x0 ) filler_type = QUEX_PLAIN;
+            else                              filler_type = QUEX_ICONV;
+        }
+        switch( filler_type ) {
+        case QUEX_MEMORY:
+            QUEX_ERROR_EXIT("Constructor function cannot handle BufferFiller of type QUEX_MEMORY,\n"
+                            "Please, use QuexBuffer_construct_wo_filler(...).\n");
 
-            case QUEX_ICONV: 
-#               ifdef QUEX_OPTION_ENABLE_ICONV
-                buffer_filler = MemoryManager_get_BufferFiller(filler_type);
-                QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
-                                            IANA_InputCodingName, /* Internal Coding: Default */0x0,
-                                            TranslationBufferMemorySize);
-#               else
-                QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
-                                "is not specified. If defined, then the iconv-library must be installed on your system!\n");
-#               endif
-                break;
-            }
-            /* If filler == 0x0, then user wants to operate on plain memory, he has to call
-             * QuexBufferMemory_init(...) by hand later.                                     */
-            me->filler = buffer_filler;
-            QuexBufferMemory_init(&(me->_memory), MemoryManager_get_BufferMemory(BufferMemorySize), BufferMemorySize);      
+        case QUEX_AUTO:
+            QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
 
-        } else { 
-            me->filler = 0x0;
-            QuexBufferMemory_init(&(me->_memory), 0, 0);      
-        } 
+        case QUEX_PLAIN: 
+            buffer_filler = MemoryManager_get_BufferFiller(filler_type);
+            QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
+            break;
+
+        case QUEX_ICONV: 
+#           ifdef QUEX_OPTION_ENABLE_ICONV
+            buffer_filler = MemoryManager_get_BufferFiller(filler_type);
+            QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
+                                        IANA_InputCodingName, /* Internal Coding: Default */0x0,
+                                        TranslationBufferMemorySize);
+#           else
+            QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                            "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+#           endif
+            break;
+        }
+        me->filler = buffer_filler;
+
+        QuexBufferMemory_init(&(me->_memory), 
+                              MemoryManager_get_BufferMemory(BufferMemorySize), 
+                              BufferMemorySize);      
+
         QuexBuffer_init(me, /* OnlyResetF */ false);
         
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -79,11 +76,32 @@ namespace quex {
     }
 
     QUEX_INLINE void
+    QuexBuffer_construct_wo_filler(QuexBuffer*           me, 
+                                   const size_t          BufferMemorySize,
+                                   QUEX_CHARACTER_TYPE*  Memory      /* = 0x0 */,
+                                   const size_t          ContentSize /* = 0   */)
+    {
+        /* Constructs a buffer for running only on memory, no 'filler' is involved. */
+        QUEX_CHARACTER_TYPE*   memory = Memory;
+        __quex_assert(ContentSize <= BufferMemorySize - 2);
+
+        if( memory == 0x0 ) memory = MemoryManager_get_BufferMemory(BufferMemorySize);
+        me->filler = 0x0;
+
+        QuexBufferMemory_init(&(me->_memory), memory, BufferMemorySize);      
+        QuexBuffer_init(me, /* OnlyResetF */ false);
+
+        me->_end_of_file_p = (Memory == 0x0) ? me->_memory._back
+                             :                 me->_memory._front + 1 + ContentSize; 
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+    }
+
+    QUEX_INLINE void
     QuexBuffer_destruct(QuexBuffer* me)
     {
-        if( me->filler != 0x0 ) {
-            me->filler->_destroy(me->filler);
-        }
+        if( me->filler != 0x0 ) me->filler->_destroy(me->filler); 
         MemoryManager_free_BufferMemory(me->_memory._front);
     }
 
@@ -95,31 +113,38 @@ namespace quex {
         /* NOTE: The terminating zero is stored in the first character **after** the  
          *       lexeme (matching character sequence). The begin of line pre-condition  
          *       is concerned with the last character in the lexeme, which is the one  
-         *       before the 'char_covered_by_terminating_zero'.*/
-        me->_end_of_file_p                 = 0x0;
-        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)*/
-        me->_content_first_character_index = 0;
-        me->_content_end_character_index   = 0;
+         *       before the 'char_covered_by_terminating_zero'.                          */
+        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
+        me->_content_character_index_end   = 0;
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line*/
+        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
 #       endif
 
-        if( ResetF ) {
-            if( me->_content_first_character_index != 0 ) {
-                __quex_assert(me->filler != 0x0);
-                me->filler->seek_character_index(me->filler, 0);
-                me->_content_first_character_index = 0;
-                QuexBufferFiller_initial_load(me);
-                me->_content_end_character_index = me->filler->tell_character_index(me->filler);
-            }
-        } else {
-            if( me->filler != 0x0 ) {
+        if( ! ResetF || me->_content_character_index_begin != 0 ) {
+            /* NOTE: On 'reset' the end of file pointer has to remain, if no reload is re-
+             *       quired. Reload is required if _content_character_index_begin == 0.  */
+            me->_end_of_file_p = 0x0;
+        }
+
+        if( me->filler != 0x0 ) {
+            if( ResetF ) {
+                /* We only have to reset the input stream, if we are not at position zero */
+                if( me->_content_character_index_begin != 0 ) {
+                    __quex_assert(me->filler != 0x0);
+                    me->filler->seek_character_index(me->filler, 0);
+                    me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above) */
+                    QuexBufferFiller_initial_load(me);      /* _content_character_index_begin == 0 in assert  */
+                } else {
+                    /* In the reset case, the end of file pointer has to remain, if no reload happens.        */
+                }
+            } else {
                 /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
-                 * assumes, that the user fills/has filled it with whatever his little heart desired. */
+                 * assumes, that the user fills/has filled it with whatever his little heart desired.         */
+                me->_content_character_index_begin = 0;     /* Cannot be (re-)initialized earlier, see above) */
                 QuexBufferFiller_initial_load(me);
-                me->_content_end_character_index = me->filler->tell_character_index(me->filler);
             }
         }
+        me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above)             */
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
@@ -129,21 +154,6 @@ namespace quex {
     QuexBuffer_reset(QuexBuffer* me)
     {
         QuexBuffer_init(me, /* ResetF */ true);
-    }
-
-    QUEX_INLINE void
-    QuexBuffer_setup_memory(QuexBuffer* me, QUEX_CHARACTER_TYPE* UserMemory, const size_t UserMemorySize)
-    {
-        /* This function initializes lexical analysis on user specified memory chunk. 
-         * Use this function, if no buffer filling shall be used and the analyser runs
-         * solely on a given chunk of memory.                                           */
-        QuexBufferMemory_init(&me->_memory, UserMemory, UserMemorySize); 
-        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
-        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
-        me->_end_of_file_p  = 0x0;
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
     QUEX_INLINE void
@@ -188,7 +198,7 @@ namespace quex {
         QUEX_DEBUG_PRINT2(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
-        return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_content_first_character_index);
+        return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_content_character_index_begin);
 #       else
         return (QUEX_CHARACTER_POSITION_TYPE)(buffer->_input_p);
 #       endif
@@ -202,7 +212,7 @@ namespace quex {
         /* Check wether the memory_position is relative to the current start position   
          * of the stream. That means, that the tell_adr() command was called on the  
          * same buffer setting or the positions have been adapted using the += operator.*/
-        __quex_assert(Position.buffer_start_position == buffer->_content_first_character_index);
+        __quex_assert(Position.buffer_start_position == buffer->_content_character_index_begin);
         buffer->_input_p = Position.address;
 #       else
         buffer->_input_p = Position;
@@ -323,7 +333,7 @@ namespace quex {
     { 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         if     ( buffer->_input_p != buffer->_memory._front )  return false;
-        else if( buffer->_content_first_character_index != 0 ) return false;
+        else if( buffer->_content_character_index_begin != 0 ) return false;
         return true;
     }
 
@@ -387,7 +397,7 @@ namespace quex {
        }
        else {
            /* _input_p - CharacterN < _front + 1 >= text_end, thus we need to reload. */
-           if( me->filler == 0x0 || me->_content_first_character_index == 0 ) { 
+           if( me->filler == 0x0 || me->_content_character_index_begin == 0 ) { 
                me->_input_p = QuexBuffer_content_front(me);
            } else {
                /* Reload until delta is reachable inside buffer. */
@@ -402,7 +412,7 @@ namespace quex {
                        me->_input_p = QuexBuffer_content_front(me); /* No reload possible */
                        break;
                    } 
-                   /* After loading forward, we need **not** to increment ... the way the game is to be played. */
+                   /* After loading backwards, we need **not** to increment ... the way the game is to be played. */
                    distance = me->_input_p - QuexBuffer_content_front(me);
 
                    if( delta < distance ) {
@@ -436,7 +446,7 @@ namespace quex {
         if( me->filler == 0x0 ) 
             return DeltaToBufferBegin;
         else
-            return DeltaToBufferBegin + me->_content_first_character_index;
+            return DeltaToBufferBegin + me->_content_character_index_begin;
     }
 
     QUEX_INLINE void    

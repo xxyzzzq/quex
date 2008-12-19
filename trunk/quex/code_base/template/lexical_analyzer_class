@@ -6,6 +6,10 @@
 #include<vector> 
 #include<map>
 #include<istream>  // gets: istream and wistream
+#ifdef __QUEX_OPTION_UNIT_TEST
+#   include <quex/code_base/StrangeStream_unit_tests>
+#endif
+
 
 // IConv Coding Name for the internally used character coding. 
 // -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
@@ -219,7 +223,6 @@ namespace quex {
 #ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #   include <quex/code_base/template/IncludeStack>
 #endif
-
 
 // RETURN: _____________________________________________________________________
 //
@@ -454,9 +457,12 @@ $$CLASS_BODY_EXTENSION$$
 
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleT> 
-        void     __constructor_core(InputHandleT*, 
-                                    QuexBufferFillerTypeEnum, const char* IConvInputCodingName);
+        void                        __constructor_core(InputHandleT*, 
+                                                       QuexBufferFillerTypeEnum, 
+                                                       const char* IConvInputCodingName);
 
+        QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
+                                                                const char* IANA_InputCodingName);
     };
  
     template <class InputHandleT> inline void
@@ -484,28 +490,6 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "##\n";
         std::cout << "###############################################################################\n";
 #       endif
-        QuexBufferFillerTypeEnum buffer_filler_type = BFT;
-        if( IANA_InputCodingName == 0x0 ) {
-            if( buffer_filler_type != QUEX_AUTO && buffer_filler_type != QUEX_PLAIN ) {
-                QUEX_ERROR_EXIT("Input coding is left to '0x0' which means plain character encoding.\n"
-                                "However, the buffer filler type is chosen to something different.\n");
-            } else { 
-                buffer_filler_type = BFT;
-            }
-        } else {
-            if( buffer_filler_type == QUEX_PLAIN ) {
-                QUEX_ERROR_EXIT("Input coding is specified but also the buffer filler type 'plain'.\n"
-                                "The buffer filler type plain cannot handle character encodings.\n");
-            } else if( buffer_filler_type == QUEX_AUTO ) {
-#               ifdef QUEX_OPTION_ENABLE_ICONV
-                buffer_filler_type = QUEX_ICONV;
-#               else
-                QUEX_ERROR_EXIT("Warning: Use of buffer filler type QUEX_AUTO resulted in QUEX_ICONV\n" \
-                                "Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
-                                "is not specified. If defined, then the iconv-library must be installed on your system!\n");
-#               endif
-            }
-        }
 
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new TokenQueue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
@@ -516,12 +500,18 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
 
-        QuexAnalyser_construct((QuexAnalyser*)this,
-                              __current_mode_p->analyser_function,
-                              input_handle,
-                              buffer_filler_type, IANA_InputCodingName, 
-                              QUEX_SETTING_BUFFER_SIZE,
-                              QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        if( BFT != QUEX_MEMORY ) {
+            QuexAnalyser_construct((QuexAnalyser*)this,
+                                   __current_mode_p->analyser_function,
+                                   input_handle,
+                                   BFT, IANA_InputCodingName, 
+                                   QUEX_SETTING_BUFFER_SIZE,
+                                   QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        } else {
+            QuexAnalyser_construct_wo_filler((QuexAnalyser*)this,
+                                             __current_mode_p->analyser_function,
+                                             QUEX_SETTING_BUFFER_SIZE, 0, 0);
+        }
 
 $$CONSTRUCTOR_EXTENSTION$$
     }   

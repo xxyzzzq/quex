@@ -44,6 +44,21 @@ namespace quex {
     }
 
     QUEX_INLINE void
+    QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
+                                     QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                                     const size_t                 BufferMemorySize,
+                                     QUEX_CHARACTER_TYPE*         Memory      /* = 0x0 */,
+                                     const size_t                 ContentSize /* = 0 */)
+    {
+        QuexBuffer_construct_wo_filler(&me->buffer, BufferMemorySize, Memory, ContentSize);
+        me->current_analyser_function = AnalyserFunction;
+
+        /* Double check that everything is setup propperly. */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+        __quex_assert(me->buffer._input_p == me->buffer._memory._front + 1);
+    }
+
+    QUEX_INLINE void
     QuexAnalyser_destruct(QuexAnalyser* me)
     {
         QuexBuffer_destruct(&me->buffer);

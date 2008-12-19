@@ -32,7 +32,7 @@ namespace quex {
         QUEX_CHARACTER_TYPE*  text_end      = QuexBuffer_text_end(buffer);
 
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
-        __quex_assert(this->buffer._content_first_character_index == 0); 
+        __quex_assert(this->buffer._content_character_index_begin == 0); 
         __quex_assert(this->buffer._end_of_file_p != 0x0); 
 
         if( copy_size > RemainingSize ) copy_size = RemainingSize;
@@ -56,16 +56,10 @@ namespace quex {
     inline void
     CLASS::buffer_prepare(const size_t CharacterN)
     {
+        QuexBuffer_init(&this->buffer, /* ResetF */ false);
         /* When lexing directly on the buffer, the end of file pointer is always set. */
         QuexBuffer_end_of_file_set(&this->buffer, 
                                    QuexBuffer_content_front(&this->buffer) + CharacterN - 1); 
-
-        this->buffer._content_first_character_index = 0;
-        this->buffer._input_p        = QuexBuffer_content_front(&this->buffer);
-        this->buffer._lexeme_start_p = QuexBuffer_content_front(&this->buffer);
-        /**/
-        this->buffer._character_before_lexeme_start = '\n';
-        this->buffer._character_at_lexeme_start     = *this->buffer._input_p;
     }
 
     inline QUEX_CHARACTER_TYPE*  CLASS::buffer_begin()
