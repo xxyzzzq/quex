@@ -135,7 +135,8 @@ namespace quex {
     typedef enum { 
         QUEX_AUTO,
         QUEX_PLAIN,
-        QUEX_ICONV
+        QUEX_ICONV,
+        QUEX_MEMORY
     } QuexBufferFillerTypeEnum;
 
 #   ifndef     QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING
@@ -188,8 +189,9 @@ namespace quex {
 
 #  else
 
-#    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)                   \
-            BufferFiller_x_show_content(Filler); /* empty */
+#    define QUEX_DEBUG_PRINT_BUFFER_LOAD(Filler, Msg)  \
+            __QUEX_STD_fprintf(stdout, Msg);           \
+            BufferFiller_x_show_content(Filler); 
 
 #  endif /* ! __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
 
@@ -220,7 +222,15 @@ namespace quex {
                  /**/                                                                     \
                  __quex_assert((*B)._end_of_file_p  >= (*B)._memory._front + 1);          \
                  __quex_assert((*B)._end_of_file_p  <= (*B)._memory._back);               \
-                 /**/                                                                     \
+             }                                                                            \
+             __quex_assert(   (*B)._content_character_index_begin                         \
+                           <= (*B)._content_character_index_end    );                     \
+             if( ! (   (*B)._content_character_index_end   == (size_t)0                   \
+                    && (*B)._content_character_index_begin == (size_t)0 ) ) {             \
+                 __quex_assert(   (size_t)(  (*B)._content_character_index_end            \
+                                           - (*B)._content_character_index_begin)         \
+                               == (size_t)(  QuexBuffer_text_end(B)                       \
+                                           - QuexBuffer_content_front(B)));               \
              }                                                                            \
          }                                                                                \
      }
@@ -245,6 +255,25 @@ namespace quex {
 #   define  QUEX_BUFFER_ASSERT_CONSISTENCY(B)  /* empty */
 #endif
 
-        
+#if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
+#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
+        "The provided input stream behaves strangely. The quex engine detected\n" \
+        "that the number of characters is not proportional to the character\n"    \
+        "position increase.  The buffer filler type which you are using might\n"  \
+        "be able to deal with those cases, if you define the compile option:\n"   \
+        "\n" \
+                  "-DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n" \
+        "\n" \
+        "Note, however, that those mechanisms imply a tradeoff in terms of\n"     \
+        "computational speed. Please, consider using a 'binary' mode of your\n"   \
+        "input stream instead.\n" 
+#else
+#    define __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM \
+        "The macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION has been defined.\n" \
+        "Nevertheless, The quex engine detected that the number of characters\n"   \
+        "is not proportional to the character position increase. The buffer\n"     \
+        "filler type which you are using **is not able** to deal with those\n"     \
+        "cases. You **must** use a binary mode of your input stream!\n"            
+#endif
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__ */

@@ -18,10 +18,7 @@ main(int argc, char** argv)
     QuexBuffer                    buffer;
     QuexBufferFiller_Plain<FILE>  filler;
 
-    QuexBufferFiller_Plain_init(&filler, fh);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(8), 8);      
-    QuexBuffer_init(&buffer, /* OnlyResetF */false);
+    QuexBuffer_construct(&buffer, fh, QUEX_PLAIN, 0x0, /* BufferMemorySize */ 8, 0);
 
     do {
         printf("------------------------------------------------------------\n");

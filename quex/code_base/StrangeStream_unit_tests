@@ -9,7 +9,7 @@
 
 namespace quex {
     template <class StdStreamType>
-    class StrangeStream {
+    class StrangeStream : public StdStreamType {
         /* PURPOSE: Implementing a class that does not increment the stream position
          *          according to the number of bytes being transferred. Instead, it
          *          increments it deterministically in a strange manner.
@@ -35,26 +35,26 @@ namespace quex {
          *
          */
         StdStreamType*   sh;
-        uint32_t             seed;
+        uint32_t         seed;
 
-        typedef typename StdStreamType::pos_type   intern_stream_position;
-        typedef typename StdStreamType::off_type   intern_stream_offset;
+        typedef typename   StdStreamType::pos_type   intern_stream_position;
+        typedef typename   StdStreamType::off_type   intern_stream_offset;
 
         typedef typename StdStreamType::char_type  character_type;
         static const size_t                        CharacterSize = sizeof(typename StdStreamType::char_type);
 
-        typedef uint32_t stream_position;
-        typedef uint32_t stream_offset;
+        typedef intern_stream_position   stream_position;
+        typedef intern_stream_offset     stream_offset;
 
         intern_stream_position  __map_strange_to_real_position(stream_position Pos);
         stream_position         __map_real_to_strange_position(intern_stream_position Pos);
 
     public:
         StrangeStream(StdStreamType*);
-        stream_position tellg();
-        void            seekg(stream_position);
-        void            read(character_type* buffer, size_t Size);
-        size_t          gcount();
+        virtual stream_position   tellg();
+        virtual void              seekg(stream_position);
+        virtual void              read(character_type* buffer, size_t Size);
+        virtual size_t            gcount();
     };
 
 #   define TEMPLATE_IN  template <class StdStreamType> inline

@@ -49,6 +49,11 @@ namespace quex {
     QUEX_INLINE size_t  QuexBufferFiller_load_forward(QuexBuffer*);
     QUEX_INLINE size_t  QuexBufferFiller_load_backward(QuexBuffer*);
 
+    /* Helper function for buffer fillers trying to deal with strange streams or 
+     * dynamic length character encodings.                                             */
+    QUEX_INLINE void    __QuexBufferFiller_step_forward_n_characters(QuexBufferFiller* me,
+                                                                     const size_t      ForwardN);
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif

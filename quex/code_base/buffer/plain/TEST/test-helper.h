@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <iostream>
 
+// Fest gemauert in der Erden
 #ifndef QUEX_DEFINED_FUNC_cl_has
 static int cl_has(int argc, char** argv, const char* What)
 { return argc > 1 && strcmp(argv[1], What) == 0; }

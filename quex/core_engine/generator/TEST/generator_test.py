@@ -332,11 +332,8 @@ test_program_db = {
         char           TestString[] = "\0$$TEST_STRING$$\0";
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, 0x0,
-                               QUEX_PLAIN, 0x0,
-                               $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
-        /**/
-        QuexBuffer_setup_memory(&lexer_state.buffer, (uint8_t*)TestString, MemorySize); 
+        QuexAnalyser_construct_wo_filler(&lexer_state, Mr_UnitTest_analyser_function, 
+                                         MemorySize, TestString, MemorySize-2);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
         printf("(*) result:\\n");
@@ -396,6 +393,36 @@ test_program_db = {
         istringstream  istr("$$TEST_STRING$$");
 
         QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr,
+                               QUEX_PLAIN, 0x0,
+                               $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
+        /**/
+        printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
+        printf("(*) result:\\n");
+        do {
+            success_f = lexer_state.current_analyser_function(&lexer_state);
+        } while ( success_f );      
+        printf("  ''\\n");
+    }\n""",
+
+    "Cpp_StrangeStream": """
+    #define  QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
+    #include <cstring>
+    #include <quex/code_base/StrangeStream_unit_tests>
+    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+
+    int main(int argc, char** argv)
+    {
+        using namespace std;
+        using namespace quex;
+
+        QuexAnalyser lexer_state;
+        int          success_f = 0;
+        /**/
+        istringstream  istr("$$TEST_STRING$$");
+        StrangeStream  strange_stream(&istr);
+
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream,
                                QUEX_PLAIN, 0x0,
                                $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/

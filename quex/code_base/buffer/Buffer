@@ -56,15 +56,16 @@ namespace quex {
         /* (*) Origin of the content in the input stream:
          *     -- pointer to position in buffer that corresponds EOF */
         QUEX_CHARACTER_TYPE*  _end_of_file_p;  
+
         /*     -- character index in the stream that corresponds to the character
          *        at the first character (see above: _front[1]) */
-        size_t                _content_first_character_index;
+        size_t    _content_character_index_begin;
         /*     -- character index in the stream that corresponds to the character
          *        after the last character in the buffer. This is necessary, because,
          *        some weird (but popular) implementations of istream do not correlate
          *        propperly between bytes transferred into a buffer and the increment 
          *        of the stream position. */
-        size_t                _content_end_character_index;
+        size_t    _content_character_index_end;
         
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to
@@ -87,6 +88,11 @@ namespace quex {
                          QuexBufferFillerTypeEnum InputCodingType, const char* IANA_InputCodingName, 
                          const size_t BufferMemorySize,
                          const size_t TranslationBufferMemorySize);
+    QUEX_INLINE void
+    QuexBuffer_construct_wo_filler(QuexBuffer*   me, 
+                                   const size_t          BufferMemorySize,
+                                   QUEX_CHARACTER_TYPE*  Memory      /* = 0x0 */,
+                                   const size_t          ContentSize /* = 0   */);
 
     QUEX_INLINE void
     QuexBuffer_reset(QuexBuffer* me);

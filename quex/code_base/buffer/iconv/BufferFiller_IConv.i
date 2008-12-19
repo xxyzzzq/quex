@@ -32,13 +32,13 @@
 #endif
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
-    extern "C" { 
-#   include <iconv.h>
-    }
-#   include <quex/code_base/compatibility/iconv-argument-types.h>
-#      include <cerrno>
+        extern "C" { 
+#       include <iconv.h>
+        }
+#       include <quex/code_base/compatibility/iconv-argument-types.h>
+#       include <cerrno>
 #   else
-#      include <errno.h>
+#       include <errno.h>
 #endif
 
 #include <quex/code_base/temporary_macros_on>
@@ -67,9 +67,6 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) bool __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)* me, 
                                                                     QuexBufferFiller_IConv_BufferInfo* drain);
-
-    TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_step_forward_n_characters(TEMPLATED(QuexBufferFiller_IConv)* me,
-                                                       const size_t     ForwardN);
 
     TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_mark_start_position(TEMPLATED(QuexBufferFiller_IConv)* me);
 
@@ -382,7 +379,7 @@ namespace quex {
                 me->raw_buffer.base.bytes_left_n += (me->raw_buffer.base.iterator - me->raw_buffer.base.begin);
                 me->raw_buffer.base.iterator             = me->raw_buffer.base.begin;
                 me->raw_buffer.iterators_character_index = me->raw_buffer.begin_character_index;
-                __QuexBufferFiller_IConv_step_forward_n_characters(me, Index - BeginIndex);
+                __QuexBufferFiller_step_forward_n_characters((QuexBufferFiller*)me, Index - BeginIndex);
             }
             else  /* Index < BeginIndex */ {
                 /* No idea where to start --> start from the beginning. In some cases this might
@@ -395,45 +392,11 @@ namespace quex {
                 me->raw_buffer.begin_character_index     = 0;
                 me->raw_buffer.iterators_character_index = 0;
                 me->raw_buffer.fill_level_n              = 0;
-                __QuexBufferFiller_IConv_step_forward_n_characters(me, Index);
+                __QuexBufferFiller_step_forward_n_characters((QuexBufferFiller*)me, Index);
             } 
         }
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
         __quex_assert(me->raw_buffer.iterators_character_index == Index);
-    }
-
-    TEMPLATE_IN(InputHandleT) void 
-    __QuexBufferFiller_IConv_step_forward_n_characters(TEMPLATED(QuexBufferFiller_IConv)* me,
-                                                       const size_t     ForwardN)
-    { 
-        /* We cannot use the raw buffer at this point in time, since this is required 
-         * to interpret characters. Whenever a dynamic size coding is required this
-         * way of searching may become necessary.                                     */
-#       ifdef QUEX_OPTION_ASSERTS
-        const size_t         TargetIndex = me->raw_buffer.iterators_character_index + ForwardN;
-#       endif
-        const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
-        QUEX_CHARACTER_TYPE  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
-        /* This seek operation thought to support only cases where character positions
-         * cannot be computed--as is the case for fixed character width encodings.    */
-        __quex_assert(me->_constant_size_character_encoding_f == false);
-        /* Same restriction as for raw_buffer (see above) */
-        __quex_assert(QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE >= 6);
-        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
-
-        /* STRATEGY: Starting from a certain point in the file we read characters
-         *           Convert one-by-one until we reach the given character index      */
-        size_t  remaining_character_n = ForwardN;
-
-        /* We are now at character index 'CharacterIndex - remaining_character_n' in the stream.
-         * It remains to interpret 'remaining_character_n' number of characters. Since the
-         * the interpretation is best done using a buffer, we do this in chunks.      */ 
-        for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
-            me->base.read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize);
-        if( remaining_character_n ) 
-            me->base.read_characters(&me->base, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
-       
-        __quex_assert(me->raw_buffer.iterators_character_index == TargetIndex);
     }
 
     TEMPLATE_IN(InputHandleT) void 

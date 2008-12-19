@@ -14,20 +14,22 @@ main(int argc, char** argv)
                sizeof(QUEX_CHARACTER_TYPE), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
-    FILE*                         fh = prepare_input();
-    QuexBuffer                    buffer;
-    QuexBufferFiller_Plain<FILE>  filler;
+    FILE*         fh = prepare_input();
+    QuexBuffer    buffer;
+    const size_t  MemorySize = 12;
+    const size_t  BeginIdx = 15;
 
-    fseek(fh, 15 * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
+    fseek(fh, BeginIdx * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
 
-    QuexBufferFiller_Plain_init(&filler, fh);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(12), 12);      
-    QuexBuffer_init(&buffer, /* OnlyResetF */false);
+    QuexBuffer_construct(&buffer, fh, QUEX_PLAIN, 0x0, MemorySize, 0);
 
     /* Simulate, as if we started at 0, and now reached '15' */
-    buffer._content_first_character_index = 15;
-    filler.start_position                 = 0;
+    buffer._content_character_index_begin = 15;
+    buffer._content_character_index_end   = buffer._content_character_index_begin + (MemorySize-2);
+    QuexBufferFiller_Plain<FILE>*  filler = (QuexBufferFiller_Plain<FILE>*)buffer.filler;
+    filler->_character_index       = buffer._content_character_index_begin + (MemorySize-2);
+    filler->_last_stream_position  = ftell(fh);
+    filler->start_position         = 0;
 
     do {
         printf("------------------------------------------------------------\n");
@@ -35,7 +37,7 @@ main(int argc, char** argv)
         printf("     ");
         QuexBuffer_show_content(&buffer);
         printf("\n");
-        if( buffer._content_first_character_index == 0 ) break;
+        if( buffer._content_character_index_begin == 0 ) break;
         buffer._input_p        = buffer._memory._front;
         buffer._lexeme_start_p = buffer._memory._front + 1;
         /**/
