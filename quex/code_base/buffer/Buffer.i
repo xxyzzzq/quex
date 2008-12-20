@@ -140,7 +140,7 @@ namespace quex {
             } else {
                 /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
                  * assumes, that the user fills/has filled it with whatever his little heart desired.         */
-                me->_content_character_index_begin = 0;     /* Cannot be (re-)initialized earlier, see above) */
+                me->_content_character_index_begin = 0;     /* Cannot be (re-)initialized earlier, see above. */
                 QuexBufferFiller_initial_load(me);
             }
         }

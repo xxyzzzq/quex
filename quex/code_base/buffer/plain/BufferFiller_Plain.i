@@ -120,10 +120,8 @@ namespace quex {
 
         /* new position == previous position + number of bytes that we have been reading. */
         STREAM_POSITION_TYPE(InputHandleT) new_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-        if( (new_position - prev_position) != (STREAM_OFFSET_TYPE(InputHandleT))ByteN ) {
-            QUEX_ERROR_EXIT(
-                "Error: Use Macro QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION.");
-        }
+        if( (new_position - prev_position) != (STREAM_OFFSET_TYPE(InputHandleT))ByteN ) 
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
 
         if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) {
             QUEX_ERROR_EXIT(
