@@ -270,6 +270,11 @@ namespace quex {
         CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
         CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
         CLASS(std::wistream*            p_input_stream, const char* IConvInputCodingName = 0x0, 
+#       if defined(__QUEX_OPTION_UNIT_TEST)
+        template <class UnderlyingStreamT>
+        CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+              const char*                              IConvInputCodingName = 0x0, 
+#       endif
         CLASS(std::FILE*                input_fh,       const char* IConvInputCodingName = 0x0, 
 
         virtual ~CLASS();

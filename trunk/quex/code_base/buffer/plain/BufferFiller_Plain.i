@@ -50,10 +50,10 @@ namespace quex {
         /**/
         me->ih             = input_handle;
         me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+#       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index = 0;
-#       ifdef QUEX_OPTION_ASSERTS
-        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
 #       endif
+        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
 
     TEMPLATE_IN(InputHandleT) void 
@@ -79,15 +79,19 @@ namespace quex {
         *    __read_characters(...) 
         *    __seek_character_index(...)                                                          */
        __quex_assert(me->_last_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT)); 
+#      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
+#      endif
+       return (size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_CHARACTER_TYPE);
     }
 
+#   if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
+    /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
+     *       stream to a particular position given by a character index. QuexBuffer_seek(..)
+     *       sets the _input_p to a particular position.                                      */
     TEMPLATE_IN(InputHandleT) void 
     __BufferFiller_Plain_seek_character_index(QuexBufferFiller* alter_ego, const size_t CharacterIndex) 
     { 
-        /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
-         *       stream to a particular position given by a character index. QuexBuffer_seek(..)
-         *       sets the _input_p to a particular position.                                      */
         __quex_assert(alter_ego != 0x0); 
         /* The type cast is necessary, since the function signature needs to 
          * work with the first argument being of base class type. */
@@ -96,15 +100,33 @@ namespace quex {
 
         long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_CHARACTER_TYPE) + me->start_position); 
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
-        me->_character_index       = CharacterIndex;
-#       ifdef QUEX_OPTION_ASSERTS
-        me->_last_stream_position  = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-#       endif
+        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
+#   else
+    /* Implementation for 'strange streams', i.e. streams where the input position increase is not
+     * necessarily proportional to the amount of read-in characters. Note, that the seek function is
+     * the only function that is significantly different for this case.                           */
+    TEMPLATE_IN(InputHandleT) void 
+    __BufferFiller_Plain_seek_character_index(QuexBufferFiller* alter_ego, const size_t CharacterIndex) 
+    { 
+        __quex_assert(alter_ego != 0x0); 
+        TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
+        __quex_assert(me->ih != 0x0); 
 
+        if     ( me->_character_index == CharacterIndex ) return;
+        else if( me->_character_index < CharacterIndex ) {
+            __QuexBufferFiller_step_forward_n_characters(alter_ego, CharacterIndex - me->_character_index);
+        }
+        else { /* me->_character_index > CharacterIndex */
+            QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->start_position);
+            __QuexBufferFiller_step_forward_n_characters(alter_ego, CharacterIndex);
+        }
+        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+    }
+#   endif
 
     TEMPLATE_IN(InputHandleT) size_t   
-    __BufferFiller_Plain_read_characters(QuexBufferFiller*   alter_ego,
+    __BufferFiller_Plain_read_characters(QuexBufferFiller*    alter_ego,
                                          QUEX_CHARACTER_TYPE* buffer_memory, const size_t N)  
     { 
         __quex_assert(alter_ego != 0x0); 
@@ -114,24 +136,17 @@ namespace quex {
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
 
         __quex_assert(me->ih != 0x0); 
-        STREAM_POSITION_TYPE(InputHandleT) prev_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
                                                           buffer_memory, N * sizeof(QUEX_CHARACTER_TYPE));
 
-        /* new position == previous position + number of bytes that we have been reading. */
-        STREAM_POSITION_TYPE(InputHandleT) new_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-        if( (new_position - prev_position) != (STREAM_OFFSET_TYPE(InputHandleT))ByteN ) 
-            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
+        if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) 
+            QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
+        const size_t   CharacterN = ByteN / sizeof(QUEX_CHARACTER_TYPE); 
 
-        if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) {
-            QUEX_ERROR_EXIT(
-                "Error: Plain character encoding: End of file cuts in the middle a multi-byte character.");
-        }
-        const size_t CharacterN = ByteN / sizeof(QUEX_CHARACTER_TYPE); 
+#       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index += CharacterN;
-#       ifdef QUEX_OPTION_ASSERTS
-        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
 #       endif
+        me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         return CharacterN;
     }
 
