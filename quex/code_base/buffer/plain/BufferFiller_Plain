@@ -35,14 +35,10 @@ namespace quex {
         /* position in stream where analysis started */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
 
+        STREAM_POSITION_TYPE(InputHandleT)  _last_stream_position;  
+#       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         /* Index of the character where the next read will start */
         size_t             _character_index;
-
-#       ifdef QUEX_OPTION_ASSERTS
-        /* With the following variable we can check that no one accessed the stream
-         * except through calls to 'filler->seek_character_index()' and
-         * 'filler->read_characters()'.                                               */
-        STREAM_POSITION_TYPE(InputHandleT)  _last_stream_position;  
 #       endif
     };
 

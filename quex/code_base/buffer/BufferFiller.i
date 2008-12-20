@@ -94,14 +94,18 @@ namespace quex {
     {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
+        QuexBufferFiller*    me           = buffer->filler;
 
         /* Assume: Buffer initialization happens independently */
         __quex_assert(buffer->_content_character_index_begin == 0);
         __quex_assert(buffer->_input_p                       == ContentFront);   
         __quex_assert(buffer->_lexeme_start_p                == ContentFront);
 
-        const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, ContentFront, ContentSize);
-        buffer->_content_character_index_end = (size_t)(buffer->filler->tell_character_index(buffer->filler));
+        const size_t  LoadedN = me->read_characters(me, ContentFront, ContentSize);
+        buffer->_content_character_index_end = (size_t)(me->tell_character_index(buffer->filler));
+
+        if( me->tell_character_index(me) != LoadedN ) 
+            QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
 
         /* If end of file has been reached, then the 'end of file' pointer needs to be set*/
         if( LoadedN != ContentSize ) QuexBuffer_end_of_file_set(buffer, ContentFront + LoadedN);
