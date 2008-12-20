@@ -132,6 +132,32 @@ CLASS::CLASS(std::wistream*           p_input_stream,
     __constructor_core(p_input_stream, bft, IANA_InputCodingName);
 }
 
+#if defined(__QUEX_OPTION_UNIT_TEST)
+template<class UnderlyingStreamT> inline
+CLASS::CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+             const char*                              IANA_InputCodingName /* = 0x0 */,
+             QuexBufferFillerTypeEnum                 BFT /* = QUEX_AUTO */)
+:
+    // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+    // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
+    __file_handle_allocated_by_constructor(0x0)
+#   ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+    , include_stack(this)
+#   endif
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    , accumulator(this)
+#   endif
+#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+    , counter(this)
+#   endif
+{
+    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
+    if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
+    __constructor_core(p_input_stream, bft, IANA_InputCodingName);
+}
+#endif
+
 inline
 CLASS::CLASS(std::FILE* fh, 
              const char*              IANA_InputCodingName /* = 0x0 */,

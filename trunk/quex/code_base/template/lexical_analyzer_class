@@ -285,6 +285,12 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
         CLASS(std::wistream*            p_input_stream, const char* IConvInputCodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
+#       if defined(__QUEX_OPTION_UNIT_TEST)
+        template <class UnderlyingStreamT>
+        CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+              const char*                              IConvInputCodingName = 0x0, 
+              QuexBufferFillerTypeEnum                 ICT=QUEX_AUTO);
+#       endif
         CLASS(std::FILE*                input_fh,       const char* IConvInputCodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
 
