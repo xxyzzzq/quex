@@ -12,6 +12,20 @@ namespace quex {
 #endif
 
      typedef struct __QuexBufferFiller_tag {
+        /* PURPOSE: This is the interface that the buffer sees of the buffer filler. Its
+         *          task is to coordinate the filling of buffer content from a stream 
+         *          in the background. Some fillers may convert characters or filter.
+         *          All fillers must provide functions for the following pointers. The 
+         *          pointers are set with the function
+         *
+         *              __QuexBufferFiller_init_functions(...) 
+         *
+         *          which shall be called in any '_construct' function of a filler. Note,
+         *          that filler types shall inherit this class. This means, that the first
+         *          element of the derived struct is to be of this type and best called 'base'.
+         *          For example, please, consider the 'plain' and 'iconv' implementations
+         *          in the correspondent sub directories.                                    */
+
         /* -- 'Tell' returns the character index of the last character read. This corresponds   
          *    to the character index of the last character that is currently in the buffer.  */
         size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);
@@ -26,13 +40,12 @@ namespace quex {
         size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
                                     QUEX_CHARACTER_TYPE* memory, const size_t N);
 
-        /* -- User defined handler for the case that the distance from lexeme start  
+        /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
          *    to lexeme end exceeds the buffer size.  */
         bool     (*_on_overflow)(QuexBuffer*, bool ForwardF);
 
-        /* -- There are derived 'classes' from this one, but in the class we only store  
-         *    a pointer to QuexBufferFiller. In order to be compatible with 'C' we store  
-         *    the de-allocate and destruct procedure that is appropriate in a function pointer. */
+        /* -- 'Destructor' -- There are derived 'classes' from this one. The user only stores a 
+         *    pointer to QuexBufferFiller, and requires a way to destruct the whole object. */ 
         void     (*_destroy)(struct __QuexBufferFiller_tag*);
     } QuexBufferFiller;
 

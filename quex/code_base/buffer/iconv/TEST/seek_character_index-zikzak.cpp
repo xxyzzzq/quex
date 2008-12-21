@@ -46,7 +46,7 @@ main(int argc, char** argv)
         exit(-1);
     }
 
-    QuexBufferFiller_IConv_init(&filler, fh, source_charset, target_charset, RawMemorySize);
+    QuexBufferFiller_IConv_construct(&filler, fh, source_charset, target_charset, RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler.base.read_characters(&filler.base, reference, ReferenceSize);
 

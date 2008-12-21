@@ -48,15 +48,15 @@ namespace quex {
 
         case QUEX_PLAIN: 
             buffer_filler = MemoryManager_get_BufferFiller(filler_type);
-            QuexBufferFiller_Plain_init((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
+            QuexBufferFiller_Plain_construct((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
             break;
 
         case QUEX_ICONV: 
 #           ifdef QUEX_OPTION_ENABLE_ICONV
             buffer_filler = MemoryManager_get_BufferFiller(filler_type);
-            QuexBufferFiller_IConv_init((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
-                                        IANA_InputCodingName, /* Internal Coding: Default */0x0,
-                                        TranslationBufferMemorySize);
+            QuexBufferFiller_IConv_construct((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
+                                             IANA_InputCodingName, /* Internal Coding: Default */0x0,
+                                             TranslationBufferMemorySize);
 #           else
             QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
                             "is not specified. If defined, then the iconv-library must be installed on your system!\n");

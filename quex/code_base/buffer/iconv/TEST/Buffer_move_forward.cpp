@@ -29,7 +29,7 @@ main(int argc, char** argv)
     std::FILE*                   fh = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
     buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
     QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);
