@@ -71,10 +71,10 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_mark_start_position(TEMPLATED(QuexBufferFiller_IConv)* me);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_IConv_init(TEMPLATED(QuexBufferFiller_IConv)* me,
-                                InputHandleT* input_handle, 
-                                const char*   FromCoding,   const char* ToCoding,
-                                size_t        RawBufferSize)
+    QuexBufferFiller_IConv_construct(TEMPLATED(QuexBufferFiller_IConv)* me,
+                                     InputHandleT* input_handle, 
+                                     const char*   FromCoding,   const char* ToCoding,
+                                     size_t        RawBufferSize)
     { 
         const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
 

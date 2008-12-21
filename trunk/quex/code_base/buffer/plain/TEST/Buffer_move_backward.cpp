@@ -18,7 +18,7 @@ main(int argc, char** argv)
     FILE*                         fh = prepare_input(); /* Festgemauert ... */
     QuexBufferFiller_Plain<FILE>  filler;
 
-    QuexBufferFiller_Plain_init(&filler, fh);
+    QuexBufferFiller_Plain_construct(&filler, fh);
     buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
     QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5),5 );      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);

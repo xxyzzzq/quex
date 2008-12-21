@@ -50,7 +50,7 @@ namespace quex {
 #   endif
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Plain_init(TEMPLATED_CLASS* me, InputHandleT* input_handle);
+    QuexBufferFiller_Plain_construct(TEMPLATED_CLASS* me, InputHandleT* input_handle);
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read. */
 

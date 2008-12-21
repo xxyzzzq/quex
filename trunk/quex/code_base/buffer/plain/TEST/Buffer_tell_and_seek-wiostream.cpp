@@ -22,7 +22,7 @@ main(int argc, char** argv)
     size_t    SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 19, 4, 6, 20, 11, 0, 
                                 23, 18, 12, 21, 17, 27, 16, 26, 14, 24, 10, 13, 1, 22, 999 };
 
-    QuexBufferFiller_Plain_init(&filler, &sh);
+    QuexBufferFiller_Plain_construct(&filler, &sh);
     buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
     QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);

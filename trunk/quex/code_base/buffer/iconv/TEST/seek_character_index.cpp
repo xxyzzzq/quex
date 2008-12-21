@@ -38,7 +38,7 @@ main(int argc, char** argv)
 
     QuexBufferFiller_IConv<FILE> filler;
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     for(int i=Front; ; i += Delta) {

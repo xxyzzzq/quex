@@ -36,8 +36,8 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Plain_init(TEMPLATED(QuexBufferFiller_Plain)* me, 
-                                InputHandleT*    input_handle)
+    QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)* me, 
+                                     InputHandleT*    input_handle)
     {
         __quex_assert(me != 0x0);
         __quex_assert(input_handle != 0x0);
