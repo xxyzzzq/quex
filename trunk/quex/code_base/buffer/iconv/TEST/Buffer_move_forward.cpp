@@ -17,9 +17,9 @@ main(int argc, char** argv)
     const int       RawMemorySize = 6;
     const size_t    StepSize      = atoi(argv[1]);
     char*           target_charset = (char*)"UCS-4LE";
-    const uint16_t  test = 0x4711;
 
     /*
+    const uint16_t  test = 0x4711;
     if( ((uint8_t*)test)[0] == 47 && ((uint8_t*)test)[1] == 1 ) {
          target_charset = (char*)"UCS-4BE";
     }

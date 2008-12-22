@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.10" date="Sun Dec 21 03:01:00 2008">
+<test-database execution-time-sec="0.11" date="Mon Dec 22 11:30:55 2008">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.03"> 
@@ -13,10 +13,10 @@
                <choice name="" result="OK" time-sec="0.03" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.02"> 
+        <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.03"> 
             <application file-name="test-delete_comment.py" info-request-time="1226470993L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.02" crc="1761513741"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1761513741"/>
             </choice-list>
         </test>
     </group>

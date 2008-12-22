@@ -27,7 +27,7 @@ main(int argc, char** argv)
     buffer._content_character_index_begin = 15;
     buffer._content_character_index_end   = buffer._content_character_index_begin + (MemorySize-2);
     QuexBufferFiller_Plain<FILE>*  filler = (QuexBufferFiller_Plain<FILE>*)buffer.filler;
-    filler->_character_index       = buffer._content_character_index_begin + (MemorySize-2);
+    //filler->_character_index       = buffer._content_character_index_begin + (MemorySize-2);
     filler->_last_stream_position  = ftell(fh);
     filler->start_position         = 0;
 

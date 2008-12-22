@@ -36,7 +36,7 @@ main(int argc, char** argv)
 
     QuexBufferFiller_IConv<FILE> filler;
 
-    QuexBufferFiller_IConv_init(&filler, fh, "UTF8", target_charset, raw_memory_size);
+    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, raw_memory_size);
 
     size_t loaded_n = 0;
     loaded_n = filler.base.read_characters(&filler.base, 
@@ -44,7 +44,7 @@ main(int argc, char** argv)
 
     cout << "## loaded character n = " << loaded_n << endl;
 
-    for(int i=0; i < loaded_n ; ++i) {
+    for(size_t i=0; i < loaded_n ; ++i) {
         uint8_t*  raw = (uint8_t*)(memory + i);
         printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
     }
