@@ -1,4 +1,4 @@
-<history date="Sun Dec 21 03:00:50 2008" element-n="480">
+<history date="Mon Dec 22 10:18:54 2008" element-n="489">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -878,5 +878,16 @@
     </day>
     <day year="2008" month="12" day="21">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="02:00:50"/>
+    </day>
+    <day year="2008" month="12" day="22">
+        <crc-error time="09:06:18" application="test-backward_loading.py" choice="'ANSI-C-PlainMemory'" database-crc="2002023178" real-crc="-1584767564"/>
+        <crc-error time="09:06:18" application="test-backward_loading.py" choice="'ANSI-C'" database-crc="2002023178" real-crc="-1584767564"/>
+        <crc-error time="09:06:19" application="test-backward_loading.py" choice="'Cpp'" database-crc="-1777994709" real-crc="-1584767564"/>
+        <crc-error time="09:06:20" application="test-backward_loading.py" choice="'Cpp_StrangeStream'" database-crc="-1777994709" real-crc="-1584767564"/>
+        <crc-error time="09:17:27" application="test-simple.py" choice="ANSI-C-PlainMemory" database-crc="1148818717" real-crc="-771053764"/>
+        <crc-error time="09:17:28" application="test-simple.py" choice="ANSI-C" database-crc="1148818717" real-crc="-771053764"/>
+        <crc-error time="09:17:28" application="test-simple.py" choice="Cpp" database-crc="-1976766171" real-crc="-771053764"/>
+        <crc-error time="09:17:29" application="test-simple.py" choice="Cpp_StrangeStream" database-crc="-2091997961" real-crc="-771053764"/>
+        <test-runs-today n="5" ok-n="1" fail-n="4" else-n="0" last-run="failure" last-time="09:18:54"/>
     </day>
 </history>
