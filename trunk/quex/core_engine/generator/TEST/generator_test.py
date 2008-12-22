@@ -24,8 +24,7 @@ def do(PatternActionPairList, TestStr, PatternDictionary={}, Language="ANSI-C-Pl
        SecondPatternActionPairList=[], QuexBufferFallbackN=-1, ShowBufferLoadsF=False,
        AssertsActionvation_str="-DQUEX_OPTION_ASSERTS"):    
 
-    if Language=="Cpp": BufferLimitCode = 0;
-    else:                 BufferLimitCode = 0;
+    BufferLimitCode = 0
 
     try:
         adapted_dict = {}
@@ -79,6 +78,10 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     else:
         extension = ".cpp"
         compiler  = "g++"
+
+    if Language.find("StrangeStream") != -1:
+        compiler += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
+
 
     fd, filename_tmp = mkstemp(extension, "tmp-", dir=os.getcwd())
     os.write(fd, SourceCode) 
@@ -186,11 +189,11 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 
     txt  = "#define QUEX_CHARACTER_TYPE uint8_t\n"
     txt += "#define QUEX_TOKEN_ID_TYPE  bool\n"  
-    if Language != "Cpp": txt += "#define __QUEX_SETTING_PLAIN_C\n"
+    if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
     txt += "#include <quex/code_base/template/Analyser>\n"
     txt += "#include <quex/code_base/template/Analyser.i>\n"
     txt += "\n"
-    if Language == "Cpp": txt += "using namespace quex;\n"
+    if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
     txt += "\n"
     txt += "bool\n"
     txt += "show_next_character(QuexBuffer* buffer) {\n"
@@ -307,6 +310,9 @@ typedef int QUEX_TOKEN_ID_TYPE;
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 $$TEST_CASE$$
+#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
+#   include <quex/code_base/StrangeStream_unit_tests>
+#endif
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/template/Analyser>
 #include <quex/code_base/template/Analyser.i>
@@ -405,9 +411,8 @@ test_program_db = {
     }\n""",
 
     "Cpp_StrangeStream": """
-    #define  QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
     #include <cstring>
-    #include <quex/code_base/StrangeStream_unit_tests>
+    #include <sstream>
     #include <quex/code_base/template/Analyser.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
@@ -419,8 +424,8 @@ test_program_db = {
         QuexAnalyser lexer_state;
         int          success_f = 0;
         /**/
-        istringstream  istr("$$TEST_STRING$$");
-        StrangeStream  strange_stream(&istr);
+        istringstream                 istr("$$TEST_STRING$$");
+        StrangeStream<istringstream>  strange_stream(&istr);
 
         QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream,
                                QUEX_PLAIN, 0x0,
