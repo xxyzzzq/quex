@@ -1,4 +1,4 @@
-<history date="Mon Dec 22 10:18:54 2008" element-n="489">
+<history date="Mon Dec 22 11:30:45 2008" element-n="513">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -888,6 +888,30 @@
         <crc-error time="09:17:28" application="test-simple.py" choice="ANSI-C" database-crc="1148818717" real-crc="-771053764"/>
         <crc-error time="09:17:28" application="test-simple.py" choice="Cpp" database-crc="-1976766171" real-crc="-771053764"/>
         <crc-error time="09:17:29" application="test-simple.py" choice="Cpp_StrangeStream" database-crc="-2091997961" real-crc="-771053764"/>
-        <test-runs-today n="5" ok-n="1" fail-n="4" else-n="0" last-run="failure" last-time="09:18:54"/>
+        <crc-error time="09:57:35" application="test-backward_loading.py" choice="Cpp" database-crc="-1777994709" real-crc="-1584767564"/>
+        <crc-error time="09:57:46" application="test-backward_loading.py" choice="ANSI-C-PlainMemory" database-crc="2002023178" real-crc="-1584767564"/>
+        <crc-error time="09:57:46" application="test-backward_loading.py" choice="ANSI-C" database-crc="2002023178" real-crc="-1584767564"/>
+        <crc-error time="09:57:48" application="test-backward_loading.py" choice="Cpp_StrangeStream" database-crc="-1777994709" real-crc="-1584767564"/>
+        <crc-error time="09:57:52" application="test-position_adaption.py" choice="Cpp_StrangeStream" database-crc="-931113262" real-crc="1319922986"/>
+        <crc-error time="09:57:55" application="test-no-backward-reloading.py" choice="Cpp_StrangeStream" database-crc="2093345627" real-crc="-887225006"/>
+        <crc-error time="09:57:58" application="test-continue-without-return-2.py" choice="Cpp_StrangeStream" database-crc="-941535757" real-crc="-759134064"/>
+        <crc-error time="09:58:00" application="test-mode-changes.py" choice="Cpp_StrangeStream" database-crc="-1529217706" real-crc="270103911"/>
+        <crc-error time="09:58:03" application="test-continue-without-return.py" choice="Cpp_StrangeStream" database-crc="931122744" real-crc="-1324080938"/>
+        <crc-error time="09:58:05" application="test-post-conditions.py" choice="Cpp_StrangeStream" database-crc="28103709" real-crc="1338437579"/>
+        <crc-error time="09:58:08" application="test-post-conditions-2.py" choice="Cpp_StrangeStream" database-crc="-51952919" real-crc="-1069020887"/>
+        <crc-error time="09:58:11" application="test-post-conditions-3.py" choice="Cpp_StrangeStream" database-crc="1180726829" real-crc="-423588249"/>
+        <crc-error time="09:58:16" application="test-pre-conditions-3.py" choice="Cpp_StrangeStream" database-crc="586635376" real-crc="-1449812084"/>
+        <crc-error time="09:58:19" application="test-pre-conditions.py" choice="Cpp_StrangeStream" database-crc="1534297597" real-crc="-524887799"/>
+        <crc-error time="09:58:22" application="test-pre-conditions-2.py" choice="Cpp_StrangeStream" database-crc="-970833810" real-crc="-2081003305"/>
+        <crc-error time="09:58:25" application="test-pre-post-condition.py" choice="Cpp_StrangeStream" database-crc="-1289560838" real-crc="-347610264"/>
+        <crc-error time="09:58:28" application="test-pseudo_ambiguous_post_conditions.py" choice="Cpp_StrangeStream" database-crc="117694500" real-crc="252074334"/>
+        <crc-error time="09:58:31" application="test-pseudo_ambiguous_post_conditions-2.py" choice="Cpp_StrangeStream" database-crc="1012743329" real-crc="1614045300"/>
+        <crc-error time="09:58:34" application="test-bol-eol.py" choice="Cpp_StrangeStream" database-crc="946586122" real-crc="-1565444249"/>
+        <crc-error time="09:58:37" application="test-simple-5.py" choice="Cpp_StrangeStream" database-crc="1435323435" real-crc="-680455951"/>
+        <crc-error time="09:58:41" application="test-simple-2.py" choice="Cpp_StrangeStream" database-crc="-370237832" real-crc="-270685933"/>
+        <crc-error time="09:58:44" application="test-simple-3.py" choice="Cpp_StrangeStream" database-crc="1167227925" real-crc="-1792493362"/>
+        <crc-error time="10:17:46" application="test-skip-trigger-set.py" choice="Cpp_StrangeStream" database-crc="1433526138" real-crc="600307805"/>
+        <crc-error time="10:18:04" application="test-skip-simple.py" choice="Cpp_StrangeStream" database-crc="-481010522" real-crc="-1090631127"/>
+        <test-runs-today n="9" ok-n="4" fail-n="5" else-n="0" last-run="oll korrekt" last-time="10:30:45"/>
     </day>
 </history>

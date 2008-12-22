@@ -36,7 +36,7 @@ main(int argc, char** argv)
         }
 
         QuexBufferFiller_Plain<FILE>    is;
-        QuexBufferFiller_Plain_init<FILE>(&is, fh);
+        QuexBufferFiller_Plain_construct<FILE>(&is, fh);
         loaded_character_n = __BufferFiller_Plain_read_characters<FILE>((QuexBufferFiller*)&is, 
                                                                         (QUEX_CHARACTER_TYPE*)buffer, 
                                                                         (const size_t)128);
@@ -53,7 +53,7 @@ main(int argc, char** argv)
         }
         
         QuexBufferFiller_Plain<istream>    is;
-        QuexBufferFiller_Plain_init<istream>(&is, &fh);
+        QuexBufferFiller_Plain_construct<istream>(&is, &fh);
         loaded_character_n = __BufferFiller_Plain_read_characters<istream>((QuexBufferFiller*)&is, 
                                                                            (QUEX_CHARACTER_TYPE*)buffer, 
                                                                            (const size_t)128);

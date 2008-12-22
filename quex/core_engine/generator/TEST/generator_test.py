@@ -189,6 +189,9 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 
     txt  = "#define QUEX_CHARACTER_TYPE uint8_t\n"
     txt += "#define QUEX_TOKEN_ID_TYPE  bool\n"  
+    txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
+    txt += "#   include <quex/code_base/StrangeStream_unit_tests>\n"
+    txt += "#endif\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
     txt += "#include <quex/code_base/template/Analyser>\n"
     txt += "#include <quex/code_base/template/Analyser.i>\n"
@@ -260,7 +263,6 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
 
     return txt
-
 
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
 

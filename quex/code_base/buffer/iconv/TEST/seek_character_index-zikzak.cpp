@@ -53,7 +53,7 @@ main(int argc, char** argv)
     /* Print the reference buffer 
      * NOTE: The buffer filler does not know anything about buffer limit codes etc. It simply
      *       fills the given amount of memory with data.                                               */
-    for(int i=0; i < loaded_n ; ++i) {
+    for(size_t i=0; i < loaded_n ; ++i) {
         uint8_t*  raw = (uint8_t*)(reference + i);
         printf("[%02d] %02X.%02X   ", i, (unsigned)raw[0], (unsigned)raw[1]);
         if( (i+1) % 8 == 0 ) printf("\n");
