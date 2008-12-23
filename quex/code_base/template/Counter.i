@@ -11,6 +11,7 @@
 // NOTE: Those functions are not responsible for setting the begin to the
 //       last end, such as _line_number_at_begin = _line_number_at_end.
 //       This has to happen outside these functions.
+#include <quex/code_base/template/Counter>
 #include <quex/code_base/template/count_common>
 
 namespace quex { 

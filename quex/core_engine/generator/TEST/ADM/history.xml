@@ -1,4 +1,4 @@
-<history date="Mon Dec 22 11:30:45 2008" element-n="513">
+<history date="Mon Dec 22 22:29:21 2008" element-n="513">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <crc-error time="09:56:17" application="test-pseudo_ambiguous_post_conditions-2.py" choice="PlainMemory" database-crc="-1275287335" real-crc="885683181"/>
@@ -912,6 +912,6 @@
         <crc-error time="09:58:44" application="test-simple-3.py" choice="Cpp_StrangeStream" database-crc="1167227925" real-crc="-1792493362"/>
         <crc-error time="10:17:46" application="test-skip-trigger-set.py" choice="Cpp_StrangeStream" database-crc="1433526138" real-crc="600307805"/>
         <crc-error time="10:18:04" application="test-skip-simple.py" choice="Cpp_StrangeStream" database-crc="-481010522" real-crc="-1090631127"/>
-        <test-runs-today n="9" ok-n="4" fail-n="5" else-n="0" last-run="oll korrekt" last-time="10:30:45"/>
+        <test-runs-today n="11" ok-n="6" fail-n="5" else-n="0" last-run="oll korrekt" last-time="21:29:21"/>
     </day>
 </history>

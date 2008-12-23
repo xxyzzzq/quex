@@ -1,14 +1,16 @@
 #include <my_tester.h>
 #include <iostream>
-#include <string>
+#include <cstring>
 
 using namespace std;
+using namespace quex;
 
 
 string total_string;
 int    indentation[64];
 
-void test(const char* TestString, my_tester& x)
+void
+test(const char* TestString, CounterWithIndentation& x)
 {
     x._line_number_at_begin   = x._line_number_at_end;
     x._column_number_at_begin = x._column_number_at_end;
@@ -21,24 +23,29 @@ void test(const char* TestString, my_tester& x)
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    x.count_indentation((QUEX_CHARACTER_TYPE*)TestString, strlen(TestString));
-    cout << "  end:    " << x.line_number_at_end()    << ", " << x.column_number_at_end() << endl;
-
+    x.icount((QUEX_CHARACTER_TYPE*)TestString, 
+             (QUEX_CHARACTER_TYPE*)TestString + strlen(TestString));
+    cout << "  end:    " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
+                       
     total_string += TestString;
 }
 
 int
 main(int  argc, char** argv)
 {
-    my_tester   x;
+    my_tester                y;
+    CounterWithIndentation   x(&y);
+    y._counter = &x;
+    x._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {
         cout << "Count Line and Column: With Indentation\n";
         return 0;
     }
 
-    x.__buffer->__the_end = (QUEX_CHARACTER_TYPE*)0xFFFFFFFFL;
+    // x.__buffer->__the_end = (QUEX_CHARACTER_TYPE*)0xFFFFFFFFL;
 
+    // indentation[i] is going to be filled by: mini_mode::on_indentation(my_tester* x, int Indentation) 
     for(int i=0; i < 64; ++i) indentation[i] = 66;
 
     test("  [23", x);
@@ -59,7 +66,7 @@ main(int  argc, char** argv)
     cout << "001: [" << indentation[0] << "] ";
     int line_n = 1;
     char tmp[6];
-    for(int i = 0; i < total_string.length() ; ++i) {
+    for(size_t i = 0; i < total_string.length() ; ++i) {
         if( total_string[i] == '\n' ) {
             ++line_n;
             if( indentation[line_n - 1] == 66 ) 
