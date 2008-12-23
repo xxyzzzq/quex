@@ -54,11 +54,6 @@ namespace quex {
                                                                               const size_t         N);
     TEMPLATE_IN(InputHandleT) void   __QuexBufferFiller_IConv_destroy(QuexBufferFiller* alter_ego);
 
-    QUEX_INLINE bool QuexBufferFiller_IConv_has_coding_dynamic_character_width(const char* Coding);
-
-    QUEX_INLINE void QuexBufferFiller_IConv_BufferInfo_init(QuexBufferFiller_IConv_BufferInfo* me, 
-                                                            uint8_t* Begin, size_t SizeInBytes);
-
     TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_IConv_read_characters(QuexBufferFiller*    alter_ego,
                                                                               QUEX_CHARACTER_TYPE* user_memory_p, 
                                                                               const size_t         N);
@@ -68,7 +63,10 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) bool __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)* me, 
                                                                     QuexBufferFiller_IConv_BufferInfo* drain);
 
-    TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_mark_start_position(TEMPLATED(QuexBufferFiller_IConv)* me);
+    QUEX_INLINE bool QuexBufferFiller_IConv_has_coding_dynamic_character_width(const char* Coding);
+
+    QUEX_INLINE void QuexBufferFiller_IConv_BufferInfo_init(QuexBufferFiller_IConv_BufferInfo* me, 
+                                                            uint8_t* Begin, size_t SizeInBytes);
 
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_IConv_construct(TEMPLATED(QuexBufferFiller_IConv)* me,
@@ -107,7 +105,7 @@ namespace quex {
                         ! QuexBufferFiller_IConv_has_coding_dynamic_character_width(FromCoding);
 
         /* Setup the tell/seek of character positions                                       */
-        __QuexBufferFiller_IConv_mark_start_position(me);
+        me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         me->raw_buffer.begin_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         me->raw_buffer.begin_character_index = 0;
         me->raw_buffer.end_stream_position       = me->raw_buffer.begin_stream_position;
@@ -397,21 +395,6 @@ namespace quex {
         }
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
         __quex_assert(me->raw_buffer.iterators_character_index == Index);
-    }
-
-    TEMPLATE_IN(InputHandleT) void 
-    __QuexBufferFiller_IConv_mark_start_position(TEMPLATED(QuexBufferFiller_IConv)* me) 
-    { 
-       __quex_assert(me != 0x0); 
-       me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
-    }
-
-    TEMPLATE_IN(InputHandleT) void 
-    __QuexBufferFiller_IConv_reset_start_position(TEMPLATED(QuexBufferFiller_IConv)* me) 
-    {
-        __quex_assert(me != 0x0); 
-        QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, me->start_position);
-        me->raw_buffer.end_stream_position = me->start_position;
     }
 
     QUEX_INLINE bool 

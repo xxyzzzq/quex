@@ -3,6 +3,8 @@
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 #include <quex/code_base/template/count_common>
 
+#include <quex/code_base/template/Counter>
+
 namespace quex { 
 // NOTE: Quex is pretty intelligent in choosing the right function
 //       to count line and column numbers. If, for example, a pattern

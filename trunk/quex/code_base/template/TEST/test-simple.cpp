@@ -4,17 +4,17 @@
 #include <string>
 
 using namespace std;
+using namespace quex;
 
 string total_string;
 
 int    indentation[64];
 
-void test(const char* TestString, my_tester& x)
+void test(const char* TestString, Counter& x)
 {
     x._line_number_at_begin   = x._line_number_at_end;
     x._column_number_at_begin = x._column_number_at_end;
-    x.count((QUEX_LEXEME_CHARACTER_TYPE*)TestString, strlen(TestString));
-    
+    x.count((QUEX_CHARACTER_TYPE*)TestString, (QUEX_CHARACTER_TYPE*)TestString + strlen(TestString));
 
     cout << "__________________________" << endl;
     // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
@@ -23,7 +23,7 @@ void test(const char* TestString, my_tester& x)
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    cout << "  after:  " << x.line_number_at_end()    << ", " << x.column_number_at_end() << endl;
+    cout << "  after:  " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
 
     total_string += TestString;
 }
@@ -31,14 +31,14 @@ void test(const char* TestString, my_tester& x)
 int
 main(int  argc, char** argv)
 {
-    my_tester   x;
+    Counter   x;
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "Count Line and Column: Without Indentation Count\n";
         return 0;
     }
 
-    x.__buffer->__the_end = (QUEX_CHARACTER_TYPE*)0xFFFFFFFFL;
+    // x.__buffer->__the_end = (QUEX_CHARACTER_TYPE*)0xFFFFFFFFL;
 
     test("12345", x);
     test("\n", x);
@@ -57,7 +57,7 @@ main(int  argc, char** argv)
     cout << "001: ";
     int line_n = 1;
     char tmp[6];
-    for(int i = 0; i < total_string.length() ; ++i) {
+    for(size_t i = 0; i < total_string.length() ; ++i) {
         if( total_string[i] == '\n' ) {
             ++line_n;
             sprintf(tmp, "%03i: ", line_n);
