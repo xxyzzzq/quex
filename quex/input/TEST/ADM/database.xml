@@ -1,17 +1,17 @@
-<test-database execution-time-sec="18.70" date="Mon Dec 22 22:29:51 2008">
+<test-database execution-time-sec="18.45" date="Wed Dec 24 09:43:15 2008">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" make-required="True" time-sum-sec="1.32"> 
+        <test title="Wildcard Property Values" make-required="True" time-sum-sec="1.34"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.32" crc="-989951512"/>
+               <choice name="" result="OK" time-sec="1.34" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" make-required="True" time-sum-sec="11.79"> 
+        <test title="Information about Properties" make-required="True" time-sum-sec="11.69"> 
             <application file-name="test-query.py" info-request-time="1223017234L"/>
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="10.41" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="1.38" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time-sec="10.28" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="1.40" crc="86685460"/>
             </choice-list>
         </test>
         <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.44"> 
@@ -20,10 +20,10 @@
                <choice name="" result="OK" time-sec="1.44" crc="-1719645304"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="4.15"> 
+        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="3.98"> 
             <application file-name="test-query-character-set.py" info-request-time="1223017234L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="4.15" crc="1436734443"/>
+               <choice name="" result="OK" time-sec="3.98" crc="1436734443"/>
             </choice-list>
         </test>
     </group>

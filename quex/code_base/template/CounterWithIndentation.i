@@ -37,7 +37,7 @@ inline void
 CounterWithIndentation::init()
 {
     _indentation = 0;
-    _indentation_count_enabled_f = false;
+    _indentation_count_enabled_f = true;
     _indentation_event_enabled_f = true;
 }
 
@@ -107,11 +107,11 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme,
     if( *Last == '\n' ) {
         _indentation = 0;
         _indentation_count_enabled_f = true;
-#       ifndef  QUEX_NO_SUPPORT_FOR_LINE_NUMBER_COUNTING
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         ++_line_number_at_end;
         __count_newline_n_backwards(it, Begin);
 #       endif
-#       ifndef  QUEX_NO_SUPPORT_FOR_COLUMN_NUMBER_COUNTING
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
         _column_number_at_end = 1;            // next lexeme starts at _column_number_at_end + 1
 #       endif
         return;

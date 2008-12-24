@@ -6,8 +6,9 @@ using namespace std;
 using namespace quex;
 
 
-string total_string;
-int    indentation[64];
+string    total_string;
+int       indentation[64];
+mini_mode tester_mini_mode;
 
 void
 test(const char* TestString, CounterWithIndentation& x)
@@ -35,7 +36,7 @@ main(int  argc, char** argv)
 {
     my_tester                y;
     CounterWithIndentation   x(&y);
-    y._counter = &x;
+    y.counter = &x;
     x._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {
