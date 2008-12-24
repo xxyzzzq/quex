@@ -1,4 +1,7 @@
-PROGRAMS = test-simple test-simple-2
+PROGRAMS = counter-column_line.exe \
+		   counter-column_line-x.exe \
+		   counter-column_line-indentation.exe \
+		   counter-column_line-indentation-x.exe
 
 all:       $(PROGRAMS) 
 
@@ -13,14 +16,10 @@ CC = g++ \
      -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
      -D__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT 
 
-test-simple:   test-simple.cpp
-	$(CC) -I./. -I$(QUEX_PATH) $^ -o $@ 
-	
-test-simple-2: test-simple-2.cpp
+%.exe:   %.cpp
 	$(CC) -I./. -I$(QUEX_PATH) $^ -o $@ 
 	
 clean: 
 	rm -f *.o
-	rm -f real-code.cpp
 	rm -f $(PROGRAMS)
 
