@@ -1,0 +1,27 @@
+In many cases the behavior of the lexical analysers can be efficiently
+described by means of modes for lexical analysis. A standard example are
+format strings. Inside format strings, there is no need for the lexical
+patterns that are necessary when parsing an algorithm. They are actually
+better turned off. Thus, a mechanism is needed that is able to control the
+activation and deactivation of groups of patterns to be matched.
+
+A lexical analyser mode is a state of the lexical analyser where only a
+particular set of patterns is actively waiting to be matched against.  A
+lexical analyser needs to be in exactly one mode at a particular point in
+time. Thus, a lexical analyser mode corresponds to the way that the
+input stream is currently transformed into signals, i.e. tokens. To handle
+the detection and influencing of mode transitions, Quex provides
+event handling mechanisms as described in the following sections.
+
+A potential disadvantages of modes is _confusion_. With traditional lexical
+analyser generators, such as flex, the end-user does not see more than a token
+stream. He has no inside on the current lexical analyser modes. He cannot sense
+or control the mode transitions which are currently made. The mode transitions
+are somwhere hidden in the pattern match actions.  GNU Flex's _start
+conditions_ are similar to modes. But, the only way two modes A and B modes can
+be related in flex is via via 'inclusion', i.e. by letting a pattern be active
+in in A and B. There is no convienient mechanism to say: 'let B overtake all
+patterns of A'.  This is where mode inheritance relationships of Quex provide
+clear convenience advantages as described in the section after the following.
+
+
