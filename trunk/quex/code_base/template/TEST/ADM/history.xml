@@ -1,4 +1,4 @@
-<history date="Wed Dec 24 16:22:01 2008" element-n="146">
+<history date="Thu Dec 25 06:43:07 2008" element-n="150">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:25"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -434,5 +434,11 @@
     </day>
     <day year="2008" month="12" day="24">
         <test-runs-today n="4" ok-n="3" fail-n="1" else-n="0" last-run="failure" last-time="15:12:47"/>
+    </day>
+    <day year="2008" month="12" day="25">
+        <crc-error time="05:04:48" application="counter-column_line-indentation.exe" choice="" database-crc="546192159" real-crc="-610457370"/>
+        <crc-error time="05:06:31" application="counter-column_line-indentation.exe" choice="" database-crc="-610457370" real-crc="1757464232"/>
+        <crc-error time="05:11:37" application="counter-column_line-indentation.exe" choice="" database-crc="1757464232" real-crc="2059796232"/>
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:43:07"/>
     </day>
 </history>

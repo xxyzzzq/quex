@@ -11,24 +11,26 @@ int       indentation[64];
 mini_mode tester_mini_mode;
 
 void
-test(const char* TestString, CounterWithIndentation& x)
+print(CounterWithIndentation& x, const char* TestString)
 {
-    x._line_number_at_begin   = x._line_number_at_end;
-    x._column_number_at_begin = x._column_number_at_end;
-
     cout << "__________________________" << endl;
-
     // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
     cout << "  lexeme: '";
     for(char* p = (char*)TestString; *p ; ++p) 
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    x.icount((QUEX_CHARACTER_TYPE*)TestString, 
-             (QUEX_CHARACTER_TYPE*)TestString + strlen(TestString));
-    cout << "  end:    " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
-                       
+    cout << "  after:  " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
+
     total_string += TestString;
+}
+
+void 
+test(const char* TestString, CounterWithIndentation& x)
+{
+    x.__shift_end_values_to_start_values();
+    x.icount((QUEX_CHARACTER_TYPE*)TestString, (QUEX_CHARACTER_TYPE*)TestString + strlen(TestString));
+    print(x, TestString);
 }
 
 int
@@ -55,13 +57,23 @@ main(int  argc, char** argv)
     test("[23   \n   ", x);
     test("   ", x);
     test("   [YZ", x);
-    test("\n   [BC\n   123", x);
-    test("\n   [23\n    ", x);
-    test("[bc\n123\n    ", x);
-    test("[BC\n\n\n123    ", x);
-    test("[YZ\n\n\n  123   \n", x);
+    test("\n   [BC", x);
+    test("\n   123", x);
+    test("\n   [23", x);
+    test("\n    ", x);
+    test("[not\n", x);     // This shall not trigger an indentation event, because of the last '\n'
+    test("not\n    ", x);
+    test("[not\n\n", x);
+    test("\n", x);
+    test("123    ", x);
+    test("[YZ\n\n\n  ", x);
+    test("not   \n", x);
     test("[234567890", x);
 
+    cout << "\n";
+    cout << "## NOTE: Anything before the last newline inside a lexeme is ignored for indentation.\n";
+    cout << "##       The following table may seem strange but it is well considered with respect\n";
+    cout << "##       to this rule.\n";
     cout << "\n";
     cout << "Total String:\n";
     cout << "001: [" << indentation[0] << "] ";
