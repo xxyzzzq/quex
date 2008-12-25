@@ -88,15 +88,19 @@ main(int  argc, char** argv)
     test("\n   ", x);
     test_NoNewline_ContainsOnlySpace("   ", x);
     test_NoNewline("   [YZ", x);
-    test("\n   [BC\n   123", x);
-    test("\n   [23\n    ", x);
+    test("\n   not\n   123", x);
+    test("\n   not\n    ", x);
     test_NoNewline_NeverStartOnWhitespace("[bc", x);
-    test("\n123\n    ", x);
+    test("\nnot\n    ", x);
     test_NoNewline_NeverStartOnWhitespace("[BC", x);
     test("\n\n\n123    ", x);
-    test("[YZ\n\n\n  123   \n", x);
+    test("not\n\n\n  not   \n", x);
     test_NoNewline_NeverStartOnWhitespace("[234567890", x);
 
+    cout << "## NOTE: Anything before the last newline inside a lexeme is ignored for indentation.\n";
+    cout << "##       The following table may seem strange but it is well considered with respect\n";
+    cout << "##       to this rule.\n";
+    cout << "\n";
     cout << "\n";
     cout << "Total String:\n";
     cout << "001: [" << indentation[0] << "] ";

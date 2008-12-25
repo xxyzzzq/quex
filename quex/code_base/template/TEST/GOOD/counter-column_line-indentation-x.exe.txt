@@ -1,61 +1,76 @@
+indentation = 2
 __________________________
   lexeme: '  [23'
-indentation = 2
-  end:    1, 6
+  after:  1, 6
 __________________________
   lexeme: '\n'
-  end:    2, 1
+  after:  2, 1
+indentation = 3
 __________________________
   lexeme: '\n   [bc'
-indentation = 3
-  end:    3, 7
+  after:  3, 7
 __________________________
-  lexeme: '[23   \n   '
-  end:    4, 4
+  lexeme: '[23   '
+  after:  3, 13
+__________________________
+  lexeme: '\n   '
+  after:  4, 4
 __________________________
   lexeme: '   '
-  end:    4, 7
+  after:  4, 7
+indentation = 9
 __________________________
   lexeme: '   [YZ'
-indentation = 9
-  end:    4, 13
-__________________________
-  lexeme: '\n   [BC\n   123'
+  after:  4, 7
 indentation = 3
-  end:    6, 7
 __________________________
-  lexeme: '\n   [23\n    '
-  end:    8, 5
+  lexeme: '\n   not\n   123'
+  after:  6, 7
 __________________________
-  lexeme: '[bc\n123\n    '
-  end:    10, 5
+  lexeme: '\n   not\n    '
+  after:  8, 5
+indentation = 4
 __________________________
-  lexeme: '[BC\n\n\n123    '
+  lexeme: '[bc'
+  after:  8, 8
+__________________________
+  lexeme: '\nnot\n    '
+  after:  10, 5
+indentation = 4
+__________________________
+  lexeme: '[BC'
+  after:  10, 8
 indentation = 0
-  end:    13, 8
 __________________________
-  lexeme: '[YZ\n\n\n  123   \n'
-  end:    17, 1
+  lexeme: '\n\n\n123    '
+  after:  13, 8
+__________________________
+  lexeme: 'not\n\n\n  not   \n'
+  after:  17, 1
+indentation = 0
 __________________________
   lexeme: '[234567890'
-indentation = 0
-  end:    17, 11
+  after:  17, 11
+## NOTE: Anything before the last newline inside a lexeme is ignored for indentation.
+##       The following table may seem strange but it is well considered with respect
+##       to this rule.
+
 
 Total String:
 001: [2] ..[23\
 002: [ ] \
 003: [3] ...[bc[23...\
 004: [9] .........[YZ\
-005: [ ] ...[BC\
+005: [ ] ...not\
 006: [3] ...123\
-007: [ ] ...[23\
-008: [ ] ....[bc\
-009: [ ] 123\
-010: [ ] ....[BC\
+007: [ ] ...not\
+008: [4] ....[bc\
+009: [ ] not\
+010: [4] ....[BC\
 011: [ ] \
 012: [ ] \
-013: [0] 123....[YZ\
+013: [0] 123....not\
 014: [ ] \
 015: [ ] \
-016: [ ] ..123...\
+016: [ ] ..not...\
 017: [0] [234567890
