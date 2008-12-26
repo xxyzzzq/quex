@@ -58,10 +58,10 @@ namespace quex {
                                                                               QUEX_CHARACTER_TYPE* user_memory_p, 
                                                                               const size_t         N);
 
-    TEMPLATE_IN(InputHandleT) void __QuexBufferFiller_IConv_fill_raw_buffer(TEMPLATED(QuexBufferFiller_IConv)*);
+    TEMPLATE_IN(InputHandleT) void   __QuexBufferFiller_IConv_fill_raw_buffer(TEMPLATED(QuexBufferFiller_IConv)*);
 
-    TEMPLATE_IN(InputHandleT) bool __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)* me, 
-                                                                    QuexBufferFiller_IConv_BufferInfo* drain);
+    TEMPLATE_IN(InputHandleT) bool   __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)* me, 
+                                                                      QuexBufferFiller_IConv_BufferInfo* drain);
 
     QUEX_INLINE bool QuexBufferFiller_IConv_has_coding_dynamic_character_width(const char* Coding);
 
@@ -219,8 +219,8 @@ namespace quex {
     }
 
     TEMPLATE_IN(InputHandleT) bool 
-    __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)*                   me, 
-                                     QuexBufferFiller_IConv_BufferInfo* drain) 
+    __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)*   me, 
+                                     QuexBufferFiller_IConv_BufferInfo*   drain) 
     {
         /* RETURNS:  true  --> User buffer is filled as much as possible with converted 
          *                     characters.
@@ -310,8 +310,8 @@ namespace quex {
     }
 
     TEMPLATE_IN(InputHandleT) void   
-    __QuexBufferFiller_IConv_seek_character_index(QuexBufferFiller* alter_ego, 
-                                              const size_t          Index)
+    __QuexBufferFiller_IConv_seek_character_index(QuexBufferFiller*  alter_ego, 
+                                                  const size_t       Index)
     { 
         /* NOTE: This differs from QuexBuffer_seek(...) in the sense, that it only sets the
          *       stream to a particular position given by a character index. QuexBuffer_seek(..)
