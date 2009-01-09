@@ -29,9 +29,14 @@ namespace quex {
          *      memory[1]             = first char of content
          *      ...
          *      memory[BUFFER_SIZE-2] = last char of content
-         *      memory[BUFFER_SIZE-1] = upper buffer limit code character */
-        QUEX_CHARACTER_TYPE*  _front;   /* first character in buffer      */
-        QUEX_CHARACTER_TYPE*  _back;    /* last character in buffer       */
+         *      memory[BUFFER_SIZE-1] = upper buffer limit code character             */
+        QUEX_CHARACTER_TYPE*  _front;         /* first character in buffer (BLC)      */
+        QUEX_CHARACTER_TYPE*  _back;          /* last character in buffer  (BLC)      */
+        /* NOTE: It is not sufficient, to have a content_end pointer. It is necessary
+         *       to detect the case where input_p  stands on the end of file. Thus 
+         *       it is necessary to have an '_end_of_file_p' that is 0x0 if end of file
+         *       is not inside the buffer.                                            */
+        QUEX_CHARACTER_TYPE*  _end_of_file_p; 
     } QuexBufferMemory;
 
     QUEX_INLINE void    QuexBufferMemory_setup(QuexBufferMemory*, 
@@ -42,7 +47,7 @@ namespace quex {
 #   if ! defined(__QUEX_SETTING_PLAIN_C)
     typedef QuexBufferMemory::Position  QUEX_CHARACTER_POSITION_TYPE;
 #   else
-    typedef QUEX_CHARACTER_TYPE* QUEX_CHARACTER_POSITION_TYPE;
+    typedef QUEX_CHARACTER_TYPE*        QUEX_CHARACTER_POSITION_TYPE;
 #   endif
 
     
@@ -52,21 +57,6 @@ namespace quex {
         /* (*) Iterator positions for lexical analysis */
         QUEX_CHARACTER_TYPE*  _input_p;
         QUEX_CHARACTER_TYPE*  _lexeme_start_p;
-
-        /* (*) Origin of the content in the input stream:
-         *     -- pointer to position in buffer that corresponds EOF */
-        QUEX_CHARACTER_TYPE*  _end_of_file_p;  
-
-        /*     -- character index in the stream that corresponds to the character
-         *        at the first character (see above: _front[1]) */
-        size_t    _content_character_index_begin;
-        /*     -- character index in the stream that corresponds to the character
-         *        after the last character in the buffer. This is necessary, because,
-         *        some weird (but popular) implementations of istream do not correlate
-         *        propperly between bytes transferred into a buffer and the increment 
-         *        of the stream position. */
-        size_t    _content_character_index_end;
-        
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to
          *     check for the 'begin of line' pre-condition.
@@ -80,7 +70,17 @@ namespace quex {
         QUEX_CHARACTER_TYPE   _character_before_lexeme_start;  /* --> begin of line           */
 #       endif
 
-        struct __QuexBufferFiller_tag*  filler;
+        /*     -- character index in the stream that corresponds to the character
+         *        at the first character (see above: _front[1]) */
+        size_t    _content_character_index_begin;
+        /*     -- character index in the stream that corresponds to the character
+         *        after the last character in the buffer. This is necessary, because,
+         *        some weird (but popular) implementations of istream do not correlate
+         *        propperly between bytes transferred into a buffer and the increment 
+         *        of the stream position. */
+        size_t    _content_character_index_end;
+        
+        struct    __QuexBufferFiller_tag*  filler;
     } QuexBuffer;
 
     TEMPLATE_IN(InputHandleT) void

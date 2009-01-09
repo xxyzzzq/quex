@@ -28,11 +28,11 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         __QUEX_STD_printf("Begin of Buffer Character Index: %i\n", (int)buffer->_content_character_index_begin);
         __QUEX_STD_printf("End   of Buffer Character Index: %i\n", (int)me->tell_character_index(me));
-        if( buffer->_end_of_file_p == 0x0 )
-            __QUEX_STD_printf("_end_of_file_p (offset)  = <0x0>\n");
+        if( buffer->_memory._end_of_file_p == 0x0 )
+            __QUEX_STD_printf("_memory._memory._end_of_file_p (offset)  = <0x0>\n");
         else
-            __QUEX_STD_printf("_end_of_file_p (offset)  = %08X\n", 
-                              (int)(buffer->_end_of_file_p  - buffer->_memory._front));
+            __QUEX_STD_printf("_memory._end_of_file_p (offset)  = %08X\n", 
+                              (int)(buffer->_memory._end_of_file_p  - buffer->_memory._front));
         __QUEX_STD_printf("_input_p (offset)        = %08X\n",     (int)(buffer->_input_p        - buffer->_memory._front));
         __QUEX_STD_printf("_lexeme_start_p (offset) = %08X\n",     (int)(buffer->_lexeme_start_p - buffer->_memory._front));
         __QUEX_STD_printf("_back (offset)           = %08X\n",     (int)(buffer->_memory._back   - buffer->_memory._front));
@@ -50,7 +50,7 @@ namespace quex {
     {
         if     ( *C != QUEX_SETTING_BUFFER_LIMIT_CODE )   
             return (QUEX_CHARACTER_TYPE)'?'; 
-        else if( buffer->_end_of_file_p == C )       
+        else if( buffer->_memory._end_of_file_p == C )       
             return (QUEX_CHARACTER_TYPE)']';
         else if( buffer->_content_character_index_begin == 0 && buffer->_memory._front == C )     
             return (QUEX_CHARACTER_TYPE)'[';
@@ -76,8 +76,8 @@ namespace quex {
         QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;
         QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
         QUEX_CHARACTER_TYPE*  iterator = 0x0;
-        QUEX_CHARACTER_TYPE*  end_p    = buffer->_end_of_file_p != 0x0 ? buffer->_end_of_file_p 
-                                         :                               buffer->_memory._back;
+        QUEX_CHARACTER_TYPE*  end_p    = buffer->_memory._end_of_file_p != 0x0 ? buffer->_memory._end_of_file_p 
+                                         :                                     buffer->_memory._back;
 
         __QUEX_STD_printf("|%c", __BufferFiller_get_border_char(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
@@ -85,7 +85,7 @@ namespace quex {
         }
         __QUEX_STD_printf("%c", __BufferFiller_get_border_char(buffer, end_p));
         /**/
-        const size_t L = (buffer->_end_of_file_p == 0x0) ? 0 : BufferBack - buffer->_end_of_file_p;
+        const size_t L = (buffer->_memory._end_of_file_p == 0x0) ? 0 : BufferBack - buffer->_memory._end_of_file_p;
         for(i=0; i < L; ++i) __QUEX_STD_printf("|");
 
         __QUEX_STD_printf("|");
@@ -154,9 +154,9 @@ namespace quex {
         for(j=0; j<IndentationN; ++j) fprintf(stdout, " ");
         for(; byte_p != End; ++byte_p, ++next_byte_p, ++i) {
             fprintf(stdout, "%02X", (int)*byte_p);
-            if     ( next_byte_p == (uint8_t*)buffer->_end_of_file_p ) 
+            if     ( next_byte_p == (uint8_t*)buffer->_memory._end_of_file_p ) 
                 fprintf(stdout, "[");
-            else if( byte_p      == (uint8_t*)buffer->_end_of_file_p + sizeof(QUEX_CHARACTER_TYPE)-1) 
+            else if( byte_p      == (uint8_t*)buffer->_memory._end_of_file_p + sizeof(QUEX_CHARACTER_TYPE)-1) 
                 fprintf(stdout, "]");
             else 
                 fprintf(stdout, ".");

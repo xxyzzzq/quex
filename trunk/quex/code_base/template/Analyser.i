@@ -5,6 +5,8 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 
+#include <quex/code_base/temporary_macros_on>
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
@@ -104,7 +106,7 @@ namespace quex {
         QUEX_CHARACTER_POSITION_TYPE* End = post_context_start_position + PostContextN;
 
         if( buffer->filler == 0x0 ) return false;
-        if( buffer->_end_of_file_p != 0x0 ) return false;
+        if( buffer->_memory._memory._content_end != 0x0 ) return false;
         const size_t LoadedCharacterN = QuexBufferFiller_load_forward(buffer);
         if( LoadedCharacterN == 0 ) return false;
 
@@ -125,6 +127,8 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex 
 #endif
+
+#include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/BufferFiller.i>

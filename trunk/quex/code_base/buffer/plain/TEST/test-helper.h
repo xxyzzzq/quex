@@ -10,7 +10,7 @@ static int cl_has(int argc, char** argv, const char* What)
 { return argc > 1 && strcmp(argv[1], What) == 0; }
 #endif
 
-static FILE*
+inline FILE*
 prepare_input()
 {
     /* NOTE: This function depends on the compiler setting QUEX_CHARACTER_TYPE */
@@ -35,7 +35,7 @@ prepare_input()
     return fh;
 }
 
-static FILE*
+inline FILE*
 prepare_input_error()
 {
     /* NOTE: This function depends on the compiler setting QUEX_CHARACTER_TYPE */

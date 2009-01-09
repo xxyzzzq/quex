@@ -40,4 +40,4 @@ lexeme start = 9 (--> '9')
 lexeme start = 10 (--> '0')
 ||1234567890]|
 ##NOTE: The following break up is intended
-##BufferFiller_backward_copy-32.exe: /home/fschaef/prj/quex/trunk/quex/code_base/buffer/BufferFiller.i:454: size_t quex::__QuexBufferFiller_backward_compute_backward_distance(quex::QuexBuffer*): Assertion `(size_t)(buffer->_lexeme_start_p - buffer->_input_p) < QuexBuffer_content_size(buffer)' failed.
+##BufferFiller_backward_copy-32.exe: /home/fschaef/prj/quex/trunk/quex/code_base/buffer/BufferFiller.i:443: size_t quex::__QuexBufferFiller_backward_compute_backward_distance(quex::QuexBuffer*): Assertion `(size_t)(buffer->_lexeme_start_p - buffer->_input_p) < QuexBuffer_content_size(buffer)' failed.

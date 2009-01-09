@@ -3,6 +3,7 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 
 #include <quex/code_base/asserts>
+#include <quex/code_base/buffer/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -91,7 +92,7 @@ namespace quex {
         QuexBufferMemory_init(&(me->_memory), memory, BufferMemorySize);      
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
-        me->_end_of_file_p = (Memory == 0x0) ? me->_memory._back
+        me->_memory._end_of_file_p = (Memory == 0x0) ? me->_memory._back
                              :                 me->_memory._front + 1 + ContentSize; 
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -123,7 +124,7 @@ namespace quex {
         if( ! ResetF || me->_content_character_index_begin != 0 ) {
             /* NOTE: On 'reset' the end of file pointer has to remain, if no reload is re-
              *       quired. Reload is required if _content_character_index_begin == 0.  */
-            me->_end_of_file_p = 0x0;
+            me->_memory._end_of_file_p = 0x0;
         }
 
         if( me->filler != 0x0 ) {
@@ -227,7 +228,7 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
 #       ifdef QUEX_OPTION_ASSERTS
         if( *me->_input_p == QUEX_SETTING_BUFFER_LIMIT_CODE )
-            __quex_assert(   me->_input_p == me->_end_of_file_p 
+            __quex_assert(   me->_input_p == me->_memory._end_of_file_p 
                           || me->_input_p == me->_memory._back || me->_input_p == me->_memory._front);
 #       endif
         return *(me->_input_p); 
@@ -289,7 +290,7 @@ namespace quex {
     QuexBuffer_text_end(QuexBuffer* me)
     {
         /* Returns a pointer to the position after the last text content inside the buffer. */
-        if( me->_end_of_file_p != 0 ) return me->_end_of_file_p;
+        if( me->_memory._end_of_file_p != 0 ) return me->_memory._end_of_file_p;
         else                          return me->_memory._back;   
     }
 
@@ -305,8 +306,8 @@ namespace quex {
     {
         /* NOTE: The content starts at _front[1], since _front[0] contains 
          *       the buffer limit code. */
-        me->_end_of_file_p    = Position;
-        *(me->_end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        me->_memory._end_of_file_p    = Position;
+        *(me->_memory._end_of_file_p) = QUEX_SETTING_BUFFER_LIMIT_CODE;
 
         /* Not yet: QUEX_BUFFER_ASSERT_CONSISTENCY(me) -- pointers may still have to be adapted. */
     }
@@ -315,9 +316,9 @@ namespace quex {
     QuexBuffer_end_of_file_unset(QuexBuffer* buffer)
     {
         /* If the end of file pointer is to be 'unset' me must assume that the storage as been
-         * overidden with something useful. Avoid setting _end_of_file_p = 0x0 while the 
+         * overidden with something useful. Avoid setting _memory._end_of_file_p = 0x0 while the 
          * position pointed to still contains the buffer limit code.                             */
-        buffer->_end_of_file_p = 0x0;
+        buffer->_memory._end_of_file_p = 0x0;
         /* Not yet: QUEX_BUFFER_ASSERT_CONSISTENCY(me) -- pointers may still have to be adapted. */
     }
 
@@ -325,7 +326,7 @@ namespace quex {
     QuexBuffer_is_end_of_file(QuexBuffer* buffer)
     { 
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
-        return buffer->_input_p == buffer->_end_of_file_p;
+        return buffer->_input_p == buffer->_memory._end_of_file_p;
     }
 
     QUEX_INLINE bool                  
@@ -349,7 +350,7 @@ namespace quex {
        }
        else {
            /* _input_p + CharacterN >= text_end, thus we need to reload. */
-           if( me->filler == 0x0 || me->_end_of_file_p != 0x0 ) {
+           if( me->filler == 0x0 || me->_memory._end_of_file_p != 0x0 ) {
                me->_input_p = QuexBuffer_text_end(me);  /* No reload possible */
            } else {
                /* Reload until delta is reachable inside buffer. */
@@ -496,30 +497,6 @@ namespace quex {
     QUEX_INLINE size_t          
     QuexBufferMemory_size(QuexBufferMemory* me)
     { return me->_back - me->_front + 1; }
-
-#ifdef QUEX_OPTION_ASSERTS
-    QUEX_INLINE void
-    QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QuexBuffer* buffer)
-    {
-        QUEX_CHARACTER_TYPE* iterator = buffer->_memory._front + 1;
-        QUEX_CHARACTER_TYPE* End      = buffer->_memory._back;
-
-        if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
-        if( buffer->_end_of_file_p != 0x0 ) End = buffer->_end_of_file_p;
-        for(; iterator != End; ++iterator) {
-            if( *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-                if( iterator == buffer->_memory._front + 1 ) {
-                    QUEX_ERROR_EXIT("Buffer limit code character appeared as first character in buffer.\n"
-                                    "This is most probably a load failure.");
-                } else {
-                    QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.\n");
-                }
-            }
-        }
-    }
-#else
-    /* Defined as empty macro. See header 'quex/code_base/buffer/Buffer' */
-#endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
