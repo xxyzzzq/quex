@@ -116,61 +116,15 @@ namespace quex {
 #   define TEMPLATED_CLASS    QuexBufferFiller_IConv
 #endif 
 
-
-#ifndef __QUEX_SETTING_PLAIN_C
-    template <class InputHandleT>
-    struct QuexCharacterIndexToStreamPosition {              /* Associate character index */
-        size_t                             character_index;  /* with its position in the  */
-        STREAM_POSITION_TYPE(InputHandleT) stream_position;  /* stream.                   */
-    };
-#   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition<TYPE>
-#else
-    typedef struct { 
-        size_t                             character_index;  
-        STREAM_POSITION_TYPE(InputHandleT) stream_position;        
-    } QuexCharacterIndexToStreamPosition;
-#   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
-#endif 
-
-    typedef struct {
-        uint8_t*  begin;
-        size_t    size;
-        uint8_t*  iterator;
-        size_t    bytes_left_n;
-    } QuexBufferFiller_IConv_BufferInfo;
-
-#   ifndef __QUEX_SETTING_PLAIN_C
-    TEMPLATIFIER(InputHandleT)
-    struct QuexBufferFiller_IConv { 
-#   else
-    struct __QuexBufferFiller_IConv_tag { 
-#   endif
+    TEMPLATIFIER(QuexBufferFiller_IConv, InputHandleT) {
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
-        QuexBufferFiller   base;
-
-        InputHandleT*      ih;
-
-        iconv_t                             iconv_handle;  /* Conversion Data */
-        bool                                _constant_size_character_encoding_f;
-
-        struct {
-            QuexBufferFiller_IConv_BufferInfo  base;
-            bool                               _external_owner_f;
-            size_t                             begin_character_index;  
-            STREAM_POSITION_TYPE(InputHandleT) begin_stream_position;        
-            size_t                             iterators_character_index;
-            STREAM_POSITION_TYPE(InputHandleT) end_stream_position;
-            size_t                             fill_level_n; 
-        } raw_buffer;
+        QuexBufferFiller_Converter   base;
 
         /* Position where the whole analysis starts. The '0' when we are asked to reset.      */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
-    };
+    } TEMPLATIFIER_END(QuexBufferFiller_IConv);
 
-#   ifdef __QUEX_SETTING_PLAIN_C
-    typedef struct __QuexBufferFiller_IConv_tag   QuexBufferFiller_IConv;
-#   endif
 
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_IConv_construct(TEMPLATED_CLASS* me,
