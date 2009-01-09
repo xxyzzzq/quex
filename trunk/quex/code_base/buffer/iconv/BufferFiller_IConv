@@ -132,12 +132,6 @@ namespace quex {
 #   define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
 #endif 
 
-    typedef struct {
-        uint8_t*  begin;
-        size_t    size;
-        uint8_t*  iterator;
-        size_t    bytes_left_n;
-    } QuexBufferFiller_IConv_BufferInfo;
 
     TEMPLATIFIER(QuexBufferFiller_IConv, InputHandleT) {
 
@@ -151,13 +145,16 @@ namespace quex {
         bool                                _constant_size_character_encoding_f;
 
         struct {
-            QuexBufferFiller_IConv_BufferInfo  base;
+            uint8_t*  begin;
+            size_t    size;
+            uint8_t*  iterator;
+            uint8_t*  end;
+
             bool                               _external_owner_f;
             size_t                             begin_character_index;  
             STREAM_POSITION_TYPE(InputHandleT) begin_stream_position;        
             size_t                             iterators_character_index;
             STREAM_POSITION_TYPE(InputHandleT) end_stream_position;
-            size_t                             fill_level_n; 
         } raw_buffer;
 
         /* Position where the whole analysis starts. The '0' when we are asked to reset.      */
