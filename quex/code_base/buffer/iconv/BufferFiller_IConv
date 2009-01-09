@@ -139,12 +139,8 @@ namespace quex {
         size_t    bytes_left_n;
     } QuexBufferFiller_IConv_BufferInfo;
 
-#   ifndef __QUEX_SETTING_PLAIN_C
-    TEMPLATIFIER(InputHandleT)
-    struct QuexBufferFiller_IConv { 
-#   else
-    struct __QuexBufferFiller_IConv_tag { 
-#   endif
+    TEMPLATIFIER(QuexBufferFiller_IConv, InputHandleT) {
+
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
         QuexBufferFiller   base;
@@ -166,11 +162,8 @@ namespace quex {
 
         /* Position where the whole analysis starts. The '0' when we are asked to reset.      */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
-    };
+    } TEMPLATIFIER_END(QuexBufferFiller_IConv);
 
-#   ifdef __QUEX_SETTING_PLAIN_C
-    typedef struct __QuexBufferFiller_IConv_tag   QuexBufferFiller_IConv;
-#   endif
 
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_IConv_construct(TEMPLATED_CLASS* me,

@@ -143,7 +143,7 @@ namespace quex {
          * NOTE: There is a seemingly dangerous case where the loading **just** fills the buffer to 
          *       the limit. In this case no 'End Of File' is detected, no end of file pointer is set,
          *       and as a consequence a new loading will happen later. This new loading, though,
-         *       will only copy the fallback-region. The 'LoadedN == 0' will cause the _end_of_file_p
+         *       will only copy the fallback-region. The 'LoadedN == 0' will cause the _memory._end_of_file_p
          *       to be set to the end of the copied fallback-region. And everything is fine.
          */
         QuexBufferFiller*  me = buffer->filler;
@@ -164,13 +164,13 @@ namespace quex {
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
 
         /* (*) Check for the three possibilities mentioned above */
-        if     ( buffer->_input_p == buffer->_memory._front ) { return 0; }      /* (1)*/
-        else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }      /* (2)*/
+        if     ( buffer->_input_p == buffer->_memory._front )       { return 0; }      /* (1)*/
+        else if( buffer->_input_p == buffer->_memory._end_of_file_p ) { return 0; }      /* (2)*/
         else if( buffer->_input_p != buffer->_memory._back  ) {                     
             QUEX_ERROR_EXIT("Call to 'load_forward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
         }
-        else if( buffer->_end_of_file_p != 0x0 ) { 
+        else if( buffer->_memory._end_of_file_p != 0x0 ) { 
             /* End of file has been reached before, we cannot load more.               */
             return 0;                               
         }
@@ -240,7 +240,7 @@ namespace quex {
         __quex_assert((int)Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
         __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(buffer));
         /* Copying forward shall **only** happen when new content is to be loaded. This is not the case
-         * if EOF as reached and the _end_of_file_p lies inside the buffer. Thus the _input_p
+         * if EOF as reached and the _memory._memory._end_of_file_p lies inside the buffer. Thus the _input_p
          * must have reached the upper border of the buffer. */
         __quex_assert(buffer->_input_p == buffer->_memory._back);
 
@@ -285,7 +285,7 @@ namespace quex {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
-        __quex_assert( buffer->_end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );
+        __quex_assert( buffer->_memory._end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );
         __quex_assert( DesiredLoadN != 0 );
 
         /* (*) If end of file has been reached, then the 'end of file' pointer needs to be set*/
@@ -303,8 +303,8 @@ namespace quex {
         buffer->_lexeme_start_p = (buffer->_input_p + 1) - Distance_LexemeStart_to_InputP; 
 
         /* Asserts */
-        __quex_assert(   buffer->_end_of_file_p == 0x0 
-                      || (int)(LoadedN + FallBackN) == buffer->_end_of_file_p - buffer->_memory._front - 1);
+        __quex_assert(   buffer->_memory._end_of_file_p == 0x0 
+                      || (int)(LoadedN + FallBackN) == buffer->_memory._end_of_file_p - buffer->_memory._front - 1);
 
     }
 
@@ -361,7 +361,7 @@ namespace quex {
 
         /* (*) Check for the three possibilities mentioned above*/
         if     ( buffer->_input_p == buffer->_memory._back )  { return 0; }   /* (1) */
-        else if( buffer->_input_p == buffer->_end_of_file_p ) { return 0; }   /* (1) */
+        else if( buffer->_input_p == buffer->_memory._end_of_file_p ) { return 0; }   /* (1) */
         else if( buffer->_input_p != buffer->_memory._front ) {
             QUEX_ERROR_EXIT("Call to 'load_backward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
@@ -502,8 +502,8 @@ namespace quex {
     __QuexBufferFiller_backward_adapt_pointers(QuexBuffer* buffer, const size_t BackwardDistance)
     {
         /* -- end of file / end of buffer:*/
-        if( buffer->_end_of_file_p ) {
-            QUEX_CHARACTER_TYPE*   NewEndOfFileP = buffer->_end_of_file_p + BackwardDistance;
+        if( buffer->_memory._end_of_file_p ) {
+            QUEX_CHARACTER_TYPE*   NewEndOfFileP = buffer->_memory._end_of_file_p + BackwardDistance;
             if( NewEndOfFileP <= buffer->_memory._back ) 
                 QuexBuffer_end_of_file_set(buffer, NewEndOfFileP);
             else  

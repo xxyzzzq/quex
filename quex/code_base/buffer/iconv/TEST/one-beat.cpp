@@ -25,9 +25,9 @@ main(int argc, char** argv)
         return 0;
     }
 
-    std::FILE*           fh = fopen("test.txt", "r");
-    char*                target_charset = (char*)"UCS-4BE";
-    size_t               raw_memory_size = 3;
+    std::FILE*   fh = fopen("test.txt", "r");
+    char*        target_charset = (char*)"UCS-4BE";
+    size_t       raw_memory_size = 3;
     raw_memory_size = argv[1][0] - '0';
     assert(raw_memory_size >= 1);
     assert(raw_memory_size <= 9);

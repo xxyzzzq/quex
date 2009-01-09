@@ -2,23 +2,28 @@
 <diagram>
 <source><![CDATA[#![QuexBuffer Construction]
 user:External[pe]
-/b:Buffer
+b:Buffer
 /m:Content Memory
+/c:Converter
 /f:BufferFiller
 /ih:Stream
 
 
 user:ih.new
 user:ih.open(...)
-user:f.new
-user:m.new
-user:b.new
-user:b._init(BufferFiller, Content Memory, Coding)
-b:m._init()
+user:b.construct(FillerType, ...)
+b:m.new
 m:setup buffer borders
-b:f._init(Stream,Coding)
-f:setup function pointers
+b:c.new
+c:set function pointers
+c:(open, convert, close)
+b:f.new(Converter)
+f:set converter
+f:set function pointers
+f:(tell, seek, read)
 f:store start stream position
+f:initialize raw buffer
+f:c.open
 b:f._initial_load()
 f:ih.QUEX_INPUT_POLICY_LOAD_BYTES()
 ih:m.fill stream content into buffer

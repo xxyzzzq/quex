@@ -72,7 +72,7 @@ test_move_forward(QuexBuffer* buffer, size_t StepSize)
 {
     print_this(buffer);
     while( ! (QuexBuffer_distance_input_to_text_end(buffer) == 0 && 
-              (buffer->filler == 0x0 || buffer->_end_of_file_p != 0x0) ) ) {
+              (buffer->filler == 0x0 || buffer->_memory._end_of_file_p != 0x0) ) ) {
         QuexBuffer_move_forward(buffer, StepSize);
         print_this(buffer);
     }

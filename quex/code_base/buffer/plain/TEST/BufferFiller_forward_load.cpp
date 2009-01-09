@@ -16,7 +16,6 @@ main(int argc, char** argv)
     }
     FILE*                         fh = prepare_input();
     QuexBuffer                    buffer;
-    QuexBufferFiller_Plain<FILE>  filler;
 
     QuexBuffer_construct(&buffer, fh, QUEX_PLAIN, 0x0, /* BufferMemorySize */ 8, 0);
 
@@ -26,7 +25,7 @@ main(int argc, char** argv)
         printf("     ");
         QuexBuffer_show_content(&buffer);
         printf("\n");
-        if( buffer._end_of_file_p != 0x0 ) break;
+        if( buffer._memory._end_of_file_p != 0x0 ) break;
         buffer._input_p        = buffer._memory._back;
         buffer._lexeme_start_p = buffer._memory._back;
         /**/

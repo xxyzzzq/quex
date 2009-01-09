@@ -20,12 +20,7 @@
 namespace quex {
 #endif
 
-    TEMPLATIFIER(InputHandleT)
-#   ifndef __QUEX_SETTING_PLAIN_C
-    struct QuexBufferFiller_Plain { 
-#   else
-    struct __QuexBufferFiller_Plain_tag { 
-#   endif
+    TEMPLATIFIER(QuexBufferFiller_Plain, InputHandleT) {
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
         QuexBufferFiller   base;
@@ -40,17 +35,10 @@ namespace quex {
         /* Index of the character where the next read will start */
         size_t             _character_index;
 #       endif
-    };
-
-#   ifndef __QUEX_SETTING_PLAIN_C
-#   define TEMPLATED_CLASS   QuexBufferFiller_Plain<InputHandleT>
-#   else
-    typedef struct __QuexBufferFiller_Plain_tag    QuexBufferFiller_Plain;
-#   define TEMPLATED_CLASS   QuexBufferFiller_Plain
-#   endif
+    } TEMPLATIFIER_END(QuexBufferFiller_Plain);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Plain_construct(TEMPLATED_CLASS* me, InputHandleT* input_handle);
+    QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)* me, InputHandleT* input_handle);
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read. */
 

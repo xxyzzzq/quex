@@ -1,32 +1,32 @@
-<test-database execution-time-sec="0.02" date="Thu Dec 25 06:43:07 2008">
+<test-database execution-time-sec="0.03" date="Thu Jan  1 10:15:16 2009">
     <last-used-diff-display-program name=""/>
     <group name="Count Line and Column">
-        <test title="Without Indentation Count II" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line-x.exe" info-request-time="1230183787L"/>
+        <test title="Without Indentation Count II" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="counter-column_line-x.exe" info-request-time="1230801315L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="1161278526"/>
+               <choice name="" result="OK" time-sec="0.01" crc="1161278526"/>
             </choice-list>
         </test>
-        <test title="With Indentation II" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line-indentation-x.exe" info-request-time="1230183786L"/>
+        <test title="With Indentation II" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="counter-column_line-indentation-x.exe" info-request-time="1230801314L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-842650517"/>
+               <choice name="" result="OK" time-sec="0.01" crc="-842650517"/>
             </choice-list>
         </test>
-        <test title="With Indentation" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line-indentation.exe" info-request-time="1230183787L"/>
+        <test title="With Indentation" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="counter-column_line-indentation.exe" info-request-time="1230801314L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-1633920135"/>
+               <choice name="" result="OK" time-sec="0.01" crc="-1633920135"/>
             </choice-list>
         </test>
-        <test title="Without Indentation Count" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="counter-column_line.exe" info-request-time="1230183787L"/>
+        <test title="Without Indentation Count" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="counter-column_line.exe" info-request-time="1230801315L"/>
             <make-procedure success="True" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="821766212"/>
+               <choice name="" result="OK" time-sec="0.01" crc="821766212"/>
             </choice-list>
         </test>
     </group>
