@@ -38,7 +38,7 @@ main(int argc, char** argv)
     while( 1 + 1 == 2 ) {
         buffer._input_p        = QuexBuffer_text_end(&buffer);
         buffer._lexeme_start_p = buffer._input_p;
-        if( buffer._input_p == buffer._end_of_file_p ) break;
+        if( buffer._input_p == buffer._memory._content_end ) break;
         QuexBufferFiller_load_forward(&buffer);
     }
     test_move_backward(&buffer, StepSize); 

@@ -95,14 +95,7 @@ namespace quex {
         me->raw_buffer.base.bytes_left_n  = 0;  /* --> trigger reload                       */
 
         /* Initialize the conversion operations                                             */
-        me->iconv_handle = iconv_open(to_coding, FromCoding);
-        if( me->iconv_handle == (iconv_t)-1 ) {
-            char tmp[128];
-            snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, to_coding);
-            QUEX_ERROR_EXIT(tmp);
-        }
-        me->_constant_size_character_encoding_f = \
-                        ! QuexBufferFiller_IConv_has_coding_dynamic_character_width(FromCoding);
+        me->converter->open(...);
 
         /* Setup the tell/seek of character positions                                       */
         me->start_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
