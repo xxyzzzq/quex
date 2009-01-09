@@ -163,7 +163,7 @@ namespace quex {
          *     again. (iterator != end)
          * (2) The raw buffer is empty. Then it must be loaded in order to get some
          *     basis for conversion. (iterator == end)                                */
-        if( me->raw_buffer.base.iterator == me->raw_buffer.base.begin + me->raw_buffer.base.size ) 
+        if( me->raw_buffer.base.iterator == me->raw_buffer.base.begin + me->raw_buffer.fill_level_n ) 
             /* If no bytes can be loaded, then zero characters are converted */
             if( __QuexBufferFiller_IConv_fill_raw_buffer(me) == 0 ) { return 0; }
 
@@ -271,7 +271,7 @@ namespace quex {
          *  as a compile option. If you have an elegant solution to solve the problem for 
          *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
         size_t source_bytes_left_n = SourceEnd - *source;
-        size_t drain_bytes_left_n  = DrainEnd - *drain;
+        size_t drain_bytes_left_n  = (DrainEnd - *drain)*sizeof(QUEX_CHARACTER_TYPE);
 
         size_t report = iconv(me->iconv_handle, 
                               __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
