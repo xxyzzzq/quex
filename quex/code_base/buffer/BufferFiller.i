@@ -586,12 +586,20 @@ namespace quex {
         const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
         QUEX_CHARACTER_TYPE  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
 
+        /* We CANNOT assume that end the end it will hold: 
+         *
+         *       __quex_assert(me->tell_character_index(me) == TargetIndex);
+         *
+         * Because, we do not know wether the stream actually has so many characters.     */
         for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
-            me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize);
+            if( me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize) < ChunkSize ) {
+                __quex_assert(me->tell_character_index(me) <= TargetIndex);
+                return;
+            }
         if( remaining_character_n ) 
             me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
        
-        __quex_assert(me->tell_character_index(me) == TargetIndex);
+        __quex_assert(me->tell_character_index(me) <= TargetIndex);
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
