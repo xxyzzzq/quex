@@ -44,6 +44,9 @@ main(int argc, char** argv)
     for(int i=Front; ; i += Delta) {
 
         filler.base.seek_character_index(&filler.base, i);
+
+        assert(filler.base.tell_character_index(&filler.base) == (size_t)i);
+
         loaded_n = filler.base.read_characters(&filler.base, 
                                                (QUEX_CHARACTER_TYPE*)memory, MemorySize);
 

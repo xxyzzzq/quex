@@ -119,24 +119,17 @@ namespace quex {
 #endif 
 
 
-    TEMPLATIFIER(QuexCharacterIndexToStreamPosition, InputHandleT) { 
-                                                             /* Associate character index */
-        size_t                             character_index;  /* with its position in the  */
-        STREAM_POSITION_TYPE(InputHandleT) stream_position;  /* stream.                   */
+    typedef struct { 
+                                       /* Associate character index        */
+        size_t       character_index;  /* with its position in the buffer. */
         /* The new content is not necessarily always loaded to the begin of the buffer.
          * Instead, some bytes may have been moved in front, and the load relates to some
          * bytes after the beginning. We cannot necessarily assume that the stream position
          * of the first byte is simple '- offset' because we may have to deal with 'strange 
          * streams'.                                                                        */
-        ptrdiff_t                          offset;
+        uint8_t*     pointer;
 
-    } TEMPLATIFIER_END(QuexCharacterIndexToStreamPosition);
-
-#   ifdef __QUEX_SETTING_PLAIN_C
-#       define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition
-#   else
-#       define CHAR_INDEX_AND_STREAM_POSITION(TYPE) QuexCharacterIndexToStreamPosition<TYPE>
-#   endif 
+    } QuexBufferFiller_Converter_CharacterIndexHint;
 
     TEMPLATIFIER(QuexBufferFiller_IConv_BufferInfo, InputHandleT) {
         uint8_t*                             begin;
@@ -167,7 +160,7 @@ namespace quex {
         /* Store the information of the relation between character index of the last loading.
          * This is not neccessarily the character index of 'begin', because some bytes might
          * have moved from the last conversion to the begin of the buffer.                    */
-        CHAR_INDEX_AND_STREAM_POSITION(InputHandleT)  hint_0;
+        QuexBufferFiller_Converter_CharacterIndexHint  hint;
 
         bool                                  _constant_size_character_encoding_f;
 
