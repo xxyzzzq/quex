@@ -121,8 +121,7 @@ namespace quex {
                                                me->start_position);
 
         /* Hint for relation between character index, raw buffer offset and stream position */
-        me->hint.character_index = 0;
-        me->hint.pointer         = me->raw_buffer.begin;
+        me->hint_begin_character_index = 0;
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
@@ -215,9 +214,18 @@ namespace quex {
         __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
         __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
 
-        /* Store information about the current position's character index. */
-        me->hint.character_index = buffer->iterators_character_index;
-        me->hint.pointer         = buffer->begin; /* + RemainingBytesN; */
+        /* Store information about the current position's character index. 
+         * [Ref 1] -- 'end' may point point into the middle of an (not yet converted) character. 
+         *         -- 'iterator' points always to the first byte after the last interpreted char.
+         *         -- The stretch starting with 'iterator' to 'end - 1' contains the fragment
+         *            of the uninterpreted character.
+         *         -- The stretch of the uninterpreted character fragment is to be copied 
+         *            to the  beginning of the buffer. 
+         *  
+         *         ==> The character index of the iterator relates always to the begin of 
+         *             the buffer.
+         */
+        me->hint_begin_character_index = buffer->iterators_character_index;
 
         /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
          * the buffer) where there are bytes left in the raw buffer. These need to be
@@ -225,7 +233,7 @@ namespace quex {
         if( RemainingBytesN != 0 ) {
             /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
              * following is safe against overlaps.                                      */
-            /* Cast to uint8_t to avoid a spurious function overload */
+            /* Cast to uint8_t to avoid a spurious function overload                    */
             __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), RemainingBytesN);
         }
 
@@ -347,8 +355,9 @@ namespace quex {
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(QuexBufferFiller_IConv)*             me           = (TEMPLATED(QuexBufferFiller_IConv)*)alter_ego;
         TEMPLATED(QuexBufferFiller_IConv_BufferInfo)*  buffer       = &me->raw_buffer;
-        const size_t                                   Hint_Index   = me->hint.character_index;
-        uint8_t*                                       Hint_Pointer = me->hint.pointer;
+        /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
+        const size_t                                   Hint_Index   = me->hint_begin_character_index;
+        uint8_t*                                       Hint_Pointer = buffer->begin;
 
         /* Seek_character_index(Pos) means that the next time when a character buffer
          * is to be filled, this has to happen from position 'CharacterIndex'. 

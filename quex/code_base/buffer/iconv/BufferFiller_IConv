@@ -119,18 +119,6 @@ namespace quex {
 #endif 
 
 
-    typedef struct { 
-                                       /* Associate character index        */
-        size_t       character_index;  /* with its position in the buffer. */
-        /* The new content is not necessarily always loaded to the begin of the buffer.
-         * Instead, some bytes may have been moved in front, and the load relates to some
-         * bytes after the beginning. We cannot necessarily assume that the stream position
-         * of the first byte is simple '- offset' because we may have to deal with 'strange 
-         * streams'.                                                                        */
-        uint8_t*     pointer;
-
-    } QuexBufferFiller_Converter_CharacterIndexHint;
-
     TEMPLATIFIER(QuexBufferFiller_IConv_BufferInfo, InputHandleT) {
         uint8_t*                             begin;
         
@@ -157,14 +145,13 @@ namespace quex {
 
         TEMPLATED(QuexBufferFiller_IConv_BufferInfo)  raw_buffer;
 
-        /* Store the information of the relation between character index of the last loading.
-         * This is not neccessarily the character index of 'begin', because some bytes might
-         * have moved from the last conversion to the begin of the buffer.                    */
-        QuexBufferFiller_Converter_CharacterIndexHint  hint;
+        /* Store information of the character index at the begin of the raw buffer. This 
+         * may facilitate the 'seek' in some cases. See also [Ref 1] in the implementation. */
+        size_t             hint_begin_character_index;
 
-        bool                                  _constant_size_character_encoding_f;
+        bool               _constant_size_character_encoding_f;
 
-        /* Position where the whole analysis starts. The '0' when we are asked to reset.      */
+        /* Position where the whole analysis starts. The '0' when we are asked to reset.    */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
     } TEMPLATIFIER_END(QuexBufferFiller_IConv);
 
