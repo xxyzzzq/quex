@@ -63,10 +63,9 @@ namespace quex {
 
     QUEX_INLINE bool QuexBufferFiller_IConv_has_coding_dynamic_character_width(const char* Coding);
 
-    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_IConv_BufferInfo_init(
-                                           TEMPLATED(QuexBufferFiller_IConv_BufferInfo)* me, 
-                                           uint8_t* Begin, size_t SizeInBytes,
-                                           STREAM_POSITION_TYPE(InputHandleT) StartPosition);
+    TEMPLATE_IN(InputHandleT) void   QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
+                                                        uint8_t* Begin, size_t SizeInBytes,
+                                                        STREAM_POSITION_TYPE(InputHandleT) StartPosition);
 
     /******/
     /******/
@@ -87,12 +86,11 @@ namespace quex {
                                           TEMPLATED(__QuexBufferFiller_IConv_read_characters),
                                           TEMPLATED(__QuexBufferFiller_IConv_destroy));
 
-        /* Initialize the raw buffer that holds the plain bytes of the input file
-         * (setup to trigger initial reload)                                                */
         me->ih = input_handle;
 
         /* Initialize the conversion operations                                             */
-        QuexConverter_IConv_open(me, FromCoding, to_coding);
+        me->converter = QuexConverter_IConv_new();
+        me->converter->open(me->converter, FromCoding, to_coding);
 
         me->_constant_size_character_encoding_f = \
                         ! QuexBufferFiller_IConv_has_coding_dynamic_character_width(FromCoding);
@@ -100,9 +98,10 @@ namespace quex {
         /* Setup the tell/seek of character positions                                       */
         me->start_position    = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
 
-        /* Initialize the raw buffer that holds the plain bytes of the input file           */
+        /* Initialize the raw buffer that holds the plain bytes of the input file
+         * (setup to trigger initial reload)                                                */
         uint8_t* raw_buffer_p = MemoryManager_get_BufferFiller_RawBuffer(RawBufferSize);
-        QuexBufferFiller_IConv_BufferInfo_init(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
+        QuexRawBuffer_init(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
                                                me->start_position);
 
         /* Hint for relation between character index, raw buffer offset and stream position */
@@ -118,7 +117,7 @@ namespace quex {
         TEMPLATED(QuexBufferFiller_IConv)* me = (TEMPLATED(QuexBufferFiller_IConv)*)alter_ego;
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
 
-        QuexConverter_IConv_close(me); 
+        me->converter->delete_self(me->converter);
 
         MemoryManager_free_BufferFiller_RawBuffer(me->raw_buffer.begin); 
 
@@ -152,11 +151,9 @@ namespace quex {
         const QUEX_CHARACTER_TYPE*  UserBufferEnd        = user_memory_p + N;
         const size_t                StartCharacterIndex  = me->raw_buffer.iterators_character_index;
 
-        while( ! __QuexBufferFiller_IConv_convert(me, 
-                                                  &me->raw_buffer.iterator, 
-                                                  me->raw_buffer.end,
-                                                  &user_buffer_iterator, 
-                                                  UserBufferEnd) ) {
+        while( ! me->converter->convert(me->converter, 
+                                        &me->raw_buffer.iterator, me->raw_buffer.end,
+                                        &user_buffer_iterator,    UserBufferEnd) ) {
 
             __quex_assert(me->raw_buffer.iterator <= me->raw_buffer.end);
 
@@ -193,8 +190,8 @@ namespace quex {
         /* Try to fill the raw buffer to its limits with data from the file.
          * The filling starts from its current position, thus the remaining bytes
          * to be translated are exactly the number of bytes in the buffer.              */
-        TEMPLATED(QuexBufferFiller_IConv_BufferInfo)*  buffer          = &me->raw_buffer;
-        const size_t                                   RemainingBytesN = buffer->end - buffer->iterator;
+        TEMPLATED(QuexRawBuffer)*  buffer          = &me->raw_buffer;
+        const size_t               RemainingBytesN = buffer->end - buffer->iterator;
         QUEX_ASSERT_BUFFER_INFO(buffer);
         __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
         __quex_assert(buffer->end_stream_position == QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT));
@@ -264,8 +261,8 @@ namespace quex {
          *       stream to a particular position given by a character index. QuexBuffer_seek(..)
          *       sets the _input_p to a particular position.                                      */
         __quex_assert(alter_ego != 0x0); 
-        TEMPLATED(QuexBufferFiller_IConv)*             me           = (TEMPLATED(QuexBufferFiller_IConv)*)alter_ego;
-        TEMPLATED(QuexBufferFiller_IConv_BufferInfo)*  buffer       = &me->raw_buffer;
+        TEMPLATED(QuexBufferFiller_IConv)*  me     = (TEMPLATED(QuexBufferFiller_IConv)*)alter_ego;
+        TEMPLATED(QuexRawBuffer)*           buffer = &me->raw_buffer;
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
         const size_t                                   Hint_Index   = me->hint_begin_character_index;
         uint8_t*                                       Hint_Pointer = buffer->begin;
@@ -354,9 +351,9 @@ namespace quex {
     }
 
     TEMPLATE_IN(InputHandleT) void   
-    QuexBufferFiller_IConv_BufferInfo_init(TEMPLATED(QuexBufferFiller_IConv_BufferInfo)* me, 
-                                           uint8_t* Begin, size_t SizeInBytes,
-                                           STREAM_POSITION_TYPE(InputHandleT) StartPosition)
+    QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
+                       uint8_t* Begin, size_t SizeInBytes,
+                       STREAM_POSITION_TYPE(InputHandleT) StartPosition)
     {
         me->begin               = Begin;
 

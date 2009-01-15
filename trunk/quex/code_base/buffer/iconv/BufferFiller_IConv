@@ -95,6 +95,7 @@
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/iconv/Converter>
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     extern "C" { 
@@ -112,14 +113,7 @@
 namespace quex {
 #endif
 
-#ifndef __QUEX_SETTING_PLAIN_C
-#   define TEMPLATED_CLASS    QuexBufferFiller_IConv<InputHandleT>
-#else
-#   define TEMPLATED_CLASS    QuexBufferFiller_IConv
-#endif 
-
-
-    TEMPLATIFIER(QuexBufferFiller_IConv_BufferInfo, InputHandleT) {
+    TEMPLATIFIER(QuexRawBuffer, InputHandleT) {
         uint8_t*                             begin;
         
         uint8_t*                             iterator;
@@ -131,7 +125,7 @@ namespace quex {
         uint8_t*                             memory_end;
 
         bool      _external_owner_f;
-    } TEMPLATIFIER_END(QuexBufferFiller_IConv_BufferInfo);
+    } TEMPLATIFIER_END(QuexRawBuffer);
 
     TEMPLATIFIER(QuexBufferFiller_IConv, InputHandleT) {
 
@@ -141,9 +135,9 @@ namespace quex {
 
         InputHandleT*      ih;
 
-        iconv_t            iconv_handle;  /* Conversion Data */
+        QuexConverter*     converter;
 
-        TEMPLATED(QuexBufferFiller_IConv_BufferInfo)  raw_buffer;
+        TEMPLATED(QuexRawBuffer)  raw_buffer;
 
         /* Store information of the character index at the begin of the raw buffer. This 
          * may facilitate the 'seek' in some cases. See also [Ref 1] in the implementation. */
@@ -157,7 +151,7 @@ namespace quex {
 
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_IConv_construct(TEMPLATED_CLASS* me,
+    QuexBufferFiller_IConv_construct(TEMPLATED(QuexBufferFiller_IConv)* me,
                                      InputHandleT* input_handle, 
                                      const char* FromCoding,   const char* ToCoding,
                                      size_t      RawBufferSize);
@@ -177,7 +171,6 @@ namespace quex {
 } // namespace quex
 #endif
 
-#undef TEMPLATED_CLASS
 
 #include <quex/code_base/temporary_macros_off>
 

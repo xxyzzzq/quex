@@ -7,30 +7,29 @@
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
-
-    /* QUEX_INLINE void */
-    TEMPLATE_IN(InputHandleT) void
-    QuexConverter_IConv_open(TEMPLATED(QuexBufferFiller_IConv)* me,
+    QUEX_INLINE void 
+    QuexConverter_IConv_open(QuexConverter* alter_ego,
                              const char* FromCoding, const char* ToCoding)
     {
-        /* QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; */
+        QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
         __quex_assert(me != 0x0);
 
         const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
 
-        me->iconv_handle = iconv_open(to_coding, FromCoding);
-        if( me->iconv_handle == (iconv_t)-1 ) {
+        me->handle = iconv_open(to_coding, FromCoding);
+        if( me->handle == (iconv_t)-1 ) {
             char tmp[128];
             snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, to_coding);
             QUEX_ERROR_EXIT(tmp);
         }
     }
 
-    TEMPLATE_IN(InputHandleT) bool 
-    __QuexBufferFiller_IConv_convert(TEMPLATED(QuexBufferFiller_IConv)*   me, 
-                                     uint8_t**              source, const uint8_t*              SourceEnd,
-                                     QUEX_CHARACTER_TYPE**  drain,  const QUEX_CHARACTER_TYPE*  DrainEnd)
+    QUEX_INLINE bool 
+    QuexConverter_IConv_convert(QuexConverter*   alter_ego, 
+                                uint8_t**              source, const uint8_t*              SourceEnd,
+                                QUEX_CHARACTER_TYPE**  drain,  const QUEX_CHARACTER_TYPE*  DrainEnd)
     {
+        QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
         /* RETURNS:  true  --> User buffer is filled as much as possible with converted 
          *                     characters.
          *           false --> More raw bytes are needed to fill the user buffer.           
@@ -50,7 +49,7 @@ namespace quex {
         size_t source_bytes_left_n = SourceEnd - *source;
         size_t drain_bytes_left_n  = (DrainEnd - *drain)*sizeof(QUEX_CHARACTER_TYPE);
 
-        size_t report = iconv(me->iconv_handle, 
+        size_t report = iconv(me->handle, 
                               __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,
                               (char**)drain,                        &drain_bytes_left_n);
 
@@ -99,10 +98,26 @@ namespace quex {
         }
     }
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexConverter_IConv_close(TEMPLATED(QuexBufferFiller_IConv)* me)
+    QUEX_INLINE void 
+    QuexConverter_IConv_delete_self(QuexConverter* alter_ego)
     {
-        iconv_close(me->iconv_handle); 
+        QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
+        iconv_close(me->handle); 
+        MemoryManager_QuexConverter_IConv_free(me);
+    }
+
+    QUEX_INLINE QuexConverter*
+    QuexConverter_IConv_new()
+    {
+        QuexConverter_IConv*  me = MemoryManager_QuexConverter_IConv_allocate();
+
+        me->base.open        = QuexConverter_IConv_open;
+        me->base.convert     = QuexConverter_IConv_convert;
+        me->base.delete_self = QuexConverter_IConv_delete_self;
+
+        me->handle = (iconv_t)-1;
+
+        return (QuexConverter*)me;
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

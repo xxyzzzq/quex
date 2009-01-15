@@ -1,0 +1,55 @@
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer  */
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__
+#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__
+
+    struct QuexConverter_tag {
+        void    (*open)(QuexConverter_tag*, 
+                        const char* FromCodingName, const char* ToCodingName);  
+        /* Opens internally a conversion handle for the conversion from 'FromCodingName'
+         * to 'ToCodingName'. Pass '0x0' as 'ToCodingName' in order to indicate a conversion
+         * to unicode of size sizeof(QUEX_CHARACTER_TYPE).                                   */
+
+        bool    (*convert)(QuexConverter_tag*, 
+                           uint8_t**             source, const uint8_t*             SourceEnd, 
+                           QUEX_CHARACTER_TYPE** drain,  const QUEX_CHARACTER_TYPE* DrainEnd);
+        /* Tries to convert all characters given in 'source' with the coding specified
+         * earlier to _open(...). 'source' and 'drain' are passed as pointers to pointers
+         * so that the pointers can be changed. This way the converter can inform the
+         * user about the state of conversion from source to drain buffer.
+         *
+         * START:          *source              SourceEnd
+         *                 |                    |
+         *          [      .....................]   source buffer
+         *
+         *               *drain         DrainEnd
+         *               |              |
+         *          [....               ] drain buffer
+         *
+         *       At the beginning, 'source' points to the first character to be
+         *       converted. 'drain' points to the place where the first converted
+         *       character is to be written to.
+         *  
+         * END:                            *source                              
+         *                                 |     
+         *          [                      .....]   source buffer
+         *
+         *                        *drain 
+         *                        |      
+         *          [.............      ] drain buffer
+         *
+         *       After convertsion, 'source' points immediately behind the last 
+         *       character that was subject to conversion. 'drain' points behind the
+         *       last character that resulted from the conversion. 
+         *  
+         * RETURNS:  true  --> Drain buffer is filled as much as possible with converted 
+         *                     characters.
+         *           false --> More source bytes are needed to fill the drain buffer.     */
+
+        void    (*delete_self)(QuexConverter_tag*);
+        /* Closes the conversion handle produced with open(...).      
+         * Deletes the object of the derived class.                                       */
+    };
+    typedef QuexConverter_tag  QuexConverter;
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__ */
