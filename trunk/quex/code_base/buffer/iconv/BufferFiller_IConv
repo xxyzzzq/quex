@@ -115,14 +115,13 @@ namespace quex {
 
     TEMPLATIFIER(QuexRawBuffer, InputHandleT) {
         uint8_t*                             begin;
+        uint8_t*                             end;
+        uint8_t*                             memory_end;
         
         uint8_t*                             iterator;
         size_t                               iterators_character_index;
         
-        uint8_t*                             end;
         STREAM_POSITION_TYPE(InputHandleT)   end_stream_position;
-
-        uint8_t*                             memory_end;
 
         bool      _external_owner_f;
     } TEMPLATIFIER_END(QuexRawBuffer);
