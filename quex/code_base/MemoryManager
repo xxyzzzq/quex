@@ -3,6 +3,8 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__
 
 #include <quex/code_base/definitions>
+#include <quex/code_base/buffer/iconv/QuexConverter_IConv>
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
@@ -44,6 +46,18 @@ namespace quex {
             return tmp;
         }
 
+    QUEX_INLINE QuexConverter_IConv*
+        MemoryManager_QuexConverter_IConv_allocate()
+        {
+            size_t     MemorySize = sizeof(QuexConverter_IConv);
+            uint8_t*   tmp        = __QUEX_ALLOCATE_MEMORY(MemorySize);
+#           ifdef QUEX_OPTION_ASSERTS
+            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, MemorySize);
+#           endif
+            return (QuexConverter_IConv*)tmp;
+        }
+
     QUEX_INLINE void
         MemoryManager_free_BufferMemory(QUEX_CHARACTER_TYPE* memory)
         {
@@ -60,6 +74,12 @@ namespace quex {
         MemoryManager_free_BufferFiller_RawBuffer(uint8_t* memory)
         {
             if( memory != 0x0 ) __QUEX_FREE_MEMORY(memory);
+        }
+
+    QUEX_INLINE void
+        MemoryManager_QuexConverter_IConv_free(QuexConverter_IConv* memory)
+        {
+            if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory);
         }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
