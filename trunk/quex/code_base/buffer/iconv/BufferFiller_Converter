@@ -126,7 +126,7 @@ namespace quex {
         bool      _external_owner_f;
     } TEMPLATIFIER_END(QuexRawBuffer);
 
-    TEMPLATIFIER(QuexBufferFiller_IConv, InputHandleT) {
+    TEMPLATIFIER(QuexBufferFiller_Converter, InputHandleT) {
 
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
          * (This is the 'C' way to express derivation) */
@@ -146,7 +146,7 @@ namespace quex {
 
         /* Position where the whole analysis starts. The '0' when we are asked to reset.    */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
-    } TEMPLATIFIER_END(QuexBufferFiller_IConv);
+    } TEMPLATIFIER_END(QuexBufferFiller_Converter);
 
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
