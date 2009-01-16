@@ -1,0 +1,37 @@
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer  */
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV__
+#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV__
+
+#include <quex/code_base/buffer/converter/BufferFiller_Converter>
+
+#include <quex/code_base/temporary_macros_on>
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+
+    TEMPLATE_IN(InputHandleT) void
+    QuexBufferFiller_Converter_IConv_construct(TEMPLATED(QuexBufferFiller_Converter)* me,
+                                               InputHandleT* input_handle, 
+                                               const char* FromCoding,   const char* ToCoding,
+                                               size_t      RawBufferSize);
+    /* input_handle         is the file handle or pointer to stream from which characters come.
+     *
+     * ToCoding == 0x0      causes an automatic choice of the target coding to according to 
+     *                      the value of 'sizeof(QUEX_CHARACTER_TYPE)'.                  
+     *
+     * raw_buffer_p == 0x0  causes a dynamic allocation of the intermediate translation
+     *                      buffer. The ownership in this case remains inside the 'filler'
+     *                      and the buffer is destroyed as soon as the filler is destroyed.  
+     *              != 0x0  leaves the ownership of the buffer to the caller of this function.
+     *                      Memory is not freed on destruction.
+     */
+
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+}
+#endif
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV__ */
+

@@ -1,5 +1,5 @@
 #include <quex/code_base/buffer/TEST/Buffer_test_common.i>
-#include <quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#include <quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
 
 using namespace std;
 using namespace quex;
@@ -23,12 +23,12 @@ main(int argc, char** argv)
     }
     */
 
-    QuexBufferFiller_IConv<FILE> filler;
+    QuexBufferFiller_Converter<FILE> filler;
     std::FILE*     fh = fopen("test.txt", "r");
     size_t         SeekIndices[] = { 10, 4, 22, 8, 18, 11, 6, 2, 3, 15, 22, 17, 22, 21, 0, 20, 13, 1, 16, 12, 14, 9, 7, 5, 19, 999 };
     assert( fh != 0x0 );
 
-    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
     buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
     QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);

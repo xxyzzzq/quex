@@ -1,32 +1,14 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  * (C) 2007-2008 Frank-Rene Schaefer  */
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV_I__
-#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV_I__
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__
+#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__
 
-#include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/iconv/BufferFiller_Converter>
-#include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/MemoryManager>
+#include <quex/code_base/buffer/InputPolicy>
+#include <quex/code_base/buffer/BufferFiller>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter>
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
-
-#ifdef QUEX_OPTION_ASSERTS
-#   define QUEX_ASSERT_BUFFER_INFO(BI)                         \
-    __quex_assert( BI != 0x0 );                                \
-    __quex_assert((BI)->iterator >= (BI)->begin);              \
-    __quex_assert((BI)->iterator <= (BI)->end);                \
-    __quex_assert((BI)->end >= (BI)->begin);                   \
-    __quex_assert((BI)->end <= (BI)->memory_end);             
-
-#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI)                    \
-    __quex_assert( BI != 0x0 );                                \
-    __quex_assert((BI)->iterator >= (BI)->begin);              \
-    __quex_assert((BI)->iterator <= (BI)->end);                     
-
-#else
-#   define QUEX_ASSERT_BUFFER_INFO(BI)      /* empty */
-#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI) /* empty */
-#endif
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 #   include <quex/code_base/compatibility/iconv-argument-types.h>
@@ -40,22 +22,6 @@
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
-    TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_tell_character_index(QuexBufferFiller* alter_ego);
-    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_seek_character_index(QuexBufferFiller* alter_ego, 
-                                                                                     const size_t      CharacterIndex); 
-    TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_read_characters(QuexBufferFiller*    alter_ego,
-                                                                                QUEX_CHARACTER_TYPE* start_of_buffer, 
-                                                                                const size_t         N);
-    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_destroy(QuexBufferFiller* alter_ego);
-
-
-    QUEX_INLINE               bool   __QuexBufferFiller_Converter_has_coding_dynamic_character_width(const char* Coding);
-
-    TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*);
-
-    TEMPLATE_IN(InputHandleT) void   __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
-                                                          uint8_t* Begin, size_t SizeInBytes,
-                                                          STREAM_POSITION_TYPE(InputHandleT) StartPosition);
 
 
     TEMPLATE_IN(InputHandleT) void   
@@ -236,13 +202,6 @@ namespace quex {
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
     }
 
-    QUEX_INLINE bool 
-    __QuexBufferFiller_Converter_has_coding_dynamic_character_width(const char* Coding) 
-    {
-        return true; /* TODO: distinguish between different coding formats   */
-        /*           //       'true' is safe, but possibly a little slower.  */
-    }
-
     TEMPLATE_IN(InputHandleT) size_t 
     __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*  me) 
     {
@@ -329,4 +288,4 @@ namespace quex {
 
 #include <quex/code_base/buffer/BufferFiller.i>
 
-#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV_I__ */
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__ */

@@ -1,12 +1,12 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
 
 
 void 
-seek_and_print(quex::QuexBufferFiller_IConv<FILE>& , size_t, QUEX_CHARACTER_TYPE* );
+seek_and_print(quex::QuexBufferFiller_Converter<FILE>& , size_t, QUEX_CHARACTER_TYPE* );
 
 int
 main(int argc, char** argv)
@@ -32,7 +32,7 @@ main(int argc, char** argv)
     const int            ReferenceSize = 24; 
     QUEX_CHARACTER_TYPE  reference[ReferenceSize];
     /**/
-    QuexBufferFiller_IConv<FILE> filler;
+    QuexBufferFiller_Converter<FILE> filler;
 
     if( strcmp(argv[1], "Dynamic") == 0 ) {
         fh             = fopen("test.txt", "r");
@@ -46,7 +46,7 @@ main(int argc, char** argv)
         exit(-1);
     }
 
-    QuexBufferFiller_IConv_construct(&filler, fh, source_charset, target_charset, RawMemorySize);
+    QuexBufferFiller_Converter_IConv_construct(&filler, fh, source_charset, target_charset, RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler.base.read_characters(&filler.base, reference, ReferenceSize);
 
@@ -79,7 +79,7 @@ main(int argc, char** argv)
     }
 }
 
-void seek_and_print(quex::QuexBufferFiller_IConv<FILE>& filler, size_t Position, QUEX_CHARACTER_TYPE* reference)
+void seek_and_print(quex::QuexBufferFiller_Converter<FILE>& filler, size_t Position, QUEX_CHARACTER_TYPE* reference)
 {
     using namespace std;
 

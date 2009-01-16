@@ -3,7 +3,7 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/buffer/iconv/QuexConverter_IConv>
+#include <quex/code_base/buffer/converter/iconv/Converter_IConv>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
