@@ -1,8 +1,8 @@
 #include<iostream>
 #include<cstdio>
 
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
 
 
 int
@@ -33,9 +33,9 @@ main(int argc, char** argv)
     assert(memory_size <= 9);
     QUEX_CHARACTER_TYPE  memory[memory_size];
 
-    QuexBufferFiller_IConv<FILE> filler;
+    QuexBufferFiller_Converter<FILE> filler;
 
-    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     do {

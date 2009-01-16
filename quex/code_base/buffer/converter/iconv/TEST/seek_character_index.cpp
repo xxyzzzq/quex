@@ -1,8 +1,8 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
 
 using namespace std;
 
@@ -36,9 +36,9 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    QuexBufferFiller_IConv<FILE> filler;
+    QuexBufferFiller_Converter<FILE> filler;
 
-    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     for(int i=Front; ; i += Delta) {

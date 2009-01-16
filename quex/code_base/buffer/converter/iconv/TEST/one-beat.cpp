@@ -1,8 +1,8 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv>
-#include<quex/code_base/buffer/iconv/BufferFiller_IConv.i>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
+#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
 
 using namespace std;
 
@@ -34,9 +34,9 @@ main(int argc, char** argv)
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_CHARACTER_TYPE  memory[MemorySize];
 
-    QuexBufferFiller_IConv<FILE> filler;
+    QuexBufferFiller_Converter<FILE> filler;
 
-    QuexBufferFiller_IConv_construct(&filler, fh, "UTF8", target_charset, raw_memory_size);
+    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, raw_memory_size);
 
     size_t loaded_n = 0;
     loaded_n = filler.base.read_characters(&filler.base, 

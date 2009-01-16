@@ -22,13 +22,11 @@ QUEX_CORE = \
                 buffer/BufferInitFactory.i \
                 buffer/converter/iconv/BufferFiller_IConv \
                 buffer/converter/iconv/BufferFiller_IConv.i \
-                buffer/converter/iconv/debug.i \
+                buffer/converter/debug.i \
                 buffer/MemoryPositionMimiker \
                 buffer/Buffer_debug.i \
                 buffer/InputPolicy \
                 buffer/TEST/Buffer_test_common.i \
-                buffer/iconv/BufferFiller_IConv \
-                buffer/iconv/BufferFiller_IConv.i \
                 buffer/plain/BufferFiller_Plain \
                 buffer/plain/BufferFiller_Plain.i \
                 template/IncludeStack.i \

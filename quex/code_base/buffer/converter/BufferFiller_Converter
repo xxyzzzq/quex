@@ -95,7 +95,7 @@
 #include <quex/code_base/buffer/InputPolicy>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/iconv/Converter>
+#include <quex/code_base/buffer/converter/Converter>
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     extern "C" { 
@@ -148,6 +148,38 @@ namespace quex {
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
     } TEMPLATIFIER_END(QuexBufferFiller_Converter);
 
+
+    TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_tell_character_index(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_seek_character_index(QuexBufferFiller* alter_ego, 
+                                                                                     const size_t      CharacterIndex); 
+    TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_read_characters(QuexBufferFiller*    alter_ego,
+                                                                                QUEX_CHARACTER_TYPE* start_of_buffer, 
+                                                                                const size_t         N);
+    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_destroy(QuexBufferFiller* alter_ego);
+
+    TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*);
+
+    TEMPLATE_IN(InputHandleT) void   __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
+                                                          uint8_t* Begin, size_t SizeInBytes,
+                                                          STREAM_POSITION_TYPE(InputHandleT) StartPosition);
+
+#ifdef QUEX_OPTION_ASSERTS
+#   define QUEX_ASSERT_BUFFER_INFO(BI)                         \
+    __quex_assert( BI != 0x0 );                                \
+    __quex_assert((BI)->iterator >= (BI)->begin);              \
+    __quex_assert((BI)->iterator <= (BI)->end);                \
+    __quex_assert((BI)->end >= (BI)->begin);                   \
+    __quex_assert((BI)->end <= (BI)->memory_end);             
+
+#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI)                    \
+    __quex_assert( BI != 0x0 );                                \
+    __quex_assert((BI)->iterator >= (BI)->begin);              \
+    __quex_assert((BI)->iterator <= (BI)->end);                     
+
+#else
+#   define QUEX_ASSERT_BUFFER_INFO(BI)      /* empty */
+#   define QUEX_ASSERT_BUFFER_INFO_EASY(BI) /* empty */
+#endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex

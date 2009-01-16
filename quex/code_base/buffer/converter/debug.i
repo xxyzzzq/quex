@@ -16,8 +16,9 @@
 
 namespace quex {
 
+#   if 0
     QUEX_INLINE void 
-    QuexBufferFiller_IConv_print_construction_info(TEMPLATED_CLASS* me,
+    QuexBufferFiller_IConv_print_construction_info(TEMPLATED(BufferFiller_Converter)* me,
                                                    const char* FromCoding, const char* ToCoding,
                                                    iconv_t IconvResult)
     {
@@ -35,6 +36,7 @@ namespace quex {
             }                                                 
         }
     }
+#   endif
 
     QUEX_INLINE void
         CLASS::QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(size_t LoadedByteN)      
