@@ -3,6 +3,10 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__
 #define __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__
 
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+
     struct QuexConverter_tag {
         void    (*open)(QuexConverter_tag*, 
                         const char* FromCodingName, const char* ToCodingName);  
@@ -51,5 +55,9 @@
          * Deletes the object of the derived class.                                       */
     };
     typedef QuexConverter_tag  QuexConverter;
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+}
+#endif
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__ */
