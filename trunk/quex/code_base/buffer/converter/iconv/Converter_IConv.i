@@ -13,14 +13,15 @@ namespace quex {
                              const char* FromCoding, const char* ToCoding)
     {
         QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
-        __quex_assert(me != 0x0);
+        __quex_assert(alter_ego != 0x0);
+        /* The caller defines the 'default' target encoding, no 'wildcard' here. */
+        __quex_assert(ToCoding != 0x0);
 
-        const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
 
-        me->handle = iconv_open(to_coding, FromCoding);
+        me->handle = iconv_open(ToCoding, FromCoding);
         if( me->handle == (iconv_t)-1 ) {
             char tmp[128];
-            snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, to_coding);
+            snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, ToCoding);
             QUEX_ERROR_EXIT(tmp);
         }
     }
