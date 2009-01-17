@@ -9,10 +9,8 @@
     extern "C" { 
 #   include <iconv.h>
     }
-#   include <cstddef>
 #else
 #   include <iconv.h>
-#   include <stddef.h>     /* gets: ptrdiff_t */
 #endif
 
 
@@ -28,7 +26,6 @@ namespace quex {
     } QuexConverter_IConv;
 
     QUEX_INLINE QuexConverter* QuexConverter_IConv_new();
-
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }
