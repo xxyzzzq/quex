@@ -24,12 +24,14 @@ namespace quex {
                                                const char*   FromCoding,   const char* ToCoding,
                                                size_t        RawBufferSize)
     { 
+        const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
+
         const bool ConstantCodingF = ! __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(FromCoding);
 
         QuexBufferFiller_Converter_construct(me,
                                              input_handle,
                                              QuexConverter_IConv_new(),
-                                             FromCoding, ToCoding,
+                                             FromCoding, to_coding,
                                              RawBufferSize,
                                              ConstantCodingF);
                                              

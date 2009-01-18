@@ -4,6 +4,7 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/converter/iconv/Converter_IConv>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
