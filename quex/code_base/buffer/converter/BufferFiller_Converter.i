@@ -32,8 +32,6 @@ namespace quex {
                                          size_t                                 RawBufferSize,
                                          bool                                   ConstantSize_CodingF)
     { 
-        const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
-
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
 
         __QuexBufferFiller_init_functions(&me->base,

@@ -2,7 +2,6 @@
  * (C) 2007-2008 Frank-Rene Schaefer  */
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
 #define __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
-#include <quex/code_base/temporary_macros_on>
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
@@ -16,7 +15,6 @@ namespace quex {
         __quex_assert(alter_ego != 0x0);
         /* The caller defines the 'default' target encoding, no 'wildcard' here. */
         __quex_assert(ToCoding != 0x0);
-
 
         me->handle = iconv_open(ToCoding, FromCoding);
         if( me->handle == (iconv_t)-1 ) {
@@ -126,7 +124,6 @@ namespace quex {
 }
 #endif
 
-#include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/BufferFiller.i>
 

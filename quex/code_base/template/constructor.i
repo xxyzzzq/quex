@@ -75,7 +75,7 @@ CLASS::CLASS(const std::string&       Filename,
     // Buffer: Size = (see macro def.), Fallback = 10 Characters
     // prefer FILE* based buffers, because we can turn low-level buffering off.
     // ownership of FILE* id passed to the input strategy of the buffer
-    std::FILE* fh = std::fopen(Filename.c_str(), "r");
+    std::FILE* fh = std::fopen(Filename.c_str(), "rb");
     if( fh == NULL ) QUEX_ERROR_EXIT("Error on attempt to open specified file.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
