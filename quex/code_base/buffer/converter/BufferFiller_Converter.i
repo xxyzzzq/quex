@@ -44,7 +44,7 @@ namespace quex {
 
         /* Initialize the conversion operations                                             */
         me->converter = converter;
-        me->converter->open(me->converter, FromCoding, to_coding);
+        me->converter->open(me->converter, FromCoding, ToCoding);
 
         me->_constant_size_character_encoding_f = ConstantSize_CodingF;
 
