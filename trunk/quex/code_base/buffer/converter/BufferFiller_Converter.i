@@ -69,9 +69,10 @@ namespace quex {
                                              QUEX_CHARACTER_TYPE* user_memory_p, 
                                              const size_t         N)
     {
-        __quex_assert(alter_ego != 0x0); 
         TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
 
+        __quex_assert(alter_ego != 0x0); 
+        __quex_assert(user_memory_p != 0x0); 
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
 
         /* TWO CASES:
@@ -92,7 +93,8 @@ namespace quex {
                                         &me->raw_buffer.iterator, me->raw_buffer.end,
                                         &user_buffer_iterator,    UserBufferEnd) ) {
 
-            __quex_assert(me->raw_buffer.iterator <= me->raw_buffer.end);
+            __quex_assert(user_buffer_iterator < UserBufferEnd); /* '==' means break */
+            QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
 
             /* The raw buffer filler requires the iterator's character index to be up-to-date. */
             me->raw_buffer.iterators_character_index =   StartCharacterIndex 
