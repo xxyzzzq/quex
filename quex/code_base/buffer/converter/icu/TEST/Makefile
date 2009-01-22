@@ -1,7 +1,7 @@
 # include $(QUEX_PATH)/quex/code_base/core.mkd
 
 FILES = \
-		converter.exe
+		converter-16.exe
 
 OUT_FILES = \
 		one-beat.exe \
@@ -25,9 +25,9 @@ all: $(FILES)
 hwut-info:
 	@echo $(FILES)
 
-%.exe: %.cpp $(QUEX_CORE)
+%-16.exe: %.cpp $(QUEX_CORE)
 	g++ -I$(QUEX_PATH) $(DEFS) \
-        -DQUEX_CHARACTER_TYPE=uint32_t \
+        -DQUEX_CHARACTER_TYPE=uint16_t \
 		-ggdb  \
 		-Wall \
 		$(ICU_FLAGS) \
