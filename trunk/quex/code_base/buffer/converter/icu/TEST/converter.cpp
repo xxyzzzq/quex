@@ -5,7 +5,7 @@ using namespace std;
 using namespace quex;
 
 int get_input(char* Choice, uint8_t* buffer, size_t BufferSize);
-void print_content(uint32_t* Begin, uint32_t* End);
+void print_content(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
 
 int cl_has(int argc, char** argv, const char* What)
 { return argc > 1 && strcmp(argv[1], What) == 0; }
@@ -18,6 +18,7 @@ main(int argc, char** argv)
         /* Please, use the ICU converter utility to find correct ICU coding names:
          * http://demo.icu-project.org/icu-bin/convexp?s=IANA                       */
         printf("CHOICES:   UTF-8, UTF-16;\n");
+        printf("SAME;\n");
         return 0;
     }
     else if( argc < 2 ) {
@@ -28,20 +29,26 @@ main(int argc, char** argv)
     QuexConverter*  converter = QuexConverter_ICU_new();
     /* (1) opening the converter
      *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
-    converter->open(converter, argv[1], "UTF-32");
+    switch( sizeof(QUEX_CHARACTER_TYPE) ) {
+    case 4: converter->open(converter, argv[1], "UTF-32"); break;
+    case 2: converter->open(converter, argv[1], 0x0); break;
+    }
 
     /* (2.1) Load file content corresponding the input coding */
-    const size_t Size = 4096;
+    const size_t Size = 16384;
     uint8_t      in[Size];
     uint8_t*     in_iterator = in;
-    uint32_t     out[Size];
-    uint32_t*    out_iterator = out;
+    QUEX_CHARACTER_TYPE     out[Size];
+    QUEX_CHARACTER_TYPE*    out_iterator = out;
 
     const size_t ContentSize = get_input(argv[1], in, Size);
     if( ContentSize == 0 ) return -1;
 
     /* (2.2) Convert buffer content. */
-    converter->convert(converter, &in_iterator, in + ContentSize, &out_iterator, out + Size);
+    bool Result = converter->convert(converter, &in_iterator, in + ContentSize, &out_iterator, out + Size);
+    printf("conversion result:      %s\n", Result ? "true" : "false");
+    printf("output iterator offset: %04i\n", (int)(out_iterator - out));
+    printf("## input iterator offset:  %04i\n", (int)(in_iterator - in));
 
     /* (2.3) Print the content. Each character in hex and its utf-8 correspondance. */
     print_content(out, out_iterator);
@@ -68,7 +75,7 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
         printf("Could not open file '%s'.\n", filename);
         return 0;
     } 
-    fread(buffer, 4096, sizeof(char), fh);
+    fread(buffer, 16384, sizeof(char), fh);
     content_size = ftell(fh);
     if( content_size == 0 ) {
         printf("File '%s' is empty.\n", filename);
@@ -78,23 +85,30 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 }
 
 void 
-print_content(uint32_t* Begin, uint32_t* End)
+print_content(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End)
 {
     uint8_t   utf8_c[10];
     size_t    utf8_c_length = (size_t)-1;
     assert(End > Begin);
 
     size_t    i = 0;
-    for(uint32_t* iterator = Begin; iterator != End; ++iterator, ++i) {
+    for(QUEX_CHARACTER_TYPE* iterator = Begin; iterator != End; ++iterator, ++i) {
         utf8_c_length         = quex::Quex_unicode_to_utf8(*iterator, utf8_c);
         utf8_c[utf8_c_length] = '\0';
 
-        printf("$%04X: %02X.%02X.%02X.%02X ('%s')\n",
-               (int)i * sizeof(QUEX_CHARACTER_TYPE),
-               (int)((*iterator & 0xFF000000) >> 24),
-               (int)((*iterator & 0x00FF0000) >> 16),
-               (int)((*iterator & 0x0000FF00) >> 8),
-               (int)((*iterator & 0x000000FF)),
-               utf8_c);
+        printf("$%04X: ", (int)i * sizeof(QUEX_CHARACTER_TYPE));
+        switch( sizeof(QUEX_CHARACTER_TYPE) ) {
+        default:
+            assert(false);
+        case 4:
+            printf("%02X.%02X.",
+                   (int)((*iterator & 0xFF000000) >> 24),
+                   (int)((*iterator & 0x00FF0000) >> 16));
+        case 2:
+            printf("%02X.", (int)((*iterator & 0x0000FF00) >> 8));
+        case 1:
+            printf("%02X", (int)((*iterator & 0x000000FF)));
+        }
+        printf(" ('%s')\n", utf8_c);
     }
 }
