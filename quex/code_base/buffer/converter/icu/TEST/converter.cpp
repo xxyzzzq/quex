@@ -14,7 +14,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Converter: Plain;\n");
+        printf("Converter: Plain %i bit;\n", (int)(8*sizeof(QUEX_CHARACTER_TYPE)));
         /* Please, use the ICU converter utility to find correct ICU coding names:
          * http://demo.icu-project.org/icu-bin/convexp?s=IANA                       */
         printf("CHOICES:   UTF-8, UTF-16;\n");
@@ -30,7 +30,7 @@ main(int argc, char** argv)
     /* (1) opening the converter
      *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
     switch( sizeof(QUEX_CHARACTER_TYPE) ) {
-    case 4: converter->open(converter, argv[1], "UTF-32"); break;
+    case 4: converter->open(converter, argv[1], 0x0); break;
     case 2: converter->open(converter, argv[1], 0x0); break;
     }
 

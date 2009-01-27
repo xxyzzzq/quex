@@ -1,4 +1,4 @@
-conversion result:      true
+conversion result:      false
 output iterator offset: 2470
 ## input iterator offset:  3527
 $0000: 00.41 ('A')
