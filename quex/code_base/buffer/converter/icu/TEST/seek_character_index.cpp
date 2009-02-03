@@ -25,7 +25,6 @@ main(int argc, char** argv)
     }
 
     std::FILE*           fh = fopen("test.txt", "r");
-    char*                target_charset = (char*)"UCS-4BE";
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
     QUEX_CHARACTER_TYPE  memory[MemorySize];
@@ -38,7 +37,7 @@ main(int argc, char** argv)
 
     QuexBufferFiller_Converter<FILE> filler;
 
-    QuexBufferFiller_Converter_ICU_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_Converter_ICU_construct(&filler, fh, "UTF-8", 0x0, RawMemorySize);
 
     size_t loaded_n = 0;
     for(int i=Front; ; i += Delta) {
@@ -53,7 +52,7 @@ main(int argc, char** argv)
         if( loaded_n != 0 ) {
             /* Print first read character from position 'i' */
             uint8_t*  raw = (uint8_t*)(memory);
-            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+            printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
         }
 
         if( i == Back ) break;

@@ -39,7 +39,7 @@ main(int argc, char** argv)
         source_charset = (char*)"UTF8"; 
     } else {
         fh             = fopen("test-ucs4be.txt", "r");
-        source_charset = (char*)"UCS-4BE"; 
+        source_charset = (char*)"UTF-32BE"; 
     }
     if( fh == 0x0 ) {
         printf("Input file not found.\n");

@@ -3,6 +3,8 @@
 FILES = \
 		converter-16.exe \
 		converter-32.exe \
+		converter-statefulness-16.exe \
+		converter-statefulness-32.exe \
 		one-beat.exe \
 		n-beat.exe \
 		seek_character_index.exe \
