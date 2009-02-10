@@ -160,7 +160,11 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICONV
 #ifdef    QUEX_OPTION_ENABLE_ICONV_DISABLED
 #   undef QUEX_OPTION_ENABLE_ICONV
 #endif
-#ifdef QUEX_OPTION_ENABLE_ICONV
+$$SWITCH$$ QUEX_OPTION_ENABLE_ICU
+#ifdef    QUEX_OPTION_ENABLE_ICU_DISABLED
+#   undef QUEX_OPTION_ENABLE_ICU
+#endif
+#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
 #    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
 #    endif
@@ -186,10 +190,7 @@ $$LEX_ID_DEFINITIONS$$
 }    
 
 #include<quex/code_base/buffer/Buffer>
-#include<quex/code_base/buffer/plain/BufferFiller_Plain>
-#ifdef QUEX_OPTION_ENABLE_ICONV
-#   include<quex/code_base/buffer/iconv/BufferFiller_IConv>
-#endif
+#include<quex/code_base/buffer/BufferFiller>
 
 // Quex/User
 #define CLASS                            $$LEXER_CLASS_NAME$$
@@ -566,6 +567,7 @@ $$CONSTRUCTOR_EXTENSTION$$
 #undef CLASS
 
 #include <quex/code_base/template/Analyser.i>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 
 #if defined(QUEX_OPTION_ASSERTS) && defined (QUEX_OPTION_ASSERTS_DISABLED)
 #    error "Ambiguous configuration options."

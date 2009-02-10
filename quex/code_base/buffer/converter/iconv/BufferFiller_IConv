@@ -10,11 +10,10 @@
 namespace quex {
 #endif
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Converter_IConv_construct(TEMPLATED(QuexBufferFiller_Converter)* me,
-                                               InputHandleT* input_handle, 
-                                               const char* FromCoding,   const char* ToCoding,
-                                               size_t      RawBufferSize);
+    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Converter)*
+    QuexBufferFiller_Converter_IConv_new(InputHandleT*  input_handle, 
+                                         const char*    FromCoding,   const char* ToCoding,
+                                         size_t         RawBufferSize);
     /* input_handle         is the file handle or pointer to stream from which characters come.
      *
      * ToCoding == 0x0      causes an automatic choice of the target coding to according to 

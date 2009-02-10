@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Sat Jan 17 10:01:04 2009">
+<test-database execution-time-sec="0.00" date="Fri Feb  6 19:39:39 2009">
     <last-used-diff-display-program name=""/>
     <group name="Move by Offset">
         <test title="Forward (BPC=4);" make-required="True" time-sum-sec="0.00"> 

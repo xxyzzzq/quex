@@ -15,7 +15,7 @@ FILES = \
 
 DEFS = -DQUEX_OPTION_ASSERTS \
 	   -DQUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE=6 \
-       -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 
+       -DQUEX_SETTING_BUFFER_MIN_FALLBACK_N=0 \
 
 # Use 'icu-config --ldflags' in order to get the linker flags
 ICU_FLAGS = \
@@ -28,7 +28,7 @@ CC = \
 		-ggdb  \
 		-Wall \
 		$(ICU_FLAGS) \
-		-D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICU
+		-DQUEX_OPTION_ENABLE_ICU
 
 hwut-info:
 	@echo $(FILES)

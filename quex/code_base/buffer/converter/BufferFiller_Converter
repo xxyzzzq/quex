@@ -3,7 +3,7 @@
 #ifndef __INCLUDE_GUARD__QUEX__BUFFER__ICONV__BUFFER_FILLER__
 #define __INCLUDE_GUARD__QUEX__BUFFER__ICONV__BUFFER_FILLER__
 /*
- *  PURPOSE:
+ *  PURPOSE: (NOTE: This has to be reworked)
  *  
  *  Reads data from a stream and converts the incoming characters into a
  *  character format required by the user. The user can specify the coding
@@ -146,6 +146,7 @@ namespace quex {
 
         /* Position where the whole analysis starts. The '0' when we are asked to reset.    */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
+
     } TEMPLATIFIER_END(QuexBufferFiller_Converter);
 
 
@@ -188,5 +189,12 @@ namespace quex {
 
 #include <quex/code_base/temporary_macros_off>
 
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include <quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
+#endif
+#ifdef QUEX_OPTION_ENABLE_ICU
+#   include <quex/code_base/buffer/converter/icu/BufferFiller_ICU>
+#endif
+ 
 
 #endif /* __INCLUDE_GUARD__QUEX__BUFFER__ICONV__BUFFER_FILLER__ */

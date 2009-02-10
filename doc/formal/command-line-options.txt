@@ -170,15 +170,29 @@ the following flag may be specified:
 
 `--no-DOS`:: DEFAULT=`<enabled>`
 
-For unicode support it is essential to allow iconv support \cite{}. For this 
-the iconv library must be installed on your system. On Unix systems this library
+For unicode support it is essential to allow character conversion. Currently
+quex can interact with GNU IConv and IBM's ICU library. For this 
+the correspondent library must be installed on your system. On Unix systems, the iconv library
 is usually present. If a coding other than ASCII is required, specify the following
 options:
 
 `--iconv`::
         
-	    Enable the use of the iconv library for character stream decoding. This option
-        is a _must_ for unicode support. DEFAULT = `<disabled>` 
+	    Enable the use of the iconv library for character stream decoding.
+        This is equivalent to defining '-DQUEX_OPTION_ENABLE_ICONV'
+        as a compiler flag. Depending on your compiler setup, you might have
+        to set the '-liconv' flag explicitly in order to link against the IConv
+        library. DEFAULT = `<disabled>` 
+
+`--icu`::
+        
+	    Enable the use of IBM's ICU library for character stream decoding.
+        This is equivalent to defining '-DQUEX_OPTION_ENABLE_ICU'
+        as a compiler flag. There are a couple of libraries that are required
+        for ICU. You can query those using the ICU tool 'icu-config'. A command 
+        line call to this tool with '--ldflags' delivers all libraries that need
+        to be linked. A typical list is '-lpthread -lm -L/usr/lib -licui18n -licuuc 
+        -licudata'. DEFAULT = `<disabled>` 
 
 `--bytes-per-ucs-code-point`, `-b` _["1", "2", "4", "wchar_t"]_::
         

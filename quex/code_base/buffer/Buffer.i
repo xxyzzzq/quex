@@ -6,10 +6,7 @@
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/buffer/plain/BufferFiller_Plain>
-#ifdef QUEX_OPTION_ENABLE_ICONV
-#   include <quex/code_base/buffer/iconv/BufferFiller_IConv>
-#endif
+#include <quex/code_base/buffer/BufferFiller>
 #include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>
@@ -36,8 +33,15 @@ namespace quex {
         __quex_assert( input_handle != 0x0 );
 
         if( filler_type == QUEX_AUTO ) {
-            if( IANA_InputCodingName == 0x0 ) filler_type = QUEX_PLAIN;
-            else                              filler_type = QUEX_ICONV;
+            if( IANA_InputCodingName == 0x0 ) {
+                filler_type = QUEX_PLAIN;
+            } else {
+                filler_type = QUEX_CONVERTER;
+#           if  ! defined(QUEX_OPTION_ENABLE_ICONV) && ! defined(QUEX_OPTION_ENABLE_ICU)
+                QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_AUTO' while neither 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                                "nor 'QUEX_OPTION_ENABLE_ICU' is specified.\n");
+#           endif
+            }
         }
         switch( filler_type ) {
         case QUEX_MEMORY:
@@ -48,26 +52,28 @@ namespace quex {
             QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
 
         case QUEX_PLAIN: 
-            buffer_filler = MemoryManager_get_BufferFiller(filler_type);
-            QuexBufferFiller_Plain_construct((TEMPLATED(QuexBufferFiller_Plain)*)buffer_filler, input_handle);
+            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
             break;
 
-        case QUEX_ICONV: 
-#           ifdef QUEX_OPTION_ENABLE_ICONV
-            buffer_filler = MemoryManager_get_BufferFiller(filler_type);
-            QuexBufferFiller_IConv_construct((TEMPLATED(QuexBufferFiller_IConv)*)buffer_filler, input_handle, 
-                                             IANA_InputCodingName, /* Internal Coding: Default */0x0,
-                                             TranslationBufferMemorySize);
+        case QUEX_CONVERTER: 
+#           if   defined(QUEX_OPTION_ENABLE_ICONV)
+            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_IConv_new(input_handle, 
+                                                       IANA_InputCodingName, /* Internal Coding: Default */0x0,
+                                                       TranslationBufferMemorySize);
+#           elif defined(QUEX_OPTION_ENABLE_ICU)
+            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_ICU_new(input_handle, 
+                                                     IANA_InputCodingName, /* Internal Coding: Default */0x0,
+                                                     TranslationBufferMemorySize);
 #           else
-            QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
-                            "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+            QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_CONVERTER' while neither 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                            "nor 'QUEX_OPTION_ENABLE_ICU' is specified.\n");
 #           endif
             break;
         }
         me->filler = buffer_filler;
 
         QuexBufferMemory_init(&(me->_memory), 
-                              MemoryManager_get_BufferMemory(BufferMemorySize), 
+                              MemoryManager_BufferMemory_allocate(BufferMemorySize), 
                               BufferMemorySize);      
 
         QuexBuffer_init(me, /* OnlyResetF */ false);
@@ -86,7 +92,7 @@ namespace quex {
         QUEX_CHARACTER_TYPE*   memory = Memory;
         __quex_assert(ContentSize <= BufferMemorySize - 2);
 
-        if( memory == 0x0 ) memory = MemoryManager_get_BufferMemory(BufferMemorySize);
+        if( memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(BufferMemorySize);
         me->filler = 0x0;
 
         QuexBufferMemory_init(&(me->_memory), memory, BufferMemorySize);      
@@ -103,7 +109,7 @@ namespace quex {
     QuexBuffer_destruct(QuexBuffer* me)
     {
         if( me->filler != 0x0 ) me->filler->_destroy(me->filler); 
-        MemoryManager_free_BufferMemory(me->_memory._front);
+        MemoryManager_BufferMemory_free(me->_memory._front);
     }
 
     QUEX_INLINE void

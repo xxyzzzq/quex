@@ -6,10 +6,7 @@
 #include <quex/code_base/buffer/Buffer.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/BufferFiller>
-#include <quex/code_base/buffer/plain/BufferFiller_Plain>
-#ifdef QUEX_OPTION_ENABLE_ICONV
-#   include <quex/code_base/buffer/iconv/BufferFiller_IConv>
-#endif
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <stdexcept>
 namespace quex { 
@@ -31,34 +28,6 @@ namespace quex {
                                                                    const size_t BackwardDistance);
     QUEX_INLINE void    __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
 
-#   ifndef __QUEX_SETTING_PLAIN_C
-    /* NOTE: The filler types carry only pointers to input handles. So, the 
-     *       required memory size is the same for any type. Let us use std::istream*
-     *       to feed the sizeof()-operator. */
-#   define BUFFER_FILLER_PLAIN   QuexBufferFiller_Plain<std::istream>
-#   define BUFFER_FILLER_ICONV   QuexBufferFiller_IConv<std::istream>
-#   else
-#   define BUFFER_FILLER_PLAIN   QuexBufferFiller_Plain
-#   define BUFFER_FILLER_ICONV   QuexBufferFiller_IConv
-#   endif
-    QUEX_INLINE size_t
-    QuexBufferFiller_get_memory_size(QuexBufferFillerTypeEnum FillerType)
-    {
-        switch( FillerType ) {
-        default:         QUEX_ERROR_EXIT("No memory size for QUEX_AUTO.\n");
-        case QUEX_PLAIN: return sizeof(BUFFER_FILLER_PLAIN);
-        case QUEX_ICONV: 
-#           ifdef QUEX_OPTION_ENABLE_ICONV
-            return sizeof(BUFFER_FILLER_ICONV);
-#           else
-            QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
-                            "is not specified. If defined, then the iconv-library must be installed on your system!\n");
-            return -1;
-#           endif
-        }
-    }
-#   undef BUFFER_FILLER_PLAIN 
-#   undef BUFFER_FILLER_ICONV 
 
     QUEX_INLINE void       
     QuexBufferFiller_destroy(QuexBufferFiller* me)
@@ -605,6 +574,8 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
+
+#include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__ */
 

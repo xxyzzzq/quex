@@ -3,6 +3,10 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
 #define __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
 
+#if ! defined(QUEX_OPTION_ENABLE_ICONV)
+#    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
+#endif
+
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
@@ -13,10 +17,18 @@ namespace quex {
     {
         QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
         __quex_assert(alter_ego != 0x0);
-        /* The caller defines the 'default' target encoding, no 'wildcard' here. */
-        __quex_assert(ToCoding != 0x0);
 
-        me->handle = iconv_open(ToCoding, FromCoding);
+        if( ToCoding == 0 ) {
+            switch( sizeof(QUEX_CHARACTER_TYPE) ) {
+            default:  __quex_assert(false); return;
+            case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
+            case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
+            case 1:  me->handle = iconv_open("ASCII", FromCoding);  break;
+            }
+        } else {
+            me->handle = iconv_open(ToCoding, FromCoding);
+        }
+
         if( me->handle == (iconv_t)-1 ) {
             char tmp[128];
             snprintf(tmp, 127, "Conversion '%s' --> '%s' is not supported by 'iconv'.\n", FromCoding, ToCoding);
@@ -88,8 +100,11 @@ namespace quex {
             /* Incomplete byte sequence for character conversion
              * ('raw_buffer.iterator' points to the beginning of the incomplete sequence.)
              * Please, refill the buffer (consider copying the bytes from raw_buffer.iterator 
-             * to the end of the buffer in front of the new buffer).                             */
-            return false; 
+             * to the end of the buffer in front of the new buffer).                               
+             * If it happens, that we just finished filling the drain buffer before this happend
+             * than the 'read_characters()' function does not need to reload.                    */
+            if( *drain == DrainEnd ) return true;
+            else                     return false; 
 
         case E2BIG:
             /* The input buffer was not able to hold the number of converted characters.
@@ -103,17 +118,18 @@ namespace quex {
     {
         QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
         iconv_close(me->handle); 
-        MemoryManager_QuexConverter_IConv_free(me);
+        MemoryManager_Converter_IConv_free(me);
     }
 
     QUEX_INLINE QuexConverter*
     QuexConverter_IConv_new()
     {
-        QuexConverter_IConv*  me = MemoryManager_QuexConverter_IConv_allocate();
+        QuexConverter_IConv*  me = MemoryManager_Converter_IConv_allocate();
 
         me->base.open        = QuexConverter_IConv_open;
         me->base.convert     = QuexConverter_IConv_convert;
         me->base.delete_self = QuexConverter_IConv_delete_self;
+        me->base.on_conversion_discontinuity = 0x0;
 
         me->handle = (iconv_t)-1;
 

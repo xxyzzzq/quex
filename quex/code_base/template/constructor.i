@@ -19,12 +19,12 @@ CLASS::__constructor_filler_assert(QuexBufferFillerTypeEnum BFT, const char* IAN
             QUEX_ERROR_EXIT("Input coding is specified but also the buffer filler type 'plain'.\n"
                             "The buffer filler type plain cannot handle character encodings.\n");
         } else if( buffer_filler_type == QUEX_AUTO ) {
-#           ifdef QUEX_OPTION_ENABLE_ICONV
-            buffer_filler_type = QUEX_ICONV;
+#           if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
+            buffer_filler_type = QUEX_CONVERTER;
 #           else
-            QUEX_ERROR_EXIT("Warning: Use of buffer filler type QUEX_AUTO resulted in QUEX_ICONV\n" \
-                            "Use of buffer filler type 'QUEX_ICONV' while option 'QUEX_OPTION_ENABLE_ICONV'\n" \
-                            "is not specified. If defined, then the iconv-library must be installed on your system!\n");
+            QUEX_ERROR_EXIT("Use of buffer filler type QUEX_AUTO resulted in QUEX_CONVERTER\n" \
+                            "Use of buffer filler type 'QUEX_CONVERTER' while option neither 'QUEX_OPTION_ENABLE_ICONV'\n" \
+                            "nor 'QUEX_OPTION_ENABLE_ICU' is specified.\n");
 #           endif
         }
     }

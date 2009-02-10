@@ -36,18 +36,17 @@ main(int argc, char** argv)
     if( strcmp(argv[1], "Forward") == 0 ) { Delta =  1; Front = 0;  Back = 23; } 
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
-    QuexBufferFiller_Converter<FILE> filler;
-
-    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_Converter<FILE>* filler = \
+        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     for(int i=Front; ; i += Delta) {
 
-        filler.base.seek_character_index(&filler.base, i);
+        filler->base.seek_character_index(&filler->base, i);
 
-        assert(filler.base.tell_character_index(&filler.base) == (size_t)i);
+        assert(filler->base.tell_character_index(&filler->base) == (size_t)i);
 
-        loaded_n = filler.base.read_characters(&filler.base, 
+        loaded_n = filler->base.read_characters(&filler->base, 
                                                (QUEX_CHARACTER_TYPE*)memory, MemorySize);
 
         if( loaded_n != 0 ) {

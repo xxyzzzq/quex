@@ -33,12 +33,11 @@ main(int argc, char** argv)
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_CHARACTER_TYPE  memory[MemorySize];
 
-    QuexBufferFiller_Converter<FILE> filler;
-
-    QuexBufferFiller_Converter_ICU_construct(&filler, fh, "UTF-8", 0x0, raw_memory_size);
+    QuexBufferFiller_Converter<FILE>* filler = \
+        QuexBufferFiller_Converter_ICU_new(fh, "UTF-8", 0x0, raw_memory_size);
 
     size_t loaded_n = 0;
-    loaded_n = filler.base.read_characters(&filler.base, 
+    loaded_n = filler->base.read_characters(&filler->base, 
                                            (QUEX_CHARACTER_TYPE*)memory, MemorySize);
 
     cout << "## loaded character n = " << loaded_n << endl;
@@ -47,4 +46,5 @@ main(int argc, char** argv)
         uint8_t*  raw = (uint8_t*)(memory + i);
         printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
     }
+
 }

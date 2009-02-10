@@ -33,14 +33,13 @@ main(int argc, char** argv)
     assert(memory_size <= 9);
     QUEX_CHARACTER_TYPE  memory[memory_size];
 
-    QuexBufferFiller_Converter<FILE> filler;
-
-    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
+    QuexBufferFiller_Converter<FILE>* filler = \
+        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     do {
-        loaded_n = filler.base.read_characters(&filler.base, 
-                                               (QUEX_CHARACTER_TYPE*)memory, memory_size);
+        loaded_n = filler->base.read_characters(&filler->base, 
+                                                (QUEX_CHARACTER_TYPE*)memory, memory_size);
 
         cout << "## loaded character n = " << loaded_n << endl;
      

@@ -35,10 +35,10 @@ namespace quex {
                                                                           const size_t         N);
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego);
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)* me, 
-                                     InputHandleT*    input_handle)
+    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Plain)*
+    QuexBufferFiller_Plain_new(InputHandleT*    input_handle)
     {
+        TEMPLATED(QuexBufferFiller_Plain)*  me = TEMPLATED(MemoryManager_BufferFiller_Plain_allocate)();
         __quex_assert(me != 0x0);
         __quex_assert(input_handle != 0x0);
 
@@ -54,15 +54,15 @@ namespace quex {
         me->_character_index = 0;
 #       endif
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
+
+        return me;
     }
 
     TEMPLATE_IN(InputHandleT) void 
     __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego) 
     {
-        /* The memory manager allocated the space required for a buffer filler of this
-         * type. Somewhere down the road it is known what size of memory belongs to this
-         * pointer. */
-        MemoryManager_free_BufferFiller(alter_ego);
+        TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
+        MemoryManager_BufferFiller_Plain_free(me);
 
     }
 

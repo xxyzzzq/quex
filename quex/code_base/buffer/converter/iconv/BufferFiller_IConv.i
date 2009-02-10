@@ -6,7 +6,6 @@
 #include <quex/code_base/buffer/converter/BufferFiller_Converter>
 #include <quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
 #include <quex/code_base/buffer/converter/iconv/Converter_IConv>
-#include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -18,22 +17,20 @@ namespace quex {
     __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(const char* Coding);
 
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Converter_IConv_construct(TEMPLATED(QuexBufferFiller_Converter)* me,
-                                               InputHandleT* input_handle, 
-                                               const char*   FromCoding,   const char* ToCoding,
-                                               size_t        RawBufferSize)
+    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Converter)* 
+    QuexBufferFiller_Converter_IConv_new(InputHandleT* input_handle, 
+                                         const char*   FromCoding,   const char* ToCoding,
+                                         size_t        RawBufferSize)
     { 
         const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
 
         const bool ConstantCodingF = ! __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(FromCoding);
 
-        QuexBufferFiller_Converter_construct(me,
-                                             input_handle,
-                                             QuexConverter_IConv_new(),
-                                             FromCoding, to_coding,
-                                             RawBufferSize,
-                                             ConstantCodingF);
+        return QuexBufferFiller_Converter_new(input_handle,
+                                              QuexConverter_IConv_new(),
+                                              FromCoding, to_coding,
+                                              RawBufferSize,
+                                              ConstantCodingF);
                                              
     }
 
