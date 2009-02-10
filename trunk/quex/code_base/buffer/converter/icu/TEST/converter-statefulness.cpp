@@ -26,12 +26,8 @@ main(int argc, char** argv)
     }
 
     QuexConverter*  converter = QuexConverter_ICU_new();
-    /* (1) opening the converter
-     *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
-    switch( sizeof(QUEX_CHARACTER_TYPE) ) {
-    case 4: converter->open(converter, argv[1], 0x0); break;
-    case 2: converter->open(converter, argv[1], 0x0); break;
-    }
+    /* (1) opening the converter with default internal character format */
+    converter->open(converter, argv[1], 0x0);
 
     /* (2.1) Load file content corresponding the input coding */
     const size_t Size = 16384;
@@ -46,7 +42,8 @@ main(int argc, char** argv)
         uint8_t*                in_iterator = in;
         QUEX_CHARACTER_TYPE     out[Size];
         QUEX_CHARACTER_TYPE*    out_iterator = out;
-        converter->on_conversion_discontinuity(converter);
+        if( converter->on_conversion_discontinuity != 0x0 ) 
+            converter->on_conversion_discontinuity(converter);
         bool      Result = converter->convert(converter, &in_iterator, in + i, &out_iterator, out + Size);
         printf(">> result:  %s; ", Result ? "true" : "false");
         printf("output iterator offset: %04i\n", (int)(out_iterator - out));

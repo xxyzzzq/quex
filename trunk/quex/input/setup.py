@@ -15,6 +15,7 @@ SETUP_INFO = {
     "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],                
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "enable_iconv_f":                 [["--iconv"],                          FLAG],
+    "enable_icu_f":                   [["--icu"],                            FLAG],
     "byte_order":                     [["--endian"],                         "<system>"],
     "input_application_version_id":   [["--version-id"],                     "0.0.0-pre-release"],
     "input_derived_class_file":       [["--derived-class-file"],             ""],

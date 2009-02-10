@@ -16,7 +16,6 @@ main(int argc, char** argv)
     QuexBuffer      buffer;
     const int       RawMemorySize = 6;
     const size_t    StepSize      = atoi(argv[1]);
-    char*           target_charset = (char*)"UCS-4LE";
 
     /*
     const uint16_t  test = 0x4711;
@@ -25,13 +24,14 @@ main(int argc, char** argv)
     }
     */
 
-    QuexBufferFiller_Converter<FILE> filler;
     std::FILE*                   fh = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
+    QuexBufferFiller_Converter<FILE>* filler = \
+        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", 0x0, RawMemorySize);
+    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
+
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);
 
     /* Read until the end of file is reached and set the _input_p to EOF */

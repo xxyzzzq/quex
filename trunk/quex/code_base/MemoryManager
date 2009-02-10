@@ -3,106 +3,94 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/buffer/converter/iconv/Converter_IConv>
-#include <quex/code_base/buffer/converter/icu/Converter_ICU>
+#include <quex/code_base/buffer/plain/BufferFiller_Plain>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#if defined (QUEX_OPTION_ENABLE_ICU)
+#   include <quex/code_base/buffer/converter/icu/Converter_ICU>
+#endif
+#if defined (QUEX_OPTION_ENABLE_ICONV)
+#   include <quex/code_base/buffer/converter/iconv/Converter_IConv>
+#endif
 
+#include <quex/code_base/temporary_macros_on>
+ 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
     struct __QuexBufferFiller_tag;
 
     QUEX_INLINE QUEX_CHARACTER_TYPE*
-        MemoryManager_get_BufferMemory(const size_t CharacterN)
-        {
-            QUEX_CHARACTER_TYPE* tmp = (QUEX_CHARACTER_TYPE*)\
-                  __QUEX_ALLOCATE_MEMORY((size_t)(CharacterN * sizeof(QUEX_CHARACTER_TYPE)));
-#           ifdef QUEX_OPTION_ASSERTS
-            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, CharacterN * sizeof(QUEX_CHARACTER_TYPE));
-#           endif
-            return tmp;
-        }
+    MemoryManager_BufferMemory_allocate(const size_t CharacterN)
+    {
+        return (QUEX_CHARACTER_TYPE*)__QUEX_ALLOCATE_MEMORY((size_t)(CharacterN * sizeof(QUEX_CHARACTER_TYPE)));
+    }
 
-    QUEX_INLINE struct __QuexBufferFiller_tag*
-        MemoryManager_get_BufferFiller(QuexBufferFillerTypeEnum FillerType)
-        {
-            size_t     MemorySize = QuexBufferFiller_get_memory_size(FillerType);
-            uint8_t*   memory = __QUEX_ALLOCATE_MEMORY(MemorySize);
-#           ifdef QUEX_OPTION_ASSERTS
-            /* Initialize everything to 0xFF which is most probably causing an error
-             * if a member variable is not initialized before it is used.             */
-            __QUEX_STD_memset(memory, 0xFF, MemorySize);
-#           endif
-            return (struct __QuexBufferFiller_tag*)memory;
-        }
+    QUEX_INLINE void
+    MemoryManager_BufferMemory_free(QUEX_CHARACTER_TYPE* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+
+    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Plain)*
+    MemoryManager_BufferFiller_Plain_allocate()
+    {
+        const size_t     MemorySize = sizeof(TEMPLATED(QuexBufferFiller_Plain));
+        return (TEMPLATED(QuexBufferFiller_Plain)*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    }
+
+    TEMPLATE_IN(InputHandleT) void
+    MemoryManager_BufferFiller_Plain_free(TEMPLATED(QuexBufferFiller_Plain)* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+
+
+    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Converter)*
+    MemoryManager_BufferFiller_Converter_allocate()
+    {
+        const size_t     MemorySize = sizeof(TEMPLATED(QuexBufferFiller_Converter));
+        return (TEMPLATED(QuexBufferFiller_Converter)*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    }
+
+    TEMPLATE_IN(InputHandleT) void
+    MemoryManager_BufferFiller_Converter_free(TEMPLATED(QuexBufferFiller_Converter)* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 
     QUEX_INLINE uint8_t*
-        MemoryManager_get_BufferFiller_RawBuffer(const size_t ByteN)
-        {
-            uint8_t* tmp = __QUEX_ALLOCATE_MEMORY(ByteN);
-#           ifdef QUEX_OPTION_ASSERTS
-            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, ByteN);
-#           endif
-            return tmp;
-        }
+    MemoryManager_BufferFiller_RawBuffer_allocate(const size_t ByteN)
+    { return __QUEX_ALLOCATE_MEMORY(ByteN); }
 
+    QUEX_INLINE void
+    MemoryManager_BufferFiller_RawBuffer_free(uint8_t* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY(memory); }
+
+#   if defined (QUEX_OPTION_ENABLE_ICONV)
     QUEX_INLINE QuexConverter_IConv*
-        MemoryManager_QuexConverter_IConv_allocate()
-        {
-            size_t     MemorySize = sizeof(QuexConverter_IConv);
-            uint8_t*   tmp        = __QUEX_ALLOCATE_MEMORY(MemorySize);
-#           ifdef QUEX_OPTION_ASSERTS
-            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, MemorySize);
-#           endif
-            return (QuexConverter_IConv*)tmp;
-        }
+    MemoryManager_Converter_IConv_allocate()
+    {
+        const size_t     MemorySize = sizeof(QuexConverter_IConv);
+        return (QuexConverter_IConv*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    }
 
+    QUEX_INLINE void
+    MemoryManager_Converter_IConv_free(QuexConverter_IConv* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+#   endif
+
+#   if defined (QUEX_OPTION_ENABLE_ICU)
     QUEX_INLINE QuexConverter_ICU*
-        MemoryManager_QuexConverter_ICU_allocate()
-        {
-            size_t     MemorySize = sizeof(QuexConverter_IConv);
-            uint8_t*   tmp        = __QUEX_ALLOCATE_MEMORY(MemorySize);
-#           ifdef QUEX_OPTION_ASSERTS
-            /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-            __QUEX_STD_memset((uint8_t*)tmp, 0xFF, MemorySize);
-#           endif
-            return (QuexConverter_ICU*)tmp;
-        }
+    MemoryManager_Converter_ICU_allocate()
+    {
+        const size_t     MemorySize = sizeof(QuexConverter_ICU);
+        return (QuexConverter_ICU*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    }
 
     QUEX_INLINE void
-        MemoryManager_free_BufferMemory(QUEX_CHARACTER_TYPE* memory)
-        {
-            if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory);
-        }
+    MemoryManager_Converter_ICU_free(QuexConverter_ICU* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+#   endif
 
-    QUEX_INLINE void
-        MemoryManager_free_BufferFiller(QuexBufferFiller* memory)
-        {
-            if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory);
-        }
-
-    QUEX_INLINE void
-        MemoryManager_free_BufferFiller_RawBuffer(uint8_t* memory)
-        {
-            if( memory != 0x0 ) __QUEX_FREE_MEMORY(memory);
-        }
-
-    QUEX_INLINE void
-        MemoryManager_QuexConverter_IConv_free(QuexConverter_IConv* memory)
-        {
-            if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory);
-        }
-
-    QUEX_INLINE void
-        MemoryManager_QuexConverter_ICU_free(QuexConverter_ICU* memory)
-        {
-            if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory);
-        }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
+ 
+#include <quex/code_base/temporary_macros_off>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__ */

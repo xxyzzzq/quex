@@ -10,29 +10,23 @@
 #include <quex/code_base/compatibility/iconv-argument-types.h>
 
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-#   include <quex/code_base/compatibility/iconv-argument-types.h>
-#   include <cerrno>
-#else
-#   include <errno.h>
-#endif
-
 #include <quex/code_base/temporary_macros_on>
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Converter_construct(TEMPLATED(QuexBufferFiller_Converter)* me,
-                                         InputHandleT*                          input_handle,
-                                         QuexConverter*                         converter,
-                                         const char*                            FromCoding,
-                                         const char*                            ToCoding,
-                                         size_t                                 RawBufferSize,
-                                         bool                                   ConstantSize_CodingF)
+    TEMPLATE_IN(InputHandleT)    TEMPLATED(QuexBufferFiller_Converter)*
+    QuexBufferFiller_Converter_new(InputHandleT*     input_handle,
+                                   QuexConverter*    converter,
+                                   const char*       FromCoding,
+                                   const char*       ToCoding,
+                                   size_t            RawBufferSize,
+                                   bool              ConstantSize_CodingF)
     { 
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
+        TEMPLATED(QuexBufferFiller_Converter)*  me = TEMPLATED(MemoryManager_BufferFiller_Converter_allocate)();
+        __quex_assert(me != 0x0);
 
         __QuexBufferFiller_init_functions(&me->base,
                                           TEMPLATED(QuexBufferFiller_Converter_tell_character_index),
@@ -53,7 +47,7 @@ namespace quex {
 
         /* Initialize the raw buffer that holds the plain bytes of the input file
          * (setup to trigger initial reload)                                                */
-        uint8_t* raw_buffer_p = MemoryManager_get_BufferFiller_RawBuffer(RawBufferSize);
+        uint8_t* raw_buffer_p = MemoryManager_BufferFiller_RawBuffer_allocate(RawBufferSize);
         __QuexRawBuffer_init(&me->raw_buffer, raw_buffer_p, RawBufferSize, 
                              me->start_position);
 
@@ -62,28 +56,47 @@ namespace quex {
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+
+        return me;
     }
 
     TEMPLATE_IN(InputHandleT) size_t 
-    QuexBufferFiller_Converter_read_characters(QuexBufferFiller*    alter_ego,
-                                             QUEX_CHARACTER_TYPE* user_memory_p, 
-                                             const size_t         N)
+    QuexBufferFiller_Converter_read_characters(QuexBufferFiller*      alter_ego,
+                                               QUEX_CHARACTER_TYPE*   user_memory_p, 
+                                               const size_t           N)
     {
         TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
-
+        __quex_assert(me->converter != 0x0);
         __quex_assert(alter_ego != 0x0); 
         __quex_assert(user_memory_p != 0x0); 
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+#       ifdef QUEX_OPTION_ASSERTS
+        __QUEX_STD_memset((uint8_t*)user_memory_p, 0xFF, N * sizeof(QUEX_CHARACTER_TYPE));
+#       endif
 
         /* TWO CASES:
          * (1) There are still some bytes in the raw buffer from the last load.
          *     in this case, first translate them and then maybe load the raw buffer
          *     again. (iterator != end)
+         *
          * (2) The raw buffer is empty. Then it must be loaded in order to get some
-         *     basis for conversion. (iterator == end)                                */
-        if( me->raw_buffer.iterator == me->raw_buffer.end ) 
-            /* If no bytes can be loaded, then zero characters are converted */
-            if( __QuexBufferFiller_Converter_fill_raw_buffer(me) == 0 ) { return 0; }
+         *     basis for conversion. For 'stateless' converters the condition
+         *
+         *                iterator == end
+         *
+         *     would be sufficient. However, there are converters that store some
+         *     source data even if they report that 'iterator==end'. The final decision
+         *     is left to the converter in its first call to 'convert()'. The 
+         *     assumption 'iterator == end => reload required' does not hold here for the 
+         *     general case.                                                              
+         *                       
+         *     If we wanted to do a pre-load here, this would increase complexity.
+         *     Because one would need to communicate with the converter, wether there are
+         *     some hidden bytes in the pipe. The task to determine this might also
+         *     not be trivial for one or the other converter to be plugged in here.
+         *
+         *     THUS: No pre-load before the first conversion, even if the first conversion
+         *           runs on zero bytes!                                                    */
 
         QUEX_CHARACTER_TYPE*        user_buffer_iterator = user_memory_p;
         const QUEX_CHARACTER_TYPE*  UserBufferEnd        = user_memory_p + N;
@@ -128,6 +141,7 @@ namespace quex {
     { 
         __quex_assert(alter_ego != 0x0); 
         TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
+        __quex_assert(me->converter != 0x0);
         /* The raw buffer iterator stands on the next character to be read. In general it holds
          * that the raw_buffer's iterator points to the first byte of the next character to be
          * converted when the next user buffer is to be filled.                                      */
@@ -151,6 +165,7 @@ namespace quex {
         /* NOTE: The 'hint' always relates to the begin of the raw buffer, see [Ref 1].           */
         const size_t     Hint_Index   = me->hint_begin_character_index;
         uint8_t*         Hint_Pointer = buffer->begin;
+        __quex_assert(me->converter != 0x0);
 
         /* Seek_character_index(Pos) means that the next time when a character buffer
          * is to be filled, this has to happen from position 'CharacterIndex'. 
@@ -161,6 +176,12 @@ namespace quex {
         if( Index == buffer->iterators_character_index ) { 
             return;                                                /* Nothing to be done          */
         }
+        /* Some type of converters (actually, at the time of this writing, only IBM's ICU)
+         * require a reset as soon as the conversion is discontinued, i.e. the stream of
+         * character's is disrupted. The reset happens to cope with some internal 'statefulness'. */
+        if( me->converter->on_conversion_discontinuity != 0x0 )
+            me->converter->on_conversion_discontinuity(me->converter);
+
         /* Depending on the character encoding, the seek procedure can be optimized there are the 
          * following two cases:
          *
@@ -238,12 +259,9 @@ namespace quex {
 
         me->converter->delete_self(me->converter);
 
-        MemoryManager_free_BufferFiller_RawBuffer(me->raw_buffer.begin); 
+        MemoryManager_BufferFiller_RawBuffer_free(me->raw_buffer.begin); 
 
-        /* The memory manager allocated the space required for a buffer filler of this
-         * type. Somewhere down the road it is known what size of memory belongs to this
-         * pointer. */
-        MemoryManager_free_BufferFiller(alter_ego);
+        MemoryManager_BufferFiller_Converter_free(me);
     }
 
     TEMPLATE_IN(InputHandleT) size_t 
@@ -269,7 +287,13 @@ namespace quex {
          *         ==> The character index of the iterator relates always to the begin of 
          *             the buffer.
          */
-        me->hint_begin_character_index = buffer->iterators_character_index;
+        /* NOTE: Some converters contain a weird statefulness. Let us assume that if
+         *       the converter provides a 'on_conversion_discontinuity()' function, than
+         *       it such a weird subject, and we cannot make any good assumptions about
+         *       character index and buffer position. The good news is that currently
+         *       only ICU converters behave so strangely.                               */
+        if( me->converter->on_conversion_discontinuity == 0x0 )
+            me->hint_begin_character_index = buffer->iterators_character_index;
 
         /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
          * the buffer) where there are bytes left in the raw buffer. These need to be
@@ -303,8 +327,8 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void   
     __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
-                       uint8_t* Begin, size_t SizeInBytes,
-                       STREAM_POSITION_TYPE(InputHandleT) StartPosition)
+                         uint8_t* Begin, size_t SizeInBytes,
+                         STREAM_POSITION_TYPE(InputHandleT) StartPosition)
     {
         me->begin               = Begin;
 
@@ -331,5 +355,12 @@ namespace quex {
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/BufferFiller.i>
+
+#ifdef QUEX_OPTION_ENABLE_ICONV
+#   include <quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
+#endif
+#ifdef QUEX_OPTION_ENABLE_ICU
+#   include <quex/code_base/buffer/converter/icu/BufferFiller_ICU.i>
+#endif
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__ */

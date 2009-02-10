@@ -1,20 +1,20 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
- * (C) 2007-2008 Frank-Rene Schaefer  */
+ * (C) 2007-2009 Frank-Rene Schaefer  */
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICU__
 #define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICU__
 
 #include <quex/code_base/buffer/converter/BufferFiller_Converter>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU>
 
 #include <quex/code_base/temporary_macros_on>
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Converter_ICU_construct(TEMPLATED(QuexBufferFiller_Converter)* me,
-                                               InputHandleT* input_handle, 
-                                               const char* FromCoding,   const char* ToCoding,
-                                               size_t      RawBufferSize);
+    TEMPLATE_IN(InputHandleT)  TEMPLATED(QuexBufferFiller_Converter)*
+    QuexBufferFiller_Converter_ICU_new(InputHandleT*  input_handle, 
+                                       const char*    FromCoding,   const char* ToCoding,
+                                       size_t         RawBufferSize);
     /* input_handle         is the file handle or pointer to stream from which characters come.
      *
      * ToCoding == 0x0      causes an automatic choice of the target coding to according to 

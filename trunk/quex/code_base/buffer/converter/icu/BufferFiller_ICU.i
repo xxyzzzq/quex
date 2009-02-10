@@ -6,7 +6,6 @@
 #include <quex/code_base/buffer/converter/BufferFiller_Converter>
 #include <quex/code_base/buffer/converter/icu/BufferFiller_ICU>
 #include <quex/code_base/buffer/converter/icu/Converter_ICU>
-#include <quex/code_base/MemoryManager>
 
 #include <quex/code_base/temporary_macros_on>
 
@@ -18,20 +17,18 @@ namespace quex {
     __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(const char* Coding);
 
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Converter_ICU_construct(TEMPLATED(QuexBufferFiller_Converter)* me,
-                                               InputHandleT* input_handle, 
-                                               const char*   FromCoding,   const char* ToCoding,
-                                               size_t        RawBufferSize)
+    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Converter)* 
+    QuexBufferFiller_Converter_ICU_new(InputHandleT* input_handle, 
+                                       const char*   FromCoding,   const char* ToCoding,
+                                       size_t        RawBufferSize)
     { 
         const bool ConstantCodingF = ! __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(FromCoding);
 
-        QuexBufferFiller_Converter_construct(me,
-                                             input_handle,
-                                             QuexConverter_ICU_new(),
-                                             FromCoding, ToCoding,
-                                             RawBufferSize,
-                                             ConstantCodingF);
+        return QuexBufferFiller_Converter_new(input_handle,
+                                              QuexConverter_ICU_new(),
+                                              FromCoding, ToCoding,
+                                              RawBufferSize,
+                                              ConstantCodingF);
                                              
     }
 

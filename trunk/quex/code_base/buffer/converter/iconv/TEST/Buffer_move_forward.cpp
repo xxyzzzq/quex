@@ -25,13 +25,13 @@ main(int argc, char** argv)
     }
     */
 
-    QuexBufferFiller_Converter<FILE> filler;
     std::FILE*                   fh = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, RawMemorySize);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5), 5);      
+    QuexBufferFiller_Converter<FILE>* filler = \
+        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", target_charset, RawMemorySize);
+    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);
 
     test_move_forward(&buffer, StepSize); 

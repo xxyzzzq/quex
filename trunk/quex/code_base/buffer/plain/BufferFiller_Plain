@@ -37,8 +37,8 @@ namespace quex {
 #       endif
     } TEMPLATIFIER_END(QuexBufferFiller_Plain);
 
-    TEMPLATE_IN(InputHandleT) void
-    QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)* me, InputHandleT* input_handle);
+    TEMPLATE_IN(InputHandleT)  TEMPLATED(QuexBufferFiller_Plain)*
+    QuexBufferFiller_Plain_new(InputHandleT* input_handle);
     /* input_handle  is the file handle or pointer to the input stream from where the
      *               incoming characters are to be read. */
 

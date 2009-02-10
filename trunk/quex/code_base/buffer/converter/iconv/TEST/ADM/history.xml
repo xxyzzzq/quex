@@ -1,4 +1,4 @@
-<history date="Sat Jan 17 10:01:02 2009" element-n="179">
+<history date="Mon Feb  9 17:07:06 2009" element-n="195">
     <day year="2008" month="02" day="10">
         <history-init time="09:55:24"/>
         <test-runs-today n="3" ok-n="3" fail-n="0" else-n="0" last-run="oll korrekt" last-time="11:15:09"/>
@@ -515,5 +515,31 @@
     </day>
     <day year="2009" month="01" day="17">
         <test-runs-today n="8" ok-n="4" fail-n="4" else-n="0" last-run="oll korrekt" last-time="09:01:02"/>
+    </day>
+    <day year="2009" month="01" day="26">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="06:40:05"/>
+    </day>
+    <day year="2009" month="02" day="03">
+        <test-runs-today n="2" ok-n="0" fail-n="2" else-n="0" last-run="failure" last-time="09:01:51"/>
+    </day>
+    <day year="2009" month="02" day="05">
+        <crc-error time="09:07:48" application="converter-16.exe" choice="UTF-8" database-crc="0" real-crc="1473430613"/>
+        <crc-error time="09:07:48" application="converter-16.exe" choice="UTF-16" database-crc="0" real-crc="1473430613"/>
+        <crc-error time="09:07:48" application="converter-32.exe" choice="UTF-8" database-crc="0" real-crc="1699693049"/>
+        <crc-error time="09:07:48" application="converter-32.exe" choice="UTF-16" database-crc="0" real-crc="1699693049"/>
+        <crc-error time="09:07:48" application="converter-statefulness-16.exe" choice="UTF-8" database-crc="0" real-crc="-54770980"/>
+        <crc-error time="09:07:48" application="converter-statefulness-16.exe" choice="UTF-16" database-crc="0" real-crc="1253790297"/>
+        <crc-error time="09:07:48" application="converter-statefulness-32.exe" choice="UTF-8" database-crc="0" real-crc="-54770980"/>
+        <crc-error time="09:07:49" application="converter-statefulness-32.exe" choice="UTF-16" database-crc="0" real-crc="1253790297"/>
+        <test-runs-today n="4" ok-n="1" fail-n="2" else-n="1" last-run="failure" last-time="09:25:25"/>
+    </day>
+    <day year="2009" month="02" day="06">
+        <crc-error time="05:13:32" application="converter-32.exe" choice="UTF-16" database-crc="1699693049" real-crc="-17263759"/>
+        <crc-error time="09:22:07" application="converter-16.exe" choice="UTF-8" database-crc="1473430613" real-crc="-525549957"/>
+        <crc-error time="09:23:06" application="converter-16.exe" choice="UTF-16" database-crc="1473430613" real-crc="-338491359"/>
+        <test-runs-today n="18" ok-n="4" fail-n="14" else-n="0" last-run="oll korrekt" last-time="18:39:27"/>
+    </day>
+    <day year="2009" month="02" day="09">
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="oll korrekt" last-time="16:07:06"/>
     </day>
 </history>

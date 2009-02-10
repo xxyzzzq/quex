@@ -32,7 +32,6 @@ main(int argc, char** argv)
     const int            ReferenceSize = 24; 
     QUEX_CHARACTER_TYPE  reference[ReferenceSize];
     /**/
-    QuexBufferFiller_Converter<FILE> filler;
 
     if( strcmp(argv[1], "Dynamic") == 0 ) {
         fh             = fopen("test.txt", "r");
@@ -46,9 +45,10 @@ main(int argc, char** argv)
         exit(-1);
     }
 
-    QuexBufferFiller_Converter_IConv_construct(&filler, fh, source_charset, target_charset, RawMemorySize);
+    QuexBufferFiller_Converter<FILE>* filler = \
+         QuexBufferFiller_Converter_IConv_new(fh, source_charset, target_charset, RawMemorySize);
     /* Fill the reference buffer */
-    size_t loaded_n = filler.base.read_characters(&filler.base, reference, ReferenceSize);
+    size_t loaded_n = filler->base.read_characters(&filler->base, reference, ReferenceSize);
 
     /* Print the reference buffer 
      * NOTE: The buffer filler does not know anything about buffer limit codes etc. It simply
@@ -69,11 +69,11 @@ main(int argc, char** argv)
      * is symetric with respect to the diagonal.                                                       */
     for(size_t a = 0; a < 23 ; ++a) {
         for(size_t b = a; b < 23 ; ++b) {
-            seek_and_print(filler, a, reference);
+            seek_and_print(*filler, a, reference);
             printf(" --> ");
-            seek_and_print(filler, b, reference);
+            seek_and_print(*filler, b, reference);
             printf(" --> ");
-            seek_and_print(filler, a, reference);
+            seek_and_print(*filler, a, reference);
             printf("\n");
         }
     }

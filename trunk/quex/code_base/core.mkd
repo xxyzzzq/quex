@@ -15,12 +15,15 @@ QUEX_CORE = \
                 compatibility/win/msc_inttypes.h     \
                 compatibility/win/msc_stdint.h       \
                 compatibility/stdbool.h              \
-                buffer/BufferFiller                  \
                 buffer/Buffer                        \
-                buffer/BufferFiller.i                \
                 buffer/Buffer.i                      \
-                buffer/BufferInitFactory.i \
-                buffer/converter/iconv/BufferFiller_IConv \
+                buffer/BufferFiller                  \
+                buffer/BufferFiller.i                \
+                buffer/converter/Converter           \
+                buffer/converter/BufferFiller_Converter     \
+                buffer/converter/icu/BufferFiller_ICU       \
+                buffer/converter/icu/BufferFiller_ICU.i     \
+                buffer/converter/iconv/BufferFiller_IConv   \
                 buffer/converter/iconv/BufferFiller_IConv.i \
                 buffer/MemoryPositionMimiker \
                 buffer/Buffer_debug.i \

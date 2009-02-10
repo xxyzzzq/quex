@@ -81,6 +81,9 @@
 #ifndef    QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
 #   define QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE  ((const size_t)(512))
 #endif
+#ifndef    QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE
+#   define QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE  (64)
+#endif
 
 /* Detect the compiler */
 #if defined(QUEX_OPTION_ALLOW_COMPUTED_GOTOS)
@@ -119,24 +122,39 @@
     typedef QUEX_TOKEN_ID_TYPE   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
 #endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-#    define __QUEX_ALLOCATE_MEMORY(N)   (new uint8_t[(size_t)N])
-#    define __QUEX_FREE_MEMORY(OBJECT)  (delete[] OBJECT)
-#else
-#    define __QUEX_ALLOCATE_MEMORY(N)   (uint8_t*)malloc((size_t)N)
-#    define __QUEX_FREE_MEMORY(OBJECT)  (free(OBJECT))
-#endif
-       
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
+    QUEX_INLINE uint8_t*
+    __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
+    {
+#        if ! defined(__QUEX_SETTING_PLAIN_C)
+         uint8_t*  result = new uint8_t[(size_t)ByteN];
+#        else
+         uint8_t*  result = (uint8_t*)malloc((size_t)ByteN);
+#        endif
+#        ifdef QUEX_OPTION_ASSERTS
+         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+         __QUEX_STD_memset((uint8_t*)result, 0xFF, ByteN);
+#        endif
+         return result;
+    }
+       
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   define __QUEX_FREE_MEMORY(OBJECT)  (free(OBJECT))
+#else
+#   define __QUEX_FREE_MEMORY(OBJECT)  (delete[] OBJECT)
+#endif
+
+
     typedef enum { 
         QUEX_AUTO,
-        QUEX_PLAIN,
-        QUEX_ICONV,
-        QUEX_MEMORY
+        QUEX_PLAIN,      /* Filling buffer with plain file content.                        */
+        QUEX_CONVERTER,  /* Filling buffer with converted file content (e.g. UTF8 -> UCS4) */
+        QUEX_MEMORY      /* Running quex on pure memory, without any buffer filling.       */
+
     } QuexBufferFillerTypeEnum;
 
 #   ifndef     QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING
@@ -145,8 +163,6 @@ namespace quex {
 
     struct  __QuexAnalyser_tag;
     typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
-
-    QUEX_INLINE size_t QuexBufferFiller_get_memory_size(QuexBufferFillerTypeEnum FillerType);
 
     QUEX_INLINE void
     QUEX_ERROR_EXIT(const char* Msg)

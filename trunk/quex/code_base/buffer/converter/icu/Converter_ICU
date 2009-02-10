@@ -4,6 +4,10 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__
 #define __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__
 
+#if ! defined(QUEX_OPTION_ENABLE_ICU)
+#    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICU. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
+#endif
+
 #include <quex/code_base/buffer/converter/Converter>
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
@@ -33,6 +37,10 @@ namespace quex {
         UConverter*  from_handle;
         UConverter*  to_handle;
         UErrorCode   status;
+
+        UChar        pivot_buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE];
+        UChar*       pivot_iterator_begin;
+        UChar*       pivot_iterator_end;
 
     } QuexConverter_ICU;
 

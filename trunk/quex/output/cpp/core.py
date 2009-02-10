@@ -108,6 +108,7 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, indentation_support_f,   "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
     txt = set_switch(txt, True,                    "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
     txt = set_switch(txt, Setup.enable_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
+    txt = set_switch(txt, Setup.enable_icu_f,      "QUEX_OPTION_ENABLE_ICU")
     txt = set_switch(txt, not Setup.disable_token_queue_f,        "QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE")
     txt = set_switch(txt, not Setup.disable_string_accumulator_f, "QUEX_OPTION_STRING_ACCUMULATOR")
     txt = set_switch(txt, Setup.post_categorizer_f,               "QUEX_OPTION_POST_CATEGORIZER")

@@ -26,7 +26,7 @@ main(int argc, char** argv)
     }
 
     std::FILE*   fh = fopen("test.txt", "r");
-    char*        target_charset = (char*)"UCS-4BE";
+    char*        target_charset = (char*)"UCS-4LE";
     size_t       raw_memory_size = 3;
     raw_memory_size = argv[1][0] - '0';
     assert(raw_memory_size >= 1);
@@ -34,18 +34,17 @@ main(int argc, char** argv)
     const int            MemorySize = 512; /* no re-load necessary */
     QUEX_CHARACTER_TYPE  memory[MemorySize];
 
-    QuexBufferFiller_Converter<FILE> filler;
-
-    QuexBufferFiller_Converter_IConv_construct(&filler, fh, "UTF8", target_charset, raw_memory_size);
+    QuexBufferFiller_Converter<FILE>* filler = \
+        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", target_charset, raw_memory_size);
 
     size_t loaded_n = 0;
-    loaded_n = filler.base.read_characters(&filler.base, 
+    loaded_n = filler->base.read_characters(&filler->base, 
                                            (QUEX_CHARACTER_TYPE*)memory, MemorySize);
 
     cout << "## loaded character n = " << loaded_n << endl;
 
     for(size_t i=0; i < loaded_n ; ++i) {
         uint8_t*  raw = (uint8_t*)(memory + i);
-        printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[0], (unsigned)raw[1], (unsigned)raw[2], (unsigned)raw[3]);
+        printf("%02X.%02X.%02X.%02X\n", (unsigned)raw[3], (unsigned)raw[2], (unsigned)raw[1], (unsigned)raw[0]);
     }
 }
