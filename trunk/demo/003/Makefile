@@ -2,6 +2,7 @@
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
+include $(QUEX_PATH)/quex/code_base/core.mkd
 .PHONY: clean
 
 ifndef QUEX_PATH
@@ -24,15 +25,16 @@ ifneq (,$(findstring $(COMPILER),icpc cl dmc))
 else
 	LIBICONV=#
 endif
+
+CONVERTER=undefined # (overidden by command line specification)
 ifeq ($(CONVERTER),icu)
 	LIB_CONV  = `icu-config --ldflags`
 	QUEX_FLAG = --icu
 else
-	LIB_CONV  = LIBICONV
+	LIB_CONV  = $(LIBICONV)
 	QUEX_FLAG = --iconv
 endif
 
-include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
 # -- INPUT
@@ -57,7 +59,7 @@ COMPILER = g++
 CC = $(COMPILER) -c -fPIC -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
 	 -D___QUEX_UNIT_TESTING___ -ggdb \
-     -DQUEX_OPTION_ENABLE_ASSERTS	
+	 $(CC_FLAG)
 
 LD = $(COMPILER) $(LIB_CONV) 
 
@@ -71,6 +73,7 @@ $(APPLICATION): $(OBJS)
 	$(CC) $< -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
+	echo ":$(CONVERTER):" $(QUEX_FLAG)
 	quex -i                         $(MODE_FILES)          \
 		 --engine                   $(ENGINE_NAME)         \
 	     --bytes-per-ucs-code-point $(BYTES_PER_CHARACTER) \
