@@ -1,0 +1,24 @@
+# TODO: This file needs some editing before it can be useful.
+#
+
+# Open an ftp session to a remote server, and wait for a username prompt.
+spawn ftp $remote_server
+expect "username:"
+# Send the username, and then wait for a password prompt.
+send "$my_user_id\r"
+expect "password:"
+# Send the password, and then wait for an ftp prompt.
+send "$my_password\r"
+expect "sftp>"
+# Switch to binary mode, and then wait for an ftp prompt.
+send "bin\r"
+expect "sftp>"
+# Turn off prompting.
+send "prompt\r"
+expect "sftp>"
+# 
+send "cd uploads\r"
+expect "sftp>"
+# Exit the ftp session, and wait for a special end-of-file character.
+send "bye\r"
+expect eof

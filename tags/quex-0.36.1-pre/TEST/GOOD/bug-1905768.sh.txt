@@ -1,0 +1,6 @@
+Simple_MODULE_analyser_function(QuexAnalyser* me) 
+    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;
+    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
+Simple_U1_STRING_analyser_function(QuexAnalyser* me) 
+    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;
+    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 

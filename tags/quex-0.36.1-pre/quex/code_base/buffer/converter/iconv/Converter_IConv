@@ -1,0 +1,39 @@
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer  */
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICONV__
+#define __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICONV__
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/converter/Converter>
+
+#if ! defined(QUEX_OPTION_ENABLE_ICONV)
+#    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
+#endif
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+    extern "C" { 
+#   include <iconv.h>
+    }
+#else
+#   include <iconv.h>
+#endif
+
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+
+    typedef struct {
+        QuexConverter  base;
+
+        iconv_t        handle;
+
+    } QuexConverter_IConv;
+
+    QUEX_INLINE QuexConverter* QuexConverter_IConv_new();
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+}
+#endif
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICONV__ */

@@ -1,0 +1,3 @@
+simple.qx:3:warning: Token id 'TKN_2' defined implicitly.
+warning: no initial mode defined via 'start'
+warning: using mode 'ONE' as initial mode
