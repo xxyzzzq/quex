@@ -146,6 +146,8 @@ function collect_packages()
 function repository_update() {
     cd $QUEX_PATH
 
+    hwut i > unit_test_results.txt
+
     # make sure that the new version information is checked in
     echo "-- Update repository / Create tag for $1"
     svn commit -m "Version Info / Prepare Release $1"
