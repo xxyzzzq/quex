@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Wed Dec 24 09:37:22 2008
+DATE:  Wed Feb 11 07:28:50 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -179,7 +179,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Wed Dec 24 09:39:48 2008
+DATE:  Wed Feb 11 07:31:28 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -221,12 +221,18 @@ TITLE: Demo-Applications
 
  -- demo/003:
 
-    Unicode Based Lexical Analyzis
+    Unicode Based Lexical Analyzis (Using GNU's Lib IConv)
         003.sh BPC=2 ....................................................[OK]
                BPC=2_NDEBUG .............................................[OK]
                BPC=4 ....................................................[OK]
                BPC=4_NDEBUG .............................................[OK]
                BPC=wchar_t ..............................................[OK]
+    Unicode Based Lexical Analyzis (Using IBM's ICU Library)
+        003-icu.sh BPC=2 ................................................[OK]
+                   BPC=2_NDEBUG .........................................[OK]
+                   BPC=4 ................................................[OK]
+                   BPC=4_NDEBUG .........................................[OK]
+                   BPC=wchar_t ..........................................[OK]
 
  -- demo/004:
 
@@ -274,7 +280,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Wed Dec 24 09:39:48 2008
+DATE:  Wed Feb 11 07:31:29 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -295,7 +301,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Wed Dec 24 09:39:50 2008
+DATE:  Wed Feb 11 07:31:30 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -321,8 +327,9 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Wed Dec 24 09:39:57 2008
-TITLE: <no file 'ADM/title.txt'>
+DATE:  Wed Feb 11 07:31:36 2009
+TITLE: Basic Buffer Functions
+
 -------------------------------------------------------------------------------
 
  -- Backward:
@@ -383,11 +390,26 @@ TITLE: <no file 'ADM/title.txt'>
                                                   
 
 ===============================================================================
-ENTER: quex/code_base/buffer/iconv/TEST
-DATE:  Wed Dec 24 09:40:03 2008
+ENTER: quex/code_base/buffer/converter/iconv/TEST
+DATE:  Wed Feb 11 07:31:42 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
+
+ -- Converter:
+
+    Plain 16 bit;
+        converter-16.exe UTF-8 ..........................................[OK]
+                         UTF-16 .........................................[OK]
+    Plain 32 bit;
+        converter-32.exe UTF-8 ..........................................[OK]
+                         UTF-16 .........................................[OK]
+    Possible 'statefulness' has been ruled out (16 bit);
+        converter-statefulness-16.exe UTF-8 .............................[OK]
+                                      UTF-16 ............................[OK]
+    Possible 'statefulness' has been ruled out (32 bit);
+        converter-statefulness-32.exe UTF-8 .............................[OK]
+                                      UTF-16 ............................[OK]
 
  -- Move by Offset:
 
@@ -444,8 +466,84 @@ TITLE: Input Buffers Based on the IConv - Library
                                                   
 
 ===============================================================================
+ENTER: quex/code_base/buffer/converter/icu/TEST
+DATE:  Wed Feb 11 07:31:50 2009
+TITLE: Testing the ICU Converter Adaption
+
+-------------------------------------------------------------------------------
+
+ -- Converter:
+
+    Plain 16 bit;
+        converter-16.exe UTF-8 ..........................................[OK]
+                         UTF-16 .........................................[OK]
+    Plain 32 bit;
+        converter-32.exe UTF-8 ..........................................[OK]
+                         UTF-16 .........................................[OK]
+    Possible 'statefulness' has been ruled out (16 bit);
+        converter-statefulness-16.exe UTF-8 .............................[OK]
+                                      UTF-16 ............................[OK]
+    Possible 'statefulness' has been ruled out (32 bit);
+        converter-statefulness-32.exe UTF-8 .............................[OK]
+                                      UTF-16 ............................[OK]
+
+ -- Move by Offset:
+
+    Backward (BPC=4);
+        Buffer_move_backward.exe 1 ......................................[OK]
+                                 2 ......................................[OK]
+                                 3 ......................................[OK]
+                                 4 ......................................[OK]
+                                 5 ......................................[OK]
+    Forward (BPC=4);
+        Buffer_move_forward.exe 1 .......................................[OK]
+                                2 .......................................[OK]
+                                3 .......................................[OK]
+                                4 .......................................[OK]
+                                5 .......................................[OK]
+
+ -- Stream Position Seek:
+
+    Plain search
+        seek_character_index.exe Forward ................................[OK]
+                                 Backward ...............................[OK]
+    Total Zik-Zak
+        seek_character_index-zikzak.exe Fixed ...........................[OK]
+                                        Dynamic .........................[OK]
+
+ -- Tell and Seek:
+
+    Bytes Per Character (BPC)=4;
+        Buffer_tell_and_seek.exe ........................................[OK]
+
+ -- read_characters:
+
+    Raw buffer size varries (UTF-8)
+        one-beat.exe 6 ..................................................[OK]
+                     7 ..................................................[OK]
+                     8 ..................................................[OK]
+                     9 ..................................................[OK]
+    User buffer size varries (UTF-8)
+        n-beat.exe 1 ....................................................[OK]
+                   2 ....................................................[OK]
+                   3 ....................................................[OK]
+                   4 ....................................................[OK]
+                   5 ....................................................[OK]
+                   6 ....................................................[OK]
+                   7 ....................................................[OK]
+                   8 ....................................................[OK]
+                   9 ....................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
+
+===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Wed Dec 24 09:40:19 2008
+DATE:  Wed Feb 11 07:32:03 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -540,7 +638,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Wed Dec 24 09:40:20 2008
+DATE:  Wed Feb 11 07:32:05 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -548,9 +646,13 @@ TITLE: Lexical Analyzer Class Template
  -- Count Line and Column:
 
     With Indentation
-        test-simple-2 ...................................................[OK]
+        counter-column_line-indentation.exe .............................[OK]
+    With Indentation II
+        counter-column_line-indentation-x.exe ...........................[OK]
     Without Indentation Count
-        test-simple .....................................................[OK]
+        counter-column_line.exe .........................................[OK]
+    Without Indentation Count II
+        counter-column_line-x.exe .......................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _ 
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -561,7 +663,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Wed Dec 24 09:40:21 2008
+DATE:  Wed Feb 11 07:32:06 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -595,7 +697,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Wed Dec 24 09:42:46 2008
+DATE:  Wed Feb 11 07:34:12 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -780,7 +882,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Wed Dec 24 09:42:51 2008
+DATE:  Wed Feb 11 07:34:17 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -843,7 +945,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Wed Dec 24 09:42:56 2008
+DATE:  Wed Feb 11 07:34:22 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -942,7 +1044,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Wed Dec 24 09:42:56 2008
+DATE:  Wed Feb 11 07:34:22 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -970,7 +1072,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Wed Dec 24 09:43:15 2008
+DATE:  Wed Feb 11 07:34:41 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -996,7 +1098,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Wed Dec 24 09:43:16 2008
+DATE:  Wed Feb 11 07:34:42 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1025,7 +1127,8 @@ demo/TEST ...............................................................[OK]
 quex/TEST ...............................................................[OK]
 quex/code_base/TEST .....................................................[OK]
 quex/code_base/buffer/TEST ..............................................[OK]
-quex/code_base/buffer/iconv/TEST ........................................[OK]
+quex/code_base/buffer/converter/iconv/TEST ..............................[OK]
+quex/code_base/buffer/converter/icu/TEST ................................[OK]
 quex/code_base/buffer/plain/TEST ........................................[OK]
 quex/code_base/template/TEST ............................................[OK]
 quex/core_engine/TEST ...................................................[OK]

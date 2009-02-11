@@ -23,7 +23,8 @@ main(int argc, char** argv)
         return 0;
     }
 
-    uint8_t              buffer[512];
+    const size_t         BufferSize = 512;
+    QUEX_CHARACTER_TYPE  buffer[BufferSize];
     size_t               loaded_character_n = 0;  
 
     if( strcmp(argv[1], "FILE") == 0 ) { 
@@ -35,11 +36,10 @@ main(int argc, char** argv)
             return 0;
         }
 
-        QuexBufferFiller_Plain<FILE>    is;
-        QuexBufferFiller_Plain_construct<FILE>(&is, fh);
-        loaded_character_n = __BufferFiller_Plain_read_characters<FILE>((QuexBufferFiller*)&is, 
-                                                                        (QUEX_CHARACTER_TYPE*)buffer, 
-                                                                        (const size_t)128);
+        QuexBufferFiller_Plain<FILE>*   is = QuexBufferFiller_Plain_new<FILE>(fh);
+
+        loaded_character_n = __BufferFiller_Plain_read_characters<FILE>((QuexBufferFiller*)is, 
+                                                                        buffer, BufferSize);
         fclose(fh);
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
 
@@ -52,11 +52,9 @@ main(int argc, char** argv)
             return 0;
         }
         
-        QuexBufferFiller_Plain<istream>    is;
-        QuexBufferFiller_Plain_construct<istream>(&is, &fh);
-        loaded_character_n = __BufferFiller_Plain_read_characters<istream>((QuexBufferFiller*)&is, 
-                                                                           (QUEX_CHARACTER_TYPE*)buffer, 
-                                                                           (const size_t)128);
+        QuexBufferFiller_Plain<istream>*   is = QuexBufferFiller_Plain_new<istream>(&fh);
+        loaded_character_n = __BufferFiller_Plain_read_characters<istream>((QuexBufferFiller*)is, 
+                                                                           buffer, BufferSize);
         
         fh.close();
         cout << "4 byte mode: loaded characters = " << loaded_character_n << "\n";
