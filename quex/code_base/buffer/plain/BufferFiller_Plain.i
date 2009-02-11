@@ -134,6 +134,9 @@ namespace quex {
         /* The type cast is necessary, since the function signature needs to 
          * work with the first argument being of base class type. */
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
+#       ifdef QUEX_OPTION_ASSERTS
+        __QUEX_STD_memset((uint8_t*)buffer_memory, 0xFF, N * sizeof(QUEX_CHARACTER_TYPE));
+#       endif
 
         __quex_assert(me->ih != 0x0); 
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 

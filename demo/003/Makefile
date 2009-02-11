@@ -1,4 +1,16 @@
 # PURPOSE: Makefile for Demo Application of Quex
+# 
+# USAGES:
+# 
+#     make lexer CONVERTER=iconv   
+#
+#         creates a lexer using the iconv library. This is actually the
+#         default which is done even if no 'CONVERTER' is specified.
+#
+#     make lexer CONVERTER=icu   
+#
+#         creates a lexer using the icu library.
+#
 #
 # ABSOLUTELY NO WARRANTY
 #_______________________________________________________________________________
