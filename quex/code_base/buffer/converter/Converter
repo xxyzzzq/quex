@@ -7,8 +7,8 @@
 namespace quex {
 #endif
 
-    struct QuexConverter_tag {
-        void    (*open)(QuexConverter_tag*, 
+    typedef struct QuexConverter_tag {
+        void    (*open)(struct QuexConverter_tag*, 
                         const char* FromCodingName, const char* ToCodingName);  
         /* Opens internally a conversion handle for the conversion from 'FromCodingName'
          * to 'ToCodingName'. Pass '0x0' as 'ToCodingName' in order to indicate a conversion
@@ -19,7 +19,7 @@ namespace quex {
          *
          */
 
-        bool    (*convert)(QuexConverter_tag*, 
+        bool    (*convert)(struct QuexConverter_tag*, 
                            uint8_t**             source, const uint8_t*             SourceEnd, 
                            QUEX_CHARACTER_TYPE** drain,  const QUEX_CHARACTER_TYPE* DrainEnd);
         /* Tries to convert all characters given in 'source' with the coding specified
@@ -55,7 +55,7 @@ namespace quex {
          *                     characters.
          *           false --> More source bytes are needed to fill the drain buffer.     */
 
-        void    (*on_conversion_discontinuity)(QuexConverter_tag*);
+        void    (*on_conversion_discontinuity)(struct QuexConverter_tag*);
         /*  [OPTIONAL] can be set to '0x0'. 
          * 
          *  This function is called whenever a conversion discontinuity appears.
@@ -69,11 +69,10 @@ namespace quex {
          *  for introducing the function pointer was the strange behavior of the 
          *  ICU Converters of IBM(R).                                                     */
 
-        void    (*delete_self)(QuexConverter_tag*);
+        void    (*delete_self)(struct QuexConverter_tag*);
         /* Closes the conversion handle produced with open(...).      
          * Deletes the object of the derived class.                                       */
-    };
-    typedef QuexConverter_tag  QuexConverter;
+    } QuexConverter;
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 }

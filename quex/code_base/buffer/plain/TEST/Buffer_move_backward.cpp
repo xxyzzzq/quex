@@ -16,11 +16,10 @@ main(int argc, char** argv)
     const size_t         StepSize      = atoi(argv[1]);
 
     FILE*                         fh = prepare_input(); /* Festgemauert ... */
-    QuexBufferFiller_Plain<FILE>  filler;
+    QuexBufferFiller_Plain<FILE>* filler = QuexBufferFiller_Plain_new(fh);
 
-    QuexBufferFiller_Plain_construct(&filler, fh);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)&filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_get_BufferMemory(5),5 );      
+    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
+    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5),5 );      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
