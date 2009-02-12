@@ -1,8 +1,8 @@
 This chapter focuses on the Unicode Character Properties as they are provied by
-quex. The curren version of Quex is based on Unicode 5.0. It uses the databases
-as provided by the Unicode Consortium it is likely that Quex integrates the
+quex. The current version of Quex is based on Unicode 5.0. It uses the databases
+as provided by the Unicode Consortium and it is likely that Quex integrates the
 property system of any later standard as soon as it is in a major state. In
-particular Unicode Character Properties are used to define _sets of characters_
+particular, Unicode Character Properties are used to define _sets of characters_
 to be matched during lexical analysis. This excludes some properties from 
 consideration, namely the properties tagged as `string` property types and
 the 'quick-check' properties (see <<UCS#15>>). The following properties
@@ -23,6 +23,6 @@ Non-Binary Properties::
 
     Age(age), Bidi_Class(bc), Bidi_Mirroring_Glyph(bmg), Block(blk), Canonical_Combining_Class(ccc), Case_Folding(cf), Decomposition_Mapping(dm), Decomposition_Type(dt), East_Asian_Width(ea), FC_NFKC_Closure(FC_NFKC), General_Category(gc), Grapheme_Cluster_Break(GCB), Hangul_Syllable_Type(hst), ISO_Comment(isc), Joining_Group(jg), Joining_Type(jt), Line_Break(lb), Lowercase_Mapping(lc), NFC_Quick_Check(NFC_QC), NFD_Quick_Check(NFD_QC), NFKC_Quick_Check(NFKC_QC), NFKD_Quick_Check(NFKD_QC), Name(na), Numeric_Type(nt), Numeric_Value(nv), Script(sc), Sentence_Break(SB), Simple_Case_Folding(sfc), Simple_Lowercase_Mapping(slc), Simple_Titlecase_Mapping(stc), Simple_Uppercase_Mapping(suc), Special_Case_Condition(scc), Titlecase_Mapping(tc), Unicode_1_Name(na1), Unicode_Radical_Stroke(URS), Uppercase_Mapping(uc), Word_Break(WB), 
 
-Binary properties can simply be applied using the `\P{...}` expression. Thus for example,
-`\P{ID_Start}` results in the set of characters that can build the beginning of an identifier
+Binary properties can simply be applied using the `\P{...}` expression. Thus,
+`\P{ID_Start}`, for example, results in the set of characters that can build the beginning of an identifier
 in usual programming languages.

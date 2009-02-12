@@ -1,27 +1,25 @@
 // vim: set syntax=asciidoc:
-With the rise of the Python programming language the use of indentation as
-scope delimiter has become popular. Indeed, it maybe the most efficient method
+With the rise of the Python programming language, the use of indentation as the
+scope delimiter has become popular. Indeed, it may be the most efficient method
 to delimit scope with the least amount of additional characters
 \cite{Safer2004}, such as '\{' and '\}' in C-styled languages.  Quex
-provides a convinient mechanism to handle indentations which runs quasi in
-paralell to the pattern matching: _indentation events_.  
+provides a convenient mechanism to handle indentations which runs quasi-parallel to the pattern matching: _indentation events_.  
 
-Figure <<fig-indentation-principle, style=ref>> displays in an example the principle of
+Figure <<fig-indentation-principle, style=ref>> displays an example of the principle of
 indentation events. Whenever the lexical analyser reaches the first
 non-whitespace in a line, an indentation event (indicated as a little star in
 the figure) is triggered. The lexical analyser engine then calls a user
 defined indentation handler. The numbers at the indentation events indicate
 the number of characters that the indentation spans. They are passed to the
-user's indentation handler as arguments. The indentation handler, then, can
-then keep track of indentation blocks or whatever his little heart desires.
+user's indentation handler as arguments. The indentation handler can then keep track of indentation blocks or whatever its little heart desires.
 
 
 [[fig-indentation-principle]]
 .Principle of Indentation Events.
 image::figures/indentation.png[]
 
-Note, that it is not trivial to express indentation in terms of pattern action
-pairs solely based on regular expressions. It is not enough to define a
+Note that it is not trivial to express indentation in terms of pattern action
+pairs based solely on regular expressions. It is not enough to define a
 pattern such as 
 
 --------------------------------------------------------
@@ -52,11 +50,10 @@ problem remains: with such a design _patterns need to know about each
   other_ to work propperly! In an environment of many different modes which
 are additionally related by inheritance, it is difficult to guarantee that all
 patterns 'respect' the quirks of each other. They better work independently.
-The indentation events of quex provide a means that allows one to avoid
-inter-pattern dependencies.
+The indentation events of quex prevent inter-pattern dependencies.
 
 Similarly, catching indentation with 'pre-condition newline plus whitespace',
-i.e.  `\verb|^[ \t]*|` is fragile, in a sense that another pattern that
+i.e.  `\verb|^[ \t]*|` is fragile, in the sense that another pattern that
 contains newline plus whitespace might hinder this pattern from triggering.
 In a lexical analyzer with dozens or hundreds of patterns this becomes
 quickly unmanageable. Errors that arise from patterns defined somewhere
@@ -70,8 +67,8 @@ about the pre-condition newline pitfall see section
 
 *Caveat:*
 
-Note, that if a pattern contains more than one newline then
-only the indentation event concerning the last newline ist triggered! Imagine
+Note that if a pattern contains more than one newline then
+only the indentation event concerning the last newline is triggered! Imagine
 a pattern
 
 --------------------------------------------------------
