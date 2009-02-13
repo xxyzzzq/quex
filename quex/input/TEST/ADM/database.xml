@@ -1,29 +1,33 @@
-<test-database execution-time-sec="18.90" date="Fri Feb 13 15:08:38 2009">
+<test-database execution-time-sec="0.00" date="Fri Feb 13 16:10:53 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
-        <test title="Wildcard Property Values" make-required="True" time-sum-sec="1.35"> 
+        <test title="Wildcard Property Values" make-required="True" time-sum-sec="0.00"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1223017234L"/>
+            <make-procedure success="False" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.35" crc="-989951512"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" make-required="True" time-sum-sec="12.07"> 
+        <test title="Information about Properties" make-required="True" time-sum-sec="0.00"> 
             <application file-name="test-query.py" info-request-time="1223017234L"/>
+            <make-procedure success="False" />
             <choice-list number="2">
-               <choice name="PropertyList" result="OK" time-sec="10.69" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time-sec="1.37" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time-sec="0.00" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time-sec="0.00" crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.44"> 
+        <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="0.00"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1226473762L"/>
+            <make-procedure success="False" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="1.44" crc="-1719645304"/>
+               <choice name="" result="OK" time-sec="0.00" crc="-1719645304"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="4.05"> 
+        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="0.00"> 
             <application file-name="test-query-character-set.py" info-request-time="1223017234L"/>
+            <make-procedure success="False" />
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="4.05" crc="1436734443"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1436734443"/>
             </choice-list>
         </test>
     </group>
