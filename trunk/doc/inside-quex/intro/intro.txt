@@ -1,10 +1,10 @@
 The following sections elaborate on the process of generating code for a directly coded lexical
 analyser. Each lexical analyzer mode consists of such an independent
 code fragment embedded into a function. In a first section, the big picture is
-discussed. This gives an overview about the major issues involved and build a
+discussed. This gives an overview about the major issues involved and builds a
 basis for later sections to refer to. Many books discuss in detail the
 Thomson-construction and the Hopcroft-Optimization, but few (the author does
-	not know a single one) discusses the construction down to
+	not know a single one) discuss the construction down to
 code-generation and its specialities in detail. Quex was created to handle
 efficiently Unicode character sets. As a consequence the table-driven approach,
 	    such as in lex \cite{} is no longer suitable%%

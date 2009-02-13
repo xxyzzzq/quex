@@ -1,15 +1,15 @@
-The purpose of this chapter is to show a tiny application that does use
+The purpose of this chapter is to show a tiny application that uses
 lexical analysis in order to implement a very tiny scripting language. This
-scripting language allows to set variables, print their content and compute
-the sinus and cosinus of numbers. There are mainly four sections. First,
+scripting language allows: setting variables, printing their content and computing
+the sines and cosines of numbers. There are mainly four sections. First,
 patterns are defined. Second, token names are specified. Third, it is
-determined what patterns produce what tokens. Forth, a little programs needs
+determined which patterns produce which tokens. Fourth, a little program needs
 to be discussed that uses the produced lexical analyser and implements the
 minimalist scripting language. All source code related to this example can be
 found in the directory \$(QUEX\_PATH){\tt /TEST/000/}.  This directory is best
 copied to a user directory for this introduction.
 
-So, first, let us define a pattern file. In the quick-start example most
+First, let us define a pattern file. In the quick-start example most
 patterns are defined directly in the mode definition. However, pattern
 definitions inside modes cannot contain whitespace, so we need to 
 define a pattern macro for that. Let us store 

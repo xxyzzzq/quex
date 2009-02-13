@@ -9,11 +9,11 @@ known from the beginning that the pre-condition is not met. For this reason, it 
 consider a single analyzer function for each case of 'pre-condition met' and
 'pre-condition not met'.  With this approach, though, the total number of
 analysers to deal with $N$ pre-conditions is $2^N$ since any combination of
-'pre-condition met' and 'pre-condition not met' has to be considered. Very few
+'pre-condition met' and 'pre-condition not met' has to be considered. Just a few
 pre-conditions would then blow the number of analysers beyond what is
 practical. Quex could not be a general solution for pre-conditions.
 
-Rather than creating an analyser for each pre-condition constallation, one
+Rather than creating an analyser for each pre-condition combination, one
 single analyser containing all pre-conditioned and non-pre-conditioned patterns
 is created. Pre-conditions are simply implemented by a conditional acceptance
 at the end of the pattern, i.e.
@@ -33,7 +33,7 @@ On the other hand, the states of the pre-conditioned patterns
 are webbed altogether into one single state machine and the overhead for doing
 so is minimal. 
 
-\TODO{It would be an improvement to allow the user control when a 
-    pre-conditioned pattern constallation is webbed into the combined
+\TODO{It would be an improvement to allow the user to control when a 
+    pre-conditioned pattern combination is webbed into the combined
 	state machine and when not.}
 

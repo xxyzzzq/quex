@@ -1,7 +1,7 @@
-Since version 0.21.11, quex has the ability to produce transition
+Since version 0.21.11, quex provides the ability to produce transition
 graphs for the state machines that result from the regular expressions
 of its modes. This happens with help of the tool 'graphviz' from AT\&T
-Labs (http://www.graphviz.org). Please, install this package before
+Labs (http://www.graphviz.org). Please install this package before
 any attempt to produce transition graphs. 
 
 The plot of transition graphs is initiated with the command line argument

@@ -1,7 +1,7 @@
-Property value settings can be specified using wilcards as 
-exaplained in <<sec-formal/patterns/character-set>>. Using
-the command line option `--property-match` allows to see
-to what values these wildcard expressions actually expand.
+Property value settings can be specified using wildcards as 
+explained in <<sec-formal/patterns/character-set>>. Using
+the command line option `--property-match` allows the user to see
+to which values these wildcard expressions actually expand.
 For example, the call
 
 [shell]

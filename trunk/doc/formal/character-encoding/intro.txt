@@ -1,14 +1,14 @@
 Traditional lexical analyzer generators concentrate on the ASCII \cite{}
-character set for encoding of character. With the raise of UTF-8 \cite{} those
+character set for the encoding of characters. With the rise of UTF-8 \cite{} those
 generators could even be used to parse unicode character sets, since they were
-unaware of escape characters.   The
-problem with this approach is first of all a lack of flexibility.  UTF-8 is for
+unaware of escape characters. The
+problem with this approach is a lack of flexibility.  UTF-8 is for
 most languages, i.e. unicode code pages, a highly redundant coding. Second the
 UTF-8 standard (ISO-10646) is a dynamic length coding where characters are
 coded with different numbers of bytes.  Counting of columns or lexeme lengthes
 is no longer trivial and is prone to consume significant computation time. 
-For lex, for example, the definition of character ranges such as
-`$$[a-z]$$` for non-latin languages is not possible because it considers
+For example, for lex the definition of character ranges such as
+`$$[a-z]$$`, for non-latin languages, is not possible because it considers
 only the two bytes around the '-' where the characters might actually be
 represented by more than one byte.
 
@@ -66,7 +66,7 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if one intends to create a purely greek programming language. If you set the command
 line option for 'byte per character' `-b wchar\_t`, then quex will use
 the number of bytes that corresponds to `wchar\_t` on your platform. For
-anything else then ASCII input encodings do not specify a byte per character
+anything other than ASCII input encodings do not specify a byte per character
 less than two.  At the time of this writing quex does not support internal
 engines that are not based on Unicode. Clearly, in the above example the greek
 encoding is treated internally as character codes in the range of code points from 

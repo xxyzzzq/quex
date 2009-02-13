@@ -1,11 +1,11 @@
-Pattern matching can be described by a finite state automaton where
-incoming characters play the role of triggers. Each incoming character, i.e.
-trigger, determines wether the state machine transits into a new state or it
+Pattern matching can be described as a finite state automaton where
+incoming characters play the role of triggers. Each incoming character 
+(trigger), determines whether the state machine transits into a new state or if it
 remains in the same state. Consider figure <<fig-pattern-state-machines, Example, style=ref>>
 that depicts a state machine to match a floating point number. In its initial
 state it waits for a digit (the `START` state). If no digit arrives, the
 state machine goes into the `FAILED` state. It can be said for sure, that
-this was no number.  If a digit arrives, though, in transits into `DIGITS-A`.  
+there was no number.  If a digit arrives, though, it transits into `DIGITS-A`.  
 As long as digits arrive, it remains in this state. If a
 non-digit comes in it transits into the `ACCEPTANCE` state, since already
 enough digits have arrived as to judge that it is a number. However, if a dot

@@ -1,6 +1,6 @@
-The design of modes, their relations and the transitions is something 
+The design of modes, their relations, and their transitions is something 
 to be done informally with a drawing program or on a sheet of paper.
-It is basically a help for the user to develop a clear design of the lexical
+It is basically an aid to help user develop a clear design of the lexical
 analysis process. In our simple example, there are only three modes:
 
 `END_OF_FILE`:: 
@@ -15,15 +15,15 @@ analysis process. In our simple example, there are only three modes:
 `PROGRAM`:: 
 
   In this mode, we detect program related tokens. It is
-  derived from `END\_OF\_FILE`. Thus, an if an end-of-file arrives in this
-  mode it behaves propperly. When a string delimiter arrives, this mode shall
-  transit into the `STRING\_READER` mode.
+  derived from `END\_OF\_FILE`. Thus, if an end-of-file arrives in this
+  mode it behaves properly. When a string delimiter arrives, this mode shall
+  transition into the `STRING\_READER` mode.
   
 `STRING\_READER`:: 
   
   This mode shall also treat end-of-file in the
   'standard' way, so it is also derived from `END\_OF\_FILE`. However,
-  all patterns for number detection, keywords and brackets are totally
+  all patterns for number detection, keywords, and brackets are totally
   meaningless inside the string. A string-delimiter shall trigger the return
   to the `PROGRAM` mode.
 
@@ -36,8 +36,8 @@ the standard behavior for the end-of-file event.
 .Inheritance relationships of the modes in the example lexical analyser.
 image::figures/inheritance-modes.png[]
 
-In this examples their are only two modes in which the lexical analyser can
-be. The posible transitions are shown in figure
+In this example, the lexical analyser can only be in one of two modes.
+ The posible transitions are shown in figure
 <<fig-mode-transition-example.png, style=ref>>. `PROGRAM` mode can transit into
 `STRING_READER` mode and vice versa. The mode inheritances and
 transitions are only pinpointed in non-machine readable form.  This
@@ -108,10 +108,9 @@ is detected as an error\footnote{Note, that inside quex `assert()`
 defined specifying its base class and the allowed transitions to `PROGRAM`.
 
 Note, that all options given here are indeed _optional_.  They are not
-necessary to define pattern-action pairs, and they do not contribute to the
-functioning of the generated lexical analyser. However, they allow to check
-wether mode definitions and mode transitions are according to the design or
-not. The detection of usage against design specifications is of great help to
-avoid errors or find their causes. 
+necessary to define pattern-action pairs and they do not contribute to the
+functioning of the generated lexical analyser. However, they allow verification of
+whether or not mode definitions and mode transitions are according to the design. The detection of usage against design specifications is a great help to
+avoiding errors or finding their causes. 
 
 

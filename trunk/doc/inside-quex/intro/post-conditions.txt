@@ -40,7 +40,7 @@ states where the 'real' pattern matches. The end of the post-condition is an
 acceptance state. Figure <<fig-post-conditions-merged, style=ref>>
 depicts the states of the amount/currency pattern webbed into a 
 state machine that contains other patterns. The process of combining
-and optimizing the state machine needs to make sure, that the information
+and optimizing the state machine needs to make sure that the information
 about saving input positions and acceptance states remains---here indicated
 as notes on a flag.
 

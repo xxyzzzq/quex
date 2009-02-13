@@ -62,7 +62,7 @@ Closure anymore. The state machines have to be mounted M-N times in sequence, wh
 the acceptance states in between remain acceptance states. This way one can be 
 sure that any number of matches from N to M corresponds to an acceptance state.
 
-A special case is the case of where zero and a maximum number of repetions are
+A special case is the case where zero and a maximum number of repetions are
 involved, i.e.  $$R?$$ and $$R{x,y}$$ with `x=0`. 
 In this case, simply the initial state is raised to an acceptance state, and then
 the usual algorithm for generating a maximum number of repetitions is applied.

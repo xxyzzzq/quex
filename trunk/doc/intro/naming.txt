@@ -1,10 +1,9 @@
-The name quex has obviously a lexo-graphical relation to lex and flex--the most
-known tools for generating lexical analysers at the time of this writing.  The
+The name quex obviously has  a lexo-graphical relation to lex and flex--the most
+well known tools for generating lexical analysers at the time of this writing. The
 'Qu' at the beginning of the word stands for 'quick', so hopefully the new
-features of quex and the ability to created directly coded engines will
+features of quex and the ability to create directly coded engines will
 generate much faster lexical analysers. Also, the process of programming shall
-be much quicker by means of handy shortcuts that quex provides and the elegance that
-problems can be solved. 
+be much quicker by means of the handy shortcuts and elegant solutions that quex provides.
 
 The last letter 'χ' is a the greek lowercase letter 'chi'.  It
 is intended to remind the author of this text that he actually wanted to create
@@ -15,7 +14,7 @@ a better \TeX footnote:[As Donald Knuth explains it\cite{}, the last letter in
 not be pronounced like the 'x' of the German word 'nix'.] system with optimized
 source code appearance. When he realized that traditional lexical analysers did
 not provide the functionality to express solutions easily he started working on
-quex--and dived into the subject much deeper than he ever thought he would. 
+quex--and dove much deeper into the subject than he ever thought he would. 
 
 
 

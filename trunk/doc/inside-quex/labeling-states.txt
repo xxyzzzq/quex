@@ -8,10 +8,10 @@ process is described in the following sections.
 
 It was already discussed that information about acceptance
 section <<sec-basics-pattern-matching>>, storing of input
-positionssection <<sec-inside-quex-intro-post-conditions>> and dependence on
+position ssection <<sec-inside-quex-intro-post-conditions>> and dependence on
 pre-conditions section <<sec-inside-quex-intro-pre-conditions>> need to be stored
 as hidden state variables\cite{} inside the states of the isolated pattern
-state machines. Those informations need to be maintained when the states
+state machines. This information needs to be maintained when the states
 dissolve into the 'super state machine' that contains all patterns. This happens
 by labeling them with origin information.
 
@@ -22,7 +22,7 @@ acceptance and it does not have acceptance if none of its original states had
 acceptance. It remains to store information about which pattern has raised
 the acceptance in a particular acceptance state, i.e. some type of pattern-id.
 
-Without post-conditions an acceptance state stands for storing the input position.
+Without post-conditions, an acceptance state stands for storing the input position.
 If the pattern that raised acceptance at this point wins, then the analyzer's focus
 must be set back to this position and the next analysis starts from this point. With
 post-conditions acceptance and storing the input position are no longer the same.
@@ -33,13 +33,13 @@ core pattern. Thus a flag is required telling wether or not it is required to st
 the input position.
 
 The input positions for different post-conditions must be stored in different variables,
-since only at the end of the match it can be decided which pattern  actually 
+since only at the end of the match can it be decided which pattern actually 
 succeeded. A flag indicating that the original pattern was post-conditioned 
-tells the code generator to use the pattern-id as indicator for the variable
+tells the code generator to use the pattern-id as the indicator for the variable
 storing the input positions.
 
 The existence of pre-conditions imply the check at an acceptance state
-if a particular pre-condition has been met. Thus a variable is required
+if a particular pre-condition has been met. Thus, a variable is required
 containing the pre-condition which has to be met in order to trigger acceptance.
 A special pre-condition is the begin-of-line pre-condition. It is a trivial 
 pre-condition, since it does not involve an inverse state machine. Thus
@@ -65,7 +65,7 @@ the following fields:
 \item [\tt pre\_condition\_id] indicates the id of the pre-condition that has to be fulfilled
       so that the acceptance of the state is valid. In the table below referenced as {\bf pre}.
 
-\item [\tt trivial\_precondition\_begin\_of\_line\_f] indicates wether the pattern
+\item [\tt trivial\_precondition\_begin\_of\_line\_f] indicates whether the pattern
       is supposed to start at the beginning of a line, i.e. after newline or the
       start of the buffer. In the table below referenced as {\bf bol}.
 \end{description}
@@ -106,14 +106,14 @@ acceptance state, thus the state that contains it together with others may or
 may not be an acceptance state. Note also, that pre-conditioned patterns
 and trivially pre-conditioned patterns are mutually exclusive. 
 
-In order to help to get easy access to the origin's state type the member
+In order to help get easy access to the origin's state type the member
 function `type`' returns direct information about the type of the original
 state, i.e. if it was a normal acceptance, a non-acceptance, a post-conditioned
 state (end of core pattern), an end of a post condition or a pre-conditioned
 acceptance state. In case the constitution does not lead to any valid
 interpretation, the function replies with an error. This would indicate that
 some functions do not work propperly. This allows for a double-check that
-all origins have passed the state machine construction propperly.
+all origins have passed the state machine construction properly.
     
 
 

@@ -1,12 +1,11 @@
 The previous sections explained the definitions of patterns, token-ids, and
 mode characteristics. In this section the core of the lexical analysis is
 discussed: pattern-action pairs. It is a basic concept in lexical analysis
-that a pattern triggers and action. This action has the following goals:
+that a pattern triggers an action. This action has the following goals:
 
-- Preparing and sending of a token.
+- Prepare and send a token.
 
-- Modifying the internal state of the lexical analyzer. In this
-  category falls also mode transition handling, indentation handling, etc.
+- Modify the internal state of the lexical analyzer. Mode transition handling, indentation handling, etc., also fall into this category.
 
 The most simple pattern-action pair consists of sending a specific token
 whenever a particular pattern occurs.  Consider for example figure
@@ -20,8 +19,8 @@ id:
           QUEX_TKN_TERMINATION
 -------------------------------------------
 
-telling that lexical analysis is over. Note, that in quex one uses the
-keyword `self` and not a `this`-pointer to refer to the lexical
+telling that lexical analysis is over. Note, that in quex the
+keyword `self` and not a `this`-pointer is used to refer to the lexical
 analyser. Recall that quex is a code generator, not a compiler.
 Internally, the code fragments that are specified as pattern-action pairs or
 event handlers may be pasted by quex into objects other than the lexical
@@ -59,9 +58,9 @@ of a specific id. The whitespace pattern does not cause any token to be sent
 and one does not return to the user, thus it is followed by an empty pair of
 curly brackets. The pattern `P\_IDENTIFIER` creates a token that contains
 the string that was matched.  `P\_NUMBER` also stores a number that
-corresponds the lexeme that was matched.  The pattern` 
+corresponds to the lexeme that was matched.  The pattern` 
   P\_STRING\_DELIMITER` initiates a mode transition
-to the mode `STRING\_READER`. However, since we are working with a token queue
+to the mode `STRING\_READER`. Since we are working with a token queue
 it is necessary to send a dummy token `TKN_EVENT_MODE_CHANGE` and return.
 The return is necessary, so that the analyser function pointer can be reset
 by the analyser.
@@ -97,22 +96,22 @@ source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The `STRING\_READER` mode's pattern-action pairs are shown in figure
 <<fig-string-reader-mode, style=ref>>. This mode makes use of a special member of the
-lexical analyser object: _the accumulator_. This object allows to
-accumulate text from incoming patterns and flush them when desired. When this
+lexical analyser object: _the accumulator_. This object allows 
+accumulation of text from incoming patterns and flushes them when desired. When this
 mode is entered, the accumulator is emptied (see `on\_entry`). When this
-mode is left, then the accumulator is flushed (see `on\_exit`). This
-means, that if the accumulated text is not empty, it is send as a token with a
+mode is left, the accumulator is flushed (see `on\_exit`). This
+means, that if the accumulated text is not empty, it is sent as a token with a
 user defined token-id. The `STRING\_READER` mode sends the accumulated
 text with a token-id `TKN\_STRING`.
 
-The arrival of a string delimiter causes a mode transition back to mode
-`PROGRAM`. A backslashed string delimiter allows to have a string delimter
-inside the the string, so it does not cause a return to `PROGRAM` mode.
-instead, it adds a quote to the accumulator. The default action '.' specifies
+The arrival of a string delimiter causes a mode transition back to the mode
+`PROGRAM`. A backslashed string delimiter allows a string delimiter
+inside the string so that it does not cause a return to `PROGRAM` mode.
+Instead, it adds a quote to the accumulator. The default action '.' specifies
 that any other incoming text is simply accumulated. Even in this simple
 example it becomes clear that the specification of entry and exit event
 handlers facilitates the specification of mode transitions. It can be said
-for sure, that wherever in the code a command triggers an exit to another
+ that wherever in the code a command triggers an exit to another
 mode, the accumulator is flushed.
 
 [[fig-string-reader-mode]]

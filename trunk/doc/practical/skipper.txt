@@ -1,8 +1,8 @@
-In order to skip partions of the input without considering its content, quex provides
+In order to skip portions of the input without considering its content, quex provides
 the ability to define so called 'skippers'. Skippers can be used, for example, to
-skip whitespaces  and skip comments. Of course, most of the skippers can also be 
+skip whitespaces and comments. Of course, most of the skippers can also be 
 defined as patterns that have no action related to it. However, there are great 
-advantages of skippers over their implementation as a 'skipping pattern':
+advantages to using skippers rather than their implementation as a 'skipping pattern'.
 
 - Skippers perform much faster than usual regular expressions. Their implementation
   is adapted to the buffer handling and reduces comparisons to a minimum.
