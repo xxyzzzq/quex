@@ -1,0 +1,42 @@
+(*) Core Engine
+        self.send(QUEX_TKN_UCS_0x000061); return;
+        self.send(QUEX_TKN_UCS_0x000061); return QUEX_TKN_UCS_0x000061;
+        self.send(QUEX_TKN_UCS_0x001000); return;
+        self.send(QUEX_TKN_UCS_0x001000); return QUEX_TKN_UCS_0x001000;
+        self.send(QUEX_TKN_UCS_0x00012E); return;
+        self.send(QUEX_TKN_UCS_0x00012E); return QUEX_TKN_UCS_0x00012E;
+        self.send(QUEX_TKN_UCS_0x0086A5); return;
+        self.send(QUEX_TKN_UCS_0x0086A5); return QUEX_TKN_UCS_0x0086A5;
+        self.send(QUEX_TKN_UCS_0x000058); return;
+        self.send(QUEX_TKN_UCS_0x000058); return QUEX_TKN_UCS_0x000058;
+        self.send(QUEX_TKN_UCS_0x00001B); return;
+        self.send(QUEX_TKN_UCS_0x00001B); return QUEX_TKN_UCS_0x00001B;
+        self.send(QUEX_TKN_UCS_0x00062C); return;
+        self.send(QUEX_TKN_UCS_0x00062C); return QUEX_TKN_UCS_0x00062C;
+        self.send(QUEX_TKN_UCS_0x00000C); return;
+        self.send(QUEX_TKN_UCS_0x00000C); return QUEX_TKN_UCS_0x00000C;
+        self.send(QUEX_TKN_TERMINATION);
+        self.send(QUEX_TKN_TERMINATION);
+(*) Token IDs
+#define __QUEX_TOKEN_ID_TERMINATION    (QUEX_TKN_TERMINATION)
+#define __QUEX_TOKEN_ID_UNINITIALIZED  (QUEX_TKN_UNINITIALIZED)
+#define QUEX_TKN_TERMINATION   ((QUEX_TOKEN_ID_TYPE)0)
+#define QUEX_TKN_UCS_0x00000C  ((QUEX_TOKEN_ID_TYPE)12)
+#define QUEX_TKN_UCS_0x00001B  ((QUEX_TOKEN_ID_TYPE)27)
+#define QUEX_TKN_UCS_0x000058  ((QUEX_TOKEN_ID_TYPE)88)
+#define QUEX_TKN_UCS_0x000061  ((QUEX_TOKEN_ID_TYPE)97)
+#define QUEX_TKN_UCS_0x00012E  ((QUEX_TOKEN_ID_TYPE)302)
+#define QUEX_TKN_UCS_0x00062C  ((QUEX_TOKEN_ID_TYPE)1580)
+#define QUEX_TKN_UCS_0x001000  ((QUEX_TOKEN_ID_TYPE)4096)
+#define QUEX_TKN_UCS_0x0086A5  ((QUEX_TOKEN_ID_TYPE)34469)
+#define QUEX_TKN_UNINITIALIZED ((QUEX_TOKEN_ID_TYPE)1)
+           db[QUEX_TKN_UNINITIALIZED] = std::string("UNINITIALIZED");
+           db[QUEX_TKN_UCS_0x00000C]  = std::string("UCS_0x00000C");
+           db[QUEX_TKN_UCS_0x00062C]  = std::string("UCS_0x00062C");
+           db[QUEX_TKN_UCS_0x00012E]  = std::string("UCS_0x00012E");
+           db[QUEX_TKN_UCS_0x000058]  = std::string("UCS_0x000058");
+           db[QUEX_TKN_UCS_0x001000]  = std::string("UCS_0x001000");
+           db[QUEX_TKN_UCS_0x0086A5]  = std::string("UCS_0x0086A5");
+           db[QUEX_TKN_TERMINATION]   = std::string("TERMINATION");
+           db[QUEX_TKN_UCS_0x00001B]  = std::string("UCS_0x00001B");
+           db[QUEX_TKN_UCS_0x000061]  = std::string("UCS_0x000061");

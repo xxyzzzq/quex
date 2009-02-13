@@ -1,0 +1,37 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=-DNDEBUG   ##
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+STRUCT
+IDENTIFIER
+BRACKET_OPEN
+TYPE_INT
+IDENTIFIER
+SEMICOLON
+TYPE_DOUBLE
+IDENTIFIER
+SEMICOLON
+BRACKET_CLOSE
+SEMICOLON
+IDENTIFIER
+IDENTIFIER
+BRACKET_OPEN
+SEND
+IDENTIFIER
+NUMBER
+IDENTIFIER
+IDENTIFIER
+SEMICOLON
+EXPECT
+IDENTIFIER
+NUMBER
+IDENTIFIER
+IDENTIFIER
+SEMICOLON
+BRACKET_CLOSE
+<TERMINATION>
+| [END] number of token = 28
+`------------------------------------------------------------------------------------
+cleaning ...

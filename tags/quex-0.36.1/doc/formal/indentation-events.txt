@@ -1,0 +1,57 @@
+Additionally to the `on\_entry` and `on\_exit` event there is an event
+for the `first non-whitespace character` that appears in a line:` 
+  on\_indentation`. In order to trigger this event a dedicated process keeps
+track of newlines and whitespace that follows it. This process happens
+virtually in paralell to pattern matching. It knows to states:
+
+- State 1: Newline has occured and since then, there was only whitespace.
+
+- State 2: There was at least one none-whitespace since newline.
+  
+At the beginning of lexical analysis, or at the beginning of a line the
+lexical analyser is in state 1. When the first non-whitespace character
+appears in a line it enters state 2. The transition from state 1 to state 2,
+i.e. the appearance of the first non-whitespace character in a line triggers
+the indentation event and the correspondent event handler is called. The
+transition from state 2 to state 1 and state 1 to state 2 can also appear
+inside one single matched pattern footnote:[Imagine, for example a pattern 
+$$[$$ \n]+$$ that matches newlines and whitespace.].
+
+This event handler is called right before the pattern action is executed that
+belongs to the matched pattern. Inside the event handler, in addition to the
+`self` reference, the following variable is available:
+
+const int Indentation:: 
+
+  The distance from the beginning of the line to the first non-whitespace.
+
+Note, that the indentation event can be disabled, but only for single event.
+Using the member function
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  void  disable_next_indentation_event();
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+disables the indentation event for the next time. However, after the next
+prevented indentation handling it is enabled again. This comes handy if one
+needs to have a 'line-prolonger', such as a backslash in python and many shell
+script languages, or the underscore in VisualBasic. The following mode action
+pair would prevent the subsequent line to be considered for indentation
+handling:
+
+[cpp]
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mode SOMETHING {
+   ...
+   {P_BACKSLASH_FOLLOWED_BY_NEWLINE} {
+        self.disable_next_indentation_event();
+   }
+   ...
+}
+source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If the subsequent line, though, does not end with a backslash the event
+handler is automatically active and indentation handling is in place.
+
+
