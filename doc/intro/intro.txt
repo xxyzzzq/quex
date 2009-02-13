@@ -2,7 +2,7 @@ The quex program generates a lexical analyser that scans text and
 identifies patterns. The result of this lexical analysis is a list of 
   _tokens_. A token is a piece of atomic information directly relating to a
 pattern, or an _event_. It consists of a type-identifier, i.e. the 
-  _token type_, and content wich is extracted from the text fragment that
+  _token type_, and content which is extracted from the text fragment that
 matched the pattern. 
 
 Figure <<fig_lexical_analyser, (here),style=ref>> shows the principle of lexical
@@ -13,11 +13,11 @@ analysis.  The lexical analyser receives a stream of characters "`if( x> 3.1 )
   identifier with the content `x`, and so on. 
   
 In compilers for serious programming languages the token stream is received by
-a parser that interpretes the given input according to a specific grammar.
+a parser that interprets the given input according to a specific grammar.
 However, for simple scripting languages this token stream might be treated
 immediately. Using a lexical analyser generator for handcrafted ad-hoc
-scripting languages has the advantages that it can be developped faster and it
-is much easier and safer to provide some flexibility and power. This is to be
+scripting languages has the advantage that it can be developed faster and it
+is much easier and safer to provide flexibility and power. This is 
 demonstrated in the following chapters.
 
 .The process of lexical analysis.
@@ -29,8 +29,8 @@ analysers such as lex or flex:
 
 - _Ease_. A simple as well as a complicated lexical analyzer can 
       be specified in a very elegant and transparent manner. Do not get confused
-      over the set of features and philosophies. If you do not use them, then
-      simple skip the concerning regions in the text. Start from the ready-to-rumble
+      by the set of features and philosophies. If you do not use them, then
+      simply skip the concerning sections of the text. Start from the ready-to-rumble
       examples in the `./demo` subdirectory.
 
 -  A generator for a directly _coded lexical analyzer_ featuring
@@ -43,12 +43,11 @@ analysers such as lex or flex:
 
  *  Inheritance _relationships_ between lexical analyser modes. This
     allows the systematic inclusion of patterns from other modes, as well as
-    convinient transition control.
+    convenient transition control.
 
- * _transition control_, i.e. restriction can be made to what mode
-   a certain mode can exit or from which mode it can be entered. This helps 
-   to avoid that the lexical analyser drops by accident into an unwanted
-   lexical analyses mode.
+ * _transition control_, i.e. restriction can be made to which mode
+   a certain mode can exit or from which mode it can be entered. This prevents the lexical analyser from accidentally dropping into an unwanted
+   lexical analysis mode.
 
  * Mode _transition events_, i.e. event handlers can be defined for
     the events of exiting or entering from or to a particular mode.    
@@ -69,17 +68,17 @@ analysers such as lex or flex:
   
 - Automatic _line_ and _column numbering_. These features can be
   turned off, in case that one fears performance loss. It can be determined
-  excactly from which line and which column a recognized pattern started and
+  exactly from which line and which column a recognized pattern started and
   where it ended.
 
 - Automatic generation of transition graphs. Using the `--plot` command line
   option initiates quex to produce a graphical representation of the underlying
   state machines.
 
-The present text first explains briefly the basic concepts of lexical analysis
+This text briefly explains the basic concepts of lexical analysis
 in quex. Here, a short review is given on lexical analysis, but then it
 concentrates on the introduction of the features mentioned above. The
 subsequent chapter dicusses a simple example of a complete application for
-lexical analysis. Finally, the last chapter elaborates on the formal usage of
+lexical analysis. The final chapter elaborates on the formal usage of
 all features of quex. 
 

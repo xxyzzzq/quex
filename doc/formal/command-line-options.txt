@@ -13,7 +13,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 
 `--token-prefix` _name_::
 	
-	    _name_ = Name prefix that is to be sticked in front of any name
+	    _name_ = Name prefix to prepend to the name
 	    given in the token-id files. For example, if a token-id file contains
 	    the name `COMPLEX`' and the token-prefix is `TOKEN\_PRE\_`'
 	    then the token-id inside the code will be `TOKEN\_PRE\_COMPLEX`. DEFAULT = `"TKN\_"`.
@@ -26,7 +26,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 `--no-token-queue`::
 
         Disables the sending of tokens via a queue. Note, this can be a little
-        faster than commicating tokens via a token queue. 
+        faster than transmitting tokens via a token queue. 
 
 `--token-id-termination` _number_::
         
@@ -39,9 +39,9 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 `--token-id-uninitialized` _number_::
         
         _number_ = Token identifier of a token that has not yet been
-        initialized.  Any token that arives the user 'by purpose' should not
-        contain this identifier.  It is basically a means for debuggin in order
-        to check wether tokens slip through due to whatever erroneous behavior.
+        initialized.  Any token that arrives to the user 'on purpose' should not
+        contain this identifier.  It is basically a means for debugging in order
+        to check whether tokens slip through due to any erroneous behavior.
         DEFAULT = `"1"`. 
         +
         This option is close to meaningless under normal conditions. One can always
@@ -85,12 +85,12 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 
 `--no-string-accumulator`, `--nsacc`::
 
-        Turns the string accumulator option off. This disallows the use of the string 
+        Turns the string accumulator option off. This disables the use of the string 
         accumulator to accumulate lexemes. See class 'quex::Accumulator'.
 
 `--post-categorizer`::
 
-        Turns the post categorizer option on. This allows to have a 'secondary'
+        Turns the post categorizer option on. This allows a 'secondary'
         mapping from lexemes to token ids based on their name. See class
         'quex::PostCategorizer'.
 
@@ -99,15 +99,15 @@ following command line options can be used.
 
 `--derived-class` _name_::
         
-	   `name` = If specified, name of the derived class that the user intends to provide
+	   `name` = If specified, the name of the derived class that the user intends to provide
 	    (see section <<sec-formal-derivation>>). Note, specifying this option
 	     signalizes that the user wants to derive from the generated class. If this
 	     is not desired, this option, and the following, have to be left out. DEFAULT = `<empty>`
         
 `--derived-class-file` _filename_::
         
-	    _filename_ = If specified, name of the file where the derived class is
-	    defined.  This option makes only sense in the context of optio`n
+	    _filename_ = If specified, the name of the file where the derived class is
+	    defined.  This option only makes sense in the context of optioin
 		--derived-class`. DEFAULT = `<empty>`
 
 `--friend-class` _name-list_::
@@ -131,7 +131,7 @@ token-class:
 	    token class. DEFAULT = `"$(QUEX\_PATH)/code_base/token"`
 
 
-Even if a non-quex token class is provided, still the token-id generator may
+Even if a non-quex token class is provided, the token-id generator may still 
 be useful. By default, it remains in place. The user, however, can specify the
 following option to disable it:
 
@@ -151,7 +151,7 @@ expression (meaning 'nothing but newline or end of file') needs check for
 begin-of-buffer and end-of-buffer in the general case. Giving both the
 same value may come with some speedup, and does not hurt. None of these
 values should be equal to the buffer limit delimiter. The following
-options allow to modify the values discussed above.  
+options allow modification of the values discussed above.  
       
 
 `--buffer-limit` _number_:: DEFAULT = `"0x0"`
@@ -161,8 +161,8 @@ options allow to modify the values discussed above.
 `--end-of-stream` _number_:: DEFAULT = `"0x1A"`
 
 If the trivial end-of-line pre-condition (i.e. the '\$' at the end of a regular
-expression) is used, the by default quex produces code that runs on both Unix
-and DOS-like Systems. Practically, this means that it matches against 'newline' 0x0A 
+expression) is used, by default quex produces code that runs on both Unix
+and DOS-like systems. Practically, this means that it matches against 'newline' 0x0A 
 and 'carriage return/newline' 0x0D 0x0A. For the case that the resulting analyzer
 only runs on a Unix machine some tiny performance improvements might be achieved
 by disabling the 0x0D 0x0A sequence and only triggering on 0x0A. In this case,
@@ -197,11 +197,11 @@ options:
 `--bytes-per-ucs-code-point`, `-b` _["1", "2", "4", "wchar_t"]_::
         
 	    With this option the internal representation of character is specified. It 
-            determines the byte number per character which compose the lexeme strings
+            determines the bytes per character, which compose the lexeme strings
 	    and on which the lexical analyzer engine internally operates. The byte number
 	    should at least suffice to carry the desired input coding space. You can
 	    only specify 1 byte, 2 byte or 4 byte per character. If`wchar\_t` is specified
-	    quex automatically adapts to the correspondent type of the  operating
+	    quex automatically adapts to the correspondent type of the operating
 	    system environment where the target code is compiled. 
 	    Use this, if option`--iconv` is used and you are in doubt. DEFAULT = `"2"`
 
@@ -242,8 +242,8 @@ by the user. Those options are the following.
 
 `--property-match` _wildcard-expression_::
 
-   Quex allows to use wildcards in property values. Using this option allows
-   to displays the list of values to which the given wildcard expression 
+   Quex allows the use of wildcards in property values. Using this option allows
+   display of the list of values to which the given wildcard expression 
    expands. Example: The wildcard-expression `Name=*LATIN*` gives all settings of property `Name` that
    contain the string `LATIN`.
 
@@ -256,16 +256,16 @@ by the user. Those options are the following.
 
    This option disables the display of single character or single character codes.
    In this case sets of adjacent characters are displayed as intervals. This provides
-   a some more brief display.
+   a somewhat more abbreviated display.
 
 Additionally, quex provides the ability to display transition diagrams of
-produces state machines graphically. The following command line options support
+produced state machines graphically. The following command line options support
 this feature:
 
 `--plot` _graphic format_::
 
         Runs quex in the plotting mode. Rather than producing source code, quex
-        produces transition diagrams of the defined modes. For quering possible graphic
+        produces transition diagrams of the defined modes. For querying possible graphic
         formats, run quex with the `--plot-format-list` command line option.
         Note, for this option to work, the graphviz package needs to be installed 
         (see www.graphviz.org).

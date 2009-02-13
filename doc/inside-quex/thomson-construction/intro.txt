@@ -8,12 +8,12 @@ through _concatenation_, _parallelization_, _optionality_ and_
 
 
 An essential concept is the so called $\epsilon$-transition. By means of this
-special transitions state machines can be glued in sequence and in parallel. It
+special transition state machines can be connected in sequence and in parallel. It
 builds a very basic concept in the Thomson construction for developing a state
 machine that represents a regular expression.
 
 \definition{{\bf An $\epsilon$-transition} is a transition that does not
-    require any input. If a state A is connect with a state B via an
+    require any input. If a state A is connected with a state B via an
 	$\epsilon$-transition, then entering state A implies that the state
 	machine enters state B.}
 

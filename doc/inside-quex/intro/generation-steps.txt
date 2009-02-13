@@ -3,13 +3,13 @@ following steps:
 
 
 
--  Constructing state machines for a each specific pattern
-      section <<sec-inside-quex-thomson-construction-intro>>. There are three mechanism
+-  Constructing state machines for each specific pattern
+      section <<sec-inside-quex-thomson-construction-intro>>. There are three mechanisms
       involved, known as the Thomson Construction \cite{}.
       
        -  Sequentialization to implement chains of patterns 
              section <<sec-inside-quex-thomson-construction-serial>>. 
-       -  Parallelization dealing with patterns are bound by a logical 'or' 
+       -  Parallelization dealing with patterns bound by a logical 'or' 
              section <<sec-inside-quex-thomson-construction-parallel>>. 
        -  Repetition to implement repetitions of patterns. Repetitions can have minimum
        	     and maximum bounds of repetition 
@@ -17,44 +17,44 @@ following steps:
 
    
     By means of these mechanisms it is possible to construct a state machine representing 
-    a regular expressions. However, the resulting state machine contains possibly
+    regular expressions. However, the resulting state machine possibly contains 
     $\epsilon$-transitions and is therefore a non-deterministic finite state
     automaton (NFA). In order to reduce complexity and to speed up the subsequent 
     processing the state machine representation is optimized. The optimized state machine
-    is achieved by 
+    is achieved by: 
     
-       -  a conversion from a non-deterministic finite automaton NFA to a 
-             deterministic finite automaton section <<sec-inside-quex-NFA-to-DFA>>, a DFA, and
+       -  a conversion from a non-deterministic finite automaton (NFA) to a 
+             deterministic finite automaton section (DFA)<<sec-inside-quex-NFA-to-DFA>> and
        -   a so called Hoproft Optimization \cite{} to reduce the state set 
               section <<sec-inside-quex-hopcroft-optimization>>.
 
 
-    These two mechanism, though, are involved again in the later process of generating 
+    These two mechanisms, though, are involved again in the later process of generating 
     a single lexial analyser for all patterns involved.
 
--  Labeling states of the pattern's state machines with 'origins' section <<sec-inside-quex-labeling-states.tex>>. 
-      This is necessary,
+-  Labeling states of the pattern's state machines with 'origins' sections <<sec-inside-quex-labeling-states.tex>>. 
+      This is necessary
       since the next step will combine all state machines into a single one. 
-      It must be possible to determine at each state of the state machine to know to which
-      states in the patterns it relates. Especially, the acceptance states need to 
-      identify what pattern actually triggered acceptance. 
+      It must be possible to determine at each state of the state machine to which
+      states in the patterns it relates; especially the acceptance states needed to 
+      identify which pattern actually triggered the acceptance. 
 
 -  Parallelization of pattern state machines section <<sec-inside-quex-thomson-construction-parallel>>. 
-      This builds the combined state machine checking for all patterns at the same time. 
+      This builds the combined state machine, checking for all patterns at the same time. 
 
 -  Conversion of the combined state machine from an NFA to a DFA section <<sec-inside-quex-NFA-to-DFA>>.
 
 -  Minimization of the state set using Hopcroft Optimization section <<sec-inside-quex-hopcroft-optimization>>.
 
 \begin{samepage}
--  Code generation for the given combined state machine section <<sec-inside-quex-code-generation-core>>. This consist of
-      generation of code for
+-  Code generation for the given combined state machine section <<sec-inside-quex-code-generation-core>>. This consists of
+      generation of code for:
  
-      -  for the state transitions of each state involved.
+      -  the state transitions of each state involved.
 
-      -  for the acceptance states.
+      -  the acceptance states.
 
-      Additionally a framework must be created that iterates over a given
+      Additionally, a framework must be created that iterates over a given
       character stream, i.e. a buffer management module. This module is described in
       chapter section \ref{}.
 \end{samepage}

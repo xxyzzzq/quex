@@ -2,8 +2,8 @@ The specification of character sets based on properties and
 character set operations requires in general some closer inspection
 in order to avoid the inclusion of unwanted characters or to span
 a character set that is wider than actually intended. Consider
-for example that one might want to provide a pogramming language that
-allows latin and greek letters in identifiers. The direct approach
+for example that one might want to provide a programming language that
+allows Latin and Greek letters in identifiers. The direct approach
 would be as follows:
 
 [cpp]
@@ -20,7 +20,7 @@ define {
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This specification is totally rational. However, it might include more
-characters than one actually intended. If one mentions greek and latin 
+characters than one actually intended. If one mentions Greek and Latin 
 characters one usually thinks about lower and upper case letters from 
 a to z and α to ω. However, the set of characters that are included 
 in `Script=Latin` is much larger than that--and so is the set of characters

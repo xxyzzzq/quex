@@ -1,5 +1,5 @@
-The first doubt that arises when properties are to be applied is about the
-properties that actually exists. The second doubt then is what values these
+The first doubt that arises when properties are to be applied is whether the
+properties actually exists. The second doubt, then, is what values these
 properties can actually have. To help out with the first question, simply call
 quex with the command line option `--property` and it prints a list of
 properties that it is able to extract from the unicode database. This
@@ -34,16 +34,15 @@ tc,      Titlecase_Mapping,                  String,        <unsupported>
 uc,      Uppercase_Mapping,                  String,        <unsupported>
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Each line contains three fields separated by comma. The first field contains
+Each line contains three fields separated by commas. The first field contains
 the _alias_ for the property name, the second field contains the _property name_,
-and the last column contains the _type_ of the property. If a field containing
+and the last column contains the _type_ of property. If a field containing
 `<unsuported>` is appended, this means that this property is not supported
-by quex. In most case is this so, because these properties support character operations
+by quex. In most cases this so because these properties support character operations
 rather then the definition of character sets. 
 
 To help out with the second question call quex with the command line option
-`--property` followed by the name of the property that you want to know some
-closer. The following displays the query about the property `Numeric_Type`:
+`--property` followed by the name of the property that you want to know more about. The following displays the query about the property `Numeric_Type`:
 
 [shell]
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

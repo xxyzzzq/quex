@@ -1,9 +1,8 @@
 // vim: set syntax=asciidoc:
-Queχ - Lexical Analyser Generator (html drafts)
-===============================================
-Frank-Rene Schaefer <fschaef@users.sourceforge.net>
-0.15.4, 9. September, 2007
-
+Queχ - Lexical Analyser Generator
+==================================
+Frank-Rene_Schaefer <fschaef@users.sourceforge.net>
+0.16.1, 20. October, 2008
 //-------------------------------------------------------
 == Introduction
 include::intro/intro.txt[]
@@ -272,4 +271,8 @@ include::inside-quex/buffer/constructor.txt[]
 === Input Methods
 include::inside-quex/buffer/input-methods.txt[]
 
-(To be Continued)
+//---------------------------------------------------------
+== Editors
+Martin Miller <martin.miller7@gmail.com>
+
+Malathi Voodi <test@tst.com>

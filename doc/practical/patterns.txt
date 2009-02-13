@@ -1,6 +1,6 @@
-In the simple example, only very basic patterns have to be defined. There is a
-pattern for _whitespace_, consisting of space, tabulator and newline.
-There are two bracket types for opening and closing brackets, an assignment
+In this simple example, only very basic patterns have to be defined. There is a
+pattern for _whitespace_, consisting of space, tabulator, and newline.
+There are two bracket types for opening and closing brackets: an assignment
 operator `=`, the two keywords `if` and `struct`, identifiers
 consisting of letters from A-Z in capital and lower-case, floating point
 numbers and string delimeters. The listing in figure <<fig-pattern-code>>
@@ -24,9 +24,9 @@ define {
 }
 source~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The filename including the extension is, of course, totally freely chooseable.
-Note, that all pattern names are 'global'. They are not local to a specific
-mode. That means, that all modes can access the pattern definitions. Note also,
+The filename including the extension can, of course, be chosen freely.
+Note that all pattern names are 'global'. They are not local to a specific
+mode. That means, that all modes can access the pattern definitions. Note also
    that inside the `define`-range only '`//`'-comments are allowed.
 The `P_`-prefix was chosen to indicate to the reader, that this is a 
 pattern definition. There is no danger of interfering with the program namespace.
