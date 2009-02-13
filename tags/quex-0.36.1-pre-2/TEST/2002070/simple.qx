@@ -1,0 +1,19 @@
+define {
+P_TOK [A-Za-z0-9]+
+}
+
+token {
+TOK
+NONE
+}
+
+mode ONE_AND_ONLY
+{
+// Order is relevant
+<<EOF>> => QUEX_TKN_TERMINATION;
+
+{P_TOK}     => QUEX_TKN_TOK(Lexeme);
+\n          => QUEX_TKN_NEWLINE;
+[^ \r\n\t]+ => QUEX_TKN_WORD(Lexeme);
+.           => QUEX_TKN_NONE(Lexeme);
+}
