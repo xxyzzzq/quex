@@ -32,6 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="icuucd.lib"
 				OutputFile="$(OutDir)/demo003.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="TRUE"
@@ -78,6 +79,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="icuuc.lib"
 				OutputFile="$(OutDir)/demo003.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="TRUE"
@@ -121,7 +123,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2 --icu
 "
 						AdditionalDependencies=""
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
@@ -132,7 +134,7 @@
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
 						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
-"
+ --icu"
 						AdditionalDependencies=""
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
 				</FileConfiguration>
@@ -144,7 +146,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2  --icu
 "
 						AdditionalDependencies=""
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
@@ -155,7 +157,7 @@
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
 						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
-"
+ --icu"
 						AdditionalDependencies=""
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
 				</FileConfiguration>
@@ -182,7 +184,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
-						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
+						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2 --icu
 "
 						AdditionalDependencies=""
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
@@ -193,7 +195,7 @@
 						Name="VCCustomBuildTool"
 						Description="Processing mode files"
 						CommandLine="&quot;$(QUEX_PATH)quex.bat&quot; -i definitions.qx end_of_file.qx program.qx --engine tiny_lexer -b 2
-"
+ --icu"
 						AdditionalDependencies=""
 						Outputs="tiny_lexer.cpp;tiny_lexer-core-engine.cpp"/>
 				</FileConfiguration>
