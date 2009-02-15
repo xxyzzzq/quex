@@ -1,0 +1,2 @@
+warning: no initial mode defined via 'start'
+warning: using mode 'MODE' as initial mode
