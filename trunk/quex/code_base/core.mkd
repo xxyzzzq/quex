@@ -2,7 +2,7 @@
 # HELPER: find -type d -or -path "*.svn*" -or -path "*TEST*" -or -path "*DESIGN*" -or -path "*.swp" -or -path "*.swo" -or -path "*README*" -or -path "*.tar*" -or -path "*tbz" -or -path "*DELETED*" -or -path "*.txt" -or -path "*.mkd" -prune -or -print
 QUEX_CODE_BASE_PATH = $(QUEX_PATH)/quex/code_base
 
-QUEX_CORE = \
+__QUEX_CORE = \
        $(addprefix $(QUEX_CODE_BASE_PATH)/, \
          ./Token \
          ./MemoryManager \
@@ -68,3 +68,9 @@ QUEX_CORE = \
          ./temporary_macros_on \
          ./temporary_macros_off \
          ./StrangeStream_unit_tests) 
+
+ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)
+    QUEX_CORE = $(__QUEX_CORE)
+else
+    QUEX_CORE =#
+endif
