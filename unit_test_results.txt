@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Sun Feb 15 09:18:21 2009
+DATE:  Sun Feb 15 19:09:35 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -17,6 +17,9 @@ TITLE: Regression Tests on Fixed Bugs
         bug-2002474.sh ........................................[NO GOOD FILE]
     2004927 UTF-8 RE Extra Comma Matched
         bug-2004927.sh ..................................................[OK]
+    2599228 0.36.1 QUEX_CORE variable not adapted to installed version
+        bug-2599228.sh /home/fschaef/prj/quex/trunk .....................[OK]
+                       /something/else ..................................[OK]
 
  -- fschaef:
 
@@ -179,7 +182,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sun Feb 15 09:20:55 2009
+DATE:  Sun Feb 15 19:12:25 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -280,7 +283,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sun Feb 15 09:20:56 2009
+DATE:  Sun Feb 15 19:12:26 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -301,7 +304,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Sun Feb 15 09:20:57 2009
+DATE:  Sun Feb 15 19:12:27 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -327,7 +330,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Sun Feb 15 09:21:02 2009
+DATE:  Sun Feb 15 19:12:34 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -391,7 +394,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Sun Feb 15 09:21:10 2009
+DATE:  Sun Feb 15 19:12:41 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -467,7 +470,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Sun Feb 15 09:21:17 2009
+DATE:  Sun Feb 15 19:12:50 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -543,7 +546,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Sun Feb 15 09:21:31 2009
+DATE:  Sun Feb 15 19:13:06 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -638,7 +641,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sun Feb 15 09:21:33 2009
+DATE:  Sun Feb 15 19:13:08 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -663,7 +666,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sun Feb 15 09:21:33 2009
+DATE:  Sun Feb 15 19:13:08 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -697,7 +700,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sun Feb 15 09:23:37 2009
+DATE:  Sun Feb 15 19:15:24 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -882,7 +885,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sun Feb 15 09:23:42 2009
+DATE:  Sun Feb 15 19:15:30 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -945,7 +948,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sun Feb 15 09:23:46 2009
+DATE:  Sun Feb 15 19:15:36 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1044,7 +1047,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sun Feb 15 09:23:47 2009
+DATE:  Sun Feb 15 19:15:36 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1072,7 +1075,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sun Feb 15 09:24:06 2009
+DATE:  Sun Feb 15 19:15:57 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1098,7 +1101,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Sun Feb 15 09:24:07 2009
+DATE:  Sun Feb 15 19:15:58 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
