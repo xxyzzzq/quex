@@ -141,24 +141,14 @@ following option to disable it:
 	    token-ids and the mapping function from numerical token-ids to
 	    `std::string` objects, i.e. human readable names. DEFAULT = `<disabled>`
 
-There may be cases where the characters used to indicate buffer limit,
-end-of-stream and begin-of-stream need to be redefined, because the
-default code points appear in a pattern footnote:[As for 'normal' ASCII
-or Unicode based lexical analyzers, this would most probably not be a
-good design decision. But, when other, alien, non-unicode codings are to
-be used, this case is conceivable.].  Also, note that the '.' regular
-expression (meaning 'nothing but newline or end of file') needs check for
-begin-of-buffer and end-of-buffer in the general case. Giving both the
-same value may come with some speedup, and does not hurt. None of these
-values should be equal to the buffer limit delimiter. The following
-options allow modification of the values discussed above.  
+There may be cases where the characters used to indicate buffer limit needs to
+be redefined, because the default value appear in a pattern footnote:[As for
+'normal' ASCII or Unicode based lexical analyzers, this would most probably not
+be a good design decision. But, when other, alien, non-unicode codings are to
+be used, this case is conceivable.].  The following option allows modification
+of the buffer limit code:
       
-
 `--buffer-limit` _number_:: DEFAULT = `"0x0"`
-
-`--begin-of-stream` _number_:: DEFAULT = `"0x19"`
-
-`--end-of-stream` _number_:: DEFAULT = `"0x1A"`
 
 If the trivial end-of-line pre-condition (i.e. the '\$' at the end of a regular
 expression) is used, by default quex produces code that runs on both Unix
@@ -203,7 +193,8 @@ options:
 	    only specify 1 byte, 2 byte or 4 byte per character. If`wchar\_t` is specified
 	    quex automatically adapts to the correspondent type of the operating
 	    system environment where the target code is compiled. 
-	    Use this, if option`--iconv` is used and you are in doubt. DEFAULT = `"2"`
+	    Use this, if option`$$--iconv$$` or `$$--icu$$` is used and you are in 
+        doubt. DEFAULT = `"2"`
 
 `--endian`  _["little", "big", "<system>"]_::
         

@@ -36,6 +36,11 @@ analysers such as lex or flex:
 -  A generator for a directly _coded lexical analyzer_ featuring
   pre- and post-condtions. The generated lexical analyzer is up to 2.5 times
   faster than an analyzer created by flex/lex.
+
+- _Unicode_. The quex engine comes with a sophisticated buffer management which
+  allows to specify converters as buffer fillers. At the time of this
+  writing, the libraries 'iconv' and 'icu' for character code conversion
+  are directly supported.
   
 - Sophisticated lexical _modes_ in which only exclusively specified
   patterns are active. In contrast to normal 'lex' modes they provide
@@ -66,10 +71,26 @@ analysers such as lex or flex:
   characters in an analysed character stream. Those tokens are derived from
   context. This again, is a key for defining redundancy reduced languages.
   
-- Automatic _line_ and _column numbering_. These features can be
-  turned off, in case that one fears performance loss. It can be determined
-  exactly from which line and which column a recognized pattern started and
-  where it ended.
+- Automatic _line_ and _column numbering_.  The current line number and column
+  number can be accessed at any time.  Quex investigates patterns and determines
+  the most time efficient method to apply changes to column and line numbers.
+  This results in an overhead for counting which is almost not measurable. 
+  However, for fine tuning it might as well be turned off.
+
+- _Include stack handling_. For languages where files include other files
+  the quex engine provides a feature that allows to store the analyzer 
+  state on a stack, continue analysis on the included file, and restore
+  the analyzer state on return from the included file--without much fuss 
+  for the end user.
+
+- _Indentation Events_. As soon as a non-whitespace occurs after a newline
+  a indentation event is fired, that allows convenient means to implement
+  indentation based languages of the Python-like style.
+
+- _Skippers_. For ranges, that are to be skipped, quex can implement 
+  optimized small engines for skipping characters that are not of interest
+  for lexical analysis. Examples, as the 'C/C++'-style comments '/*' to '*/'
+  or '//' to newline.
 
 - Automatic generation of transition graphs. Using the `--plot` command line
   option initiates quex to produce a graphical representation of the underlying
