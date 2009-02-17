@@ -2,7 +2,7 @@
 bug=2599228
 if [[ $1 == "--hwut-info" ]]; then
     echo "attardi: $bug 0.36.1 QUEX_CORE variable not adapted to installed version"
-    echo "CHOICES: /home/fschaef/prj/quex/trunk, /something/else"
+    echo "CHOICES: Developper, Else"
     exit
 fi
 
@@ -15,7 +15,9 @@ echo "installed versions of quex."
 tmp=`pwd`
 cd $bug/ 
 export ALWAYS_CORRECT_QUEX_PATH=$QUEX_PATH
-export QUEX_PATH=$1
+if [[ $1 == "Else" ]]; then
+   export QUEX_PATH=$1
+fi
 make all
 
 cd $tmp
