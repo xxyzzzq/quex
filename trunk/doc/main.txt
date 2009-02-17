@@ -17,36 +17,47 @@ include::intro/license.txt[]
 include::intro/naming.txt[]
 
 //-------------------------------------------------------
-== Basics
+== Concepts
 include::basics/intro.txt[]
 
 === Pattern Matching
 include::basics/pattern-matching.txt[]
 
-=== The Token Queue
-include::basics/token-queue.txt[]
-
 === Lexical Analysis Modes
 include::basics/modes.txt[]
 
-=== Mode Inheritance
-include::basics/mode-inheritance.txt[]
-
-=== Mode Transitions
-include::basics/mode-transitions.txt[]
-
-=== Indentation
-include::basics/indentation.txt[]
-
-=== Line and Column Number Counting
-include::basics/line-column-counting.txt[]
-
-=== Summary
-include::basics/summary.txt[]
-
+=== Event Handling
+include::basics/event-handling.txt[]
 
 //-------------------------------------------------------
-== Practical Usage
+== Usage
+
+=== Minimalist Example
+include::usage/minimalist-example.txt[]
+
+=== Pattern Definition
+include::usage/patterns/intro.txt[]
+
+==== Context Free Regular Expressions
+include::usage/patterns/context-free.txt[]
+
+===== Character Set Expressions
+include::usage/patterns/character-set-expressions.txt[]
+
+===== Unicode Character Properties
+include::usage/patterns/ucs-properties.txt[]
+
+===== Pitfalls
+include::usage/patterns/context-free-pitfalls.txt[]
+
+==== Pre- and Post-Conditions
+include::usage/patterns/context-dependent.txt[]
+
+===== Pitfalls
+include::usage/patterns/context-dependent-pitfalls.txt[]
+
+//-------------------------------------------------------
+== Practical Example
 include::practical/intro.txt[]
 
 === Patterns
@@ -74,27 +85,6 @@ include::practical/summary.txt[]
 //-------------------------------------------------------
 == Formal Usage
 include::formal/intro.txt[]
-
-=== Regular Expression Syntax
-include::formal/patterns/intro.txt[]
-
-=== Context Free Regular Expressions
-include::formal/patterns/context-free.txt[]
-
-==== Character Set Expressions
-include::formal/patterns/character-set-expressions.txt[]
-
-==== Unicode Character Properties
-include::formal/patterns/ucs-properties.txt[]
-
-==== Pitfalls
-include::formal/patterns/context-free-pitfalls.txt[]
-
-=== Pre- and Post-Conditions
-include::formal/patterns/context-dependent.txt[]
-
-==== Pitfalls
-include::formal/patterns/context-dependent-pitfalls.txt[]
 
 === Specification of Starting Mode with `start`
 include::basics/start-mode.txt[]
@@ -197,82 +187,29 @@ include::appendix/ucs_properties/intro.txt[]
 === Unicode Character Property Settings
 include::appendix/ucs_properties/property-settings.txt[]
 
-//-------------------------------------------------------
-== Appendix: Quex Intern: Generation of the Core Engine
-include::inside-quex/intro.txt[]
-
-=== Introduction
-include::inside-quex/intro/intro.txt[]
-
-
-==== The Big Picture
-include::inside-quex/intro/the-big-picture.txt[]
-
-==== Post-Conditions
-include::inside-quex/intro/post-conditions.txt[]
-
-==== Pre-Conditions
-include::inside-quex/intro/pre-conditions.txt[]
-
-==== Generation Steps
-include::inside-quex/intro/generation-steps.txt[]
-
-
-=== Thomson Construction
-include::inside-quex/thomson-construction/intro.txt[]
-
-  
-==== Mounting State Machines in Sequence
-include::inside-quex/thomson-construction/serial.txt[]
-
-==== Mounting State Machines in Parallel
-include::inside-quex/thomson-construction/parallel.txt[]
-
-==== Implementing Repeated State Machines
-include::inside-quex/thomson-construction/repetition.txt[]
-
-
-=== Labeling State Origins
-include::inside-quex/labeling-states.txt[]
-
-=== Subset Construction--NFA to DFA
-include::inside-quex/NFA-to-DFA.txt[]
-
-=== Hopcroft Optimization
-include::inside-quex/hopcroft-optimization.txt[]
-
-=== Code Generation
-include::inside-quex/code-generation/core.txt[]
-
-==== State Transition Header
-include::inside-quex/code-generation/header.txt[]
-
-==== State Transition Triggering
-include::inside-quex/code-generation/state-transitions.txt[]
-
-
-== Appendix: The Buffer
-include::inside-quex/buffer/intro.txt[]
-
-=== Programming Interface
-include::inside-quex/buffer/API.txt[]
-
-=== Mechanisms
-include::inside-quex/buffer/mechanisms.txt[]
-
-      
-//-------------------------------------------------------
-=== Loading from File
-include::inside-quex/buffer/load.txt[]
-      
-=== Creation of A Buffer Object
-include::inside-quex/buffer/constructor.txt[]
-
-=== Input Methods
-include::inside-quex/buffer/input-methods.txt[]
 
 //---------------------------------------------------------
 == Editors
 Martin Miller <martin.miller7@gmail.com>
 
 Malathi Voodi <test@tst.com>
+
+//---------------------------------------------------------
+=== The Token Queue
+include::basics/token-queue.txt[]
+
+=== Mode Inheritance
+include::basics/mode-inheritance.txt[]
+
+=== Mode Transitions
+include::basics/mode-transitions.txt[]
+
+=== Indentation
+include::basics/indentation.txt[]
+
+=== Line and Column Number Counting
+include::basics/line-column-counting.txt[]
+
+=== Summary
+include::basics/summary.txt[]
+

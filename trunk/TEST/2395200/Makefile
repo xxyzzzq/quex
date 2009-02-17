@@ -20,6 +20,6 @@ lexer:
 		  lexer.cpp Simple*.cpp -o lexer
 
 clean:
-	rm -f Simple*.cpp
+	rm -f Simple*
 	rm -f *.o
 	rm -f lexer error-lexer
