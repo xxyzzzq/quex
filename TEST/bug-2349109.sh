@@ -12,5 +12,5 @@ make INPUT=$1
 ./lexer $1.txt
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism
+make clean
 cd $tmp
