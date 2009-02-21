@@ -1,0 +1,56 @@
+\documentclass{book}
+\input{../../DOC/header.tex}
+
+
+
+\begin{document}
+\tableofcontents
+
+
+
+\mychapter{Inside \Quex}
+          {intro}
+
+\mysection{Introduction}
+	  {intro/intro}
+
+\mysubsection{The Big Picture}
+             {intro/the-big-picture}
+	     
+\mysubsubsection{Post Conditions}
+                {intro/post-conditions}
+
+\mysubsubsection{Pre Conditions}
+                {intro/pre-conditions}
+	     
+\mysubsection{Generation Steps}
+             {intro/generation-steps}
+
+\mysection{Thomson Construction}
+	  {thomson-construction/intro}
+	  
+   \mysubsection{Mounting State Machines in Parallel}
+  	        {thomson-construction/serial}
+   \mysubsection{Mounting State Machines in Sequence}
+	        {thomson-construction/parallel}
+   \mysubsection{Implementing Repeated State Machines}
+	        {thomson-construction/repetition}
+
+\mysection{NFA to DFA}
+          {NFA-to-DFA}
+
+\mysection{Hopcroft Optimization}
+	  {hopcroft-optimization}
+
+\mysection{Code Generation}
+          {code-generation/core}
+	  
+\mysection{State Transitions}
+          {code-generation/state-transitions}
+
+   \mysubsection{State Transition Header}
+                {code-generation/header}    
+   \mysubsection{State Transition Triggering}
+                {code-generation/state-transitions}    
+   
+\end{document}

@@ -1,0 +1,68 @@
+Before beginning the installation of quex, make sure that
+Python (http://www.python.org) is installed. Most linux distributions provide
+handy rpm packages--so this should not be an issue. Then, follow these steps: 
+
+. Extract the file `quex-x.x.x.tar.gz` into the desired directory.
+
+. Set the environment variable `QUEX\_PATH` in your system
+    environment to the place where you installed quex. If you are using
+    a Unix system and the bash-shell, add the following line to your
+    `.bashrc`-file: `export QUEX_PATH=the/directory/where/quex/was/installed/`
+    if you installed quex in the directory given on the right hand side of
+    the assignment.
+
+
+    
+. Make a link from the file `$QUEX_PATH/quex-exe.py` to
+`$EXECUTABLE_PATH/quex` where `$EXECUTABLE_PATH` is a path where executables
+can be found by your system.  If you work on a unix system, you can
+type `ln -s $QUEX_PATH/quex-exe.py /usr/local/bin/quex` You can
+ensure executable rights with `chmod a+rx $QUEX_PATH/quex-exe.py`, `chmod a+rx
+/usr/local/bin/quex`.
+
+. Supply your C\+\+ compiler with the include path '$QUEX_PATH'. For the
+vast majority of compilers this means you must add `-I$(QUEX_PATH)`
+to the list of compiler flags. An example of how this is done can be observed
+in the test applications which come with the quex distribution.
+
+That is all. Now, you should either copy the directories `./demo/*` to a
+place where you want to work on it, or simply change directory to there.  These
+directories contain sample applications 000, 001, $\ldots$. Change to the directory of the
+sample applications and type '`make`'. If everything is setup properly,
+you will get your first quex-made lexical analyser executable in a matter
+of seconds. 
+
+
+The example applications depict easy ways to specify
+traditional lexical analysers, they show some special features of quex such
+as mode transitions, and more. Each demo-application deals with a particular
+feature of quex: 
+
+- `demo\000` shows how to setup a lexical analyzer very quickly.
+
+- `demo\001` demonstrates basics on modes and mode transitions.
+
+- `demo\002` contains a sample application for an indentation based language.
+
+- `demo\003` implements a lexical analyzer handling Unicode.
+
+- `demo\004` contains a setup to generate a lexical analyser for the 'C' language.
+             Additionally, it contains a benchmark suite by means of which the 
+             generated analyser can be measured in terms of code sizes in bytes
+             and computation time in terms of CPU clock cycles.
+
+- `demo\005` explains how to do lexical analysis with files that include other files.
+
+- `demo\006` contains an example that treats _pseudo ambiguous post contexts_ which are
+             difficult to deal with by means of traditional lexical analyser generators.
+
+- `demo\007` 
+
+- `demo\008`
+
+- `demo\009`
+
+The author of this document suggests that the user looks at these
+sample applications first before continuing with the remainder of this text. 
+With the background of easy-to-use examples to serve as starting point
+for their own efforts, it should be natural to get a feeling for the ease of quex.
