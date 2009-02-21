@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Sun Feb 15 19:09:35 2009
+DATE:  Sat Feb 21 18:38:15 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -18,8 +18,10 @@ TITLE: Regression Tests on Fixed Bugs
     2004927 UTF-8 RE Extra Comma Matched
         bug-2004927.sh ..................................................[OK]
     2599228 0.36.1 QUEX_CORE variable not adapted to installed version
-        bug-2599228.sh /home/fschaef/prj/quex/trunk .....................[OK]
-                       /something/else ..................................[OK]
+        bug-2599228.sh Developper .......................................[OK]
+                       Else .............................................[OK]
+    2619679 QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY redefined
+        bug-2619679.sh ..................................................[OK]
 
  -- fschaef:
 
@@ -182,7 +184,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sun Feb 15 19:12:25 2009
+DATE:  Sat Feb 21 18:40:55 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -283,7 +285,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sun Feb 15 19:12:26 2009
+DATE:  Sat Feb 21 18:40:56 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -304,7 +306,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Sun Feb 15 19:12:27 2009
+DATE:  Sat Feb 21 18:40:57 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -330,7 +332,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Sun Feb 15 19:12:34 2009
+DATE:  Sat Feb 21 18:41:04 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -394,7 +396,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Sun Feb 15 19:12:41 2009
+DATE:  Sat Feb 21 18:41:11 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -470,7 +472,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Sun Feb 15 19:12:50 2009
+DATE:  Sat Feb 21 18:41:19 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -546,7 +548,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Sun Feb 15 19:13:06 2009
+DATE:  Sat Feb 21 18:41:34 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -641,7 +643,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sun Feb 15 19:13:08 2009
+DATE:  Sat Feb 21 18:41:36 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -666,7 +668,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sun Feb 15 19:13:08 2009
+DATE:  Sat Feb 21 18:41:37 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -700,7 +702,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sun Feb 15 19:15:24 2009
+DATE:  Sat Feb 21 18:43:43 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -790,11 +792,6 @@ TITLE: Code Generation for Lexical Analyzer
 
  -- Pseudo Ambgiguous Post Condition:
 
-    Part I
-        test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory .....[OK]
-                                                 ANSI-C .................[OK]
-                                                 Cpp ....................[OK]
-                                                 Cpp_StrangeStream ......[OK]
     Part II
         test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory ...[OK]
                                                    ANSI-C ...............[OK]
@@ -885,7 +882,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sun Feb 15 19:15:30 2009
+DATE:  Sat Feb 21 18:43:50 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -948,7 +945,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sun Feb 15 19:15:36 2009
+DATE:  Sat Feb 21 18:43:56 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -996,6 +993,11 @@ TITLE: State Machine Operations
     The Philosophical Cut
         test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
 
+ -- Ranking of state machines:
+
+    Pattern priorization
+        OUTDATED-test-ranking.py ..............................[NO GOOD FILE]
+
  -- StateMachine:
 
     Cloning
@@ -1026,6 +1028,8 @@ TITLE: State Machine Operations
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Hopcroft optimization (minimize state set)
         test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
+    Inverse
+        OUTDATED-test-StateMachine-trace-origin-inverse.py ....[NO GOOD FILE]
     NFA to DFA (subset construction)
         test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     NFA to DFA (subset construction) II
@@ -1047,7 +1051,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sun Feb 15 19:15:36 2009
+DATE:  Sat Feb 21 18:43:56 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1075,7 +1079,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sun Feb 15 19:15:57 2009
+DATE:  Sat Feb 21 18:44:16 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1101,7 +1105,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Sun Feb 15 19:15:58 2009
+DATE:  Sat Feb 21 18:44:17 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

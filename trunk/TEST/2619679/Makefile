@@ -26,29 +26,21 @@ APPLICATION      = lexer
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++ -ggdb -Wall -pedantic -DQUEX_OPTION_NO_COMPUTED_GOTOS
-CC = $(COMPILER) -c \
-	 -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+CC = $(COMPILER) \
+	 -I./ -I$(QUEX_PATH)  \
      -DQUEX_OPTION_ASSERTS_DISABLED 
-	 # -no-deprecated -Wall \
-	 #  -fPIC \
-
-LD = $(COMPILER) 
 
 # (*) RULES ____________________________________________________________________
 # -- application
-$(APPLICATION): $(APPLICATION).o \
-	            $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o
-	$(LD) -o $(APPLICATION) \
-		  ./$(APPLICATION).o $(ENGINE_NAME).o $(ENGINE_NAME)-core-engine.o 
+$(APPLICATION): $(APPLICATION).cpp $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp
+	@echo "##"
+	@echo "## The issue here was that there were warnings about double defined macros."
+	@echo "##"
+	$(CC) -o $(APPLICATION) \
+		  ./$(APPLICATION).cpp $(ENGINE_NAME).cpp $(ENGINE_NAME)-core-engine.cpp 
           
-
-# -- engine and object files
-%.o: %.cpp $(ENGINE_SOURCES)
-	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
-
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) \
-		 --token-offset 0x1000 \
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) 
 
 # (*) HELPERS __________________________________________________________________
 clean:	

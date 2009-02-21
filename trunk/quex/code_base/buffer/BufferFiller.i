@@ -251,7 +251,9 @@ namespace quex {
                                               const size_t FallBackN, 
                                               const size_t Distance_LexemeStart_to_InputP)
     {
+#       ifdef QUEX_OPTION_ASSERTS
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
+#       endif
         QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
 
         __quex_assert( buffer->_memory._end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );

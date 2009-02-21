@@ -25,4 +25,4 @@ non-newline-skipper:
 		-DQUEX_SETTING_BUFFER_SIZE=4
 
 clean:
-	rm -f lexer Simple*
+	@rm -f lexer Simple*
