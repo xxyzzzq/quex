@@ -2,7 +2,7 @@
 bug=2078087
 if [[ $1 == "--hwut-info" ]]; then
     echo "fschaef: $bug (feature) Mode transition shortcuts GOTO, GOSUB, GOUP"
-    echo "CHOICES: GOTO, GOSUB, GOSUB-2;"
+    echo "CHOICES: GOTO, GOTO-2, GOSUB, GOSUB-2;"
     exit
 fi
 
