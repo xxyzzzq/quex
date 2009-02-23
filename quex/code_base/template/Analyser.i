@@ -14,7 +14,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void
     QuexAnalyser_construct(QuexAnalyser* me,
-                           QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                           QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
                            QuexBufferFillerTypeEnum     InputCodingType,
                            const char*                  IANA_InputCodingName, 
@@ -48,7 +48,7 @@ namespace quex {
 
     QUEX_INLINE void
     QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
-                                     QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                                     QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                                      const size_t                 BufferMemorySize,
                                      QUEX_CHARACTER_TYPE*         Memory      /* = 0x0 */,
                                      const size_t                 ContentSize /* = 0 */)

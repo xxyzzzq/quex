@@ -4,10 +4,13 @@ handy rpm packages--so this should not be an issue. Then, follow these steps:
 
 . Extract the file `quex-x.x.x.tar.gz` into the desired directory.
 
-. Set the environment variable `QUEX\_PATH` in your system
+. Set the environment variable ``QUEX_PATH`` in your system
     environment to the place where you installed quex. If you are using
     a Unix system and the bash-shell, add the following line to your
-    `.bashrc`-file: `export QUEX_PATH=the/directory/where/quex/was/installed/`
+    ``.bashrc``-file:: 
+    
+       export QUEX_PATH=the/directory/where/quex/was/installed/
+
     if you installed quex in the directory given on the right hand side of
     the assignment.
 
