@@ -1,0 +1,26 @@
+Compile Options
+===============
+
+Quex offers a set of compile options that can be set by specifying them
+via the ``-D`` flag of the C-compiler. No explicit setting is necessary to create a
+working analyzer. The options, though, allow to configure and fine tune the
+lexical analyzer engine. The compile options split into the following groups
+
+.. cmacro:: QUEX_OPTION_ ...
+
+   These macros can either be defined or not. If they are defined they trigger 
+   a certain behavior. All macros of this group have a sibling of the shape::
+
+       QUEX_OPTION_ ... _DISABLED
+
+   If this option is set than any setting is outruled, even those that have 
+   been set by quex.
+
+.. cmacro:: QUEX_SETTING_ ...
+
+   These macros contain a value that is expanded in the code of quex. 
+
+.. cmacro:: QUEX_TYPE_ ...
+
+   By means of those macros types are defined.
+

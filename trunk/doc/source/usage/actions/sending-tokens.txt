@@ -1,0 +1,104 @@
+Sending Tokens
+===============
+
+The operator to send a token together with its token-id is ``=>``. It has
+already appeared in some examples in preceeding sections. The meaning of
+a code fragment like
+
+.. code-block:: cpp
+
+   mode MINE {
+     ...
+         "while"  => QUEX_TKN_KEYWORD_WHILE;
+     ...
+   }
+
+is straight forward: When the pattern ``while`` matches, then return the
+token-id ``QUEX_TKN_KEYWORD_WHILE``. Note, that quex takes the fuss of the
+user's shoulders to define numerical values for the tokens. Technically, in the
+generated code the token constructor is called and the token-id is set to the
+specified value. Now, the token constructor may allow other arguments. Those
+additional arguments may be specified in brackets, such as
+
+.. code-block:: cpp
+
+   mode MINE {
+     ...
+         [0-9]+  => QUEX_TKN_KEYWORD_WHILE(atoi(Lexeme));
+         [a-z]+  => QUEX_TKN_KEYWORD_WHILE(Lexeme);
+     ...
+   }
+
+where the former line calls the token constructor with a numeric argument, and
+the second one calls it with the lexeme itself.  Additional arguments are
+conceivable, but they would require a user defined token class.
+
+Note, that information about the lexeme is available via the following 
+'variables' [#f1]_.
+
+.. data:: Lexeme
+
+   A pointer to the first character of the matched lexeme. The lexeme itself
+   is temporarily zero-terminated for during the pattern action. If the lexeme
+   is to be referred to longer than that, the length has to be stored along
+   with the lexeme. Note, that such operations are not necessary, if the 
+   default token class is used.
+
+.. data:: LexemeBegin
+
+   This is identical to ``Lexeme``.
+
+.. data:: LexemeEnd
+
+   A pointer to the first character after the lexeme which matches the current pattern.
+
+.. data:: LexemeL
+
+   The length of the lexeme.
+
+Instead of relying on a named constand definition for a token-id, quex can
+directly use character codes as token-ids. This comes handy when using
+in conjunction with the parser generators like bison or yacc. The syntax
+is simply the character written in single quotes. Quex uses UTF-8 as input
+coding for the source files. Character of code ranges beyond can seeminglessly
+be specified in the same manner, if your editor is setup in UTF-8 mode. The
+following shows an example:
+
+.. code-block:: cpp
+
+    "="            => '=';
+    "+"            => '+';
+    "-"            => '-';
+    ε              => 'ε';
+    ∞|(infinity)   => '∞';
+
+As the last line points out, this type of token-id specification is not
+restricted to patterns of length one--they can be as any other pattern.  The
+character code of the token-id can as well be specified numerically. Numeric
+specifications of token ids can be done in decimal (without any prefix), 
+hexadecimal with a '0x' prefix, octal with a '0o' prefix, or binary with a '0b'
+prefix. This is shown in the following example:
+
+.. code-block:: cpp
+
+    Z      => 27;
+    honey  => 0x1000;             // decimal: 4069
+    butter => 0o456;              // decimal: 302 hex: 12E
+    bread  => 0b1000011010100101; // decimal: 34469 hex: 86A5
+
+Finally, the token-id can be specified via the name of a character from the
+unicode character by using 'UC' plus whitespace as a prefix. The unicode
+character name must have the spaces inside replaced with underscores. An
+example is shown here:
+
+.. code-block:: cpp
+
+    X         => UC LATIN_CAPITAL_LETTER_X;
+    \U010455  => UC SHAVIAN_LETTER_MEASURE;
+    \x23      => UC NUMBER_SIGN;
+
+
+.. rubric:: Footnotes
+
+.. [#f1] They are actually defined as C-preprocessor macros and they are only
+         active arround the generated code segments.
