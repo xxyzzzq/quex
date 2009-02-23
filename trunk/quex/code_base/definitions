@@ -162,7 +162,7 @@ namespace quex {
 #   endif
 
     struct  __QuexAnalyser_tag;
-    typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_ANALYSER_FUNCTION_TYPE)(struct __QuexAnalyser_tag*);
+    typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);
 
     QUEX_INLINE void
     QUEX_ERROR_EXIT(const char* Msg)

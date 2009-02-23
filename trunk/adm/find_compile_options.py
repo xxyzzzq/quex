@@ -20,10 +20,10 @@ def extract_options(Txt):
     global unique_option_db
     global file_name
 
-    for name, line_n in extract_identifiers_with_specific_prefix(Txt, "QUEX_OPTION_"):
+    for name, line_n in extract_identifiers_with_specific_prefix(Txt, "QUEX"):
         add_finding(name, file_name, line_n)
 
-    for name, line_n in extract_identifiers_with_specific_prefix(Txt, "QUEX_SETTING_"):
+    for name, line_n in extract_identifiers_with_specific_prefix(Txt, "__QUEX"):
         add_finding(name, file_name, line_n)
 
 def extension(Filename):
@@ -47,4 +47,4 @@ the_list.sort()
 for key, finding_list in the_list:
     print "[%s]" % key
     for file_name, line_n in finding_list:
-        print "    %s:%i:" % (file_name, line_n)
+        print "    %s:%i: here" % (file_name, line_n)

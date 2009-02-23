@@ -18,21 +18,21 @@ namespace quex {
      * is just decoration! Any 'real' lexical analyser should be derived from this class. */
     struct __QuexAnalyser_tag {
         QuexBuffer                   buffer;
-        QUEX_ANALYSER_FUNCTION_TYPE  current_analyser_function;
+        QUEX_TYPE_ANALYZER_FUNCTION  current_analyser_function;
 #if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
     || defined(QUEX_OPTION_ASSERTS)
         /* When a mode change happens and the user does not 'return' but 'CONTINUE'
          * an error must be logged, since the following characters are still swallowed
          * by the current function and not the new one. For this one needs to return and
          * then continue further. */
-        QUEX_ANALYSER_FUNCTION_TYPE  DEBUG_analyser_function_at_entry;
+        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;
 #       endif
     };
     typedef struct __QuexAnalyser_tag QuexAnalyser;
 
     TEMPLATE_IN(InputHandleT) void
     QuexAnalyser_construct(QuexAnalyser* me,
-                           QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                           QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
                            QuexBufferFillerTypeEnum     InputCodingType,
                            const char*                  IANA_InputCodingName, 
@@ -41,7 +41,7 @@ namespace quex {
 
     QUEX_INLINE void
     QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
-                                     QUEX_ANALYSER_FUNCTION_TYPE  AnalyserFunction,
+                                     QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                                      const size_t                 BufferMemorySize,
                                      QUEX_CHARACTER_TYPE*         Memory      /* = 0x0 */,
                                      const size_t                 ContentSize /* = 0   */);
