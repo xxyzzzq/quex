@@ -1,0 +1,20 @@
+.. Quex documentation master file
+
+Welcome to Quex's documentation!
+================================
+
+Contents:
+
+.. toctree::
+
+   intro/intro.txt
+   basics/intro.txt
+   usage/intro.txt
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
