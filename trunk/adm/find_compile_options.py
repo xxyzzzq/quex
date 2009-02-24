@@ -6,6 +6,12 @@ unique_option_db = {}
 dubious = {}
 forbidden = [".exe", ".out", ".pdf", ".xml", ".html", ".bin", ".pyc", ".o", ".swp"]
 
+forsaken_list = [
+        "/home/fschaef/prj/quex/trunk/quex/core_engine/generator/languages/perl.py",
+        "/home/fschaef/prj/quex/trunk/quex/core_engine/generator/languages/c.py",
+        "/home/fschaef/prj/quex/trunk/quex/core_engine/generator/languages/visual_basic.py",
+        ]
+
 file = ""
 
 def add_finding(OptionName, FileName, LineN):
@@ -31,13 +37,23 @@ def extension(Filename):
     if i == -1: return ""
     else:       return Filename[i:]
 
-for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"]):
-    if root.find(".svn") != -1: continue
+for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
+    if root.find(".svn")        != -1: continue
+    if root.find("/TEST/OUT/")  != -1: continue
+    if root.find("/TEST/GOOD/") != -1: continue
+    if root.find("/TEST/ADM/")  != -1: continue
+
     # print root
     for file in file_list:
-        if extension(file) in forbidden: continue
+        if root.find("/code_base/") != -1:
+            if extension(file) in forbidden: continue
+        else:
+            if extension(file) != ".py": continue
+
         # print "--", file
         file_name = root + "/" + file
+        if file_name in forsaken_list: continue
+
         fh        = open(file_name)
         extract_options(fh.read())
         fh.close()
