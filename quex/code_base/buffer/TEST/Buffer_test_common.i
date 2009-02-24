@@ -23,11 +23,11 @@ cl_has(int argc, char** argv, const char* What)
 #define QUEX_DEFINED_FUNC_cl_has
 
 inline void
-show_this(const char* Name, QuexBuffer* buffer, QUEX_CHARACTER_TYPE* Pos, char Appendix)
+show_this(const char* Name, QuexBuffer* buffer, QUEX_TYPE_CHARACTER* Pos, char Appendix)
 {
     static uint8_t      utf8_char_str[7];
     int                 utf8_char_str_length = 0;
-    QUEX_CHARACTER_TYPE UC = *Pos;
+    QUEX_TYPE_CHARACTER UC = *Pos;
 
     if( UC == '\0' ) { 
         printf("%s= %i (--> '%c')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 

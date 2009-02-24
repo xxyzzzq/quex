@@ -45,31 +45,31 @@ namespace quex {
         BufferFiller_show_brief_content(buffer);
     }
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE
-    __BufferFiller_get_border_char(QuexBuffer* buffer, const QUEX_CHARACTER_TYPE* C) 
+    QUEX_INLINE QUEX_TYPE_CHARACTER
+    __BufferFiller_get_border_char(QuexBuffer* buffer, const QUEX_TYPE_CHARACTER* C) 
     {
         if     ( *C != QUEX_SETTING_BUFFER_LIMIT_CODE )   
-            return (QUEX_CHARACTER_TYPE)'?'; 
+            return (QUEX_TYPE_CHARACTER)'?'; 
         else if( buffer->_memory._end_of_file_p == C )       
-            return (QUEX_CHARACTER_TYPE)']';
+            return (QUEX_TYPE_CHARACTER)']';
         else if( buffer->_content_character_index_begin == 0 && buffer->_memory._front == C )     
-            return (QUEX_CHARACTER_TYPE)'[';
+            return (QUEX_TYPE_CHARACTER)'[';
         else
-            return (QUEX_CHARACTER_TYPE)'|';
+            return (QUEX_TYPE_CHARACTER)'|';
     }
 
     QUEX_INLINE void
     QuexBuffer_show_content(QuexBuffer* buffer)
     {
         size_t                i = 0;
-        QUEX_CHARACTER_TYPE   EmptyChar =   sizeof(QUEX_CHARACTER_TYPE) == 1 ? (QUEX_CHARACTER_TYPE)(0xFF)
-                                          : sizeof(QUEX_CHARACTER_TYPE) == 2 ? (QUEX_CHARACTER_TYPE)(0xFFFF)
-                                          :                                    (QUEX_CHARACTER_TYPE)(0xFFFFFFFF);
-        QUEX_CHARACTER_TYPE*  ContentFront = QuexBuffer_content_front(buffer);
-        QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;
-        QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
-        QUEX_CHARACTER_TYPE*  iterator = 0x0;
-        QUEX_CHARACTER_TYPE*  end_p    = buffer->_memory._end_of_file_p != 0x0 ? buffer->_memory._end_of_file_p 
+        QUEX_TYPE_CHARACTER   EmptyChar =   sizeof(QUEX_TYPE_CHARACTER) == 1 ? (QUEX_TYPE_CHARACTER)(0xFF)
+                                          : sizeof(QUEX_TYPE_CHARACTER) == 2 ? (QUEX_TYPE_CHARACTER)(0xFFFF)
+                                          :                                    (QUEX_TYPE_CHARACTER)(0xFFFFFFFF);
+        QUEX_TYPE_CHARACTER*  ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
+        QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
+        QUEX_TYPE_CHARACTER*  iterator = 0x0;
+        QUEX_TYPE_CHARACTER*  end_p    = buffer->_memory._end_of_file_p != 0x0 ? buffer->_memory._end_of_file_p 
                                          :                                     buffer->_memory._back;
 
         __QUEX_STD_printf("|%c", __BufferFiller_get_border_char(buffer, BufferFront));
@@ -94,9 +94,9 @@ namespace quex {
          *       it is thought to print only ASCII characters (i.e. code points < 0xFF)*/
         size_t                i = 0;
         const size_t          ContentSize  = QuexBuffer_content_size(buffer);
-        QUEX_CHARACTER_TYPE*  ContentFront = QuexBuffer_content_front(buffer);
-        QUEX_CHARACTER_TYPE*  BufferFront  = buffer->_memory._front;
-        QUEX_CHARACTER_TYPE*  BufferBack   = buffer->_memory._back;
+        QUEX_TYPE_CHARACTER*  ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
+        QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
 
         /*_________________________________________________________________________________*/
         char* tmp = (char*)__QUEX_ALLOCATE_MEMORY(ContentSize + 4);
@@ -149,7 +149,7 @@ namespace quex {
             fprintf(stdout, "%02X", (int)*byte_p);
             if     ( next_byte_p == (uint8_t*)buffer->_memory._end_of_file_p ) 
                 fprintf(stdout, "[");
-            else if( byte_p      == (uint8_t*)buffer->_memory._end_of_file_p + sizeof(QUEX_CHARACTER_TYPE)-1) 
+            else if( byte_p      == (uint8_t*)buffer->_memory._end_of_file_p + sizeof(QUEX_TYPE_CHARACTER)-1) 
                 fprintf(stdout, "]");
             else 
                 fprintf(stdout, ".");

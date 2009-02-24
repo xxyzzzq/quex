@@ -11,7 +11,7 @@ main(int argc, char** argv)
     using namespace quex;
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("Load Forward: With Error in Stream (Character=%i Byte(s))\n", 
-               sizeof(QUEX_CHARACTER_TYPE));
+               sizeof(QUEX_TYPE_CHARACTER));
         return 0;
     }
     FILE*                         fh = prepare_input_error();

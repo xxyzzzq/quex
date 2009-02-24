@@ -65,8 +65,8 @@ get_file_input()
     /* Normal File Input */
     cout << "## FILE* (stdio.h):\n";
     cout << "##    Note this works only when engine is generated with -b 1 (or no -b)\n";
-    cout << "##    and therefore QUEX_CHARACTER_TYPE == uint8_t.\n";
-    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(uint8_t));
+    cout << "##    and therefore QUEX_TYPE_CHARACTER == uint8_t.\n";
+    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(uint8_t));
     return new quex::tiny_lexer("example.txt");
 }
 
@@ -77,8 +77,8 @@ get_stringstream_input()
     std::stringstream    my_stream;
     cout << "## stringstream:\n";
     cout << "##    Note this works only when engine is generated with -b 1 (or no -b)\n";
-    cout << "##    and therefore QUEX_CHARACTER_TYPE == uint8_t.\n";
-    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(uint8_t));
+    cout << "##    and therefore QUEX_TYPE_CHARACTER == uint8_t.\n";
+    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(uint8_t));
 
     my_stream << "bonjour le monde hello world hallo welt";
 

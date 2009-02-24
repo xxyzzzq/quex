@@ -67,7 +67,7 @@ analyse_this(QUEX_ANALYSER_FUNC_ARGS) {
     //  -- basic required variables
     int                        last_acceptance = -1;
     QUEX_STREAM_POSITION_TYPE  last_acceptance_input_position = (QUEX_STREAM_POSITION_TYPE)(0x00);
-    QUEX_CHARACTER_TYPE        input = (QUEX_CHARACTER_TYPE)(0x00);\n
+    QUEX_TYPE_CHARACTER        input = (QUEX_TYPE_CHARACTER)(0x00);\n
 
     //  -- variables to deal with post-conditioned patterns (optional)
     //    QUEX_STREAM_POSITION_TYPE  last_acceptance_i_input_position = (QUEX_STREAM_POSITION_TYPE)(0x00);

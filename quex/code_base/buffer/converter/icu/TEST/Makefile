@@ -35,19 +35,19 @@ hwut-info:
 
 %.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-        -DQUEX_CHARACTER_TYPE=uint32_t 
+        -DQUEX_TYPE_CHARACTER=uint32_t 
 
 %-16.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-        -DQUEX_CHARACTER_TYPE=uint16_t 
+        -DQUEX_TYPE_CHARACTER=uint16_t 
 
 %-32.exe: %.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-        -DQUEX_CHARACTER_TYPE=uint32_t 
+        -DQUEX_TYPE_CHARACTER=uint32_t 
 
 seek_character_index-zikzak.exe: seek_character_index-zikzak.cpp $(QUEX_CORE)
 	$(CC) $< -o $@ \
-		-DQUEX_CHARACTER_TYPE=uint16_t 
+		-DQUEX_TYPE_CHARACTER=uint16_t 
 
 clean:
 	rm -f $(FILES)

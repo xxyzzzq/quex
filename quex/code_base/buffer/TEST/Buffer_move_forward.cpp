@@ -4,7 +4,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Move by Offset: Forward (BPC=%i);\n", sizeof(QUEX_CHARACTER_TYPE));
+        printf("Move by Offset: Forward (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
         printf("CHOICES:  1, 2, 3, 4, 5;\n");
         return 0;
     }

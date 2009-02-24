@@ -14,7 +14,7 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 
 // IConv Coding Name for the internally used character coding. 
 // -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
-// -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
+// -- never use a coding that requires more bytes than QUEX_TYPE_CHARACTER contains,
 //    e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
 // Coding must be defined before the inclusion of 'definitions' since this file will
 // otherwise define a default value
@@ -37,14 +37,14 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //
 // NOTE: If in parallel another engine is built with other bytes per character settings,
 //       then the engines will also include their own header with their own definition
-//       of QUEX_CHARACTER_TYPE. Thus there is no danger at all. 
+//       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
 //       Templatifying the lexer would be possible, but the author has in mind to bring out
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
 #include<quex/code_base/compatibility/inttypes.h>
 
 // TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it wont
-//                    override the QUEX_TOKEN_ID_TYPE.)
+//                    override the QUEX_TYPE_TOKEN_ID.)
 #include "Simple-token_ids"
 #include "quex/code_base/Token"
 
@@ -280,21 +280,21 @@ namespace quex {
         virtual ~CLASS();
 
         /* Direct Access to Memory */
-        bool                  buffer_copy(QUEX_CHARACTER_TYPE* Content, const size_t Size);
-        bool                  buffer_append(QUEX_CHARACTER_TYPE* Content, const size_t Size);
+        bool                  buffer_copy(QUEX_TYPE_CHARACTER* Content, const size_t Size);
+        bool                  buffer_append(QUEX_TYPE_CHARACTER* Content, const size_t Size);
         void                  buffer_prepare(const size_t CharacterN);
-        QUEX_CHARACTER_TYPE*  buffer_begin();
-        QUEX_CHARACTER_TYPE*  buffer_end();
+        QUEX_TYPE_CHARACTER*  buffer_begin();
+        QUEX_TYPE_CHARACTER*  buffer_end();
         const size_t          buffer_size();
-        QUEX_CHARACTER_TYPE*  buffer_text_end();
+        QUEX_TYPE_CHARACTER*  buffer_text_end();
         const size_t          buffer_distance_to_text_end();
         
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-        QUEX_TOKEN_ID_TYPE   get_token();
+        QUEX_TYPE_TOKEN_ID   get_token();
 #       else
-        QUEX_TOKEN_ID_TYPE   get_token(Token*  result_p);
+        QUEX_TYPE_TOKEN_ID   get_token(Token*  result_p);
         void                 get_token(Token** result_pp);
 #       endif   
         //
@@ -325,10 +325,10 @@ namespace quex {
         // (*) Token sending
         void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const Token& That);
-        void        send(const QUEX_TOKEN_ID_TYPE TokenID);
-        void        send_n(const int N, const QUEX_TOKEN_ID_TYPE TokenID);
+        void        send(const QUEX_TYPE_TOKEN_ID TokenID);
+        void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
         template <typename ContentT> 
-        void        send(const QUEX_TOKEN_ID_TYPE TokenID, ContentT Content);
+        void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
 
 
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -621,11 +621,11 @@ Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me)
 #   endif
     /* me = pointer to state of the lexical analyser */
     quex::QuexMode&              ONE_AND_ONLY = QUEX_LEXER_CLASS::ONE_AND_ONLY;
-    QUEX_GOTO_LABEL_TYPE         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
-    QUEX_CHARACTER_POSITION_TYPE last_acceptance_input_position = (QUEX_CHARACTER_TYPE*)(0x00);
-    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position = 0x0;
+    QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
+    QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
+    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
     const size_t                 PostContextStartPositionN = (size_t)0;
-    QUEX_CHARACTER_TYPE          input = (QUEX_CHARACTER_TYPE)(0x00);
+    QUEX_TYPE_CHARACTER          input = (QUEX_TYPE_CHARACTER)(0x00);
 
     /* Post context positions do not have to be reset or initialized. If a state
      * is reached which is associated with 'end of post context' it is clear what
@@ -3023,15 +3023,15 @@ namespace quex {
 
 
     inline const std::string&
-    Token::map_id_to_name(const QUEX_TOKEN_ID_TYPE TokenID)
+    Token::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
        static bool virginity_f = true;
-       static std::map<QUEX_TOKEN_ID_TYPE, std::string>  db;
+       static std::map<QUEX_TYPE_TOKEN_ID, std::string>  db;
        static std::string  error_string("");
        static std::string  uninitialized_string("<UNINITIALIZED>");
        static std::string  termination_string("<TERMINATION>");
        
-       // NOTE: In general no assumptions can be made that the QUEX_TOKEN_ID_TYPE
+       // NOTE: In general no assumptions can be made that the QUEX_TYPE_TOKEN_ID
        //       is an integer. Thus, no switch statement is used. 
        if( virginity_f ) {
            virginity_f = false;
@@ -3053,7 +3053,7 @@ namespace quex {
 
        if     ( TokenID == __QUEX_TOKEN_ID_TERMINATION ) return termination_string;
        else if( TokenID == __QUEX_TOKEN_ID_UNINITIALIZED ) return uninitialized_string;
-       std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
+       std::map<QUEX_TYPE_TOKEN_ID, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];

@@ -23,14 +23,14 @@ namespace quex {
     }
 
     inline void   
-    CLASS::send(const QUEX_TOKEN_ID_TYPE ID) 
+    CLASS::send(const QUEX_TYPE_TOKEN_ID ID) 
     {
         the_token.set(ID);
         __QUEX_DEBUG_TOKEN_SENDING();
     }
 
     inline void   
-    CLASS::send_n(const int N, QUEX_TOKEN_ID_TYPE ID) 
+    CLASS::send_n(const int N, QUEX_TYPE_TOKEN_ID ID) 
     {
         /* this function does not make sense for singleton tokens */
         the_token.set(ID); // applies DEBUG of 'send()'
@@ -38,7 +38,7 @@ namespace quex {
     }
 
     template <typename ContentT> inline void   
-    CLASS::send(const QUEX_TOKEN_ID_TYPE ID, ContentT Content) 
+    CLASS::send(const QUEX_TYPE_TOKEN_ID ID, ContentT Content) 
     {
         the_token.set(ID, Content);
         __QUEX_DEBUG_TOKEN_SENDING();

@@ -19,14 +19,14 @@ namespace quex {
 #endif
     struct __QuexBufferFiller_tag;
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE*
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
     MemoryManager_BufferMemory_allocate(const size_t CharacterN)
     {
-        return (QUEX_CHARACTER_TYPE*)__QUEX_ALLOCATE_MEMORY((size_t)(CharacterN * sizeof(QUEX_CHARACTER_TYPE)));
+        return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY((size_t)(CharacterN * sizeof(QUEX_TYPE_CHARACTER)));
     }
 
     QUEX_INLINE void
-    MemoryManager_BufferMemory_free(QUEX_CHARACTER_TYPE* memory)
+    MemoryManager_BufferMemory_free(QUEX_TYPE_CHARACTER* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 
     TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Plain)*

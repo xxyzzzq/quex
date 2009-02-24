@@ -16,7 +16,7 @@
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN__
 #define __INCLUDE_GUARD__QUEX__TOKEN__
 
-// Depends on 'QUEX_CHARACTER_TYPE' being defined!
+// Depends on 'QUEX_TYPE_CHARACTER' being defined!
 
 #include<iostream>
 #include<string>
@@ -27,8 +27,8 @@
 #include<quex/code_base/unicode>
 #include<quex/code_base/compatibility/inttypes.h>
 
-#ifndef    QUEX_TOKEN_ID_TYPE 
-#   define QUEX_TOKEN_ID_TYPE uint32_t
+#ifndef    QUEX_TYPE_TOKEN_ID 
+#   define QUEX_TYPE_TOKEN_ID uint32_t
 #endif
 
 namespace quex {
@@ -36,13 +36,13 @@ namespace quex {
     class Token {
     public:
         // Quex Token Policy: _____________________________________________________
-        static const std::string&  map_id_to_name(QUEX_TOKEN_ID_TYPE);
+        static const std::string&  map_id_to_name(QUEX_TYPE_TOKEN_ID);
         //_________________________________________________________________________
 
     private:
-        typedef std::basic_string<QUEX_CHARACTER_TYPE> __string;
+        typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
-        QUEX_TOKEN_ID_TYPE _id;
+        QUEX_TYPE_TOKEN_ID _id;
         __string           _text;
         int                _number;
 
@@ -53,7 +53,7 @@ namespace quex {
         // note, that tokens are created in a bunch on the token stack and only
         // set with the .set(..) functions when pushed.
         //
-        Token(QUEX_TOKEN_ID_TYPE ID, const QUEX_CHARACTER_TYPE* Text) { set(ID, Text); }
+        Token(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text) { set(ID, Text); }
 
         // (*) convert data to string
         const __string   type_string() const;
@@ -63,16 +63,16 @@ namespace quex {
 
         // (*) member acces
         //     -- read
-        const QUEX_TOKEN_ID_TYPE  type_id() const      { return _id; }
+        const QUEX_TYPE_TOKEN_ID  type_id() const      { return _id; }
         const std::string&        type_id_name() const { return map_id_to_name(_id); }
         const __string&           text() const         { return _text; }
         const std::string         utf8_text() const;
         const int                 number()             { return _number; }
 
         //     -- write 
-        void    set(QUEX_TOKEN_ID_TYPE ID);
-        void    set(QUEX_TOKEN_ID_TYPE ID, const QUEX_CHARACTER_TYPE* Text);
-        void    set(QUEX_TOKEN_ID_TYPE ID, const int   Number1);
+        void    set(QUEX_TYPE_TOKEN_ID ID);
+        void    set(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text);
+        void    set(QUEX_TYPE_TOKEN_ID ID, const int   Number1);
 
     private:
         void __copy(const Token& That);
@@ -87,15 +87,15 @@ namespace quex {
     }
 
     inline void    
-    Token::set(QUEX_TOKEN_ID_TYPE Type, const QUEX_CHARACTER_TYPE* Text)
+    Token::set(QUEX_TYPE_TOKEN_ID Type, const QUEX_TYPE_CHARACTER* Text)
     { _id = Type; _text = __string(Text); }
 
     inline void    
-    Token::set(QUEX_TOKEN_ID_TYPE Type, const int Number1)
+    Token::set(QUEX_TYPE_TOKEN_ID Type, const int Number1)
     { _id = Type; _number = Number1; }
 
     inline void    
-    Token::set(QUEX_TOKEN_ID_TYPE Type) 
+    Token::set(QUEX_TYPE_TOKEN_ID Type) 
     { _id = Type; }
 
     inline std::ostream&

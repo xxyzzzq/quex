@@ -1,7 +1,7 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 
 namespace quex { 
-    inline QUEX_TOKEN_ID_TYPE
+    inline QUEX_TYPE_TOKEN_ID
     CLASS::get_token() 
     {
         // The framework / constructor **should** ensure that at this point the two
@@ -12,7 +12,7 @@ namespace quex {
 #       if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
         return QuexAnalyser::current_analyser_function(this);
 #       else
-        QUEX_TOKEN_ID_TYPE token_id = __QUEX_TOKEN_ID_TERMINATION;
+        QUEX_TYPE_TOKEN_ID token_id = __QUEX_TOKEN_ID_TERMINATION;
         do {
             token_id = QuexAnalyser::current_analyser_function(this);
         } while( token_id == __QUEX_TOKEN_ID_UNINITIALIZED );

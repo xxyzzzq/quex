@@ -15,14 +15,14 @@ CLASS::send(const __QUEX_SETTING_TOKEN_CLASS_NAME& That)
 }
 
 inline void   
-CLASS::send(const QUEX_TOKEN_ID_TYPE ID) 
+CLASS::send(const QUEX_TYPE_TOKEN_ID ID) 
 {
     _token_queue->push(ID);
     __QUEX_DEBUG_TOKEN_SENDING();
 }
 
 inline void   
-CLASS::send_n(const int N, QUEX_TOKEN_ID_TYPE ID) 
+CLASS::send_n(const int N, QUEX_TYPE_TOKEN_ID ID) 
 {
     __quex_assert(N > 0);
     for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
@@ -30,7 +30,7 @@ CLASS::send_n(const int N, QUEX_TOKEN_ID_TYPE ID)
 
 template <typename ContentT>
 inline void   
-CLASS::send(const QUEX_TOKEN_ID_TYPE ID, ContentT Content) 
+CLASS::send(const QUEX_TYPE_TOKEN_ID ID, ContentT Content) 
 {
     _token_queue->push(ID, Content);
     __QUEX_DEBUG_TOKEN_SENDING();

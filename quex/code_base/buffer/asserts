@@ -72,8 +72,8 @@ namespace quex {
     QUEX_INLINE void
     QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QuexBuffer* buffer)
     {
-        QUEX_CHARACTER_TYPE* iterator = buffer->_memory._front + 1;
-        QUEX_CHARACTER_TYPE* End      = buffer->_memory._back;
+        QUEX_TYPE_CHARACTER* iterator = buffer->_memory._front + 1;
+        QUEX_TYPE_CHARACTER* End      = buffer->_memory._back;
 
         if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
         if( buffer->_memory._end_of_file_p != 0x0 ) End = buffer->_memory._end_of_file_p;

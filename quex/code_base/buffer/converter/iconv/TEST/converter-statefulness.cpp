@@ -5,7 +5,7 @@ using namespace std;
 using namespace quex;
 
 int get_input(char* Choice, uint8_t* buffer, size_t BufferSize);
-void print_content(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
+void print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
 
 int cl_has(int argc, char** argv, const char* What)
 { return argc > 1 && strcmp(argv[1], What) == 0; }
@@ -14,7 +14,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Converter: Possible 'statefulness' has been ruled out (%i bit);\n", (int)(8*sizeof(QUEX_CHARACTER_TYPE)));
+        printf("Converter: Possible 'statefulness' has been ruled out (%i bit);\n", (int)(8*sizeof(QUEX_TYPE_CHARACTER)));
         /* Please, use the ICU converter utility to find correct ICU coding names:
          * http://demo.icu-project.org/icu-bin/convexp?s=IANA                       */
         printf("CHOICES:   UTF-8, UTF-16;\n");
@@ -40,8 +40,8 @@ main(int argc, char** argv)
     for(size_t i=ContentSize; i != 0 ; --i){
 
         uint8_t*                in_iterator = in;
-        QUEX_CHARACTER_TYPE     out[Size];
-        QUEX_CHARACTER_TYPE*    out_iterator = out;
+        QUEX_TYPE_CHARACTER     out[Size];
+        QUEX_TYPE_CHARACTER*    out_iterator = out;
         if( converter->on_conversion_discontinuity != 0x0 ) 
             converter->on_conversion_discontinuity(converter);
         bool      Result = converter->convert(converter, &in_iterator, in + i, &out_iterator, out + Size);
@@ -85,14 +85,14 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 }
 
 void 
-print_content(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End)
+print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
 {
     uint8_t   utf8_c[10];
     size_t    utf8_c_length = (size_t)-1;
 
     size_t    i = 0;
     printf("%i: [", (int)(End-Begin));
-    for(QUEX_CHARACTER_TYPE* iterator = Begin; iterator != End; ++iterator, ++i) {
+    for(QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++iterator, ++i) {
         utf8_c_length         = quex::Quex_unicode_to_utf8(*iterator, utf8_c);
         utf8_c[utf8_c_length] = '\0';
         printf("%s", utf8_c);

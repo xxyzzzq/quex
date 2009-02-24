@@ -14,7 +14,7 @@ void test(const char* TestString, Counter& x)
 {
     x._line_number_at_begin   = x._line_number_at_end;
     x._column_number_at_begin = x._column_number_at_end;
-    x.count((QUEX_CHARACTER_TYPE*)TestString, (QUEX_CHARACTER_TYPE*)TestString + strlen(TestString));
+    x.count((QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
 
     cout << "__________________________" << endl;
     // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
@@ -38,7 +38,7 @@ main(int  argc, char** argv)
         return 0;
     }
 
-    // x.__buffer->__the_end = (QUEX_CHARACTER_TYPE*)0xFFFFFFFFL;
+    // x.__buffer->__the_end = (QUEX_TYPE_CHARACTER*)0xFFFFFFFFL;
 
     test("12345", x);
     test("\n", x);

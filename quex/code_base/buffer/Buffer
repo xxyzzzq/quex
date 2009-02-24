@@ -19,9 +19,9 @@ namespace quex {
     typedef struct { 
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
 #          if defined (QUEX_OPTION_ASSERTS)
-           typedef MemoryPositionMimiker<QUEX_CHARACTER_TYPE>   Position;
+           typedef MemoryPositionMimiker<QUEX_TYPE_CHARACTER>   Position;
 #          else
-           typedef QUEX_CHARACTER_TYPE*                         Position;
+           typedef QUEX_TYPE_CHARACTER*                         Position;
 #          endif
 #       endif
         /* (*) Buffer Memory Setup:
@@ -30,24 +30,24 @@ namespace quex {
          *      ...
          *      memory[BUFFER_SIZE-2] = last char of content
          *      memory[BUFFER_SIZE-1] = upper buffer limit code character             */
-        QUEX_CHARACTER_TYPE*  _front;         /* first character in buffer (BLC)      */
-        QUEX_CHARACTER_TYPE*  _back;          /* last character in buffer  (BLC)      */
+        QUEX_TYPE_CHARACTER*  _front;         /* first character in buffer (BLC)      */
+        QUEX_TYPE_CHARACTER*  _back;          /* last character in buffer  (BLC)      */
         /* NOTE: It is not sufficient, to have a content_end pointer. It is necessary
          *       to detect the case where input_p  stands on the end of file. Thus 
          *       it is necessary to have an '_end_of_file_p' that is 0x0 if end of file
          *       is not inside the buffer.                                            */
-        QUEX_CHARACTER_TYPE*  _end_of_file_p; 
+        QUEX_TYPE_CHARACTER*  _end_of_file_p; 
     } QuexBufferMemory;
 
     QUEX_INLINE void    QuexBufferMemory_setup(QuexBufferMemory*, 
-                                               QUEX_CHARACTER_TYPE* memory, size_t Size, 
+                                               QUEX_TYPE_CHARACTER* memory, size_t Size, 
                                                bool ExternalOwnerF); 
     QUEX_INLINE size_t  QuexBufferMemory_size(QuexBufferMemory*);
 
 #   if ! defined(__QUEX_SETTING_PLAIN_C)
-    typedef QuexBufferMemory::Position  QUEX_CHARACTER_POSITION_TYPE;
+    typedef QuexBufferMemory::Position  QUEX_TYPE_CHARACTER_POSITION;
 #   else
-    typedef QUEX_CHARACTER_TYPE*        QUEX_CHARACTER_POSITION_TYPE;
+    typedef QUEX_TYPE_CHARACTER*        QUEX_TYPE_CHARACTER_POSITION;
 #   endif
 
     
@@ -55,8 +55,8 @@ namespace quex {
         QuexBufferMemory      _memory;
 
         /* (*) Iterator positions for lexical analysis */
-        QUEX_CHARACTER_TYPE*  _input_p;
-        QUEX_CHARACTER_TYPE*  _lexeme_start_p;
+        QUEX_TYPE_CHARACTER*  _input_p;
+        QUEX_TYPE_CHARACTER*  _lexeme_start_p;
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to
          *     check for the 'begin of line' pre-condition.
@@ -65,9 +65,9 @@ namespace quex {
          *           lexeme (matching character sequence). The begin of line pre-condition
          *           is concerned with the last character in the lexeme, which is the one
          *           before the 'char_covered_by_terminating_zero'. */
-        QUEX_CHARACTER_TYPE   _character_at_lexeme_start;      /* --> terminating zero helper */
+        QUEX_TYPE_CHARACTER   _character_at_lexeme_start;      /* --> terminating zero helper */
 #       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        QUEX_CHARACTER_TYPE   _character_before_lexeme_start;  /* --> begin of line           */
+        QUEX_TYPE_CHARACTER   _character_before_lexeme_start;  /* --> begin of line           */
 #       endif
 
         /*     -- character index in the stream that corresponds to the character
@@ -91,7 +91,7 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_construct_wo_filler(QuexBuffer*   me, 
                                    const size_t          BufferMemorySize,
-                                   QUEX_CHARACTER_TYPE*  Memory      /* = 0x0 */,
+                                   QUEX_TYPE_CHARACTER*  Memory      /* = 0x0 */,
                                    const size_t          ContentSize /* = 0   */);
 
     QUEX_INLINE void
@@ -100,20 +100,20 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_destruct(QuexBuffer* me);
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE   QuexBuffer_input_get(QuexBuffer*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER   QuexBuffer_input_get(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_input_p_increment(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_input_p_decrement(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_mark_lexeme_start(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_seek_lexeme_start(QuexBuffer*);
     QUEX_INLINE void                  QuexBuffer_store_last_character_of_lexeme_for_next_run(QuexBuffer*);
-    QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_content_front(QuexBuffer*);
-    QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_content_back(QuexBuffer*);
-    QUEX_INLINE QUEX_CHARACTER_TYPE*  QuexBuffer_text_end(QuexBuffer*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QuexBuffer_content_front(QuexBuffer*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QuexBuffer_content_back(QuexBuffer*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  QuexBuffer_text_end(QuexBuffer*);
     QUEX_INLINE size_t                QuexBuffer_content_size(QuexBuffer*);
 
-    QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE  QuexBuffer_tell_memory_adr(QuexBuffer*);
+    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION  QuexBuffer_tell_memory_adr(QuexBuffer*);
     QUEX_INLINE void                          QuexBuffer_seek_memory_adr(QuexBuffer*, 
-                                                                         QUEX_CHARACTER_POSITION_TYPE);
+                                                                         QUEX_TYPE_CHARACTER_POSITION);
     
     QUEX_INLINE void    QuexBuffer_move_forward(QuexBuffer*, const size_t CharacterN);
     QUEX_INLINE void    QuexBuffer_move_backward(QuexBuffer*, const size_t CharacterN);
@@ -122,13 +122,13 @@ namespace quex {
 
     QUEX_INLINE void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
     QUEX_INLINE void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);
-    QUEX_INLINE void  QuexBuffer_end_of_file_set(QuexBuffer*, QUEX_CHARACTER_TYPE* Position);
+    QUEX_INLINE void  QuexBuffer_end_of_file_set(QuexBuffer*, QUEX_TYPE_CHARACTER* Position);
     QUEX_INLINE void  QuexBuffer_end_of_file_unset(QuexBuffer*);
     QUEX_INLINE bool  QuexBuffer_is_end_of_file(QuexBuffer*);
     QUEX_INLINE bool  QuexBuffer_is_begin_of_file(QuexBuffer*);
 
     QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory* me, 
-                                            QUEX_CHARACTER_TYPE* memory, size_t Size);
+                                            QUEX_TYPE_CHARACTER* memory, size_t Size);
 
 
 

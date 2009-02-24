@@ -62,7 +62,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) size_t 
     QuexBufferFiller_Converter_read_characters(QuexBufferFiller*      alter_ego,
-                                               QUEX_CHARACTER_TYPE*   user_memory_p, 
+                                               QUEX_TYPE_CHARACTER*   user_memory_p, 
                                                const size_t           N)
     {
         TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
@@ -71,7 +71,7 @@ namespace quex {
         __quex_assert(user_memory_p != 0x0); 
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset((uint8_t*)user_memory_p, 0xFF, N * sizeof(QUEX_CHARACTER_TYPE));
+        __QUEX_STD_memset((uint8_t*)user_memory_p, 0xFF, N * sizeof(QUEX_TYPE_CHARACTER));
 #       endif
 
         /* TWO CASES:
@@ -98,8 +98,8 @@ namespace quex {
          *     THUS: No pre-load before the first conversion, even if the first conversion
          *           runs on zero bytes!                                                    */
 
-        QUEX_CHARACTER_TYPE*        user_buffer_iterator = user_memory_p;
-        const QUEX_CHARACTER_TYPE*  UserBufferEnd        = user_memory_p + N;
+        QUEX_TYPE_CHARACTER*        user_buffer_iterator = user_memory_p;
+        const QUEX_TYPE_CHARACTER*  UserBufferEnd        = user_memory_p + N;
         const size_t                StartCharacterIndex  = me->raw_buffer.iterators_character_index;
 
         while( ! me->converter->convert(me->converter, 
@@ -130,7 +130,7 @@ namespace quex {
 #           ifdef QUEX_OPTION_ASSERTS
             /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
             __QUEX_STD_memset((uint8_t*)(user_buffer_iterator), (uint8_t)0xFF, 
-                              (UserBufferEnd - user_buffer_iterator) * sizeof(QUEX_CHARACTER_TYPE));
+                              (UserBufferEnd - user_buffer_iterator) * sizeof(QUEX_TYPE_CHARACTER));
 #           endif
         }
         return ConvertedCharN;
@@ -194,16 +194,16 @@ namespace quex {
         if( me->_constant_size_character_encoding_f ) { 
             /* (1) Fixed Character Width */
             const size_t ContentSize = buffer->end - buffer->begin;
-            const size_t EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_CHARACTER_TYPE));
+            const size_t EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_TYPE_CHARACTER));
             /* NOTE: the hint index must be valid (i.e. != -1) */
             if( Index >= Hint_Index && Index < EndIndex && Hint_Index != (size_t)-1 ) {
-                uint8_t* new_iterator  = buffer->begin + (Index - Hint_Index) * sizeof(QUEX_CHARACTER_TYPE);
+                uint8_t* new_iterator  = buffer->begin + (Index - Hint_Index) * sizeof(QUEX_TYPE_CHARACTER);
                 buffer->iterator                  = new_iterator;
                 buffer->iterators_character_index = Index;
             }
             else  /* Index not in [BeginIndex:EndIndex) */ {
                 STREAM_POSITION_TYPE(InputHandleT) avoid_tmp_arg =
-                    (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_CHARACTER_TYPE) + me->start_position);
+                    (STREAM_POSITION_TYPE(InputHandleT))(Index * sizeof(QUEX_TYPE_CHARACTER) + me->start_position);
                 QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
                 buffer->end_stream_position = avoid_tmp_arg;
                 /* iterator == end => trigger reload                                              */

@@ -43,9 +43,9 @@ def create_skip_code(CharacterSet):
 range_skipper_template = """
 {
     $$DELIMITER_COMMENT$$
-    const QUEX_CHARACTER_TYPE   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
+    const QUEX_TYPE_CHARACTER   Skipper$$SKIPPER_INDEX$$[] = { $$DELIMITER$$ };
     const size_t                Skipper$$SKIPPER_INDEX$$L  = $$DELIMITER_LENGTH$$;
-    QUEX_CHARACTER_TYPE*        text_end = QuexBuffer_text_end(&me->buffer);
+    QUEX_TYPE_CHARACTER*        text_end = QuexBuffer_text_end(&me->buffer);
 $$LC_COUNT_COLUMN_N_POINTER_DEFINITION$$
 
 $$ENTRY$$
@@ -356,7 +356,7 @@ def get_nested_character_skipper(StartSequence, EndSequence, LanguageDB, BufferE
 
 lc_counter_in_loop = """
 #       if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-        if( input == (QUEX_CHARACTER_TYPE)'\\n' ) { 
+        if( input == (QUEX_TYPE_CHARACTER)'\\n' ) { 
             ++(self.counter._line_number_at_end);
 #           if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
             column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);
@@ -385,7 +385,7 @@ def __range_skipper_lc_counting_replacements(code_str, EndSequence):
     variable_definition = \
       "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-      "    QUEX_CHARACTER_POSITION_TYPE column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
+      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
       "#   endif\n" + \
       "#   endif\n"
     in_loop       = ""
@@ -466,7 +466,7 @@ def __set_skipper_lc_counting_replacements(code_str, CharacterSet):
     variable_definition = \
       "#   if defined(QUEX_OPTION_LINE_NUMBER_COUNTING) || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)\n" + \
       "#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING\n" + \
-      "    QUEX_CHARACTER_POSITION_TYPE column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
+      "    QUEX_TYPE_CHARACTER_POSITION column_count_p_$$SKIPPER_INDEX$$ = QuexBuffer_tell_memory_adr(&me->buffer);\n"+\
       "#   endif\n" + \
       "#   endif\n"
     in_loop       = ""

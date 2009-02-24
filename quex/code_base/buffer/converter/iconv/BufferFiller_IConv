@@ -17,7 +17,7 @@ namespace quex {
     /* input_handle         is the file handle or pointer to stream from which characters come.
      *
      * ToCoding == 0x0      causes an automatic choice of the target coding to according to 
-     *                      the value of 'sizeof(QUEX_CHARACTER_TYPE)'.                  
+     *                      the value of 'sizeof(QUEX_TYPE_CHARACTER)'.                  
      *
      * raw_buffer_p == 0x0  causes a dynamic allocation of the intermediate translation
      *                      buffer. The ownership in this case remains inside the 'filler'

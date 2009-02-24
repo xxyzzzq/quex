@@ -7,7 +7,7 @@
     inline void
     trim_rear(QUEX_LEXEME_CHARACTER_TYPE*     text, 
               const int Length,
-              int       (*condition)(const QUEX_CHARACTER_TYPE))
+              int       (*condition)(const QUEX_TYPE_CHARACTER))
         // PURPOSE:
         //    Inserts a terminating zero after the first letter where a
         //    condition hold. This is useful, for example, if strings have 
@@ -31,7 +31,7 @@
 
     inline const QUEX_LEXEME_CHARACTER_TYPE*
     trim_front(QUEX_LEXEME_CHARACTER_TYPE* text, 
-               int   (*condition)(const QUEX_CHARACTER_TYPE))
+               int   (*condition)(const QUEX_TYPE_CHARACTER))
         // PURPOSE:
         //    Like insert_term_zero_after_condition(...) treating the string
         //    from front to back (i.e. vice versa). Does not insert terminating
@@ -49,7 +49,7 @@
     inline const QUEX_LEXEME_CHARACTER_TYPE*
     trim(QUEX_LEXEME_CHARACTER_TYPE*     text, 
          const int Length,
-         int       (*condition)(const QUEX_CHARACTER_TYPE))
+         int       (*condition)(const QUEX_TYPE_CHARACTER))
         // PURPOSE:
         //    Delivers a string that has no whitespace at front and none at end.
         //    For example, the string "  hello world!    " becomes "hello world!".

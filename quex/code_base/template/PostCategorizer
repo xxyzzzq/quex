@@ -25,8 +25,8 @@ namespace quex {
     //       equal to '-1' then no post defined lexeme exists.
     //________________________________________________________________________________
     struct PostCategorizer {
-        void             enter(const QUEX_CHARACTER_TYPE* Lexeme, const int TokenID);
-        $$TOKEN_CLASS$$::id_type  get_token_id(const QUEX_CHARACTER_TYPE* Lexeme) const;
+        void             enter(const QUEX_TYPE_CHARACTER* Lexeme, const int TokenID);
+        $$TOKEN_CLASS$$::id_type  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
     private:
         std::map<std::string, int>  lexeme_to_token_id_map;
     };

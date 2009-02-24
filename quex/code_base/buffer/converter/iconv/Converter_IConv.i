@@ -19,7 +19,7 @@ namespace quex {
         __quex_assert(alter_ego != 0x0);
 
         if( ToCoding == 0 ) {
-            switch( sizeof(QUEX_CHARACTER_TYPE) ) {
+            switch( sizeof(QUEX_TYPE_CHARACTER) ) {
             default:  __quex_assert(false); return;
             case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
             case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
@@ -39,7 +39,7 @@ namespace quex {
     QUEX_INLINE bool 
     QuexConverter_IConv_convert(QuexConverter*   alter_ego, 
                                 uint8_t**              source, const uint8_t*              SourceEnd,
-                                QUEX_CHARACTER_TYPE**  drain,  const QUEX_CHARACTER_TYPE*  DrainEnd)
+                                QUEX_TYPE_CHARACTER**  drain,  const QUEX_TYPE_CHARACTER*  DrainEnd)
     {
         QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
         /* RETURNS:  true  --> User buffer is filled as much as possible with converted 
@@ -59,7 +59,7 @@ namespace quex {
          *  as a compile option. If you have an elegant solution to solve the problem for 
          *  plain 'C', then please, let me know <fschaef@users.sourceforge.net>.               */
         size_t source_bytes_left_n = SourceEnd - *source;
-        size_t drain_bytes_left_n  = (DrainEnd - *drain)*sizeof(QUEX_CHARACTER_TYPE);
+        size_t drain_bytes_left_n  = (DrainEnd - *drain)*sizeof(QUEX_TYPE_CHARACTER);
 
         size_t report = iconv(me->handle, 
                               __QUEX_ADAPTER_ICONV_2ND_ARG(source), &source_bytes_left_n,

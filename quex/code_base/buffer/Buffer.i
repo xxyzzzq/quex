@@ -17,7 +17,7 @@ namespace quex {
 
     QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me, bool OnlyResetF); 
     QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*    me, 
-                                            QUEX_CHARACTER_TYPE* memory, size_t Size);
+                                            QUEX_TYPE_CHARACTER* memory, size_t Size);
 
     TEMPLATE_IN(InputHandleT) void
     QuexBuffer_construct(QuexBuffer*  me, InputHandleT*  input_handle,
@@ -85,11 +85,11 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_construct_wo_filler(QuexBuffer*           me, 
                                    const size_t          BufferMemorySize,
-                                   QUEX_CHARACTER_TYPE*  Memory      /* = 0x0 */,
+                                   QUEX_TYPE_CHARACTER*  Memory      /* = 0x0 */,
                                    const size_t          ContentSize /* = 0   */)
     {
         /* Constructs a buffer for running only on memory, no 'filler' is involved. */
-        QUEX_CHARACTER_TYPE*   memory = Memory;
+        QUEX_TYPE_CHARACTER*   memory = Memory;
         __quex_assert(ContentSize <= BufferMemorySize - 2);
 
         if( memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(BufferMemorySize);
@@ -195,7 +195,7 @@ namespace quex {
         buffer->_input_p = buffer->_lexeme_start_p;
     }
 
-    QUEX_INLINE QUEX_CHARACTER_POSITION_TYPE
+    QUEX_INLINE QUEX_TYPE_CHARACTER_POSITION
     QuexBuffer_tell_memory_adr(QuexBuffer* buffer)
     {
         /* NOTE: We cannot check for general consistency here, because this function 
@@ -205,14 +205,14 @@ namespace quex {
         QUEX_DEBUG_PRINT2(buffer, "TELL: %i", (int)buffer->_input_p);
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
-        return QUEX_CHARACTER_POSITION_TYPE(buffer->_input_p, buffer->_content_character_index_begin);
+        return QUEX_TYPE_CHARACTER_POSITION(buffer->_input_p, buffer->_content_character_index_begin);
 #       else
-        return (QUEX_CHARACTER_POSITION_TYPE)(buffer->_input_p);
+        return (QUEX_TYPE_CHARACTER_POSITION)(buffer->_input_p);
 #       endif
     }
 
     QUEX_INLINE void
-    QuexBuffer_seek_memory_adr(QuexBuffer* buffer, QUEX_CHARACTER_POSITION_TYPE Position)
+    QuexBuffer_seek_memory_adr(QuexBuffer* buffer, QUEX_TYPE_CHARACTER_POSITION Position)
     {
 #       if      defined (QUEX_OPTION_ASSERTS) \
            && ! defined(__QUEX_SETTING_PLAIN_C)
@@ -227,7 +227,7 @@ namespace quex {
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
     }
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE
+    QUEX_INLINE QUEX_TYPE_CHARACTER
     QuexBuffer_input_get(QuexBuffer* me)
     {
         QUEX_DEBUG_PRINT_INPUT(me, *(me->_input_p));
@@ -240,7 +240,7 @@ namespace quex {
         return *(me->_input_p); 
     }
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE
+    QUEX_INLINE QUEX_TYPE_CHARACTER
     QuexBuffer_input_get_offset(QuexBuffer* me, const size_t Offset)
     {
         QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(me);
@@ -268,19 +268,19 @@ namespace quex {
     QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer* me)
     {
         /* only need to reset, in case that the terminating zero was set*/
-        if( me->_character_at_lexeme_start != (QUEX_CHARACTER_TYPE)'\0' ) {  
+        if( me->_character_at_lexeme_start != (QUEX_TYPE_CHARACTER)'\0' ) {  
             *(me->_input_p) = me->_character_at_lexeme_start;                  
-            me->_character_at_lexeme_start = (QUEX_CHARACTER_TYPE)'\0';     
+            me->_character_at_lexeme_start = (QUEX_TYPE_CHARACTER)'\0';     
         }
     }
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE*
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
     QuexBuffer_content_front(QuexBuffer* me)
     {
         return me->_memory._front + 1;
     }
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE*
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
     QuexBuffer_content_back(QuexBuffer* me)
     {
         return me->_memory._back - 1;
@@ -292,7 +292,7 @@ namespace quex {
         return QuexBufferMemory_size(&(me->_memory)) - 2;
     }
 
-    QUEX_INLINE QUEX_CHARACTER_TYPE*  
+    QUEX_INLINE QUEX_TYPE_CHARACTER*  
     QuexBuffer_text_end(QuexBuffer* me)
     {
         /* Returns a pointer to the position after the last text content inside the buffer. */
@@ -308,7 +308,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QuexBuffer_end_of_file_set(QuexBuffer* me, QUEX_CHARACTER_TYPE* Position)
+    QuexBuffer_end_of_file_set(QuexBuffer* me, QUEX_TYPE_CHARACTER* Position)
     {
         /* NOTE: The content starts at _front[1], since _front[0] contains 
          *       the buffer limit code. */
@@ -470,7 +470,7 @@ namespace quex {
 
     QUEX_INLINE void 
     QuexBufferMemory_init(QuexBufferMemory* me, 
-                           QUEX_CHARACTER_TYPE* memory, size_t Size) 
+                           QUEX_TYPE_CHARACTER* memory, size_t Size) 
     {
         /* The buffer memory can be initially be set to '0x0' if no buffer filler
          * is specified. Then the user has to call this function on his own in order

@@ -27,33 +27,33 @@
  * been defined. Otherwise, it would rely on default values. */
 #include "quex/code_base/Token"
 
-#define QUEX_TKN_BRACKET_CLOSE ((QUEX_TOKEN_ID_TYPE)10000)
-#define QUEX_TKN_BRACKET_OPEN  ((QUEX_TOKEN_ID_TYPE)10001)
-#define QUEX_TKN_EXPECT        ((QUEX_TOKEN_ID_TYPE)10002)
-#define QUEX_TKN_IDENTIFIER    ((QUEX_TOKEN_ID_TYPE)10003)
-#define QUEX_TKN_NUMBER        ((QUEX_TOKEN_ID_TYPE)10004)
-#define QUEX_TKN_SEMICOLON     ((QUEX_TOKEN_ID_TYPE)10005)
-#define QUEX_TKN_SEND          ((QUEX_TOKEN_ID_TYPE)10006)
-#define QUEX_TKN_STRUCT        ((QUEX_TOKEN_ID_TYPE)10007)
-#define QUEX_TKN_TERMINATION   ((QUEX_TOKEN_ID_TYPE)0)
-#define QUEX_TKN_TYPE_DOUBLE   ((QUEX_TOKEN_ID_TYPE)10008)
-#define QUEX_TKN_TYPE_INT      ((QUEX_TOKEN_ID_TYPE)10009)
-#define QUEX_TKN_UNINITIALIZED ((QUEX_TOKEN_ID_TYPE)1)
+#define QUEX_TKN_BRACKET_CLOSE ((QUEX_TYPE_TOKEN_ID)10000)
+#define QUEX_TKN_BRACKET_OPEN  ((QUEX_TYPE_TOKEN_ID)10001)
+#define QUEX_TKN_EXPECT        ((QUEX_TYPE_TOKEN_ID)10002)
+#define QUEX_TKN_IDENTIFIER    ((QUEX_TYPE_TOKEN_ID)10003)
+#define QUEX_TKN_NUMBER        ((QUEX_TYPE_TOKEN_ID)10004)
+#define QUEX_TKN_SEMICOLON     ((QUEX_TYPE_TOKEN_ID)10005)
+#define QUEX_TKN_SEND          ((QUEX_TYPE_TOKEN_ID)10006)
+#define QUEX_TKN_STRUCT        ((QUEX_TYPE_TOKEN_ID)10007)
+#define QUEX_TKN_TERMINATION   ((QUEX_TYPE_TOKEN_ID)0)
+#define QUEX_TKN_TYPE_DOUBLE   ((QUEX_TYPE_TOKEN_ID)10008)
+#define QUEX_TKN_TYPE_INT      ((QUEX_TYPE_TOKEN_ID)10009)
+#define QUEX_TKN_UNINITIALIZED ((QUEX_TYPE_TOKEN_ID)1)
 
 
 namespace quex {
 
 
     inline const std::string&
-    Token::map_id_to_name(const QUEX_TOKEN_ID_TYPE TokenID)
+    Token::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
        static bool virginity_f = true;
-       static std::map<QUEX_TOKEN_ID_TYPE, std::string>  db;
+       static std::map<QUEX_TYPE_TOKEN_ID, std::string>  db;
        static std::string  error_string("");
        static std::string  uninitialized_string("<UNINITIALIZED>");
        static std::string  termination_string("<TERMINATION>");
        
-       // NOTE: In general no assumptions can be made that the QUEX_TOKEN_ID_TYPE
+       // NOTE: In general no assumptions can be made that the QUEX_TYPE_TOKEN_ID
        //       is an integer. Thus, no switch statement is used. 
        if( virginity_f ) {
            virginity_f = false;
@@ -75,7 +75,7 @@ namespace quex {
 
        if     ( TokenID == __QUEX_TOKEN_ID_TERMINATION ) return termination_string;
        else if( TokenID == __QUEX_TOKEN_ID_UNINITIALIZED ) return uninitialized_string;
-       std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
+       std::map<QUEX_TYPE_TOKEN_ID, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];

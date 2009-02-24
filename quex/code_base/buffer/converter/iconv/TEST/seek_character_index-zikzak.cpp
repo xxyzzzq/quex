@@ -6,14 +6,14 @@
 
 
 void 
-seek_and_print(quex::QuexBufferFiller_Converter<FILE>& , size_t, QUEX_CHARACTER_TYPE* );
+seek_and_print(quex::QuexBufferFiller_Converter<FILE>& , size_t, QUEX_TYPE_CHARACTER* );
 
 int
 main(int argc, char** argv)
 {
     using namespace std;
     using namespace quex;
-    assert(sizeof(QUEX_CHARACTER_TYPE) == 2);
+    assert(sizeof(QUEX_TYPE_CHARACTER) == 2);
 
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "Stream Position Seek: Total Zik-Zak\n";
@@ -30,7 +30,7 @@ main(int argc, char** argv)
     char*                source_charset = (char*)""; 
     size_t               RawMemorySize = 6;
     const int            ReferenceSize = 24; 
-    QUEX_CHARACTER_TYPE  reference[ReferenceSize];
+    QUEX_TYPE_CHARACTER  reference[ReferenceSize];
     /**/
 
     if( strcmp(argv[1], "Dynamic") == 0 ) {
@@ -79,12 +79,12 @@ main(int argc, char** argv)
     }
 }
 
-void seek_and_print(quex::QuexBufferFiller_Converter<FILE>& filler, size_t Position, QUEX_CHARACTER_TYPE* reference)
+void seek_and_print(quex::QuexBufferFiller_Converter<FILE>& filler, size_t Position, QUEX_TYPE_CHARACTER* reference)
 {
     using namespace std;
 
     const int            MemorySize = 1; 
-    QUEX_CHARACTER_TYPE  memory[MemorySize];
+    QUEX_TYPE_CHARACTER  memory[MemorySize];
 
     filler.base.seek_character_index(&filler.base, Position);
     __quex_assert(filler.raw_buffer.iterators_character_index == Position);
