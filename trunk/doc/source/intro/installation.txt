@@ -54,14 +54,15 @@ feature of quex:
 
 * `demo\005` explains how to do lexical analysis with files that include other files.
 
-* `demo\006` contains an example that treats _pseudo ambiguous post contexts_ which are
+* `demo\006` contains an example that treats *pseudo ambiguous post contexts* which are
              difficult to deal with by means of traditional lexical analyser generators.
 
-* `demo\007` 
+* `demo\007` examples showing pattern priorization between base and derived modes as well as
+             applications of ``PRIORITY-MARK`` and ``DELETION``.
 
-* `demo\008`
+* `demo\008` shows how a quex generated lexer is linked to a bison generated parser. 
 
-* `demo\009`
+* `demo\009` shows how an interactive parser can be implemented for ``char`` and ``wchar_t`` input stream.
 
 The author of this document suggests that the user looks at these
 sample applications first before continuing with the remainder of this text. 
