@@ -16,7 +16,5 @@ and project files.
    patterns/intro.txt
    actions/intro.txt
    modes/intro.txt
-   command-line/intro.txt
-   compile-options/intro.txt
 
 

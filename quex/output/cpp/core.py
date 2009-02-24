@@ -112,7 +112,7 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, not Setup.disable_token_queue_f,        "QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE")
     txt = set_switch(txt, not Setup.disable_string_accumulator_f, "QUEX_OPTION_STRING_ACCUMULATOR")
     txt = set_switch(txt, Setup.post_categorizer_f,               "QUEX_OPTION_POST_CATEGORIZER")
-    txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      
+    ## txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      
     txt = set_switch(txt, True,                    "QUEX_OPTION_LINE_NUMBER_COUNTING")      
     txt = set_switch(txt, True,                    "QUEX_OPTION_COLUMN_NUMBER_COUNTING")        
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_TOKEN_SENDING")
