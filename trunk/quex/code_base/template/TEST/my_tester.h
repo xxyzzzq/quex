@@ -3,7 +3,7 @@
 #include <quex/code_base/compatibility/inttypes.h>
 
 typedef uint8_t  QUEX_CHARACTER_TYPE;
-typedef uint8_t* QUEX_CHARACTER_POSITION; 
+typedef uint8_t* QUEX_CHARACTER_POSITION_TYPE; 
 
 #ifdef QUEX_OPTION_ASSERTS
 #   include <cassert>

@@ -61,13 +61,6 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_show_content(QuexBuffer* buffer)
     {
-#       if QUEX_CHARACTER_TYPE   == uint8_t
-#          define QUEX_BUFFER_EMPTY_CHAR ((uint8_t)0xFFFFFFFF)
-#       elif QUEX_CHARACTER_TYPE == uint16_t
-#          define QUEX_BUFFER_EMPTY_CHAR ((uint16_t)0xFFFFFFFF)
-#       else /* QUEX_CHARACTER_TYPE == uint32_t */
-#          define QUEX_BUFFER_EMPTY_CHAR ((uint32_t)0xFFFFFFFF)
-#       endif
         size_t                i = 0;
         QUEX_CHARACTER_TYPE   EmptyChar =   sizeof(QUEX_CHARACTER_TYPE) == 1 ? (QUEX_CHARACTER_TYPE)(0xFF)
                                           : sizeof(QUEX_CHARACTER_TYPE) == 2 ? (QUEX_CHARACTER_TYPE)(0xFFFF)
