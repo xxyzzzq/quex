@@ -11,7 +11,7 @@ context of usages of tokens, however, imposes that it complies to some policies:
   -  The token class must be specified in namespace `quex`.
     
   -  A `define` macro outside the class must define a type for 
-     `QUEX_TOKEN_ID_TYPE`. It is essential to use macro functionality
+     `QUEX_TYPE_TOKEN_ID`. It is essential to use macro functionality
      rather than a `typedef`, since later general definition files need 
      to verify its definition. 
 
@@ -56,7 +56,7 @@ context of usages of tokens, however, imposes that it complies to some policies:
   - It must provide a member function that tells about the token's via
     a function with the following signature
     +
-    QUEX_TOKEN_ID_TYPE type_id();
+    QUEX_TYPE_TOKEN_ID type_id();
        
 
 As long as these conventions are respected the user created token class will

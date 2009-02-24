@@ -44,8 +44,8 @@ def do(sm, LanguageDB, PrintStateMachineF):
     function_body += LanguageDB["$input/increment"] + "\n"
 
     variables_txt = LanguageDB["$local-variable-defs"](
-            [["QUEX_CHARACTER_TYPE",          "input",                        "(QUEX_CHARACTER_TYPE)(0x0)"],
-             ["QUEX_CHARACTER_POSITION_TYPE", "end_of_core_pattern_position", "(QUEX_CHARACTER_TYPE*)(0x0)"]])
+            [["QUEX_TYPE_CHARACTER",          "input",                        "(QUEX_TYPE_CHARACTER)(0x0)"],
+             ["QUEX_TYPE_CHARACTER_POSITION", "end_of_core_pattern_position", "(QUEX_TYPE_CHARACTER*)(0x0)"]])
 
     return blue_print(function_str, 
                       [["$$ID$$",              repr(sm.get_id()).replace("L", "")],

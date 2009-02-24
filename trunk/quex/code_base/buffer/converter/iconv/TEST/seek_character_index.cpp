@@ -17,7 +17,7 @@ main(int argc, char** argv)
         cout << "CHOICES: Forward, Backward;\n";
         return 0;
     }
-    assert(sizeof(QUEX_CHARACTER_TYPE) == 4);
+    assert(sizeof(QUEX_TYPE_CHARACTER) == 4);
 
     if( argc < 2 )  {
         printf("Missing choice argument. Use --hwut-info\n");
@@ -28,7 +28,7 @@ main(int argc, char** argv)
     char*                target_charset = (char*)"UCS-4BE";
     size_t               RawMemorySize = 6;
     const int            MemorySize = 1; /* no re-load necessary */
-    QUEX_CHARACTER_TYPE  memory[MemorySize];
+    QUEX_TYPE_CHARACTER  memory[MemorySize];
     /**/
     int    Delta = 0;
     int    Front = 0;
@@ -47,7 +47,7 @@ main(int argc, char** argv)
         assert(filler->base.tell_character_index(&filler->base) == (size_t)i);
 
         loaded_n = filler->base.read_characters(&filler->base, 
-                                               (QUEX_CHARACTER_TYPE*)memory, MemorySize);
+                                               (QUEX_TYPE_CHARACTER*)memory, MemorySize);
 
         if( loaded_n != 0 ) {
             /* Print first read character from position 'i' */

@@ -10,14 +10,14 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Forward: Copy Fallback Region (BPC=%i);\n", sizeof(QUEX_CHARACTER_TYPE));
+        printf("Forward: Copy Fallback Region (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
         return 0;
     }
 
     using namespace quex;
 
     QuexBuffer           buffer;
-    QUEX_CHARACTER_TYPE  content[]    = { '0', '9', '8', '7', '6', '5', '4', '3', '2', '1' }; 
+    QUEX_TYPE_CHARACTER  content[]    = { '0', '9', '8', '7', '6', '5', '4', '3', '2', '1' }; 
     int                  memory_size  = 12;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
@@ -38,7 +38,7 @@ main(int argc, char** argv)
         buffer._lexeme_start_p != buffer._memory._front; 
         --(buffer._lexeme_start_p) ) { 
 
-        memcpy((void*)(buffer._memory._front + 1), (void*)content, (memory_size-2)*sizeof(QUEX_CHARACTER_TYPE));
+        memcpy((void*)(buffer._memory._front + 1), (void*)content, (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 

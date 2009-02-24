@@ -9,7 +9,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Backward: Copy Region (BPC=%i);\n", sizeof(QUEX_CHARACTER_TYPE));
+        printf("Backward: Copy Region (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
         printf("CHOICES:  Normal, StartOfStream;\n");
         return 0;
     }
@@ -17,7 +17,7 @@ main(int argc, char** argv)
     using namespace quex;
 
     QuexBuffer           buffer;
-    QUEX_CHARACTER_TYPE  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
+    QUEX_TYPE_CHARACTER  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
     int                  memory_size = 12;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
@@ -44,7 +44,7 @@ main(int argc, char** argv)
         buffer._lexeme_start_p != buffer._memory._back; 
         ++(buffer._lexeme_start_p) ) { 
 
-        memcpy((char*)(buffer._memory._front+1), (char*)content, (memory_size-2)*sizeof(QUEX_CHARACTER_TYPE));
+        memcpy((char*)(buffer._memory._front+1), (char*)content, (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 

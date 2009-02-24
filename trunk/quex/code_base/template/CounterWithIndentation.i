@@ -50,8 +50,8 @@ CounterWithIndentation::on_end_of_file()
 }
 
 inline void    
-CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme,
-                               QUEX_CHARACTER_TYPE* LexemeEnd)
+CounterWithIndentation::icount(QUEX_TYPE_CHARACTER* Lexeme,
+                               QUEX_TYPE_CHARACTER* LexemeEnd)
 // Lexeme:    Pointer to first character of Lexeme.
 // LexemeEnd: Pointer to first character after Lexeme.
 //
@@ -95,9 +95,9 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme,
     //      column_number_at_end  = End_it - start_consideration_it
     //      line_number_at_end   += number of newlines from: Begin_it to: start_consideration_it
     //  
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
-    QUEX_CHARACTER_TYPE* Last  = LexemeEnd - 1;                
-    QUEX_CHARACTER_TYPE* it    = Last;
+    QUEX_TYPE_CHARACTER* Begin = (QUEX_TYPE_CHARACTER*)Lexeme;
+    QUEX_TYPE_CHARACTER* Last  = LexemeEnd - 1;                
+    QUEX_TYPE_CHARACTER* it    = Last;
 
     __quex_assert(Begin < LexemeEnd);   // LexemeLength >= 1: NEVER COMPROMISE THIS !
 
@@ -119,7 +119,7 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme,
 
     // (2) Find last newline in lexeme _______________________________________________
     //
-    QUEX_CHARACTER_TYPE* start_consideration_it = 0x0;
+    QUEX_TYPE_CHARACTER* start_consideration_it = 0x0;
     it = Last;
     while( it != Begin ) {
         // recall assert: no lexeme with len(Lexeme) == 0
@@ -177,14 +177,14 @@ CounterWithIndentation::icount(QUEX_CHARACTER_TYPE* Lexeme,
 
 
 inline void    
-CounterWithIndentation::icount_NoNewline(QUEX_CHARACTER_TYPE* Lexeme,
+CounterWithIndentation::icount_NoNewline(QUEX_TYPE_CHARACTER* Lexeme,
                                          const int            LexemeL)
 // Lexeme:    Pointer to first character of Lexeme.
 // LexemeEnd: Pointer to first character after Lexeme.
 {
     // NOTE: For an explanation of the algorithm, see the function:
     //       count_indentation(...).
-    QUEX_CHARACTER_TYPE* Begin = (QUEX_CHARACTER_TYPE*)Lexeme;
+    QUEX_TYPE_CHARACTER* Begin = (QUEX_TYPE_CHARACTER*)Lexeme;
 
     // (1) Last character == newline ? _______________________________________________
     //     [impossible, lexeme does never contain a newline]
@@ -240,9 +240,9 @@ CounterWithIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncr
 }
 
 inline void
-CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration_it, 
-                                                                   QUEX_CHARACTER_TYPE* Begin,
-                                                                   QUEX_CHARACTER_TYPE* End,
+CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHARACTER* start_consideration_it, 
+                                                                   QUEX_TYPE_CHARACTER* Begin,
+                                                                   QUEX_TYPE_CHARACTER* End,
                                                                    const bool           LicenseToCountF)
 // NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
 //       from the following function or implement it unconditionally, since the decision
@@ -252,7 +252,7 @@ CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTE
     //
     // -- whitespace from: start_consideration to first non-whitespace
     //    (indentation count is disabled if non-whitespace arrives)
-    QUEX_CHARACTER_TYPE* it = start_consideration_it;
+    QUEX_TYPE_CHARACTER* it = start_consideration_it;
     do { 
         if( *it != ' ' ) { 
             _indentation_count_enabled_f = false;
@@ -281,9 +281,9 @@ CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_CHARACTE
 }
 
 inline void
-CounterWithIndentation::__count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
-                                                QUEX_CHARACTER_TYPE* Begin,
-                                                QUEX_CHARACTER_TYPE* End, 
+CounterWithIndentation::__count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,
+                                                QUEX_TYPE_CHARACTER* Begin,
+                                                QUEX_TYPE_CHARACTER* End, 
                                                 const bool           LicenseToCountF)
 {
     // when inlined, this is a condition on a constant => deleted by compiler.

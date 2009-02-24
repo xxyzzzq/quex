@@ -143,10 +143,10 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
     if Language in ["ANSI-C", "ANSI-C-PlainMemory"]:
         test_case_str = "#define __QUEX_SETTING_PLAIN_C\n" + \
-                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
+                        "typedef unsigned char QUEX_TYPE_CHARACTER;\n"
     else:
         test_case_str = "/* #define __QUEX_SETTING_PLAIN_C */\n" + \
-                        "typedef unsigned char QUEX_CHARACTER_TYPE;\n"
+                        "typedef unsigned char QUEX_TYPE_CHARACTER;\n"
 
     return txt.replace("$$TEST_CASE$$", test_case_str)
 
@@ -187,8 +187,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode, 
                                  QuexBufferSize, CommentTestStrF, ShowPositionF, EndStr, MarkerCharList):
 
-    txt  = "#define QUEX_CHARACTER_TYPE uint8_t\n"
-    txt += "#define QUEX_TOKEN_ID_TYPE  bool\n"  
+    txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
+    txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/StrangeStream_unit_tests>\n"
     txt += "#endif\n"
@@ -200,8 +200,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "\n"
     txt += "bool\n"
     txt += "show_next_character(QuexBuffer* buffer) {\n"
-    txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position = 0x0;\n"
-    txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
+    txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;\n"
+    txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
     txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) == 0 ) {\n"
     txt += "        QuexBuffer_mark_lexeme_start(buffer);\n"
     txt += "        if( QuexAnalyser_buffer_reload_forward(buffer, &last_acceptance_input_position,\n"
@@ -222,10 +222,10 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "\n"
     txt += "bool  Mr_UnitTest_analyser_function(QuexAnalyser* me)\n"
     txt += "{\n"
-    txt += "    QUEX_CHARACTER_POSITION_TYPE* post_context_start_position    = 0x0;\n"
-    txt += "    QUEX_CHARACTER_POSITION_TYPE  last_acceptance_input_position = 0x0;\n"
+    txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
+    txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
     txt += "    const size_t                  PostContextStartPositionN      = 0;\n"
-    txt += "    QUEX_CHARACTER_TYPE           input                          = 0x0;\n"
+    txt += "    QUEX_TYPE_CHARACTER           input                          = 0x0;\n"
     txt += "ENTRY:\n"
     txt += "    /* Skip irrelevant characters */\n"
     txt += "    while(1 + 1 == 2) {\n" 
@@ -307,8 +307,8 @@ def action(PatternName):
     
 test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
-#define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_CHARACTER_TYPE)$$BUFFER_LIMIT_CODE$$)
-typedef int QUEX_TOKEN_ID_TYPE;              
+#define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
+typedef int QUEX_TYPE_TOKEN_ID;              
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 $$TEST_CASE$$

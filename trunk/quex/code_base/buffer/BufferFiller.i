@@ -43,7 +43,7 @@ namespace quex {
                                       size_t       (*tell_character_index)(QuexBufferFiller*),
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
-                                                                      QUEX_CHARACTER_TYPE* buffer, const size_t),
+                                                                      QUEX_TYPE_CHARACTER* buffer, const size_t),
                                       void         (*destroy)(QuexBufferFiller*))
     {
         __quex_assert(me != 0x0);
@@ -62,7 +62,7 @@ namespace quex {
     QuexBufferFiller_initial_load(QuexBuffer* buffer)
     {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
-        QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER* ContentFront = QuexBuffer_content_front(buffer);
         QuexBufferFiller*    me           = buffer->filler;
 
         /* Assume: Buffer initialization happens independently */
@@ -87,7 +87,7 @@ namespace quex {
     QuexBufferFiller_load_forward(QuexBuffer* buffer)
     {
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
-        QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER* ContentFront = QuexBuffer_content_front(buffer);
         /* PURPOSE: This function is to be called as a reaction to a buffer limit code 'BLC'
          *          as returned by 'get_forward()'. Its task is to load new content into the 
          *          buffer such that 'get_forward() can continue iterating. This means that the 
@@ -161,7 +161,7 @@ namespace quex {
         me->seek_character_index(me, buffer->_content_character_index_end);
         buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
-        QUEX_CHARACTER_TYPE* new_content_begin = ContentFront + FallBackN;
+        QUEX_TYPE_CHARACTER* new_content_begin = ContentFront + FallBackN;
         const size_t         LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
         
         /*___________________________________________________________________________________*/
@@ -226,19 +226,19 @@ namespace quex {
         /* (*) Copy fallback region*/
         /*     If there is no 'overlap' from source and drain than the faster memcpy() can */
         /*     used instead of memmove().*/
-        QUEX_CHARACTER_TYPE*  source = QuexBuffer_content_back(buffer) - FallBackN + 1; /* end of content - fallback*/
-        QUEX_CHARACTER_TYPE*  drain  = QuexBuffer_content_front(buffer);       
+        QUEX_TYPE_CHARACTER*  source = QuexBuffer_content_back(buffer) - FallBackN + 1; /* end of content - fallback*/
+        QUEX_TYPE_CHARACTER*  drain  = QuexBuffer_content_front(buffer);       
         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
         if( drain + FallBackN >= source  ) {
-            __QUEX_STD_memmove((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
+            __QUEX_STD_memmove((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_TYPE_CHARACTER));
         } else { 
-            __QUEX_STD_memcpy((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_CHARACTER_TYPE));
+            __QUEX_STD_memcpy((uint8_t*)drain, (uint8_t*)source, FallBackN * sizeof(QUEX_TYPE_CHARACTER));
         }
 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
         __QUEX_STD_memset((uint8_t*)(drain + FallBackN), (uint8_t)(0xFF), 
-                          (QuexBuffer_content_size(buffer) - FallBackN)*sizeof(QUEX_CHARACTER_TYPE)); 
+                          (QuexBuffer_content_size(buffer) - FallBackN)*sizeof(QUEX_TYPE_CHARACTER)); 
 #       endif
 
         __quex_assert(FallBackN < QuexBuffer_content_size(buffer));
@@ -254,7 +254,7 @@ namespace quex {
 #       ifdef QUEX_OPTION_ASSERTS
         const size_t         ContentSize  = QuexBuffer_content_size(buffer);
 #       endif
-        QUEX_CHARACTER_TYPE* ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER* ContentFront = QuexBuffer_content_front(buffer);
 
         __quex_assert( buffer->_memory._end_of_file_p == 0x0 || LoadedN + FallBackN == ContentSize );
         __quex_assert( DesiredLoadN != 0 );
@@ -324,8 +324,8 @@ namespace quex {
          * greater than normal (64 Bytes). After all, lexical analysis means
          * to go **mainly forward** and not backwards.  */
         __quex_assert(buffer != 0x0);
-        QUEX_CHARACTER_TYPE*   ContentFront = QuexBuffer_content_front(buffer);
-        QUEX_CHARACTER_TYPE*   ContentBack  = QuexBuffer_content_back(buffer);
+        QUEX_TYPE_CHARACTER*   ContentFront = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER*   ContentBack  = QuexBuffer_content_back(buffer);
 
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "BACKWARD(entry)");
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
@@ -456,16 +456,16 @@ namespace quex {
     __QuexBufferFiller_backward_copy_backup_region(QuexBuffer* buffer, const size_t BackwardDistance)
     {
         const size_t         ContentSize      = QuexBuffer_content_size(buffer);
-        QUEX_CHARACTER_TYPE* ContentFront     = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER* ContentFront     = QuexBuffer_content_front(buffer);
 
         /* (*) copy content that is already there to its new position.
          *     (copying is much faster then loading new content from file). */
         __QUEX_STD_memmove(ContentFront + BackwardDistance, ContentFront, 
-                           (ContentSize - BackwardDistance)*sizeof(QUEX_CHARACTER_TYPE));
+                           (ContentSize - BackwardDistance)*sizeof(QUEX_TYPE_CHARACTER));
 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-        __QUEX_STD_memset((uint8_t*)ContentFront, (uint8_t)(0xFF), BackwardDistance * sizeof(QUEX_CHARACTER_TYPE)); 
+        __QUEX_STD_memset((uint8_t*)ContentFront, (uint8_t)(0xFF), BackwardDistance * sizeof(QUEX_TYPE_CHARACTER)); 
 #       endif
     }
 
@@ -474,7 +474,7 @@ namespace quex {
     {
         /* -- end of file / end of buffer:*/
         if( buffer->_memory._end_of_file_p ) {
-            QUEX_CHARACTER_TYPE*   NewEndOfFileP = buffer->_memory._end_of_file_p + BackwardDistance;
+            QUEX_TYPE_CHARACTER*   NewEndOfFileP = buffer->_memory._end_of_file_p + BackwardDistance;
             if( NewEndOfFileP <= buffer->_memory._back ) 
                 QuexBuffer_end_of_file_set(buffer, NewEndOfFileP);
             else  
@@ -500,8 +500,8 @@ namespace quex {
             const size_t          MessageSize = 1024;
             uint8_t*              WEnd        = utf8_encoded_str + 512 - 7;
             uint8_t*              witerator   = utf8_encoded_str; 
-            QUEX_CHARACTER_TYPE*  End         = buffer->_memory._back; 
-            QUEX_CHARACTER_TYPE*  iterator    = buffer->_lexeme_start_p; 
+            QUEX_TYPE_CHARACTER*  End         = buffer->_memory._back; 
+            QUEX_TYPE_CHARACTER*  iterator    = buffer->_lexeme_start_p; 
             int                   utf8_length = 0;
             
             for(; witerator < WEnd &&  iterator != End ; ++iterator) {
@@ -555,7 +555,7 @@ namespace quex {
          *        the interpretation is best done using a buffer, we do this in chunks.      */ 
         size_t               remaining_character_n = ForwardN;
         const size_t         ChunkSize = QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE;
-        QUEX_CHARACTER_TYPE  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
+        QUEX_TYPE_CHARACTER  chunk[QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE];
 
         /* We CANNOT assume that end the end it will hold: 
          *
@@ -563,12 +563,12 @@ namespace quex {
          *
          * Because, we do not know wether the stream actually has so many characters.     */
         for(; remaining_character_n > ChunkSize; remaining_character_n -= ChunkSize )  
-            if( me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, ChunkSize) < ChunkSize ) {
+            if( me->read_characters(me, (QUEX_TYPE_CHARACTER*)chunk, ChunkSize) < ChunkSize ) {
                 __quex_assert(me->tell_character_index(me) <= TargetIndex);
                 return;
             }
         if( remaining_character_n ) 
-            me->read_characters(me, (QUEX_CHARACTER_TYPE*)chunk, remaining_character_n);
+            me->read_characters(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
        
         __quex_assert(me->tell_character_index(me) <= TargetIndex);
     }

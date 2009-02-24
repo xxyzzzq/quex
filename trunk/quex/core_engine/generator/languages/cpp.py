@@ -94,7 +94,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
              created additionally: 
 
                'EngineClassName'_init(EngineClassName* me,
-                                      QUEX_CHARACTER_TYPE StartInputPosition);
+                                      QUEX_TYPE_CHARACTER StartInputPosition);
 
                      This function has to be called before starting the lexing process.
                      See the unit tests for examples.
@@ -123,12 +123,12 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
 
     PostContextN = len(PostConditionedStateMachineID_List)
     local_variable_list.extend(
-            [ ["QUEX_GOTO_LABEL_TYPE",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
-              ["QUEX_CHARACTER_POSITION_TYPE", "last_acceptance_input_position", "(QUEX_CHARACTER_TYPE*)(0x00)"],
-              ["QUEX_CHARACTER_POSITION_TYPE", "post_context_start_position",    "(QUEX_CHARACTER_TYPE*)(0x00)", 
+            [ ["QUEX_TYPE_GOTO_LABEL",         "last_acceptance",                "QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE"],
+              ["QUEX_TYPE_CHARACTER_POSITION", "last_acceptance_input_position", "(QUEX_TYPE_CHARACTER*)(0x00)"],
+              ["QUEX_TYPE_CHARACTER_POSITION", "post_context_start_position",    "(QUEX_TYPE_CHARACTER*)(0x00)", 
                                                                                  PostContextN],
               ["const size_t",                 "PostContextStartPositionN",      "(size_t)" + repr(PostContextN)],
-              ["QUEX_CHARACTER_TYPE",          "input",                          "(QUEX_CHARACTER_TYPE)(0x00)"]
+              ["QUEX_TYPE_CHARACTER",          "input",                          "(QUEX_TYPE_CHARACTER)(0x00)"]
             ])
               
     # -- pre-condition fulfillment flags                

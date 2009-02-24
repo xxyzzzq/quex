@@ -11,7 +11,7 @@ main(int argc, char** argv)
     using namespace quex;
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("Load Backward: Character=%i Byte(s), Fallback=%i\n", 
-               sizeof(QUEX_CHARACTER_TYPE), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+               sizeof(QUEX_TYPE_CHARACTER), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
     FILE*         fh = prepare_input();
@@ -19,7 +19,7 @@ main(int argc, char** argv)
     const size_t  MemorySize = 12;
     const size_t  BeginIdx = 15;
 
-    fseek(fh, BeginIdx * sizeof(QUEX_CHARACTER_TYPE), SEEK_SET); 
+    fseek(fh, BeginIdx * sizeof(QUEX_TYPE_CHARACTER), SEEK_SET); 
 
     QuexBuffer_construct(&buffer, fh, QUEX_PLAIN, 0x0, MemorySize, 0);
 

@@ -1,4 +1,4 @@
-#define QUEX_CHARACTER_TYPE uint32_t
+#define QUEX_TYPE_CHARACTER uint32_t
 #include<iostream>
 #include<fstream>
 
@@ -24,7 +24,7 @@ main(int argc, char** argv)
     }
 
     const size_t         BufferSize = 512;
-    QUEX_CHARACTER_TYPE  buffer[BufferSize];
+    QUEX_TYPE_CHARACTER  buffer[BufferSize];
     size_t               loaded_character_n = 0;  
 
     if( strcmp(argv[1], "FILE") == 0 ) { 

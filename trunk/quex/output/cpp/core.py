@@ -148,7 +148,7 @@ def write_engine_header(Modes, Setup):
                 ["$$TOKEN_CLASS$$",                      Setup.input_token_class_name],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.input_token_class_file.replace("//","/")],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
-                ["$$QUEX_CHARACTER_TYPE$$",              quex_character_type_str],
+                ["$$QUEX_TYPE_CHARACTER$$",              quex_character_type_str],
                 ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],

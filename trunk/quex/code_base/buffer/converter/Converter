@@ -12,16 +12,16 @@ namespace quex {
                         const char* FromCodingName, const char* ToCodingName);  
         /* Opens internally a conversion handle for the conversion from 'FromCodingName'
          * to 'ToCodingName'. Pass '0x0' as 'ToCodingName' in order to indicate a conversion
-         * to unicode of size sizeof(QUEX_CHARACTER_TYPE). 
+         * to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
          *
          * It is the task of the particular implementation to provide the 'to coding'
-         * which is appropriate for sizeof(QUEX_CHARACTER_TYPE), i.e. ASCII, UCS2, UCS4.
+         * which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
          *
          */
 
         bool    (*convert)(struct QuexConverter_tag*, 
                            uint8_t**             source, const uint8_t*             SourceEnd, 
-                           QUEX_CHARACTER_TYPE** drain,  const QUEX_CHARACTER_TYPE* DrainEnd);
+                           QUEX_TYPE_CHARACTER** drain,  const QUEX_TYPE_CHARACTER* DrainEnd);
         /* Tries to convert all characters given in 'source' with the coding specified
          * earlier to _open(...). 'source' and 'drain' are passed as pointers to pointers
          * so that the pointers can be changed. This way the converter can inform the

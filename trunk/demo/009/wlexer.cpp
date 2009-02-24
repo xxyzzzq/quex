@@ -67,8 +67,8 @@ get_wfile_input()
     /* Normal File Input */
     cout << "## FILE* (stdio.h):\n";
     cout << "##    Note this works only when engine is generated with -b wchar_t (or no -b)\n";
-    cout << "##    and therefore QUEX_CHARACTER_TYPE == wchar_t.\n";
-    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(wchar_t));
+    cout << "##    and therefore QUEX_TYPE_CHARACTER == wchar_t.\n";
+    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
     return new quex::tiny_wlexer("wchar_t-example.txt");
 }
 
@@ -79,9 +79,9 @@ get_wstringstream_input()
     std::wstringstream    my_stream;
     cout << "## wstringstream:\n";
     cout << "##    Note this works only when engine is generated with -b wchar_t\n";
-    cout << "##    and therefore QUEX_CHARACTER_TYPE == wchar_t.\n";
+    cout << "##    and therefore QUEX_TYPE_CHARACTER == wchar_t.\n";
 
-    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(wchar_t));
+    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
     my_stream << L"bonjour le monde hello world hallo welt";
 

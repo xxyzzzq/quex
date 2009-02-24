@@ -13,7 +13,7 @@
 
 // IConv Coding Name for the internally used character coding. 
 // -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
-// -- never use a coding that requires more bytes than QUEX_CHARACTER_TYPE contains,
+// -- never use a coding that requires more bytes than QUEX_TYPE_CHARACTER contains,
 //    e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
 // Coding must be defined before the inclusion of 'definitions' since this file will
 // otherwise define a default value
@@ -38,15 +38,15 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 //
 // NOTE: If in parallel another engine is built with other bytes per character settings,
 //       then the engines will also include their own header with their own definition
-//       of QUEX_CHARACTER_TYPE. Thus there is no danger at all. 
+//       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
 //       Templatifying the lexer would be possible, but the author has in mind to bring out
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
 #include<quex/code_base/compatibility/inttypes.h>
-#define QUEX_CHARACTER_TYPE   $$QUEX_CHARACTER_TYPE$$
+#define QUEX_TYPE_CHARACTER   $$QUEX_TYPE_CHARACTER$$
 
 // TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it wont
-//                    override the QUEX_TOKEN_ID_TYPE.)
+//                    override the QUEX_TYPE_TOKEN_ID.)
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
@@ -298,21 +298,21 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         virtual ~CLASS();
 
         /* Direct Access to Memory */
-        bool                  buffer_copy(QUEX_CHARACTER_TYPE* Content, const size_t Size);
-        bool                  buffer_append(QUEX_CHARACTER_TYPE* Content, const size_t Size);
+        bool                  buffer_copy(QUEX_TYPE_CHARACTER* Content, const size_t Size);
+        bool                  buffer_append(QUEX_TYPE_CHARACTER* Content, const size_t Size);
         void                  buffer_prepare(const size_t CharacterN);
-        QUEX_CHARACTER_TYPE*  buffer_begin();
-        QUEX_CHARACTER_TYPE*  buffer_end();
+        QUEX_TYPE_CHARACTER*  buffer_begin();
+        QUEX_TYPE_CHARACTER*  buffer_end();
         const size_t          buffer_size();
-        QUEX_CHARACTER_TYPE*  buffer_text_end();
+        QUEX_TYPE_CHARACTER*  buffer_text_end();
         const size_t          buffer_distance_to_text_end();
         
         //
         // -- token stream: read next token
 #       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-        QUEX_TOKEN_ID_TYPE   get_token();
+        QUEX_TYPE_TOKEN_ID   get_token();
 #       else
-        QUEX_TOKEN_ID_TYPE   get_token($$TOKEN_CLASS$$*  result_p);
+        QUEX_TYPE_TOKEN_ID   get_token($$TOKEN_CLASS$$*  result_p);
         void                 get_token($$TOKEN_CLASS$$** result_pp);
 #       endif   
         //
@@ -343,10 +343,10 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // (*) Token sending
         void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const $$TOKEN_CLASS$$& That);
-        void        send(const QUEX_TOKEN_ID_TYPE TokenID);
-        void        send_n(const int N, const QUEX_TOKEN_ID_TYPE TokenID);
+        void        send(const QUEX_TYPE_TOKEN_ID TokenID);
+        void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
         template <typename ContentT> 
-        void        send(const QUEX_TOKEN_ID_TYPE TokenID, ContentT Content);
+        void        send(const QUEX_TYPE_TOKEN_ID TokenID, ContentT Content);
 
 
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING

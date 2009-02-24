@@ -4,12 +4,12 @@
 
 namespace quex { 
 inline void
-Accumulator::flush(const QUEX_TOKEN_ID_TYPE TokenID)
+Accumulator::flush(const QUEX_TYPE_TOKEN_ID TokenID)
 {
     if( _accumulated_text.length() == 0 ) return;
 
     _the_lexer->send(TokenID, _accumulated_text.c_str());
-    _accumulated_text = std::basic_string<QUEX_CHARACTER_TYPE>();
+    _accumulated_text = std::basic_string<QUEX_TYPE_CHARACTER>();
 }
 
 
@@ -17,11 +17,11 @@ inline void
 Accumulator::clear()
 {
     if( _accumulated_text.length() == 0 ) return;
-    _accumulated_text = std::basic_string<QUEX_CHARACTER_TYPE>();
+    _accumulated_text = std::basic_string<QUEX_TYPE_CHARACTER>();
 }
 
 inline void 
-Accumulator::add(const QUEX_CHARACTER_TYPE* ToBeAppended)
+Accumulator::add(const QUEX_TYPE_CHARACTER* ToBeAppended)
 { 
     if( _accumulated_text.length() == 0 ) {
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -36,7 +36,7 @@ Accumulator::add(const QUEX_CHARACTER_TYPE* ToBeAppended)
 
 
 inline void 
-Accumulator::add(const QUEX_CHARACTER_TYPE ToBeAppended)
+Accumulator::add(const QUEX_TYPE_CHARACTER ToBeAppended)
 { 
 
 #   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \

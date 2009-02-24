@@ -2,8 +2,8 @@
 #define __INCLUDE_GUARD_MY_TESTER_H__
 #include <quex/code_base/compatibility/inttypes.h>
 
-typedef uint8_t  QUEX_CHARACTER_TYPE;
-typedef uint8_t* QUEX_CHARACTER_POSITION_TYPE; 
+typedef uint8_t  QUEX_TYPE_CHARACTER;
+typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION; 
 
 #ifdef QUEX_OPTION_ASSERTS
 #   include <cassert>

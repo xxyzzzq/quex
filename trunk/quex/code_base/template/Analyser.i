@@ -50,7 +50,7 @@ namespace quex {
     QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
                                      QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                                      const size_t                 BufferMemorySize,
-                                     QUEX_CHARACTER_TYPE*         Memory      /* = 0x0 */,
+                                     QUEX_TYPE_CHARACTER*         Memory      /* = 0x0 */,
                                      const size_t                 ContentSize /* = 0 */)
     {
         QuexBuffer_construct_wo_filler(&me->buffer, BufferMemorySize, Memory, ContentSize);
@@ -99,12 +99,12 @@ namespace quex {
 
     QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_forward(QuexBuffer* buffer, 
-                                       QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position,
-                                       QUEX_CHARACTER_POSITION_TYPE* post_context_start_position,
+                                       QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                       QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                        const size_t                  PostContextN)
     {
-        QUEX_CHARACTER_POSITION_TYPE* iterator = 0x0;
-        QUEX_CHARACTER_POSITION_TYPE* End = post_context_start_position + PostContextN;
+        QUEX_TYPE_CHARACTER_POSITION* iterator = 0x0;
+        QUEX_TYPE_CHARACTER_POSITION* End = post_context_start_position + PostContextN;
 
         if( buffer->filler == 0x0 ) return false;
         if( buffer->_memory._end_of_file_p != 0x0 ) return false;
@@ -113,7 +113,6 @@ namespace quex {
 
         if( *last_acceptance_input_position != 0x0 ) { 
             *last_acceptance_input_position -= LoadedCharacterN;
-            /* QUEX_DEBUG_ADR_ASSIGNMENT("last_acceptance_input_position", *last_acceptance_input_position); */
         }                                                                  
         for(iterator = post_context_start_position; iterator != End; ++iterator) {
             /* NOTE: When the post_context_start_position is still undefined the following operation may

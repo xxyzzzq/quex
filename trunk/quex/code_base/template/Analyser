@@ -43,7 +43,7 @@ namespace quex {
     QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
                                      QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                                      const size_t                 BufferMemorySize,
-                                     QUEX_CHARACTER_TYPE*         Memory      /* = 0x0 */,
+                                     QUEX_TYPE_CHARACTER*         Memory      /* = 0x0 */,
                                      const size_t                 ContentSize /* = 0   */);
 
     QUEX_INLINE void 
@@ -57,8 +57,8 @@ namespace quex {
 
     QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_forward(QuexBuffer* buffer, 
-                                       QUEX_CHARACTER_POSITION_TYPE* last_acceptance_input_position,
-                                       QUEX_CHARACTER_POSITION_TYPE* post_context_start_position,
+                                       QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
+                                       QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                        const size_t                  PostContextN);
 
 

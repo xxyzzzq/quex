@@ -44,7 +44,7 @@ namespace quex {
         return;
     }
 
-    inline QUEX_TOKEN_ID_TYPE
+    inline QUEX_TYPE_TOKEN_ID
     CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME* result_p) 
     {
         __QUEX_SETTING_TOKEN_CLASS_NAME* tmp = 0x0;

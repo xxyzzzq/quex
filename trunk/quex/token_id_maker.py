@@ -73,15 +73,15 @@ $$CONTENT$$
 func_str = \
 """
     inline const std::string&
-    $$TOKEN_CLASS$$::map_id_to_name(const QUEX_TOKEN_ID_TYPE TokenID)
+    $$TOKEN_CLASS$$::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
        static bool virginity_f = true;
-       static std::map<QUEX_TOKEN_ID_TYPE, std::string>  db;
+       static std::map<QUEX_TYPE_TOKEN_ID, std::string>  db;
        static std::string  error_string("");
        static std::string  uninitialized_string("<UNINITIALIZED>");
        static std::string  termination_string("<TERMINATION>");
        
-       // NOTE: In general no assumptions can be made that the QUEX_TOKEN_ID_TYPE
+       // NOTE: In general no assumptions can be made that the QUEX_TYPE_TOKEN_ID
        //       is an integer. Thus, no switch statement is used. 
        if( virginity_f ) {
            virginity_f = false;
@@ -91,7 +91,7 @@ func_str = \
 
        if     ( TokenID == __QUEX_TOKEN_ID_TERMINATION ) return termination_string;
        else if( TokenID == __QUEX_TOKEN_ID_UNINITIALIZED ) return uninitialized_string;
-       std::map<QUEX_TOKEN_ID_TYPE, std::string>::const_iterator it = db.find(TokenID);
+       std::map<QUEX_TYPE_TOKEN_ID, std::string>::const_iterator it = db.find(TokenID);
        if( it != db.end() ) return (*it).second;
        else {
           char tmp[64];
@@ -188,7 +188,7 @@ def output(global_setup):
             token_info = lexer_mode.token_id_db[token_name] 
             if token_info.number == None: 
                 token_info.number = i; i+= 1
-            token_id_txt += "#define %s%s %s((QUEX_TOKEN_ID_TYPE)%i)\n" % (setup.token_prefix,
+            token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_prefix,
                                                                            token_name, space(token_name), 
                                                                            token_info.number)
     # NO LONGER: token_id_txt += "} // namespace quex\n" 

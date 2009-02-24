@@ -38,7 +38,7 @@ namespace quex {
 
         /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)*/
         size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
-                                    QUEX_CHARACTER_TYPE* memory, const size_t N);
+                                    QUEX_TYPE_CHARACTER* memory, const size_t N);
 
         /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
          *    to lexeme end exceeds the buffer size.  */
@@ -54,7 +54,7 @@ namespace quex {
                                       size_t       (*tell_character_index)(QuexBufferFiller*),
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
-                                                                      QUEX_CHARACTER_TYPE* buffer, const size_t),
+                                                                      QUEX_TYPE_CHARACTER* buffer, const size_t),
                                       void         (*destroy)(QuexBufferFiller*));
     QUEX_INLINE void    QuexBufferFiller_destroy(QuexBufferFiller*); 
 

@@ -10,9 +10,9 @@ namespace quex {
         Counter(const Counter&);
         void  init();
 
-        void  count(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
+        void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
         void  count_NoNewline(const int CharacterN);
-        void  count_FixNewlineN(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End,
+        void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
                                 const int LineNIncrement);
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         int  _line_number_at_begin;   // line where current pattern starts
@@ -25,11 +25,11 @@ namespace quex {
 
         // (*) helper functions
         void  __shift_end_values_to_start_values();
-        void  __count_newline_n_backwards(QUEX_CHARACTER_TYPE* it,
-                                          QUEX_CHARACTER_TYPE* Begin);
+        void  __count_newline_n_backwards(QUEX_TYPE_CHARACTER* it,
+                                          QUEX_TYPE_CHARACTER* Begin);
 
-        QUEX_CHARACTER_TYPE* __count_chars_to_newline_backwards(QUEX_CHARACTER_TYPE* Begin,
-                                                                QUEX_CHARACTER_TYPE* End,
+        QUEX_TYPE_CHARACTER* __count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,
+                                                                QUEX_TYPE_CHARACTER* End,
                                                                 const int    LexemeLength,
                                                                 const bool   LicenseToIncrementLineCountF=false);
     };
@@ -41,9 +41,9 @@ namespace quex {
         CounterPseudo(const CounterPseudo&) { }
         void  init() { }
 
-        void  count(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End) { }
+        void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End) { }
         void  count_NoNewline(const int CharacterN) { }
-        void  count_FixNewlineN(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End,
+        void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
                                 const int LineNIncrement) { }
         void  __shift_end_values_to_start_values() { }
     };
@@ -57,8 +57,8 @@ namespace quex {
 
         void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 
-        void  icount(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE*  End);
-        void  icount_NoNewline(QUEX_CHARACTER_TYPE* Begin, const int CharacterN);
+        void  icount(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER*  End);
+        void  icount_NoNewline(QUEX_TYPE_CHARACTER* Begin, const int CharacterN);
         void  icount_NoNewline_NeverStartOnWhitespace(const int CharacterN);
         void  icount_NoNewline_ContainsOnlySpace(const int CharacterN);
 
@@ -69,14 +69,14 @@ namespace quex {
         bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
 
         // (*) Helper functions
-        void  __count_indentation_aux(QUEX_CHARACTER_TYPE* start_consideration_it,
-                                      QUEX_CHARACTER_TYPE* Begin,
-                                      QUEX_CHARACTER_TYPE* End, 
+        void  __count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,
+                                      QUEX_TYPE_CHARACTER* Begin,
+                                      QUEX_TYPE_CHARACTER* End, 
                                       const bool       LicenseToCountF);
 
-        void  __count_whitespace_to_first_non_whitespace(QUEX_CHARACTER_TYPE* start_consideration, 
-                                                         QUEX_CHARACTER_TYPE* Begin,
-                                                         QUEX_CHARACTER_TYPE* End,
+        void  __count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHARACTER* start_consideration, 
+                                                         QUEX_TYPE_CHARACTER* Begin,
+                                                         QUEX_TYPE_CHARACTER* End,
                                                          const bool       LicenseToCountF);
     };
 }

@@ -14,11 +14,11 @@ hwut-info:
 	@echo $(TEST_FILES)
 
 strange_stream.exe: strange_stream.cpp $(QUEX_CORE)
-	g++ -DQUEX_CHARACTER_TYPE=uint8_t \
+	g++ -DQUEX_TYPE_CHARACTER=uint8_t \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 strange_wstream.exe: strange_wstream.cpp $(QUEX_CORE)
-	g++ -DQUEX_CHARACTER_TYPE=wchar_t \
+	g++ -DQUEX_TYPE_CHARACTER=wchar_t \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 

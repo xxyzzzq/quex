@@ -11,7 +11,7 @@ main(int argc, char** argv)
     using namespace quex;
     if( cl_has(argc, argv, "--hwut-info") ) {
         printf("Load Forward: Character=%i Byte(s), Fallback=%i\n", 
-               sizeof(QUEX_CHARACTER_TYPE), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+               sizeof(QUEX_TYPE_CHARACTER), (int)QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
         return 0;
     }
     FILE*                         fh = prepare_input();

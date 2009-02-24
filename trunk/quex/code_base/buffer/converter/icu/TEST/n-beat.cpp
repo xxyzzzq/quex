@@ -17,7 +17,7 @@ main(int argc, char** argv)
         cout << "SAME;\n";
         return 0;
     }
-    assert(sizeof(QUEX_CHARACTER_TYPE) == 4);
+    assert(sizeof(QUEX_TYPE_CHARACTER) == 4);
 
     if( argc < 2 )  {
         printf("Missing choice argument. Use --hwut-info\n");
@@ -30,7 +30,7 @@ main(int argc, char** argv)
     memory_size = argv[1][0] - '0';
     assert(memory_size >= 1);
     assert(memory_size <= 9);
-    QUEX_CHARACTER_TYPE  memory[memory_size];
+    QUEX_TYPE_CHARACTER  memory[memory_size];
 
     QuexBufferFiller_Converter<FILE>* filler = \
         QuexBufferFiller_Converter_ICU_new(fh, "UTF8", 0x0, RawMemorySize);
@@ -38,7 +38,7 @@ main(int argc, char** argv)
     size_t loaded_n = 0;
     do {
         loaded_n = filler->base.read_characters(&filler->base, 
-                                               (QUEX_CHARACTER_TYPE*)memory, memory_size);
+                                               (QUEX_TYPE_CHARACTER*)memory, memory_size);
 
         cout << "## loaded character n = " << loaded_n << endl;
      

@@ -94,7 +94,7 @@
 [QUEX_CHARACTER_POSITION]
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/MemoryPositionMimiker:56: here
     /home/fschaef/prj/quex/trunk/quex/code_base/template/TEST/my_tester.h:6: here
-[QUEX_CHARACTER_POSITION_TYPE]
+[QUEX_TYPE_CHARACTER_POSITION]
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/Buffer:48: here
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/Buffer:50: here
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/Buffer:114: here
@@ -118,7 +118,7 @@
     /home/fschaef/prj/quex/trunk/quex/core_engine/generator/TEST/generator_test.py:204: here
     /home/fschaef/prj/quex/trunk/quex/core_engine/generator/TEST/generator_test.py:225: here
     /home/fschaef/prj/quex/trunk/quex/core_engine/generator/TEST/generator_test.py:226: here
-[QUEX_CHARACTER_TYPE]
+[QUEX_TYPE_CHARACTER]
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/BufferFiller:41: here
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/BufferFiller:57: here
     /home/fschaef/prj/quex/trunk/quex/code_base/buffer/Buffer:22: here
@@ -545,7 +545,7 @@
     /home/fschaef/prj/quex/trunk/quex/code_base/template/constructor.i:156: here
     /home/fschaef/prj/quex/trunk/quex/code_base/template/constructor.i:179: here
     /home/fschaef/prj/quex/trunk/quex/core_engine/generator/languages/cpp.py:246: here
-[QUEX_GOTO_LABEL_TYPE]
+[QUEX_TYPE_GOTO_LABEL]
     /home/fschaef/prj/quex/trunk/quex/core_engine/generator/languages/cpp.py:126: here
 [QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE]
     /home/fschaef/prj/quex/trunk/quex/core_engine/generator/languages/cpp.py:126: here
@@ -1240,7 +1240,7 @@
     /home/fschaef/prj/quex/trunk/quex/output/c/core.py:128: here
 [QUEX_TKN_]
     /home/fschaef/prj/quex/trunk/quex/input/setup.py:32: here
-[QUEX_TOKEN_ID_TYPE]
+[QUEX_TYPE_TOKEN_ID]
     /home/fschaef/prj/quex/trunk/quex/token_id_maker.py:76: here
     /home/fschaef/prj/quex/trunk/quex/token_id_maker.py:79: here
     /home/fschaef/prj/quex/trunk/quex/token_id_maker.py:84: here

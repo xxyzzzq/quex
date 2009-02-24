@@ -14,6 +14,8 @@ forsaken_list = [
 
 file = ""
 
+prefix_list = ["QUEX", "__QUEX" ]
+
 def add_finding(OptionName, FileName, LineN):
     global unique_option_db
 
@@ -25,12 +27,11 @@ def add_finding(OptionName, FileName, LineN):
 def extract_options(Txt):
     global unique_option_db
     global file_name
+    global prefix_list
 
-    for name, line_n in extract_identifiers_with_specific_prefix(Txt, "QUEX"):
-        add_finding(name, file_name, line_n)
-
-    for name, line_n in extract_identifiers_with_specific_prefix(Txt, "__QUEX"):
-        add_finding(name, file_name, line_n)
+    for prefix in prefix_list:
+        for name, line_n in extract_identifiers_with_specific_prefix(Txt, prefix):
+            add_finding(name, file_name, line_n)
 
 def extension(Filename):
     i = Filename.rfind(".")
@@ -58,9 +59,15 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
         extract_options(fh.read())
         fh.close()
 
+if "user" in sys.argv:
+    prefix_list = ["QUEX_SETTING", "QUEX_OPTION", "QUEX_TYPE"]
+
 the_list = unique_option_db.items()
 the_list.sort()
 for key, finding_list in the_list:
-    print "[%s]" % key
-    for file_name, line_n in finding_list:
-        print "    %s:%i: here" % (file_name, line_n)
+    if "user" in sys.argv:
+        print ".. macro:: %s" % key
+    else:
+        for file_name, line_n in finding_list:
+            print "    %s:%i: here" % (file_name, line_n)
+

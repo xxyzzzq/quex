@@ -40,7 +40,7 @@ __cpp_function_header = \
 #if defined QUEX_ANALYSER_STREAM_BASED
 #    define QUEX_ANALYSER_FUNC_ARGS     std::istream&  stream
 #    define QUEX_ANALYSER_RETURN_TYPE   int
-#    define QUEX_CHARACTER_TYPE         int
+#    define QUEX_TYPE_CHARACTER         int
 #    define QUEX_CHARACTER_POSITION   std::istream::pos_type
 #    define QUEX_STREAM_GET(character)  (character = stream.get())
 #    define QUEX_STREAM_TELL(position)  (position = stream.tellg())
@@ -54,7 +54,7 @@ __cpp_function_header = \
 */
 #    define QUEX_ANALYSER_FUNC_ARGS     unsigned char** char_pp
 #    define QUEX_ANALYSER_RETURN_TYPE   int
-#    define QUEX_CHARACTER_TYPE         unsigned char
+#    define QUEX_TYPE_CHARACTER         unsigned char
 #    define QUEX_CHARACTER_POSITION   unsigned char*
 #    define QUEX_STREAM_GET(character)  character = (**char_pp); ++(*char_pp); 
 #    define QUEX_STREAM_TELL(position)  position = *char_pp;
@@ -65,7 +65,7 @@ __cpp_function_header = \
 // Each element in the vector contains a unicode character
 #    define QUEX_ANALYSER_FUNC_ARGS     std::vector<int>::iterator& it
 #    define QUEX_ANALYSER_RETURN_TYPE   int
-#    define QUEX_CHARACTER_TYPE         int
+#    define QUEX_TYPE_CHARACTER         int
 #    define QUEX_CHARACTER_POSITION   std::vector<int>::iterator
 #    define QUEX_STREAM_GET(character)  character = (*it); ++it; 
 #    define QUEX_STREAM_TELL(position)  position = it;
@@ -76,7 +76,7 @@ QUEX_ANALYSER_RETURN_TYPE
 $$QUEX_ANALYZER_FUNCTION_NAME$$(QUEX_ANALYSER_FUNC_ARGS) {
     int                        last_acceptance = -1;
     QUEX_CHARACTER_POSITION  last_acceptance_input_position = (QUEX_CHARACTER_POSITION)(0x00);
-    QUEX_CHARACTER_TYPE        input = (QUEX_CHARACTER_TYPE)(0x00);\n
+    QUEX_TYPE_CHARACTER        input = (QUEX_TYPE_CHARACTER)(0x00);\n
 """
 def __cpp_analyser_function(FunctionName, function_body):   
     txt = __cpp_function_header.replace("$$QUEX_ANALYZER_FUNCTION_NAME$$", 

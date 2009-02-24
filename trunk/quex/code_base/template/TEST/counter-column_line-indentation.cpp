@@ -29,7 +29,7 @@ void
 test(const char* TestString, CounterWithIndentation& x)
 {
     x.__shift_end_values_to_start_values();
-    x.icount((QUEX_CHARACTER_TYPE*)TestString, (QUEX_CHARACTER_TYPE*)TestString + strlen(TestString));
+    x.icount((QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
@@ -46,7 +46,7 @@ main(int  argc, char** argv)
         return 0;
     }
 
-    // x.__buffer->__the_end = (QUEX_CHARACTER_TYPE*)0xFFFFFFFFL;
+    // x.__buffer->__the_end = (QUEX_TYPE_CHARACTER*)0xFFFFFFFFL;
 
     // indentation[i] is going to be filled by: mini_mode::on_indentation(my_tester* x, int Indentation) 
     for(int i=0; i < 64; ++i) indentation[i] = 66;

@@ -13,7 +13,7 @@ main(int argc, char** argv)
     }
 
     std::wstringstream    sh;
-    assert(sizeof(QUEX_CHARACTER_TYPE) == sizeof(wchar_t));
+    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
     sh << L"Fest gemauert in der Erden";
 

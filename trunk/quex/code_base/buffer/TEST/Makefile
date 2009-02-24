@@ -25,12 +25,12 @@ hwut-info:
 	@echo $(TEST_FILES)
 
 %.exe: %.cpp $(QUEX_CORE)
-	g++ -DQUEX_CHARACTER_TYPE=uint8_t \
+	g++ -DQUEX_TYPE_CHARACTER=uint8_t \
 		-Wall \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 
 %-32.exe: %.cpp $(QUEX_CORE)
-	g++ -DQUEX_CHARACTER_TYPE=uint32_t \
+	g++ -DQUEX_TYPE_CHARACTER=uint32_t \
 		-Wall \
 		-ggdb -I$(QUEX_PATH) $(DEFS) $< -o $@
 

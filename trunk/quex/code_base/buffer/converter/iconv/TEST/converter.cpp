@@ -5,7 +5,7 @@ using namespace std;
 using namespace quex;
 
 int get_input(char* Choice, uint8_t* buffer, size_t BufferSize);
-void print_content(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End);
+void print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
 
 int cl_has(int argc, char** argv, const char* What)
 { return argc > 1 && strcmp(argv[1], What) == 0; }
@@ -14,7 +14,7 @@ int
 main(int argc, char** argv)
 {
     if( cl_has(argc, argv, "--hwut-info") ) {
-        printf("Converter: Plain %i bit;\n", (int)(8*sizeof(QUEX_CHARACTER_TYPE)));
+        printf("Converter: Plain %i bit;\n", (int)(8*sizeof(QUEX_TYPE_CHARACTER)));
         /* Please, use the ICU converter utility to find correct ICU coding names:
          * http://demo.icu-project.org/icu-bin/convexp?s=IANA                       */
         printf("CHOICES:   UTF-8, UTF-16;\n");
@@ -29,7 +29,7 @@ main(int argc, char** argv)
     QuexConverter*  converter = QuexConverter_IConv_new();
     /* (1) opening the converter
      *     'UTF-32' == 'ISO-10646-UCS-4' in IANA */
-    switch( sizeof(QUEX_CHARACTER_TYPE) ) {
+    switch( sizeof(QUEX_TYPE_CHARACTER) ) {
     case 4: converter->open(converter, argv[1], 0x0); break;
     case 2: converter->open(converter, argv[1], 0x0); break;
     }
@@ -38,8 +38,8 @@ main(int argc, char** argv)
     const size_t Size = 16384;
     uint8_t      in[Size];
     uint8_t*     in_iterator = in;
-    QUEX_CHARACTER_TYPE     out[Size];
-    QUEX_CHARACTER_TYPE*    out_iterator = out;
+    QUEX_TYPE_CHARACTER     out[Size];
+    QUEX_TYPE_CHARACTER*    out_iterator = out;
 
     const size_t ContentSize = get_input(argv[1], in, Size);
     if( ContentSize == 0 ) return -1;
@@ -62,11 +62,11 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 {
     const char* filename = 0x0;
     if ( strcmp("UTF-8",  Choice) == 0 ) {
-        if( sizeof(QUEX_CHARACTER_TYPE) == 4 ) filename = "example-32.utf8";
+        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "example-32.utf8";
         else                                   filename = "example-16.utf8";
     }
     else if( strcmp("UTF-16", Choice) == 0 ) {
-        if( sizeof(QUEX_CHARACTER_TYPE) == 4 ) filename = "example-32.utf16";
+        if( sizeof(QUEX_TYPE_CHARACTER) == 4 ) filename = "example-32.utf16";
         else                                   filename = "example-16.utf16";
     }
     else {
@@ -91,19 +91,19 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 }
 
 void 
-print_content(QUEX_CHARACTER_TYPE* Begin, QUEX_CHARACTER_TYPE* End)
+print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
 {
     uint8_t   utf8_c[10];
     size_t    utf8_c_length = (size_t)-1;
     assert(End > Begin);
 
     size_t    i = 0;
-    for(QUEX_CHARACTER_TYPE* iterator = Begin; iterator != End; ++iterator, ++i) {
+    for(QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++iterator, ++i) {
         utf8_c_length         = quex::Quex_unicode_to_utf8(*iterator, utf8_c);
         utf8_c[utf8_c_length] = '\0';
 
-        printf("$%04X: ", (int)i * sizeof(QUEX_CHARACTER_TYPE));
-        switch( sizeof(QUEX_CHARACTER_TYPE) ) {
+        printf("$%04X: ", (int)i * sizeof(QUEX_TYPE_CHARACTER));
+        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
         default:
             assert(false);
         case 4:

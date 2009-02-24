@@ -31,7 +31,7 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_seek_character_index(QuexBufferFiller* alter_ego, 
                                                                                const size_t      CharacterIndex); 
     TEMPLATE_IN(InputHandleT) size_t __BufferFiller_Plain_read_characters(QuexBufferFiller*    alter_ego,
-                                                                          QUEX_CHARACTER_TYPE* start_of_buffer, 
+                                                                          QUEX_TYPE_CHARACTER* start_of_buffer, 
                                                                           const size_t         N);
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego);
 
@@ -82,7 +82,7 @@ namespace quex {
 #      ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
        return me->_character_index;
 #      endif
-       return (size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_CHARACTER_TYPE);
+       return (size_t)(me->_last_stream_position - me->start_position) / sizeof(QUEX_TYPE_CHARACTER);
     }
 
 #   if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)
@@ -98,7 +98,7 @@ namespace quex {
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
         __quex_assert(me->ih != 0x0); 
 
-        long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_CHARACTER_TYPE) + me->start_position); 
+        long avoid_tmp_arg = (long)(CharacterIndex * sizeof(QUEX_TYPE_CHARACTER) + me->start_position); 
         QUEX_INPUT_POLICY_SEEK(me->ih, InputHandleT, avoid_tmp_arg);
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
     }
@@ -127,7 +127,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) size_t   
     __BufferFiller_Plain_read_characters(QuexBufferFiller*    alter_ego,
-                                         QUEX_CHARACTER_TYPE* buffer_memory, const size_t N)  
+                                         QUEX_TYPE_CHARACTER* buffer_memory, const size_t N)  
     { 
         __quex_assert(alter_ego != 0x0); 
         __quex_assert(buffer_memory != 0x0); 
@@ -135,16 +135,16 @@ namespace quex {
          * work with the first argument being of base class type. */
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
 #       ifdef QUEX_OPTION_ASSERTS
-        __QUEX_STD_memset((uint8_t*)buffer_memory, 0xFF, N * sizeof(QUEX_CHARACTER_TYPE));
+        __QUEX_STD_memset((uint8_t*)buffer_memory, 0xFF, N * sizeof(QUEX_TYPE_CHARACTER));
 #       endif
 
         __quex_assert(me->ih != 0x0); 
         const size_t ByteN = QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, 
-                                                          buffer_memory, N * sizeof(QUEX_CHARACTER_TYPE));
+                                                          buffer_memory, N * sizeof(QUEX_TYPE_CHARACTER));
 
-        if( ByteN % sizeof(QUEX_CHARACTER_TYPE) != 0 ) 
+        if( ByteN % sizeof(QUEX_TYPE_CHARACTER) != 0 ) 
             QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
-        const size_t   CharacterN = ByteN / sizeof(QUEX_CHARACTER_TYPE); 
+        const size_t   CharacterN = ByteN / sizeof(QUEX_TYPE_CHARACTER); 
 
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index += CharacterN;

@@ -12,7 +12,7 @@ main(int argc, char** argv)
 
     // (*) create token
     quex::Token        Token;
-    QUEX_TOKEN_ID_TYPE token_id = __QUEX_TOKEN_ID_UNINITIALIZED;
+    QUEX_TYPE_TOKEN_ID token_id = __QUEX_TOKEN_ID_UNINITIALIZED;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::Simple*  qlex = new quex::Simple(argc == 1 ? "example.txt" : argv[1]);
