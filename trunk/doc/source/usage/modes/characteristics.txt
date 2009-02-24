@@ -106,7 +106,10 @@ The possible options for modes to be specifiedare the following.
       }
 
     Any character set expression as mentioned in <<section>> can be defined 
-    in the skip option.
+    in the skip option. Skipper have the advantage that they are faster than
+    equivalent implementations with patterns. Further, they reduce the 
+    requirements on the buffer size. Skipped regions can be larger than
+    the buffer size. Lexemes need be smaller or equal the buffer size.
 
 .. data:: <skip_range: start-string end-string>
 

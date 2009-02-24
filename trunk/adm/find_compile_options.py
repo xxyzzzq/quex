@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import os
+import sys
 from quex.frs_py.file_in import extract_identifiers_with_specific_prefix
 
 unique_option_db = {}
@@ -38,6 +39,9 @@ def extension(Filename):
     if i == -1: return ""
     else:       return Filename[i:]
 
+if "user" in sys.argv:
+    prefix_list = ["QUEX_SETTING", "QUEX_OPTION", "QUEX_TYPE"]
+
 for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
     if root.find(".svn")        != -1: continue
     if root.find("/TEST/OUT/")  != -1: continue
@@ -59,15 +63,11 @@ for root, dir_list, file_list in os.walk(os.environ["QUEX_PATH"] + "/quex"):
         extract_options(fh.read())
         fh.close()
 
-if "user" in sys.argv:
-    prefix_list = ["QUEX_SETTING", "QUEX_OPTION", "QUEX_TYPE"]
-
 the_list = unique_option_db.items()
 the_list.sort()
 for key, finding_list in the_list:
-    if "user" in sys.argv:
-        print ".. macro:: %s" % key
-    else:
+    print ".. cmacro:: %s" % key
+    if "user" not in sys.argv:
         for file_name, line_n in finding_list:
             print "    %s:%i: here" % (file_name, line_n)
 

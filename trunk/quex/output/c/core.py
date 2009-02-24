@@ -102,8 +102,6 @@ def do(Modes, setup):
     txt = set_switch(txt, setup.plain_memory_f,    "__QUEX_CORE_OPTION_PLAIN_MEMORY_BASED")     
     txt = set_switch(txt, True,                    "__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
     txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      
-    txt = set_switch(txt, False,                   "QUEX_OPTION_NO_LINE_NUMBER_COUNTING")       
-    txt = set_switch(txt, False,                   "QUEX_OPTION_NO_COLUMN_NUMBER_COUNTING")     
     
     txt = blue_print(txt,
                      [
