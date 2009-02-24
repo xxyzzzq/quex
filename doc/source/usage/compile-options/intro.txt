@@ -14,13 +14,35 @@ lexical analyzer engine. The compile options split into the following groups
        QUEX_OPTION_ ... _DISABLED
 
    If this option is set than any setting is outruled, even those that have 
-   been set by quex.
+   been set by quex. To disable asserts for example the compiler is called
+   like this::
+
+      $CC ... -DQUEX_OPTION_ASSERTS_DISABLED
+
+   The disablement of asserts is, by the way, essential to high performance
+   lexical analysis.
 
 .. cmacro:: QUEX_SETTING_ ...
 
-   These macros contain a value that is expanded in the code of quex. 
+   These macros contain a value that is expanded in the code of quex. This can
+   for example be used to set the buffer size with::
+
+      $CC ... -DQUEX_SETTING_BUFFER_SIZE=4096
 
 .. cmacro:: QUEX_TYPE_ ...
 
-   By means of those macros types are defined.
+   By means of those macros types are defined. The following overides quex's
+   definition for the internal character type::
 
+      $CC ... -DQUEX_TYPE_CHARACTER=UChar
+
+
+None of the following compile options is necessary to get a working analyser.
+Indeed, many of them are already controlled by quex. Nevertheless, they provide
+toolset for fine tuning or adaptions to less regular system constraints.
+
+..  toctree:: 
+    
+    options.txt 
+    settings.txt 
+    types.txt
