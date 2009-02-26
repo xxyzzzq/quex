@@ -25,9 +25,9 @@ demonstrated in the following chapters.
 
 .. _fig-lexical-analyser:
 
-.. image:: ../figures/lexical-analysis-process-text-to-path.*
-   :align: center
-   :alt:   Process of lexical analysis.
+.. figure:: ../figures/lexical-analysis-process-text-to-path.*
+   
+   Process of lexical analysis.
 
 The following features distinguish quex from the traditional lexical
 analysers such as lex or flex:

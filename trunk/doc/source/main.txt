@@ -7,10 +7,13 @@ Contents:
 
 .. toctree::
 
+   :maxdepth: 3
+
    intro/intro.txt
    basics/intro.txt
    usage/intro.txt
    invocation/intro.txt
+   character-encoding/intro.txt
 
 
 Indices and tables
