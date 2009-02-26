@@ -73,13 +73,13 @@ patterns have to high priority.
 
 .. _fig-avoid-PRIORITY-MARK:
 
-.. image:: ../../figures/avoid-PRIORITY-MARK-1.*
-   :align: center
-   :alt:   Solving conflicts with ``PRIORITY-MARK``.
+.. figure:: ../../figures/avoid-PRIORITY-MARK-1.*
+
+   Solving conflicts with ``PRIORITY-MARK``.
 
 .. image:: ../../figures/avoid-PRIORITY-MARK-2.*
-   :align: center
-   :alt:   Avoiding the ``PRIORITY-MARK`` by re-design.
+
+   Avoiding the ``PRIORITY-MARK`` by re-design.
 
 DELETION
 --------
