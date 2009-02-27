@@ -1,87 +1,112 @@
-User Defined Converters
-=======================
+User Implemented Converters
+===========================
+
+For 'normal' applications the provided converters provide enough performance
+and a sufficiently low memory footprint. There is no need for the user to
+implement special converters. However, it might become interesting when it
+comes to tuning.  If someone knows that the UTF-8 encoding mostly reads
+characters from a specific code page it is possible to provide an optimized
+converter that is able to speed up a bit the total time for lexical analysis.
+Also, by means of this feature it is possible to scan personalized encodings. 
 
 Converters can be added to the quex engine very much in a plug-and-play manner.
-Nevertheless, this section is considered to be read by advanced users. If someone
-knows that the UTF-8 encoding mostly reads characters from a specific code page
-it is possible to provide an optimized converter that is able to speed up a bit
-the total time for lexical analysis. Also, by means of this feature it is possible
-to scan personalized encodings. A converter for a buffer filler is an object
-that contains the following function pointers in a simplified manner, without
-precise argument typing:
+Nevertheless, this section is considered to be read by advanced users. Also,
+the effort required for implementing and testing a dedicated converter might
+exceed the time budgets of many projects. Lexical analyzers can be generated
+with quex, literally, in minutes. Implementing personalized converters together
+with the implementation of unit tests, however, can easily take up a whole week. 
 
-.. cfunction:: void    (*open)(me, FromCodingName, CodingName);  
+For everyone who is not yet scared off, here comes the explanation: A converter
+for a buffer filler is an object that contains the following function pointers
+described here in a simplified manner, without precise type definitions:
 
-.. cfunction:: bool    (*convert)(me, source, SourceEnd, drain, DrainEnd);
+.. code-block:: cpp
 
-.. cfunction:: void    (*on_conversion_discontinuity)(me);
- 
-        This function is optional and can be set to 0x0.
+   struct QuexConverter {
+        void    (*open)(me, FromCodingName, CodingName);  
+        bool    (*convert)(me, source, SourceEnd, drain, DrainEnd);
+        void    (*on_conversion_discontinuity)(me);       /* optional and can be 0x0 */
+        void    (*delete_self)(me);
+   };
 
-.. cfunction:: void    (*delete_self)(me);
+Each function points to an implementation of a function that interacts the the library
+or the algorithm for character conversion. The role of each function is explained in the following list.
 
+.. cfunction:: open(...)
 
-The function ``open`` opens internally a conversion handle for the conversion from 'FromCodingName'
-to ``ToCodingName``. Pass ``0x0`` as ``ToCodingName`` in order to indicate a conversion
-to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
+        This opens internally a conversion handle for the conversion from 'FromCodingName'
+        to ``ToCodingName``. Pass ``0x0`` as ``ToCodingName`` in order to indicate a conversion
+        to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
+                
+        It is the task of the particular implementation to provide the 'to coding'
+        which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
         
-It is the task of the particular implementation to provide the 'to coding'
-which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
         
-        
-Function ``convert`` tries to convert all characters given in ``source`` with the
-coding specified earlier to _open(...). ``source`` and ``drain`` are passed as
-pointers to pointers so that the pointers can be changed. This way the
-converter can inform the user about the state of conversion from source to
-drain buffer.::
-        
-           START:
-                        *source              SourceEnd
-                        |                    |
-                 [      .....................]   source buffer
-        
-                      *drain         DrainEnd
-                      |              |
-                 [....               ] drain buffer
-        
-At the beginning, 'source' points to the first character to be
-converted. 'drain' points to the place where the first converted
-character is to be written to.::
-         
-           END:
-                                        *source                              
-                                        |     
-                 [                      .....]   source buffer
-        
-                               *drain 
-                               |      
-                 [.............      ] drain buffer
-        
-After convertsion, ``source`` points immediately behind the last 
-character that was subject to conversion. ``drain`` points behind the
-last character that resulted from the conversion. 
-         
-        RETURNS:  true  --> Drain buffer is filled as much as possible with converted 
-                            characters.
-                  false --> More source bytes are needed to fill the drain buffer.     
+.. cfunction:: open(...)
 
-        
-The function ``on_conversion_discontinuity`` is called whenever a conversion discontinuity appears.
-Such cases appear only when the user navigates through the input
-stream (seek_character_index(...)), or with long pre-conditions when
-the buffer size is exceeded. 
-    
-For 'normal' converters this function can be set to '0x0'. If a converter
-has an internal 'statefulness' that is difficult to be tamed, then use
-this function to reset the converter. Actually, the initial reason
-for introducing the function pointer was the strange behavior of the 
-ICU Converters of IBM(R). Note, that if the function pointer is set, then
-the buffer filler does not use any hints on character index positions. This
-may slow down the seek procedure. If a pre-condition makes it necessary to load
-backwards, or the user navigates arbitrarily in the buffer stream there
-can be significant trade-offs.
+        Function ``convert`` tries to convert all characters given in ``source`` with the
+        coding specified earlier to _open(...). ``source`` and ``drain`` are passed as
+        pointers to pointers so that the pointers can be changed. This way the
+        converter can inform the user about the state of conversion from source to
+        drain buffer.::
+                
+                   START:
+                                *source              SourceEnd
+                                |                    |
+                         [      .....................]   source buffer
+                
+                              *drain         DrainEnd
+                              |              |
+                         [....               ] drain buffer
+                
+        At the beginning, 'source' points to the first character to be
+        converted. 'drain' points to the place where the first converted
+        character is to be written to.::
+                 
+                   END:
+                                                *source                              
+                                                |     
+                         [                      .....]   source buffer
+                
+                                       *drain 
+                                       |      
+                         [.............      ] drain buffer
+                
+        After convertsion, ``source`` points immediately behind the last 
+        character that was subject to conversion. ``drain`` points behind the
+        last character that resulted from the conversion. 
 
-        Closes the conversion handle produced with open(...).      
-        Deletes the object of the derived class.                                       
+        This function must provide the following return values
+                 
+        .. data:: true    
+           
+           Drain buffer is filled as much as possible with converted characters.
+
+        .. data:: false    
+
+           More source bytes are needed to fill the drain buffer.     
+
+.. cfunction:: on_conversion_discontinuity(...)    
+
+        The function ``on_conversion_discontinuity`` is called whenever a conversion discontinuity appears.
+        Such cases appear only when the user navigates through the input
+        stream (seek_character_index(...)), or with long pre-conditions when
+        the buffer size is exceeded. 
+            
+        For 'normal' converters this function can be set to '0x0'. If a converter
+        has an internal 'statefulness' that is difficult to be tamed, then use
+        this function to reset the converter. Actually, the initial reason
+        for introducing the function pointer was the strange behavior of the 
+        ICU Converters of IBM(R). Note, that if the function pointer is set, then
+        the buffer filler does not use any hints on character index positions. This
+        may slow down the seek procedure. If a pre-condition makes it necessary to load
+        backwards, or the user navigates arbitrarily in the buffer stream there
+        can be significant trade-offs.
+
+.. cfunction:: on_conversion_discontinuity(...)    
+
+        This function closes the conversion handle produced with open(...) and      
+        deletes the object of the conversion object, in the same way as a virtual
+        constructor does.
 
 
