@@ -56,14 +56,25 @@ namespace quex {
             break;
 
         case QUEX_CONVERTER: 
+
 #           if   defined(QUEX_OPTION_ENABLE_ICONV)
-            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_IConv_new(input_handle, 
-                                                       IANA_InputCodingName, /* Internal Coding: Default */0x0,
-                                                       TranslationBufferMemorySize);
+            const char* to_coding = IANA_InputCodingName != 0x0 ? IANA_InputCodingName 
+                                                                : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
+
+            const bool ConstantCodingF = ! __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(to_coding);
+            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
+                                                       QuexConverter_IConv_new(),
+                                                       to_coding, /* Internal Coding: Default */0x0,
+                                                       TranslationBufferMemorySize,
+                                                       ConstantCodingF);
 #           elif defined(QUEX_OPTION_ENABLE_ICU)
-            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_ICU_new(input_handle, 
+            const bool ConstantCodingF = ! __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(IANA_InputCodingName);
+
+            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
+                                                     QuexConverter_ICU_new(),
                                                      IANA_InputCodingName, /* Internal Coding: Default */0x0,
-                                                     TranslationBufferMemorySize);
+                                                     TranslationBufferMemorySize,
+                                                     ConstantCodingF);
 #           else
             QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_CONVERTER' while neither 'QUEX_OPTION_ENABLE_ICONV'\n" \
                             "nor 'QUEX_OPTION_ENABLE_ICU' is specified.\n");
