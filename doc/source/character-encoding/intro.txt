@@ -1,3 +1,6 @@
+Character Encodings
+===================
+
 Many cultures of the world in the history of mankind developped many types of
 scripts. A script in a more technical sense decribes the relationship between a
 *phonetic expression* or a *meaning* and its *graphical representation*[#f1]_. The

@@ -1,3 +1,7 @@
+The Process of Buffer Filling
+=============================
+
+
 This section discusses how a generated lexical analyzer reads data from a file or, more
 generally, from a stream. Figure :ref:`Process of loading data from a data stream<fig-load-data>` 
 shows an overview over the process.  It all starts with a character stream. The content
@@ -41,7 +45,7 @@ non-unicode encodings. The following parameters are to be kept in mind
 
   .. note::
 
-     The character type is a C-type and does not make any assumptions of the
+     The character type is a C-type and does not make any assumptions about the
      encoding which is used. It is a means to specify the number of bytes
      that are used for a character in the buffer memory--not more.
 
