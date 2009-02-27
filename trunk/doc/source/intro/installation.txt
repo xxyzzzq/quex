@@ -26,6 +26,10 @@ handy rpm packages--so this should not be an issue. Then, follow these steps:
   to the list of compiler flags. An example of how this is done can be observed
   in the test applications which come with the quex distribution.
 
+* If you want to use character set conversion, you need to install one of the
+  supported libraries--currently IBM's ICU <http://icu-project.org/userguide/intro.html>
+  or GNU IConv <http://www.gnu.org/software/libiconv/>[#f1]_.
+
 
 That is all. Now, you should either copy the directories ``./demo/*`` to a
 place where you want to work on it, or simply change directory to there.  These
@@ -96,3 +100,9 @@ sample applications first before continuing with the remainder of this text.
 With the background of easy-to-use examples to serve as starting point
 for their own efforts, it should be natural to get a feeling for the ease of quex.
 
+.. rubric:: Footnotes
+
+.. [#f1] If you are glad to work on a Linux system, the probability that your 
+         distribution provides pre-configured installation packages for those 
+         libraries is very high. Nevertheless, there are also wellness packages for other
+         operating systems.

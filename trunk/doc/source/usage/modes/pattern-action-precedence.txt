@@ -77,7 +77,7 @@ patterns have to high priority.
 
    Solving conflicts with ``PRIORITY-MARK``.
 
-.. image:: ../../figures/avoid-PRIORITY-MARK-2.*
+.. figure:: ../../figures/avoid-PRIORITY-MARK-2.*
 
    Avoiding the ``PRIORITY-MARK`` by re-design.
 
@@ -99,8 +99,7 @@ how a keyword pattern is deleted from the list of pattern that are inherited
        [a-zA-Z_]+[a-zA-Z0-9_]  => TKN_IDENTIFIER(Lexeme);
        ...
    }
-   mode A : 
-      B {
+   mode B : A {
        /* IDENTIFIER would outrule all keywords. */
        [a-zA-Z_]+[a-zA-Z0-9_]  => DELETION; 
 

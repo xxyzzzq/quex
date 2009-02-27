@@ -172,13 +172,13 @@ htmlhelp_basename = 'Quexdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('main', 'Quex.tex', ur'Quex Documentation',
+  ('main', 'Quex.tex', ur'Documentation',
    ur'Frank-Rene Schaefer', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = "figures/calligraphy.png"
+latex_logo = "figures/logo.png"
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

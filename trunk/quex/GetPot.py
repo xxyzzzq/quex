@@ -1,53 +1,5 @@
-#! /usr/bin/env python
-# Quex is  free software;  you can  redistribute it and/or  modify it  under the
-# terms  of the  GNU Lesser  General  Public License  as published  by the  Free
-# Software Foundation;  either version 2.1 of  the License, or  (at your option)
-# any later version.
-# 
-# This software is  distributed in the hope that it will  be useful, but WITHOUT
-# ANY WARRANTY; without even the  implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the  GNU Lesser General Public License for more
-# details.
-# 
-# You should have received a copy of the GNU Lesser General Public License along
-# with this  library; if not,  write to the  Free Software Foundation,  Inc., 59
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#
-################################################################################
-#! /usr/bin/env python
-# Quex is  free software;  you can  redistribute it and/or  modify it  under the
-# terms  of the  GNU Lesser  General  Public License  as published  by the  Free
-# Software Foundation;  either version 2.1 of  the License, or  (at your option)
-# any later version.
-# 
-# This software is  distributed in the hope that it will  be useful, but WITHOUT
-# ANY WARRANTY; without even the  implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the  GNU Lesser General Public License for more
-# details.
-# 
-# You should have received a copy of the GNU Lesser General Public License along
-# with this  library; if not,  write to the  Free Software Foundation,  Inc., 59
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#
-################################################################################
-#! /usr/bin/env python
-# Quex is  free software;  you can  redistribute it and/or  modify it  under the
-# terms  of the  GNU Lesser  General  Public License  as published  by the  Free
-# Software Foundation;  either version 2.1 of  the License, or  (at your option)
-# any later version.
-# 
-# This software is  distributed in the hope that it will  be useful, but WITHOUT
-# ANY WARRANTY; without even the  implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE.  See the  GNU Lesser General Public License for more
-# details.
-# 
-# You should have received a copy of the GNU Lesser General Public License along
-# with this  library; if not,  write to the  Free Software Foundation,  Inc., 59
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA
-#
-################################################################################
 #  -*- python -*- 
-#  GetPot Version $$Version$$                                    $$Date$$
+#  GetPot Version 1.0                                        Sept/13/2002
 #  
 #  WEBSITE: http://getpot.sourceforge.net
 #  
@@ -66,7 +18,7 @@
 #  Foundation, Inc.,  59 Temple Place,  Suite 330, Boston,  MA 02111-1307
 #  USA
 #  
-#  (C) 2001, 2002 Frank R. Schaefer  
+#  (C) 2001-2009 Frank-Rene Schaefer  
 #==========================================================================
 import string
 import os
@@ -83,32 +35,32 @@ class GetPot_variable:
         
 
 class GetPot:
-    def __init__(self, Argv=[], Filename=None):
+    def __init__(self, Argv=None, Filename=None):
         # Make the default argument for Argv=[], otherwise
         # strange things may occur, when somewhere the cursor
         # is set to len(Argv) - 1. Even if the user passes a dangerous
         # [], the case is caught.
-        if Argv == []: Argv = [""]
-        
+        if Argv == None: Argv = [""]
+
         # in case a search for a specific argument failed,
-        # it effects the next functions calls.
+        # it effects the next functions block.
         self.search_failed_f = 0
 
         # indeces of arguments that do not start with minus
-        self.idx_nominus = []
+        self.__idx_nominus = []
 
         # vector of identified variables
         # (arguments of the form "variable=value")
         self.variables = [ ]
 
         self.section_list = []
-        
-        # cursor oriented functions (nect(), follow(), etc.): 
+
+        # cursor oriented functions (next(), follow(), etc.):
         # pointer to actual position to be parsed.
         self.cursor         = 0
         self.nominus_cursor = -1
         self.search_loop_f  = 1
-        self.prefix         = ""
+        self.__prefix         = ""
         # set up the internal database
 
         if Filename != None:
@@ -126,27 +78,28 @@ class GetPot:
         self.section = ''
         section_stack = []
 
-        argv = []
+        arg_list = []
 
-        for i in range(len(argv_)):
-            arg = argv_[i]
+        i = -1
+        for arg in filter(lambda arg: arg.strip() != "", argv_):
+            i += 1
+            arg = arg.strip()  # avoid problems with "\r\n"
 
-            if len(arg) == 0: continue
-            elif i == 0:      argv.append(arg); continue
-            
+            if i == 0:      arg_list.append(arg); continue
+
             # [section] ?
             if len(arg) > 1 and arg[0] == '[' and arg[-1] == ']':
                 name = self.DBE_expand_string(arg[1:-1])
                 self.section = self.__process_section_label(name, section_stack)
                 if self.section not in self.section_list:
                     self.section_list.append(self.section)
-                argv.append(arg)
+                arg_list.append(arg)
             else:
                 arg = self.section + self.DBE_expand_string(arg[:])
-                argv.append(arg)
-            
+                arg_list.append(arg)
+
             # no-minus argument ?
-            if arg[0] != '-': self.idx_nominus.append(i)
+            if arg[0] != '-': self.__idx_nominus.append(i)
 
             # assignment ?
             for k in range(len(arg)-1):
@@ -157,10 +110,8 @@ class GetPot:
                     else:
                         v.take(arg[k+1:])
 
-        return argv
+        return arg_list
 
-
-    # (*) file parsing
     def __read_in_file(self, Filename):
         """Parses a file and returns a vector of arguments."""
         try:
@@ -175,16 +126,16 @@ class GetPot:
             token = self.__get_next_token(fh)
             brute_tokens.append(token)
 
-        # -- reduce expressions of token1'='token2 to a single 
+        # -- reduce expressions of token1'='token2 to a single
         #    string 'token1=token2'
         # -- copy everything into 'argv'
         # -- arguments preceded by something like '[' name ']' (section)
-        #    produce a second copy of each argument with a prefix '[name]argument'
+        #    produce a second copy of each argument with a __prefix '[name]argument'
         i1 = 0; i2 = 1; i3 = 2;
 
         argv = []
         # loop over brute tokens to create argv vector
-        while i1 < len(brute_tokens): 
+        while i1 < len(brute_tokens):
             SRef = brute_tokens[i1];
         
             # concatinate 'variable' '=' 'value' to 'variable=value'
@@ -205,7 +156,7 @@ class GetPot:
         """Skips whitespaces: space, tabulator, newline and #-comments."""
         tmp = ' '
         while 1+1==2:
-            while tmp == ' ' or tmp == '\t' or tmp == '\n':
+            while tmp in [' ', '\t', '\n', '\r']:
                 tmp = FH.read(1)                
                 if tmp == '': return     # end of file ?
 
@@ -264,7 +215,7 @@ class GetPot:
         brackets = 1
         while 1 + 1 == 2:
             last_letter = tmp; tmp = FH.read(1)
-            if tmp == '':                           return str            
+            if tmp == '':                           return str
             elif tmp == '{' and last_letter == '$': brackets += 1
             elif tmp == '}':
                 brackets -= 1
@@ -348,7 +299,7 @@ class GetPot:
         if Start == "": return String
         if string.find(String, Start) == 0: return String[len(Start):]
         else:                               return None
-
+        
 
     def __deal_propperly_with_array_arguments(self, Args):
         tmp_args = []
@@ -371,7 +322,7 @@ class GetPot:
         self.search_failed_f = 1
         old_cursor = self.cursor
 
-        def check_match(i0, i1, Args, Argv=self.argv, Prefix=self.prefix, obj=self):
+        def check_match(i0, i1, Args, Argv=self.argv, Prefix=self.__prefix, obj=self):
             """Checks if one of the arguments in Args matches an argument in sequence."""
             for i in range(i0, i1):
                 for arg in Args:
@@ -381,7 +332,7 @@ class GetPot:
             return False
             
         # first run: from cursor to end
-        if check_match(self.cursor, len(self.argv), Args, self.argv) == 1: return True
+        if check_match(self.cursor, len(self.argv), Args) == 1: return 1
                 
         if self.search_loop_f == 0: return False
 
@@ -389,7 +340,7 @@ class GetPot:
         # (note, that old_cursor can be at maximum = len(self.argv),
         #  the range function contains therefore only values until
         #  "len(self.argv) - 1")
-        if check_match(1, old_cursor, Args, self.argv) == 1: return True
+        if check_match(1, old_cursor, Args) == 1: return 1
 
         return False
             
@@ -410,8 +361,8 @@ class GetPot:
         self.disable_loop(); self.reset_cursor()
 
     def set_prefix(self, Prefix):
-        self.prefix = Prefix
-        
+        if Prefix[-1] != "/": Prefix += "/"
+        self.__prefix = Prefix
     # (*) direct access to command line arguments through []-operator
     def __getitem__(self, Idx):
         """Returns a specific argument indexed by Idx or 'None' if this
@@ -439,9 +390,9 @@ class GetPot:
         self.cursor += 1
         if self.cursor >= len(self.argv): self.cursor = len(self.argv)-1; return Default
 
-        if self.prefix == "": return self.__convert_to_type(self.argv[self.cursor], Default)
+        if self.__prefix == "": return self.__convert_to_type(self.argv[self.cursor], Default)
 
-        remain = self.__get_remaining_string(self.argv[self.cursor], self.prefix)
+        remain = self.__get_remaining_string(self.argv[self.cursor], self.__prefix)
         if remain != None: return self.__convert_to_type(remain, Default)
         else:              return Default
 
@@ -518,13 +469,12 @@ class GetPot:
                 return self.argv[i][len(StartString):]
         return None
 
-    # (*) flags
     def options_contain(self, FlagList):
         """Go through all arguments that start with a '-' and watch if they
         contain a flag in flaglist. In case a prefix is specified, the option
         must be preceeded with it, e.g. 'pack-options/-cvx'."""
         for arg in self.argv:
-            if self.prefix != "": arg = self.__get_remaining_string(arg, self.prefix)
+            if self.__prefix != "": arg = self.__get_remaining_string(arg, self.__prefix)
             if arg != None and len(arg) >= 2 and arg[0] == '-' and arg[1] != '-' \
                and self.__check_flags(arg, FlagList) == 1: return 1
             
@@ -536,7 +486,7 @@ class GetPot:
         inside the list."""
         if Idx < 0 or Idx > len(self.argv): return 0
 
-        if self.prefix == "":
+        if self.__prefix == "":
             # search argument for any flag in flag list
             return self.__check_flags(self.argv[Idx], FlagList)
         
@@ -545,7 +495,7 @@ class GetPot:
         # => only check list of arguments that start with prefix
         no_matches = 0
         for i in range(len(self.argv)):
-            remain = self.__get_remaining_string(self.argv[i], self.prefix)
+            remain = self.__get_remaining_string(self.argv[i], self.__prefix)
             if remain != None:
                 no_matches += 1
                 if no_matches == Idx:
@@ -568,18 +518,19 @@ class GetPot:
 
     def nominus_vector(self):
         v_nm = []
-        for i in self.idx_nominus:
-            v_nm.append(self.argv[i])
+        for i in self.__idx_nominus:
+            nominus = self.argv[i]
+            tmp = self.__get_remaining_string(nominus, self.__prefix)
+            if tmp != None: v_nm.append(tmp)
         return v_nm
-    
+
     def nominus_size(self):
-        return len(self.idx_nominus)
+        return len(self.__idx_nominus)
     
     def next_nominus(self):
-        if self.nominus_cursor >= len(self.idx_nominus)-1: return None
+        if self.nominus_cursor >= len(self.__idx_nominus)-1: return None
         self.nominus_cursor += 1
-        return self.argv[self.idx_nominus[self.nominus_cursor]]
-
+        return self.argv[self.__idx_nominus[self.nominus_cursor]]
 
     # (*) variables
     # helper to find arguments
@@ -587,17 +538,17 @@ class GetPot:
         # return all variables for given prefix
         vars = []
         for v in self.variables:
-            tmp = self.__get_remaining_string(v.name, self.prefix)
+            tmp = self.__get_remaining_string(v.name, self.__prefix)
             if tmp != None: vars.append(tmp)
         return vars
 
     def get_section_names(self):
-        self.section_list
+        return self.section_list
 
     # helper to find arguments
     def __find_variable(self, VarName):
         """Search for a variable in the array of variables."""
-        v_name = self.prefix + VarName
+        v_name = self.__prefix + VarName
         for v in self.variables:
             if v.name == v_name: return v        
         return None
@@ -748,18 +699,18 @@ class GetPot:
 
 
     def DBE_get_variable(self, VarName):
-        SECURE_Prefix = self.prefix
+        SECURE_Prefix = self.__prefix
 
         for p in [self.section, ""]:
-            self.prefix = p
+            self.__prefix = p
             # (1) first search in currently active section
             # (2) search in root name space
             var = self.__find_variable(VarName)
             if type(var) != type(None):
-                self.prefix = SECURE_Prefix
+                self.__prefix = SECURE_Prefix
                 return var
 
-        self.prefix = SECURE_Prefix
+        self.__prefix = SECURE_Prefix
         return "<<${ } variable '%s' undefined>>" % VarName
 
 
@@ -823,19 +774,19 @@ class GetPot:
             if Expr[1] == "=": OP = Expr[0:2]; A = self.DBE_get_expr_list(Expr[2:], 2)
             else:              OP = Expr[0];   A = self.DBE_get_expr_list(Expr[1:], 2)
 
-            x_orig = A[0]            
+            x_orig = A[0]
             x = self.__convert_to_type(x_orig, 1e37)
             i = 1
 
             for y_orig in A[1:]:
                 y = self.__convert_to_type(y_orig, 1e37)
                 # set the strings as reference if one wasn't a number
-                if x == 1e37 or y == 1e37: xc = x_orig; y = y_orig;  
+                if x == 1e37 or y == 1e37: xc = x_orig; y = y_orig;
                 else:                      xc = x
 
                 if   OP == "==" and xc == y: return repr(i)
                 elif OP == ">=" and xc >= y: return repr(i)
-                elif OP == "<=" and xc <= y: return repr(i)                
+                elif OP == "<=" and xc <= y: return repr(i)
                 elif OP == ">"  and xc > y:  return repr(i)
                 elif OP == "<"  and xc < y:  return repr(i)
                 i += 1
@@ -843,7 +794,7 @@ class GetPot:
             # nothing fulfills the condition => return 0
             return repr(0)
 
-        # ${?? expr expr} select 
+        # ${?? expr expr} select
         elif len(Expr) >=2 and Expr[0:2] == "??":
             A = self.DBE_get_expr_list(Expr[2:], 2)
             X = self.__convert_to_type(A[0], 1e37)
@@ -931,7 +882,7 @@ class GetPot:
 
         ufos = []
         for it in self.argv[1:]:
-            arg = self.__get_remaining_string(it, self.prefix)
+            arg = self.__get_remaining_string(it, self.__prefix)
             if arg not in known_x: ufos.append(it)
         return ufos
 
@@ -944,7 +895,7 @@ class GetPot:
 
         ufos = []
         for it in self.argv[1:]:
-            arg = self.__get_remaining_string(it, self.prefix)
+            arg = self.__get_remaining_string(it, self.__prefix)
             if len(arg) < 2 or arg[0] != '-': continue
             if arg not in known_x: ufos.append(it)
         return ufos
@@ -955,7 +906,7 @@ class GetPot:
         if ArgumentNumber == -1:
             # (*) search through all options with one single '-'
             for it in self.argv[1:]:
-                arg = self.__get_remaining_string(it, self.prefix)
+                arg = self.__get_remaining_string(it, self.__prefix)
                 if len(arg) < 2:    continue
                 elif arg[0] != '-': continue
                 elif arg[1] == '-': continue
@@ -965,7 +916,7 @@ class GetPot:
         else:
             no_matches = 0
             for it in argv[1:]:
-                Remain = self.__get_remaining_string(it, self.prefix)
+                Remain = self.__get_remaining_string(it, self.__prefix)
                 if Remain != "":
                     no_matches += 1
                     if no_matches == ArgumentNumber:
@@ -979,21 +930,21 @@ class GetPot:
     def unidentified_variables(self, *Knowns):
         ufos = []
         for it in self.variables:
-            var_name = self.__get_remaining_string(it.name, self.prefix)
+            var_name = self.__get_remaining_string(it.name, self.__prefix)
             if var_name not in Knowns: ufos.append(it.name)
         return ufos
         
     def unidentified_sections(self, *Knowns):
         ufos = []
         for it in self.section_list:
-            sec_name = self.__get_remaining_string(it, self.prefix)
+            sec_name = self.__get_remaining_string(it, self.__prefix)
             if sec_name not in Knowns: ufos.append(it)
         return ufos
 
     def unidentified_nominuses(self, Knowns):
         ufos = []
         for it in self.argv[1:]:
-            arg = self.__get_remaining_string(it, self.prefix)
+            arg = self.__get_remaining_string(it, self.__prefix)
             # only 'real nominuses'
             if   len(arg) < 1 or arg[0] == '-':    continue
             elif arg[0] == '[' and arg[-1] == ']': continue # section label
@@ -1002,8 +953,3 @@ class GetPot:
             if arg not in Knowns: ufos.append(it)
         return ufos
         
-
-
-#license-info Sat Aug  5 12:31:27 2006#
-#license-info Sat Aug  5 13:05:27 2006#
-#license-info Sat Aug  5 14:10:32 2006#
