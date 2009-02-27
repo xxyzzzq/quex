@@ -14,25 +14,6 @@ namespace quex {
 #endif
 
     QUEX_INLINE bool 
-    __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(const char* Coding);
-
-
-    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Converter)* 
-    QuexBufferFiller_Converter_ICU_new(InputHandleT* input_handle, 
-                                       const char*   FromCoding,   const char* ToCoding,
-                                       size_t        RawBufferSize)
-    { 
-        const bool ConstantCodingF = ! __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(FromCoding);
-
-        return QuexBufferFiller_Converter_new(input_handle,
-                                              QuexConverter_ICU_new(),
-                                              FromCoding, ToCoding,
-                                              RawBufferSize,
-                                              ConstantCodingF);
-                                             
-    }
-
-    QUEX_INLINE bool 
     __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(const char* Coding) 
     {
         return true; /* TODO: distinguish between different coding formats   */

@@ -14,27 +14,6 @@ namespace quex {
 #endif
 
     QUEX_INLINE bool 
-    __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(const char* Coding);
-
-
-    TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Converter)* 
-    QuexBufferFiller_Converter_IConv_new(InputHandleT* input_handle, 
-                                         const char*   FromCoding,   const char* ToCoding,
-                                         size_t        RawBufferSize)
-    { 
-        const char* to_coding = ToCoding != 0x0 ? ToCoding : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
-
-        const bool ConstantCodingF = ! __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(FromCoding);
-
-        return QuexBufferFiller_Converter_new(input_handle,
-                                              QuexConverter_IConv_new(),
-                                              FromCoding, to_coding,
-                                              RawBufferSize,
-                                              ConstantCodingF);
-                                             
-    }
-
-    QUEX_INLINE bool 
     __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(const char* Coding) 
     {
         return true; /* TODO: distinguish between different coding formats   */
