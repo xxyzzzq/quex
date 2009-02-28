@@ -3,7 +3,13 @@ Installation
 
 Before beginning the installation of quex, make sure that
 Python (http://www.python.org) is installed. Most linux distributions provide
-handy rpm packages--so this should not be an issue. Then, follow these steps: 
+handy rpm packages--so this should not be an issue. 
+Once Python is isntalled, follow these steps: 
+
+.. note::
+
+   As for quex version 0.36.5 you cannot use Python version ≥ 3.0. Version 3.0
+   is not compatible with the 2.x versions. 
 
 * Extract the file ``quex-x.x.x.tar.gz`` into the desired directory.
 

@@ -37,7 +37,7 @@ main(int argc, char** argv)
     else                                  { Delta = -1; Front = 23; Back = 0; }
 
     QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", target_charset, RawMemorySize);
+        QuexBufferFiller_Converter_new(fh, QuexConverter_IConv_new(), "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     for(int i=Front; ; i += Delta) {

@@ -107,8 +107,8 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, exit_handler_active_f,   "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT")
     txt = set_switch(txt, indentation_support_f,   "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
     txt = set_switch(txt, True,                    "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
-    txt = set_switch(txt, Setup.enable_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
-    txt = set_switch(txt, Setup.enable_icu_f,      "QUEX_OPTION_ENABLE_ICU")
+    txt = set_switch(txt, Setup.converter_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
+    txt = set_switch(txt, Setup.converter_icu_f,      "QUEX_OPTION_ENABLE_ICU")
     txt = set_switch(txt, not Setup.disable_token_queue_f,        "QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE")
     txt = set_switch(txt, not Setup.disable_string_accumulator_f, "QUEX_OPTION_STRING_ACCUMULATOR")
     txt = set_switch(txt, Setup.post_categorizer_f,               "QUEX_OPTION_POST_CATEGORIZER")
@@ -122,12 +122,17 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
 
+    if   Setup.converter_icu_f:               converter_new_str = "QuexConverter_ICU_new()"
+    elif Setup.converter_iconv_f:             converter_new_str = "QuexConverter_IConv_new()"
+    elif Setup.converter_user_new_func != "": converter_new_str = Setup.converter_user_new_func
+
     txt = blue_print(txt,
             [
                 ["$$BUFFER_LIMIT_CODE$$",            "0x%X" % Setup.buffer_limit_code],
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  class_constructor_extension_str],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
+                ["$$CONVERTER_NEW$$",                converter_new_str],
                 ["$$CLASS_BODY_EXTENSION$$",         class_body_extension_str],
                 ["$$INCLUDE_GUARD_EXTENSION$$",      include_guard_extension],
                 ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.get_code()],
