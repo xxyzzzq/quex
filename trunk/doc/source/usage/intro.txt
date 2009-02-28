@@ -2,7 +2,8 @@ Usage
 =====
 
 This section introduces the basics for using quex. A minimalist, but complete, example
-shall display the process of generating a lexical analyser engine with quex. In two 
+shall display the process of generating a lexical analyser engine with quex. A short section
+gives an overview over the major sections of a quex definition file. In two 
 separate sections the definition of patterns and their related actions is explained. 
 Pattern-action pairs are grouped in modes. The particularities of mode definitions
 is explained in a dedicated section. At this point in time the user is familiar
@@ -13,6 +14,7 @@ and project files.
 .. toctree::
 
    minimalist-example.txt
+   section-overview.txt
    patterns/intro.txt
    actions/intro.txt
    modes/intro.txt
