@@ -186,7 +186,7 @@ you converter class, so you need to mention it in a ``header`` section.
 
 The linker, also has his rights and need to be informed about the files of your converter
 and the files that implement the converter interface (e.g. ``CryptoConverter.o``). This
-is all that it needs to setup a user defined character converter.
+is all that is required to setup a user defined character converter.
 
 .. rubric:: Footnotes
 
