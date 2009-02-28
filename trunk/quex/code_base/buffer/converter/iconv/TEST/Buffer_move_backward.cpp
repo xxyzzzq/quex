@@ -24,11 +24,11 @@ main(int argc, char** argv)
     }
     */
 
-    std::FILE*                   fh = fopen("test.txt", "r");
+    std::FILE*      fh = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
     QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", 0x0, RawMemorySize);
+        QuexBufferFiller_Converter_new(fh, QuexConverter_IConv_new(), "UTF8", 0x0, RawMemorySize);
     buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
 
     QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      

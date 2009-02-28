@@ -18,12 +18,16 @@ namespace quex {
         QuexConverter_IConv* me = (QuexConverter_IConv*)alter_ego; 
         __quex_assert(alter_ego != 0x0);
 
+        /* Default: assume input encoding to have dynamic character sizes. */
+        me->base.dynamic_character_size_f = true;
+
+        /* Setup conversion handle */
         if( ToCoding == 0 ) {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
             default:  __quex_assert(false); return;
             case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
             case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
-            case 1:  me->handle = iconv_open("ASCII", FromCoding);  break;
+            case 1:  me->handle = iconv_open("ASCII",    FromCoding);  break;
             }
         } else {
             me->handle = iconv_open(ToCoding, FromCoding);

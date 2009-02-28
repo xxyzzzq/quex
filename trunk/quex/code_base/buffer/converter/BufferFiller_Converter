@@ -140,8 +140,6 @@ namespace quex {
          * may facilitate the 'seek' in some cases. See also [Ref 1] in the implementation. */
         size_t             hint_begin_character_index;
 
-        bool               _constant_size_character_encoding_f;
-
         /* Position where the whole analysis starts. The '0' when we are asked to reset.    */
         STREAM_POSITION_TYPE(InputHandleT)  start_position;  
 

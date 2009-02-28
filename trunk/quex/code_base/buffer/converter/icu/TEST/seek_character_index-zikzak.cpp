@@ -45,7 +45,7 @@ main(int argc, char** argv)
     }
 
     QuexBufferFiller_Converter<FILE>* filler = \
-              QuexBufferFiller_Converter_ICU_new(fh, source_charset, target_charset, RawMemorySize);
+              QuexBufferFiller_Converter_new(fh, QuexConverter_ICU_new(), source_charset, target_charset, RawMemorySize);
     /* Fill the reference buffer */
     size_t loaded_n = filler->base.read_characters(&filler->base, reference, ReferenceSize);
 

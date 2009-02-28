@@ -27,6 +27,7 @@ described here in a simplified manner, without precise type definitions:
         bool    (*convert)(me, source, SourceEnd, drain, DrainEnd);
         void    (*on_conversion_discontinuity)(me);       /* optional and can be 0x0 */
         void    (*delete_self)(me);
+        bool    dynamic_character_size_f;
    };
 
 Each function points to an implementation of a function that interacts the the library
@@ -40,6 +41,11 @@ or the algorithm for character conversion. The role of each function is explaine
                 
         It is the task of the particular implementation to provide the 'to coding'
         which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
+
+        Based on the ``FromCodingName`` this function needs to decide wether the
+        character encoding is fixed size or dynamic size. According to this, the
+        flag ``dynamic_character_size_f`` needs to be set. Setting it to ``true``
+        is safe, but may slow down the stream navigation.
         
         
 .. cfunction:: convert(...)
@@ -109,10 +115,16 @@ or the algorithm for character conversion. The role of each function is explaine
         deletes the object of the conversion object, in the same way as a virtual
         constructor does.
 
-In the next step, a user defined converter must be derived from ``QuexConverter``. This
-should happen in the C-way-of-doing-it. That means, that ``QuexConverter`` becomes
-the first member of the derived class[f#1]_ . Consider the implementation for GNU IConv
-as an example
+.. cvar:: bool dynamic_character_size_f
+
+        This flag needs to be set to allow the buffer filler to allow its algorithms
+        for character stream navigation.
+
+For all functions mentioned above the user needs to implement to which those
+function pointer can point.  In the next step, a user defined converter must be
+derived from ``QuexConverter``. This should happen in the C-way-of-doing-it.
+That means, that ``QuexConverter`` becomes the first member of the derived
+class[f#1]_ . Consider the implementation for GNU IConv as an example
 
 .. code-block:: cpp
 
@@ -123,7 +135,7 @@ as an example
 
     } QuexConverter_IConv;
 
-The converter class for IBM's ICU is implemented as
+As another example consider the implementation of a converter class for IBM's ICU:
 
 .. code-block:: cpp
 
@@ -141,11 +153,45 @@ The converter class for IBM's ICU is implemented as
     } QuexConverter_ICU;
 
 The role of the derived class (``struct``) is to contain data which is important
-for the conversion process. 
+for the conversion process. Once, the access functions and the dedicated class have 
+been defined a function needs to be implemented that creates a the converter. This
+needs to following:
+
+#. Allocate space for the converter object.
+#. Set the function pointers for ``open``, ``convert``, 
+   ``on_conversion_discontinuity``, and ``delete_self``.
+#. Initialize the converter object, not the conversion handles. The initialization
+   of the conversion handles is the task of the ``open`` function.
+#. Return a pointer to the created object.
+
+Now, the only thing that remains is to tell quex about the user's artwork. Using
+the command line option ``--converter-new`` (respectively ``--cn``) the name
+of the converter creating function, i.e. if the function that implements the above
+tasks is named ``CryptoConverter_new``, the call to quex needs to look like
+
+.. code-block:: bash
+
+   > quex ... --converter-new CryptoConverter_new ...
+
+Additionally, the compiler needs to know where to find the definition of 
+you converter class, so you need to mention it in a ``header`` section.
+
+.. code-block:: cpp
+
+   header { 
+       ...
+       #include "CryptoConverter.h"
+       ...
+   }
+
+The linker, also has his rights and need to be informed about the files of your converter
+and the files that implement the converter interface (e.g. ``CryptoConverter.o``). This
+is all that it needs to setup a user defined character converter.
 
 .. rubric:: Footnotes
 
-.. [f#1] This ensures that the ``QuexConverter`` object is located at the beginning of the
-         derived class' object. A pointer to the (beginning) of the derived class' object
-         can therefore always be casted safely to a ``QuexConverter``. The object located
-         there is *indeed* a ``QuexConverter`` object.
+.. [#f1] This ensures that the ``QuexConverter`` object is located in memory at the 
+         beginning of the derived class' object. A pointer to the (beginning) of 
+         the derived class' object points at the same time to the beginning of the
+         member ``base`` which is of type ``QuexConverter``. A pointer to the
+         derived class can act seeminglessly as a pointer to the base class.

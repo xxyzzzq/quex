@@ -34,7 +34,7 @@ main(int argc, char** argv)
     QUEX_TYPE_CHARACTER  memory[memory_size];
 
     QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_IConv_new(fh, "UTF8", target_charset, RawMemorySize);
+        QuexBufferFiller_Converter_new(fh, QuexConverter_IConv_new(), "UTF8", target_charset, RawMemorySize);
 
     size_t loaded_n = 0;
     do {

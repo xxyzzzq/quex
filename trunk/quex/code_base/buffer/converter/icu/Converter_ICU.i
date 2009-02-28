@@ -21,6 +21,10 @@ namespace quex {
         QuexConverter_ICU* me = (QuexConverter_ICU*)alter_ego;
         __quex_assert(me != 0x0);
 
+        /* Default: assume input encoding to have dynamic character sizes. */
+        me->base.dynamic_character_size_f = true;
+
+        /* Open conversion handles */
         me->from_handle = ucnv_open(FromCodingName, &me->status);
 
         if( ! U_SUCCESS(me->status) ) 
@@ -44,6 +48,7 @@ namespace quex {
             }
         }
 
+        /* Setup the pivot buffer */
         me->pivot_iterator_begin = me->pivot_buffer;
         me->pivot_iterator_end   = me->pivot_buffer;
     }

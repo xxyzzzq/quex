@@ -173,6 +173,7 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)0)
 #    endif
 #endif
+#define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  $$CONVERTER_NEW$$
 
 //   Begin of line pre-condition introduces an extra flag in the buffer
 //   structure. Only out-comment this in case of tough memory restrictions,

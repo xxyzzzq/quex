@@ -21,8 +21,7 @@ namespace quex {
                                    QuexConverter*    converter,
                                    const char*       FromCoding,
                                    const char*       ToCoding,
-                                   size_t            RawBufferSize,
-                                   bool              ConstantSize_CodingF)
+                                   size_t            RawBufferSize)
     { 
         __quex_assert(RawBufferSize >= 6);  /* UTF-8 char can be 6 bytes long    */
         TEMPLATED(QuexBufferFiller_Converter)*  me = TEMPLATED(MemoryManager_BufferFiller_Converter_allocate)();
@@ -39,8 +38,6 @@ namespace quex {
         /* Initialize the conversion operations                                             */
         me->converter = converter;
         me->converter->open(me->converter, FromCoding, ToCoding);
-
-        me->_constant_size_character_encoding_f = ConstantSize_CodingF;
 
         /* Setup the tell/seek of character positions                                       */
         me->start_position    = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
@@ -191,7 +188,7 @@ namespace quex {
          *   (2) The coding uses **dynamic** character width (e.g. UTF-8). Here the position cannot
          *       be computed. Instead, the conversion must start from a given 'known' position 
          *       until one reaches the specified character index.                                 */
-        if( me->_constant_size_character_encoding_f ) { 
+        if( me->converter->dynamic_character_size_f == false ) { 
             /* (1) Fixed Character Width */
             const size_t ContentSize = buffer->end - buffer->begin;
             const size_t EndIndex    = Hint_Index + (ContentSize / sizeof(QUEX_TYPE_CHARACTER));

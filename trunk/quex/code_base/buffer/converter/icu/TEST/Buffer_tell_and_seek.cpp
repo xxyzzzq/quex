@@ -21,7 +21,7 @@ main(int argc, char** argv)
     assert( fh != 0x0 );
 
     QuexBufferFiller_Converter<FILE>* filler = \
-         QuexBufferFiller_Converter_ICU_new(fh, "UTF8", 0x0, RawMemorySize);
+         QuexBufferFiller_Converter_new(fh, QuexConverter_ICU_new(), "UTF8", 0x0, RawMemorySize);
     buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
     QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      
     QuexBuffer_init(&buffer, /* OnlyResetF */false);
