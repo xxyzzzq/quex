@@ -112,6 +112,7 @@ all features of quex.
 
 .. toctree::
 
-   naming.txt
    installation.txt
    license.txt
+   naming.txt
+   robustness.txt

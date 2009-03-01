@@ -23,10 +23,20 @@ described here in a simplified manner, without precise type definitions:
 .. code-block:: cpp
 
    struct QuexConverter {
-        void    (*open)(me, FromCodingName, CodingName);  
-        bool    (*convert)(me, source, SourceEnd, drain, DrainEnd);
-        void    (*on_conversion_discontinuity)(me);       /* optional and can be 0x0 */
-        void    (*delete_self)(me);
+
+        void    (*open)(struct QuexConverter_tag*, 
+                        const char* FromCodingName, 
+                        const char* ToCodingName);  
+
+        bool    (*convert)(struct QuexConverter_tag*, 
+                           uint8_t**                  source, 
+                           const uint8_t*             SourceEnd, 
+                           QUEX_TYPE_CHARACTER**      drain,  
+                           const QUEX_TYPE_CHARACTER* DrainEnd);
+
+        /* optional: can be set to 0x0 */
+        void    (*on_conversion_discontinuity)(struct QuexConverter_tag*);  
+
         bool    dynamic_character_size_f;
    };
 
