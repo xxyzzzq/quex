@@ -80,6 +80,22 @@ namespace quex {
          * adapt the seek algorithm for navigation in the character stream.               */
     } QuexConverter;
 
+    /* Facilitate the task of converting to apropriate function pointers from derived 
+     * member functions.                                                                  */
+    typedef void    (*QuexConverterFunctionP_open)(struct QuexConverter_tag*, 
+                                                   const char* FromCodingName, 
+                                                   const char* ToCodingName);  
+
+    typedef bool    (*QuexConverterFunctionP_convert)(struct QuexConverter_tag*, 
+                                                      uint8_t**        source, 
+                                                      const uint8_t*   SourceEnd, 
+                                                      QUEX_TYPE_CHARACTER**      drain,  
+                                                      const QUEX_TYPE_CHARACTER* DrainEnd);
+
+    typedef void    (*QuexConverterFunctionP_on_conversion_discontinuity)(struct QuexConverter_tag*);
+
+    typedef void    (*QuexConverterFunctionP_delete_self)(struct QuexConverter_tag*);
+
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 }
 #endif

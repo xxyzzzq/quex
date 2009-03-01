@@ -14,7 +14,6 @@ and project files.
 .. toctree::
 
    minimalist-example.txt
-   section-overview.txt
    patterns/intro.txt
    actions/intro.txt
    modes/intro.txt

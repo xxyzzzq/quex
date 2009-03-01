@@ -167,7 +167,7 @@ htmlhelp_basename = 'Quexdoc'
 #latex_paper_size = 'letter'
 
 # The font size ('10pt', '11pt' or '12pt').
-#latex_font_size = '10pt'
+latex_font_size = '12pt'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
@@ -185,7 +185,10 @@ latex_logo = "figures/logo.png"
 #latex_use_parts = False
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
+latex_preamble = """
+ \usepackage{ucs}
+ \usepackage[utf8x]{inputenc}
+"""
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []

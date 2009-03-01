@@ -1,6 +1,8 @@
 Settings
 --------
 
+Following settings can be made on the command line:
+
 .. cmacro:: QUEX_SETTING_BUFFER_FILLER_SEEK_TEMP_BUFFER_SIZE
 
    For seeking in character streams a temporary buffer is required. By means
