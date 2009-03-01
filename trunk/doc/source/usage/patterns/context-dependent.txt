@@ -9,7 +9,7 @@ Then it is shown how to specify whole regular expressions to express
 conditions on the surroundings of the pattern to be matched. The traditional
 characters to condition begin and end of line are:
 
-.. data:: ^R 
+.. describe:: ^R 
 
    a  regular expression ``R``, but only at the beginning of a line. This condition
    holds whenever the scan starts at the beginning of the character stream or
@@ -18,7 +18,7 @@ characters to condition begin and end of line are:
    on how the particular operating system codes the newline. In this case, 
    there is no harm coming from different conventions of newline.
 
-.. data:: R$ 
+.. describe:: R$ 
 
     a regular expression R, but only at the end of a line and _not_ at the end of the
     file. Note, that the meaning of this shortcut can be adapted according to the 
@@ -42,7 +42,7 @@ at the front and rear of the core pattern. Let ``R`` be the core regular express
 ``Q`` the regular expression of the pre-condition, and ``S`` the regular expression
 for the post-condition.
 
-.. data:: R/S
+.. describe:: R/S
 
    matches an ``R``, but only if it is followed by an ``S``. If the pattern
    matches the input is set to the place where ``R``. The part that is
@@ -50,15 +50,15 @@ for the post-condition.
    is post-conditioned.  Note, that the case where the end of ``R`` matches
    the beginning of ``S`` cannot be treated by Version 0.9.0 [#f1]_.
 		 
-.. data :: Q/R/ 
+.. describe:: Q/R/ 
 
-matches ``R`` from the current position, but only if it is preceeded by a
-``Q``. Practically, this means that quex goes backwards in order to determine
-if the pre-condition ``Q`` has matched and then forward to see if ``R`` has
-matched. ``R`` is pre-conditioned.  Note, with pre-conditions there is no
-trailing context problem as with post-conditions above.
+    matches ``R`` from the current position, but only if it is preceeded by a
+    ``Q``. Practically, this means that quex goes backwards in order to determine
+    if the pre-condition ``Q`` has matched and then forward to see if ``R`` has
+    matched. ``R`` is pre-conditioned.  Note, with pre-conditions there is no
+    trailing context problem as with post-conditions above.
                   
-.. data :: Q/R/S 
+.. describe:: Q/R/S 
 
     matches ``R`` from the current position, but only if the preceeding
     stream matches a ``Q`` and the following stream matches an ``S``.

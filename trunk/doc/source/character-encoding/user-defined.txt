@@ -24,18 +24,20 @@ described here in a simplified manner, without precise type definitions:
 
    struct QuexConverter {
 
-        void    (*open)(struct QuexConverter_tag*, 
+        void    (*open)(struct QuexConverter*, 
                         const char* FromCodingName, 
                         const char* ToCodingName);  
 
-        bool    (*convert)(struct QuexConverter_tag*, 
+        bool    (*convert)(struct QuexConverter*, 
                            uint8_t**                  source, 
                            const uint8_t*             SourceEnd, 
                            QUEX_TYPE_CHARACTER**      drain,  
                            const QUEX_TYPE_CHARACTER* DrainEnd);
 
         /* optional: can be set to 0x0 */
-        void    (*on_conversion_discontinuity)(struct QuexConverter_tag*);  
+        void    (*on_conversion_discontinuity)(struct QuexConverter*);  
+
+        void    (*delete_self)(struct QuexConverter*);  
 
         bool    dynamic_character_size_f;
    };
@@ -162,29 +164,118 @@ As another example consider the implementation of a converter class for IBM's IC
 
     } QuexConverter_ICU;
 
-The role of the derived class (``struct``) is to contain data which is important
-for the conversion process. Once, the access functions and the dedicated class have 
-been defined a function needs to be implemented that creates a the converter. This
-needs to following:
+The role of the derived class (``struct``) is to contain data which is
+important for the conversion process.  As an example, let the user defined
+converter functions be defined as 
 
-#. Allocate space for the converter object.
+.. code-block:: cpp
+
+    void
+    CryptoConverter_open(CryptoConverter*  me, 
+                         const char* FromCodingName, 
+                         const char* ToCodingName);
+
+    bool
+    CryptoConverter_convert(CryptoConverter*  me
+                            uint8_t**       source, 
+                            const uint8_t*  SourceEnd, 
+                            QUEX_TYPE_CHARACTER**       drain,  
+                            const QUEX_TYPE_CHARACTER*  DrainEnd);
+    void 
+    CryptoConverter_on_conversion_discontinuity(CryptoConverter*  me);
+
+    void
+    CryptoConverter_delete_self(CryptoConverter*  me);
+
+Note, that the function signatures contain a pointer to ``CryptoConverter`` as
+a ``me`` pointer [#f2]_, where the required function pointers require a pointer to
+a ``QuexConverter`` converter object. This is no contradition. When the buffer filler
+creates an object of the derived type ``CryptoConverter`` is stores the pointer to
+it in as pointer to ``QuexConverter``. The member functions, though, know that
+they work on an object of the derived class ``CryptoConverter``. 
+
+Once, the access functions and the dedicated class have been defined a function
+needs to be implemented that creates a the converter. This needs to following:
+
+#. Allocate space for the converter object. The allocation method for the converter
+   object must correspond the deletion method in ``delete_self``. A simple
+   way to implent this is to rely on ``malloc`` like this
+
+   .. code-block:: cpp
+
+      ...
+      me = (CryptoConverter*)malloc(sizeof(CryptoConverter));
+      ...
+
+   provided that the ``delete_self`` function is implemented like
+
+   .. code-block:: cpp
+
+        void
+        CryptoConverter_delete_self(CryptoConverter*  me) {
+            /* de-initialize resources */
+            ...
+            free(me);   /* corresponding call to 'malloc' */
+        }
+
+   Note, that quex provides you with sophisticated methods of memory management <<>>.
+   This is the point where you can plug-in the memory allocation method for 
+   your converter object.
+
 #. Set the function pointers for ``open``, ``convert``, 
-   ``on_conversion_discontinuity``, and ``delete_self``.
-#. Initialize the converter object, not the conversion handles. The initialization
-   of the conversion handles is the task of the ``open`` function.
-#. Return a pointer to the created object.
+   ``on_conversion_discontinuity``, and ``delete_self``. The assignment
+   of function pointers require a type cast, because the first argument
+   differs. In the example above, the assignment of function pointers
+   is
 
-Now, the only thing that remains is to tell quex about the user's artwork. Using
-the command line option ``--converter-new`` (respectively ``--cn``) the name
-of the converter creating function, i.e. if the function that implements the above
-tasks is named ``CryptoConverter_new``, the call to quex needs to look like
+   .. code-block:: cpp
+
+        ...
+        /* assume that 'me' has been allocated */
+        me->base.open        = (QuexConverterFunctionP_open)CryptoConverter_open;
+        me->base.convert     = (QuexConverterFunctionP_convert)CryptoConverter_convert;
+        me->base.delete_self = (QuexConverterFunctionP_delete_self)CryptoConverter_delete_self;
+        me->base.on_conversion_discontinuity = \
+           (QuexConverterFunctionP_on_conversion_discontinuity)\
+           CryptoConverter_on_conversion_discontinuity;
+        ...
+
+
+#. Initialize the converter object. This is not the place to setup or
+   allocate any conversion handle. The setup of conversion handles is the
+   task of the ``open`` function. The iconv library, for example does not
+   more than 
+   
+   .. code-block:: cpp
+
+        ...
+        me->handle = (iconv_t)-1;
+        ...
+
+   which assigns something useless to the conversion handle. This way it can be
+   easily detected wether the ``open`` call was done propperly.
+
+#. Return a pointer to the created object. That is the easiest part:
+
+   .. code-block:: cpp
+
+      ...
+      return me;
+
+
+
+Now, the only thing that remains is to tell quex about the user's artwork.
+Using the command line option ``--converter-new`` (respectively ``--cn``) the
+name of the converter creating function can be passed. If, for example, the
+this function is named ``CryptoConverter_new``, then the call to quex needs to look
+like
 
 .. code-block:: bash
 
    > quex ... --converter-new CryptoConverter_new ...
 
-Additionally, the compiler needs to know where to find the definition of 
-you converter class, so you need to mention it in a ``header`` section.
+Additionally, the compiler needs to know where to find the definition of you
+converter class, so you need to mention it in a ``header`` section.
 
 .. code-block:: cpp
 
@@ -194,9 +285,10 @@ you converter class, so you need to mention it in a ``header`` section.
        ...
    }
 
-The linker, also has his rights and need to be informed about the files of your converter
-and the files that implement the converter interface (e.g. ``CryptoConverter.o``). This
-is all that is required to setup a user defined character converter.
+The linker, also, has his rights and needs to be informed about the files of
+your converter and the files that implement the converter interface 
+(e.g.  ``CryptoConverter.o``). This is all that is required to setup a user 
+defined character converter.
 
 .. rubric:: Footnotes
 
@@ -205,3 +297,7 @@ is all that is required to setup a user defined character converter.
          the derived class' object points at the same time to the beginning of the
          member ``base`` which is of type ``QuexConverter``. A pointer to the
          derived class can act seeminglessly as a pointer to the base class.
+
+.. [#f2] A ``me`` pointer in C corresponds to the ``this`` pointer in C++. It gives
+         access to the objects content.
+ 
