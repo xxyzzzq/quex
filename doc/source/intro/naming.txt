@@ -15,6 +15,21 @@ source code appearance. When he realized that traditional lexical analysers did
 not provide the functionality to express solutions easily he started working on
 quex--and dove much deeper into the subject than he ever thought he would. 
 
+
+.. figure:: ../figures/calligraphy-plain.*
+
+   Calligraphy of the name Quex based on the arabic spelling: 'kaf' ك, 'wau' و, 
+   and 'kha' خ.
+
+A question closely related to the name might be what the logo actually stands for.
+It is a calligraphic essay of the author of quex. Based on the arabic spelling of 
+quex (kaf ك, wau و, kha خ) the logo consist of a representation in the *squared kufi* 
+style. It is the algorithmic nature of this style that made it possible for a
+modestly talented artist like me to produce something beautiful. Indeed there is
+something fascination about arabic calligraphy due to the fact that it combines
+art and algorithm to produce something esthetically appealing.
+
+
 .. rubric:: Footnotes
 
 .. [#f1] As Donald Knuth explains it\cite{}, the last letter in
