@@ -1,8 +1,8 @@
 #include<iostream>
 #include<fstream>
 
-#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
-#include<quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
 
 
 void 

@@ -1,4 +1,4 @@
-# include $(QUEX_PATH)/quex/code_base/core.mkd
+include $(QUEX_PATH)/quex/code_base/core.mkd
 
 FILES = \
 		converter-16.exe \

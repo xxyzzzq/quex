@@ -1,8 +1,8 @@
 #include<iostream>
 #include<cstdio>
 
-#include<quex/code_base/buffer/converter/icu/BufferFiller_ICU>
-#include<quex/code_base/buffer/converter/icu/BufferFiller_ICU.i>
+#include<quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include<quex/code_base/buffer/converter/icu/Converter_ICU.i>
 
 
 int

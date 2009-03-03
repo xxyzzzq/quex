@@ -354,10 +354,10 @@ namespace quex {
 #include <quex/code_base/buffer/BufferFiller.i>
 
 #ifdef QUEX_OPTION_ENABLE_ICONV
-#   include <quex/code_base/buffer/converter/iconv/BufferFiller_IConv.i>
+#   include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
 #endif
 #ifdef QUEX_OPTION_ENABLE_ICU
-#   include <quex/code_base/buffer/converter/icu/BufferFiller_ICU.i>
+#   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #endif
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__ */

@@ -4,6 +4,7 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__
 #define __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__
 
+#include <quex/code_base/definitions>
 #include <quex/code_base/buffer/converter/Converter>
 #include <quex/code_base/buffer/converter/icu/special_headers.h>
 

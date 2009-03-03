@@ -21,14 +21,10 @@ __QUEX_CORE = \
          ./buffer/converter/BufferFiller_Converter.i \
          ./buffer/converter/Converter \
          ./buffer/converter/BufferFiller_Converter \
-         ./buffer/converter/icu/BufferFiller_ICU.i \
          ./buffer/converter/icu/Converter_ICU \
-         ./buffer/converter/icu/BufferFiller_ICU \
          ./buffer/converter/icu/special_headers.h \
          ./buffer/converter/icu/Converter_ICU.i \
          ./buffer/converter/iconv/Converter_IConv.i \
-         ./buffer/converter/iconv/BufferFiller_IConv \
-         ./buffer/converter/iconv/BufferFiller_IConv.i \
          ./buffer/converter/iconv/Converter_IConv \
          ./buffer/converter/iconv/special_headers.h \
          ./buffer/converter/recode/Converter_Recode.i \

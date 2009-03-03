@@ -27,7 +27,7 @@ of buffer fillers.
 
 .. _fig_load_data:
 
-.. figures:: ../figures/character-converting-process.*
+.. figure:: ../figures/character-converting-process.*
    
    Loading data from a stream into the buffer memory.
 
