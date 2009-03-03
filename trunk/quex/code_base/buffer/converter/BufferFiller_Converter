@@ -186,10 +186,10 @@ namespace quex {
 #include <quex/code_base/temporary_macros_off>
 
 #ifdef QUEX_OPTION_ENABLE_ICONV
-#   include <quex/code_base/buffer/converter/iconv/BufferFiller_IConv>
+#   include <quex/code_base/buffer/converter/iconv/Converter_IConv>
 #endif
 #ifdef QUEX_OPTION_ENABLE_ICU
-#   include <quex/code_base/buffer/converter/icu/BufferFiller_ICU>
+#   include <quex/code_base/buffer/converter/icu/Converter_ICU>
 #endif
  
 

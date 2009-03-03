@@ -1,5 +1,5 @@
 #include <cstring>
-#include <quex/code_base/buffer/converter/icu/BufferFiller_ICU.i>
+#include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #include <quex/code_base/unicode>
 using namespace std;
 using namespace quex;
