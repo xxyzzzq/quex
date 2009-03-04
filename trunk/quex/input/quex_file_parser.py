@@ -22,10 +22,11 @@ import quex.lexer_mode               as lexer_mode
 import quex.input.mode_definition    as mode_definition
 import quex.input.regular_expression as regular_expression
 import quex.input.code_fragment      as code_fragment
+from   quex.input.setup             import setup as Setup
 from   quex.core_engine.generator.action_info import UserCodeFragment
 
 
-def do(file_list, Setup):
+def do(file_list):
     global mode_db
 
     for file in file_list:
@@ -85,7 +86,7 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
 
     assert True == False, "this code section should have never been reached!"
 
-def parse_section(fh, Setup):
+def parse_section(fh):
 
     # NOTE: End of File is supposed to be reached when trying to read a new
     #       section. Thus, the end-of-file catcher does not encompass the beginning.
@@ -127,15 +128,19 @@ def parse_section(fh, Setup):
             return
             
         elif word == "define":
-            parse_pattern_name_definitions(fh, Setup)
+            parse_pattern_name_definitions(fh)
             return
 
         elif word == "token":       
-            parse_token_id_definitions(fh, Setup)
+            parse_token_id_definitions(fh)
+            return
+
+        elif word == "token_type":       
+            parse_token_type_definitions(fh)
             return
 
         elif word == "mode":
-            mode_definition.parse(fh, Setup)
+            mode_definition.parse(fh)
             return
         else:
             error_msg("sequence '%s' not recognized as valid keyword in this context\n" % word + \
@@ -144,7 +149,7 @@ def parse_section(fh, Setup):
         fh.seek(position)
         error_msg("End of file reached while parsing '%s' section" % word, fh)
 
-def parse_pattern_name_definitions(fh, Setup):
+def parse_pattern_name_definitions(fh):
     """Parses pattern definitions of the form:
    
           WHITESPACE  [ \t\n]
@@ -196,7 +201,7 @@ def parse_pattern_name_definitions(fh, Setup):
                                             fh.name, get_current_line_info_number(fh),
                                             regular_expression_obj)
 
-def parse_token_id_definitions(fh, Setup):
+def parse_token_id_definitions(fh):
     """Parses token definitions of the form:
   
           TOKEN_ID_NAME [Number] [TypeName] 
@@ -261,6 +266,90 @@ def parse_token_id_definitions(fh, Setup):
             if type_name != None: db[name].type_name = type_name
             db[name].positions.append([fh.name, line_n])
 
+def parse_token_type_definitions(fh):
+    """Parses token type definitions of the form:
+   
+          member0_name ':' type0 ';'
+          member1_name ':' type1 ';'
+          member2_name ':' type2 ';'
+          
+       This defines a customized token class.
+    """
+    # NOTE: Catching of EOF happens in caller: parse_section(...), the caller
+
+    #
+    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
+
+    while 1 + 1 == 2:
+        if __check(fh, "{"):
+            # Combined token type members (members that can occur at the same time)
+            combined_member_list = []
+            while 1 + 1 == 2:
+                member = parse_token_type_member_definition(fh)
+                if member == None: break
+                combined_member_list.append(member)
+            # Closing '}' has been eaten by parse_token_type_member_definition(..)
+            token_type_member_list.append(combined_member_list)
+        else:
+            member = parse_token_type_member_definition(fh)
+            if member == None: break
+            token_type_member_list.append([member])
+            
+
+def parse_token_type_member_definition(fh):
+    member_name     = ""
+    type_name       = ""
+    array_element_n = -1
+
+    skip_whitespace(fh)
+
+    if __check(fh, "}"): 
+        return
+    
+    # -- get the name of the pattern
+    skip_whitespace(fh)
+    member_name = read_identifier(fh)
+    if member_name == "":
+        error_msg("Missing identifier for token struct/class member.", fh)
+
+    skip_whitespace(fh)
+
+    verify_next_word(fh, ":")
+
+    skip_whitespace(fh)
+
+    if __check(fh, "}"): 
+        error_msg("Missing type for token struct/class member '%s'." % member_name, fh)
+
+    type_name = read_identifier(fh)
+    if type_name == "":
+        error_msg("Missing type name for token struct/class member.", fh)
+
+    skip_whitespace(fh)
+    if __check(fh, "[") == false:
+        skip_whitespace(fh)
+        if __check(fh, ";"): 
+            error_msg("Missing ';' after token struct/class member '%s' definition." % \
+                      member_name, fh)
+    else:
+        skip_whitespace(fh)
+        number_str = read_integer(fh)
+        if number_str == "":
+            error_msg("Missing integer after '[' in '%s' definition." % member_name, fh)
+        array_element_n = int(number_str)
+
+        skip_whitespace(fh)
+
+        if __check(fh, "]") == false:
+            error_msg("Missing closing ']' in '%s' array definition." % member_name, fh)
+        skip_whitespace(fh)
+
+        if __check(fh, ";"): 
+            error_msg("Missing ';' after token struct/class member '%s' definition." % \
+                      member_name, fh)
+
+    return TokenTypeMember(member_name, type_name, array_element_n)
+
 def parse_initial_mode_definition(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
 
@@ -277,4 +366,11 @@ def parse_initial_mode_definition(fh):
                   lexer_mode.initial_mode.line_n)
         
     lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh), None)
+
+def __check(fh, Char):
+    position = fh.tell()
+    dummy = fh.read(1)
+    if dummy == Char: return True
+    fh.seek(position)
+    return False
 

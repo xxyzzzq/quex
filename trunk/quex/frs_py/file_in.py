@@ -126,11 +126,13 @@ def delete_comment(Content, Opener, Closer, LeaveNewlineDelimiter=False):
 
     return new_content
 
-def read_integer(fh):
+def read_integer(fh, HexF=True):
+    if HexF: digit_list = "abcdefABCDEF"
+    else:    digit_list = ""
     pos = fh.tell()
     tmp = fh.read(1)
     txt = ""
-    while tmp.isdigit() or tmp in "abcdefABCDEF":
+    while tmp.isdigit() or tmp in digit_list:
         txt += tmp
         tmp = fh.read(1)
     fh.seek(-1, 1)
