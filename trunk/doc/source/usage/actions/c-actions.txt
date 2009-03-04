@@ -15,7 +15,7 @@ example
         {P_STRING_DELIMITER} {
             self << STRING_READER; 
             self.send(QUEX_TKN_EVENT_MODE_CHANGE);
-            return;
+            RETURN;
         }
 
         ...
@@ -23,7 +23,7 @@ example
         on_end_of_stream {
             self.send(QUEX_TKN_ELSE);
             self.allow_opening_indentation_f = true;
-            return;
+            RETURN;
         }
     }
 
@@ -37,3 +37,13 @@ seen in the example, the occurence of a string delimiter triggers a transition
 to a mode called ``STRING_READER``. The definition of the *end of stream*
 handler demonstrates that event handlers and pattern actions are defined with
 the same syntax.
+
+Note, that in the code section the word
+
+.. description:: RETURN
+
+is used. It ensures that the lexical analyzer returns and synchronizes with 
+the token queue.
+
+   The length of the lexeme.
+

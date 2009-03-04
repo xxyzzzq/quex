@@ -249,7 +249,7 @@ namespace quex {
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
 #   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
 #   define RETURN                                                                \
-    if( self._token_queue->is_empty() ) { CONTINUE; }                            \
+    if( QuexTokenQuex_is_empty(self._token_queue) ) { CONTINUE; }                \
     else {                                                                       \
         return /* self._token_queue->top()->type_id() */;                        \
    }

@@ -205,9 +205,9 @@ def validate(setup, command_line, argv):
 
     # Check that not more than one converter is specified
     converter_n = 0
-    if Setup.converter_iconv_f:             converter_n += 1
-    if Setup.converter_icu_f:               converter_n += 1 
-    if Setup.converter_user_new_func != "": converter_n += 1
+    if setup.converter_iconv_f:             converter_n += 1
+    if setup.converter_icu_f:               converter_n += 1 
+    if setup.converter_user_new_func != "": converter_n += 1
     if converter_n > 1:
         error_msg("More than one character converter has been specified. Note, that the\n" + \
                   "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n" + \

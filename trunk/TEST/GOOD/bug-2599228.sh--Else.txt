@@ -3,5 +3,4 @@ is propperly disabled on systems other then the developper\'s host.
 This variable ensures that the unit tests are re-compiled as soon
 as one of the quex headers changes. This is not necessary for
 installed versions of quex.
-echo 
 
