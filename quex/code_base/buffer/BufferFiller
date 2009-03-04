@@ -74,4 +74,6 @@ namespace quex {
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter>
+
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER__ */

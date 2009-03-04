@@ -15,6 +15,14 @@
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
+    TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_tell_character_index(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_seek_character_index(QuexBufferFiller* alter_ego, 
+                                                                                     const size_t      CharacterIndex); 
+    TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_read_characters(QuexBufferFiller*    alter_ego,
+                                                                                QUEX_TYPE_CHARACTER* start_of_buffer, 
+                                                                                const size_t         N);
+    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_destroy(QuexBufferFiller* alter_ego);
+
 
     TEMPLATE_IN(InputHandleT)    TEMPLATED(QuexBufferFiller_Converter)*
     QuexBufferFiller_Converter_new(InputHandleT*     input_handle,

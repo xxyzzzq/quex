@@ -19,7 +19,14 @@ __header_definitions_txt = """
 #ifdef CONTINUE
 #   undef CONTINUE
 #endif
-#define CONTINUE  $$GOTO_START_PREPARATION$$
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   define CONTINUE  \
+           if( ! QuexTokenQuex_is_full(self._token_queue) ) $$GOTO_START_PREPARATION$$
+           return;
+#else
+#   define CONTINUE \
+           QUEX_ERROR_EXIT("Call to CONTINUE while token queue was disabled. Review command line arguments to quex.");
+#endif
 """
 
 def __header_definitions(LanguageDB):

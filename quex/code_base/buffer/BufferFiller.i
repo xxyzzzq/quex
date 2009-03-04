@@ -578,6 +578,7 @@ namespace quex {
 #endif
 
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
+#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_FILLER_I__ */
 

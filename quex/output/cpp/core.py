@@ -122,6 +122,7 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
 
+    converter_new_str = "(QuexConverter*)0x0"
     if   Setup.converter_icu_f:               converter_new_str = "QuexConverter_ICU_new()"
     elif Setup.converter_iconv_f:             converter_new_str = "QuexConverter_IConv_new()"
     elif Setup.converter_user_new_func != "": converter_new_str = Setup.converter_user_new_func
