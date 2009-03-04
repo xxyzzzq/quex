@@ -477,3 +477,8 @@ shorthand_db = {}
 token_id_db = {}
 
 
+#-----------------------------------------------------------------------------------------
+# token_type_member_list: list of members of a user defined token type. If list is []
+#                         this means that no token type has been defined explicitly.
+#-----------------------------------------------------------------------------------------
+token_type_member_list = []
