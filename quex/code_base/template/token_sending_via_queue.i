@@ -8,7 +8,7 @@ namespace quex {
 #endif
 
 inline void   
-CLASS::send(const __QUEX_SETTING_TOKEN_CLASS_NAME& That) 
+CLASS::send(const QUEX_TYPE_TOKEN& That) 
 {
     QuexTokenQueue_push(_token_queue, That);
     __QUEX_DEBUG_TOKEN_SENDING();
@@ -25,10 +25,13 @@ inline void
 CLASS::send_n(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
 {
     __quex_assert(N > 0);
-    const int AvailableN = QuexTokenQueue_available_n(me);
+    const int AvailableN = QuexTokenQueue_available_n(_token_queue);
     const int N = N > AvailableN ? AvailableN : N;
 
-    for(int n=0; n < N; n++) send(ID); // applies DEBUG of 'send()'
+    for(int n=0; n < N; n++) {
+        QuexTokenQueue_push1(_token_queue, ID);
+    }
+    _token_queue->remaining_repetitions_of_last_token_n = N - AvailableN;
 }
 
 template <typename ContentT>

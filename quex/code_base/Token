@@ -70,6 +70,7 @@ namespace quex {
         const int                 number()             { return _number; }
 
         //     -- write 
+        void    set(const Token&);
         void    set(QUEX_TYPE_TOKEN_ID ID);
         void    set(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text);
         void    set(QUEX_TYPE_TOKEN_ID ID, const int   Number1);
@@ -93,6 +94,10 @@ namespace quex {
     inline void    
     Token::set(QUEX_TYPE_TOKEN_ID Type, const int Number1)
     { _id = Type; _number = Number1; }
+
+    inline void    
+    Token::set(const Token& Other) 
+    { __copy(Other); }
 
     inline void    
     Token::set(QUEX_TYPE_TOKEN_ID Type) 

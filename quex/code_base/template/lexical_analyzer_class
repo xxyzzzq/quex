@@ -194,8 +194,7 @@ $$LEX_ID_DEFINITIONS$$
 #include<quex/code_base/buffer/BufferFiller>
 
 // Quex/User
-#define CLASS                            $$LEXER_CLASS_NAME$$
-#define __QUEX_SETTING_TOKEN_CLASS_NAME  $$TOKEN_CLASS$$
+#define CLASS            $$LEXER_CLASS_NAME$$
 
 #include <quex/code_base/template/QuexMode>
 
@@ -415,7 +414,7 @@ $$MODE_OBJECT_MEMBERS$$
         //
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     private:
-        TokenQueue<$$TOKEN_CLASS$$>*   _token_queue;
+        QuexTokenQueue*   _token_queue;
 #       else
     public:
         $$TOKEN_CLASS$$                the_token;
@@ -500,7 +499,7 @@ $$CLASS_BODY_EXTENSION$$
 #       endif
 
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
-        _token_queue = new TokenQueue<$$TOKEN_CLASS$$>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+        _token_queue = new QuexTokenQueue;
 #       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -564,7 +563,6 @@ $$CONSTRUCTOR_EXTENSTION$$
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
-#undef __QUEX_SETTING_TOKEN_CLASS_NAME
 #undef CLASS
 
 #include <quex/code_base/template/Analyser.i>

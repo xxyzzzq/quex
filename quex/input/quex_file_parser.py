@@ -35,7 +35,7 @@ def do(file_list):
         # read all modes until end of file
         try:
             while 1 + 1 == 2:
-                parse_section(fh, Setup)
+                parse_section(fh)
         except EndOfStreamException:
             pass
         except RegularExpressionException, x:
@@ -135,9 +135,9 @@ def parse_section(fh):
             parse_token_id_definitions(fh)
             return
 
-        elif word == "token_type":       
-            parse_token_type_definitions(fh)
-            return
+        # elif word == "token_type":       
+        #    parse_token_type_definitions(fh)
+        #    return
 
         elif word == "mode":
             mode_definition.parse(fh)
@@ -277,6 +277,7 @@ def parse_token_type_definitions(fh):
     """
     # NOTE: Catching of EOF happens in caller: parse_section(...), the caller
 
+    option_list = parse_token_type_options(fh)
     #
     dummy, i = read_until_letter(fh, ["{"], Verbose=True)
 
@@ -295,6 +296,8 @@ def parse_token_type_definitions(fh):
             if member == None: break
             token_type_member_list.append([member])
             
+def parse_token_type_options(fh):
+    pass
 
 def parse_token_type_member_definition(fh):
     member_name     = ""

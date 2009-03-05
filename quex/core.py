@@ -211,7 +211,7 @@ def __get_mode_db(Setup):
     # (1) input: do the pattern analysis, in case exact counting of newlines is required
     #            (this might speed up the lexer, but nobody might care ...)
     #            pattern_db = analyse_patterns.do(pattern_file)    
-    mode_db = quex_file_parser.do(Setup.input_mode_files, Setup)
+    mode_db = quex_file_parser.do(Setup.input_mode_files)
 
     # (*) perform consistency check 
     consistency_check.do(mode_db)
