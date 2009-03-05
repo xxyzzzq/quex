@@ -1,7 +1,7 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 namespace quex { 
     inline void
-    CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME** result_pp) 
+    CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
     // NOTE: As long as the 'get_token()' function is not called there is nothing
     //       happening to the token in the queue. But, a parser very probably
     //       does a couple af calls to 'get_token()' before a rule triggers 
@@ -21,9 +21,9 @@ namespace quex {
     {
         __quex_assert(_token_queue != 0x0);
         // (i) tokens are in queue --> take next token from stack
-        if( _token_queue->is_empty() == false ) {
+        if( QuexTokenQueue_is_empty(_token_queue) == false ) {
             // DEBUG    
-            *result_pp = _token_queue->quick_pop();
+            *result_pp = QuexTokenQueue_pop(_token_queue);
             return;
         }
 
@@ -37,17 +37,17 @@ namespace quex {
             // to return (see end of analyzer function at REENTRY label). If the tokenstack is
             // non-empty, we return to the caller (spare one check). If its empty the analyzer
             // function (which has recently been setup) is called again.
-        } while ( _token_queue->is_empty() );
+        } while (  QuexTokenQueue_is_empty(_token_queue) );
 #       endif
 
-        *result_pp = _token_queue->quick_pop();
+        *result_pp = QuexTokenQueue_pop(_token_queue);
         return;
     }
 
     inline QUEX_TYPE_TOKEN_ID
-    CLASS::get_token(__QUEX_SETTING_TOKEN_CLASS_NAME* result_p) 
+    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
-        __QUEX_SETTING_TOKEN_CLASS_NAME* tmp = 0x0;
+        QUEX_TYPE_TOKEN* tmp = 0x0;
         get_token(&tmp);
         *result_p = *tmp;
         return result_p->type_id();

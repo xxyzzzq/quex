@@ -11,7 +11,7 @@ from   quex.core_engine.state_machine.core  import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
 from   quex.input.setup    import setup as Setup
 
-def parse(fh, Setup):
+def parse(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)
 
     skip_whitespace(fh)
@@ -67,7 +67,9 @@ def parse_mode_option(fh, new_mode):
     skip_whitespace(fh)
 
     # (*) base modes 
-    if fh.read(1) != "<": return False
+    if fh.read(1) != "<": 
+        fh.seek(-1, 1) 
+        return False
 
     skip_whitespace(fh)
 
