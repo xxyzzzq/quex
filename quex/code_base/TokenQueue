@@ -1,74 +1,112 @@
-// -*- C++ -*- vim: set syntax=cpp:
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
 
-#ifndef __INCLUDE_GUARD__QUEX__TOKEN_QUEUE__
-#define __INCLUDE_GUARD__QUEX__TOKEN_QUEUE__
+#include <quex/code_base/asserts>
+#include <quex/code_base/MemoryManager>
 
-#include <quex/code_base/circular_queue>
-#include <quex/code_base/definitions>
+#include <quex/code_base/temporary_macros_on>
 
-namespace quex {
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex { 
+#endif
 
-    template <typename TokenT>
-    class TokenQueue : 
-        public circular_queue<TokenT> {
-        // NOTES: benchmarks have shown that this circular_queue is 
-        //        trice as fast as the std::deque. So, do not even
-        //        think about replacing it by the standard version!
-    public:
+    TEMPLATIFIER(QuexTokenQueue, QuexToken) {
 
-        // TODO: orthonormal: constructors, destructors, assignment op
-        TokenQueue(const unsigned Size=2048);
-        TokenQueue(const TokenQueue& That) 
-            : circular_queue<TokenT>(That) {}
-    
-        TokenQueue& operator=(const TokenQueue& That)
-            { return (TokenQueue&)circular_queue<TokenT>::operator=(That); }
+        QuexToken*   begin;
+        QuexToken*   read;    // pointer to next token to be read
+        QuexToken*   write;   // pointer to next token to be written
+        QuexToken*   end;
+        /* A token might be 'N' times repeated. This is the only case where a token
+         * queue overflow might occur. When the token queue is full and there are still
+         * 'N' tokens to be repeated, then the remaining 'N' are stored in the following
+         * variable.                                                                      */
+        size_t     remaining_repetitions_of_last_token_n;
 
-        // (*) push operation:
-        //     increment the top-pointer, then write.
-        void    push(const TokenT& That);
-        void    push(QUEX_TYPE_TOKEN_ID Type);
-        template <typename ContentT> 
-        void    push(QUEX_TYPE_TOKEN_ID Type, ContentT Text);
+    } TEMPLATIFIER_END(QuexTokenQueue);
 
-    protected:
-        /* IDEA: use registered iterators to let tokens live in token stack
-           std::vector<iterator>   _registered_iterators;
-           friend class            TokenQueue::iterator;
-        */
-    };
+#   define QuexTokenQueue_is_full(me) \
+           ( me->write == me->end )
 
-    template<typename TokenT>
-    inline 
-    TokenQueue<TokenT>::TokenQueue(const unsigned Size /* = 2048 */) 
-        : circular_queue<TokenT>(Size) {}
+#   define QuexTokenQueue_is_empty(me) \
+           ( me->read == me->write )
+
+#   define QuexTokenQueue_available_n(me) \
+           ( (me->end - me->write) )
+
+#   define QuexTokenQueue_pop(me) \
+           ( (me->read)++ )
+
+#   define QuexTokenQueue_reset(me) \
+#          ( me->read = me->write = me->begin )
+
+/* Allow settings of maximum 16 token arguments. If more are required, extend the 
+ * macro set below, or better define a struct for some some tokens.             */
+#   define QuexTokenQueue_push(me, Arg) \
+        ( *me->write->set(Arg) )
+
+#   define QuexTokenQueue_push1(me, Arg) \
+        ( *me->write->set(Arg) )
+
+#   define QuexTokenQueue_push2(me, Arg0, Arg1) \
+        do { *me->write->set(Arg0, Arg1); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push3(me, Arg0, Arg1, Arg2) \
+        do { *me->write->set(Arg0, Arg1, Arg2); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push4(me, Arg0, Arg1, Arg2, Arg3) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push5(me, Arg0, Arg1, Arg2, Arg3, Arg4) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push6(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push7(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push8(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push9(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push10(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push11(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push12(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push13(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push14(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push15(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14); ++(me->write) } while(0)
+
+#   define QuexTokenQueue_push16(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15) \
+        do { *me->write->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15); ++(me->write) } while(0)
 
 
-    template<typename TokenT>
-    inline  void   
-    TokenQueue<TokenT>::push(const TokenT& That) 
-    { circular_queue<TokenT>::push(That); }    
+#   ifdef QUEX_OPTION_ASSERTS
+#      define QUEX_TOKEN_QUEUE_ASSERT(me)        \
+          __quex_assert(me->read  >= me->begin); \
+          __quex_assert(me->write >= me->read);  \
+          __quex_assert(me->write <= me->end);
+#   else
+#      define QUEX_TOKEN_QUEUE_ASSERT(me) /* empty */
+#   endif
 
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
 
-    template<typename TokenT>
-    inline void 
-    TokenQueue<TokenT>::push(QUEX_TYPE_TOKEN_ID Type)
-    { 
-        circular_queue<TokenT>::__increment_top(); 
-        circular_queue<TokenT>::_top->set(Type); 
-    }
+#include <quex/code_base/temporary_macros_on>
 
-    template<typename TokenT>
-    template<typename ContentT>
-    inline void  
-    TokenQueue<TokenT>::push(QUEX_TYPE_TOKEN_ID Type, ContentT Content)
-    { 
-        circular_queue<TokenT>::__increment_top(); 
-        circular_queue<TokenT>::_top->set(Type, Content); 
-    }
-
-
-}
-
-#endif // __INCLUDE_GUARD__QUEX__TOKEN_QUEUE__
-
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__ */
