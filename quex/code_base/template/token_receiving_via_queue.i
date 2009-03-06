@@ -1,4 +1,7 @@
 // -*- C++ -*-   vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
+#define __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
+
 namespace quex { 
 
 #   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
@@ -46,39 +49,51 @@ namespace quex {
 #       endif
 
         *result_pp = QuexTokenQueue_pop(_token_queue);
+#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+        return (*result_pp)->type_id();
+#       else
         return;
+#       endif
     }
+
 
 #   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
     inline QUEX_TYPE_TOKEN_ID
-#   else
-    inline void
-#   endif
     CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
-        QUEX_TYPE_TOKEN* tmp = 0x0;
+        QUEX_TYPE_TOKEN*   tmp = 0x0;
+        QUEX_TYPE_TOKEN_ID type_id = get_token(&tmp);
+        *result_p = *tmp;
+        return type_id;
+    }
+#   else
+    inline void
+    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    {
+        QUEX_TYPE_TOKEN*   tmp = 0x0;
         get_token(&tmp);
         *result_p = *tmp;
-        return result_p->type_id();
+        return;
     }
+#   endif
+
 
 #   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
     inline QUEX_TYPE_TOKEN_ID
+    CLASS::get_token() 
+    {
+        QUEX_TYPE_TOKEN* tmp = 0x0;
+        return get_token(&tmp);
+    }
 #   else
     inline QUEX_TYPE_TOKEN
-#   endif
     CLASS::get_token() 
     {
         QUEX_TYPE_TOKEN* tmp = 0x0;
         get_token(&tmp);
-#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
-        return tmp->type_id();
-#       else
         return *tmp;
-#       endif
     }
-
-#endif
-
-
+#   endif
 }
+
+#endif // __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
