@@ -1,6 +1,11 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 namespace quex { 
+
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+    inline QUEX_TYPE_TOKEN_ID
+#   else
     inline void
+#   endif
     CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
     // NOTE: As long as the 'get_token()' function is not called there is nothing
     //       happening to the token in the queue. But, a parser very probably
@@ -37,14 +42,18 @@ namespace quex {
             // to return (see end of analyzer function at REENTRY label). If the tokenstack is
             // non-empty, we return to the caller (spare one check). If its empty the analyzer
             // function (which has recently been setup) is called again.
-        } while (  QuexTokenQueue_is_empty(_token_queue) );
+        } while ( QuexTokenQueue_is_empty(_token_queue) );
 #       endif
 
         *result_pp = QuexTokenQueue_pop(_token_queue);
         return;
     }
 
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
     inline QUEX_TYPE_TOKEN_ID
+#   else
+    inline void
+#   endif
     CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
         QUEX_TYPE_TOKEN* tmp = 0x0;
@@ -52,6 +61,24 @@ namespace quex {
         *result_p = *tmp;
         return result_p->type_id();
     }
+
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+    inline QUEX_TYPE_TOKEN_ID
+#   else
+    inline QUEX_TYPE_TOKEN
+#   endif
+    CLASS::get_token() 
+    {
+        QUEX_TYPE_TOKEN* tmp = 0x0;
+        get_token(&tmp);
+#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+        return tmp->type_id();
+#       else
+        return *tmp;
+#       endif
+    }
+
+#endif
 
 
 }

@@ -119,6 +119,7 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_MODE_TRANSITIONS")
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
     txt = set_switch(txt, True,                    "QUEX_OPTION_INCLUDE_STACK_SUPPORT")
+    txt = set_switch(txt, not Setup.disable_return_token_id_f, "__QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID")
     txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
 
@@ -154,6 +155,8 @@ def write_engine_header(Modes, Setup):
                 ["$$TOKEN_CLASS$$",                      Setup.input_token_class_name],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.input_token_class_file.replace("//","/")],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
+                ["$$TOKEN_QUEUE_SIZE$$",                 repr(Setup.token_queue_size)],
+                ["$$TOKEN_QUEUE_SAFETY_BORDER$$",        repr(Setup.token_queue_safety_border)],
                 ["$$QUEX_TYPE_CHARACTER$$",              quex_character_type_str],
                 ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],

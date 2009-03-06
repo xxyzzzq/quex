@@ -34,10 +34,16 @@ Following settings can be made on the command line:
    When using IBM's ICU library for character conversion (command line option ``--icu``),
    the intermediate buffer size is determined by this setting.
 
-.. cmacro:: QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
+.. cmacro:: QUEX_SETTING_TOKEN_QUEUE_SIZE
 
    Defines the initial number of elements of the token queue--if it is 
    enable (see also command line option ``--no-token-queue``)
+
+.. cmacro:: QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
+
+   Defines the size of the safety border. In other words, this corresponds to the 
+   maximum number of tokens to be sent caused by a pattern match '-1'. If each
+   pattern sends only one token, it can be set safely to zero.
 
 .. cmacro:: QUEX_SETTING_TRANSLATION_BUFFER_SIZE
 

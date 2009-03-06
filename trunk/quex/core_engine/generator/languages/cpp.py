@@ -15,17 +15,22 @@ def __nice(SM_ID):
 __header_definitions_txt = """
 #include <quex/code_base/template/Analyser>
 #include <quex/code_base/buffer/Buffer>
+#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   include <quex/code_base/TokenQueue>
+#endif
 
 #ifdef CONTINUE
 #   undef CONTINUE
 #endif
+
+#define RETURN return
+
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   define CONTINUE  \
-           if( ! QuexTokenQuex_is_full(self._token_queue) ) $$GOTO_START_PREPARATION$$
-           return;
+#   define CONTINUE \
+      $$GOTO_START_PREPARATION$$ 
 #else
 #   define CONTINUE \
-           QUEX_ERROR_EXIT("Call to CONTINUE while token queue was disabled. Review command line arguments to quex.");
+      QUEX_ERROR_EXIT("Call to CONTINUE while token queue was disabled. Review command line arguments to quex.");
 #endif
 """
 
@@ -194,10 +199,10 @@ $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
 $$END_OF_STREAM_ACTION$$
-#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-        return /*__QUEX_TOKEN_ID_TERMINATION*/;
-#else
+#ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
         return __QUEX_TOKEN_ID_TERMINATION;
+#else
+        return /*__QUEX_TOKEN_ID_TERMINATION*/;
 #endif
 
 $$TERMINAL_DEFAULT-DEF$$
@@ -225,6 +230,16 @@ __on_continue_reentry_preparation_str = """
 $$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
+    
+    if( QuexTokenQueue_is_full(self._token_queue) ) 
+#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+        return QuexTokenQueue_begin(self._token_queue)->type_id());
+#       else
+        return;
+#       endif
+    }
+    QUEX_TOKEN_QUEUE_ASSERT(self._token_queue); 
+
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
 $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
@@ -244,10 +259,10 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-#   ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-       return /*__QUEX_TOKEN_ID_UNINITIALIZED*/;
-#   else
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
        return __QUEX_TOKEN_ID_UNINITIALIZED;
+#   else
+       return /*__QUEX_TOKEN_ID_UNINITIALIZED*/;
 #   endif
 #elif defined(QUEX_OPTION_ASSERTS)
        QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
