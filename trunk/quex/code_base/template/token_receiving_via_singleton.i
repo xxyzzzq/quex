@@ -1,7 +1,22 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 
 namespace quex { 
+
+
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
     inline QUEX_TYPE_TOKEN_ID
+#   else
+    inline void
+#   endif
+    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    {
+    }
+
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+    inline QUEX_TYPE_TOKEN_ID
+#   else
+    inline QUEX_TYPE_TOKEN
+#   endif
     CLASS::get_token() 
     {
         // The framework / constructor **should** ensure that at this point the two
