@@ -378,23 +378,23 @@ $$MODE_OBJECT_MEMBERS$$
         // (*) mode stack allows for pushing and popping of lexical analysis modes
         std::vector<QuexMode*>   _mode_stack;
 
-        // (*) The Token Queue ___________________________________________________________
-        //
-        // Any time a token is created, it is pushed on the token queue. Lexical analysis
-        // only happens if stack is empty, so that it is filled up again.
-        //
-        // NOTE: A token stack is necessary whenever tokens are created that do not
-        //       relate directly to patterns. A token stack gives the great possibility
-        //       to 'send' tokens from anywhere inside an action or a state transition.
-        // 
-        //       Otherwise, one would be restricted to sending one token by pattern.        
-        //
+        // NOTE: A pointer to an object of the token queue/object is used in order to make
+        //       memory management more flexible. The token queue/token object is heavily
+        //       used and it should be possible to put it somewhere in memory with other
+        //       heavily used data so that the cache can take advantage of data locality.
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     private:
+        // (*) The Token Queue ___________________________________________________________
+        //     The token queue is **private**, because the user does not need direct
+        //      access. get_token(Token**) is enough to get access to the current token. 
         QuexTokenQueue*   _token_queue;
 #       else
     public:
-        $$TOKEN_CLASS$$   the_token;
+        // (*) The Token _________________________________________________________________
+        //     get_token(Token**) does not make a whole lot of sense, since the token 
+        //     pointer always points to the same object. The object can be accessed
+        //     by this **public** pointer.
+        QUEX_TYPE_TOKEN*  token;
 #       endif
     public:
         // (*) Who and what am I ? _______________________________________________________
@@ -478,6 +478,8 @@ $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new QuexTokenQueue;
         QuexTokenQueue_init(_token_queue);
+#       else
+        token = new QUEX_TYPE_TOKEN;
 #       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
