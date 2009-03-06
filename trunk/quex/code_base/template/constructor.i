@@ -189,6 +189,8 @@ CLASS::~CLASS()
     QuexAnalyser_destruct(this);
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
     delete _token_queue;
+#   else;
+    delete token;
 #   endif
     if( __file_handle_allocated_by_constructor != 0x0 ) {
         std::fclose(__file_handle_allocated_by_constructor); 
