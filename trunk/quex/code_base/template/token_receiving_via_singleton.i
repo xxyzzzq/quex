@@ -1,37 +1,60 @@
 // -*- C++ -*-   vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_SINGLETON_I__
+#define __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_SINGLETON_I__
 
 namespace quex { 
 
 
 #   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
     inline QUEX_TYPE_TOKEN_ID
+    CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
+    {
+        QuexAnalyser::current_analyser_function(this);
+        *result_pp = this->token;
+        return this->token->type_id();
+    }
 #   else
     inline void
-#   endif
-    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
     {
+        QuexAnalyser::current_analyser_function(this);
+        *result_pp = this->token;
+        return;
     }
+#   endif
 
 #   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
     inline QUEX_TYPE_TOKEN_ID
+    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    {
+        QUEX_TYPE_TOKEN_ID type_id = QuexAnalyser::current_analyser_function(this);
+        *result_p = *(this->token);
+        return type_id;
+    }
 #   else
-    inline QUEX_TYPE_TOKEN
+    inline void
+    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    {
+        QuexAnalyser::current_analyser_function(this);
+        *result_p = *(this->token);
+        return;
+    }
 #   endif
+
+#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+    inline QUEX_TYPE_TOKEN_ID
     CLASS::get_token() 
     {
-        // The framework / constructor **should** ensure that at this point the two
-        // pointers are identical. Since this function is called very often the
-        // assignment of safety (prev=current) is not done. Instead, we only check
-        // (as long as NDEBUG is not defined) that the framework assigns the variables
-        // propperly.
-#       if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
         return QuexAnalyser::current_analyser_function(this);
-#       else
-        QUEX_TYPE_TOKEN_ID token_id = __QUEX_TOKEN_ID_TERMINATION;
-        do {
-            token_id = QuexAnalyser::current_analyser_function(this);
-        } while( token_id == __QUEX_TOKEN_ID_UNINITIALIZED );
-        return token_id;
-#       endif
     }
+#   else
+    inline QUEX_TYPE_TOKEN
+    CLASS::get_token() 
+    {
+        QuexAnalyser::current_analyser_function(this);
+        return *(this->token);
+    }
+#   endif
 }
+
+#endif // __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_SINGLETON_I__
