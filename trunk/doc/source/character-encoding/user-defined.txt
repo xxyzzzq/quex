@@ -1,5 +1,5 @@
-User Implemented Converters
-===========================
+Customized Converters
+=====================
 
 For 'normal' applications the provided converters provide enough performance
 and a sufficiently low memory footprint. There is no need for the user to
