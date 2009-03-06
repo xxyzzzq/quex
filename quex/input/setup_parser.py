@@ -55,15 +55,14 @@ def do(argv):
     setup.output_code_file        = __prepare_file_name(setup, ".cpp")
     setup.output_core_engine_file = __prepare_file_name(setup, "-core-engine.cpp")
 
-    setup.buffer_limit_code    = __get_integer(setup.buffer_limit_code, "--buffer-limit")
+    setup.buffer_limit_code          = __get_integer("buffer_limit_code")
     setup.control_character_code_list = [setup.buffer_limit_code]
 
-    setup.input_token_counter_offset = __get_integer(setup.input_token_counter_offset,
-                                                     "--token-offset")
-    setup.token_id_termination       = __get_integer(setup.token_id_termination, 
-                                                     "--token-id-termination")
-    setup.token_id_uninitialized     = __get_integer(setup.token_id_uninitialized, 
-                                                     "--token-id-uninitialized")
+    setup.input_token_counter_offset = __get_integer("input_token_counter_offset")
+    setup.token_id_termination       = __get_integer("token_id_termination")
+    setup.token_id_uninitialized     = __get_integer("token_id_uninitialized")
+    setup.token_queue_size           = __get_integer("token_queue_size")
+    setup.token_queue_safety_border  = __get_integer("token_queue_safety_border")
     validate(setup, command_line, argv)
 
     if setup.input_foreign_token_id_file != "": 
@@ -175,6 +174,14 @@ def validate(setup, command_line, argv):
         error_msg("Token id offset (--token-offset) < token id termination (--token-id-termination).\n" + \
                   "Maybe it works.", DontExitF=True)
     
+    # token queue
+    if setup.token_queue_size <= setup.token_queue_safety_border + 1:
+        if setup.token_queue_size == setup.token_queue_safety_border: cmp_str = "equal to"
+        else:                                                         cmp_str = "less than"
+        error_msg("Token queue size is %i is %s token queue safety border %i + 1.\n" % \
+                  (setup.token_queue_size, cmp_str, setup.token_queue_safety_border) + 
+                  "Set appropriate values with --token-queue-size and --token-queue-safety-border.")
+
     # check that names are valid identifiers
     __check_identifier(setup, "input_token_id_prefix", "Token prefix")
     __check_identifier(setup, "output_engine_name",    "Engine name")
@@ -239,7 +246,8 @@ def __check_identifier(setup, Candidate, Name):
     error_msg("%s must be a valid identifier (%s).\n" % (Name, repr(CommandLineOption)[1:-1]) + \
               "Received: '%s'" % value)
 
-def __get_integer(code, option_name):
+def __get_integer(MemberName):
+    code = setup.__dict__[MemberName]
     try:
         if   type(code) == int: return code
         elif len(code) > 2:
@@ -247,6 +255,7 @@ def __get_integer(code, option_name):
             elif code[:2] == "0o": return int(code, 8)
         return int(code)
     except:
+        option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
         error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
 
 def __prepare_file_name(Setup, Suffix):

@@ -13,6 +13,7 @@ SETUP_INFO = {
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
     "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],                
+    "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "converter_iconv_f":              [["--iconv"],                          FLAG],
     "converter_icu_f":                [["--icu"],                            FLAG],
@@ -31,6 +32,8 @@ SETUP_INFO = {
     "token_id_termination":           [["--token-id-termination"],           "0"],
     "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
     "input_token_id_prefix":          [["--token-prefix"],                   "QUEX_TKN_"],
+    "token_queue_size":               [["--token-queue-size"],               "64"],
+    "token_queue_safety_border":      [["--token-queue-safety-border"],      "16"],
     "input_user_token_id_file":       [["--user-token-id-file"],             ""],  # disables token-id file generation!
     "no_mode_transition_check_f":     [["--no-mode-transition-check"],       FLAG],
     "output_debug_f":                 [["--debug"],                          FLAG],

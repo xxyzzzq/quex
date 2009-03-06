@@ -68,7 +68,7 @@ def parse_mode_option(fh, new_mode):
 
     # (*) base modes 
     if fh.read(1) != "<": 
-        fh.seek(-1, 1) 
+        # fh.seek(-1, 1) 
         return False
 
     skip_whitespace(fh)
@@ -262,6 +262,10 @@ def check_for_event_specification(word, fh, new_mode):
         # Event: start of indentation, 
         #        first non-whitespace after whitespace
         new_mode.on_indentation = code_fragment.parse(fh, "%s::on_indentation event handler" % new_mode.name)
+        if Setup.disable_token_queue_f:
+            error_msg("Using 'on_indentation' event handler, while the token queue is disabled.\n" + \
+                      "Now, no tokens can be sent in this event handler. Maybe, the command\n" + \
+                      "line flag '--no-token-queue' should be omitted.", DontExitF=True)
         return True
 
     elif word == "on_failure" or word == "<<FAIL>>":

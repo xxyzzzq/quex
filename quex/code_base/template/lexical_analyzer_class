@@ -23,8 +23,11 @@
 $$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
 #endif
 #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
-#       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_SIZE
+#       define QUEX_SETTING_TOKEN_QUEUE_SIZE  ((size_t)$$TOKEN_QUEUE_SIZE$$)
+#   endif
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
+#       define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)$$TOKEN_QUEUE_SAFETY_BORDER$$)
 #   endif
 #endif
 
@@ -225,37 +228,9 @@ namespace quex {
 #   include <quex/code_base/template/IncludeStack>
 #endif
 
-// RETURN: _____________________________________________________________________
-//
-//  -- Return from pattern action to the function that called the
-//     lexer - but only in case that the token stack was filled.
-//
-//     QUEX core: If not, the analyser function automatically jumps to the 
-//                initial state. This happens through a little trick,
-//                were 'break' jumps to the goto statement that guides
-//                to the entry point of the state machine that is
-//                currently active.
-//
-//     This is very handy, when dealing with functions that not
-//     necessarily fill the token queue, such as push_pure_text_token().
-//     If no pure text appeared, the stack is empty after this function
-//     call. Similar things happen with table patterns.
-//
-//  -- Note, that at some point in time End of File <<EOF>> will
-//     hit the token stack, so the lexing won't continue infinitly.
-//     
-//
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
-#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-#   define RETURN                                                                \
-    if( QuexTokenQuex_is_empty(self._token_queue) ) { CONTINUE; }                \
-    else {                                                                       \
-        return /* self._token_queue->top()->type_id() */;                        \
-   }
-#else
-#   define RETURN  return
+#ifndef    __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
+$$SWITCH$$ __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
 #endif
-
 
 // START:
 $$LEXER_DERIVED_CLASS_DECL$$
@@ -307,13 +282,15 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         QUEX_TYPE_CHARACTER*  buffer_text_end();
         const size_t          buffer_distance_to_text_end();
         
-        //
         // -- token stream: read next token
-#       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
         QUEX_TYPE_TOKEN_ID   get_token();
+        QUEX_TYPE_TOKEN_ID   get_token(TOKEN_TYPE*   result_p);
+        QUEX_TYPE_TOKEN_ID   get_token(TOKEN_TYPE**  result_pp);
 #       else
-        QUEX_TYPE_TOKEN_ID   get_token($$TOKEN_CLASS$$*  result_p);
-        void                 get_token($$TOKEN_CLASS$$** result_pp);
+        QUEX_TOKEN_TYPE      get_token();
+        void                 get_token(TOKEN_TYPE*   result_p);
+        void                 get_token(TOKEN_TYPE**  result_pp);
 #       endif   
         //
         // (*) Mode handling
@@ -500,6 +477,7 @@ $$CLASS_BODY_EXTENSION$$
 
 #       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
         _token_queue = new QuexTokenQueue;
+        QuexTokenQueue_init(_token_queue);
 #       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
