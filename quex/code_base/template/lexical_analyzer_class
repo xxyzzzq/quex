@@ -394,7 +394,7 @@ $$MODE_OBJECT_MEMBERS$$
         QuexTokenQueue*   _token_queue;
 #       else
     public:
-        $$TOKEN_CLASS$$                the_token;
+        $$TOKEN_CLASS$$   the_token;
 #       endif
     public:
         // (*) Who and what am I ? _______________________________________________________
