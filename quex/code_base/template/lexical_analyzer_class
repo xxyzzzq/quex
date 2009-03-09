@@ -394,7 +394,7 @@ $$MODE_OBJECT_MEMBERS$$
         //     get_token(Token**) does not make a whole lot of sense, since the token 
         //     pointer always points to the same object. The object can be accessed
         //     by this **public** pointer.
-        QUEX_TYPE_TOKEN*  token;
+        QUEX_TYPE_TOKEN*    token;
 #       endif
     public:
         // (*) Who and what am I ? _______________________________________________________
@@ -480,6 +480,7 @@ $$CLASS_BODY_EXTENSION$$
         QuexTokenQueue_init(_token_queue);
 #       else
         token = new QUEX_TYPE_TOKEN;
+        token_repetion_n = 0;
 #       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -526,13 +527,9 @@ $$CONSTRUCTOR_EXTENSTION$$
 #    include <quex/code_base/template/Accumulator.i>
 #endif
 
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   include <quex/code_base/template/token_receiving_via_queue.i>
-#   include <quex/code_base/template/token_sending_via_queue.i>
-#else
-#   include <quex/code_base/template/token_receiving_via_singleton.i>
-#   include <quex/code_base/template/token_sending_via_singleton.i>
-#endif
+#include <quex/code_base/template/token_sending.i>
+#include <quex/code_base/template/token_receiving.i>
+
 #include <quex/code_base/template/mode_handling.i>
 #ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #   include <quex/code_base/template/IncludeStack.i>
