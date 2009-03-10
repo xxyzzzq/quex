@@ -50,7 +50,7 @@ file_str = \
 
 /* Definition of essential token identifiers that the analyser engine requires. */
 #if defined(__QUEX_TOKEN_ID_TERMINATION) || defined(__QUEX_TOKEN_ID_UNINITIALIZED)
-#    error \"Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/descriptions' shall **not** be included before this file.\"
+#    error \"Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/definitions' shall **not** be included before this file.\"
 #endif
 /* Note, we can very well refer in macros to things that are defined below. */
 #define __QUEX_TOKEN_ID_TERMINATION    ($$TOKEN_PREFIX$$TERMINATION)

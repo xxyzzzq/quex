@@ -43,6 +43,7 @@ namespace quex {
 #   define QuexTokenQueue_is_empty(me)     (me->read_iterator == me->write_iterator)
 #   define QuexTokenQueue_pop(me)          (me->read_iterator++)
 #   define QuexTokenQueue_begin(me)        (me->begin)
+#   define QuexTokenQueue_back(me)         (me->end - 1)
 #   define QuexTokenQueue_available_n(me)  (me->end - me->write_iterator)
 
 /* Allow settings of maximum 16 token arguments. If more are required, extend the 
@@ -61,43 +62,6 @@ namespace quex {
 
 #   define QuexTokenQueue_push4(me, Arg0, Arg1, Arg2, Arg3) \
         do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push5(me, Arg0, Arg1, Arg2, Arg3, Arg4) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push6(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push7(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push8(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push9(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push10(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push11(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push12(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push13(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push14(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push15(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push16(me, Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15); ++(me->write_iterator); } while(0)
-
 
 #   ifdef QUEX_OPTION_ASSERTS
 #      define QUEX_TOKEN_QUEUE_ASSERT(me)        \
