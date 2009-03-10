@@ -4,45 +4,14 @@
 
 namespace quex { 
 
-#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
-#      define __QUEX_RETURN_TYPE              QUEX_TYPE_TOKEN_ID
-#      define __QUEX_RETURN_THIS(TOKEN_ID)    return (TOKEN_ID);
-#      define __QUEX_REENTRY_CONDITION        (QuexTokenQueue_is_empty(_token_queue))
-#      define __QUEX_TOKEN_ID_VAR_DEF(VAR)    QUEX_TYPE_TOKEN_ID   VAR    
-#      define __QUEX_ANALYZER_CALL(VAR)       VAR = QuexAnalyser::current_analyser_function(this)
-
-#   else
-#      define __QUEX_RETURN_TYPE              void
-#      define __QUEX_RETURN_THIS(TOKEN_ID)    return (TOKEN_ID);
-#      define __QUEX_REENTRY_CONDITION        (token->type_id() == __QUEX_TOKEN_ID_UNINITIALIZED)
-#      define __QUEX_TOKEN_ID_VAR_DEF(VAR)    /* type_id not used */
-#      define __QUEX_ANALYZER_CALL(VAR)       QuexAnalyser::current_analyser_function(this)
-
-#   endif
-
 #   if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-#      undef   __QUEX_REENTRY_CONDITION
-#      define  __QUEX_REENTRY_CONDITION       (false)
+#      undef   QUEX_TOKEN_POLICY_NO_TOKEN
+#      define  QUEX_TOKEN_POLICY_NO_TOKEN()       (false)
 #   endif
 
-#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#      define __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN(TOKEN_P)          \
-              if( QuexTokenQueue_is_empty(_token_queue) == false ) {          \
-                 TOKEN_P = QuexTokenQueue_pop(_token_queue);                  \
-                 __QUEX_RETURN_THIS((*result_pp)->type_id());                 \
-              }                                                               \
-              else if( token_queue->remaining_repetitions_of_last_token_n ) { \
-                 --(token_queue->remaining_repetitions_of_last_token_n)       \
-                 TOKEN_P = QuexTokenQueue_back(_token_queue);                 \
-                 __QUEX_RETURN_THIS(token->type_id());                        \
-              }
-#   else
-#      define __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN(TOKEN_P) \
-              /* nothing */
-#   endif
       
 #   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-    inline __QUEX_RETURN_TYPE
+    inline void
     CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
     /* NOTE: As long as the 'get_token()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
@@ -61,58 +30,53 @@ namespace quex {
      *    Token-ID = '$$TOKEN_CLASS$$::ID_UNITIALIZED' is returned in 
      *               case that no  token could be read.                                      */
     {
-        __QUEX_TOKEN_ID_VAR_DEF(type_id);
-
         /* (i) tokens are in queue --> take next token from stack                            */
-        __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN(**result_pp);
+        QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(*result_pp);
 
         /* In case a mode change happend inside the pattern actions, the function is forced
          * to return (see end of analyzer function at REENTRY label). If the tokenstack is
          * non-empty, we return to the caller (spare one check). If its empty the analyzer
          * function (which has recently been setup) is called again.                        */
-        do     __QUEX_ANALYZER_CALL(type_id); 
-        while( __QUEX_REENTRY_CONDITION );        
+        do   __QUEX_ANALYZER_CALL(type_id); 
+        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         *result_pp = QuexTokenQueue_pop(_token_queue);
-        __QUEX_RETURN_THIS((*result_pp)->type_id()); 
+        return;
     }
 #   endif /* QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE */
 
-    inline __QUEX_RETURN_TYPE
+    inline void
     CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
         QUEX_TYPE_TOKEN*   tmp = 0x0;
-        __QUEX_TOKEN_ID_VAR_DEF(type_id);
 
-        __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN();
+        QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(result_p);
 
-        do     __QUEX_ANALYZER_CALL(type_id); 
-        while( __QUEX_REENTRY_CONDITION );        
+        do   QuexAnalyser::current_analyser_function(this);
+        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         *result_p = *tmp;
 
-        __QUEX_RETURN_THIS(type_id);
+        return;
     }
 
 
-    inline __QUEX_RETURN_TYPE
+    inline void
     CLASS::get_token() 
     {
         QUEX_TYPE_TOKEN*   tmp = 0x0;
-        __QUEX_TOKEN_ID_VAR_DEF(type_id);
 
-        __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN();
+        QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(tmp);
 
-        do     __QUEX_ANALYZER_CALL(type_id); 
-        while( __QUEX_REENTRY_CONDITION );        
+        do   QuexAnalyser::current_analyser_function(this);
+        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
-        __QUEX_RETURN_THIS(type_id);
+        return;
     }
 }
 
-#undef __QUEX_RETURN_TYPE
 #undef __QUEX_RETURN_THIS
-#undef __QUEX_REENTRY_CONDITION
+#undef QUEX_TOKEN_POLICY_NO_TOKEN
 #undef __QUEX_TOKEN_ID_VAR_DEF
 #undef __QUEX_ANALYZER_CALL
 #undef __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN
