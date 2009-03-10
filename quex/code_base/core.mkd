@@ -36,19 +36,17 @@ __QUEX_CORE = \
          ./buffer/plain/BufferFiller_Plain.i \
          ./buffer/asserts \
          ./template/IncludeStack.i \
-         ./template/token_receiving_via_queue.i \
+         ./template/token_receiving.i \
          ./template/dumpster.i \
          ./template/Accumulator \
          ./template/QuexMode \
          ./template/Analyser.i \
          ./template/mode_handling.i \
          ./template/buffer_access.i \
-         ./template/token_receiving_via_singleton.i \
          ./template/PostCategorizer \
-         ./template/token_sending_via_queue.i \
+         ./template/token_sending.i \
          ./template/lexical_analyzer_class \
          ./template/constructor.i \
-         ./template/token_sending_via_singleton.i \
          ./template/Accumulator.i \
          ./template/misc.i \
          ./template/Analyser \

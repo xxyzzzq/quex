@@ -447,7 +447,6 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
 
     return txt
     
-
 def __frame_of_all(Code, HeaderFile, LexerClassName):
     return "#include \"%s\"\n" % HeaderFile                 + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
@@ -477,7 +476,6 @@ def __get_if_in_interval(TriggerSet):
         return "if( input == %i || input == %i ) {\n" % (TriggerSet.begin, TriggerSet.end - 1)
     else:
         return "if( input >= %i && input < %i ) {\n" % (TriggerSet.begin, TriggerSet.end)
-
 
 def __require_terminating_zero_preparation(LanguageDB, CodeStr):
     CommentDelimiterList = LanguageDB["$comment-delimiters"]
