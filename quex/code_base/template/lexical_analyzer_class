@@ -285,12 +285,16 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // -- token stream: read next token
 #       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
         QUEX_TYPE_TOKEN_ID   get_token();
-        QUEX_TYPE_TOKEN_ID   get_token(TOKEN_TYPE*   result_p);
-        QUEX_TYPE_TOKEN_ID   get_token(TOKEN_TYPE**  result_pp);
+        QUEX_TYPE_TOKEN_ID   get_token(QUEX_TYPE_TOKEN*   result_p);
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+        QUEX_TYPE_TOKEN_ID   get_token(QUEX_TYPE_TOKEN**  result_pp);
+#       endif
 #       else
-        QUEX_TOKEN_TYPE      get_token();
-        void                 get_token(TOKEN_TYPE*   result_p);
-        void                 get_token(TOKEN_TYPE**  result_pp);
+        void                 get_token();
+        void                 get_token(QUEX_TYPE_TOKEN*   result_p);
+#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+        void                 get_token(QUEX_TYPE_TOKEN**  result_pp);
+#       endif
 #       endif   
         //
         // (*) Mode handling
