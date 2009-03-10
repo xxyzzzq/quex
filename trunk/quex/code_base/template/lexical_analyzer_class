@@ -19,10 +19,16 @@
 // otherwise define a default value
 #define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"$$CORE_ENGINE_CHARACTER_CODING$$")
 
-#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE_DISABLED
-$$SWITCH$$ QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifndef QUEX_OPTION_TOKEN_POLICY_SINGLETON_DISABLED
+$$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_SINGLETON
 #endif
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
+$$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_QUEUE
+#endif
+#ifndef QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE_DISABLED
+$$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE
+#endif
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   ifndef     QUEX_SETTING_TOKEN_QUEUE_SIZE
 #       define QUEX_SETTING_TOKEN_QUEUE_SIZE  ((size_t)$$TOKEN_QUEUE_SIZE$$)
 #   endif
@@ -218,7 +224,7 @@ namespace quex {
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/template/Accumulator>
 #endif
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/TokenQueue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
@@ -283,19 +289,11 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         const size_t          buffer_distance_to_text_end();
         
         // -- token stream: read next token
-#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
-        QUEX_TYPE_TOKEN_ID   get_token();
-        QUEX_TYPE_TOKEN_ID   get_token(QUEX_TYPE_TOKEN*   result_p);
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-        QUEX_TYPE_TOKEN_ID   get_token(QUEX_TYPE_TOKEN**  result_pp);
-#       endif
-#       else
         void                 get_token();
         void                 get_token(QUEX_TYPE_TOKEN*   result_p);
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
         void                 get_token(QUEX_TYPE_TOKEN**  result_pp);
 #       endif
-#       endif   
         //
         // (*) Mode handling
         //
@@ -386,7 +384,7 @@ $$MODE_OBJECT_MEMBERS$$
         //       memory management more flexible. The token queue/token object is heavily
         //       used and it should be possible to put it somewhere in memory with other
         //       heavily used data so that the cache can take advantage of data locality.
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
     private:
         // (*) The Token Queue ___________________________________________________________
         //     The token queue is **private**, because the user does not need direct
@@ -479,12 +477,11 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "###############################################################################\n";
 #       endif
 
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
         _token_queue = new QuexTokenQueue;
         QuexTokenQueue_init(_token_queue);
 #       else
-        token = new QUEX_TYPE_TOKEN;
-        token_repetion_n = 0;
+        token = 0x0; /* call to 'get_token(token*)' provides pointer to some place in memory. */
 #       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN

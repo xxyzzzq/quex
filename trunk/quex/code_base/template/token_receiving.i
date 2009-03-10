@@ -2,15 +2,16 @@
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
 #define __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
 
+#include <quex/code_base/template/TokenPolicy>
+
 namespace quex { 
 
 #   if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
 #      undef   QUEX_TOKEN_POLICY_NO_TOKEN
 #      define  QUEX_TOKEN_POLICY_NO_TOKEN()       (false)
 #   endif
-
       
-#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     inline void
     CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
     /* NOTE: As long as the 'get_token()' function is not called there is nothing
@@ -37,48 +38,36 @@ namespace quex {
          * to return (see end of analyzer function at REENTRY label). If the tokenstack is
          * non-empty, we return to the caller (spare one check). If its empty the analyzer
          * function (which has recently been setup) is called again.                        */
-        do   __QUEX_ANALYZER_CALL(type_id); 
+        do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         *result_pp = QuexTokenQueue_pop(_token_queue);
         return;
     }
-#   endif /* QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE */
+#   endif /* QUEX_OPTION_TOKEN_POLICY_QUEUE */
 
+#   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     inline void
     CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
-        QUEX_TYPE_TOKEN*   tmp = 0x0;
-
         QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(result_p);
 
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
-        *result_p = *tmp;
-
         return;
     }
-
-
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
     inline void
-    CLASS::get_token() 
+    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
-        QUEX_TYPE_TOKEN*   tmp = 0x0;
-
-        QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(tmp);
-
+        this->token = result_p;
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
     }
+#   endif
 }
-
-#undef __QUEX_RETURN_THIS
-#undef QUEX_TOKEN_POLICY_NO_TOKEN
-#undef __QUEX_TOKEN_ID_VAR_DEF
-#undef __QUEX_ANALYZER_CALL
-#undef __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN
 
 #endif // __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__

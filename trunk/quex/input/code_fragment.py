@@ -178,11 +178,7 @@ def __parse_token_id_specification_by_character_code(fh):
     token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
     lexer_mode.token_id_db[prefix_less_token_name] = \
             TokenInfo(prefix_less_token_name, character_code, None, fh.name, get_current_line_info_number(fh)) 
-    txt  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
     txt += "self.send(%s); return;\n" % token_id_str
-    txt += "#else\n"
-    txt += "self.send(%s); return %s;\n" % (token_id_str, token_id_str)
-    txt += "#endif\n"
     return txt
 
 def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
@@ -208,11 +204,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
 
     tail = ArgListStr
     if tail != "": tail = ", " + tail
-    txt  = "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
-    txt += "self.send(%s%s); return;\n" % (TokenName, tail)
-    txt += "#else\n"
-    txt += "self.send(%s); return %s;\n" % (ArgListStr, TokenName)
-    txt += "#endif\n"
+    txt = "self.send(%s%s); return;\n" % (TokenName, tail)
 
     return txt
 
@@ -250,10 +242,6 @@ def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
     else:                  send_str = "" 
 
     txt  = mode_change_str
-    txt += "#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE\n"
     txt += send_str + "return;\n" 
-    txt += "#else\n"
-    txt += send_str + "return %s;\n" % token_name
-    txt += "#endif\n"
     return txt
 

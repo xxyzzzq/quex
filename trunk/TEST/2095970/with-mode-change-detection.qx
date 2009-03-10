@@ -20,7 +20,7 @@ mode STRING {
     <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { 
         self << MODULE; 
-#       if ! defined(QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE)
+#       if ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
         return self.the_token.type_id();  // type_id is set by on_exit
 #       endif
     }

@@ -3,14 +3,14 @@
 #define __INCLUDE_GUARD__QUEX__TOKEN_POLICY__
 
 
-#if defined(SINGLETON)
+#if   defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
      /* Setting Token Content */
-#      define QUEX_TOKEN_POLICY_SET(X)                    *(_token_queue->write_iterator) = (X);
-#      define QUEX_TOKEN_POLICY_SET_1(X0)                  token_queue->set(X0);
-#      define QUEX_TOKEN_POLICY_SET_2(X0, X1)              token_queue->set(X0, X1);
-#      define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)          token_queue->set(X0, X1, X2);
-#      define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)      token_queue->set(X0, X1, X2, X3);
-#      define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4)  token_queue->set(X0, X1, X2, X3, X4);
+#      define QUEX_TOKEN_POLICY_SET(X)                    *(self.token) = (X);
+#      define QUEX_TOKEN_POLICY_SET_1(X0)                 self.token->set(X0);
+#      define QUEX_TOKEN_POLICY_SET_2(X0, X1)             self.token->set(X0, X1);
+#      define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)         self.token->set(X0, X1, X2);
+#      define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)     self.token->set(X0, X1, X2, X3);
+#      define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) self.token->set(X0, X1, X2, X3, X4);
 #      define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
 #             /* empty */
 #      define __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN(TOKEN_P) \
@@ -18,38 +18,37 @@
 #      define QUEX_TOKEN_POLICY_NO_TOKEN() \
 #             (token->type_id() == __QUEX_TOKEN_ID_UNINITIALIZED)
 
-#elif  defined(QUEUE)
+#elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
      /* Setting Token Content */
-#    define QUEX_TOKEN_POLICY_SET(X)                    *(_token_queue->write_iterator) = (X);
-#    define QUEX_TOKEN_POLICY_SET_1(X0)                  _token_queue->write_iterator->set(X0);
-#    define QUEX_TOKEN_POLICY_SET_2(X0, X1)              _token_queue->write_iterator->set(X0, X1);
-#    define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)          _token_queue->write_iterator->set(X0, X1, X2);
-#    define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)      _token_queue->write_iterator->set(X0, X1, X2, X3);
-#    define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4)  _token_queue->write_iterator->set(X0, X1, X2, X3, X4);
+#    define QUEX_TOKEN_POLICY_SET(X)                    *(self._token_queue->write_iterator) = (X);
+#    define QUEX_TOKEN_POLICY_SET_1(X0)                 self._token_queue->write_iterator->set(X0);
+#    define QUEX_TOKEN_POLICY_SET_2(X0, X1)             self._token_queue->write_iterator->set(X0, X1);
+#    define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)         self._token_queue->write_iterator->set(X0, X1, X2);
+#    define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)     self._token_queue->write_iterator->set(X0, X1, X2, X3);
+#    define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) self._token_queue->write_iterator->set(X0, X1, X2, X3, X4);
 #    define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
-            ++(_token_queue->write_iterator); \
-            __quex_assert(_token_queue->write_iterator <= _token_queue->end);
+            ++(self._token_queue->write_iterator); \
+            __quex_assert(self._token_queue->write_iterator <= self._token_queue->end);
 
 #    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
-            _token_queue->remaining_repetitions_of_last_token_n = N;
+            self._token_queue->remaining_repetitions_of_last_token_n = N;
 
-#    define QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(TOKEN_P)          \
+#    define QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(TOKEN_P)        \
             if( QuexTokenQueue_is_empty(_token_queue) == false ) {           \
                (TOKEN_P) = QuexTokenQueue_pop(_token_queue);                 \
-               __QUEX_RETURN_THIS((TOKEN_P)->type_id());                     \
+               return;                                                       \
             }                                                                \
             else if( _token_queue->remaining_repetitions_of_last_token_n ) { \
                --(_token_queue->remaining_repetitions_of_last_token_n);      \
                (TOKEN_P) = QuexTokenQueue_back(_token_queue);                \
-               __QUEX_RETURN_THIS((TOKEN_P)->type_id());                     \
+               return;                                                       \
             }
 
 #    define QUEX_TOKEN_POLICY_NO_TOKEN() \
             (QuexTokenQueue_is_empty(_token_queue))
 
-#elif defined(MINI_QUEUE)
-
-
+#elif defined(QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE)
+#    error "Mini Token Queue not yet supported."
 #else
 #    error "No token policy specified."
 #endif

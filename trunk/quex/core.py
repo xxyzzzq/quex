@@ -85,11 +85,7 @@ def get_code_for_mode(Mode, ModeNameList):
     # -- 'end of stream' action
     if Mode.on_end_of_stream_code_fragments() == []:
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
-        txt += "#ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID\n"
-        txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
-        txt += "#else\n"
-        txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
-        txt += "#endif\n"
+        txt += "return;\n"
         Mode.on_end_of_stream = CodeFragment(txt)
 
     end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
@@ -98,11 +94,7 @@ def get_code_for_mode(Mode, ModeNameList):
 
     if Mode.on_failure_code_fragments() == []:
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
-        txt += "#ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID\n"
-        txt += "    return /*__QUEX_TOKEN_ID_TERMINATION*/;\n"
-        txt += "#else\n"
-        txt += "    return __QUEX_TOKEN_ID_TERMINATION;\n"
-        txt += "#endif\n"
+        txt += "return;\n"
         Mode.on_failure = CodeFragment(txt)
 
     default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 

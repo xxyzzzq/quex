@@ -12,7 +12,8 @@ SETUP_INFO = {
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
-    "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],                
+    "token_mini_queue_f":             [["--token-mini-queue", "--tmq"],      FLAG],                
+    "token_singelton_f":              [["--token-singleton", "--ts"],        FLAG],                
     "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "converter_iconv_f":              [["--iconv"],                          FLAG],
@@ -57,6 +58,7 @@ SETUP_INFO = {
     "yywrap_is_ok_f":                 [["--yywrap-is-ok"],          FLAG],                    # DEPRECATED
     "input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
     "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
+    "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
 }
 
 DEPRECATED = { 
@@ -99,7 +101,11 @@ DEPRECATED = {
   "string_accumulator_f":
      ("The string accumulator was temporarily turned off by default. Since 0.31.5 the it is again\n" + \
       "turned on by default. If you want to disable the token queue, please, use '--no-string-accumulator',\n" + \
-      "or '--nsacc'.", "0.31.5")
+      "or '--nsacc'.", "0.31.5"),
+  "disable_token_queue_f":
+     ("Since version 0.36.5 the flag '--no-token-queue' and '--ntq' have been deprecated.\n" + \
+      "User flag '--token-singleton' or '--ts' if a single token is desired, or use\n" + \
+      "flag '--token-mini-queue' or '--tmw' for a mini queue token policy.", "0.36.5"),     
 }
  
 
