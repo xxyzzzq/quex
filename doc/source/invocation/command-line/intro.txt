@@ -29,10 +29,18 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         
         DEFAULT = `10000`
 
-.. cmdoption:: --no-token-queue
+.. cmdoption:: --token-singleton, --ts
 
         Disables the sending of tokens via a queue. Note, this can be a little
-        faster than transmitting tokens via a token queue. 
+        faster than transmitting tokens via a token queue. Tokens are communicated
+        via a single token provided either by the user or by the engine.
+
+.. cmdoption:: --token-mini-queue, --tmq
+
+        *Not yet implemented.*
+
+        Disables the sending of tokens via a full fledged queue. Insteads implements
+        a token policy based on a efficient mini queue.
 
 .. cmdoption:: --token-id-termination number
         

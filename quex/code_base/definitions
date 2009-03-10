@@ -116,11 +116,7 @@
 #endif
 
 /* Return type of analyser function */
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-    typedef void                 __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
-#else
-    typedef QUEX_TYPE_TOKEN_ID   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
-#endif
+typedef void   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
 
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

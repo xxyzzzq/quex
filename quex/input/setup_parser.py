@@ -22,14 +22,14 @@ def do(argv):
     if command_line.search("--version", "-v"):
         print "Quex - A Mode Oriented Lexical Analyser"
         print "Version " + QUEX_VERSION
-        print "(C) 2006-2008 Frank-Rene Schaefer"
+        print "(C) 2006-2009 Frank-Rene Schaefer"
         sys.exit(0)
 
     if command_line.search("--help", "-h"):
         print "Quex - A Mode Oriented Lexical Analyser"
         print "Please, consult the quex documentation for further help, or"
         print "visit http://quex.sourceforge.net."
-        print "(C) 2006-2008 Frank-Rene Schaefer"
+        print "(C) 2006-2009 Frank-Rene Schaefer"
         sys.exit(0)
 
     for variable_name, info in SETUP_INFO.items():
@@ -218,6 +218,15 @@ def validate(setup, command_line, argv):
     if converter_n > 1:
         error_msg("More than one character converter has been specified. Note, that the\n" + \
                   "options '--icu', '--iconv', and '--converter-new' (or '--cn') are\n" + \
+                  "to be used mutually exclusively.")
+
+    # token transmission policy
+    token_policy_n = 0
+    if setup.token_singelton_f:   token_policy_n += 1
+    if setup.token_mini_queue_f:  token_policy_n += 1 
+    if token_policy_n > 1:
+        error_msg("More than one token policy has been specified. Note, that the\n" + \
+                  "options for the token policy 'singleton' and 'mini queue' are\n" + \
                   "to be used mutually exclusively.")
 
 def __check_file_name(setup, Candidate, Name):

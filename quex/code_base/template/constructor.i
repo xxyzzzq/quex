@@ -187,7 +187,7 @@ inline
 CLASS::~CLASS() 
 {
     QuexAnalyser_destruct(this);
-#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
     delete _token_queue;
 #   else
     delete token;

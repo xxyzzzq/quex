@@ -15,7 +15,7 @@ def __nice(SM_ID):
 __header_definitions_txt = """
 #include <quex/code_base/template/Analyser>
 #include <quex/code_base/buffer/Buffer>
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/TokenQueue>
 #endif
 
@@ -25,7 +25,7 @@ __header_definitions_txt = """
 
 #define RETURN return
 
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   define CONTINUE \
       $$GOTO_START_PREPARATION$$ 
 #else
@@ -199,15 +199,11 @@ $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
 $$END_OF_STREAM_ACTION$$
-#ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
-        return __QUEX_TOKEN_ID_TERMINATION;
-#else
-        return /*__QUEX_TOKEN_ID_TERMINATION*/;
-#endif
+     return;
 
 $$TERMINAL_DEFAULT-DEF$$
 $$DEFAULT_ACTION$$
-        $$GOTO_START_PREPARATION$$
+     $$GOTO_START_PREPARATION$$
 
 #undef Lexeme
 #undef LexemeBegin
@@ -231,14 +227,7 @@ $$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
     
-    if( QuexTokenQueue_is_full(self._token_queue) ) 
-#       ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
-        return QuexTokenQueue_begin(self._token_queue)->type_id());
-#       else
-        return;
-#       endif
-    }
-    QUEX_TOKEN_QUEUE_ASSERT(self._token_queue); 
+    if( QuexTokenQueue_is_full(self._token_queue) ) return;
 
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
@@ -259,13 +248,10 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-#   ifdef __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
-       return __QUEX_TOKEN_ID_UNINITIALIZED;
-#   else
-       return /*__QUEX_TOKEN_ID_UNINITIALIZED*/;
-#   endif
+    QUEX_TOKEN_POLICY_SET_1(__QUEX_TOKEN_ID_UNINITIALIZED);
+    return;
 #elif defined(QUEX_OPTION_ASSERTS)
-       QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+    QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
 #endif
     }
 

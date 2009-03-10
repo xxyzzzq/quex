@@ -38,7 +38,7 @@ namespace quex {
 #   endif
 
         // empty the token queue
-#   ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
         QuexTokenQueue_reset(this->_token_queue);
 #   endif
 
