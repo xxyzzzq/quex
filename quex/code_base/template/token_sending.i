@@ -32,13 +32,13 @@ namespace quex {
 
         for(int n=0; n < N; n++) {
             QUEX_TOKEN_POLICY_SET_1(ID);
+            QUEX_TOKEN_POLICY_PREPARE_NEXT();
         }
         if( N - AvailableN ) {
             _token_queue->remaining_repetitions_of_last_token_n = N - AvailableN;
         }
 #       else
         QUEX_TOKEN_POLICY_SET_1(That);
-        QUEX_TOKEN_SET_REMAINING_REPETITION_NUMBER(N);
 #       endif
     }
 
