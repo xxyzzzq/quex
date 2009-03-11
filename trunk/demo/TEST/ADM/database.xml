@@ -1,9 +1,8 @@
-<test-database execution-time-sec="0.00" date="Fri Mar  6 11:11:06 2009">
+<test-database execution-time-sec="0.00" date="Wed Mar 11 07:43:39 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="0.00"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="6">
                <choice name="000" result="FAIL" time-sec="0.00" crc="-10986171"/>
                <choice name="001" result="FAIL" time-sec="0.00" crc="-228378687"/>
@@ -15,7 +14,6 @@
         </test>
         <test title="Intel's icpc" make-required="True" time-sum-sec="0.00"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="6">
                <choice name="000" result="FAIL" time-sec="0.00" crc="489948922"/>
                <choice name="001" result="FAIL" time-sec="0.00" crc="167903718"/>
@@ -29,7 +27,6 @@
     <group name="demo/000">
         <test title="Single Mode Example" make-required="True" time-sum-sec="0.00"> 
             <application file-name="000.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="-1674132255"/>
                <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="-1134124828"/>
@@ -39,7 +36,6 @@
     <group name="demo/001">
         <test title="Multiple Modes, Mode Transitions" make-required="True" time-sum-sec="0.00"> 
             <application file-name="001.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="-1913396181"/>
                <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="-1913396181"/>
@@ -49,7 +45,6 @@
     <group name="demo/002">
         <test title="Indentation Based Scopes" make-required="True" time-sum-sec="0.00"> 
             <application file-name="002.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="-1031173828"/>
                <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="-1031173828"/>
@@ -59,7 +54,6 @@
     <group name="demo/003">
         <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="0.00"> 
             <application file-name="003.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="5">
                <choice name="BPC=2" result="OK" time-sec="0.00" crc="-717271771"/>
                <choice name="BPC=2_NDEBUG" result="OK" time-sec="0.00" crc="-717271771"/>
@@ -70,7 +64,6 @@
         </test>
         <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="0.00"> 
             <application file-name="003-icu.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="5">
                <choice name="BPC=2" result="OK" time-sec="0.00" crc="-1995344588"/>
                <choice name="BPC=2_NDEBUG" result="OK" time-sec="0.00" crc="-1995344588"/>
@@ -83,7 +76,6 @@
     <group name="demo/004">
         <test title="Benchmarking a C-Lexical Analyser" make-required="True" time-sum-sec="0.00"> 
             <application file-name="004.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="1">
                <choice name="" result="OK" time-sec="0.00" crc="-2050672611"/>
             </choice-list>
@@ -92,7 +84,6 @@
     <group name="demo/005">
         <test title="Including Files" make-required="True" time-sum-sec="0.00"> 
             <application file-name="005.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="4">
                <choice name="1" result="FAIL" time-sec="0.00" crc="-1625213566"/>
                <choice name="1_NDEBUG" result="FAIL" time-sec="0.00" crc="-1736537714"/>
@@ -104,7 +95,6 @@
     <group name="demo/006">
         <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="0.00"> 
             <application file-name="006.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="2111894497"/>
                <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="189521074"/>
@@ -114,7 +104,6 @@
     <group name="demo/007">
         <test title="Miscellaneous Features" make-required="True" time-sum-sec="0.00"> 
             <application file-name="007.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="-884239353"/>
                <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="-884239353"/>
@@ -124,7 +113,6 @@
     <group name="demo/008">
         <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="0.00"> 
             <application file-name="008.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="NDEBUG" result="FAIL" time-sec="0.00" crc="1304621319"/>
                <choice name="DEBUG" result="FAIL" time-sec="0.00" crc="1304621319"/>
@@ -134,7 +122,6 @@
     <group name="demo/009">
         <test title="Direct Buffer Access (8Bit and WChar Strings)" make-required="True" time-sum-sec="0.00"> 
             <application file-name="009.sh" info-request-time="1235458275L"/>
-            <make-procedure success="False" />
             <choice-list number="2">
                <choice name="lexer" result="FAIL" time-sec="0.00" crc="13704092"/>
                <choice name="wlexer" result="FAIL" time-sec="0.00" crc="13704092"/>

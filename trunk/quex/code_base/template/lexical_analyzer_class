@@ -289,7 +289,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         const size_t          buffer_distance_to_text_end();
         
         // -- token stream: read next token
+#       ifdef QUEX_OPTION_TOKEN_POLICY_SINGLETON
         void                 get_token();
+#       endif
         void                 get_token(QUEX_TYPE_TOKEN*   result_p);
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
         void                 get_token(QUEX_TYPE_TOKEN**  result_pp);

@@ -55,6 +55,8 @@ namespace quex {
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
+        *result_p = *QuexTokenQueue_pop(_token_queue);
+
         return;
     }
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
@@ -68,6 +70,21 @@ namespace quex {
         return;
     }
 #   endif
+
+
+#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
+    inline void
+    CLASS::get_token() 
+    {
+        __quex_assert(this->token != 0x0);
+
+        do   QuexAnalyser::current_analyser_function(this);
+        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+
+        return;
+    }
+#   endif
+
 }
 
 #endif // __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__

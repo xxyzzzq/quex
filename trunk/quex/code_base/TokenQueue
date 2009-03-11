@@ -30,38 +30,24 @@ namespace quex {
     } QuexTokenQueue;
 
 #   define QuexTokenQueue_init(me) \
-          do {                                                                                \
-             me->end = me->begin;                                                             \
-             me->end_minus_safety_border = me->end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER;  \
-             QuexTokenQueue_reset(me);                                                        \
+          do {                                                                               \
+             me->end                     = me->begin + QUEX_SETTING_TOKEN_QUEUE_SIZE;        \
+             me->end_minus_safety_border = me->end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
+             QuexTokenQueue_reset(me);                                                       \
           } while(0)
  
 #   define QuexTokenQueue_reset(me) \
-           do me->read_iterator = me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; while(0)
+           do {                                                                      \
+               me->read_iterator = me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; \
+               me->remaining_repetitions_of_last_token_n = 0;                        \
+           } while(0)
 
-#   define QuexTokenQueue_is_full(me)      (me->write_iterator == me->end) 
+#   define QuexTokenQueue_is_full(me)      (me->write_iterator >= me->end_minus_safety_border) 
 #   define QuexTokenQueue_is_empty(me)     (me->read_iterator == me->write_iterator)
 #   define QuexTokenQueue_pop(me)          (me->read_iterator++)
 #   define QuexTokenQueue_begin(me)        (me->begin)
 #   define QuexTokenQueue_back(me)         (me->end - 1)
 #   define QuexTokenQueue_available_n(me)  (me->end - me->write_iterator)
-
-/* Allow settings of maximum 16 token arguments. If more are required, extend the 
- * macro set below, or better define a struct for some some tokens.             */
-#   define QuexTokenQueue_push(me, Arg) \
-        do { me->write_iterator->set(Arg); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push1(me, Arg) \
-        do { me->write_iterator->set(Arg); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push2(me, Arg0, Arg1) \
-        do { me->write_iterator->set(Arg0, Arg1); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push3(me, Arg0, Arg1, Arg2) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2); ++(me->write_iterator); } while(0)
-
-#   define QuexTokenQueue_push4(me, Arg0, Arg1, Arg2, Arg3) \
-        do { me->write_iterator->set(Arg0, Arg1, Arg2, Arg3); ++(me->write_iterator); } while(0)
 
 #   ifdef QUEX_OPTION_ASSERTS
 #      define QUEX_TOKEN_QUEUE_ASSERT(me)        \
