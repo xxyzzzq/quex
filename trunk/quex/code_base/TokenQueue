@@ -16,7 +16,7 @@ namespace quex {
 
     typedef struct {
 
-        QUEX_TYPE_TOKEN    begin[QUEX_SETTING_TOKEN_QUEUE_SIZE];
+        QUEX_TYPE_TOKEN*   begin;
         QUEX_TYPE_TOKEN*   read_iterator;    // pointer to next token to be read
         QUEX_TYPE_TOKEN*   write_iterator;   // pointer to next token to be written
         QUEX_TYPE_TOKEN*   end_minus_safety_border;
@@ -29,9 +29,10 @@ namespace quex {
 
     } QuexTokenQueue;
 
-#   define QuexTokenQueue_init(me) \
+#   define QuexTokenQueue_init(me, Memory, Size) \
           do {                                                                               \
-             me->end                     = me->begin + QUEX_SETTING_TOKEN_QUEUE_SIZE;        \
+             me->begin                   = Memory;                                           \
+             me->end                     = me->begin + Size;                                 \
              me->end_minus_safety_border = me->end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
              QuexTokenQueue_reset(me);                                                       \
           } while(0)

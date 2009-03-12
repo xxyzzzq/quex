@@ -13,8 +13,6 @@
 #      define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) self.token->set(X0, X1, X2, X3, X4);
 #      define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
 #             /* empty */
-#      define __QUEX_TRY_TO_GET_TOKEN_FROM_QUEUE_AND_RETURN(TOKEN_P) \
-              /* empty */
 #      define QUEX_TOKEN_POLICY_NO_TOKEN() \
 #             (token->type_id() == __QUEX_TOKEN_ID_UNINITIALIZED)
 
@@ -32,18 +30,6 @@
 
 #    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
             self._token_queue->remaining_repetitions_of_last_token_n = N;
-
-#    define QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(TOKEN_P)        \
-            if( QuexTokenQueue_is_empty(_token_queue) == false ) {           \
-               (TOKEN_P) = QuexTokenQueue_pop(_token_queue);                 \
-               return;                                                       \
-            }                                                                \
-            else if( _token_queue->remaining_repetitions_of_last_token_n ) { \
-               --(_token_queue->remaining_repetitions_of_last_token_n);      \
-               (TOKEN_P) = QuexTokenQueue_back(_token_queue);                \
-               return;                                                       \
-            }                                                                \
-            QuexTokenQueue_reset(_token_queue);
 
 #    define QUEX_TOKEN_POLICY_NO_TOKEN() \
             (QuexTokenQueue_is_empty(_token_queue))
