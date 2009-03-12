@@ -481,7 +481,9 @@ $$CLASS_BODY_EXTENSION$$
 
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
         _token_queue = new QuexTokenQueue;
-        QuexTokenQueue_init(_token_queue);
+        QuexTokenQueue_init(_token_queue, 
+                            new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE], 
+                            QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #       else
         token = 0x0; /* call to 'get_token(token*)' provides pointer to some place in memory. */
 #       endif

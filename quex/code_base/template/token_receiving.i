@@ -31,8 +31,19 @@ namespace quex {
      *    Token-ID = '$$TOKEN_CLASS$$::ID_UNITIALIZED' is returned in 
      *               case that no  token could be read.                                      */
     {
-        /* (i) tokens are in queue --> take next token from stack                            */
-        QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(*result_pp);
+        /* Tokens are in queue --> take next token from queue                                */
+        if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
+            *result_pp = QuexTokenQueue_pop(_token_queue);
+            return;  
+        } 
+        else if( _token_queue->remaining_repetitions_of_last_token_n ) {
+            --(_token_queue->remaining_repetitions_of_last_token_n);
+            *result_pp = QuexTokenQueue_back(_token_queue);
+            return;
+        }
+
+        /* Restart filling the queue from begin */
+        QuexTokenQueue_reset(_token_queue);
 
         /* In case a mode change happend inside the pattern actions, the function is forced
          * to return (see end of analyzer function at REENTRY label). If the tokenstack is
@@ -50,11 +61,24 @@ namespace quex {
     inline void
     CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
     {
-        QUEX_TOKEN_POLICY_RETURN_ON_GET_TOKEN_FROM_QUEUE(result_p);
+        /* Tokens are in queue --> take next token from queue                                */
+        if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
+            *result_p = *(QuexTokenQueue_pop(_token_queue));
+            return;  
+        } 
+        else if( _token_queue->remaining_repetitions_of_last_token_n ) {
+            --(_token_queue->remaining_repetitions_of_last_token_n);
+            *result_p = *(QuexTokenQueue_back(_token_queue));
+            return;
+        }
 
+        /* Restart filling the queue from begin */
+        QuexTokenQueue_reset(_token_queue);
+
+        /* Analyze until there is some content in the queue */
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
-
+        
         *result_p = *QuexTokenQueue_pop(_token_queue);
 
         return;
@@ -71,6 +95,20 @@ namespace quex {
     }
 #   endif
 
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+    inline void
+    CLASS::get_token(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
+    {
+        __quex_assert(this->token != 0x0);
+        QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd - QueueMemoryBegin);
+
+        do   QuexAnalyser::current_analyser_function(this);
+        while(    QuexTokenQueue_is_full(_token_queue) 
+               || _token_queue->write_iterator->type_id() == __QUEX_TOKEN_ID_TERMINATION );        
+
+        return;
+    }
+#   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
     inline void
