@@ -19,8 +19,8 @@
 // otherwise define a default value
 #define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)"$$CORE_ENGINE_CHARACTER_CODING$$")
 
-#ifndef QUEX_OPTION_TOKEN_POLICY_SINGLETON_DISABLED
-$$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_SINGLETON
+#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN_DISABLED
+$$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 #endif
 #ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
 $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_QUEUE
@@ -289,12 +289,21 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         const size_t          buffer_distance_to_text_end();
         
         // -- token stream: read next token
-#       ifdef QUEX_OPTION_TOKEN_POLICY_SINGLETON
-        void                 get_token();
-#       endif
-        void                 get_token(QUEX_TYPE_TOKEN*   result_p);
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-        void                 get_token(QUEX_TYPE_TOKEN**  result_pp);
+        void  get_token() 
+        { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+        void  get_token(QUEX_TYPE_TOKEN*   result_p);
+        { QUEX_ERROR_EXIT("get_token(Token*) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+        void  get_token(QUEX_TYPE_TOKEN**   result_p);
+        { QUEX_ERROR_EXIT("get_token(Token**) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+
+#       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        void                 receive(QUEX_TYPE_TOKEN*   result_p);
+        void                 receive(QUEX_TYPE_TOKEN**  result_pp);
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+        void                 receive();
+        void                 receive(QUEX_TYPE_TOKEN*   result_p);
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+        QUEX_TYPE_TOKEN*     receive(QUEX_TYPE_TOKEN*  begin, QUEX_TYPE_TOKEN* end);
 #       endif
         //
         // (*) Mode handling
@@ -322,7 +331,6 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         const int   map_mode_to_mode_id(const QuexMode& Mode) const;
 
         // (*) Token sending
-        void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const $$TOKEN_CLASS$$& That);
         void        send(const QUEX_TYPE_TOKEN_ID TokenID);
         void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);

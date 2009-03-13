@@ -12,8 +12,7 @@ SETUP_INFO = {
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
-    "token_mini_queue_f":             [["--token-mini-queue", "--tmq"],      FLAG],                
-    "token_singelton_f":              [["--token-singleton", "--ts"],        FLAG],                
+    "token_policy":                   [["--token-policy", "--tp"],        FLAG],                
     "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "converter_iconv_f":              [["--iconv"],                          FLAG],
@@ -104,8 +103,7 @@ DEPRECATED = {
       "or '--nsacc'.", "0.31.5"),
   "disable_token_queue_f":
      ("Since version 0.36.5 the flag '--no-token-queue' and '--ntq' have been deprecated.\n" + \
-      "User flag '--token-singleton' or '--ts' if a single token is desired, or use\n" + \
-      "flag '--token-mini-queue' or '--tmw' for a mini queue token policy.", "0.36.5"),     
+      "Use flag '--token-policy' or '--tp' instead.", "0.36.5"),     
 }
  
 

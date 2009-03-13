@@ -15,35 +15,72 @@ example
         {P_STRING_DELIMITER} {
             self << STRING_READER; 
             self.send(QUEX_TKN_EVENT_MODE_CHANGE);
-            RETURN;
+            return;
         }
 
         ...
 
-        on_end_of_stream {
-            self.send(QUEX_TKN_ELSE);
+        [a-z]+ {
+            self.send(QUEX_TKN_IDENTIFIER, Lexeme);
             self.allow_opening_indentation_f = true;
-            RETURN;
+            return;
         }
     }
 
 The patterns ``P_IF_KEYWORD`` and ``P_STRING_DELIMITER`` are supposed to be
-defined in a ``define`` section. The lexical analyzer can be accessed via the
-reference ``self.``. The member function ``send`` works similar to the brackets
+defined in a ``define`` section. The functions used in this example are
+subsequently explained. The lexical analyzer object can be accessed via
+
+.. data:: self
+
+   which is a reference to the analyzer inside pattern actions and event handlers.
+
+The are member functions starting with ``send``. They work similar to the brackets
 in the previous token senders. The first argument is the token-id and the
 remaining arguments are arguments as they are passed to the constructor of the
-token class. The operator `<<` allows to specify mode transitions. As can be
-seen in the example, the occurence of a string delimiter triggers a transition
-to a mode called ``STRING_READER``. The definition of the *end of stream*
-handler demonstrates that event handlers and pattern actions are defined with
-the same syntax.
+token class. In particular they are the following:
 
-Note, that in the code section the word
+.. cfunction:: .send(QUEX_TYPE_TOKEN_ID)
 
-.. description:: RETURN
+    Which sends one token to the caller of the lexical analyzer with the given 
+    token-id.
 
-is used. It ensures that the lexical analyzer returns and synchronizes with 
-the token queue.
+.. cfunction:: .send_n(size_t N, QUEX_TYPE_TOKEN_ID)
 
-   The length of the lexeme.
+    Sends a token with the given token-id ``N`` times.
 
+.. cfunction:: .send(QUEX_TYPE_TOKEN_ID, ContentT)
+
+    This is a templated function. It calls the ``.set`` function of the token
+    class that corresponds the type ``ContentT``. For example::
+
+        [a-z]+ {
+             ...
+             self.send(TKN_IDENTIFIER, Lexeme);
+        }
+
+    sends a token with the id ``TKN_IDENTIFIER`` and the content of the current
+    lexeme to the caller of the lexical analyzer.
+
+
+Modes can be switched with the ``<<``-operator, as shown in the example, or
+``enter_mode``. For example
+
+.. code-block:: cpp
+
+        {P_STRING_DELIMITER} {
+            self.enter_mode(STRING_READER); 
+            return;
+        }
+
+causes a mode transition to the ``STRING_READER`` mode as soon as a string
+delimiter arrives.
+
+.. warning::
+
+   As long as the default token policy (See section :ref:`sec-token-policies`)
+   is used all token sending functions are available and can be used without a
+   lot of caution. The same is true for token policies that are queue based.
+   The token policy ``users_token``, though, allows only *one single* token to
+   be sent for a pattern match. With this token policy no tokens can be sent
+   inside event handlers and the ``send_n()`` is not implemented.

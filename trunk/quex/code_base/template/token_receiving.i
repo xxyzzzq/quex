@@ -13,10 +13,10 @@ namespace quex {
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     inline void
-    CLASS::get_token(QUEX_TYPE_TOKEN** result_pp) 
-    /* NOTE: As long as the 'get_token()' function is not called there is nothing
+    CLASS::receive(QUEX_TYPE_TOKEN** result_pp) 
+    /* NOTE: As long as the 'receive()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
-     *       does a couple af calls to 'get_token()' before a rule triggers 
+     *       does a couple af calls to 'receive()' before a rule triggers 
      *       and data structures can be stored.
      *
      * ARGUMENTS:
@@ -59,7 +59,7 @@ namespace quex {
 
 #   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     inline void
-    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    CLASS::receive(QUEX_TYPE_TOKEN* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
@@ -83,9 +83,9 @@ namespace quex {
 
         return;
     }
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     inline void
-    CLASS::get_token(QUEX_TYPE_TOKEN* result_p) 
+    CLASS::receive(QUEX_TYPE_TOKEN* result_p) 
     {
         this->token = result_p;
         do   QuexAnalyser::current_analyser_function(this);
@@ -96,8 +96,9 @@ namespace quex {
 #   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    inline void
-    CLASS::get_token(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
+    inline QUEX_TYPE_TOKEN*
+    CLASS::receive(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
+        /* RETURNS: Pointer to first token after the last filled in token. */
     {
         __quex_assert(this->token != 0x0);
         QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd - QueueMemoryBegin);
@@ -106,11 +107,11 @@ namespace quex {
         while(    QuexTokenQueue_is_full(_token_queue) 
                || _token_queue->write_iterator->type_id() == __QUEX_TOKEN_ID_TERMINATION );        
 
-        return;
+        return _token_queue->write_iterator;
     }
 #   endif
 
-#   if defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     inline void
     CLASS::get_token() 
     {

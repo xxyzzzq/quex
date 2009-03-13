@@ -38,11 +38,13 @@ Note, that information about the lexeme is available via the following
 
 .. data:: Lexeme
 
-   A pointer to the first character of the matched lexeme. The lexeme itself
-   is temporarily zero-terminated for during the pattern action. If the lexeme
-   is to be referred to longer than that, the length has to be stored along
-   with the lexeme. Note, that such operations are not necessary, if the 
-   default token class is used.
+   A pointer to the first character of the matched lexeme. The lexeme itself is
+   temporarily zero-terminated for during the pattern action. 
+   
+   .. note:: If the lexeme is to be referred to longer outside the action or event 
+             handler, then the length the end pointer has to be stored along with 
+             the lexeme. No such operations are not necessary, if the default 
+             token class is used because it copies the string into a ``string`` object.
 
 .. data:: LexemeBegin
 
@@ -66,11 +68,11 @@ following shows an example:
 
 .. code-block:: cpp
 
-    "="            => '=';
-    "+"            => '+';
-    "-"            => '-';
-    ε              => 'ε';
-    ∞|(infinity)   => '∞';
+    "="          => '=';
+    "+"          => '+';
+    "-"          => '-';
+    ε            => 'ε';
+    ∞|infinity   => '∞';
 
 As the last line points out, this type of token-id specification is not
 restricted to patterns of length one--they can be as any other pattern.  The
@@ -101,4 +103,5 @@ example is shown here:
 .. rubric:: Footnotes
 
 .. [#f1] They are actually defined as C-preprocessor macros and they are only
-         active arround the generated code segments.
+         active arround the generated code segments. If they are not used, no
+         computation time is consumed.
