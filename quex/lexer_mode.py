@@ -148,56 +148,66 @@ class LexMode:
         """Collect all 'on_entry' event handlers from all base classes.
            Returns list of 'CodeFragment'.
         """
-        return self.__collect_fragments("on_entry")
+        return self.__collect_fragments("on_entry", Depth)
 
     def on_exit_code_fragments(self, Depth=0):
         """Collect all 'on_exit' event handlers from all base classes.
            Returns list of 'CodeFragment'.
         """
-        return self.__collect_fragments("on_exit")
+        return self.__collect_fragments("on_exit", Depth)
 
     def on_indentation_code_fragments(self, Depth=0):
         """Collect all 'on_indentation' event handlers from all base classes.
            Returns list of 'CodeFragment'.
         """
-        return self.__collect_fragments("on_indentation")
+        return self.__collect_fragments("on_indentation", Depth)
 
     def on_match_code_fragments(self, Depth=0):
         """Collect all 'on_match' event handlers from all base classes.
            Returns list of 'CodeFragment'.
         """
-        return self.__collect_fragments("on_match")
+        return self.__collect_fragments("on_match", Depth)
 
     def on_end_of_stream_code_fragments(self, Depth=0):
         """Collect all 'on_end_of_stream' event handlers from all base classes.
            Returns list of 'CodeFragment'.
         """
-        return self.__collect_fragments("on_end_of_stream")
+        return self.__collect_fragments("on_end_of_stream", Depth)
 
     def on_failure_code_fragments(self, Depth=0):
         """Collect all 'on_failure' event handlers from all base classes.
            Returns list of 'CodeFragment'.
         """
-        return self.__collect_fragments("on_failure")
+        return self.__collect_fragments("on_failure", Depth)
 
     def __collect_fragments(self, FragmentName, Depth=0):
         """Collect all event handlers with the given FragmentName from all base classes.
            Returns list of 'CodeFragment'.
         """
-        if self.__dict__[FragmentName].get_code() == "":
-            code_fragments = []
+        fragment = self.__dict__[FragmentName]
+        if fragment == None or fragment.get_code() == "":
+            code_fragment_list = []
         else:      
-            code_fragments = [ self.__dict__[FragmentName] ]
+            assert isinstance(fragment, CodeFragment)
+            code_fragment_list = [ fragment ]
 
         for base_mode_name in self.base_modes:
             # -- get 'on_match' handler from the base mode
-            base_mode = mode_db[base_mode_name]
-            code_fragments.extend(base_mode.on_match_code_fragments(Depth+1))
+            base_mode     = mode_db[base_mode_name]
+            base_fragment_list = { 
+                    "on_entry":          base_mode.on_entry_code_fragments,
+                    "on_exit":           base_mode.on_exit_code_fragments,
+                    "on_indentation":    base_mode.on_indentation_code_fragments,
+                    "on_match":          base_mode.on_match_code_fragments,
+                    "on_end_of_stream":  base_mode.on_end_of_stream_code_fragments,
+                    "on_failure":        base_mode.on_failure_code_fragments,
+                    }[FragmentName](Depth+1)
+            code_fragment_list.extend(base_fragment_list)
 
         # reverse the order, so that the lowest base class appears first
-        if Depth==0: code_fragments.reverse()
+        if Depth==0: code_fragment_list.reverse()
 
-        return code_fragments
+        return code_fragment_list
 
     def pattern_action_pairs(self, Depth=0):
         """Collect patterns of all inherited modes. Patterns are like virtual functions

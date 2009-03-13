@@ -25,7 +25,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex->get_token(&Token);
+        qlex->receive(&Token);
 
         // (*) print out token information
         //     -- line number and column number
