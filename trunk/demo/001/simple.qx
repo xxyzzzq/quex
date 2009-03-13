@@ -36,7 +36,7 @@ mode END_OF_FILE :
 <inheritable: only>  
 {    
     <<EOF>> {
-        self.send(quex::token::ID_TERMINATION);
+        self.send(QUEX_TKN_TERMINATION);
         RETURN;
     }
 }

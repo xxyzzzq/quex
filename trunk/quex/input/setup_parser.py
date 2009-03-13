@@ -222,11 +222,11 @@ def validate(setup, command_line, argv):
 
     # token transmission policy
     token_policy_list = ["queue", "mini_queue", "users_token", "users_queue", "users_mini_queue"]
-    if Setup.token_policy not in token_policy_list:
-        error_msg("Token policy '%s' not supported. Use one of the following:\n" % Setup.token_policy + \
+    if setup.token_policy not in token_policy_list:
+        error_msg("Token policy '%s' not supported. Use one of the following:\n" % setup.token_policy + \
                   repr(token_policy_list)[1:-1])
-    elif Setup.token_policy in ["mini_queue", "users_mini_queue"]:
-        error_msg("Token policy '%s' not yet supported." % Setup.token_policy)
+    elif setup.token_policy in ["mini_queue", "users_mini_queue"]:
+        error_msg("Token policy '%s' not yet supported." % setup.token_policy)
 
 
 def __check_file_name(setup, Candidate, Name):

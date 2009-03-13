@@ -13,11 +13,7 @@ main(int argc, char** argv)
     quex::Token        Token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer*  qlex = new quex::tiny_lexer(argc == 1 ? "example.txt" : argv[1], "UTF-8");
-    uint16_t           empty_string[] = { 0x0000 };
-
-    // (*) print the version 
-    // cout << qlex->version() << endl << endl;
+    quex::tiny_lexer   qlex(argc == 1 ? "example.txt" : argv[1], "UTF-8");
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
@@ -26,13 +22,11 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        Token.set(0, empty_string);    /* Set token content to nothing */
-        Token.set(0, 0);
-        qlex->get_token(&Token);
+        qlex.receive(&Token);
 
         // (*) print out token information
         //     -- line number and column number
-        cout << "(" << qlex->line_number() << ", " << qlex->column_number() << ")  \t";
+        cout << "(" << qlex.line_number() << ", " << qlex.column_number() << ")  \t";
         //     -- name of the token
         cout << string(Token);
         cout << endl;

@@ -291,9 +291,9 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         // -- token stream: read next token
         void  get_token() 
         { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-        void  get_token(QUEX_TYPE_TOKEN*   result_p);
+        void  get_token(QUEX_TYPE_TOKEN*   result_p)
         { QUEX_ERROR_EXIT("get_token(Token*) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
-        void  get_token(QUEX_TYPE_TOKEN**   result_p);
+        void  get_token(QUEX_TYPE_TOKEN**   result_p)
         { QUEX_ERROR_EXIT("get_token(Token**) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
 
 #       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)

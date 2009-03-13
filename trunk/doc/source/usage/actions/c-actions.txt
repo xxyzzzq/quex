@@ -62,8 +62,33 @@ token class. In particular they are the following:
     sends a token with the id ``TKN_IDENTIFIER`` and the content of the current
     lexeme to the caller of the lexical analyzer.
 
+.. note::
 
-Modes can be switched with the ``<<``-operator, as shown in the example, or
+   When a token is send via the a ``send()`` function, what actually happens is that
+   the lexical analyzer accesses a token object via a pointer and fills it. If only
+   a token-id is sent then the data part of the present token object
+   remains as it was. If the same token object was used earlier, then the
+   data of this earlier use in the data part remains. For the sake of 
+   computational speed, the token object is not re-initialized before it is used.
+
+.. warning::
+
+   Relevant for token passing policy *users_token*.
+
+   As long as the default token passing policy (See section :ref:`sec-token-policies`)
+   is used all token sending functions are available and can be used without a
+   lot of caution. The same is true for token policies that are queue based.
+   The token policy ``users_token``, though, allows only *one single* token to
+   be sent for a pattern match. With this token policy no tokens can be sent
+   inside event handlers and the ``send_n()`` is not implemented.
+
+The token object which is currently ready to be sent can be accessed via the
+member function
+
+.. cfunction:: QUEX_TYPE_TOKEN*  token_object()
+
+The pointer to this object may be used to prepare the token object before sending
+it out. Modes can be switched with the ``<<``-operator, as shown in the example, or
 ``enter_mode``. For example
 
 .. code-block:: cpp
@@ -78,9 +103,14 @@ delimiter arrives.
 
 .. warning::
 
-   As long as the default token policy (See section :ref:`sec-token-policies`)
-   is used all token sending functions are available and can be used without a
-   lot of caution. The same is true for token policies that are queue based.
-   The token policy ``users_token``, though, allows only *one single* token to
-   be sent for a pattern match. With this token policy no tokens can be sent
-   inside event handlers and the ``send_n()`` is not implemented.
+   Relevant for token passing policies *users_token*, *users_queue*, and
+   *users_mini_queue* when a customized token type is used.
+
+   If you use a customized token type that contains pointers, make sure that
+   you read the section about token passing policies :ref:`sec-token-policies`.
+   The point is that the ``send()`` functions may override these pointers
+   without being referred elsewhere. It must be ensured that the pointers in 
+   received tokens are stored elsewhere, before the analyzer overwrites it.
+
+   
+

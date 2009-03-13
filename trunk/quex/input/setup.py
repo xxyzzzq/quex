@@ -12,7 +12,7 @@ SETUP_INFO = {
     "buffer_limit_code":              [["--buffer-limit"],                   "0x0"],
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
-    "token_policy":                   [["--token-policy", "--tp"],        FLAG],                
+    "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
     "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "converter_iconv_f":              [["--iconv"],                          FLAG],

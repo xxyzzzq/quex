@@ -19,7 +19,6 @@ though, for pattern-actions and actions for event handling is the same.
 
    token-id-definition.txt
    sending-tokens.txt
-   receiving-tokens.txt
    mode-transitions.txt
    c-actions.txt
 

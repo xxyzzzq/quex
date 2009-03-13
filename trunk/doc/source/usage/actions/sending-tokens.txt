@@ -100,6 +100,7 @@ example is shown here:
     \x23      => UC NUMBER_SIGN;
 
 
+
 .. rubric:: Footnotes
 
 .. [#f1] They are actually defined as C-preprocessor macros and they are only
