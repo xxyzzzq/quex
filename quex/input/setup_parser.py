@@ -221,13 +221,13 @@ def validate(setup, command_line, argv):
                   "to be used mutually exclusively.")
 
     # token transmission policy
-    token_policy_n = 0
-    if setup.token_singelton_f:   token_policy_n += 1
-    if setup.token_mini_queue_f:  token_policy_n += 1 
-    if token_policy_n > 1:
-        error_msg("More than one token policy has been specified. Note, that the\n" + \
-                  "options for the token policy 'singleton' and 'mini queue' are\n" + \
-                  "to be used mutually exclusively.")
+    token_policy_list = ["queue", "mini_queue", "users_token", "users_queue", "users_mini_queue"]
+    if Setup.token_policy not in token_policy_list:
+        error_msg("Token policy '%s' not supported. Use one of the following:\n" % Setup.token_policy + \
+                  repr(token_policy_list)[1:-1])
+    elif Setup.token_policy in ["mini_queue", "users_mini_queue"]:
+        error_msg("Token policy '%s' not yet supported." % Setup.token_policy)
+
 
 def __check_file_name(setup, Candidate, Name):
     value = setup.__dict__[Candidate]

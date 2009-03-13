@@ -109,10 +109,9 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, True,                    "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
     txt = set_switch(txt, Setup.converter_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
     txt = set_switch(txt, Setup.converter_icu_f,      "QUEX_OPTION_ENABLE_ICU")
-    txt = set_switch(txt, Setup.token_singelton_f,            "QUEX_OPTION_TOKEN_POLICY_SINGLETON")
-    txt = set_switch(txt, Setup.token_mini_queue_f,           "QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE")
-    txt = set_switch(txt, not Setup.token_singelton_f and not Setup.token_mini_queue_f,           
-                                                              "QUEX_OPTION_TOKEN_POLICY_QUEUE")
+    txt = set_switch(txt, Setup.token_policy == "users_token", "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN")
+    txt = set_switch(txt, Setup.token_policy == "mini_queue",  "QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE")
+    txt = set_switch(txt, Setup.token_policy == "queue",       "QUEX_OPTION_TOKEN_POLICY_QUEUE")
     txt = set_switch(txt, not Setup.disable_string_accumulator_f, "QUEX_OPTION_STRING_ACCUMULATOR")
     txt = set_switch(txt, Setup.post_categorizer_f,               "QUEX_OPTION_POST_CATEGORIZER")
     ## txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      

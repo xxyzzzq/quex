@@ -3,7 +3,7 @@
 #define __INCLUDE_GUARD__QUEX__TOKEN_POLICY__
 
 
-#if   defined(QUEX_OPTION_TOKEN_POLICY_SINGLETON)
+#if   defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
      /* Setting Token Content */
 #      define QUEX_TOKEN_POLICY_SET(X)                    *(self.token) = (X);
 #      define QUEX_TOKEN_POLICY_SET_1(X0)                 self.token->set(X0);
