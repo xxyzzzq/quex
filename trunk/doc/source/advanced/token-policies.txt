@@ -1,0 +1,145 @@
+.. _sec-token-policies:
+
+Token Passing Policies
+======================
+
+.. note:: 
+
+   Since version 0.37.1 there is no longer support for returning the 
+   token id directly from the lexical analyzer. At the time of this
+   writing, there is no evidence that this brings any advantage. If 
+   a token queue is used, then the token-id *must* be stored in the
+   token object, otherwise no id could be retrieved for stacked 
+   tokens. No global memory can be spared by relying on the program stack.
+   If a user owned token is used as a token storage, then the memory
+   requirements are exactly the same. Thus, there is no advantage 
+   in passing the token-id as a return value. 
+
+   Any evidence for a different viewpoint can be reported to the 
+   author of quex fschaef@users.sourceforge.net.
+
+
+The process of token receiption from the caller is configurable. Basically,
+there are two mechanisms to pass tokens from the analyzer to the caller:
+
+#. A *token queue* mechanism: Tokens are stored in a queue during the analysis
+   process. The `get_token(...)` function pops tokens from the queue as long 
+   there are some. If the token queue is empty it calls the analyzer function
+   again and returns the first token in the queue.
+
+   The advantage of this approach is that more than one token can be produced
+   by a triggering pattern. This allows for the usage of implicit patterns 
+   or patterns that are produced during mode transitions.
+   
+   It is mandatory to have a token queue, if one relies on quex's `on_indentation`
+   event handler to implement a indentation based language.
+
+#. Without a token queue. In this case one pattern can only produce one token.
+   During mode transitions or on indentation events no tokens can be produced.
+   
+The default behavior is to create an analyzer based on a token queue. Because,
+only then the event handlers can be used without a lot of precaution. The
+size of the token queue is fixed. It can be set via the command line option
+``--token-queue-size``. An overflow of the queue is prevented since the
+analyser returns as soon as the queue is full. The default size of the
+token queue is 64 tokens.
+
+In case that multiple tokens are send in an action, then the
+``--token-queue-safety-border`` command line flag allows to define a safety
+region. Now, the analyzer returns as soon as the remaining free places in the
+queue are less then the specified number. This ensures that any action find a
+minimum of places in the queue to which it can write tokens. In other words,
+the safety-border corresponds to the maximum number of tokens send as
+reaction to a pattern match, including indentation events and mode transitions.
+The default safety border is 16 tokens.
+
+If the command line flag ``--no-token-queue`` is set, then the token queue
+is disabled. The caller of the lexical analyzer has multiple options to receive
+the result of an analysis process. There are two possible sets of function
+available, depending on the command line option ``--no-return-token-id`` [#f1]_:
+
+ 1. Functions *not returning a token id* (``--no-return-token-id`` is not set):
+
+    Obviously it is not mandatory for the token class/struct to contain a type id.
+    It can be retrieved from the return value.  
+
+    .. cfunction:: TokenID get_token() 
+        
+        returns the token id.
+
+    .. cfunction:: TokenID get_token(Token*)
+        
+        returns the token id and fills the token's content.  The user defines the
+        place in memory where the content is written.
+
+    .. cfunction:: TokenID get_token(Token**)
+
+        *(Only active when the token queue is activated.)* [#f3]_
+
+        returns the token id and redirects the pointer to the token that
+        the analyzer has filled. If no token queue is used, the pointer
+        of the currently active token points always to the same position.
+        Thus redirecting it becomes nonsense. Without a token queue a pointer
+        to the current token is accessible via the public 
+        member ``self.token`` [#f2]_ . 
+
+ 2. Functions not returning a token id (``--no-return-token-id`` is set):
+
+    .. cfunction:: void get_token()
+       
+        fills the *known* token object ``self.token``. After a call to this
+        function the user needs to access the content by himself.
+
+    .. cfunction:: void  get_token(Token*)
+       
+        fills then token object's content. 
+
+    .. cfunction:: void  get_token(Token**)
+       
+        *(Only active when the token queue is activated.)* [#f3]_
+
+        redirects the given pointer to the result token [#f2]_.
+
+The user must decide which one of the token receiption functions is the most
+appropriate with respect to memory management and/or computational constraints.
+Then it can be decided wether the ``--no-return-token-id`` flag is to be set 
+or not based on the function that needs to be implemented.
+
+
+type_id in      Token Queue     Return        Provided
+Token Type                      TokenID       Functions
+
+   yes          yes             yes           *redundant*  [#f4]_
+   yes          yes             no            
+   yes          no              yes           *redundant*  [#f4]_
+   yes          no              no            
+   no           yes             yes           *impossible* [#f5]_
+   no           yes             no            *impossible* [#f5]_
+   no           no              yes
+   no           no              no            *nonsense*   [#f6]_
+
+.. rubric:: Footnotes
+
+.. [#f1] The type ``TokenID`` in the list is a shorthand for ``QUEX_TYPE_TOKEN_ID``. ``Token``
+         is a shorthand for ``QUEX_TYPE_TOKEN``.
+
+.. [#f2] If there is no token queue, then the token information is always stored at the
+         same place. It does not make sense to 'redirect' a pointer always to the same 
+         position. Thus, in case of no token queue, one could as well use a ``get_token``
+         function that just returns a token-id and refer to the token by the ``.token``
+         pointer which is a public member of the lexical analyzer class.
+
+.. [#f3] In other words: It is not present if the command line flag ``--no-token-queue``
+         has been specified, or the compile option ``QUEX_OPTION_TOKEN_POLICY_QUEUE``
+         has been defined.
+
+.. [#f4] The token identifier is communicated via a member of the token type and 
+         the return value. This means unnecessary overhead.
+
+.. [#f5] When a token queue is used, the token type *must* contain the type identifier.
+         Otherwise, no token id for a stacked token can be provided.
+
+.. [#f6] If the token type does not contain the token identifier nor the token identifier
+         is communicated by a return value, then the user cannot know what token has
+         been found. This is meaningless.
+
