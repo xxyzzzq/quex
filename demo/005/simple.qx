@@ -1,5 +1,8 @@
 // -*- C++ -*-
 
+header {
+extern QUEX_TYPE_CHARACTER  EmptyLexeme;
+}
 token {
    INCLUDE
    IDENTIFIER
@@ -10,12 +13,15 @@ token {
 
 mode ONE_AND_ONLY
 {
-    <<EOF>>     => QUEX_TKN_TERMINATION;
+    <<EOF>> {
+	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
+        RETURN;
+    }
 
-    "("         => QUEX_TKN_BRACKET_OPEN;
-    ")"         => QUEX_TKN_BRACKET_CLOSE;
+    "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
+    ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
     //
-    "include"   => QUEX_TKN_INCLUDE;
+    "include"   => QUEX_TKN_INCLUDE(&EmptyLexeme);
     //
     ([_a-zA-Z]|("/"|"."|"'"))+  => QUEX_TKN_IDENTIFIER(Lexeme); 
     [ \t\r\n]+                  { }

@@ -118,10 +118,6 @@
 #   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
 #endif
 
-/* Return type of analyser function */
-typedef void   __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE;
-
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
@@ -161,7 +157,7 @@ namespace quex {
 #   endif
 
     struct  __QuexAnalyser_tag;
-    typedef __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);
+    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);
 
     QUEX_INLINE void
     QUEX_ERROR_EXIT(const char* Msg)

@@ -7,6 +7,8 @@
 
 using namespace std;
 
+QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
+
 int 
 main(int argc, char** argv) 
 {        
