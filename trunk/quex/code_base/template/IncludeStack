@@ -38,8 +38,7 @@ namespace quex {
         CLASS*   _the_lexer;
 
         template <class InputHandle> 
-        void   __push(InputHandle*, 
-                      __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE (*StartModeAnalyzerFunction)(QuexAnalyser*), 
+        void   __push(InputHandle*, void (*StartModeAnalyzerFunction)(QuexAnalyser*), 
                       const char* IANA_Coding);
     };
 }

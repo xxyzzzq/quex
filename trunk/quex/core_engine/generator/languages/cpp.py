@@ -61,7 +61,7 @@ def __local_variable_definitions(VariableInfoList):
     return txt
          
 __function_signature = """
-__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+void  
 $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyser* me) 
 {
     /* NOTE: Different modes correspond to different analyser functions. The analyser*/

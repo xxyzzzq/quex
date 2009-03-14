@@ -152,7 +152,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
-    default_action = "return 0;"
+    default_action = "analysis_terminated_f = true; return;"
 
     # -- produce some visible output about the setup
     print "(*) Lexical Analyser Patterns:"
@@ -177,7 +177,7 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
     txt += generator.do(PatternActionPairList, 
                         StateMachineName       = "UnitTest",
                         DefaultAction          = PatternActionInfo(None, default_action), 
-                        EndOfStreamAction      = PatternActionInfo(None, ""), 
+                        EndOfStreamAction      = PatternActionInfo(None, default_action), 
                         PrintStateMachineF     = True,
                         AnalyserStateClassName = sm_name,
                         StandAloneAnalyserF    = True)
@@ -197,6 +197,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#include <quex/code_base/template/Analyser.i>\n"
     txt += "\n"
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
+    txt += "\n"
+    txt += "extern bool analysis_terminated_f = false;\n"
     txt += "\n"
     txt += "bool\n"
     txt += "show_next_character(QuexBuffer* buffer) {\n"
@@ -220,7 +222,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    return true;\n"
     txt += "}\n"
     txt += "\n"
-    txt += "bool  Mr_UnitTest_analyser_function(QuexAnalyser* me)\n"
+    txt += "void Mr_UnitTest_analyser_function(QuexAnalyser* me)\n"
     txt += "{\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
@@ -267,7 +269,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
 
     end_str  = '    printf("end\\n");'
-    end_str += '    return false;\n'
+    end_str += '    analysis_terminated_f = true; return;\n'
 
     skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"])
 
@@ -283,7 +285,7 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     assert QuexBufferSize >= len(EndSequence) + 2
 
     end_str  = '    printf("end\\n");'
-    end_str += '    return false;\n'
+    end_str += '    analysis_terminated_f = true; return;\n'
 
     skipper_code = skip_code.get_range_skipper(EndSequence, db["C++"], end_str)
 
@@ -300,8 +302,8 @@ def action(PatternName):
     elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function;\n"
 
     if "CONTINUE" in PatternName: txt += ""
-    elif "STOP" in PatternName:   txt += "return 0;"
-    else:                         txt += "return 1;"
+    elif "STOP" in PatternName:   txt += "analysis_terminated_f = true; return;"
+    else:                         txt += "return;"
 
     return txt
     
@@ -309,6 +311,7 @@ test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
 typedef int QUEX_TYPE_TOKEN_ID;              
+#define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 $$TEST_CASE$$
@@ -322,10 +325,12 @@ $$TEST_CASE$$
     using namespace quex;
 #endif
 
+bool analysis_terminated_f = false;
+
 #define QUEX_LEXER_CLASS QuexAnalyser
 
-static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mr_UnitTest_analyser_function(QuexAnalyser* me);
-static __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
+static void  Mr_UnitTest_analyser_function(QuexAnalyser* me);
+static void  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
 """
 
 test_program_db = { 
@@ -345,9 +350,8 @@ test_program_db = {
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
         printf("(*) result:\\n");
-        do {
-            success_f = lexer_state.current_analyser_function(&lexer_state);
-        } while ( success_f );      
+        for(analysis_terminated_f = false; ! analysis_terminated_f; )
+            lexer_state.current_analyser_function(&lexer_state);
         printf("  ''\\n");
     }\n""",
 
@@ -376,9 +380,8 @@ test_program_db = {
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
-        do {
-            success_f = lexer_state.current_analyser_function(&lexer_state);
-        } while ( success_f );      
+        for(analysis_terminated_f = false; ! analysis_terminated_f; )
+            lexer_state.current_analyser_function(&lexer_state);
         printf("  ''\\n");
 
         fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
@@ -406,9 +409,8 @@ test_program_db = {
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
-        do {
-            success_f = lexer_state.current_analyser_function(&lexer_state);
-        } while ( success_f );      
+        for(analysis_terminated_f = false; ! analysis_terminated_f; )
+            lexer_state.current_analyser_function(&lexer_state);
         printf("  ''\\n");
     }\n""",
 
@@ -435,9 +437,8 @@ test_program_db = {
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
-        do {
-            success_f = lexer_state.current_analyser_function(&lexer_state);
-        } while ( success_f );      
+        for(analysis_terminated_f = false; ! analysis_terminated_f; )
+            lexer_state.current_analyser_function(&lexer_state);
         printf("  ''\\n");
     }\n""",
 }
