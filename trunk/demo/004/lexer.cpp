@@ -29,7 +29,6 @@ int
 main(int argc, char** argv) 
 {        
     std::FILE*  fh = 0x0;
-
     {
         if( argc != 2 ) { return -1; }
 

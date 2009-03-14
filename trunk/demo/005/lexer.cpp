@@ -11,13 +11,13 @@ int
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::Token        Token;
+    quex::Token       Token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer*  qlex = new quex::tiny_lexer(argc == 1 ? "example.txt" : argv[1]);
+    quex::tiny_lexer  qlex(argc == 1 ? "example.txt" : argv[1]);
 
     // (*) print the version 
-    // cout << qlex->version() << endl << endl;
+    // cout << qlex.version() << endl << endl;
 
     cout << ",------------------------------------------------------------------------------------\n";
     cout << "| [START]\n";
@@ -27,7 +27,7 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex->get_token(&Token);
+        qlex.receive(&Token);
 
         // (*) print out token information
         //     -- name of the token
@@ -39,7 +39,7 @@ main(int argc, char** argv)
 
         case QUEX_TKN_INCLUDE: 
             {
-                qlex->get_token(&Token);
+                qlex.receive(&Token);
                 cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
                 if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
                     cout << "found 'include' without a subsequent filename. hm?\n";
@@ -52,12 +52,12 @@ main(int argc, char** argv)
                     cout << "file not found\n";
                     return 0;
                 }
-                qlex->include_stack.push(fh);
+                qlex.include_stack.push(fh);
                 break;
                 
             }
         case QUEX_TKN_TERMINATION:
-            if( qlex->include_stack.pop() == false ) continue_lexing_f = false;
+            if( qlex.include_stack.pop() == false ) continue_lexing_f = false;
             else                                     cout << "<< return from include\n";
             break;
         }

@@ -5,7 +5,7 @@ mode BASE :
 <inheritable: only>  
 {    
     <<EOF>> {
-        self.send(quex::token::ID_TERMINATION);
+        self.send(QUEX_TKN_TERMINATION);
         RETURN;
     }
     "."         => QUEX_TKN_PERIOD;

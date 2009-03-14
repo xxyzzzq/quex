@@ -2,10 +2,10 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
 
+#include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/Token>
-#define QUEX_TYPE_TOKEN Token
 
 
 #include <quex/code_base/temporary_macros_on>

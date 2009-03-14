@@ -227,7 +227,11 @@ $$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
     
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+    return;
+#   else
     if( QuexTokenQueue_is_full(self._token_queue) ) return;
+#   endif
 
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$

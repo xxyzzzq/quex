@@ -28,8 +28,8 @@
 #   define BENCHMARK_SETTING_HEADER \
            using namespace quex;
 
-#   define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh);
-#   define BENCHMARK_SETTING_GET_TOKEN_ID   token_id = qlex.get_token();
+#   define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); quex::Token token; qlex.token = &token;
+#   define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(); token_id = qlex.token->type_id();
 #   define BENCHMARK_SETTING_RESET          qlex._reset();
 
 
