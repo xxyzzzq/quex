@@ -102,7 +102,7 @@ lexer-flex: lex.yy.c
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) \
-		 --token-offset 3 --no-token-queue \
+		 --token-offset 3 --token-policy users_token \
 		 --no-string-accumulator --token-prefix TKN_ \
          --foreign-token-id-file token-ids.h
 

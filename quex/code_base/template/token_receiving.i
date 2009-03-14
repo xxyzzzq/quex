@@ -113,7 +113,7 @@ namespace quex {
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     inline void
-    CLASS::get_token() 
+    CLASS::receive() 
     {
         __quex_assert(this->token != 0x0);
 

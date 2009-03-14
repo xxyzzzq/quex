@@ -38,7 +38,7 @@ namespace quex {
             _token_queue->remaining_repetitions_of_last_token_n = N - AvailableN;
         }
 #       else
-        QUEX_TOKEN_POLICY_SET_1(That);
+        QUEX_TOKEN_POLICY_SET_1(ID);
 #       endif
     }
 
