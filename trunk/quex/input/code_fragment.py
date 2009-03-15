@@ -178,8 +178,7 @@ def __parse_token_id_specification_by_character_code(fh):
     token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
     lexer_mode.token_id_db[prefix_less_token_name] = \
             TokenInfo(prefix_less_token_name, character_code, None, fh.name, get_current_line_info_number(fh)) 
-    txt += "self.send(%s); return;\n" % token_id_str
-    return txt
+    return "self.send(%s); return;\n" % token_id_str
 
 def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
     assert type(ArgListStr) == str

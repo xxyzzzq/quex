@@ -10,26 +10,26 @@ tmp=`pwd`
 cd $bug/ 
 if [[ $1 == "Normal" ]]; then
     make EXT_MODE_FILE=with-mode-change-detection.qx \
-         EXT_TOKEN_QUEUE_FLAG='--no-token-queue'        
+         EXT_TOKEN_QUEUE_FLAG='--token-policy users_token'        
 fi
 if [[ $1 == "NormalNoAsserts" ]]; then
     make EXT_MODE_FILE=with-mode-change-detection.qx \
-         EXT_TOKEN_QUEUE_FLAG='--no-token-queue'     \
+         EXT_TOKEN_QUEUE_FLAG='--token-policy users_token'     \
          EXT_CFLAGS=-DQUEX_OPTION_ASSERTS_DISABLED     
 fi
 if [[ $1 == "NoModeDetection" ]]; then
     make EXT_MODE_FILE=without-mode-change-detection.qx \
-         EXT_TOKEN_QUEUE_FLAG='--no-token-queue'        \
+         EXT_TOKEN_QUEUE_FLAG='--token-policy users_token'        \
          EXT_CFLAGS=-DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED
 fi
 if [[ $1 == "NoModeDetectionNoAsserts" ]]; then
     make EXT_MODE_FILE=without-mode-change-detection.qx \
-         EXT_TOKEN_QUEUE_FLAG='--no-token-queue'        \
+         EXT_TOKEN_QUEUE_FLAG='--token-policy users_token'        \
          EXT_CFLAGS='-DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED -DQUEX_OPTION_ASSERTS_DISABLED'
 fi
 if [[ $1 == "NoModeDetection_ErrorCase" ]]; then
     make EXT_MODE_FILE=with-mode-change-detection.qx \
-         EXT_TOKEN_QUEUE_FLAG='--no-token-queue'     \
+         EXT_TOKEN_QUEUE_FLAG='--token-policy users_token'     \
          EXT_CFLAGS='-DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED'
 fi
 ./lexer >& tmp.txt

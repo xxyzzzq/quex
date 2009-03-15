@@ -19,11 +19,18 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 // Coding must be defined before the inclusion of 'definitions' since this file will
 // otherwise define a default value
 
-#ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE_DISABLED
+#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN_DISABLED
 #endif
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   ifndef     QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE
-#       define QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE  ((size_t)2048)
+#ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
+#endif
+#ifndef QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE_DISABLED
+#endif
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_SIZE
+#       define QUEX_SETTING_TOKEN_QUEUE_SIZE  ((size_t)64)
+#   endif
+#   ifndef     QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
+#       define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)16)
 #   endif
 #endif
 
@@ -194,7 +201,7 @@ namespace quex {
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/template/Accumulator>
 #endif
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
 #   include <quex/code_base/TokenQueue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
@@ -204,37 +211,8 @@ namespace quex {
 #   include <quex/code_base/template/IncludeStack>
 #endif
 
-// RETURN: _____________________________________________________________________
-//
-//  -- Return from pattern action to the function that called the
-//     lexer - but only in case that the token stack was filled.
-//
-//     QUEX core: If not, the analyser function automatically jumps to the 
-//                initial state. This happens through a little trick,
-//                were 'break' jumps to the goto statement that guides
-//                to the entry point of the state machine that is
-//                currently active.
-//
-//     This is very handy, when dealing with functions that not
-//     necessarily fill the token queue, such as push_pure_text_token().
-//     If no pure text appeared, the stack is empty after this function
-//     call. Similar things happen with table patterns.
-//
-//  -- Note, that at some point in time End of File <<EOF>> will
-//     hit the token stack, so the lexing won't continue infinitly.
-//     
-//
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
-#   define __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-#   define RETURN                                                                \
-    if( self._token_queue->is_empty() ) { CONTINUE; }                            \
-    else {                                                                       \
-        return /* self._token_queue->top()->type_id() */;                        \
-   }
-#else
-#   define RETURN  return
+#ifndef    __QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID
 #endif
-
 
 // START:
 
@@ -251,7 +229,7 @@ namespace quex {
 #include <quex/code_base/temporary_macros_on>
 namespace quex {
     
-    extern     __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
+    extern     void Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     extern     bool Simple_ONE_AND_ONLY_has_base(const QuexMode*);
     extern     bool Simple_ONE_AND_ONLY_has_entry_from(const QuexMode*);
@@ -289,14 +267,23 @@ namespace quex {
         QUEX_TYPE_CHARACTER*  buffer_text_end();
         const size_t          buffer_distance_to_text_end();
         
-        //
         // -- token stream: read next token
-#       ifndef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-        QUEX_TYPE_TOKEN_ID   get_token();
-#       else
-        QUEX_TYPE_TOKEN_ID   get_token(Token*  result_p);
-        void                 get_token(Token** result_pp);
-#       endif   
+        void  get_token() 
+        { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+        void  get_token(QUEX_TYPE_TOKEN*   result_p)
+        { QUEX_ERROR_EXIT("get_token(Token*) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+        void  get_token(QUEX_TYPE_TOKEN**   result_p)
+        { QUEX_ERROR_EXIT("get_token(Token**) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
+
+#       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        void                 receive(QUEX_TYPE_TOKEN*   result_p);
+        void                 receive(QUEX_TYPE_TOKEN**  result_pp);
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+        void                 receive();
+        void                 receive(QUEX_TYPE_TOKEN*   result_p);
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+        QUEX_TYPE_TOKEN*     receive(QUEX_TYPE_TOKEN*  begin, QUEX_TYPE_TOKEN* end);
+#       endif
         //
         // (*) Mode handling
         //
@@ -323,7 +310,6 @@ namespace quex {
         const int   map_mode_to_mode_id(const QuexMode& Mode) const;
 
         // (*) Token sending
-        void        send(); /* empty function, for uniformity (see token sending via singleton) */
         void        send(const Token& That);
         void        send(const QUEX_TYPE_TOKEN_ID TokenID);
         void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
@@ -383,24 +369,25 @@ namespace quex {
         // (*) mode stack allows for pushing and popping of lexical analysis modes
         std::vector<QuexMode*>   _mode_stack;
 
-        // (*) The Token Queue ___________________________________________________________
-        //
-        // Any time a token is created, it is pushed on the token queue. Lexical analysis
-        // only happens if stack is empty, so that it is filled up again.
-        //
-        // NOTE: A token stack is necessary whenever tokens are created that do not
-        //       relate directly to patterns. A token stack gives the great possibility
-        //       to 'send' tokens from anywhere inside an action or a state transition.
-        // 
-        //       Otherwise, one would be restricted to sending one token by pattern.        
-        //
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
+        // NOTE: A pointer to an object of the token queue/object is used in order to make
+        //       memory management more flexible. The token queue/token object is heavily
+        //       used and it should be possible to put it somewhere in memory with other
+        //       heavily used data so that the cache can take advantage of data locality.
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
     private:
-        TokenQueue<Token>*   _token_queue;
+        // (*) The Token Queue ___________________________________________________________
+        //     The token queue is **private**, because the user does not need direct
+        //      access. get_token(Token**) is enough to get access to the current token. 
+        QuexTokenQueue*   _token_queue;
 #       else
     public:
-        Token                the_token;
+        // (*) The Token _________________________________________________________________
+        //     get_token(Token**) does not make a whole lot of sense, since the token 
+        //     pointer always points to the same object. The object can be accessed
+        //     by this **public** pointer.
+        QUEX_TYPE_TOKEN*  token;
 #       endif
+
     public:
         // (*) Who and what am I ? _______________________________________________________
         Simple&   self;
@@ -431,7 +418,7 @@ namespace quex {
 
     private:
         // (*) All Modes are Friends _____________________________________________________
-        friend     __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
+        friend     void Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
         friend     bool Simple_ONE_AND_ONLY_has_base(const QuexMode*);
         friend     bool Simple_ONE_AND_ONLY_has_entry_from(const QuexMode*);
@@ -487,8 +474,13 @@ namespace quex {
         std::cout << "###############################################################################\n";
 #       endif
 
-#       ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE 
-        _token_queue = new TokenQueue<Token>(QUEX_SETTING_TOKEN_QUEUE_INITIAL_SIZE);    
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
+        _token_queue = new QuexTokenQueue;
+        QuexTokenQueue_init(_token_queue, 
+                            new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE], 
+                            QUEX_SETTING_TOKEN_QUEUE_SIZE);
+#       else
+        token = 0x0; /* call to 'get_token(token*)' provides pointer to some place in memory. */
 #       endif
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -546,13 +538,9 @@ namespace quex {
 #    include <quex/code_base/template/Accumulator.i>
 #endif
 
-#ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
-#   include <quex/code_base/template/token_receiving_via_queue.i>
-#   include <quex/code_base/template/token_sending_via_queue.i>
-#else
-#   include <quex/code_base/template/token_receiving_via_singleton.i>
-#   include <quex/code_base/template/token_sending_via_singleton.i>
-#endif
+#include <quex/code_base/template/token_sending.i>
+#include <quex/code_base/template/token_receiving.i>
+
 #include <quex/code_base/template/mode_handling.i>
 #ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
 #   include <quex/code_base/template/IncludeStack.i>
@@ -563,7 +551,6 @@ namespace quex {
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
-#undef __QUEX_SETTING_TOKEN_CLASS_NAME
 #undef CLASS
 
 #include <quex/code_base/template/Analyser.i>
@@ -600,13 +587,17 @@ namespace quex {
 
 #include <quex/code_base/template/Analyser>
 #include <quex/code_base/buffer/Buffer>
+#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#   include <quex/code_base/TokenQueue>
+#endif
 
 #ifdef CONTINUE
 #   undef CONTINUE
 #endif
+
 #include <quex/code_base/temporary_macros_on>
 
-__QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
+void  
 Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me) 
 {
     /* NOTE: Different modes correspond to different analyser functions. The analyser*/
@@ -2549,12 +2540,8 @@ TERMINAL_35_DIRECT:
         self.counter.count_NoNewline(LexemeL);
         
         #line 27 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme)); return;
-        #else
-        self.send(atoi((char*)Lexeme)); return QUEX_TKN_NUMBER;
-        #endif
-#line 1989 "Simple-core-engine.cpp"
+#line 1990 "Simple-core-engine.cpp"
         
         }
     }
@@ -2593,12 +2580,8 @@ TERMINAL_7_DIRECT:
         self.counter.count_NoNewline(6);
         
         #line 19 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_STRUCT); return;
-        #else
-        self.send(); return QUEX_TKN_STRUCT;
-        #endif
-#line 2033 "Simple-core-engine.cpp"
+#line 2030 "Simple-core-engine.cpp"
         
         }
     }
@@ -2621,7 +2604,7 @@ TERMINAL_41_DIRECT:
         
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
-#line 2056 "Simple-core-engine.cpp"
+#line 2053 "Simple-core-engine.cpp"
         
         }
     }
@@ -2642,12 +2625,8 @@ TERMINAL_10_DIRECT:
         self.counter.count_NoNewline(3);
         
         #line 20 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_TYPE_INT); return;
-        #else
-        self.send(); return QUEX_TKN_TYPE_INT;
-        #endif
-#line 2082 "Simple-core-engine.cpp"
+#line 2075 "Simple-core-engine.cpp"
         
         }
     }
@@ -2668,12 +2647,8 @@ TERMINAL_13_DIRECT:
         self.counter.count_NoNewline(6);
         
         #line 21 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_TYPE_DOUBLE); return;
-        #else
-        self.send(); return QUEX_TKN_TYPE_DOUBLE;
-        #endif
-#line 2108 "Simple-core-engine.cpp"
+#line 2097 "Simple-core-engine.cpp"
         
         }
     }
@@ -2694,12 +2669,8 @@ TERMINAL_16_DIRECT:
         self.counter.count_NoNewline(4);
         
         #line 22 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_SEND); return;
-        #else
-        self.send(); return QUEX_TKN_SEND;
-        #endif
-#line 2134 "Simple-core-engine.cpp"
+#line 2119 "Simple-core-engine.cpp"
         
         }
     }
@@ -2720,12 +2691,8 @@ TERMINAL_19_DIRECT:
         self.counter.count_NoNewline(6);
         
         #line 23 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_EXPECT); return;
-        #else
-        self.send(); return QUEX_TKN_EXPECT;
-        #endif
-#line 2160 "Simple-core-engine.cpp"
+#line 2141 "Simple-core-engine.cpp"
         
         }
     }
@@ -2746,12 +2713,8 @@ TERMINAL_22_DIRECT:
         self.counter.count_NoNewline(1);
         
         #line 24 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_SEMICOLON); return;
-        #else
-        self.send(); return QUEX_TKN_SEMICOLON;
-        #endif
-#line 2186 "Simple-core-engine.cpp"
+#line 2163 "Simple-core-engine.cpp"
         
         }
     }
@@ -2772,12 +2735,8 @@ TERMINAL_25_DIRECT:
         self.counter.count_NoNewline(1);
         
         #line 25 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_BRACKET_OPEN); return;
-        #else
-        self.send(); return QUEX_TKN_BRACKET_OPEN;
-        #endif
-#line 2212 "Simple-core-engine.cpp"
+#line 2185 "Simple-core-engine.cpp"
         
         }
     }
@@ -2798,12 +2757,8 @@ TERMINAL_28_DIRECT:
         self.counter.count_NoNewline(1);
         
         #line 26 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_BRACKET_CLOSE); return;
-        #else
-        self.send(); return QUEX_TKN_BRACKET_CLOSE;
-        #endif
-#line 2238 "Simple-core-engine.cpp"
+#line 2207 "Simple-core-engine.cpp"
         
         }
     }
@@ -2820,21 +2775,13 @@ TERMINAL_END_OF_STREAM:
         self.counter.__shift_end_values_to_start_values();
         
         #line 16 "dos_lf_2.qx"
-        #ifdef QUEX_OPTION_TOKEN_SENDING_VIA_QUEUE
         self.send(QUEX_TKN_TERMINATION); return;
-        #else
-        self.send(); return QUEX_TKN_TERMINATION;
-        #endif
-#line 2260 "Simple-core-engine.cpp"
+#line 2225 "Simple-core-engine.cpp"
         
         }
                 }
 
-#ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-        return /*__QUEX_TOKEN_ID_TERMINATION*/;
-#else
-        return __QUEX_TOKEN_ID_TERMINATION;
-#endif
+     return;
 
 TERMINAL_DEFAULT:
     QUEX_DEBUG_PRINT(&me->buffer, "LABEL: TERMINAL_DEFAULT");
@@ -2855,16 +2802,12 @@ else {
         self.counter.__shift_end_values_to_start_values();
         self.counter.count(Lexeme, LexemeEnd);
         self.send(QUEX_TKN_TERMINATION);
-        #ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-            return /*__QUEX_TOKEN_ID_TERMINATION*/;
-        #else
-            return __QUEX_TOKEN_ID_TERMINATION;
-        #endif
+        return;
         
         }
                 }
 
-        goto __REENTRY_PREPARATION;
+     goto __REENTRY_PREPARATION;
 
 #undef Lexeme
 #undef LexemeBegin
@@ -2898,6 +2841,13 @@ __REENTRY_PREPARATION:
 
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
+    
+#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+    if( self.token->type_id() != __QUEX_TOKEN_ID_UNINITIALIZED) return;
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+    if( QuexTokenQueue_is_full(self._token_queue) ) return;
+#   endif
+
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 
 
@@ -2927,13 +2877,10 @@ __REENTRY_PREPARATION:
     if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
 #endif
     { 
-#   ifdef __QUEX_OPTION_ANALYSER_RETURN_TYPE_IS_VOID
-       return /*__QUEX_TOKEN_ID_UNINITIALIZED*/;
-#   else
-       return __QUEX_TOKEN_ID_UNINITIALIZED;
-#   endif
+    QUEX_TOKEN_POLICY_SET_1(__QUEX_TOKEN_ID_UNINITIALIZED);
+    return;
 #elif defined(QUEX_OPTION_ASSERTS)
-       QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+    QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
 #endif
     }
 
@@ -3009,7 +2956,7 @@ __quex_assert(Indentation >= 0);
 
 /* Definition of essential token identifiers that the analyser engine requires. */
 #if defined(__QUEX_TOKEN_ID_TERMINATION) || defined(__QUEX_TOKEN_ID_UNINITIALIZED)
-#    error "Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/descriptions' shall **not** be included before this file."
+#    error "Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/definitions' shall **not** be included before this file."
 #endif
 /* Note, we can very well refer in macros to things that are defined below. */
 

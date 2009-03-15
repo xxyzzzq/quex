@@ -13,7 +13,7 @@ main(int argc, char** argv)
     quex::Simple   qlex("example.txt");
 
     do {
-        qlex.get_token(&Token);
+        qlex.receive(&Token);
 		cout << Token << endl;
     } while( Token.type_id() != QUEX_TKN_TERMINATION );
     return 0;

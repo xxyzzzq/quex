@@ -17,7 +17,7 @@ main(int argc, char** argv)
 
     cout << "## An Assert-Abortion might be an intended element of the experiment.\n";
     do {
-        qlex.get_token(&Token);
+        qlex.receive(&Token);
         cout << string(Token) << endl;
     } while( Token.type_id() != QUEX_TKN_TERMINATION );
 
