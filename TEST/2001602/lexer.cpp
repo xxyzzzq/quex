@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     while (true) {
 	// (*) get next token from the token stream
-	qlex->get_token(&Token);
+	qlex->receive(&Token);
 
 	// (*) check against 'termination'
 	if (Token.type_id() == QUEX_TKN_TERMINATION)

@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.36" date="Sat Mar 14 07:46:39 2009">
+<test-database execution-time-sec="0.35" date="Sun Mar 15 08:23:09 2009">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
-        <test title="Cut Interval" make-required="True" time-sum-sec="0.07"> 
+        <test title="Cut Interval" make-required="True" time-sum-sec="0.06"> 
             <application file-name="test-NumberSet-cut_interval.py" info-request-time="1235458276L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.07" crc="1051370365"/>
+               <choice name="" result="OK" time-sec="0.06" crc="1051370365"/>
             </choice-list>
         </test>
         <test title="Inverse" make-required="True" time-sum-sec="0.04"> 
@@ -25,10 +25,10 @@
                <choice name="" result="OK" time-sec="0.05" crc="892506273"/>
             </choice-list>
         </test>
-        <test title="Union" make-required="True" time-sum-sec="0.04"> 
+        <test title="Union" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-union.py" info-request-time="1235458276L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="973910203"/>
+               <choice name="" result="OK" time-sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
         <test title="Condition Code Generation" make-required="True" time-sum-sec="0.06"> 

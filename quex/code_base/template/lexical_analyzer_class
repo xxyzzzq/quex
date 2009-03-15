@@ -406,8 +406,9 @@ $$MODE_OBJECT_MEMBERS$$
         //     get_token(Token**) does not make a whole lot of sense, since the token 
         //     pointer always points to the same object. The object can be accessed
         //     by this **public** pointer.
-        QUEX_TYPE_TOKEN*    token;
+        QUEX_TYPE_TOKEN*  token;
 #       endif
+
     public:
         // (*) Who and what am I ? _______________________________________________________
         $$LEXER_DERIVED_CLASS_NAME$$&   self;

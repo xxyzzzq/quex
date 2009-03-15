@@ -88,6 +88,7 @@ namespace quex {
     CLASS::receive(QUEX_TYPE_TOKEN* result_p) 
     {
         this->token = result_p;
+        this->token->set(__QUEX_TOKEN_ID_UNINITIALIZED);
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
@@ -117,6 +118,7 @@ namespace quex {
     {
         __quex_assert(this->token != 0x0);
 
+        this->token->set(__QUEX_TOKEN_ID_UNINITIALIZED);
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 

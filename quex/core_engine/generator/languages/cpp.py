@@ -23,15 +23,8 @@ __header_definitions_txt = """
 #   undef CONTINUE
 #endif
 
-#define RETURN return
-
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-#   define CONTINUE \
-      $$GOTO_START_PREPARATION$$ 
-#else
-#   define CONTINUE \
-      QUEX_ERROR_EXIT("Call to CONTINUE while token queue was disabled. Review command line arguments to quex.");
-#endif
+#define RETURN   return
+#define CONTINUE $$GOTO_START_PREPARATION$$ 
 """
 
 def __header_definitions(LanguageDB):
@@ -228,8 +221,8 @@ $$REENTRY_PREPARATION$$
      *     at each time when CONTINUE is called at the end of a pattern. */
     
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-    return;
-#   else
+    if( self.token->type_id() != __QUEX_TOKEN_ID_UNINITIALIZED) return;
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     if( QuexTokenQueue_is_full(self._token_queue) ) return;
 #   endif
 

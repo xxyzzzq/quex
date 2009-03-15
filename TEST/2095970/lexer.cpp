@@ -25,11 +25,12 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-        qlex->get_token(&Token);
+        qlex->receive(&Token);
         cout << Token.type_id_name() << endl;
         token_id = Token.type_id();
 #       else
-        token_id = qlex->get_token();
+        qlex->receive(&Token);
+        token_id = Token.type_id();
         cout << Token.map_id_to_name(token_id) << endl;
 #       endif
         ++number_of_tokens;

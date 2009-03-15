@@ -1,6 +1,15 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
 #define __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
+/****************************************************************************
+ *
+ * IMPORTANT NOTE:
+ *
+ * It is problematic to include 'Token' inside 'Analyzer'. This would create
+ * problems with user defined token headers. Thus, we **must** include the
+ * token class before header 'Analyser'                                     
+ *
+ ****************************************************************************/
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
@@ -27,6 +36,7 @@ namespace quex {
          * then continue further. */
         QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;
 #       endif
+
     };
     typedef struct __QuexAnalyser_tag QuexAnalyser;
 

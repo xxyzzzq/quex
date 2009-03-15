@@ -10,7 +10,7 @@ WORD 'with'
 FAILED '-' 
 WORD 'dashes' 
 FAILED '\n' 
-<TERMINATION> '' 
+<TERMINATION> '\n' 
 rm -rf Simple-core-engine.cpp
 rm -rf Simple-token_ids
 rm -rf Simple.cpp
