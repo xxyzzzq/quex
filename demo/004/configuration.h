@@ -23,6 +23,8 @@
 #   define BENCHMARK_SETTING_GET_TOKEN_ID   token_id = yylex();
 #   define BENCHMARK_SETTING_RESET          fseek(yyin, 0, SEEK_SET); yyrestart(yyin);
 
+#   define BENCHMARK_SETTING_TERMINATE      /* */
+
 #else
 
 #   define BENCHMARK_SETTING_HEADER \
@@ -31,6 +33,8 @@
 #   define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); quex::Token token; qlex.token = &token;
 #   define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(); token_id = qlex.token->type_id();
 #   define BENCHMARK_SETTING_RESET          qlex._reset();
+
+#   define BENCHMARK_SETTING_TERMINATE      qlex.token = 0x0;
 
 
 #endif
