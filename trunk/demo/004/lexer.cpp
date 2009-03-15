@@ -126,6 +126,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
     
     cout << "//Benchmark (including overhead)\n";
     cout << "//    TokenN: " << (int)((token_n-1) / *repetition_n) << endl;
+
     return report(StartTime, *repetition_n, FileSize, /* CharacterSize = 1 */ 1);
 }
 
@@ -166,6 +167,7 @@ overhead(std::FILE* fh,
     // optimized away, then the token id reception cannot be optimized away.
     cout << "// Overhead:\n";
     cout << "//     Checksum (meaningless): " << checksum << " [1]" << std::endl;
+
     return report(StartTime, RepetitionN, SimulatedFileSize, /* CharacterSize [byte] */ 1);
 }
 

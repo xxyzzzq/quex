@@ -5,6 +5,11 @@ Token Passing Policies
 
 .. note:: 
 
+   If void receive() is to be used, then the variable ``self.token`` must
+   be set and before the lexer is destructed, self.token must be set to 0x0;
+
+.. note:: 
+
    Since version 0.37.1 there is no longer support for returning the 
    token id directly from the lexical analyzer. At the time of this
    writing, there is no evidence that this brings any advantage. If 

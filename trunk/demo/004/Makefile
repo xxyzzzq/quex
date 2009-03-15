@@ -5,7 +5,7 @@
 COMPILER     = g++    # icpc # g++ 
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 # -ggdb # -O3    # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 # # -O3    # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 GENERATOR    = Quex#  Quex, Flex
 
 # (*) SETUP ____________________________________________________________________
