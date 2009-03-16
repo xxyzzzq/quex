@@ -1,3 +1,5 @@
+.. _usage-minimalist-example:
+
 Minimalist Example
 ==================
 
@@ -62,7 +64,7 @@ program demonstrates the accesses to lexical analyser engine:
             quex::tiny_lexer   qlex("example.txt");
 
             do {
-                qlex.get_token(&Token);      
+                qlex.receive(&Token);      
                 std::cout << Token.type_id_name() << endl;
 
             } while( Token.type_id() != QUEX_TKN_TERMINATION );

@@ -25,7 +25,9 @@ mode STRING {
     <<EOF>> => QUEX_TKN_TERMINATION;
     "\"" { 
         self << MODULE; 
-        // self.send(QUEX_TKN_EVENT_MODE_CHANGE); 
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+        self.send(QUEX_TKN_EVENT_MODE_CHANGE); 
+#       endif
         return;                          
     }
     .    { self.accumulator.add(Lexeme); CONTINUE; }
