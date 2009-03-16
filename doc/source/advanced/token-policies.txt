@@ -3,148 +3,197 @@
 Token Passing Policies
 ======================
 
-.. note:: 
+The result of a lexical analysis step is a so called token containing a
+token-id. One goal of quex was to decouple analysis from whatever calls the
+analyzer. This means, that the lexical analyzer *sends* (possibly multiple)
+tokens :ref:`sec:usage-sending-tokens` without considering how they are
+received by the caller. This section discusses how the tokens are actually
+between the callee, the generated analyzer, and the caller.
 
-   If void receive() is to be used, then the variable ``self.token`` must
-   be set and before the lexer is destructed, self.token must be set to 0x0;
+Section :ref:`usage-minimalist-example` already depicted how a caller
+of the lexical analyzer initiates a lexical analysis step and how it
+receives the token value. In the heart of it is the function call
 
-.. note:: 
+.. code-block:: cpp
 
-   Since version 0.37.1 there is no longer support for returning the 
-   token id directly from the lexical analyzer. At the time of this
-   writing, there is no evidence that this brings any advantage. If 
-   a token queue is used, then the token-id *must* be stored in the
-   token object, otherwise no id could be retrieved for stacked 
-   tokens. No global memory can be spared by relying on the program stack.
-   If a user owned token is used as a token storage, then the memory
-   requirements are exactly the same. Thus, there is no advantage 
-   in passing the token-id as a return value. 
+      ...
+      qlex.receive(&Token);      
+      ...
 
-   Any evidence for a different viewpoint can be reported to the 
-   author of quex fschaef@users.sourceforge.net.
+where a pointer to a token object is passed. The lexical analyzer then fills
+it with the information for the current analysis step. The process behind the
+call to the receive function is called the *token passing policy*. They
+are subject of the subsequent sections.
 
+Let ``Token`` be a shorthand for ``QUEX_TYPE_TOKEN`` in the following 
+subsections.
 
-The process of token receiption from the caller is configurable. Basically,
-there are two mechanisms to pass tokens from the analyzer to the caller:
+.. _advanced-safety-border:
 
-#. A *token queue* mechanism: Tokens are stored in a queue during the analysis
-   process. The `get_token(...)` function pops tokens from the queue as long 
-   there are some. If the token queue is empty it calls the analyzer function
-   again and returns the first token in the queue.
+Policy 'Queue'
+----------------
 
-   The advantage of this approach is that more than one token can be produced
-   by a triggering pattern. This allows for the usage of implicit patterns 
-   or patterns that are produced during mode transitions.
-   
-   It is mandatory to have a token queue, if one relies on quex's `on_indentation`
-   event handler to implement a indentation based language.
+Command line option: ``--token-policy  queue``, or no ``--token-policy``. 
 
-#. Without a token queue. In this case one pattern can only produce one token.
-   During mode transitions or on indentation events no tokens can be produced.
-   
-The default behavior is to create an analyzer based on a token queue. Because,
-only then the event handlers can be used without a lot of precaution. The
-size of the token queue is fixed. It can be set via the command line option
-``--token-queue-size``. An overflow of the queue is prevented since the
-analyser returns as soon as the queue is full. The default size of the
-token queue is 64 tokens.
+This is the default token passing policy, i.e. the policy that is used if no
+other one is specified. It is the 'no brainer' since it does require much
+consideration. All features of token sending can be used. 
 
-In case that multiple tokens are send in an action, then the
+Figure :ref:`Token Passing Policy Queue <fig-token-policy-queue>` shows what
+happens behind the scenes. The analyser contains a pointer to the current token
+object to be filled.  The ``send()`` functions fill the data into the token
+object and increment the pointer. This process continues until, either, the
+analyzer reaches a ``return`` statement, or the token queue is filled up.
+
+.. _fig-token-policy-queue:
+
+.. figure:: ../figures/token-policy-queue-2.*
+
+   Token passing policy ``queue`` with function ``receive(Token*)``.
+  
+The analysis steps are triggered with a call to the member function
+``receive(Token*)``.  The user owns a token token object and provides a pointer
+to it.  When the function returns, this object is filled with the content 
+of the first token in the queue, relying on the ``operator=()``. 
+In subsequent calls to ``receive(...)`` it is checked wether the token 
+queue contains more tokens and the copying happens directly from the 
+qeue. When the token queue is emptied a new analysis step is triggered.
+
+.. _fig-token-policy-queue-pp:
+
+.. figure:: ../figures/token-policy-queue-1.*
+
+   Token passing policy ``queue`` with function ``receive(Token**)``.
+
+The same policy can be applied when the user only wants to own a pointer to a
+token (figure :ref:`fig-token-policy-queue-pp`). In this case, a pointer to the
+pointer is passed. Where the ``receive(Token*)`` function copied content from
+the queue, the function ``receive(Token**)`` only bends the user's pointer.
+  
+The former call to ``receive()`` passes the ownership of the token to the user,
+by copying,  and the analyzer can process the token queue is safely. The
+latter call to ``receive()`` is faster, since no copying takes place.
+However, it forces to user to process and store the data contained in the
+token structure immediately. The next call to ``receive()`` may change
+content to what the pointer refers.
+
+The size of the token queue is constant during run-time. Quex generates the size
+based on the the command line option ``--token-queue-size``. An overflow of the
+queue is prevented since the analyser returns as soon as the queue is full. The
+default size of the token queue is 64 tokens.
+
+In case that multiple tokens are sent in an action, then the
 ``--token-queue-safety-border`` command line flag allows to define a safety
 region. Now, the analyzer returns as soon as the remaining free places in the
 queue are less then the specified number. This ensures that any action find a
 minimum of places in the queue to which it can write tokens. In other words,
 the safety-border corresponds to the maximum number of tokens send as
-reaction to a pattern match, including indentation events and mode transitions.
-The default safety border is 16 tokens.
+reaction to a pattern match, including indentation events and mode
+transitions.  The default safety border is 16 tokens.
 
-If the command line flag ``--no-token-queue`` is set, then the token queue
-is disabled. The caller of the lexical analyzer has multiple options to receive
-the result of an analysis process. There are two possible sets of function
-available, depending on the command line option ``--no-return-token-id`` [#f1]_:
+Note, the last token may be repeated ``N`` times, when the maximum number
+``N`` is limited by the definition of ``size_t`` of the operating system
+environment.
 
- 1. Functions *not returning a token id* (``--no-return-token-id`` is not set):
+Policy 'User's Token'
+-----------------------
 
-    Obviously it is not mandatory for the token class/struct to contain a type id.
-    It can be retrieved from the return value.  
+Command line option ``--token-policy  users_token``.
 
-    .. cfunction:: TokenID get_token() 
+In this case the user provides a single token. A call to ``receive()``
+triggers a single call to the analyzer. The analyzer can only write 
+one single token at a time. If it sends twice during a pattern match,
+the first content is overwritten.
+
+.. _fig-token-policy-users-token:
+
+.. figure:: ../figures/token-policy-queue-3.*
+
+   Token passing policy ``users_token`` with function ``receive(Token*)``.
+
+This token policy is fast, but requires some care to be taken, as follows:
+
+  #. A pattern action can only send one distinct token!
+
+  #. Event handlers (``on_entry``, ``on_indentation``, etc.) better 
+     do not send a token. The 'sending' might interfer with the 
+     pattern action that is currently active.
+
+     Any sending of two or more tokens as a reaction to a pattern 
+     match may interfere. Avoid those, when using the *user's token*
+     policy.
+
+  #. Each time ``receive()`` is called a new token object is to be provided,
+     or the content is to be processed immediately.
+
+.. note::
+
+    The policy *user's token* can also be applied with the function call
+    ``receive()``, i.e. without any argument. However, then you need to set the
+    analyser's member pointer
+
+    .. describe::   .token
+
+       to the token which you provide--either each time when ``receive()`` is
+       called, or once at the beginning of the experiment.
+
+Policy 'User's Queue'
+---------------------
+
+(To be implemented in V. 0.38.1)
+
+The policy ``users_queue`` is shown in figure :ref:`User's Queue <fig-token-policy-users-queue>`.
+Instead of working on an intermediate queue, such as policy ``queue``, it directly works
+on a chunk of memory that is provided by the caller of ``receive(...)``. The exact signature of the
+receive function is
+
+.. cfunction:: Token*  receive(Token* Begin, Token* End);
+
+   This function receives an array of tokens. The begin of the array is indicated
+   with the ``Begin``-pointer. The ``End`` pointer points right behind the last
+   token object of the array.
+
+   The return value is a pointer right behind the last token that was written 
+   into the array. 
+   
+.. _fig-token-policy-users-queue:
+
+.. figure:: ../figures/token-policy-queue-4.*
+
+   Token passing policy ``users_queue``.
+
+The queue is not necessarily filled to the limit, depending on what the safety 
+border :ref:`advanced-safety-border` was set. Thus the return value needs to 
+be considered. Consider the following example usage
+
+.. code-block:: cpp
+
+    ...
+        Token*  chunk_begin = my_memory_management_token_chunk_allocate(2048);
+        Token*  water_mark  = lexer.receive(chunk_begin, chunk_begin + 2048);
         
-        returns the token id.
+        for(Token* it = chunk_begin; it != water_mark; ++it) 
+            my_parser_take_this(it);
 
-    .. cfunction:: TokenID get_token(Token*)
-        
-        returns the token id and fills the token's content.  The user defines the
-        place in memory where the content is written.
+        return 0;
+    ...
+   
+Thus, one **does not** iterate until the end of the allocated chunk of memory!
+The iteration should only exceed to to watermark that is returned by the
+receive function. This token policy combines the best of both policies ``quex``
+and ``users_token``:
 
-    .. cfunction:: TokenID get_token(Token**)
+#. It leaves the ownership of the token to the caller, *without* copying.
 
-        *(Only active when the token queue is activated.)* [#f3]_
+#. It allows for the sending of multiple tokens for one pattern match. Thus,
+   event handlers can safely send tokens.
 
-        returns the token id and redirects the pointer to the token that
-        the analyzer has filled. If no token queue is used, the pointer
-        of the currently active token points always to the same position.
-        Thus redirecting it becomes nonsense. Without a token queue a pointer
-        to the current token is accessible via the public 
-        member ``self.token`` [#f2]_ . 
-
- 2. Functions not returning a token id (``--no-return-token-id`` is set):
-
-    .. cfunction:: void get_token()
-       
-        fills the *known* token object ``self.token``. After a call to this
-        function the user needs to access the content by himself.
-
-    .. cfunction:: void  get_token(Token*)
-       
-        fills then token object's content. 
-
-    .. cfunction:: void  get_token(Token**)
-       
-        *(Only active when the token queue is activated.)* [#f3]_
-
-        redirects the given pointer to the result token [#f2]_.
-
-The user must decide which one of the token receiption functions is the most
-appropriate with respect to memory management and/or computational constraints.
-Then it can be decided wether the ``--no-return-token-id`` flag is to be set 
-or not based on the function that needs to be implemented.
-
-
-type_id in      Token Queue     Return        Provided
-Token Type                      TokenID       Functions
-
-   yes          yes             yes           *redundant*  [#f4]_
-   yes          yes             no            
-   yes          no              yes           *redundant*  [#f4]_
-   yes          no              no            
-   no           yes             yes           *impossible* [#f5]_
-   no           yes             no            *impossible* [#f5]_
-   no           no              yes
-   no           no              no            *nonsense*   [#f6]_
+However, it puts the responsibility of memory management on the user's shoulders.
+In some scenarios [#f1]_ this requires extra infrastructure to be implemented.
 
 .. rubric:: Footnotes
 
-.. [#f1] The type ``TokenID`` in the list is a shorthand for ``QUEX_TYPE_TOKEN_ID``. ``Token``
-         is a shorthand for ``QUEX_TYPE_TOKEN``.
-
-.. [#f2] If there is no token queue, then the token information is always stored at the
-         same place. It does not make sense to 'redirect' a pointer always to the same 
-         position. Thus, in case of no token queue, one could as well use a ``get_token``
-         function that just returns a token-id and refer to the token by the ``.token``
-         pointer which is a public member of the lexical analyzer class.
-
-.. [#f3] In other words: It is not present if the command line flag ``--no-token-queue``
-         has been specified, or the compile option ``QUEX_OPTION_TOKEN_POLICY_QUEUE``
-         has been defined.
-
-.. [#f4] The token identifier is communicated via a member of the token type and 
-         the return value. This means unnecessary overhead.
-
-.. [#f5] When a token queue is used, the token type *must* contain the type identifier.
-         Otherwise, no token id for a stacked token can be provided.
-
-.. [#f6] If the token type does not contain the token identifier nor the token identifier
-         is communicated by a return value, then the user cannot know what token has
-         been found. This is meaningless.
-
+.. [#f1] For example, if a parser is designed to call the lexical analyzer. It must
+         keep track of the allocated chunks of memory. Maybe, those chunks are 
+         best tracked as members of the lexical analyzer--relying on the 
+         ``body`` section (see :ref:`sec-basics-sections`).
