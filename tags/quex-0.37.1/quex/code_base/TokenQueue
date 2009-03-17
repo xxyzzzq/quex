@@ -1,0 +1,68 @@
+/* -*- C++ -*- vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/asserts>
+#include <quex/code_base/MemoryManager>
+#include <quex/code_base/Token>
+
+
+#include <quex/code_base/temporary_macros_on>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex { 
+#endif
+
+    typedef struct {
+
+        QUEX_TYPE_TOKEN*   begin;
+        QUEX_TYPE_TOKEN*   read_iterator;    // pointer to next token to be read
+        QUEX_TYPE_TOKEN*   write_iterator;   // pointer to next token to be written
+        QUEX_TYPE_TOKEN*   end_minus_safety_border;
+        QUEX_TYPE_TOKEN*   end;
+        /* A token might be 'N' times repeated. This is the only case where a token
+         * queue overflow might occur. When the token queue is full and there are still
+         * 'N' tokens to be repeated, then the remaining 'N' are stored in the following
+         * variable.                                                                      */
+        size_t     remaining_repetitions_of_last_token_n;
+
+    } QuexTokenQueue;
+
+#   define QuexTokenQueue_init(me, Memory, Size) \
+          do {                                                                               \
+             me->begin                   = Memory;                                           \
+             me->end                     = me->begin + Size;                                 \
+             me->end_minus_safety_border = me->end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
+             QuexTokenQueue_reset(me);                                                       \
+          } while(0)
+ 
+#   define QuexTokenQueue_reset(me) \
+           do {                                                                      \
+               me->read_iterator = me->write_iterator = (QUEX_TYPE_TOKEN*)me->begin; \
+               me->remaining_repetitions_of_last_token_n = 0;                        \
+           } while(0)
+
+#   define QuexTokenQueue_is_full(me)      (me->write_iterator >= me->end_minus_safety_border) 
+#   define QuexTokenQueue_is_empty(me)     (me->read_iterator == me->write_iterator)
+#   define QuexTokenQueue_pop(me)          (me->read_iterator++)
+#   define QuexTokenQueue_begin(me)        (me->begin)
+#   define QuexTokenQueue_back(me)         (me->end - 1)
+#   define QuexTokenQueue_available_n(me)  (me->end - me->write_iterator)
+
+#   ifdef QUEX_OPTION_ASSERTS
+#      define QUEX_TOKEN_QUEUE_ASSERT(me)        \
+          __quex_assert(me->read_iterator  >= me->begin); \
+          __quex_assert(me->write_iterator >= me->read_iterator);  \
+          __quex_assert(me->write_iterator <= me->end);
+#   else
+#      define QUEX_TOKEN_QUEUE_ASSERT(me) /* empty */
+#   endif
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
+
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__ */

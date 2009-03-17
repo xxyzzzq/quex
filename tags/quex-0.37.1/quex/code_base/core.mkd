@@ -1,0 +1,70 @@
+# vim: set syntax=make: -*- makefile -*-
+# HELPER: find -type d -or -path "*.svn*" -or -path "*TEST*" -or -path "*DESIGN*" -or -path "*.swp" -or -path "*.swo" -or -path "*README*" -or -path "*.tar*" -or -path "*tbz" -or -path "*DELETED*" -or -path "*.txt" -or -path "*.mkd" -prune -or -print
+QUEX_CODE_BASE_PATH = $(QUEX_PATH)/quex/code_base
+
+__QUEX_CORE = \
+       $(addprefix $(QUEX_CODE_BASE_PATH)/, \
+         ./Token \
+         ./MemoryManager \
+         ./TokenQueue \
+         ./compatibility/inttypes.h \
+         ./compatibility/pseudo-stdbool.h \
+         ./compatibility/iconv-argument-types.h \
+         ./compatibility/win/borland_inttypes.h \
+         ./compatibility/win/msc_inttypes.h \
+         ./compatibility/win/msc_stdint.h \
+         ./compatibility/stdbool.h \
+         ./buffer/BufferFiller \
+         ./buffer/Buffer \
+         ./buffer/BufferFiller.i \
+         ./buffer/Buffer.i \
+         ./buffer/converter/BufferFiller_Converter.i \
+         ./buffer/converter/Converter \
+         ./buffer/converter/BufferFiller_Converter \
+         ./buffer/converter/icu/Converter_ICU \
+         ./buffer/converter/icu/special_headers.h \
+         ./buffer/converter/icu/Converter_ICU.i \
+         ./buffer/converter/iconv/Converter_IConv.i \
+         ./buffer/converter/iconv/Converter_IConv \
+         ./buffer/converter/iconv/special_headers.h \
+         ./buffer/converter/recode/Converter_Recode.i \
+         ./buffer/converter/recode/Converter_Recode \
+         ./buffer/MemoryPositionMimiker \
+         ./buffer/Buffer_debug.i \
+         ./buffer/InputPolicy \
+         ./buffer/plain/BufferFiller_Plain \
+         ./buffer/plain/BufferFiller_Plain.i \
+         ./buffer/asserts \
+         ./template/IncludeStack.i \
+         ./template/token_receiving.i \
+         ./template/dumpster.i \
+         ./template/Accumulator \
+         ./template/QuexMode \
+         ./template/Analyser.i \
+         ./template/mode_handling.i \
+         ./template/buffer_access.i \
+         ./template/PostCategorizer \
+         ./template/token_sending.i \
+         ./template/lexical_analyzer_class \
+         ./template/constructor.i \
+         ./template/Accumulator.i \
+         ./template/misc.i \
+         ./template/Analyser \
+         ./template/count_common \
+         ./template/Counter.i \
+         ./template/CounterWithIndentation.i \
+         ./template/Counter \
+         ./template/IncludeStack \
+         ./unicode \
+         ./asserts \
+         ./definitions \
+         ./circular_queue \
+         ./temporary_macros_on \
+         ./temporary_macros_off \
+         ./StrangeStream_unit_tests) 
+
+ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)
+    QUEX_CORE = $(__QUEX_CORE)
+else
+    QUEX_CORE =#
+endif
