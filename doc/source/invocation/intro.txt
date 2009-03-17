@@ -11,4 +11,4 @@ concerned with the control of more special features and fine-tuning.
    command-line/intro.txt
    compile-options/intro.txt
    query/intro.txt
-   plot/into.txt
+   plot/intro.txt

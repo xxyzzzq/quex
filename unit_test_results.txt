@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Sat Feb 21 18:38:15 2009
+DATE:  Tue Mar 17 06:43:35 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -43,6 +43,7 @@ TITLE: Regression Tests on Fixed Bugs
         feature-2078087.sh GOTO .........................................[OK]
                            GOSUB ........................................[OK]
                            GOSUB-2 ......................................[OK]
+                           GOTO-2 .......................................[OK]
     2161098 0.32.1 Range Skipper Line Number Counter
         bug-2161098.sh c_comments .......................................[OK]
                        shell_comments ...................................[OK]
@@ -184,7 +185,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sat Feb 21 18:40:55 2009
+DATE:  Tue Mar 17 06:34:24 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -285,7 +286,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sat Feb 21 18:40:56 2009
+DATE:  Tue Mar 17 06:34:24 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -306,7 +307,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Sat Feb 21 18:40:57 2009
+DATE:  Tue Mar 17 06:34:25 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -332,7 +333,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Sat Feb 21 18:41:04 2009
+DATE:  Tue Mar 17 06:34:33 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -396,7 +397,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Sat Feb 21 18:41:11 2009
+DATE:  Tue Mar 17 06:34:41 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -472,7 +473,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Sat Feb 21 18:41:19 2009
+DATE:  Tue Mar 17 06:34:50 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -548,7 +549,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Sat Feb 21 18:41:34 2009
+DATE:  Tue Mar 17 06:35:07 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -643,7 +644,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sat Feb 21 18:41:36 2009
+DATE:  Tue Mar 17 06:35:09 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -668,7 +669,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sat Feb 21 18:41:37 2009
+DATE:  Tue Mar 17 06:35:10 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -702,7 +703,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sat Feb 21 18:43:43 2009
+DATE:  Tue Mar 17 06:37:22 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -882,7 +883,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sat Feb 21 18:43:50 2009
+DATE:  Tue Mar 17 06:37:27 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -945,7 +946,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sat Feb 21 18:43:56 2009
+DATE:  Tue Mar 17 06:37:33 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1051,7 +1052,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sat Feb 21 18:43:56 2009
+DATE:  Tue Mar 17 06:37:33 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1079,7 +1080,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sat Feb 21 18:44:16 2009
+DATE:  Tue Mar 17 06:37:52 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1105,7 +1106,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Sat Feb 21 18:44:17 2009
+DATE:  Tue Mar 17 06:37:53 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

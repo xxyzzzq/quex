@@ -16,12 +16,20 @@
 # (C) 2007 Frank-Rene Schaefer
 #
 ################################################################################
+import sys
+try:    
+    if False: print ""
+except: 
+    print("error: This version of quex was not implemented for Python >= 3.0")
+    print("error: Please, use Python versions 2.x.")
+    sys.exit(-1)
+       
+
 
 # (*) Check if everything is correctly installed
 import quex.DEFINITIONS
 quex.DEFINITIONS.check()
 
-import sys
 import tempfile
 
 # This script needs to be located one directory above 'quex.'
