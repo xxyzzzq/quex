@@ -1,0 +1,13 @@
+token {
+    ONE
+    TWO
+    THREE
+    FOUR
+    FIVE
+}
+// The mode is totally senseless, since we do all sending in 
+// a pseudo-analysis function (see lexer.cpp)
+mode ALMOST_EMPTY : { 
+    a => QUEX_TKN_ONE;
+    x { self.send(QUEX_TKN_ONE); self.send(QUEX_TKN_TWO); self.send(QUEX_TKN_THREE); self.send(QUEX_TKN_FOUR); self.send(QUEX_TKN_FIVE); } 
+}
