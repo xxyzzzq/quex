@@ -16,26 +16,24 @@
 #      define QUEX_TOKEN_POLICY_NO_TOKEN() \
               (token->type_id() == __QUEX_TOKEN_ID_UNINITIALIZED)
 
-#elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
      /* Setting Token Content */
-#    define QUEX_TOKEN_POLICY_SET(X)                    *(self._token_queue->write_iterator) = (X);
-#    define QUEX_TOKEN_POLICY_SET_1(X0)                 self._token_queue->write_iterator->set(X0);
-#    define QUEX_TOKEN_POLICY_SET_2(X0, X1)             self._token_queue->write_iterator->set(X0, X1);
-#    define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)         self._token_queue->write_iterator->set(X0, X1, X2);
-#    define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)     self._token_queue->write_iterator->set(X0, X1, X2, X3);
-#    define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) self._token_queue->write_iterator->set(X0, X1, X2, X3, X4);
+#    define QUEX_TOKEN_POLICY_SET(X)                    *(self._token_queue.write_iterator) = (X);
+#    define QUEX_TOKEN_POLICY_SET_1(X0)                 self._token_queue.write_iterator->set(X0);
+#    define QUEX_TOKEN_POLICY_SET_2(X0, X1)             self._token_queue.write_iterator->set(X0, X1);
+#    define QUEX_TOKEN_POLICY_SET_3(X0, X1, X2)         self._token_queue.write_iterator->set(X0, X1, X2);
+#    define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)     self._token_queue.write_iterator->set(X0, X1, X2, X3);
+#    define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) self._token_queue.write_iterator->set(X0, X1, X2, X3, X4);
 #    define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
-            ++(self._token_queue->write_iterator); \
-            __quex_assert(self._token_queue->write_iterator <= self._token_queue->end);
+            ++(self._token_queue.write_iterator); \
+            __quex_assert(self._token_queue.write_iterator <= self._token_queue.end);
 
 #    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
-            self._token_queue->remaining_repetitions_of_last_token_n = N;
+            self._token_queue.remaining_repetitions_of_last_token_n = N;
 
 #    define QUEX_TOKEN_POLICY_NO_TOKEN() \
             (QuexTokenQueue_is_empty(_token_queue))
 
-#elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-#    error "User's Token Queue not yet supported."
 #else
 #    error "No token policy specified."
 #endif

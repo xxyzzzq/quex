@@ -48,17 +48,6 @@ the typo. In order to avoid such confusing situations, it is essential for quex
 to report warnings in case of the usage of token identifiers that have not
 explicitly been specified.
 
-.. warning:: 
-
-   The definitions for the token ids in the ``token`` section are only
-   implemented, if the token ids are really used inside pattern actions
-   or event handlers. 
-   
-   If the user's code refers somewhere to those token-ids, the compiler is
-   going to complain about the token id not being defined.  This also 
-   prevents the user from waiting for tokens that are never sent from 
-   inside the engine.
-
 There is another way to define names of token identifiers. In frameworks 
 with automatic parser generators, it is common that the parser generator
 provides a file with token identifier definitions. The foreign token

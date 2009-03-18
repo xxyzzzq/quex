@@ -36,8 +36,8 @@ namespace quex {
             *result_pp = QuexTokenQueue_pop(_token_queue);
             return;  
         } 
-        else if( _token_queue->remaining_repetitions_of_last_token_n ) {
-            --(_token_queue->remaining_repetitions_of_last_token_n);
+        else if( _token_queue.remaining_repetitions_of_last_token_n ) {
+            --(_token_queue.remaining_repetitions_of_last_token_n);
             *result_pp = QuexTokenQueue_back(_token_queue);
             return;
         }
@@ -66,8 +66,8 @@ namespace quex {
             *result_p = *(QuexTokenQueue_pop(_token_queue));
             return;  
         } 
-        else if( _token_queue->remaining_repetitions_of_last_token_n ) {
-            --(_token_queue->remaining_repetitions_of_last_token_n);
+        else if( _token_queue.remaining_repetitions_of_last_token_n ) {
+            --(_token_queue.remaining_repetitions_of_last_token_n);
             *result_p = *(QuexTokenQueue_back(_token_queue));
             return;
         }
@@ -101,14 +101,15 @@ namespace quex {
     CLASS::receive(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
         /* RETURNS: Pointer to first token after the last filled in token. */
     {
-        __quex_assert(this->token != 0x0);
+        __quex_assert(QueueMemoryBegin != 0x0);
+        __quex_assert(QueueMemoryEnd > QueueMemoryBegin);
         QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd - QueueMemoryBegin);
 
         do   QuexAnalyser::current_analyser_function(this);
         while(    QuexTokenQueue_is_full(_token_queue) 
-               || _token_queue->write_iterator->type_id() == __QUEX_TOKEN_ID_TERMINATION );        
+               || _token_queue.write_iterator->type_id() == __QUEX_TOKEN_ID_TERMINATION );        
 
-        return _token_queue->write_iterator;
+        return _token_queue.write_iterator;
     }
 #   endif
 

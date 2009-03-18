@@ -16,6 +16,7 @@ namespace quex {
     inline void   
     CLASS::send(const QUEX_TYPE_TOKEN_ID ID) 
     {
+        // self._token_queue->write_iterator->set(ID);
         QUEX_TOKEN_POLICY_SET_1(ID);
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
     }
@@ -23,7 +24,7 @@ namespace quex {
     inline void   
     CLASS::send_n(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
     {
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
         const int AvailableN = QuexTokenQueue_available_n(_token_queue);
         const int N = RepetitionN > AvailableN ? AvailableN : RepetitionN;
         __quex_assert(N > 0);
@@ -35,7 +36,7 @@ namespace quex {
             QUEX_TOKEN_POLICY_PREPARE_NEXT();
         }
         if( N - AvailableN ) {
-            _token_queue->remaining_repetitions_of_last_token_n = N - AvailableN;
+            _token_queue.remaining_repetitions_of_last_token_n = N - AvailableN;
         }
 #       else
         QUEX_TOKEN_POLICY_SET_1(ID);
