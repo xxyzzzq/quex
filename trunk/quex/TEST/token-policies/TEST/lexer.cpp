@@ -1,5 +1,6 @@
 #include<fstream>    
 #include<iostream> 
+#include<cstring>
 
 // The test_includer.h is created by the makefile
 #include "test_includer.h"
@@ -7,6 +8,7 @@
 using namespace std;
 
 void pseudo_analysis(lexer*);
+void test();
 
 int 
 main(int argc, char** argv) 
@@ -18,8 +20,8 @@ main(int argc, char** argv)
     return 0;
 }
 
-void
-test()
+
+void test()
 {        
     quex::Token   Token;
     lexer   qlex("example.txt");
@@ -56,3 +58,4 @@ void pseudo_analysis(lexer* me)
 
     
 }
+

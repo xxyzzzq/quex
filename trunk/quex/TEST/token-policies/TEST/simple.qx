@@ -4,6 +4,7 @@ token {
     THREE
     FOUR
     FIVE
+    UNUSED_TOKEN
 }
 // The mode is totally senseless, since we do all sending in 
 // a pseudo-analysis function (see lexer.cpp)
