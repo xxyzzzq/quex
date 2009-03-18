@@ -101,8 +101,8 @@
 /* Support of computed goto */
 #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
     typedef  void*    QUEX_TYPE_GOTO_LABEL;
-#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       &&TERMINAL_DEFAULT
-#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (0x0)
+#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (&&TERMINAL_DEFAULT)
+#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(0x0)
 #   define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
 #   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance      = &&TERMINAL_ ##TerminalIndex; 
 #   define QUEX_GOTO_drop_out_state_index()          goto *drop_out_state_index;
@@ -110,8 +110,8 @@
 
 #else
     typedef  uint32_t QUEX_TYPE_GOTO_LABEL;
-#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (-1)
-#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (-1)
+#   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (QUEX_TYPE_GOTO_LABEL)(-1)
+#   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
 #   define QUEX_SET_last_acceptance(TerminalIndex)   last_acceptance         = TerminalIndex; 
 #   define QUEX_GOTO_drop_out_state_index()          goto __DROP_OUT_STATE_ROUTER;

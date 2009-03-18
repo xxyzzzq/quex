@@ -29,7 +29,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         
         DEFAULT = ``10000``
 
-.. cmdoption:: --token-policy, --tp [queue, users_token, mini_queue, users_queue, users_mini_queue]
+.. cmdoption:: --token-policy, --tp [queue, users_token, users_queue]
 
         Determines the policy for passing tokens from the analyzer to the user.
 

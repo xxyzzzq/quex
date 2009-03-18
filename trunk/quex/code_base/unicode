@@ -50,14 +50,14 @@ namespace quex {
         else /* if (UCS_CharacterCode <= 0x7fffffff) */ n = 6;
 
         /* make it work under different endians */
-        uint8_t byte3 = (UCS_CharacterCode & 0xFF);
-        uint8_t byte2 = (UCS_CharacterCode & 0xFF00) >> 8;
-        uint8_t byte1 = (UCS_CharacterCode & 0xFF0000) >> 16;
-        uint8_t byte0 = (UCS_CharacterCode & 0xFF000000) >> 24;
+        uint8_t byte3 = (uint8_t)((UCS_CharacterCode & 0xFF));
+        uint8_t byte2 = (uint8_t)((UCS_CharacterCode & 0xFF00) >> 8);
+        uint8_t byte1 = (uint8_t)((UCS_CharacterCode & 0xFF0000) >> 16);
+        uint8_t byte0 = (uint8_t)((UCS_CharacterCode & 0xFF000000) >> 24);
 
         switch (n) {
         case 1:
-            *p = UCS_CharacterCode;
+            *p = (uint8_t)UCS_CharacterCode;
             break;
 
         case 2:
