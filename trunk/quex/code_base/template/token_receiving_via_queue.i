@@ -27,7 +27,7 @@ namespace quex {
     //    Token-ID = '$$TOKEN_CLASS$$::ID_UNITIALIZED' is returned in 
     //               case that no  token could be read.
     {
-        __quex_assert(_token_queue != 0x0);
+        __quex_assert(_token_queue.begin != 0x0);
         // (i) tokens are in queue --> take next token from stack
         if( QuexTokenQueue_is_empty(_token_queue) == false ) {
             // DEBUG    

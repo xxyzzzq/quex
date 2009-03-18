@@ -22,7 +22,6 @@ class TokenInfo:
 class Setup:
     def __init__(self, GlobalSetup):
 
-        self.input_files      = GlobalSetup.input_token_id_db
         self.output_file      = GlobalSetup.output_token_id_file
         self.token_class_file = GlobalSetup.input_token_class_file
         self.token_class      = GlobalSetup.input_token_class_name
@@ -108,26 +107,6 @@ def do(global_setup):
 
        const string& $$token$$::map_id_to_name().
     """
-    # file contains simply a whitespace separated list of token-names
-    output(global_setup)
-    return
-
-    # THIS IS A FIRST ATTEMPT TO PARSE FOREIGN TOKEN ID DEFINITIONS
-    for input_file in global_setup.input_token_id_db:
-        curr_tokens = file_in.open_file_or_die(input_file).read().split(";")        
-        curr_token_infos = map(lambda x: TokenInfo(x.split(), input_file), curr_tokens)
-
-        for token_info in curr_token_infos:
-            if token_info.name == "": continue
-            
-            if token_info.name in lexer_mode.token_id_db.keys():
-                print "%s:0:error: token name '%s' defined twice." % (input_file, token_info.name)
-                print "%s:0:error: previously defined here." % lexer_mode.token_id_db[token_info.name].filename
-                sys.exit(-1)
-
-            lexer_mode.token_id_db[token_info.name] = token_info
-
-def output(global_setup):
     global file_str
     assert lexer_mode.token_id_db.has_key("TERMINATION"), \
            "TERMINATION token id must be defined by setup or user."
@@ -161,10 +140,6 @@ def output(global_setup):
         global_setup.output_token_id_file = global_setup.input_user_token_id_file
         return
     
-    if global_setup.input_token_id_db == "":
-        print "error: token-id database not specified"
-        sys.exit(-1)
-        
     ## print "   token class file = '%s'" % global_setup.input_token_class_file
     ## print "   => '%s'" % global_setup.output_token_id_file
     

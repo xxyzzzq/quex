@@ -15,7 +15,7 @@ def __nice(SM_ID):
 __header_definitions_txt = """
 #include <quex/code_base/template/Analyser>
 #include <quex/code_base/buffer/Buffer>
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   include <quex/code_base/TokenQueue>
 #endif
 
@@ -222,7 +222,7 @@ $$REENTRY_PREPARATION$$
     
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     if( self.token->type_id() != __QUEX_TOKEN_ID_UNINITIALIZED) return;
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     if( QuexTokenQueue_is_full(self._token_queue) ) return;
 #   endif
 
