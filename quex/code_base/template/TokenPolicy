@@ -34,8 +34,8 @@
 #    define QUEX_TOKEN_POLICY_NO_TOKEN() \
             (QuexTokenQueue_is_empty(_token_queue))
 
-#elif defined(QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE)
-#    error "Mini Token Queue not yet supported."
+#elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#    error "User's Token Queue not yet supported."
 #else
 #    error "No token policy specified."
 #endif
