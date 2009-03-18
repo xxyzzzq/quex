@@ -62,15 +62,13 @@ namespace quex {
     QuexBuffer_show_content(QuexBuffer* buffer)
     {
         size_t                i = 0;
-        QUEX_TYPE_CHARACTER   EmptyChar =   sizeof(QUEX_TYPE_CHARACTER) == 1 ? (QUEX_TYPE_CHARACTER)(0xFF)
-                                          : sizeof(QUEX_TYPE_CHARACTER) == 2 ? (QUEX_TYPE_CHARACTER)(0xFFFF)
-                                          :                                    (QUEX_TYPE_CHARACTER)(0xFFFFFFFF);
+        QUEX_TYPE_CHARACTER   EmptyChar    = (QUEX_TYPE_CHARACTER)(-1);
         QUEX_TYPE_CHARACTER*  ContentFront = QuexBuffer_content_front(buffer);
         QUEX_TYPE_CHARACTER*  BufferFront  = buffer->_memory._front;
         QUEX_TYPE_CHARACTER*  BufferBack   = buffer->_memory._back;
         QUEX_TYPE_CHARACTER*  iterator = 0x0;
         QUEX_TYPE_CHARACTER*  end_p    = buffer->_memory._end_of_file_p != 0x0 ? buffer->_memory._end_of_file_p 
-                                         :                                     buffer->_memory._back;
+                                         :                                       buffer->_memory._back;
 
         __QUEX_STD_printf("|%c", __BufferFiller_get_border_char(buffer, BufferFront));
         for(iterator = ContentFront; iterator != end_p; ++iterator) {
@@ -109,8 +107,8 @@ namespace quex {
         for(i=2; i<ContentSize + 2 ; ++i) tmp[i] = ' ';
         tmp[ContentSize+4] = '\0';
         tmp[ContentSize+3] = '|';
-        tmp[ContentSize+2] = __BufferFiller_get_border_char(buffer, BufferBack);
-        tmp[1]             = __BufferFiller_get_border_char(buffer, BufferFront);
+        tmp[ContentSize+2] = (char)__BufferFiller_get_border_char(buffer, BufferBack);
+        tmp[1]             = (char)__BufferFiller_get_border_char(buffer, BufferFront);
         tmp[0]             = '|';
         /* tmp[_SHOW_current_fallback_n - 1 + 2] = ':';        */
         tmp[buffer->_input_p - ContentFront + 2] = 'C';

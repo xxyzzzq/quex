@@ -27,13 +27,12 @@ the following example:
        NUMBER
     }
 
-Note, that the names of the token identifiers are specified without any
-prefix. This reduces typing efforts and facilitates the change from 
-one token prefix to another.
-The explicit definition of token identifiers has an advantage. If a token identifier
-is mentioned in the `token` section, then quex will not report a warning if it hits
-on a token identifier that is not defined in the token section. 
-Imagine a typo in the description of pattern-action pairs:
+Note, that the names of the token identifiers are specified without any prefix.
+This reduces typing efforts and facilitates the change from one token prefix to
+another.  The explicit definition of token identifiers has an advantage. If a
+token identifier is mentioned in the `token` section, then quex will not report
+a warning if it hits on a token identifier that is not defined in the token
+section.  Imagine a typo in the description of pattern-action pairs:
 
 .. code-block:: cpp
 
@@ -46,8 +45,19 @@ automatically generated. But, the caller of the lexical analyzer might actually
 expect a `QUEX_TKN_KEYWORD_FOR` with a `D` in `KEYWORD`, not a `T`. Such a
 token identifier would never be reported by the lexical analyzer, because of
 the typo. In order to avoid such confusing situations, it is essential for quex
-to report warnings in case of the usage of token identifiers that have not explicitly been
-specified.
+to report warnings in case of the usage of token identifiers that have not
+explicitly been specified.
+
+.. warning:: 
+
+   The definitions for the token ids in the ``token`` section are only
+   implemented, if the token ids are really used inside pattern actions
+   or event handlers. 
+   
+   If the user's code refers somewhere to those token-ids, the compiler is
+   going to complain about the token id not being defined.  This also 
+   prevents the user from waiting for tokens that are never sent from 
+   inside the engine.
 
 There is another way to define names of token identifiers. In frameworks 
 with automatic parser generators, it is common that the parser generator
@@ -59,7 +69,7 @@ token prefix `TOK_`, quex might be called in the following manner
 
 .. code-block:: bash
 
-    > quex (...) --foreign-tokn-id-file vbasic-token-ids.h --token-prefix TOK_
+    > quex (...) --foreign-token-id-file vbasic-token-ids.h --token-prefix TOK_
 
 Quex is still able to identify token identifiers which have not been mentioned
 in the file--in general. It is able to reflect on the content of the file to a

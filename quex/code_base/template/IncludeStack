@@ -7,10 +7,12 @@
 
 namespace quex { 
 
-    struct IncludeStack { 
+    class IncludeStack { 
+    public:
         IncludeStack(CLASS* the_lexer);
 
-        struct memento {
+        class memento {
+        public:
             QuexAnalyser analyser_core;
             CounterType  counter;
             QuexMode*    current_mode_p;
@@ -29,9 +31,9 @@ namespace quex {
         
         template <class InputHandle> 
         void   push(InputHandle*            new_input_handle_p, 
-                   const int                MODE_ID         = -1, 
-                   QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
-                   const char*              IANA_CodingName = 0x0);
+                    const int                MODE_ID         = -1, 
+                    QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
+                    const char*              IANA_CodingName = 0x0);
         bool   pop();
 
     private:
