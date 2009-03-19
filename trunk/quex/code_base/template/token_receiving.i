@@ -106,8 +106,7 @@ namespace quex {
         QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd);
 
         do   QuexAnalyser::current_analyser_function(this);
-        while(    QuexTokenQueue_is_full(_token_queue) == false
-               && _token_queue.write_iterator->type_id() != __QUEX_TOKEN_ID_TERMINATION );        
+        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return _token_queue.write_iterator;
     }

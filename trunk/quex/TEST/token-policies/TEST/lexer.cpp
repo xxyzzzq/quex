@@ -2,13 +2,13 @@
 #include<iostream> 
 #include<cstring>
 
-// The test_includer.h is created by the makefile
-#include "test_includer.h"
 
+#include "TPLex"
 using namespace std;
+using namespace quex;
 
 void                pseudo_analysis(quex::QuexAnalyser* me);
-QUEX_TYPE_TOKEN_ID  test_core(lexer&, const char*);
+QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
 
 int 
 main(int argc, char** argv) 
@@ -34,15 +34,18 @@ main(int argc, char** argv)
     if( argc < 2 ) return 0;
 #   endif
 
-    lexer         qlex("example.txt");
+    TPLex         qlex("real.txt");  /* In case of pseudo_analysis the file does not matter */
 
+#   if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
+    cout << "Pseudo Analysis: Replace analysis pointer with own function.\n";
     ((quex::QuexAnalyser*)&qlex)->current_analyser_function = pseudo_analysis;
+#   endif
 
     while( test_core(qlex, argv[1]) != QUEX_TKN_TERMINATION );
 }
 
 #if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-QUEX_TYPE_TOKEN_ID test_core(lexer& qlex, const char* Choice)
+QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {
     quex::Token   token;
     quex::Token*  token_p;
@@ -59,7 +62,7 @@ QUEX_TYPE_TOKEN_ID test_core(lexer& qlex, const char* Choice)
 }
 
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
-QUEX_TYPE_TOKEN_ID test_core(lexer& qlex, const char* Choice)
+QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {        
     quex::Token Token;
     if( strcmp(Choice, "receive-1") == 0 ) { qlex.token = &Token; qlex.receive(); }
@@ -69,7 +72,7 @@ QUEX_TYPE_TOKEN_ID test_core(lexer& qlex, const char* Choice)
 }
 
 #elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
-QUEX_TYPE_TOKEN_ID test_core(lexer& qlex, const char* Choice)
+QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 {        
     quex::Token   MyArray[5];
     quex::Token*  water_mark = qlex.receive(MyArray, MyArray + 5);
@@ -83,9 +86,10 @@ QUEX_TYPE_TOKEN_ID test_core(lexer& qlex, const char* Choice)
 
 #endif
 
+#if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
 void pseudo_analysis(quex::QuexAnalyser* me)
 {
-    lexer&     self = *((lexer*)me);
+    TPLex&     self = *((TPLex*)me);
     static int i = 0;
 
     switch( i++ ) {
@@ -130,4 +134,5 @@ void pseudo_analysis(quex::QuexAnalyser* me)
              break;
     }
 }
+#endif
 
