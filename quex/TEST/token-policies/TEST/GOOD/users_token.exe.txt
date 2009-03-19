@@ -1,5 +1,6 @@
 NOTE: The production of an assertion error might be part of the test.
 ---------------------------------------------------------------------
+Pseudo Analysis: Replace analysis pointer with own function.
 received: ONE
 received: TWO
 received: THREE
