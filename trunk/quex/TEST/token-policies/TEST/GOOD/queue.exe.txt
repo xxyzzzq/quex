@@ -1,0 +1,25 @@
+NOTE: The production of an assertion error might be part of the test.
+---------------------------------------------------------------------
+received: ONE
+received: TWO
+received: THREE
+received: FOUR
+received: FIVE
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: ONE
+received: _____NEXT_____
+received: ONE
+received: TWO
+received: _____NEXT_____
+received: ONE
+received: TWO
+received: THREE
+received: _____NEXT_____
+received: ONE
+received: TWO
+received: THREE
+received: FOUR
+received: _____NEXT_____
+queue.exe: /home/fschaef/prj/quex/trunk/quex/code_base/template/token_sending.i:21: void quex::LexerWith_Queue::send(uint32_t): Assertion `self._token_queue.write_iterator <= self._token_queue.end' failed.

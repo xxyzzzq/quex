@@ -8,4 +8,5 @@ token {
 }
 // The mode is totally senseless, since we do all sending in 
 // a pseudo-analysis function (see lexer.cpp)
+start = ALMOST_EMPTY;
 mode ALMOST_EMPTY : { a => QUEX_TKN_ONE; }

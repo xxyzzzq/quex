@@ -103,11 +103,11 @@ namespace quex {
     {
         __quex_assert(QueueMemoryBegin != 0x0);
         __quex_assert(QueueMemoryEnd > QueueMemoryBegin);
-        QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd - QueueMemoryBegin);
+        QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd);
 
         do   QuexAnalyser::current_analyser_function(this);
-        while(    QuexTokenQueue_is_full(_token_queue) 
-               || _token_queue.write_iterator->type_id() == __QUEX_TOKEN_ID_TERMINATION );        
+        while(    QuexTokenQueue_is_full(_token_queue) == false
+               && _token_queue.write_iterator->type_id() != __QUEX_TOKEN_ID_TERMINATION );        
 
         return _token_queue.write_iterator;
     }
