@@ -10,20 +10,26 @@ using namespace quex;
 void                pseudo_analysis(quex::QuexAnalyser* me);
 QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
 
+#if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
+#   define NAME "Pseudo Analysis;\n"
+#else
+#   define NAME "Real Analysis;\n"
+#endif
+
 int 
 main(int argc, char** argv) 
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
 #       if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        printf("Token Policy: Queue;\n");
+        printf("Token Policy Queue: " NAME);
         printf("CHOICES: receive-1, receive-2;\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
-        printf("Token Policy: UsersToken;\n");
+        printf("Token Policy UsersToken: " NAME);
         printf("CHOICES: receive-1, receive-2;\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
-        printf("Token Policy: UsersQueue;\n");
+        printf("Token Policy UsersQueue: " NAME);
 #       endif
         return 0;
     }
