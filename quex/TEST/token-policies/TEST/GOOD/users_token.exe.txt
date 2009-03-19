@@ -1,0 +1,16 @@
+NOTE: The production of an assertion error might be part of the test.
+---------------------------------------------------------------------
+received: ONE
+received: TWO
+received: THREE
+received: FOUR
+received: FIVE
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: _____NEXT_____
+received: <TERMINATION>

@@ -29,10 +29,10 @@ namespace quex {
 
     } QuexTokenQueue;
 
-#   define QuexTokenQueue_init(me, Memory, Size) \
+#   define QuexTokenQueue_init(me, Memory, MemoryEnd) \
           do {                                                                             \
              me.begin                   = Memory;                                          \
-             me.end                     = me.begin + (Size);                               \
+             me.end                     = MemoryEnd;                                       \
              me.end_minus_safety_border = me.end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
              QuexTokenQueue_reset(me);                                                     \
           } while(0)

@@ -1,3 +1,5 @@
+include $(QUEX_PATH)/quex/code_base/core.mkd
+
 TESTS = queue.exe users_token.exe users_queue.exe
 
 all: $(TESTS)
@@ -5,7 +7,7 @@ all: $(TESTS)
 CC = g++ -ggdb -Wall \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 	 -DQUEX_SETTING_TOKEN_QUEUE_SIZE=5 \
-	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=2 
+	 -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=4 
 
 QUEUE_ENGINE  = LexerWith_Queue.o      LexerWith_Queue-core-engine.o
 UTOKEN_ENGINE = LexerWith_UsersToken.o LexerWith_UsersToken-core-engine.o
