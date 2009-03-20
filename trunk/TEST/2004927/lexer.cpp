@@ -29,7 +29,8 @@ main(int argc, char** argv)
 
         // (*) print out token information
         //     -- name of the token
-        cout << string(Token) << endl;
+        if( Token.type_id() != QUEX_TKN_TERMINATION ) { cout << string(Token) << endl; } 
+        else                                          { cout << Token.type_id_name() << endl; }
 
         ++number_of_tokens;
 

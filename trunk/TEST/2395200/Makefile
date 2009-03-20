@@ -11,11 +11,11 @@ CFLAGS = \
 CC = g++ -I$(QUEX_PATH) -I. $(CFLAGS) -ggdb \
 
 error-lexer:
-	quex -i simple.qx -o Simple
+	quex -i simple.qx -o Simple --token-policy users_token
 	$(CC) lexer.cpp Simple*.cpp -o error-lexer
 
 lexer:
-	quex -i simple.qx -o Simple
+	quex -i simple.qx -o Simple --token-policy users_token
 	$(CC) -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION \
 		  lexer.cpp Simple*.cpp -o lexer
 

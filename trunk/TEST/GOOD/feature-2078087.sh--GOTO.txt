@@ -1,4 +1,4 @@
-quex -i GOTO.qx -o Simple
+quex -i GOTO.qx -o Simple --token-policy users_token
 g++ -I/home/fschaef/prj/quex/trunk -I. \
 		-DQUEX_OPTION_DEBUG_MODE_TRANSITIONS -DQUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED -DQUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED  \
 		lexer.cpp Simple*.cpp \

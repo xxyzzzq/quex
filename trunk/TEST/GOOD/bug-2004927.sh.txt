@@ -31,7 +31,7 @@ THING 'di'
 THING 'Parigi' 
 NONE ',' 
 THING 'dipinse' 
-<TERMINATION> 'dipinse' 
+<TERMINATION>
 | [END] number of token = 10
 `------------------------------------------------------------------------------------
 rm -rf Simple-core-engine.cpp

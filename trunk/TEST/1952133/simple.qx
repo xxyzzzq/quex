@@ -75,7 +75,6 @@ token {
 mode PROGRAM :
 {
     <<EOF>>       { 
-        std::printf("This is the end and looks good. Buffer Size = %i\n", QUEX_SETTING_BUFFER_SIZE); 
         self.send(QUEX_TKN_TERMINATION); 
     }
 
