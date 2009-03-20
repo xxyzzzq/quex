@@ -35,6 +35,22 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
 
         DEFAULT = ``queue``
 
+.. cmdoption:: --token-queue-size number
+
+        In conjunction with token passing policy 'queue', ``number`` specifies
+        the number of tokens in the token queue. This determines the maximum
+        number of tokens that can be send without returning from the analyzer
+        function.
+
+        DEFAULT = ``64``.
+
+.. cmdoption:: --token-queue-safety-border number
+
+        Specifies the number of tokens that can be sent at maximum as reaction to
+        one single pattern match.
+
+        DEFAULT = ``16``
+
 .. cmdoption:: --token-id-termination number
         
         ``number`` = Token identifier for the event of 'end of token stream'.

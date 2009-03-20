@@ -51,10 +51,19 @@ namespace quex {
 #   define QuexTokenQueue_available_n(me)  (me.end - me.write_iterator)
 
 #   ifdef QUEX_OPTION_ASSERTS
-#      define QUEX_TOKEN_QUEUE_ASSERT(me)        \
-          __quex_assert(me.read_iterator  >= me.begin); \
-          __quex_assert(me.write_iterator >= me.read_iterator);  \
-          __quex_assert(me.write_iterator <= me.end);
+    QUEX_INLINE void  
+    QUEX_TOKEN_QUEUE_ASSERT(QuexTokenQueue* me)
+    {
+        __quex_assert(me->begin != 0x0);
+        __quex_assert(me->read_iterator  >= me->begin);
+        __quex_assert(me->write_iterator >= me->read_iterator);
+        if( me->write_iterator > me->end ) { 
+            QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
+                            "       as a reaction to one single pattern match. Use quex's command line\n"
+                            "       option --token-queue-safety-border, or define the macro\n"
+                            "       QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER with a greater value.\n"); 
+        }
+    }
 #   else
 #      define QUEX_TOKEN_QUEUE_ASSERT(me) /* empty */
 #   endif

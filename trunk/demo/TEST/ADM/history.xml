@@ -1,4 +1,4 @@
-<history date="Thu Mar 19 23:23:39 2009" element-n="260">
+<history date="Fri Mar 20 07:45:10 2009" element-n="271">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -612,5 +612,18 @@
     </day>
     <day year="2009" month="03" day="17">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:34:24"/>
+    </day>
+    <day year="2009" month="03" day="20">
+        <crc-error time="06:30:10" application="001.sh" choice="DEBUG" database-crc="-1913396181" real-crc="-2092421156"/>
+        <crc-error time="06:31:42" application="002.sh" choice="DEBUG" database-crc="-1031173828" real-crc="-1787106835"/>
+        <crc-error time="06:34:28" application="003.sh" choice="BPC=2_NDEBUG" database-crc="-717271771" real-crc="1522589167"/>
+        <crc-error time="06:34:33" application="003.sh" choice="BPC=4" database-crc="-717271771" real-crc="1522589167"/>
+        <crc-error time="06:34:38" application="003.sh" choice="BPC=4_NDEBUG" database-crc="-717271771" real-crc="1522589167"/>
+        <crc-error time="06:34:43" application="003.sh" choice="BPC=wchar_t" database-crc="-717271771" real-crc="1522589167"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="06:43:55"/>
+        <crc-error time="06:44:55" application="003-icu.sh" choice="BPC=2_NDEBUG" database-crc="-1995344588" real-crc="-2052519256"/>
+        <crc-error time="06:45:00" application="003-icu.sh" choice="BPC=4" database-crc="-1995344588" real-crc="-2052519256"/>
+        <crc-error time="06:45:05" application="003-icu.sh" choice="BPC=4_NDEBUG" database-crc="-1995344588" real-crc="-2052519256"/>
+        <crc-error time="06:45:10" application="003-icu.sh" choice="BPC=wchar_t" database-crc="-1995344588" real-crc="-2052519256"/>
     </day>
 </history>

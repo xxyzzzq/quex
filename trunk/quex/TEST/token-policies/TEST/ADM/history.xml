@@ -1,9 +1,13 @@
-<history date="Thu Mar 19 23:23:40 2009" element-n="5">
+<history date="Fri Mar 20 07:45:42 2009" element-n="7">
     <day year="2009" month="03" day="19">
         <history-init time="06:35:09"/>
         <crc-error time="21:35:24" application="queue.exe" choice="receive-2" database-crc="-1963775000" real-crc="860844415"/>
         <crc-error time="21:35:36" application="users_token.exe" choice="receive-2" database-crc="-1290730883" real-crc="-1143890683"/>
         <crc-error time="22:00:56" application="queue-real.exe" choice="receive-2" database-crc="1489474883" real-crc="1977572885"/>
         <test-runs-today n="7" ok-n="1" fail-n="1" else-n="5" last-run="oll korrekt" last-time="22:11:24"/>
+    </day>
+    <day year="2009" month="03" day="20">
+        <crc-error time="06:11:18" application="queue.exe" choice="receive-2" database-crc="860844415" real-crc="-1676057123"/>
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="06:45:42"/>
     </day>
 </history>

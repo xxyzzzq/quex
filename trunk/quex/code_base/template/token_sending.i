@@ -29,7 +29,7 @@ namespace quex {
         const int N = RepetitionN > AvailableN ? AvailableN : RepetitionN;
         __quex_assert(N > 0);
 
-        QUEX_TOKEN_QUEUE_ASSERT(_token_queue);
+        QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
 
         for(int n=0; n < N; n++) {
             QUEX_TOKEN_POLICY_SET_1(ID);

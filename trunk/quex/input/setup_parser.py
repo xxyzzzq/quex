@@ -155,7 +155,7 @@ def validate(setup, command_line, argv):
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 
     elif setup.byte_order not in ["<system>", "little", "big"]:
-        error_msg("Byte order (option --endian) must be 'little' or 'big'.\n" + \
+        error_msg("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
                   "Note, that this option is only interesting for cross plattform development.\n" + \
                   "By default, quex automatically chooses the endian type of your system.")
 
@@ -175,6 +175,9 @@ def validate(setup, command_line, argv):
                   "Maybe it works.", DontExitF=True)
     
     # token queue
+    if setup.token_policy != "queue" and command_line.search("--token-queue-size"):
+        error_msg("Option --token-queue-size determines a fixed token queue size. This makes\n" + \
+                  "only sense in conjunction with '--token-policy queue'.\n")
     if setup.token_queue_size <= setup.token_queue_safety_border + 1:
         if setup.token_queue_size == setup.token_queue_safety_border: cmp_str = "equal to"
         else:                                                         cmp_str = "less than"

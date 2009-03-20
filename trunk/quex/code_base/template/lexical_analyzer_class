@@ -396,19 +396,18 @@ $$MODE_OBJECT_MEMBERS$$
         //       memory management more flexible. The token queue/token object is heavily
         //       used and it should be possible to put it somewhere in memory with other
         //       heavily used data so that the cache can take advantage of data locality.
+    public:
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    private:
         // (*) The Token Queue ___________________________________________________________
         //     The token queue is **private**, because the user does not need direct
         //      access. get_token(Token**) is enough to get access to the current token. 
-        QuexTokenQueue    _token_queue;
+        QuexTokenQueue    _token_queue;  // must be public or protected (accessed with 'self')
 #       else
-    public:
         // (*) The Token _________________________________________________________________
         //     get_token(Token**) does not make a whole lot of sense, since the token 
         //     pointer always points to the same object. The object can be accessed
         //     by this **public** pointer.
-        QUEX_TYPE_TOKEN*  token;
+        QUEX_TYPE_TOKEN*  token;         // must be public or protected (accessed with 'self')
 #       endif
 
     public:

@@ -4,25 +4,25 @@ make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
-(1, 1)  	STRUCT
-(1, 16)  	IDENTIFIER
-(1, 16)  	CURLY_BRACKET_O
-(2, 11)  	IDENTIFIER
-(2, 11)  	IDENTIFIER
-(2, 11)  	SEMICOLON
-(3, 11)  	IDENTIFIER
-(3, 11)  	IDENTIFIER
-(3, 11)  	SEMICOLON
-(4, 1)  	CURLY_BRACKET_C
-(4, 2)  	SEMICOLON
-(6, 1)  	IF
-(6, 4)  	CURLY_BRACKET_O
-(7, 3)  	QUOTE
-(7, 15)  	STRING
-(7, 15)  	QUOTE
-(7, 16)  	SEMICOLON
-(8, 1)  	CURLY_BRACKET_C
-(9, 1)  	<TERMINATION>
+STRUCT
+IDENTIFIER
+CURLY_BRACKET_O
+IDENTIFIER
+IDENTIFIER
+SEMICOLON
+IDENTIFIER
+IDENTIFIER
+SEMICOLON
+CURLY_BRACKET_C
+SEMICOLON
+IF
+CURLY_BRACKET_O
+QUOTE
+STRING
+QUOTE
+SEMICOLON
+CURLY_BRACKET_C
+<TERMINATION>
 | [END] number of token = 19
 `------------------------------------------------------------------------------------
 cleaning ...
