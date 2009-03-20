@@ -14,7 +14,8 @@ main(int argc, char** argv)
 
     do {
         qlex.receive(&Token);
-		cout << Token << endl;
+        if( Token.type_id() != QUEX_TKN_TERMINATION ) { cout << string(Token) << endl; } 
+        else                                          { cout << Token.type_id_name() << endl; }
     } while( Token.type_id() != QUEX_TKN_TERMINATION );
     return 0;
 }

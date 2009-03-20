@@ -1,12 +1,12 @@
 (*) Core Engine
-        self.send(QUEX_TKN_UCS_0x000061); return;
-        self.send(QUEX_TKN_UCS_0x001000); return;
-        self.send(QUEX_TKN_UCS_0x00012E); return;
-        self.send(QUEX_TKN_UCS_0x0086A5); return;
-        self.send(QUEX_TKN_UCS_0x000058); return;
-        self.send(QUEX_TKN_UCS_0x00001B); return;
-        self.send(QUEX_TKN_UCS_0x00062C); return;
-        self.send(QUEX_TKN_UCS_0x00000C); return;
+        self.send(QUEX_TKN_UCS_0x000061); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x001000); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x00012E); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x0086A5); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x000058); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x00001B); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x00062C); CONTINUE;
+        self.send(QUEX_TKN_UCS_0x00000C); CONTINUE;
         self.send(QUEX_TKN_TERMINATION);
         self.send(QUEX_TKN_TERMINATION);
 (*) Token IDs

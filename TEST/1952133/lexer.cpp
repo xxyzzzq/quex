@@ -37,6 +37,7 @@ main(int argc, char** argv)
         // (*) check against 'termination'
     } while( Token.type_id() != QUEX_TKN_TERMINATION );
 
+    std::printf("Buffer Size = %i\n", QUEX_SETTING_BUFFER_SIZE); 
     // cout << Token.type_id_name() << endl;
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";
