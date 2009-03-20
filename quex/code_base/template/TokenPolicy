@@ -26,7 +26,7 @@
 #    define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) self._token_queue.write_iterator->set(X0, X1, X2, X3, X4);
 #    define QUEX_TOKEN_POLICY_PREPARE_NEXT() \
             ++(self._token_queue.write_iterator); \
-            __quex_assert(self._token_queue.write_iterator <= self._token_queue.end);
+            QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue);
 
 #    define QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET(N) \
             self._token_queue.remaining_repetitions_of_last_token_n = N;

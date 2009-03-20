@@ -49,15 +49,15 @@ namespace quex {
          * to return (see end of analyzer function at REENTRY label). If the tokenstack is
          * non-empty, we return to the caller (spare one check). If its empty the analyzer
          * function (which has recently been setup) is called again.                        */
-        do   QuexAnalyser::current_analyser_function(this);
-        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+        do {
+            QuexAnalyser::current_analyser_function(this);
+            QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
+        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         *result_pp = QuexTokenQueue_pop(_token_queue);
         return;
     }
-#   endif /* QUEX_OPTION_TOKEN_POLICY_QUEUE */
 
-#   if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     inline void
     CLASS::receive(QUEX_TYPE_TOKEN* result_p) 
     {
@@ -76,18 +76,33 @@ namespace quex {
         QuexTokenQueue_reset(_token_queue);
 
         /* Analyze until there is some content in the queue */
-        do   QuexAnalyser::current_analyser_function(this);
-        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+        do {
+            QuexAnalyser::current_analyser_function(this);
+            QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
+        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
         *result_p = *QuexTokenQueue_pop(_token_queue);
 
         return;
     }
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+
     inline void
     CLASS::receive(QUEX_TYPE_TOKEN* result_p) 
     {
         this->token = result_p;
+        this->token->set(__QUEX_TOKEN_ID_UNINITIALIZED);
+        do   QuexAnalyser::current_analyser_function(this);
+        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+
+        return;
+    }
+
+    inline void
+    CLASS::receive() 
+    {
+        __quex_assert(this->token != 0x0);
+
         this->token->set(__QUEX_TOKEN_ID_UNINITIALIZED);
         do   QuexAnalyser::current_analyser_function(this);
         while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
@@ -105,24 +120,12 @@ namespace quex {
         __quex_assert(QueueMemoryEnd > QueueMemoryBegin);
         QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd);
 
-        do   QuexAnalyser::current_analyser_function(this);
-        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+        do {
+            QuexAnalyser::current_analyser_function(this);
+            QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
+        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return _token_queue.write_iterator;
-    }
-#   endif
-
-#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-    inline void
-    CLASS::receive() 
-    {
-        __quex_assert(this->token != 0x0);
-
-        this->token->set(__QUEX_TOKEN_ID_UNINITIALIZED);
-        do   QuexAnalyser::current_analyser_function(this);
-        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
-
-        return;
     }
 #   endif
 
