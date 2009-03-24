@@ -81,6 +81,11 @@ namespace quex {
         this->counter       = TheLexer->counter;
 
         this->current_mode_p = TheLexer->__current_mode_p;
+#       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
+        /* Copy only the pointers, the caller must ensure that a new token array is
+         * used for the included file.                                              */
+        this->token_queue    = TheLexer->_token_queue;
+#       endif
     }
 
     inline void
@@ -90,6 +95,11 @@ namespace quex {
         *((QuexAnalyser*)the_lexer) = this->analyser_core;
         the_lexer->counter          = this->counter;
         the_lexer->__current_mode_p = this->current_mode_p;
+#       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
+        /* Copy only the pointers, the caller must ensure that a new token array is
+         * used for the included file.                                              */
+        TheLexer->_token_queue = this->token_queue;
+#       endif
     }
 } // namespace quex
 
