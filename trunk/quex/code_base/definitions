@@ -233,4 +233,8 @@ namespace quex {
         "cases. You **must** use a binary mode of your input stream!\n"            
 #endif
 
+/* Generating names on the fly while existing macros are to be used. */
+#define __QUEX_NAMER(A, x, B) A ## x ## B
+#define QUEX_NAMER(A, x, B) __QUEX_MACRO_STRING_CONCATINATE(A, x, B)
+#
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__ */

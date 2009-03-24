@@ -367,5 +367,7 @@ namespace quex {
 #ifdef QUEX_OPTION_ENABLE_ICU
 #   include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 #endif
+#include <quex/code_base/MemoryManager.i>
+
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__ */

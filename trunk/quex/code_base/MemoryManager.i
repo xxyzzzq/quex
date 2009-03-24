@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__
+#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/plain/BufferFiller_Plain>
@@ -101,10 +101,36 @@ namespace quex {
     }
 #   endif
 
+#   if defined (QUEX_OPTION_INCLUDE_STACK)
+    /* NOTE: The macro 'QUEX_MACRO_STRING_CONCATINATE' is used to generate a function
+     *       name. For example, if the macro CLASS_MEMENTO is defined as 'LexerMemento',
+     *       then the macro call
+     *
+     *           QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)
+     *
+     *       generates the function name:
+     *
+     *           MemoryManager_LexerMemento_allocate
+     *
+     *       Results of C-Preprocessing can always be viewed with 'gcc -E'.
+     *                                                                                    */
+    QUEX_INLINE CLASS_MEMENTO*
+    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)()
+    {
+        const size_t     MemorySize = sizeof(CLASS_MEMENTO);
+        return (CLASS_MEMENTO*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    }
+
+    QUEX_INLINE void
+    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _free)(CLASS_MEMENTO* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+#   endif
+
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
  
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER__ */
+#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__MEMORY_MANAGER_I__ */
