@@ -516,6 +516,7 @@ namespace quex {
 #include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/Buffer_debug.i>
+#include <quex/code_base/MemoryManager.i>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__ */
 
