@@ -47,7 +47,7 @@ $(APPLICATION): $(APPLICATION).o \
 	$(CC) $< -o $@ # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
-	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 0x1000 
+	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) --token-offset 0x1000
 
 # (*) HELPERS __________________________________________________________________
 clean:	

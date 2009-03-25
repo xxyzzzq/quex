@@ -77,4 +77,8 @@ namespace quex {
     CLASS::buffer_distance_to_text_end()
     { return QuexBuffer_distance_input_to_text_end(&this->buffer); }
 
+    inline const size_t          
+    CLASS::buffer_remaining_free_space()
+    { return QuexBuffer_content_end(&this->buffer) - QuexBuffer_text_end(&this->buffer); }
+
 }
