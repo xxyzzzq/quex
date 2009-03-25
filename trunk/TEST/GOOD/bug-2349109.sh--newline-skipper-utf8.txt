@@ -1,4 +1,4 @@
-quex -i newline-skipper-utf8.qx -o Simple --token-prefix COL_ --iconv -b 2
+quex -i newline-skipper-utf8.qx -o Simple --token-prefix COL_ --iconv -b 2 --token-policy users_token
 newline-skipper-utf8.qx:6:warning: Token id 'COL_1' defined implicitly.
 newline-skipper-utf8.qx:7:warning: Token id 'COL_2' defined implicitly.
 newline-skipper-utf8.qx:8:warning: Token id 'COL_3' defined implicitly.

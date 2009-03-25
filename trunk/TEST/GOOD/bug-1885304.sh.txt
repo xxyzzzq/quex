@@ -19,16 +19,18 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 // Coding must be defined before the inclusion of 'definitions' since this file will
 // otherwise define a default value
 
-#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN_DISABLED
-#endif
 #ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
 #endif
-#ifndef QUEX_OPTION_TOKEN_POLICY_MINI_QUEUE_DISABLED
+#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN_DISABLED
 #endif
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE_DISABLED
+#endif
+#if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE)
 #   ifndef     QUEX_SETTING_TOKEN_QUEUE_SIZE
 #       define QUEX_SETTING_TOKEN_QUEUE_SIZE  ((size_t)64)
 #   endif
+#endif
+#if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   ifndef     QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
 #       define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)16)
 #   endif
@@ -114,10 +116,10 @@ warning: using mode 'ONE_AND_ONLY' as initial mode
 //    Easy handling of include files/streams via 'push' and 'pop'
 //    Turn this off, if you do not use 'inclusion' in your files and
 //    you want to save some bytes.
-#ifndef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#ifndef  QUEX_OPTION_INCLUDE_STACK
 #endif
-#ifdef    QUEX_OPTION_INCLUDE_STACK_SUPPORT_DISABLED
-#   undef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#ifdef    QUEX_OPTION_INCLUDE_STACK_DISABLED
+#   undef QUEX_OPTION_INCLUDE_STACK
 #endif
 
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
@@ -201,13 +203,13 @@ namespace quex {
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/template/Accumulator>
 #endif
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   include <quex/code_base/TokenQueue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/template/PostCategorizer>
 #endif
-#ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#ifdef QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/template/IncludeStack>
 #endif
 
@@ -373,19 +375,18 @@ namespace quex {
         //       memory management more flexible. The token queue/token object is heavily
         //       used and it should be possible to put it somewhere in memory with other
         //       heavily used data so that the cache can take advantage of data locality.
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
-    private:
+    public:
+#       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
         // (*) The Token Queue ___________________________________________________________
         //     The token queue is **private**, because the user does not need direct
         //      access. get_token(Token**) is enough to get access to the current token. 
-        QuexTokenQueue*   _token_queue;
+        QuexTokenQueue    _token_queue;  // must be public or protected (accessed with 'self')
 #       else
-    public:
         // (*) The Token _________________________________________________________________
         //     get_token(Token**) does not make a whole lot of sense, since the token 
         //     pointer always points to the same object. The object can be accessed
         //     by this **public** pointer.
-        QUEX_TYPE_TOKEN*  token;
+        QUEX_TYPE_TOKEN*  token;         // must be public or protected (accessed with 'self')
 #       endif
 
     public:
@@ -397,7 +398,7 @@ namespace quex {
         FILE*    __file_handle_allocated_by_constructor;
 
     public:
-#       ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
         IncludeStack       include_stack;
 #       endif 
         //      -- include events (a file is included)
@@ -430,7 +431,7 @@ namespace quex {
 
         // (*) User's Lexer Class Body Extenstion ________________________________________
 
-#       ifdef QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#       ifdef QUEX_OPTION_INCLUDE_STACK
         friend class       IncludeStack;
         friend class       IncludeStack::memento;
 #       endif
@@ -474,11 +475,13 @@ namespace quex {
         std::cout << "###############################################################################\n";
 #       endif
 
-#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
-        _token_queue = new QuexTokenQueue;
+#       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        QUEX_TYPE_TOKEN*    token_chunk = new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE]; 
         QuexTokenQueue_init(_token_queue, 
-                            new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE], 
-                            QUEX_SETTING_TOKEN_QUEUE_SIZE);
+                            token_chunk,
+                            token_chunk + QUEX_SETTING_TOKEN_QUEUE_SIZE);
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+        QuexTokenQueue_init(_token_queue, 0, 0);
 #       else
         token = 0x0; /* call to 'get_token(token*)' provides pointer to some place in memory. */
 #       endif
@@ -542,7 +545,7 @@ namespace quex {
 #include <quex/code_base/template/token_receiving.i>
 
 #include <quex/code_base/template/mode_handling.i>
-#ifdef  QUEX_OPTION_INCLUDE_STACK_SUPPORT
+#ifdef  QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/template/IncludeStack.i>
 #endif
 #include <quex/code_base/template/misc.i>
@@ -587,7 +590,7 @@ namespace quex {
 
 #include <quex/code_base/template/Analyser>
 #include <quex/code_base/buffer/Buffer>
-#ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   include <quex/code_base/TokenQueue>
 #endif
 
@@ -2540,7 +2543,7 @@ TERMINAL_35_DIRECT:
         self.counter.count_NoNewline(LexemeL);
         
         #line 27 "dos_lf_2.qx"
-        self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme)); return;
+        self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme)); CONTINUE;
 #line 1990 "Simple-core-engine.cpp"
         
         }
@@ -2580,7 +2583,7 @@ TERMINAL_7_DIRECT:
         self.counter.count_NoNewline(6);
         
         #line 19 "dos_lf_2.qx"
-        self.send(QUEX_TKN_STRUCT); return;
+        self.send(QUEX_TKN_STRUCT); CONTINUE;
 #line 2030 "Simple-core-engine.cpp"
         
         }
@@ -2625,7 +2628,7 @@ TERMINAL_10_DIRECT:
         self.counter.count_NoNewline(3);
         
         #line 20 "dos_lf_2.qx"
-        self.send(QUEX_TKN_TYPE_INT); return;
+        self.send(QUEX_TKN_TYPE_INT); CONTINUE;
 #line 2075 "Simple-core-engine.cpp"
         
         }
@@ -2647,7 +2650,7 @@ TERMINAL_13_DIRECT:
         self.counter.count_NoNewline(6);
         
         #line 21 "dos_lf_2.qx"
-        self.send(QUEX_TKN_TYPE_DOUBLE); return;
+        self.send(QUEX_TKN_TYPE_DOUBLE); CONTINUE;
 #line 2097 "Simple-core-engine.cpp"
         
         }
@@ -2669,7 +2672,7 @@ TERMINAL_16_DIRECT:
         self.counter.count_NoNewline(4);
         
         #line 22 "dos_lf_2.qx"
-        self.send(QUEX_TKN_SEND); return;
+        self.send(QUEX_TKN_SEND); CONTINUE;
 #line 2119 "Simple-core-engine.cpp"
         
         }
@@ -2691,7 +2694,7 @@ TERMINAL_19_DIRECT:
         self.counter.count_NoNewline(6);
         
         #line 23 "dos_lf_2.qx"
-        self.send(QUEX_TKN_EXPECT); return;
+        self.send(QUEX_TKN_EXPECT); CONTINUE;
 #line 2141 "Simple-core-engine.cpp"
         
         }
@@ -2713,7 +2716,7 @@ TERMINAL_22_DIRECT:
         self.counter.count_NoNewline(1);
         
         #line 24 "dos_lf_2.qx"
-        self.send(QUEX_TKN_SEMICOLON); return;
+        self.send(QUEX_TKN_SEMICOLON); CONTINUE;
 #line 2163 "Simple-core-engine.cpp"
         
         }
@@ -2735,7 +2738,7 @@ TERMINAL_25_DIRECT:
         self.counter.count_NoNewline(1);
         
         #line 25 "dos_lf_2.qx"
-        self.send(QUEX_TKN_BRACKET_OPEN); return;
+        self.send(QUEX_TKN_BRACKET_OPEN); CONTINUE;
 #line 2185 "Simple-core-engine.cpp"
         
         }
@@ -2757,7 +2760,7 @@ TERMINAL_28_DIRECT:
         self.counter.count_NoNewline(1);
         
         #line 26 "dos_lf_2.qx"
-        self.send(QUEX_TKN_BRACKET_CLOSE); return;
+        self.send(QUEX_TKN_BRACKET_CLOSE); CONTINUE;
 #line 2207 "Simple-core-engine.cpp"
         
         }
@@ -2775,7 +2778,7 @@ TERMINAL_END_OF_STREAM:
         self.counter.__shift_end_values_to_start_values();
         
         #line 16 "dos_lf_2.qx"
-        self.send(QUEX_TKN_TERMINATION); return;
+        self.send(QUEX_TKN_TERMINATION); CONTINUE;
 #line 2225 "Simple-core-engine.cpp"
         
         }
@@ -2844,7 +2847,7 @@ __REENTRY_PREPARATION:
     
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
     if( self.token->type_id() != __QUEX_TOKEN_ID_UNINITIALIZED) return;
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     if( QuexTokenQueue_is_full(self._token_queue) ) return;
 #   endif
 
