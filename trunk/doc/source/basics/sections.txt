@@ -104,6 +104,37 @@ for the given section-name. The available sections are the following:
    Extensions to the lexical analyzer constructor. This is the place to initialize
    the additional members mentioned in the ``body`` section.
 
+Quex supports the inclusion of other files or streams during analyzis. This
+is done by means of a include stack handler :ref:`sec-include-stack`. It writes the
+relevant state information into a so called *memento* [#f2]_ when it dives
+into a file and restores its state from it when it comes back. The following
+sections allow to make additions to the memento scheme of the include handler:
+
+.. data:: memento
+
+   Extensions to the memento class that saves file local data before a sub-file
+   (included file) is handled.
+
+.. data:: memento_pack
+
+   Implicit Variables:
+
+   ``memento``: Pointer to the memento object.
+
+   ``lexer``: Pointer to the lexical analyzer object.
+
+   Code to be treated when the state of a lexical analyzer is stored in a memento.
+
+.. data:: memento_unpack
+
+   Implicit Variables:
+
+   ``memento``: Pointer to the memento object.
+
+   ``lexer``: Pointer to the lexical analyzer object.
+
+   Code to be treated when the state of a lexical analyzer is restored from a memento.
+
 An initial mode ``START_MODE`` in which the lexical analyzer starts its
 analysis can be specified via 
 

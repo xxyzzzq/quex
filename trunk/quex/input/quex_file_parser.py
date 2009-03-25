@@ -119,12 +119,27 @@ def parse_section(fh):
 
         elif word == "body":
             fragment = code_fragment.parse(fh, "body", AllowBriefTokenSenderF=False)        
-            lexer_mode.class_body = fragment
+            lexer_mode.class_body_extension = fragment
             return
 
         elif word == "init":
             fragment = code_fragment.parse(fh, "init", AllowBriefTokenSenderF=False)
-            lexer_mode.class_init = fragment
+            lexer_mode.class_constructor_extension = fragment
+            return
+
+        elif word == "memento":
+            fragment = code_fragment.parse(fh, "memento", AllowBriefTokenSenderF=False)
+            lexer_mode.memento_class_extension = fragment
+            return
+
+        elif word == "memento_pack":
+            fragment = code_fragment.parse(fh, "memento_pack", AllowBriefTokenSenderF=False)
+            lexer_mode.memento_pack_extension = fragment
+            return
+
+        elif word == "memento_unpack":
+            fragment = code_fragment.parse(fh, "memento_unpack", AllowBriefTokenSenderF=False)
+            lexer_mode.memento_unpack_extension = fragment
             return
             
         elif word == "define":
@@ -142,6 +157,7 @@ def parse_section(fh):
         elif word == "mode":
             mode_definition.parse(fh)
             return
+
         else:
             error_msg("sequence '%s' not recognized as valid keyword in this context\n" % word + \
                       "use: 'mode', 'header', 'body', 'init', 'define', 'token' or 'start'", fh)
