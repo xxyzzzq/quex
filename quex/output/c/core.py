@@ -77,7 +77,7 @@ def do(Modes, setup):
     class_body_extension_str = lexer_mode.class_body.get_code()
 
     # -- the class constructor extension
-    class_constructor_extension_str = lexer_mode.class_init.get_code()
+    class_constructor_extension_str = lexer_mode.class_constructor_extension.get_code()
 
     fh = open_file_or_die(QuexClassHeaderFileTemplate)
     template_code_txt = fh.read()
