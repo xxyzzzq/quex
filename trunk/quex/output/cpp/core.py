@@ -80,12 +80,6 @@ def write_engine_header(Modes, Setup):
     for friend in Setup.input_lexer_class_friends:
         friends_str += "    friend class %s;\n" % friend
 
-    # -- the class body extension
-    class_body_extension_str = lexer_mode.class_body.get_code()
-
-    # -- the class constructor extension
-    class_constructor_extension_str = lexer_mode.class_init.get_code()
-
     fh = open_file_or_die(QuexClassHeaderFileTemplate)
     template_code_txt = fh.read()
     fh.close()
@@ -107,6 +101,7 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, exit_handler_active_f,   "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT")
     txt = set_switch(txt, indentation_support_f,   "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
     txt = set_switch(txt, True,                    "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
+    txt = set_switch(txt, not Setup.no_include_stack_support_f,    "QUEX_OPTION_INCLUDE_STACK")
     txt = set_switch(txt, Setup.converter_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
     txt = set_switch(txt, Setup.converter_icu_f,      "QUEX_OPTION_ENABLE_ICU")
     txt = set_switch(txt, Setup.token_policy == "queue",       "QUEX_OPTION_TOKEN_POLICY_QUEUE")
@@ -120,8 +115,6 @@ def write_engine_header(Modes, Setup):
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_TOKEN_SENDING")
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_MODE_TRANSITIONS")
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
-    txt = set_switch(txt, True,                    "QUEX_OPTION_INCLUDE_STACK_SUPPORT")
-    txt = set_switch(txt, not Setup.disable_return_token_id_f, "__QUEX_OPTION_ANALYZER_RETURNS_TOKEN_ID")
     txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
 
@@ -133,11 +126,11 @@ def write_engine_header(Modes, Setup):
     txt = blue_print(txt,
             [
                 ["$$BUFFER_LIMIT_CODE$$",            "0x%X" % Setup.buffer_limit_code],
-                ["$$CONSTRUCTOR_EXTENSTION$$",                  class_constructor_extension_str],
+                ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
                 ["$$CONVERTER_NEW$$",                converter_new_str],
-                ["$$CLASS_BODY_EXTENSION$$",         class_body_extension_str],
+                ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
                 ["$$INCLUDE_GUARD_EXTENSION$$",      include_guard_extension],
                 ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.get_code()],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
@@ -151,6 +144,9 @@ def write_engine_header(Modes, Setup):
                 ["$$MODE_CLASS_FRIENDS$$",           friend_txt],
                 ["$$MODE_OBJECT_MEMBERS$$",              mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
+                ["$$MEMENTO_EXTENSIONS$$",               lexer_mode.memento_extension.get_code()],
+                ["$$MEMENTO_EXTENSIONS_PACK$$",          lexer_mode.memento_extension_pack.get_code()],
+                ["$$MEMENTO_EXTENSIONS_UNPACK$$",        lexer_mode.memento_extension_unpack.get_code()],
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
                 ["$$QUEX_VERSION$$",                     QuexVersionID],
