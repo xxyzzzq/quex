@@ -1,0 +1,31 @@
+// -*- C++ -*-
+
+header {
+extern QUEX_TYPE_CHARACTER  EmptyLexeme;
+}
+token {
+   INCLUDE
+   IDENTIFIER
+   BRACKET_OPEN
+   BRACKET_CLOSE
+   NUMBER
+}
+
+mode ONE_AND_ONLY
+{
+    <<EOF>> {
+	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
+        RETURN;
+    }
+
+    "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
+    ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
+    //
+    "include"   => QUEX_TKN_INCLUDE(&EmptyLexeme);
+    //
+    ([_a-zA-Z]|("/"|"."|"'"))+  => QUEX_TKN_IDENTIFIER(Lexeme); 
+    [ \t\r\n]+                  { }
+}
+
+
+

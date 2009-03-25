@@ -1,0 +1,36 @@
+In order to skip portions of the input without considering its content, quex provides
+the ability to define so called 'skippers'. Skippers can be used, for example, to
+skip whitespaces and comments. Of course, most of the skippers can also be 
+defined as patterns that have no action related to it. However, there are great 
+advantages to using skippers rather than their implementation as a 'skipping pattern'.
+
+- Skippers perform much faster than usual regular expressions. Their implementation
+  is adapted to the buffer handling and reduces comparisons to a minimum.
+
+- Skippers reduce the minimum required buffer size. For example, comments in C programs
+  can become very lengthy. If they were to be parsed by the general engine, then they
+  would require that the buffer size is as big as the largest thinkable comment. Skippers
+  do not suffer this constraint. A buffer of the size of five characters may suffice to 
+  parse a range of arbitrary size.
+
+- The _nested_ skipper is a feature that can not be achieved by regular expressions since it
+  implies recursion. A nested skipper, can for example be used to parse a region of 
+  closing and opening '{' brackets down the the '}' which matches the current level.
+
+This shows, that skippers are a very powerful tool to reduce computation time
+and memory constraints of the created lexical analyser. Additionally, they add
+clarity to the code that describes the analyser. When an end-of-file is reached
+before the range skipper ends, the normal end-of-file action is executed and
+the lexical analysis continues as normal-provided that the input is set
+appropriately (e.g. a return from an include occured). 
+
+Currently, there are two forms of skippers implemented:
+
+# _Character set skippers_ of the form ''<skip: [ \n\t]>'' which allows to skip 
+over wide ranges of characters that belong to a given character set defined in 
+'['- and ']'- brackets. The above example shows a skipper that eliminates whitespace
+in ASCII. 
+
+# _Range Skippers_ of the form ''<skip_range:  "/*" "*/">''. They allow to skip any
+content that is framed by a starting regular expression and an ending string. In the example
+above the skipper  skips over traditional C-Language comments.

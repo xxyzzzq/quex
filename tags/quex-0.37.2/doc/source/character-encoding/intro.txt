@@ -1,0 +1,42 @@
+Character Encodings
+===================
+
+Many cultures of the world in the history of mankind developped many types of
+scripts. A script in a more technical sense decribes the relationship between a
+*phonetic expression* or a *meaning* and its *graphical representation*[#f1]_. The
+element of a writing is a character and its numerical representation is called
+a *code-point* or a *character code*. The formal relationship between characters
+and code-points is called an *encoding*. A lexical analyzer generator, that tries
+to be universal must therefore reflect the multitude of encodings. Much development
+in computer science at the end of the 2000's century has been made in a region 
+of the world where the English was predominant. For this reason, the so called 
+ASCII Standard encoding became widespread, even though, it does only support
+English characters. 
+
+With the dramatic change of global interactions and communcations, the need 
+for character encodings from other languages becomes indispensable. On of the
+major goals is to support the lexical analysis of any type of encoding. The
+following sections provide an overview about the lexical analysis process
+of a generated engine, explain the usage of libraries for the conversion
+of character encodings to unicode, and finally explain how user generated
+converters can be plugged into the process.
+
+
+.. toctree::
+
+   process.txt
+   converter.txt
+   user-defined.txt
+
+.. rubric:: Footnotes
+
+.. [#f1] Humans reflect over information in terms of phonetical expressions or 
+         meanings. Therefore scripts provide the basis for the *transport of information*
+         over time and space. Being able to transport information from person
+         to person, or preserve information for later generations is the key
+         for any development of civilization.
+
+         The usage of automated tools for the writing and interpretion of information
+         acts as an accelerator for the motor of civilization. In the vision
+         of the author quex makes its contribution to civilization by providing means
+         for automatic interpretation of information.
