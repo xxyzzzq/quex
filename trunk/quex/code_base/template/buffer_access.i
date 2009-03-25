@@ -33,7 +33,6 @@ namespace quex {
 
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
         __quex_assert(this->buffer._content_character_index_begin == 0); 
-        __quex_assert(this->buffer._memory._end_of_file_p != 0x0); 
 
         if( copy_size > RemainingSize ) copy_size = RemainingSize;
         /* Let us use 'move', because we can never know if the user might want

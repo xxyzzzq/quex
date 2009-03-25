@@ -38,24 +38,24 @@ namespace quex {
         if( MODE_ID != -1 ) _the_lexer->set_mode_brutally(MODE_ID);
 
         /* Initialize the lexical analyzer for the new input stream */
-        _the_lexer->__init(new_input_handle_p, BFT, IANA_InputCodingName);
+        _the_lexer->__init(new_input_handle_p, BFT, IANA_CodingName);
 
         /* Keep track of 'who's your daddy?' */
-        m->parent = _the_lexer->_parent_menento;
-        _the_lexer->_parent_menento = m;
+        m->parent = _the_lexer->_parent_memento;
+        _the_lexer->_parent_memento = m;
     }   
 
     inline bool
     IncludeStack::pop() 
     {
         /* Not included? return 'false' to indicate we're on the top level */
-        if( _the_lexer->_parent_menento == 0x0 ) return false; 
+        if( _the_lexer->_parent_memento == 0x0 ) return false; 
 
         // (1) Free the related memory that is no longer used
         QuexAnalyser_destruct((QuexAnalyser*)_the_lexer);
 
         /* Reset the lexical analyser to the state it was before the include */
-        QUEX_NAMER(CLASS_MEMENTO, _unpack,)(the_lexer->_parent_menento, _the_lexer);
+        QUEX_NAMER(CLASS_MEMENTO, _unpack,)(_the_lexer->_parent_memento, _the_lexer);
 
         /* Return to including file succesful */
         return true;

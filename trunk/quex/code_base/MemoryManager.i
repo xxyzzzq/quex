@@ -87,17 +87,18 @@ namespace quex {
 #   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_INLINE size_t 
+    QUEX_INLINE bool 
     MemoryManager_TokenArray_allocate(QUEX_TYPE_TOKEN** memory, size_t RequiredSize)
     {
         const size_t     MemorySize = sizeof(QUEX_TYPE_TOKEN) * RequiredSize;
         *memory = (QUEX_TYPE_TOKEN*)__QUEX_ALLOCATE_MEMORY(MemorySize);
-        return RequiredSize;
+        if( *memory == 0x0 ) return false;
+        return true;
     }
     QUEX_INLINE void 
     MemoryManager_TokenArray_free(QUEX_TYPE_TOKEN* memory, size_t Size)
     {
-        { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+        if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); 
     }
 #   endif
 

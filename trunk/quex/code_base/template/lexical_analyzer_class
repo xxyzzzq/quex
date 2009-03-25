@@ -6,6 +6,7 @@
 #include<vector> 
 #include<map>
 #include<istream>  // gets: istream and wistream
+
 #ifdef __QUEX_OPTION_UNIT_TEST
 #   include <quex/code_base/StrangeStream_unit_tests>
 #endif
@@ -196,22 +197,27 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
 namespace quex {
     template <class QuexCharacterType> class Quex$$LEXER_CLASS_NAME$$;
-    class $$LEXER_CLASS_NAME$$;
+    class  $$LEXER_CLASS_NAME$$;
+    struct $$LEXER_CLASS_NAME$$Memento_tag;
+
+    QUEX_INLINE struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*);
+    QUEX_INLINE void  $$LEXER_CLASS_NAME$$Memento_pack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
 
 $$LEX_ID_DEFINITIONS$$
 }    
 
+#define CLASS             $$LEXER_CLASS_NAME$$
+#ifdef QUEX_OPTION_INCLUDE_STACK
+#   define CLASS_MEMENTO_TAG  struct $$LEXER_CLASS_NAME$$Memento_tag
+#   define CLASS_MEMENTO      $$LEXER_CLASS_NAME$$Memento
+#endif
+
 #include<quex/code_base/buffer/Buffer>
 #include<quex/code_base/buffer/BufferFiller>
 
-// Quex/User
-#define CLASS             $$LEXER_CLASS_NAME$$
-#define CLASS_MEMENTO     $$LEXER_CLASS_NAME$$Memento
-
+#include <quex/code_base/MemoryManager>
 #include <quex/code_base/template/QuexMode>
-
 #include <quex/code_base/template/Analyser>
-
 #include <quex/code_base/template/Counter>
 namespace quex { 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
@@ -417,7 +423,8 @@ $$MODE_OBJECT_MEMBERS$$
 
     public:
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
-        IncludeStack       include_stack;
+        IncludeStack    include_stack;
+        struct $$LEXER_CLASS_NAME$$Memento_tag*  _parent_memento;
 #       endif 
         //      -- include events (a file is included)
         void virtual on_include(const char* Filename) {}
@@ -444,7 +451,8 @@ $$LEXER_CLASS_FRIENDS$$
 $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_INCLUDE_STACK
         friend class       IncludeStack;
-        friend class       $$LEXER_CLASS_NAME$$Memento;
+        friend struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*);
+        friend void  $$LEXER_CLASS_NAME$$Memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
 #       endif
 
     private:
@@ -455,6 +463,11 @@ $$CLASS_BODY_EXTENSION$$
         void                        __constructor_core(InputHandleT*, 
                                                        QuexBufferFillerTypeEnum, 
                                                        const char* IConvInputCodingName);
+        template <class InputHandleT> 
+        void                        __init(InputHandleT*  input_handle, 
+                                           QuexBufferFillerTypeEnum  BFT, 
+                                           const char* IANA_InputCodingName);
+
 
         QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
                                                                 const char* IANA_InputCodingName);
@@ -510,7 +523,9 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
         __init(input_handle, BFT, IANA_InputCodingName);
 
-        _parent_menento = 0x0;
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        _parent_memento = 0x0;
+#       endif
 
 $$CONSTRUCTOR_EXTENSTION$$
     }
@@ -558,17 +573,20 @@ $$CONSTRUCTOR_EXTENSTION$$
     QUEX_INLINE $$LEXER_CLASS_NAME$$Memento*
     $$LEXER_CLASS_NAME$$Memento_pack(CLASS* lexer)
     {
-        memento = MemoryManager_Memento_allocate();
+        $$LEXER_CLASS_NAME$$Memento* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
 
-        memento->parent         = lexer->_parent_menento;
+        memento->parent         = lexer->_parent_memento;
         memento->analyser_core  = *((QuexAnalyser*)lexer);
         memento->counter        = lexer->counter;
         memento->current_mode_p = lexer->__current_mode_p;
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
         memento->token_queue.remaining_n =   lexer->_token_queue.write_iterator 
-                                           - lexer->_token_queue->read_iterator;
+                                           - lexer->_token_queue.read_iterator;
         if( memento->token_queue.remaining_n != 0 ) {
-            memento->token_queue.remainder = MemoryManager_TokenArray_allocate();
+            if(   MemoryManager_TokenArray_allocate(&memento->token_queue.remainder, memento->token_queue.remaining_n)
+               == false ) {
+                QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
+            }
             memcpy(memento->token_queue.remainder, 
                    lexer->_token_queue.read_iterator,
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
@@ -576,13 +594,15 @@ $$CONSTRUCTOR_EXTENSTION$$
 #       endif
 
 $$MEMENTO_EXTENSIONS_PACK$$
+
+        return memento;
     }
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     QUEX_INLINE void
     $$LEXER_CLASS_NAME$$Memento_unpack($$LEXER_CLASS_NAME$$Memento* memento, CLASS* lexer)
     {
-        lexer->_parent_menento  = memento->parent;
+        lexer->_parent_memento  = memento->parent;
         *((QuexAnalyser*)lexer) = memento->analyser_core;
         lexer->counter          = memento->counter;
         lexer->__current_mode_p = memento->current_mode_p;
@@ -603,6 +623,8 @@ $$MEMENTO_EXTENSIONS_PACK$$
 #       endif
 
 $$MEMENTO_EXTENSIONS_UNPACK$$
+        
+        MemoryManager_$$LEXER_CLASS_NAME$$Memento_free(memento);
     }
 #   endif /* QUEX_OPTION_INCLUDE_STACK */
 
@@ -637,7 +659,9 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
 #undef CLASS
-#undef CLASS_MEMENTO
+#ifdef    QUEX_OPTION_INCLUDE_STACK
+#   undef CLASS_MEMENTO
+#endif
 
 #include <quex/code_base/template/Analyser.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
