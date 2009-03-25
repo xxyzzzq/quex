@@ -51,8 +51,16 @@ namespace quex {
 #   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_INLINE size_t  MemoryManager_TokenArray_allocate(QUEX_TYPE_TOKEN** memory, size_t RequiredSize);
-    QUEX_INLINE void    MemoryManager_TokenArray_free(QUEX_TYPE_TOKEN* memory, size_t Size);
+    QUEX_INLINE bool  MemoryManager_TokenArray_allocate(QUEX_TYPE_TOKEN** memory, size_t RequiredSize);
+    QUEX_INLINE void  MemoryManager_TokenArray_free(QUEX_TYPE_TOKEN* memory, size_t Size);
+#   endif
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    QUEX_INLINE  CLASS_MEMENTO_TAG*
+    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)();
+
+    QUEX_INLINE void
+    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _free)(CLASS_MEMENTO_TAG* memory);
 #   endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
