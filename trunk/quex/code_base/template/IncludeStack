@@ -21,8 +21,6 @@ namespace quex {
             void   map_from_lexical_analyzer(CLASS*);
         };
 
-        std::vector<memento>  _stack;
-
         template <class InputHandle> 
         void   push(InputHandle*             new_input_handle_p, 
                     const QuexMode&          mode, 
