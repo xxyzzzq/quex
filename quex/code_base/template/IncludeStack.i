@@ -33,74 +33,34 @@ namespace quex {
         __quex_assert(new_input_handle_p != 0x0);
         // IANA_CodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
 
+        CLASS_MEMENTO*  m = QUEX_NAMER(CLASS_MEMENTO, _pack,)(_the_lexer);
+
         if( MODE_ID != -1 ) _the_lexer->set_mode_brutally(MODE_ID);
 
-        _stack.push_back(memento());
-        memento*  m = &(_stack.back());
+        /* Initialize the lexical analyzer for the new input stream */
+        _the_lexer->__init(new_input_handle_p, BFT, IANA_InputCodingName);
 
-        // (1) saving the current state of the lexical analyzer (memento pattern)
-        m->map_from_lexical_analyzer(_the_lexer);
-
-        _the_lexer->counter.init();
-
-        // (2) initializing the new state of the lexer for reading the new input file/stream
-        QuexAnalyser_construct((QuexAnalyser*)_the_lexer,
-                               _the_lexer->current_analyser_function,
-                               new_input_handle_p,
-                               BFT, IANA_CodingName, 
-                               QUEX_SETTING_BUFFER_SIZE,
-                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        /* Keep track of 'who's your daddy?' */
+        m->parent = _the_lexer->_parent_menento;
+        _the_lexer->_parent_menento = m;
     }   
 
     inline bool
     IncludeStack::pop() 
     {
         /* Not included? return 'false' to indicate we're on the top level */
-        if( _stack.empty() ) return false; 
-
-        memento*  m = &(_stack.back());
+        if( _the_lexer->_parent_menento == 0x0 ) return false; 
 
         // (1) Free the related memory that is no longer used
         QuexAnalyser_destruct((QuexAnalyser*)_the_lexer);
 
-        // (2) Reset the lexical analyser to the state it was before the include
-        m->map_to_lexical_analyzer(_the_lexer);
-
-        // (3) Forget about the memento
-        _stack.pop_back();
+        /* Reset the lexical analyser to the state it was before the include */
+        QUEX_NAMER(CLASS_MEMENTO, _unpack,)(the_lexer->_parent_menento, _the_lexer);
 
         /* Return to including file succesful */
         return true;
     }
 
-    inline void
-    IncludeStack::memento::map_from_lexical_analyzer(CLASS* TheLexer)
-    {
-        // (1) saving the current state of the lexical analyzer (memento pattern)
-        this->analyser_core = *((QuexAnalyser*)TheLexer);
-        this->counter       = TheLexer->counter;
-
-        this->current_mode_p = TheLexer->__current_mode_p;
-#       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        /* Copy only the pointers, the caller must ensure that a new token array is
-         * used for the included file.                                              */
-        this->token_queue    = TheLexer->_token_queue;
-#       endif
-    }
-
-    inline void
-    IncludeStack::memento::map_to_lexical_analyzer(CLASS* the_lexer)
-    {
-        // (1) saving the current state of the lexical analyzer (memento pattern)
-        *((QuexAnalyser*)the_lexer) = this->analyser_core;
-        the_lexer->counter          = this->counter;
-        the_lexer->__current_mode_p = this->current_mode_p;
-#       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        /* Copy only the pointers, the caller must ensure that a new token array is
-         * used for the included file.                                              */
-        TheLexer->_token_queue = this->token_queue;
-#       endif
-    }
 } // namespace quex
 
 #endif // __INCLUDE_GUARD__QUEX__INCLUDE_STACK
