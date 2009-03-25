@@ -451,16 +451,30 @@ initial_mode = CodeFragment()
 header = CodeFragment()
 
 #-----------------------------------------------------------------------------------------
-# class_body: code fragment that is to be pasted inside the class definition
-#             of the lexical analyser class.
+# class_body_extension: code fragment that is to be pasted inside the class definition
+#                       of the lexical analyser class.
 #-----------------------------------------------------------------------------------------
-class_body = CodeFragment()
+class_body_extension = CodeFragment()
 
 #-----------------------------------------------------------------------------------------
-# class_init: code fragment that is to be pasted inside the lexer class constructor
+# class_constructor_extension: code fragment that is to be pasted inside the lexer class constructor
 #-----------------------------------------------------------------------------------------
-class_init = CodeFragment()
+class_constructor_extension = CodeFragment()
 
+#-----------------------------------------------------------------------------------------
+# memento_extension: fragment to be pasted into the memento  class's body.
+#-----------------------------------------------------------------------------------------
+memento_class_extension = CodeFragment()
+#-----------------------------------------------------------------------------------------
+# memento_pack_extension: fragment to be pasted into the function that packs the
+#                         lexical analyzer state in a memento.
+#-----------------------------------------------------------------------------------------
+memento_pack_extension = CodeFragment()
+#-----------------------------------------------------------------------------------------
+# memento_unpack_extension: fragment to be pasted into the function that unpacks the
+#                           lexical analyzer state in a memento.
+#-----------------------------------------------------------------------------------------
+memento_unpack_extension = CodeFragment()
 
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):

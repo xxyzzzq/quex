@@ -13,13 +13,13 @@ SETUP_INFO = {
     "bytes_per_ucs_code_point":       [["--bytes-per-ucs-code-point", "-b"], "1"],
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
-    "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
     "converter_iconv_f":              [["--iconv"],                          FLAG],
     "converter_icu_f":                [["--icu"],                            FLAG],
     "converter_user_new_func":        [["--converter-new", "--cn"],          ""],
     "byte_order":                     [["--endian"],                         "<system>"],
     "input_application_version_id":   [["--version-id"],                     "0.0.0-pre-release"],
+    "no_include_stack_support_f":     [["--no-include-stack", "--nois"],     FLAG],
     "input_derived_class_file":       [["--derived-class-file"],             ""],
     "input_derived_class_name":       [["--derived-class"],                  ""],
     "input_foreign_token_id_file":    [["--foreign-token-id-file"],          ""],  # provides foreign token-ids to
@@ -58,6 +58,7 @@ SETUP_INFO = {
     "input_token_sending_via_queue_f":[["--token-queue"],           FLAG],                    # DEPRECATED
     "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
     "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
+    "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -104,6 +105,9 @@ DEPRECATED = {
   "disable_token_queue_f":
      ("Since version 0.36.5 the flag '--no-token-queue' and '--ntq' have been deprecated.\n" + \
       "Use flag '--token-policy' or '--tp' instead.", "0.36.5"),     
+  "disable_return_token_id_f":      
+     ("Flag --no-return-token-id is no longer supported. In recent versions of quex\n" + \
+      "token-IDs are not passed as return values at all.", "0.37.1"), 
 }
  
 

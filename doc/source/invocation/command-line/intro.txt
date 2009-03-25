@@ -105,19 +105,32 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         activate the output of every pattern match. Then defining the macro
         `QUEX\_OPTION\_DEBUG\_QUEX\_PATTERN\_MATCHES` activates those printouts in the
         standard error output. Note, that this options produces considerable
-        code overhead. DEFAULT = `<disabled>`
+        code overhead. 
+        
+        DEFAULT = `<disabled>`
 
 .. cmdoption:: --no-mode-transition-check 
 
         Turns off the mode transition check and makes the engine a little faster.
         During development this option should not be used. But the final lexical
-        analyzer should be created with this option set. By default, the
-        the mode transition check is enabled.
+        analyzer should be created with this option set. 
+        
+        By default, the mode transition check is enabled.
 
 .. cmdoption:: --no-string-accumulator, --nsacc
 
         Turns the string accumulator option off. This disables the use of the string 
         accumulator to accumulate lexemes. See class 'quex::Accumulator'.
+
+        By default, the string-accumulator is implemented.
+
+.. cmdoption:: --no-include-stack, --nois
+
+        Disables the support of include stacks where the state of the lexical 
+        analyzer can be saved and restored before diving into included files.
+        Setting this flag may speed up a bit compile time
+
+        By default, the include stack handler is implemented.
 
 .. cmdoption:: --post-categorizer
 
