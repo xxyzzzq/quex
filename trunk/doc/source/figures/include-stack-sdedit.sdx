@@ -17,7 +17,7 @@ user:job.start analyzis
 *1
 job:user.#include "my_header.h"
 job:stop
-user:server[s].save state
+user:server[s].pack state
 user:db.switch analysis
 *2 db
    #define WIDTH 80
@@ -25,7 +25,7 @@ user:db.switch analysis
 *2
 db:user.end of file
 db:stop
-server[s]:user.restore state
+server[s]:user.unpack state
 server[s]:stop
 user:job.continue analyzis
 *3 job
