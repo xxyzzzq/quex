@@ -450,7 +450,15 @@ $$LEXER_CLASS_FRIENDS$$
         // (*) User's Lexer Class Body Extenstion ________________________________________
 $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_INCLUDE_STACK
-        friend class       IncludeStack;
+        template <class InputHandle> void  include_push(InputHandle*             new_input_handle_p, 
+                                                        const QuexMode&          mode, 
+                                                        QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */,
+                                                        const char*              IANA_CodingName /* = 0x0 */);
+        template <class InputHandle> void  include_push(InputHandle*            new_input_handle_p, 
+                                                        const int                MODE_ID /* = -1 */, 
+                                                        QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
+                                                        const char*              IANA_CodingName /* = 0x0 */);
+        bool                               include_pop();
         friend struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*);
         friend void  $$LEXER_CLASS_NAME$$Memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
 #       endif
@@ -573,22 +581,23 @@ $$CONSTRUCTOR_EXTENSTION$$
     QUEX_INLINE $$LEXER_CLASS_NAME$$Memento*
     $$LEXER_CLASS_NAME$$Memento_pack(CLASS* lexer)
     {
+        CLASS& self = *lexer;
         $$LEXER_CLASS_NAME$$Memento* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
 
-        memento->parent         = lexer->_parent_memento;
+        memento->parent         = self._parent_memento;
         memento->analyser_core  = *((QuexAnalyser*)lexer);
-        memento->counter        = lexer->counter;
-        memento->current_mode_p = lexer->__current_mode_p;
+        memento->counter        = self.counter;
+        memento->current_mode_p = self.__current_mode_p;
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        memento->token_queue.remaining_n =   lexer->_token_queue.write_iterator 
-                                           - lexer->_token_queue.read_iterator;
+        memento->token_queue.remaining_n =   self._token_queue.write_iterator 
+                                           - self._token_queue.read_iterator;
         if( memento->token_queue.remaining_n != 0 ) {
             if(   MemoryManager_TokenArray_allocate(&memento->token_queue.remainder, memento->token_queue.remaining_n)
                == false ) {
                 QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
             }
             memcpy(memento->token_queue.remainder, 
-                   lexer->_token_queue.read_iterator,
+                   self._token_queue.read_iterator,
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
         }
 #       endif
@@ -602,22 +611,23 @@ $$MEMENTO_EXTENSIONS_PACK$$
     QUEX_INLINE void
     $$LEXER_CLASS_NAME$$Memento_unpack($$LEXER_CLASS_NAME$$Memento* memento, CLASS* lexer)
     {
-        lexer->_parent_memento  = memento->parent;
+        CLASS& self = *lexer;
+        self._parent_memento    = memento->parent;
         *((QuexAnalyser*)lexer) = memento->analyser_core;
-        lexer->counter          = memento->counter;
-        lexer->__current_mode_p = memento->current_mode_p;
+        self.counter            = memento->counter;
+        self.__current_mode_p   = memento->current_mode_p;
         
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
         /* When one returns from a file, the last token of the file was the terminating 
          * token. It is the occurence of this token that triggers a 'return from include'.
          * Thus, the token queue **must** be empty at this point in time.                  */
-        __quex_assert( QuexTokenQueue_is_empty(lexer->_token_queue) );
+        __quex_assert( QuexTokenQueue_is_empty(self._token_queue) );
         if( memento->token_queue.remaining_n != 0 ) {
-            memcpy(lexer->_token_queue.begin, memento->token_queue.remainder, 
+            memcpy(self._token_queue.begin, memento->token_queue.remainder, 
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
-            lexer->_token_queue.read_iterator  = lexer->_token_queue.begin;
-            lexer->_token_queue.write_iterator = lexer->_token_queue.begin + memento->token_queue.remaining_n;
-            lexer->_token_queue.remaining_repetitions_of_last_token_n = 0;
+            self._token_queue.read_iterator  = self._token_queue.begin;
+            self._token_queue.write_iterator = self._token_queue.begin + memento->token_queue.remaining_n;
+            self._token_queue.remaining_repetitions_of_last_token_n = 0;
         }
         MemoryManager_TokenArray_free(memento->token_queue.remainder, memento->token_queue.remaining_n);
 #       endif

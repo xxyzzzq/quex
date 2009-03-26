@@ -58,13 +58,13 @@ main(int argc, char** argv)
                     cout << "file not found\n";
                     return 0;
                 }
-                qlex.include_stack.push(fh);
+                qlex.include_push(fh);
                 break;
                 
             }
         case QUEX_TKN_TERMINATION:
-            if( qlex.include_stack.pop() == false ) continue_lexing_f = false;
-            else                                    cout << "<< return from include\n";
+            if( qlex.include_pop() == false ) continue_lexing_f = false;
+            else                              cout << "<< return from include\n";
             break;
         }
 
