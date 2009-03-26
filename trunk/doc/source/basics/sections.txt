@@ -121,7 +121,7 @@ sections allow to make additions to the memento scheme of the include handler:
 
    ``memento``: Pointer to the memento object.
 
-   ``lexer``: Pointer to the lexical analyzer object.
+   ``self``: Reference to the lexical analyzer object.
 
    Code to be treated when the state of a lexical analyzer is stored in a memento.
 
@@ -131,7 +131,7 @@ sections allow to make additions to the memento scheme of the include handler:
 
    ``memento``: Pointer to the memento object.
 
-   ``lexer``: Pointer to the lexical analyzer object.
+   ``self``: Reference to the lexical analyzer object.
 
    Code to be treated when the state of a lexical analyzer is restored from a memento.
 
