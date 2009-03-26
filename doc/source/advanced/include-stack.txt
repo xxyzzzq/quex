@@ -1,0 +1,62 @@
+Include Stack
+=============
+
+A useful feature of many programming languages is the feature to *include*
+files into a file. It has the effect that the content of the included file is
+treated as if it is pasted into the including file. For example, let ``my_header.h``
+be a 'C' file with the content
+
+.. code-block:: cpp
+
+   #define TEXT_WIDTH 80
+   typedef short      my_size_t;
+
+Then, a C-file ``main.c`` containing
+
+.. code-block:: cpp
+   
+   /* (C) 2009 Someone */
+   #include "my_header.h"
+   int main(int argc, char** argv)
+   {
+       ...
+   }
+
+produces the same token sequence as the following code fragment where
+``my_header.h`` is pasted into ``main.c`` 
+
+.. code-block:: cpp
+
+   /* (C) 2009 Someone */
+   #define WIDTH 80
+   typedef short my_size_t;
+
+   int main(int argc, char** argv)
+   {
+       ...
+   }
+
+What happens internally is that the following:
+
+   1. An ``#include`` statement is found.
+   2. The analyzer switches to the included file
+   3. Analyzis continues in the included file until 'End of File'.
+   4. The analyzer switches back to the including file and continues
+      the analyzes after the ``#include`` statement.
+
+This simple procedure prevents users from writing the same code multiple times.
+Moreover, it supports centralized organization of the code. Scripts or
+configurations that are referred to in many files can be put into a central
+place that is maintained by trustworthy personal ensuring robustness of the
+overall configuration. The advantages of the simple ``include`` feature are
+many. In this section it is described how quex supports the inclusion of
+files.
+
+.. _fig-include-stack-example:
+
+.. figure:: ../figures/include-stack-sdedit.*
+
+   Inclusion of content from other files.
+
+Figure :ref:`fig-include-stack-example` shows what happens behind the scenes.
+
