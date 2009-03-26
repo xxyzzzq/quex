@@ -13,3 +13,4 @@ the optimization of memory consumption and analysis speed.
 .. toctree::
 
    token-policies.txt
+   include-stack.txt
