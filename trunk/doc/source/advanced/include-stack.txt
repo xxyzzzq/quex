@@ -79,11 +79,28 @@ last memento put onto it is the first to be popped from it. An example is shown
 in figure :ref:`fig-include-stack-N-example` where a file A includes a file B
 which includes a file C which includes a file D. Whenever a file returns the correct
 memento is unpacked and the lexical analyzer can continue in the including file.
+The mementos are lined up as a list linked by 'parent' pointers as shown
+in :ref:`List of Mementos <fig-memento-queue>`. The parent pointers are required
+to find the state of the including file on return from the included file.
+
+.. _fig-memento-queue:
+
+.. figure:: ../figures/memento-queue.*
+
+   List of Mementos implementing the Include Stack.
+
+.. note::
+
+   The memento class always carries the name of the lexical analyzer plus the
+   string ``Memento``. If for example an analyzer is called ``Tester``, then
+   the memento is called ``TesterMemento``. The name of this class might be
+   needed when iterating over mementos, see :ref:`Infinite Recursion Protection
+   <sec-infinite-recursion>`.
 
 Using the include stack handler all revolves around the following member functions
 of the lexical analyzer:
 
-.. cfunction:: void  include_push(input_handle, [mode [, BufferFillerType[, CharacterCodingName]]]);
+.. cfunction:: void  include_push(input_handle, ...) 
 
    By means of this function the current lexical analyzer state is packed into
    a memento and the analysis of the new file is initialized. This function
@@ -110,7 +127,7 @@ of the lexical analyzer:
       Character encoding name for the converter. By default the same encoding is
       used as in the current file.
         
-.. cfunction:: bool  include_pop();
+.. cfunction:: bool  include_pop()
 
    This function unpacks a memento from the stack and puts the analyzer in the state in
    which it was before the inclusion. This function must be called when an 'end of file'
@@ -200,12 +217,16 @@ whitespace and bug counting:
    memento_pack {
        memento->__whitespace_count = self.whitespace_count;
        memento->__bug_count        = self.bug_count;
+       /* initialize variables */
+       self.whitespace_count = 0;
+       self.bug_count        = 0;
    }
 
 Note, that the variable ``memento`` provides access to the memento object. With
-the ``memento_unpack``-section the actions of unpacking may be extended. Similarly,
-we need to ensure that the saved variables are restored when the analyzer returns 
-from the included file:
+the ``memento_unpack``-section the actions of unpacking may be extended. Before
+the new file is being analyzed the member variables need to be re-initialized.
+When the file analyzis is terminated we need to ensure that the saved variables
+are restored:
 
 .. code-block:: cpp
 
@@ -218,7 +239,100 @@ This is all that needs to be specified for including other files. The directory
 ``demo/005`` contains an example handling include stacks.  Providing a language
 with such the 'include' feature is a key to propper code organization. By means
 of the above mechanisms quex tries to facilitate this task as much as possible.
+There is, however, a pitfall that needs to be considered. This will be the 
+subject of the following section.
 
+.. _sec-infinite-recursion:
+
+Infinite Recursion Protection
+-----------------------------
+
+When a file is included, this happens from the beginning of the file. But, what
+happens if a file includes itself? The answer is that the lexical analyzer
+keeps including this file over and over again, i.e. in hangs in an *infinite
+recursion*. If there is no terminating condition specified by the implementer,
+then at some point in time the system on which it executes runs out of
+resources and terminates after its fancy.
+
+The case that a file includes itself is easily detectable. But the same 
+mentioned scenario evolves if some file in the include chain is included 
+twice, e.g. file A includes B which includes C which includes D which includes E
+which includes F which includes G which includes C. In this case the analyzer
+would loop over the files C, D, E, F, G over and over again.
+
+Quex does not make any assumptions about what is actually included. It may be a
+file in the file system accessed by a ``FILE`` pointer or ``ifstream`` object,
+or it may be a stream coming from a specific port. Nevertheless, the
+solution to the above problem is fairly simple: Detect whether the current
+thing to be included is in the chain that includes it. This can be done by
+iteration over the memento chain. The member ``stream_id`` in figure
+:ref:`fig-memento-queue` is a placeholder for something that identifies an
+input stream. For example let it be a filename. Then, the memento class
+extension must contain its definition
+
+.. code-block:: cpp
+
+   memento {
+       ...
+       std::string   file_name; // ... is more intuitive than 'stream_id'
+       ...
+   }
+
+The lexical analyzer needs to contain the filename of the root
+file, thus the analyzer's class body must be extended.
+
+.. code-block:: cpp
+
+    body {
+        ...
+        std::string   file_name;
+        ...
+    }
+
+Then, at each inclusion it must be iterated over all including files, i.e.
+the preceeding mementos. The first memento, i.e. the root file has a
+parent pointer of ``0x0`` which provides the loop termination condition.
+
+.. code-block:: cpp
+
+    ...
+    MyLexer  my_lexer("example.txt");
+    my_lexer.file_name = "example.txt";
+    ...
+    const std::string   Filename = Token.text();
+    /* Detect infinite recursion */
+    for(MyLexerMemento* iterator = my_analyzer._memento_parent;
+        iterator != 0x0;
+        iterator = iterator->parent ) {
+        /* Check wether the current file name already appears in the chain */
+        if( Filename == iterator->file_name ) {
+            REACTION_ON_INFINITE_RECURSION(Filename);
+        }
+    }
+    /* Open the file and include */
+    FILE*  fh = open(Filename.c_str(), "rb");
+    if( fh == NULL ) REACTION_ON_FILE_NOT_FOUNT(Filename);
+    my_analyzer.include_push(fh);
+    /* Set the file name **after** the include_push() ! */
+    my_analyzer.file_name = Filename;
+    ...
+
+Once, the check is done, the file can be included as usual. But the 
+``memento_pack`` must be extended.
+
+.. code-block:: cpp
+
+   memento_pack {
+       ...
+       memento->file_name = self.file_name;
+       ...
+   }
+
+   memento_unpack {
+       ...
+       memento->file_name = self.file_name;
+       ...
+   }
 
 .. rubric:: Footnotes
 
@@ -229,4 +343,5 @@ of the above mechanisms quex tries to facilitate this task as much as possible.
 
 
 .. [#f2] The name memento shall pinpoint that what is implemented
-         here is the so called 'Memento Pattern'. See also <<cite: DesignPatterns>>.
+         here is the so called 'Memento Pattern'. See also 
+         <<cite: DesignPatterns>>.
