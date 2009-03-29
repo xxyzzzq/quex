@@ -1,53 +1,59 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DNDEBUG   ##
+make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
-IDENTIFIER	Avant
-IDENTIFIER	la
-IDENTIFIER	premiere
-IDENTIFIER	'include'
-INCLUDE	
+1:  IDENTIFIER	Avant
+1:  IDENTIFIER	la
+1:  IDENTIFIER	premiere
+1:  IDENTIFIER	'include'
+2:  INCLUDE	
 IDENTIFIER	auxiliary/hello.txt
 >> including: auxiliary/hello.txt
-INCLUDE	
-IDENTIFIER	auxiliary/bonjour.txt
->> including: auxiliary/bonjour.txt
-IDENTIFIER	Bonjour
-IDENTIFIER	le
-IDENTIFIER	monde
-INCLUDE	
-IDENTIFIER	auxiliary/moin.txt
->> including: auxiliary/moin.txt
-IDENTIFIER	Moin
-IDENTIFIER	Moin
-INCLUDE	
-IDENTIFIER	auxiliary/hallo.txt
->> including: auxiliary/hallo.txt
-IDENTIFIER	Hallo
-<TERMINATION>	
+    1:  INCLUDE	
+    IDENTIFIER	auxiliary/bonjour.txt
+    >> including: auxiliary/bonjour.txt
+        1:  IDENTIFIER	Bonjour
+        1:  IDENTIFIER	le
+        1:  IDENTIFIER	monde
+        2:  INCLUDE	
+        IDENTIFIER	auxiliary/moin.txt
+        >> including: auxiliary/moin.txt
+            1:  IDENTIFIER	Moin
+            1:  IDENTIFIER	Moin
+            2:  INCLUDE	
+            IDENTIFIER	auxiliary/hallo.txt
+            >> including: auxiliary/hallo.txt
+                1:  IDENTIFIER	Hallo
+                Per File Letter Count = 5
+                2:  <TERMINATION>	
+            << return from include
+            3:  IDENTIFIER	Tschuess
+            Per File Letter Count = 42
+            4:  <TERMINATION>	
+        << return from include
+        3:  INCLUDE	
+        IDENTIFIER	auxiliary/hallo.txt
+        >> including: auxiliary/hallo.txt
+            1:  IDENTIFIER	Hallo
+            Per File Letter Count = 5
+            2:  <TERMINATION>	
+        << return from include
+        Per File Letter Count = 65
+        5:  <TERMINATION>	
+    << return from include
+    2:  IDENTIFIER	Hello
+    2:  IDENTIFIER	World
+    Per File Letter Count = 38
+    4:  <TERMINATION>	
 << return from include
-IDENTIFIER	Tschuess
-<TERMINATION>	
-<< return from include
-INCLUDE	
-IDENTIFIER	auxiliary/hallo.txt
->> including: auxiliary/hallo.txt
-IDENTIFIER	Hallo
-<TERMINATION>	
-<< return from include
-<TERMINATION>	
-<< return from include
-IDENTIFIER	Hello
-IDENTIFIER	World
-<TERMINATION>	
-<< return from include
-IDENTIFIER	Apres
-IDENTIFIER	la
-IDENTIFIER	premiere
-IDENTIFIER	'include'
-<TERMINATION>	
+3:  IDENTIFIER	Apres
+3:  IDENTIFIER	la
+3:  IDENTIFIER	premiere
+3:  IDENTIFIER	'include'
+Per File Letter Count = 74
+4:  <TERMINATION>	
 | [END] number of token = 29
 `------------------------------------------------------------------------------------
 cleaning ...

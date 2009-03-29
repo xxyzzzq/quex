@@ -1,16 +1,18 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DNDEBUG   ##
+make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
-INCLUDE	
+1:  INCLUDE	
 IDENTIFIER	auxiliary/hallo.txt
 >> including: auxiliary/hallo.txt
-IDENTIFIER	Hallo
-<TERMINATION>	
+    1:  IDENTIFIER	Hallo
+    Per File Letter Count = 5
+    2:  <TERMINATION>	
 << return from include
-<TERMINATION>	
+Per File Letter Count = 26
+2:  <TERMINATION>	
 | [END] number of token = 4
 `------------------------------------------------------------------------------------
 cleaning ...

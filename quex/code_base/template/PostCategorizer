@@ -2,6 +2,8 @@
 #ifndef __INCLUDE_GUARD__QUEX__POST_CATEGORIZER
 #define __INCLUDE_GUARD__QUEX__POST_CATEGORIZER
 
+#include<map>
+
 namespace quex { 
     //________________________________________________________________________________
     // Post Categorization of Lexemes:

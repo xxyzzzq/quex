@@ -9,6 +9,9 @@ using namespace std;
 
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
+string space(int N) 
+{ string tmp; for(int i=0; i<N; ++i) tmp += "    "; return tmp; }
+
 int 
 main(int argc, char** argv) 
 {        
@@ -33,6 +36,7 @@ main(int argc, char** argv)
 
         // (*) print out token information
         //     -- name of the token
+        cout << space(qlex.include_depth) << qlex.line_number() << ":  ";
         cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
 
         switch( Token.type_id() ) {
@@ -42,29 +46,29 @@ main(int argc, char** argv)
         case QUEX_TKN_INCLUDE: 
             {
                 qlex.receive(&Token);
-                cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
+                cout << space(qlex.include_depth) << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
                 if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
                     continue_lexing_f = false;
-                    break;
-                }
-                else if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
-                    cout << "found 'include' without a subsequent filename. hm?\n";
+                    cout << space(qlex.include_depth) << "found 'include' without a subsequent filename. hm?\n";
                     break;
                 }
                
-                cout << ">> including: " << Token.text().c_str() << endl;
+                cout << space(qlex.include_depth) << ">> including: " << Token.text().c_str() << endl;
                 FILE* fh = fopen((const char*)(Token.text().c_str()), "r");
                 if( fh == 0x0 ) {
-                    cout << "file not found\n";
+                    cout << space(qlex.include_depth) << "file not found\n";
                     return 0;
                 }
                 qlex.include_push(fh);
                 break;
-                
             }
+
         case QUEX_TKN_TERMINATION:
-            if( qlex.include_pop() == false ) continue_lexing_f = false;
-            else                              cout << "<< return from include\n";
+            if( qlex.include_pop() == false ) {
+                continue_lexing_f = false;
+            } else {
+                cout << space(qlex.include_depth) << "<< return from include\n";
+            }
             break;
         }
 

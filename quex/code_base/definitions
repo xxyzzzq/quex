@@ -7,7 +7,7 @@
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
 #ifndef    QUEX_TYPE_TOKEN_ID
-#   define QUEX_TYPE_TOKEN_ID  uint32_t
+#   define QUEX_TYPE_TOKEN_ID    uint32_t
 #endif
 #ifndef    QUEX_TYPE_TOKEN
 #   define QUEX_TYPE_TOKEN  quex::Token
@@ -17,6 +17,30 @@
 #endif
 #ifndef    __QUEX_TOKEN_ID_TERMINATION 
 #   define __QUEX_TOKEN_ID_TERMINATION   (QUEX_TYPE_TOKEN_ID)(0)
+#endif
+
+/* Tokens may be 'stamped' with the line an column number automatically.
+ * This happens by means of the option 
+ *      
+ *       QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+ *
+ * It is active by default only for queue token policies, because after
+ * a call to .receive(), the lexical analyzer maintains only the position
+ * of the last token in the queue. The positions of other tokens would
+ * not be accessible once they are in the queue. 
+ * 
+ * The token policy 'users_token' only communicates one token at a time
+ * and the line and column numbers in the lexical analyzer are those
+ * of the last token. Thus, in this case the tokens do not need to be 
+ * stamped with the position in the file.                                */
+#ifndef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+#    ifndef    QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#       define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#    endif
+#else
+#    ifndef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#        undef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#    endif
 #endif
 
 #ifdef QUEX_SETTING_BUFFER_MIN_FALLBACK_N 

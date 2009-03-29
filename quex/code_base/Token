@@ -63,11 +63,11 @@ namespace quex {
 
         // (*) member acces
         //     -- read
-        const QUEX_TYPE_TOKEN_ID  type_id() const      { return _id; }
+        QUEX_TYPE_TOKEN_ID        type_id() const      { return _id; }
         const std::string&        type_id_name() const { return map_id_to_name(_id); }
         const __string&           text() const         { return _text; }
         const std::string         utf8_text() const;
-        const int                 number()             { return _number; }
+        int                       number()             { return _number; }
 
         //     -- write 
         void    set(const Token&);
@@ -77,6 +77,23 @@ namespace quex {
 
     private:
         void __copy(const Token& That);
+
+#   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    private:
+        size_t  _line_n;
+    public:
+        size_t  line_number() const                 { return _line_n; }
+        void    set_line_number(const size_t Value) { _line_n = Value; }
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    private:
+        size_t  _column_n;
+    public:
+        size_t  column_number() const                 { return _column_n; }
+        void    set_column_number(const size_t Value) { _column_n = Value; }
+#       endif
+#   endif
     };
 
     inline void 
