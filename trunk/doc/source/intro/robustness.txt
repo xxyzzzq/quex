@@ -19,9 +19,8 @@ reports that quex has gained its actual level of maturity.
 
     **Please, do not hesitate to report bugs!** 
     
-    The few minutes spend to submit a bug may help to avoid to improve the
-    quality for many other users or pinpoint to issues that were overlooked by
-    the author.
+    The few minutes spend to submit a bug may help to improve the quality for
+    many other users or pinpoint to new interesting issues.
 
 Released versions of quex come with a file ``unit_test_results.txt`` that
 contains descriptions of all performed tests. It allows the user to overview the
