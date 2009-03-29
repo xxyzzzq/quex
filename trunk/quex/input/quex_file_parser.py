@@ -161,6 +161,7 @@ def parse_section(fh):
         else:
             error_msg("sequence '%s' not recognized as valid keyword in this context\n" % word + \
                       "use: 'mode', 'header', 'body', 'init', 'define', 'token' or 'start'", fh)
+
     except EndOfStreamException:
         fh.seek(position)
         error_msg("End of file reached while parsing '%s' section" % word, fh)
@@ -216,6 +217,23 @@ def parse_pattern_name_definitions(fh):
                 lexer_mode.PatternShorthand(pattern_name, state_machine, 
                                             fh.name, get_current_line_info_number(fh),
                                             regular_expression_obj)
+
+def parse_initial_mode_definition(fh):
+    # NOTE: Catching of EOF happens in caller: parse_section(...)
+
+    verify_next_word(fh, "=")
+    # specify the name of the intial lexical analyser mode
+    skip_whitespace(fh)
+    mode_name = read_identifier(fh)
+    verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
+
+    if lexer_mode.initial_mode.get_code() != "":
+        error_msg("start mode defined more than once!", fh, DontExitF=True)
+        error_msg("previously defined here",
+                  lexer_mode.initial_mode.filename,
+                  lexer_mode.initial_mode.line_n)
+        
+    lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh), None)
 
 def parse_token_id_definitions(fh):
     """Parses token definitions of the form:
@@ -368,23 +386,6 @@ def parse_token_type_member_definition(fh):
                       member_name, fh)
 
     return TokenTypeMember(member_name, type_name, array_element_n)
-
-def parse_initial_mode_definition(fh):
-    # NOTE: Catching of EOF happens in caller: parse_section(...)
-
-    verify_next_word(fh, "=")
-    # specify the name of the intial lexical analyser mode
-    skip_whitespace(fh)
-    mode_name = read_identifier(fh)
-    verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
-
-    if lexer_mode.initial_mode.get_code() != "":
-        error_msg("start mode defined more than once!", fh, DontExitF=True)
-        error_msg("previously defined here",
-                  lexer_mode.initial_mode.filename,
-                  lexer_mode.initial_mode.line_n)
-        
-    lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh), None)
 
 def __check(fh, Char):
     position = fh.tell()

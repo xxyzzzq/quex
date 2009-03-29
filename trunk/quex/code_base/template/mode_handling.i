@@ -4,7 +4,7 @@ inline QuexMode&
 CLASS::mode() 
 { return *__current_mode_p; }
 
-inline const int
+inline int
 CLASS::mode_id() const
 { return __current_mode_p->id; }
 
@@ -97,7 +97,7 @@ CLASS::map_mode_id_to_mode(const int ModeID)
     return *(mode_db[ModeID]); 
 }
 
-inline const int  
+inline int  
 CLASS::map_mode_to_mode_id(const QuexMode& Mode) const
 { return Mode.id; }
 }

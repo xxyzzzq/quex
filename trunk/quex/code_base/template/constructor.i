@@ -39,9 +39,6 @@ CLASS::CLASS()
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    , include_stack(this)
-#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -61,9 +58,6 @@ CLASS::CLASS(const std::string&       Filename,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    , include_stack(this)
-#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -93,9 +87,6 @@ CLASS::CLASS(std::istream*            p_input_stream,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    , include_stack(this)
-#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -117,9 +108,6 @@ CLASS::CLASS(std::wistream*           p_input_stream,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    , include_stack(this)
-#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -142,9 +130,6 @@ CLASS::CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    , include_stack(this)
-#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif
@@ -165,9 +150,6 @@ CLASS::CLASS(std::FILE* fh,
 : 
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    , include_stack(this)
-#   endif
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     , accumulator(this)
 #   endif

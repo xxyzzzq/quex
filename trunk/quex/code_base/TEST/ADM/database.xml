@@ -1,8 +1,8 @@
-<test-database execution-time-sec="0.03" date="Wed Mar 25 23:18:15 2009">
+<test-database execution-time-sec="0.03" date="Sun Mar 29 07:50:54 2009">
     <last-used-diff-display-program name=""/>
     <group name="StrangeStream">
-        <test title="wchar_t stream based." make-required="True" time-sum-sec="0.02"> 
-            <application file-name="strange_wstream.exe" info-request-time="1238019495L"/>
+        <test title="char stream based." make-required="True" time-sum-sec="0.01"> 
+            <application file-name="strange_stream.exe" info-request-time="1238305854L"/>
             <make-procedure success="True" />
             <choice-list number="4">
                <choice name="2" result="OK" time-sec="0.00" crc="2006234070"/>
@@ -11,8 +11,8 @@
                <choice name="5" result="OK" time-sec="0.00" crc="252659001"/>
             </choice-list>
         </test>
-        <test title="char stream based." make-required="True" time-sum-sec="0.01"> 
-            <application file-name="strange_stream.exe" info-request-time="1238019495L"/>
+        <test title="wchar_t stream based." make-required="True" time-sum-sec="0.01"> 
+            <application file-name="strange_wstream.exe" info-request-time="1238305854L"/>
             <make-procedure success="True" />
             <choice-list number="4">
                <choice name="2" result="OK" time-sec="0.00" crc="2006234070"/>
