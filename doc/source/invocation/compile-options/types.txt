@@ -20,3 +20,4 @@ Types
 
    The character type can also be specified via the command line option ``-b``, 
    or ``--bytes-per-ucs-code-point``.
+
