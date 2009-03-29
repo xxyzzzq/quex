@@ -105,7 +105,7 @@ for the given section-name. The available sections are the following:
    the additional members mentioned in the ``body`` section.
 
 Quex supports the inclusion of other files or streams during analyzis. This
-is done by means of a include stack handler :ref:`sec-include-stack`. It writes the
+is done by means of a include stack handler :ref:`Include Stack <sec-include-stack>`. It writes the
 relevant state information into a so called *memento* [#f2]_ when it dives
 into a file and restores its state from it when it comes back. The following
 sections allow to make additions to the memento scheme of the include handler:
@@ -148,3 +148,4 @@ analysis can be specified via
          expressions. However, some additions where made to facilitate the treatment
          of unicode properties (<<>>).
 
+.. [#f2] See 'Design Patterns' (<<>>).
