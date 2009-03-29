@@ -14,3 +14,7 @@ the optimization of memory consumption and analysis speed.
 
    token-policies.txt
    include-stack.txt
+   indentation-blocks.txt
+   line-column-number-counting.txt
+   derived-class.txt
+   token-class.txt

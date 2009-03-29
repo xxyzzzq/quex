@@ -1,0 +1,143 @@
+.. _sec-advanced-indentation-blocks:
+
+Indentation Blocks
+==================
+
+With the rise of the Python programming language, the use of indentation as the
+scope delimiter has become popular. Indeed, it may be the most efficient method
+to delimit scope with the least amount of additional characters provides a
+convenient mechanism to handle indentations which runs quasi-parallel to the
+pattern matching: indentation events. As mentioned in
+:ref:`sec-usage-modes-characteristics-event-handlers` the user may define the
+event handler ``on_indentation`` to handle those events.
+
+Figure :ref:`Triggering indentation events <fig-indentation-events>`  displays
+an example of the principle of indentation events.  Whenever the lexical
+analyser reaches the first non-whitespace in a line an indentation event,
+indicated as a little star in the figure, is triggered. The lexical
+analyser engine then calls a user defined indentation handler. The
+numbers at the indentation events indicate the number of characters
+that the indentation spans.  
+
+.. _fig-indentation-events:
+
+.. figure:: ../figures/indentation.*
+
+   Triggering indentation events.
+
+Note that it is not trivial to express indentation in terms of pattern action
+pairs based solely on regular expressions. It is not enough to define a pattern
+such as::
+
+          P_INDENTATION_CATCHER    "\n"[ ]*
+
+That is a newline followed by whitespace. Imagine, one introduces a comment
+sign such as the traditional # for comment until newline. The comment eating
+pattern would be at first glance::
+
+          P_COMMENT_EATER    "#"[^\n]*\n
+
+That is a # followed by anything but newline and then one newline. The action
+related to this pattern would have to put pack the last newline. Otherwise the
+indentation catcher which starts with a newline can never trigger. In this
+particular case, this problem can be solved by deleting the last newline from
+the comment eater pattern, knowing that after as many not-newline as possible
+there must be a newline, i.e.
+
+          P_COMMENT_EATER    "#"[^\n]*
+
+The last newline is then eaten by the indentation catcher. However, the main
+problem remains: 
+
+.. note:: 
+
+   A design without indentation events, forces the pattern actions to know
+   about each other.  Otherwise, they might not function propperly together! In
+   an environment of many different modes which are additionally related by
+   inheritance, it is potentially difficult to guarantee that all pattern
+   actions avoid interferences with some overal concepts. 
+
+Similarly, catching indentation with pre-condition newline plus whitespace,
+i.e. ``^[ \t]*`` is fragile, in the sense that another pattern that
+contains newline plus whitespace might hinder this pattern from triggering.
+In a lexical analyzer with dozens or hundreds of patterns this becomes
+quickly unmanageable. Errors that arise from patterns defined somewhere
+else are very hard to find and require a lot of insight into the actual
+process of lexical analysis. Using the on_indentation event handler ends up
+in a much clearer and safer design. For more information about the
+pre-condition newline pitfall see section :ref:`sec-formal-patterns-context-dependent-pitfalls`.
+
+The Indentation Event Handler
+-----------------------------
+
+The event handler ``on_indentation`` is called right before the pattern action
+is executed that belongs to the matching pattern that includes the first
+non-whitespace in the line. Inside the event handler, in addition to the
+``self`` reference of the analyzer, the variable ``Indentation`` is available.
+This variable carries the number of spaces from the last newline to the first
+non-whitespace.  The indentation handler needs then keep track of indentation
+blocks and send appropriate tokens of the ``INDENT``/``DEDENT`` style.  
+
+Outside the indentation handler (such as in pattern actions) 
+the current indentation can be accessed via the member function
+
+.. cfunction:: size_t    indentation()
+
+The indentation event can be disabled, but only for one time ahead.
+This is achieved with ``self``'s member function::
+
+    void  disable_next_indentation_event();
+
+It disables the call of ``on_indentation`` for the next time an indentation
+event occurs. However, after the next prevented indentation handling it is
+enabled again. This comes handy if one needs to have a line-prolonger, such as
+a backslash in python and many shell script languages, or the underscore in
+VisualBasic. The following pattern-action pair would prevent the triggering of
+an indentation event if a line ends with backslash.
+
+.. code-block:: cpp
+
+    mode INDENTICUS {
+        ...
+        "\\\n" {
+                  self.disable_next_indentation_event();
+               }
+        ...
+    }
+
+
+Caveat
+------
+
+If a pattern contains more than one newline then only the indentation
+event concerning the last newline is triggered! Imagine a pattern such as
+in the following example::
+
+     mode INDENTICUS { 
+        " "*"hello"[\n]+" "*"world"[\n]+" "*"how are you?" => TKN_STRANGE;
+     }
+
+then the following pattern would match::
+
+     hello
+   world
+        how are you?
+
+If this matches, then the lines of hello and world do not trigger an
+indentation event. So, when dealing with indentation based scoping such strange
+things are best avoided.  If the line after the concatinated line does
+not end with a backslash the event handler is automatically active and
+indentation handling is in place. Lets turn this into a warning.
+
+.. warning::
+
+   Avoid having multiple non-whitespace sub patterns (such as keywords or
+   identifiers) concatinated by newline-containing sub-patterns in 
+   *one single pattern*. Otherwise only the last transition from whitespace 
+   to non-whitespace inside the pattern triggers an indentation event.
+
+The author of this text hopes that this caveat is only of theoretical interest.
+It is hard to imagine a case where such a construct would actually make sense.
+In any case, before implementing an indentation based analyzer it is advisable
+to have a look at the demo/002 directory for a functioning example.
+
