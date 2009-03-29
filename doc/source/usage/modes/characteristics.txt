@@ -127,6 +127,7 @@ The possible options for modes to be specifiedare the following.
 
    This type of skipper is still in the implementation pipeline and not yet implemented.
 
+.. _sec-usage-modes-characteristics-event-handlers:
 
 Event Handlers
 --------------
@@ -175,37 +176,8 @@ in the event handler definition. The list of event handlers is the following:
     event handler. Note, that it is only executed at the moment where a pattern matches 
     that eats part (or all) of the concerned part of the stream. This event handler 
     facilitates the definition of languages that rely on indentation. ``Indentation``
-    provides the number of whitespace since the beginning of the line.
-
-    This event handler is called right before the pattern action is executed
-    that belongs to the matched pattern. Inside the event handler, in addition
-    to the self reference, the following variable is available:
-
-    Note, that the indentation event can be disabled, but only for next 
-    indentation event. Using the member function::
-
-        void  disable_next_indentation_event();
-
-    disables the indentation event for the next time. However, after the
-    next prevented indentation handling it is enabled again. This comes
-    handy if one needs to have a line-prolonger, such as a backslash in
-    python and many shell script languages, or the underscore in
-    VisualBasic. The following mode action pair would prevent the
-    subsequent line to be considered for indentation handling:
-
-    .. code-block:: cpp
-
-        mode SOMETHING {
-           ...
-           {P_BACKSLASH_FOLLOWED_BY_NEWLINE} {
-                self.disable_next_indentation_event();
-           }
-           ...
-        }
-
-    If the line after the concatinated line does not end with a backslash the 
-    event handler is automatically active and indentation handling is in place.
-
+    provides the number of whitespace since the beginning of the line. Please,
+    refer to section :ref:`sec-advanced-indentation-blocks` for further information.
 
 .. data:: on_failure
 
