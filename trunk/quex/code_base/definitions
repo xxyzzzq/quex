@@ -34,11 +34,11 @@
  * of the last token. Thus, in this case the tokens do not need to be 
  * stamped with the position in the file.                                */
 #ifndef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
-#    ifndef    QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
+#    ifndef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #       define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #    endif
 #else
-#    ifndef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#    ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #        undef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #    endif
 #endif

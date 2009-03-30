@@ -55,6 +55,7 @@ CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
      -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \
 	 -DNDEBUG \
      -DQUEX_OPTION_ASSERTS_DISABLED	\
+	 -DQUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN \
 	 -DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED \
 	 -DQUEX_BENCHMARK_SERIOUS \
      #-DQUEX_SETTING_BUFFER_SIZE=64 \
@@ -102,9 +103,10 @@ lexer-flex: lex.yy.c
 
 $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 	quex -i $(MODE_FILES) --engine $(ENGINE_NAME) \
-		 --token-offset 3 --token-policy users_token \
+		 --token-offset 3 \
 		 --no-string-accumulator --token-prefix TKN_ \
          --foreign-token-id-file token-ids.h
+# --token-policy users_token \
 
 lex.yy.c: c.lex
 	flex c.lex 
