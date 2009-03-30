@@ -9,8 +9,8 @@ using namespace std;
 
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
-void print(quex::STLexer& qlex, quex::Token& Token, bool TextF = false);
-void print(quex::STLexer& qlex, const char* Str1, const char* Str2=0x0);
+void    print(quex::STLexer& qlex, quex::Token& Token, bool TextF = false);
+void    print(quex::STLexer& qlex, const char* Str1, const char* Str2=0x0);
 
 int 
 main(int argc, char** argv) 
@@ -23,15 +23,15 @@ main(int argc, char** argv)
     }
     else if( strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Include Stack: Misc Scenarios;\n");
-        printf("CHOICES: 1;");
+        printf("CHOICES: 1, 2, 3, 4, 5, 20;");
         return 0;
     }
 
-    quex::tiny_lexer  qlex(argv[1]);
+    string            Filename(argv[1]);
+    quex::tiny_lexer  qlex(string(Filename + ".txt").c_str());
 
     cout << "[START]\n";
 
-    int  number_of_tokens  = 0;
     bool continue_lexing_f = true;
 
     do {
@@ -70,10 +70,6 @@ main(int argc, char** argv)
             break;
         }
 
-
-        ++number_of_tokens;
-
-        /* (*) check against 'termination' */
     } while( continue_lexing_f );
 
     cout << "[END]\n";
