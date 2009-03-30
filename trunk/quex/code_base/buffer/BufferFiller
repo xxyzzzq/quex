@@ -54,7 +54,7 @@ namespace quex {
                                       size_t       (*tell_character_index)(QuexBufferFiller*),
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
-                                                                      QUEX_TYPE_CHARACTER* buffer, const size_t),
+                                                                      QUEX_TYPE_CHARACTER*, const size_t),
                                       void         (*destroy)(QuexBufferFiller*));
     QUEX_INLINE void    QuexBufferFiller_destroy(QuexBufferFiller*); 
 

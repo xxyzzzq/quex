@@ -1,4 +1,4 @@
-// -*- C++ -*-
+// -*- C++ -*- vim: set syntax=cpp: 
 
 header {
 extern QUEX_TYPE_CHARACTER  EmptyLexeme;
@@ -20,14 +20,14 @@ memento {
 
 memento_pack {
     memento->file_name = self.file_name;
-    for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
+    for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
     std::cout << "Memento: Pack " << self.file_name << std::endl;
     self.include_depth += 1;
 }
 
 memento_unpack {
     self.file_name = memento->file_name;
-    for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
+    for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
     std::cout << "Memento: Unpack " << self.file_name << std::endl;
     self.include_depth -= 1;
 }
@@ -42,19 +42,13 @@ token {
 
 mode ONE_AND_ONLY
 {
-    <<EOF>> {
-	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
-        for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
-        std::cout << "Per File Letter Count = " << self.letter_count << std::endl;
-        RETURN;
-    }
-
+    <<EOF>>     => QUEX_TKN_TERMINATION(&EmptyLexeme);
     "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
     ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
     //
-    "include"   { self.send(QUEX_TKN_INCLUDE, &EmptyLexeme); self.letter_count += strlen((char*)Lexeme); }
+    "include"   => QUEX_TKN_INCLUDE(&EmptyLexeme); 
     //
-    ([_a-zA-Z]|("/"|"."|"'"))+  { self.send(QUEX_TKN_IDENTIFIER, Lexeme); self.letter_count += strlen((char*)Lexeme); }
+    ([_a-zA-Z]|("/"|"."|"'"))+  => QUEX_TKN_IDENTIFIER(Lexeme); 
     [ \t\r\n]+                  { }
 }
 

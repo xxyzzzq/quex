@@ -104,7 +104,7 @@ namespace quex {
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
         me->_memory._end_of_file_p = (Memory == 0x0) ? me->_memory._back
-                             :                 me->_memory._front + 1 + ContentSize; 
+                                     :                 me->_memory._front + 1 + ContentSize; 
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);

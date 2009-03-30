@@ -68,7 +68,6 @@ namespace quex {
             return Result * CharacterSize;
         }
     };
-
 #   define QUEX_INPUT_POLICY_SEEK(IH, IH_TYPE, POS) \
            InputPolicy<IH_TYPE*>::seek((IH), (POS))
 #   define QUEX_INPUT_POLICY_TELL(IH, IH_TYPE) \

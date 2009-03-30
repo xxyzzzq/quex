@@ -108,38 +108,14 @@ def parse_section(fh):
         #     -- 'define { ... }' => define patterns shorthands such as IDENTIFIER for [a-z]+
         #     -- 'token { ... }'  => define token ids
         #
-        if word == "start":
+        if word in lexer_mode.fragment_db.keys():
+            element_name = lexer_mode.fragment_db[word]
+            fragment     = code_fragment.parse(fh, word, AllowBriefTokenSenderF=False)        
+            lexer_mode.__dict__[element_name] = fragment
+            return
+
+        elif word == "start":
             parse_initial_mode_definition(fh)
-            return
-        
-        elif word == "header":
-            fragment = code_fragment.parse(fh, "header", AllowBriefTokenSenderF=False)        
-            lexer_mode.header = fragment
-            return
-
-        elif word == "body":
-            fragment = code_fragment.parse(fh, "body", AllowBriefTokenSenderF=False)        
-            lexer_mode.class_body_extension = fragment
-            return
-
-        elif word == "init":
-            fragment = code_fragment.parse(fh, "init", AllowBriefTokenSenderF=False)
-            lexer_mode.class_constructor_extension = fragment
-            return
-
-        elif word == "memento":
-            fragment = code_fragment.parse(fh, "memento", AllowBriefTokenSenderF=False)
-            lexer_mode.memento_class_extension = fragment
-            return
-
-        elif word == "memento_pack":
-            fragment = code_fragment.parse(fh, "memento_pack", AllowBriefTokenSenderF=False)
-            lexer_mode.memento_pack_extension = fragment
-            return
-
-        elif word == "memento_unpack":
-            fragment = code_fragment.parse(fh, "memento_unpack", AllowBriefTokenSenderF=False)
-            lexer_mode.memento_unpack_extension = fragment
             return
             
         elif word == "define":
