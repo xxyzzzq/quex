@@ -1,0 +1,51 @@
+// -*- C++ -*-
+
+header {
+extern QUEX_TYPE_CHARACTER  EmptyLexeme;
+}
+
+body {
+    std::string file_name;
+}
+
+
+memento {
+    std::string file_name;
+}
+
+memento_pack {
+    memento->file_name = self.file_name;
+}
+
+memento_unpack {
+    self.file_name = memento->file_name;
+}
+
+token {
+   INCLUDE
+   IDENTIFIER
+   BRACKET_OPEN
+   BRACKET_CLOSE
+   NUMBER
+}
+
+mode ONE_AND_ONLY
+{
+    <<EOF>> {
+	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
+        for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
+        std::cout << "Per File Letter Count = " << self.letter_count << std::endl;
+        RETURN;
+    }
+
+    "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
+    ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
+    //
+    "include"   { self.send(QUEX_TKN_INCLUDE, &EmptyLexeme); self.letter_count += strlen((char*)Lexeme); }
+    //
+    ([_a-zA-Z]|("/"|"."|"'"))+  { self.send(QUEX_TKN_IDENTIFIER, Lexeme); self.letter_count += strlen((char*)Lexeme); }
+    [ \t\r\n]+                  { }
+}
+
+
+
