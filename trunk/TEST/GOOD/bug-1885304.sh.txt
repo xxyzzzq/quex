@@ -216,9 +216,6 @@ namespace quex {
 #ifdef QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/template/PostCategorizer>
 #endif
-#ifdef QUEX_OPTION_INCLUDE_STACK
-#   include <quex/code_base/template/IncludeStack>
-#endif
 
 // START:
 
@@ -269,9 +266,9 @@ namespace quex {
         void                  buffer_prepare(const size_t CharacterN);
         QUEX_TYPE_CHARACTER*  buffer_begin();
         QUEX_TYPE_CHARACTER*  buffer_end();
-        const size_t          buffer_size();
+        size_t                buffer_size();
         QUEX_TYPE_CHARACTER*  buffer_text_end();
-        const size_t          buffer_distance_to_text_end();
+        size_t                buffer_distance_to_text_end();
         
         // -- token stream: read next token
         void  get_token() 
@@ -295,7 +292,7 @@ namespace quex {
         //
         //     -- modes: read access
         QuexMode&     mode();
-        const int     mode_id() const;
+        int           mode_id() const;
         const char*   mode_name() const;
         //
         //     -- modes: changing lexical analysis mode
@@ -313,7 +310,7 @@ namespace quex {
         //
         //     -- map: mode id to mode and vice versa
         QuexMode&   map_mode_id_to_mode(const int        ModeID);       
-        const int   map_mode_to_mode_id(const QuexMode& Mode) const;
+        int         map_mode_to_mode_id(const QuexMode& Mode) const;
 
         // (*) Token sending
         void        send(const Token& That);
@@ -401,15 +398,6 @@ namespace quex {
         // (*) Sometimes we just want to tell the filename, ... for destructor to close ..
         FILE*    __file_handle_allocated_by_constructor;
 
-    public:
-#       ifdef  QUEX_OPTION_INCLUDE_STACK
-        IncludeStack    include_stack;
-        struct SimpleMemento_tag*  _parent_memento;
-#       endif 
-        //      -- include events (a file is included)
-        void virtual on_include(const char* Filename) {}
-        void virtual on_include_exit() {}
-
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
     public:
         // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
@@ -422,7 +410,6 @@ namespace quex {
         PostCategorizer    post_categorizer;
 #       endif
 
-    private:
         // (*) All Modes are Friends _____________________________________________________
         friend     void Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
@@ -436,11 +423,28 @@ namespace quex {
 
         // (*) User's Lexer Class Body Extenstion ________________________________________
 
-#       ifdef QUEX_OPTION_INCLUDE_STACK
-        friend class       IncludeStack;
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    private:
+        struct SimpleMemento_tag*  _parent_memento;
+        //      -- include events (a file is included)
         friend struct SimpleMemento_tag*  SimpleMemento_pack(Simple*);
         friend void  SimpleMemento_unpack(struct SimpleMemento_tag*, Simple*);
-#       endif
+
+    protected:
+        void virtual on_include(const char* Filename) {}
+        void virtual on_include_exit() {}
+
+    public:
+        template <class InputHandle> void  include_push(InputHandle*             new_input_handle_p, 
+                                                        const QuexMode&          mode, 
+                                                        const char*              IANA_CodingName = 0x0);
+        template <class InputHandle> void  include_push(InputHandle*             new_input_handle_p, 
+                                                        const int                MODE_ID         = -1, 
+                                                        const char*              IANA_CodingName = 0x0);
+        bool                               include_pop();
+
+#   endif
 
     private:
         void __debug_print_transition(QuexMode* Source, QuexMode* Target);
@@ -460,24 +464,6 @@ namespace quex {
                                                                 const char* IANA_InputCodingName);
     };
 
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    typedef struct SimpleMemento_tag {
-        QuexAnalyser analyser_core;
-        CounterType  counter;
-        QuexMode*    current_mode_p;
-#       if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        struct {
-            QUEX_TYPE_TOKEN*    remainder;
-            size_t              remaining_n;
-        } token_queue;
-#       endif
-
-        struct SimpleMemento_tag*  parent;
-
-
-    } SimpleMemento;
-#   endif
- 
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
                               QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
@@ -571,25 +557,43 @@ namespace quex {
     { 
     }
 
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    typedef struct SimpleMemento_tag {
+        QuexAnalyser analyser_core;
+        CounterType  counter;
+        QuexMode*    current_mode_p;
+#       if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        struct {
+            QUEX_TYPE_TOKEN*    remainder;
+            size_t              remaining_n;
+        } token_queue;
+#       endif
+
+        struct SimpleMemento_tag*  parent;
+
+
+    } SimpleMemento;
+ 
     QUEX_INLINE SimpleMemento*
     SimpleMemento_pack(CLASS* lexer)
     {
+        CLASS& self = *lexer;
         SimpleMemento* memento = MemoryManager_SimpleMemento_allocate();
 
-        memento->parent         = lexer->_parent_memento;
+        memento->parent         = self._parent_memento;
         memento->analyser_core  = *((QuexAnalyser*)lexer);
-        memento->counter        = lexer->counter;
-        memento->current_mode_p = lexer->__current_mode_p;
+        memento->counter        = self.counter;
+        memento->current_mode_p = self.__current_mode_p;
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        memento->token_queue.remaining_n =   lexer->_token_queue.write_iterator 
-                                           - lexer->_token_queue.read_iterator;
+        memento->token_queue.remaining_n =   self._token_queue.write_iterator 
+                                           - self._token_queue.read_iterator;
         if( memento->token_queue.remaining_n != 0 ) {
             if(   MemoryManager_TokenArray_allocate(&memento->token_queue.remainder, memento->token_queue.remaining_n)
                == false ) {
                 QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
             }
             memcpy(memento->token_queue.remainder, 
-                   lexer->_token_queue.read_iterator,
+                   self._token_queue.read_iterator,
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
         }
 #       endif
@@ -599,26 +603,26 @@ namespace quex {
         return memento;
     }
 
-#   ifdef QUEX_OPTION_INCLUDE_STACK
     QUEX_INLINE void
     SimpleMemento_unpack(SimpleMemento* memento, CLASS* lexer)
     {
-        lexer->_parent_memento  = memento->parent;
+        CLASS& self = *lexer;
+        self._parent_memento    = memento->parent;
         *((QuexAnalyser*)lexer) = memento->analyser_core;
-        lexer->counter          = memento->counter;
-        lexer->__current_mode_p = memento->current_mode_p;
+        self.counter            = memento->counter;
+        self.__current_mode_p   = memento->current_mode_p;
         
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
         /* When one returns from a file, the last token of the file was the terminating 
          * token. It is the occurence of this token that triggers a 'return from include'.
          * Thus, the token queue **must** be empty at this point in time.                  */
-        __quex_assert( QuexTokenQueue_is_empty(lexer->_token_queue) );
+        __quex_assert( QuexTokenQueue_is_empty(self._token_queue) );
         if( memento->token_queue.remaining_n != 0 ) {
-            memcpy(lexer->_token_queue.begin, memento->token_queue.remainder, 
+            memcpy(self._token_queue.begin, memento->token_queue.remainder, 
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
-            lexer->_token_queue.read_iterator  = lexer->_token_queue.begin;
-            lexer->_token_queue.write_iterator = lexer->_token_queue.begin + memento->token_queue.remaining_n;
-            lexer->_token_queue.remaining_repetitions_of_last_token_n = 0;
+            self._token_queue.read_iterator  = self._token_queue.begin;
+            self._token_queue.write_iterator = self._token_queue.begin + memento->token_queue.remaining_n;
+            self._token_queue.remaining_repetitions_of_last_token_n = 0;
         }
         MemoryManager_TokenArray_free(memento->token_queue.remainder, memento->token_queue.remaining_n);
 #       endif
