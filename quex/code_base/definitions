@@ -81,6 +81,7 @@
 #   define __QUEX_STD_fseek    std::fseek 
 #   define __QUEX_STD_ftell    std::ftell 
 #   define __QUEX_STD_fread    std::fread 
+#   define __QUEX_STD_fclose   std::fclose
 
 #   define QUEX_INLINE     inline
     /* Input handle type is determined automagically via templates */
@@ -97,6 +98,7 @@
 #   define __QUEX_STD_fseek    fseek 
 #   define __QUEX_STD_ftell    ftell 
 #   define __QUEX_STD_fread    fread 
+#   define __QUEX_STD_fclose   fclose
 
 #   define QUEX_INLINE     static
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 

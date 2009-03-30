@@ -2,15 +2,15 @@
 #include<iostream> 
 
 // (*) include lexical analyser header
-#include <./ISLexer>
-#include <./ISLexer-token_ids>
+#include "ISLexer"
+#include "ISLexer-token_ids"
 
 using namespace std;
 
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
-void    print(quex::STLexer& qlex, quex::Token& Token, bool TextF = false);
-void    print(quex::STLexer& qlex, const char* Str1, const char* Str2=0x0);
+void    print(quex::ISLexer& qlex, quex::Token& Token, bool TextF = false);
+void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0);
 
 int 
 main(int argc, char** argv) 
@@ -23,12 +23,13 @@ main(int argc, char** argv)
     }
     else if( strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Include Stack: Misc Scenarios;\n");
-        printf("CHOICES: 1, 2, 3, 4, 5, 20;");
+        printf("CHOICES: empty, 1, 2, 3, 4, 5, 20;");
         return 0;
     }
 
-    string            Filename(argv[1]);
-    quex::tiny_lexer  qlex(string(Filename + ".txt").c_str());
+    string         Directory("example/");
+    string         Filename(argv[1]);
+    quex::ISLexer  qlex(string(Directory + Filename + ".txt").c_str());
 
     cout << "[START]\n";
 
@@ -47,13 +48,16 @@ main(int argc, char** argv)
                 print(qlex, Token, false);
                 if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
                     continue_lexing_f = false;
-                    print(qlex, "found 'include' without a subsequent filename. hm?\n");
+                    print(qlex, "found 'include' without a subsequent filename. hm?: ", 
+                          (const char*)(Token.type_id_name().c_str()));
                     break;
                 }
                
-                print(qlex, ">> including: ", Token.text().c_str());
-                FILE* fh = fopen((const char*)(Token.text().c_str()), "r");
-                if( fh == 0x0 ) {
+                string     Filename((const char*)Token.text().c_str());
+                Filename = Directory + Filename;
+                print(qlex, ">> including: ", (const char*)(Filename.c_str()));
+                FILE* fh = fopen((const char*)(Filename.c_str()), "r");
+                if( fh == NULL ) {
                     print(qlex, "file not found\n");
                     return 0;
                 }
@@ -77,10 +81,10 @@ main(int argc, char** argv)
     return 0;
 }
 
-string  space(int N);
+string  space(int N)
 { string tmp; for(int i=0; i<N; ++i) tmp += "    "; return tmp; }
 
-void  print(quex::STLexer& qlex, quex::Token& Token, bool TextF = false)
+void  print(quex::ISLexer& qlex, quex::Token& Token, bool TextF /* = false */)
 { 
     cout << space(qlex.include_depth) << Token.line_number() << ": (" << Token.column_number() << ")";
     cout << Token.type_id_name();
@@ -88,7 +92,7 @@ void  print(quex::STLexer& qlex, quex::Token& Token, bool TextF = false)
     cout << endl;
 }
 
-void print(quex::STLexer& qlex, const char* Str1, const char* Str2=0x0)
+void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */)
 {
     cout << space(qlex.include_depth) << Str1;
     if( Str2 != 0x0 ) cout << Str2;

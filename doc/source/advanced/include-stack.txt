@@ -169,7 +169,25 @@ have to be packed with the memento. Vice versa, the variable need to
 be restored when the memento gets unpacked. 
 
 In the quex source files the memento behavior can be influenced by the 
-sections ``memento``, ``memento_pack``, and ``memento_unpack``.
+sections ``memento``, ``memento_pack``, and ``memento_unpack``. The following
+implicit variables are available in ``memento_pack`` and ``memento_unpack``:
+
+.. describe:: self
+
+   Reference to the lexical analyzer.
+
+.. describe:: memento
+
+   Pointer to the memento object.
+
+.. describe:: InputH
+
+   *Only for* ``memento_pack``.
+
+   Input handle that was passed to ``include_push(...)``. It may be stored
+   in an memento in order to be able to close it as soon as the included
+   file is analyzed.
+
 This is explained in an example: For some purpose the user wants to 
 count the number of whitespace characters and the occurencies of the 
 word 'bug' in each of the analyzed files. For this purpose he adds
@@ -242,7 +260,76 @@ of the above mechanisms quex tries to facilitate this task as much as possible.
 There is, however, a pitfall that needs to be considered. This will be the 
 subject of the following section.
 
-.. _sec-infinite-recursion:
+
+Closing Included Files
+----------------------
+
+For a file to be closed its handle must be available. Since streams and files
+are handled uniformly inside the quex handling there is a problem: not every
+stream provides a 'close' function. Further, it might not always be desired to
+close the stream as soon as a file inclusion is terminated.  Ownership lucidity
+enforces that the one who opens a file must be the one who closes it. Here is
+what might be the most consistent approach:
+
+First, the memento must contain a member to carry a file handle
+
+.. code-block::cpp
+
+   memento {
+       ...
+       FILE*   file_handle;
+       ...
+   }
+
+Second, when a file is opened the handle is stored in a temporary
+and then the include handling is processed
+
+.. code-block::cpp
+
+   fh = fopen(the_file_name, "rb");
+   qlex.include_push(fh);
+
+Third, the one who opened the handle stores it in the memento
+
+.. code-block::cpp
+
+   qlex.parent_memento().file_handle = fh;
+
+The other way round, when returning from a file to the including file,
+the file handle is better be stored in a temporary, then the include
+handling is processed and then the file handle is closed, i.e.
+
+.. code-block::cpp
+
+   fh = qlex.parent_memento().file_handle;
+   qlex.include_pop();
+   fclose(fh); 
+
+The following code fragment displays both opening and closing 
+
+.. code-block::cpp
+
+    switch( Token.type_id() ) {
+    default: break;
+
+    case QUEX_TKN_INCLUDE: 
+            qlex.receive(&Token);
+            if( Token.type_id() != QUEX_TKN_IDENTIFIER ) { continue_lexing_f = false; break; }
+           
+            FILE* fh = fopen((const char*)(Token.text().c_str()), "r");
+            if( fh == 0x0 ) { return 0; }
+            qlex.include_push(fh);
+            qlex.parent_memento()->file_handle = fh; 
+
+    case QUEX_TKN_TERMINATION:
+        if( qlex.include_pop() == false ) continue_lexing_f = false;
+        else {
+            fh = qlex.parent_memento()->file_handle;
+            qlex.include_pop();
+            fclose(fh);
+        }
+        break;
+    }
 
 Infinite Recursion Protection
 -----------------------------

@@ -299,7 +299,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
         size_t                buffer_size();
         QUEX_TYPE_CHARACTER*  buffer_text_end();
         size_t                buffer_distance_to_text_end();
-        
+
         // -- token stream: read next token
         void  get_token() 
         { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
@@ -451,8 +451,8 @@ $$CLASS_BODY_EXTENSION$$
     private:
         struct $$LEXER_CLASS_NAME$$Memento_tag*  _parent_memento;
         //      -- include events (a file is included)
-        friend struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*);
-        friend void  $$LEXER_CLASS_NAME$$Memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
+        template<class InputHandleT> struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*, InputHandleT*);
+        void  $$LEXER_CLASS_NAME$$Memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
 
     protected:
         void virtual on_include(const char* Filename) {}
@@ -585,11 +585,15 @@ $$CONSTRUCTOR_EXTENSTION$$
 $$MEMENTO_EXTENSIONS$$
     } $$LEXER_CLASS_NAME$$Memento;
  
-    QUEX_INLINE $$LEXER_CLASS_NAME$$Memento*
-    $$LEXER_CLASS_NAME$$Memento_pack(CLASS* lexer)
+    template<class InputHandleT> inline struct $$LEXER_CLASS_NAME$$Memento_tag*
+    CLASS::memento_pack(InputHandleT* InputH)
     {
-        CLASS& self = *lexer;
+        CLASS& self = *this;
         $$LEXER_CLASS_NAME$$Memento* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
+
+        /* Use placement 'new' for explicit call of constructor */
+        new ((void*)memento) $$LEXER_CLASS_NAME$$Memento;
+
 
         memento->parent         = self._parent_memento;
         memento->analyser_core  = *((QuexAnalyser*)lexer);
@@ -603,6 +607,31 @@ $$MEMENTO_EXTENSIONS$$
                == false ) {
                 QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
             }
+            /* No placement new (explicit constructor calls) are necessary. If there are objects 
+             * which are pointed to in memory, they keep being pointed to by the copy of the 
+             * pointer of the 'plain' copy. No one else is pointing to those objects later on.
+             *
+             * Before:
+             *
+             *   [A0] [B0]   [A1] [B1]   [A2] [B2]
+             *    |    |      |    |      |   | 
+             *    |    |      |    |      |   | 
+             *  [ token 1  ][ token 2  ][ token 3  ]     [ token    ][ token    ][ token    ]
+             *
+             *  previous token queue                     newly allocated backup storage
+             *
+             * After:
+             *
+             *                                            [A0] [B0]   [A1] [B1]   [A2] [B2]
+             *                                             |    |      |    |      |   | 
+             *                                             |    |      |    |      |   | 
+             *  [ token    ][ token    ][ token    ]     [ token 1  ][ token 2  ][ token 3  ]
+             *
+             *  previous token queue                     newly allocated backup storage
+             *  (which is overriden)
+             *
+             * When the token queue is written back the same applies. Only the original queue
+             * will contain pointers to the objects.                                           */
             memcpy(memento->token_queue.remainder, 
                    self._token_queue.read_iterator,
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
@@ -615,9 +644,9 @@ $$MEMENTO_EXTENSIONS_PACK$$
     }
 
     QUEX_INLINE void
-    $$LEXER_CLASS_NAME$$Memento_unpack($$LEXER_CLASS_NAME$$Memento* memento, CLASS* lexer)
+    CLASS::memento_unpack($$LEXER_CLASS_NAME$$Memento* memento)
     {
-        CLASS& self = *lexer;
+        CLASS& self = *this;
         self._parent_memento    = memento->parent;
         *((QuexAnalyser*)lexer) = memento->analyser_core;
         self.counter            = memento->counter;
@@ -640,6 +669,8 @@ $$MEMENTO_EXTENSIONS_PACK$$
 
 $$MEMENTO_EXTENSIONS_UNPACK$$
         
+        /* Counterpart to placement new: Explicit destructor call */
+        memento->~$$LEXER_CLASS_NAME$$Memento();
         MemoryManager_$$LEXER_CLASS_NAME$$Memento_free(memento);
     }
 #   endif /* QUEX_OPTION_INCLUDE_STACK */

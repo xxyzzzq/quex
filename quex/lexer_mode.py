@@ -476,6 +476,15 @@ memento_pack_extension = CodeFragment()
 #-----------------------------------------------------------------------------------------
 memento_unpack_extension = CodeFragment()
 
+fragment_db = {
+        "header":         "header",
+        "body":           "class_body_extension",
+        "init":           "class_constructor_extension",
+        "memento":        "memento_class_extension",
+        "memento_pack":   "memento_pack_extension",
+        "memento_unpack": "memento_unpack_extension",
+}
+
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
         assert StateMachine.has_origins() == False
