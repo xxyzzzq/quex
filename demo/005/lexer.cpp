@@ -20,6 +20,7 @@ main(int argc, char** argv)
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::tiny_lexer  qlex(argc == 1 ? "example.txt" : argv[1]);
+    FILE*             fh = 0x0;
 
     // (*) print the version 
     // cout << qlex.version() << endl << endl;
@@ -44,30 +45,31 @@ main(int argc, char** argv)
             break;
 
         case QUEX_TKN_INCLUDE: 
-            {
-                qlex.receive(&Token);
-                cout << space(qlex.include_depth) << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
-                if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
-                    continue_lexing_f = false;
-                    cout << space(qlex.include_depth) << "found 'include' without a subsequent filename. hm?\n";
-                    break;
-                }
-               
-                cout << space(qlex.include_depth) << ">> including: " << Token.text().c_str() << endl;
-                FILE* fh = fopen((const char*)(Token.text().c_str()), "r");
-                if( fh == 0x0 ) {
-                    cout << space(qlex.include_depth) << "file not found\n";
-                    return 0;
-                }
-                qlex.include_push(fh);
+            qlex.receive(&Token);
+            cout << space(qlex.include_depth) << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
+            if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
+                continue_lexing_f = false;
+                cout << space(qlex.include_depth) << "found 'include' without a subsequent filename. hm?\n";
                 break;
             }
 
+            cout << space(qlex.include_depth) << ">> including: " << Token.text().c_str() << endl;
+            fh = fopen((const char*)(Token.text().c_str()), "r");
+            if( fh == NULL ) {
+                cout << space(qlex.include_depth) << "file not found\n";
+                return 0;
+            }
+            qlex.include_push(fh);
+            qlex.parent_memento()->included_file_handle = fh;
+            break;
+
         case QUEX_TKN_TERMINATION:
+            fh = qlex.parent_memento()->included_file_handle;
             if( qlex.include_pop() == false ) {
                 continue_lexing_f = false;
             } else {
                 cout << space(qlex.include_depth) << "<< return from include\n";
+                fclose(fh);
             }
             break;
         }
