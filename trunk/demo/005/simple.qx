@@ -15,18 +15,21 @@ init {
 }
 
 memento {
-    size_t my_letter_count_store;
+    size_t   my_letter_count_store;
+    FILE*    included_file_handle;
 }
 
 memento_pack {
     memento->my_letter_count_store = self.letter_count;
     self.letter_count = 0;
     self.include_depth += 1;
+    memento->included_file_handle = InputH;
 }
 
 memento_unpack {
     self.letter_count = memento->my_letter_count_store;
     self.include_depth -= 1;
+    fclose(memento->included_file_handle);
 }
 
 token {
