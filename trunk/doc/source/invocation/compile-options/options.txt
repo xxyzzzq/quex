@@ -47,7 +47,7 @@ the suffix enables something, the option with the suffix disables the 'something
 
    Enables/disables error messages on disallows mode transitions.
 
-.. cmacro:: QUEX_OPTION_INCLUDE_STACK_SUPPORT
+.. cmacro:: QUEX_OPTION_INCLUDE_STACK
 
    Enables/disables the feature of an intelligent include stack. 
 
@@ -95,4 +95,11 @@ the suffix enables something, the option with the suffix disables the 'something
 
    Enables/disables the token sending via a token queue owned by the user.
 
+.. cmacro:: QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+
+   Enables/disables the stamping of tokens with the line and column number.
+   The stamping happens by default. If it is desired to disable this stamping
+   the ``..._DISABLED`` version of this macro must be defined. If column or
+   line counting is disabled the corresponding stamping is also disabled,
+   anyway.
 
