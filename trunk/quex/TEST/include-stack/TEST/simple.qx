@@ -6,6 +6,11 @@ extern QUEX_TYPE_CHARACTER  EmptyLexeme;
 
 body {
     std::string file_name;
+    size_t      include_depth;
+}
+
+init {
+    include_depth = 0;
 }
 
 
@@ -15,10 +20,16 @@ memento {
 
 memento_pack {
     memento->file_name = self.file_name;
+    for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
+    std::cout << "Memento: Pack " << self.file_name << std::endl;
+    self.include_depth += 1;
 }
 
 memento_unpack {
     self.file_name = memento->file_name;
+    for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
+    std::cout << "Memento: Unpack " << self.file_name << std::endl;
+    self.include_depth -= 1;
 }
 
 token {
