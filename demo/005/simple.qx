@@ -23,12 +23,14 @@ memento_pack {
     memento->my_letter_count_store = self.letter_count;
     self.letter_count = 0;
     self.include_depth += 1;
+    /* Store the file handle, so that it can be closed later */
     memento->included_file_handle = InputH;
 }
 
 memento_unpack {
     self.letter_count = memento->my_letter_count_store;
     self.include_depth -= 1;
+    /* Close the file handle */
     fclose(memento->included_file_handle);
 }
 
@@ -44,7 +46,7 @@ mode ONE_AND_ONLY
 {
     <<EOF>> {
 	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
-        for(int i=0; i<self.include_depth; ++i) std::cout << "    ";
+        for(size_t i=0; i<self.include_depth; ++i) std::cout << "    ";
         std::cout << "Per File Letter Count = " << self.letter_count << std::endl;
         RETURN;
     }

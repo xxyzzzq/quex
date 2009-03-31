@@ -269,10 +269,7 @@ are handled uniformly inside the quex handling there is a problem: not every
 stream provides a 'close' function. Further, it might not always be desired to
 close the stream as soon as a file inclusion is terminated.  Ownership lucidity
 enforces that the one who opens a file must be the one who closes it. Here is
-what might be the most consistent approach:
-
-Solution 1
-..........
+what might be the most consistent approach.
 
 First, the memento must contain a member to carry a file handle
 
@@ -301,7 +298,11 @@ implicit argument ``InputH`` can be used to store the file handle in the
         fclose(memento->included_file_handle);
     }
 
-Note, that the root file of analyzis must still be closed by hand.
+Note, that the root file of analyzis must still be closed. If the first
+file was opened with a filename, the lexical analyzer knows that it's 
+his responsibility to close it and does so at destruction time. If a
+stream handle was passed to the constructor, then it's considered the
+user's responsibility to close the stream.
 
 
 Infinite Recursion Protection

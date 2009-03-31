@@ -60,16 +60,13 @@ main(int argc, char** argv)
                 return 0;
             }
             qlex.include_push(fh);
-            qlex.parent_memento()->included_file_handle = fh;
             break;
 
         case QUEX_TKN_TERMINATION:
-            fh = qlex.parent_memento()->included_file_handle;
             if( qlex.include_pop() == false ) {
                 continue_lexing_f = false;
             } else {
                 cout << space(qlex.include_depth) << "<< return from include\n";
-                fclose(fh);
             }
             break;
         }
