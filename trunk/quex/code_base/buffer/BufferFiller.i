@@ -44,7 +44,6 @@ namespace quex {
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
                                                                       QUEX_TYPE_CHARACTER* buffer, const size_t),
-                                      void         (*close)(struct __QuexBufferFiller_tag*),
                                       void         (*destroy)(QuexBufferFiller*))
     {
         __quex_assert(me != 0x0);

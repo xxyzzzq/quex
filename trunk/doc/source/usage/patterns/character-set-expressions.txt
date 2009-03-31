@@ -56,7 +56,7 @@ displayed in the following table:
     ``union(A0, A1, ...)``            ``union([a-z], [A-Z]) = [a-zA-Z]``
     ``intersection(A0, A1, ...)``     ``intersection([0-9], [4-5]) = [4-5]`` 
     ``difference(A, B0, B1, ...)``    ``difference([0-9], [4-5]) = [0-36-9]``
-    ``inverse(A0, A1, ...)``          ``inverse([\x40-\5A]) = [\x00-\x40\x5B-\U12FFFF]`` 
+    ``inverse(A0, A1, ...)``          ``inverse([\x40-\5A]) = [\x00-\x3F\x5B-\U12FFFF]`` 
     ===============================  =====================================================
 
 A ``union`` expression allows to create the union of all sets mentioned inside

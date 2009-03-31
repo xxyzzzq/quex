@@ -2,6 +2,7 @@
 
 header {
 extern QUEX_TYPE_CHARACTER  EmptyLexeme;
+#include <fstream>
 }
 
 body {
@@ -15,7 +16,8 @@ init {
 
 
 memento {
-    std::string file_name;
+    std::string     file_name;
+    std::ifstream*  included_sh;
 }
 
 memento_pack {
@@ -23,6 +25,8 @@ memento_pack {
     for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
     std::cout << "Memento: Pack " << self.file_name << std::endl;
     self.include_depth += 1;
+    /* store stream handle for 'close' on end of file */
+    memento->included_sh = InputH;
 }
 
 memento_unpack {
@@ -30,6 +34,9 @@ memento_unpack {
     for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
     std::cout << "Memento: Unpack " << self.file_name << std::endl;
     self.include_depth -= 1;
+    /* 'close' on end of file */
+    memento->included_sh->close();
+    delete (memento->included_sh);
 }
 
 token {

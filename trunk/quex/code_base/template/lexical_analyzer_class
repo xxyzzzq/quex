@@ -201,9 +201,6 @@ namespace quex {
     class  $$LEXER_CLASS_NAME$$;
     struct $$LEXER_CLASS_NAME$$Memento_tag;
 
-    inline struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*);
-    inline void  $$LEXER_CLASS_NAME$$Memento_pack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
-
 $$LEX_ID_DEFINITIONS$$
 }    
 
@@ -451,8 +448,8 @@ $$CLASS_BODY_EXTENSION$$
     private:
         struct $$LEXER_CLASS_NAME$$Memento_tag*  _parent_memento;
         //      -- include events (a file is included)
-        template<class InputHandleT> struct $$LEXER_CLASS_NAME$$Memento_tag*  $$LEXER_CLASS_NAME$$Memento_pack($$LEXER_CLASS_NAME$$*, InputHandleT*);
-        void  $$LEXER_CLASS_NAME$$Memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*, $$LEXER_CLASS_NAME$$*);
+        template<class InputHandleT> struct $$LEXER_CLASS_NAME$$Memento_tag*  memento_pack(InputHandleT*);
+        void  memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*);
 
     protected:
         void virtual on_include(const char* Filename) {}
@@ -596,7 +593,7 @@ $$MEMENTO_EXTENSIONS$$
 
 
         memento->parent         = self._parent_memento;
-        memento->analyser_core  = *((QuexAnalyser*)lexer);
+        memento->analyser_core  = *((QuexAnalyser*)this);
         memento->counter        = self.counter;
         memento->current_mode_p = self.__current_mode_p;
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
@@ -648,7 +645,7 @@ $$MEMENTO_EXTENSIONS_PACK$$
     {
         CLASS& self = *this;
         self._parent_memento    = memento->parent;
-        *((QuexAnalyser*)lexer) = memento->analyser_core;
+        *((QuexAnalyser*)this)  = memento->analyser_core;
         self.counter            = memento->counter;
         self.__current_mode_p   = memento->current_mode_p;
         

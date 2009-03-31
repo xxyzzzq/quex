@@ -29,8 +29,11 @@ main(int argc, char** argv)
 
     string         Directory("example/");
     string         Filename(argv[1]);
-    quex::ISLexer  qlex(string(Directory + Filename + ".txt").c_str());
+    ifstream       istr((Directory + Filename + ".txt").c_str());
+    ifstream*      sh = 0x0;
+    quex::ISLexer  qlex(&istr);
 
+    delete sh;
     cout << "[START]\n";
 
     bool continue_lexing_f = true;
@@ -43,27 +46,25 @@ main(int argc, char** argv)
         switch( Token.type_id() ) {
         default: break;
 
-        case QUEX_TKN_INCLUDE: {
-                qlex.receive(&Token);
-                print(qlex, Token, false);
-                if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
-                    continue_lexing_f = false;
-                    print(qlex, "found 'include' without a subsequent filename. hm?: ", 
-                          (const char*)(Token.type_id_name().c_str()));
-                    break;
-                }
-               
-                string     Filename((const char*)Token.text().c_str());
-                Filename = Directory + Filename;
-                print(qlex, ">> including: ", (const char*)(Filename.c_str()));
-                FILE* fh = fopen((const char*)(Filename.c_str()), "r");
-                if( fh == NULL ) {
-                    print(qlex, "file not found\n");
-                    return 0;
-                }
-                qlex.include_push(fh);
-                break;
-            }
+        case QUEX_TKN_INCLUDE: 
+             qlex.receive(&Token);
+             print(qlex, Token, false);
+             if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
+                 continue_lexing_f = false;
+                 print(qlex, "found 'include' without a subsequent filename. hm?: ", 
+                       (const char*)(Token.type_id_name().c_str()));
+                 break;
+             }
+
+             Filename = Directory + string((const char*)Token.text().c_str());
+             print(qlex, ">> including: ", (const char*)(Filename.c_str()));
+             sh = new ifstream((const char*)(Filename.c_str()));
+             if( sh == NULL || sh->bad() ) {
+                 print(qlex, "file not found\n");
+                 return 0;
+             }
+             qlex.include_push(sh);
+             break;
 
         case QUEX_TKN_TERMINATION:
             if( qlex.include_pop() == false ) {
