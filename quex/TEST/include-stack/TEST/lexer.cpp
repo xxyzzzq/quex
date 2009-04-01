@@ -10,7 +10,7 @@ using namespace std;
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
 void    print(quex::ISLexer& qlex, quex::Token& Token, bool TextF = false);
-void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0);
+void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
 int 
 main(int argc, char** argv) 
@@ -52,26 +52,25 @@ main(int argc, char** argv)
              if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
                  continue_lexing_f = false;
                  print(qlex, "found 'include' without a subsequent filename. hm?: ", 
-                       (const char*)(Token.type_id_name().c_str()));
+                       (const char*)(Token.type_id_name().c_str()),
+                       (const char*)(Token.text().c_str()));
                  break;
              }
 
              Filename = Directory + string((const char*)Token.text().c_str());
-             print(qlex, ">> including: ", (const char*)(Filename.c_str()));
              sh = new ifstream((const char*)(Filename.c_str()));
              if( sh == NULL || sh->bad() ) {
                  print(qlex, "file not found\n");
                  return 0;
              }
+             qlex.file_name = Filename;
              qlex.include_push(sh);
              break;
 
         case QUEX_TKN_TERMINATION:
             if( qlex.include_pop() == false ) {
                 continue_lexing_f = false;
-            } else {
-                print(qlex, "<< return from include\n");
-            }
+            } 
             break;
         }
 
@@ -93,9 +92,10 @@ void  print(quex::ISLexer& qlex, quex::Token& Token, bool TextF /* = false */)
     cout << endl;
 }
 
-void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */)
+void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
 {
     cout << space(qlex.include_depth) << Str1;
     if( Str2 != 0x0 ) cout << Str2;
+    if( Str3 != 0x0 ) cout << Str3;
     cout << endl;
 }
