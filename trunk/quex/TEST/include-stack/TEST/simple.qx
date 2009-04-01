@@ -1,7 +1,6 @@
 // -*- C++ -*- vim: set syntax=cpp: 
 
 header {
-extern QUEX_TYPE_CHARACTER  EmptyLexeme;
 #include <fstream>
 }
 
@@ -23,7 +22,7 @@ memento {
 memento_pack {
     memento->file_name = self.file_name;
     for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
-    std::cout << "Memento: Pack " << self.file_name << std::endl;
+    std::cout << "Memento: including from " << self.file_name << std::endl;
     self.include_depth += 1;
     /* store stream handle for 'close' on end of file */
     memento->included_sh = InputH;
@@ -32,7 +31,7 @@ memento_pack {
 memento_unpack {
     self.file_name = memento->file_name;
     for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
-    std::cout << "Memento: Unpack " << self.file_name << std::endl;
+    std::cout << "Memento: return to " << self.file_name << std::endl;
     self.include_depth -= 1;
     /* 'close' on end of file */
     memento->included_sh->close();
@@ -42,21 +41,18 @@ memento_unpack {
 token {
    INCLUDE
    IDENTIFIER
-   BRACKET_OPEN
-   BRACKET_CLOSE
-   NUMBER
+   WHITESPACE
+   STRING
 }
 
 mode ONE_AND_ONLY
 {
-    <<EOF>>     => QUEX_TKN_TERMINATION(&EmptyLexeme);
-    "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
-    ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
+    <<EOF>>         => QUEX_TKN_TERMINATION(LexemeNull);
     //
-    "include"   => QUEX_TKN_INCLUDE(&EmptyLexeme); 
+    "include"       => QUEX_TKN_INCLUDE(LexemeNull); 
     //
-    ([_a-zA-Z]|("/"|"."|"'"))+  => QUEX_TKN_IDENTIFIER(Lexeme); 
-    [ \t\r\n]+                  { }
+    [_a-zA-Z0-9.]+  => QUEX_TKN_IDENTIFIER(Lexeme); 
+    [ \t\r\n]+      {}
 }
 
 
