@@ -1,6 +1,12 @@
 Include Stack
 =============
 
+.. note:: 
+
+   The API for include stack handling is likely to change until V 0.39.1. 
+   When using this API earlier, keep in mind to get back here to ensure
+   that you update your interface.
+
 A useful feature of many programming languages is the feature to *include*
 files into a file. It has the effect that the content of the included file is
 treated as if it is pasted into the including file. For example, let ``my_header.h``
@@ -391,7 +397,7 @@ Once, the check is done, the file can be included as usual. But the
 
    memento_unpack {
        ...
-       memento->file_name = self.file_name;
+       self.file_name = memento->file_name;
        ...
    }
 

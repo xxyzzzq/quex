@@ -12,6 +12,13 @@ QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 void    print(quex::ISLexer& qlex, quex::Token& Token, bool TextF = false);
 void    print(quex::ISLexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
+#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
+     void get_token_from_users_queue(quex::ISLexer&, quex::Token&);
+#    define RECEIVE(Token)   get_token_from_users_queue(qlex, Token)
+#else
+#    define RECEIVE(Token)   qlex.receive(&Token)
+#endif
+
 int 
 main(int argc, char** argv) 
 {        
@@ -33,13 +40,14 @@ main(int argc, char** argv)
     ifstream*      sh = 0x0;
     quex::ISLexer  qlex(&istr);
 
+    qlex.file_name = Directory + Filename + ".txt";
     delete sh;
     cout << "[START]\n";
 
     bool continue_lexing_f = true;
 
     do {
-        qlex.receive(&Token);
+        RECEIVE(Token);
 
         print(qlex, Token, true);
 
@@ -47,8 +55,8 @@ main(int argc, char** argv)
         default: break;
 
         case QUEX_TKN_INCLUDE: 
-             qlex.receive(&Token);
-             print(qlex, Token, false);
+             RECEIVE(Token);
+             print(qlex, Token, true);
              if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
                  continue_lexing_f = false;
                  print(qlex, "found 'include' without a subsequent filename. hm?: ", 
@@ -63,8 +71,8 @@ main(int argc, char** argv)
                  print(qlex, "file not found\n");
                  return 0;
              }
-             qlex.file_name = Filename;
              qlex.include_push(sh);
+             qlex.file_name = Filename;
              break;
 
         case QUEX_TKN_TERMINATION:
@@ -88,7 +96,7 @@ void  print(quex::ISLexer& qlex, quex::Token& Token, bool TextF /* = false */)
 { 
     cout << space(qlex.include_depth) << Token.line_number() << ": (" << Token.column_number() << ")";
     cout << Token.type_id_name();
-    if( TextF ) cout << "\t" << Token.text().c_str();
+    if( TextF ) cout << "\t'" << Token.text().c_str() << "'";
     cout << endl;
 }
 
@@ -99,3 +107,19 @@ void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, 
     if( Str3 != 0x0 ) cout << Str3;
     cout << endl;
 }
+
+#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
+void get_token_from_users_queue(quex::ISLexer& qlex, quex::Token& Token)
+{
+    static quex::Token   Begin[3];
+    static quex::Token*  End        = Begin + 3;
+    static quex::Token*  water_mark = Begin;
+    static quex::Token*  iterator   = water_mark;
+    
+    if( iterator == water_mark ) {
+        water_mark = qlex.receive(Begin, End);
+        iterator   = Begin;
+    }
+    Token = *iterator++;
+}
+#endif
