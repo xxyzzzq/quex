@@ -25,6 +25,8 @@ __header_definitions_txt = """
 
 #define RETURN   return
 #define CONTINUE $$GOTO_START_PREPARATION$$ 
+
+static QUEX_TYPE_CHARACTER  QuexLexemeNullObject = 0x0;
 """
 
 def __header_definitions(LanguageDB):
@@ -184,9 +186,13 @@ __terminal_state_str  = """
   /* pattern was according to the terminal state. The terminal states are */
   /* numbered after the pattern id.*/
   /**/
+
+/* Lexeme descriptions: There is a temporary zero stored at the end of each
+ * lexeme. A pointer to the zero provides the Null-lexeme.                     */
 #define Lexeme       (me->buffer._lexeme_start_p)
 #define LexemeBegin  (me->buffer._lexeme_start_p)
 #define LexemeEnd    (me->buffer._input_p)
+#define LexemeNull   (&QuexLexemeNullObject)
 #define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 
@@ -201,6 +207,7 @@ $$DEFAULT_ACTION$$
 #undef Lexeme
 #undef LexemeBegin
 #undef LexemeEnd
+#undef LexemeNull
 #undef LexemeL
 #ifndef __QUEX_OPTION_USE_COMPUTED_GOTOS
 __TERMINAL_ROUTER: {

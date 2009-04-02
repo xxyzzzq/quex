@@ -60,6 +60,11 @@ Note, that information about the lexeme is available via the following
 
    The length of the lexeme.
 
+.. data:: LexemeNull
+
+   This is a pseudo-lexeme of length zero. It is useful in cases that 
+   it is required to set some string inside a token[#f2]_.
+
 Instead of relying on a named constand definition for a token-id, quex can
 directly use character codes as token-ids. This comes handy when using
 in conjunction with the parser generators like bison or yacc. The syntax
@@ -108,3 +113,7 @@ example is shown here:
 .. [#f1] They are actually defined as C-preprocessor macros and they are only
          active arround the generated code segments. If they are not used, no
          computation time is consumed.
+
+.. [#f2] For performance reasons, the token objects are not initialized before
+         content is written to to them. Thus, if only the token-id is written
+         to them the rest of the content inherited from previous usage.

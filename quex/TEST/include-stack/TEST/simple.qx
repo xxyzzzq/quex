@@ -1,4 +1,5 @@
 // -*- C++ -*- vim: set syntax=cpp: 
+start = MAIN;
 
 header {
 #include <fstream>
@@ -45,7 +46,7 @@ token {
    STRING
 }
 
-mode ONE_AND_ONLY
+mode MAIN
 {
     <<EOF>>         => QUEX_TKN_TERMINATION(LexemeNull);
     //

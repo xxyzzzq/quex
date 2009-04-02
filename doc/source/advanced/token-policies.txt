@@ -191,6 +191,14 @@ and ``users_token``:
 However, it puts the responsibility of memory management on the user's shoulders.
 In some scenarios [#f1]_ this requires extra infrastructure to be implemented.
 
+.. warning::
+
+   When using the token policy 'users_queue' it must be ensured that the queue
+   which is provided has at least the size of the safety border plus one. The
+   safety border is defined as the macro 
+
+      ``QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER``
+
 .. rubric:: Footnotes
 
 .. [#f1] For example, if a parser is designed to call the lexical analyzer. It must

@@ -660,8 +660,9 @@ $$MEMENTO_EXTENSIONS_PACK$$
             self._token_queue.read_iterator  = self._token_queue.begin;
             self._token_queue.write_iterator = self._token_queue.begin + memento->token_queue.remaining_n;
             self._token_queue.remaining_repetitions_of_last_token_n = 0;
+
+            MemoryManager_TokenArray_free(memento->token_queue.remainder, memento->token_queue.remaining_n);
         }
-        MemoryManager_TokenArray_free(memento->token_queue.remainder, memento->token_queue.remaining_n);
 #       endif
 
 $$MEMENTO_EXTENSIONS_UNPACK$$
