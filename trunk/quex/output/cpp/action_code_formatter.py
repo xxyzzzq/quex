@@ -66,7 +66,6 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 
     return CodeFragment(txt, require_terminating_zero_preparation_f)
 
-
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering

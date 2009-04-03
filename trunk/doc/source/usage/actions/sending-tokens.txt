@@ -106,6 +106,18 @@ example is shown here:
     \U010455  => UC SHAVIAN_LETTER_MEASURE;
     \x23      => UC NUMBER_SIGN;
 
+Analyzis Continuation
+---------------------
+
+In case that the token policy ``users_token`` is applied the analyzer returns
+after each sending of a token. When the token policies ``queue`` or
+``users_queue`` are used the analyzer continues its analyzis until it hits the
+safety border in the queue. An exception to this is the reaction to the end of
+file event, i.e. ``on_end_of_stream`` or ``<<EOF>>``. By default, the analyzer
+returns. This is so to support the prevention of sending tokens after the
+``TERMINATION`` token.  Without a definition of an action for 'end of stream'
+or 'failure', the analyzer returns a ``TERMINATION`` token, by default.
+
 .. note::
 
    When using the token policies ``queue`` or ``users_queue`` while the asserts
@@ -117,7 +129,7 @@ example is shown here:
    was a ``TERMINATION`` token or not.
    
    There are no worries when including other files. The include stack handler
-   re-initializes the token queues, though, as soon as the lexer returns from
+   re-initializes the token queues as soon as the engine returns from
    an included file.
 
    The behavior is there to help the user, not to bother him. It is to 

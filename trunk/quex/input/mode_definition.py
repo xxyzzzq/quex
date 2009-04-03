@@ -279,7 +279,12 @@ def check_for_event_specification(word, fh, new_mode):
         # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
         #       patterns are entered here, even if later versions of quex might dismiss
         #       those rule deefinitions in favor of consistent event handlers.
-        new_mode.on_end_of_stream = code_fragment.parse(fh, "%s::on_end_of_stream event handler" % new_mode.name)
+        # NOTE: The 'ContinueF' is turned of in this case, because when a termination
+        #       token is sent, no other token shall follow. Thus, we enforce the
+        #       return from the analyzer.
+        new_mode.on_end_of_stream = code_fragment.parse(fh, 
+                                                        "%s::on_end_of_stream event handler" % new_mode.name,
+                                                        ContinueF=False)
         return True
 
     elif len(word) >= 3 and word[:3] == "on_":    
