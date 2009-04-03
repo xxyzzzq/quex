@@ -106,6 +106,23 @@ example is shown here:
     \U010455  => UC SHAVIAN_LETTER_MEASURE;
     \x23      => UC NUMBER_SIGN;
 
+.. note::
+
+   When using the token policies ``queue`` or ``users_queue`` while the asserts
+   are active, the engine **might** throw an exception if the user tries to
+   send a token after a ``TERMINATION`` token.  There is a scenario where
+   cannot detect it: if a ``TERMINATION`` is sent, then the queue is cleared,
+   and then new tokens are sent. Then the engine has no reference to the last sent
+   token. At the moment of token sending it cannot tell whether the last token
+   was a ``TERMINATION`` token or not.
+   
+   There are no worries when including other files. The include stack handler
+   re-initializes the token queues, though, as soon as the lexer returns from
+   an included file.
+
+   The behavior is there to help the user, not to bother him. It is to 
+   prevent subtle errors where the token queue contains tokens beyond the
+   terminating token that signified the end of a file.
 
 
 .. rubric:: Footnotes
