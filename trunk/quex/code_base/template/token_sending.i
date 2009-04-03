@@ -49,6 +49,7 @@ namespace quex {
     template <typename X0_T> inline void   
     CLASS::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0) 
     {
+        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION();
         QUEX_TOKEN_POLICY_SET_2(ID, X0);
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
     }
