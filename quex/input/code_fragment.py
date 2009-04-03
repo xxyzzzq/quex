@@ -10,7 +10,7 @@ LanguageDB = Setup.language_db
 
 
 def parse(fh, CodeFragmentName, 
-          ErrorOnFailureF=True, AllowBriefTokenSenderF=True):
+          ErrorOnFailureF=True, AllowBriefTokenSenderF=True, ContinueF=True):
     """RETURNS: An object of class UserCodeFragment containing
                 line number, filename, and the code fragment.
 
@@ -29,7 +29,7 @@ def parse(fh, CodeFragmentName,
         return __parse_normal(fh, CodeFragmentName)
 
     elif AllowBriefTokenSenderF and word == "=>":
-        return __parse_brief_token_sender(fh)
+        return __parse_brief_token_sender(fh, ContinueF)
 
     elif not ErrorOnFailureF:
         fh.seek(-2,1)
@@ -42,8 +42,8 @@ def __parse_normal(fh, code_fragment_name):
     code   = read_until_closing_bracket(fh, "{", "}")
     return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
 
-def __parse_brief_token_sender(fh):
-    # shorthand for { self.send(TKN_SOMETHING); RETURN; }
+def __parse_brief_token_sender(fh, ContinueF):
+    # shorthand for { self.send(TKN_SOMETHING); CONTINUE; }
     
     position = fh.tell()
     line_n   = get_current_line_info_number(fh) + 1
@@ -52,15 +52,17 @@ def __parse_brief_token_sender(fh):
         position = fh.tell()
 
         code = __parse_token_id_specification_by_character_code(fh)
-        if code != "": return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
-
-        identifier, arg_list_str = __parse_function_call(fh)
-        if identifier in ["GOTO", "GOSUB", "GOUP"]:
-            code = __create_mode_transition_and_token_sender(fh, identifier, arg_list_str)
+        if code != -1: 
+            code = __create_token_sender_by_character_code(fh, CharacterCode)
         else:
-            code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
+            identifier, arg_list_str = __parse_function_call(fh)
+            if identifier in ["GOTO", "GOSUB", "GOUP"]:
+                code = __create_mode_transition_and_token_sender(fh, identifier, arg_list_str)
+            else:
+                code = __create_token_sender_by_token_name(fh, identifier, arg_list_str)
 
         if code != "": 
+            if ContinueF: code += "CONTINUE;\n"
             return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
         else:
             return None
@@ -171,14 +173,16 @@ def __parse_function_call(fh):
 
 def __parse_token_id_specification_by_character_code(fh):
     character_code = read_character_code(fh)
-    if character_code == -1: return ""
-
+    if character_code == -1: return -1
     verify_next_word(fh, ";")
-    prefix_less_token_name = "UCS_0x%06X" % character_code
+    return character_code
+
+def __create_token_sender_by_character_code(fh, CharacterCode):
+    prefix_less_token_name = "UCS_0x%06X" % CharacterCode
     token_id_str = Setup.input_token_id_prefix + prefix_less_token_name
     lexer_mode.token_id_db[prefix_less_token_name] = \
-            TokenInfo(prefix_less_token_name, character_code, None, fh.name, get_current_line_info_number(fh)) 
-    return "self.send(%s); CONTINUE;\n" % token_id_str
+            TokenInfo(prefix_less_token_name, CharacterCode, None, fh.name, get_current_line_info_number(fh)) 
+    return "self.send(%s);\n" % token_id_str
 
 def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
     assert type(ArgListStr) == str
@@ -203,10 +207,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
 
     tail = ArgListStr
     if tail != "": tail = ", " + tail
-    txt = "self.send(%s%s); CONTINUE;\n" % (TokenName, tail)
-
-    return txt
-
+    return "self.send(%s%s);\n" % (TokenName, tail)
 
 def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
@@ -241,6 +242,6 @@ def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
     else:                  send_str = "" 
 
     txt  = mode_change_str
-    txt += send_str + "CONTINUE;\n" 
+    txt += send_str 
     return txt
 

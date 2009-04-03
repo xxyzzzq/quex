@@ -198,7 +198,9 @@ $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
 $$END_OF_STREAM_ACTION$$
-     return;
+     /* End of Stream causes a return from the lexical analyzer, so that no
+      * tokens can be filled after the termination token.                    */
+     return;          
 
 $$TERMINAL_DEFAULT-DEF$$
 $$DEFAULT_ACTION$$
