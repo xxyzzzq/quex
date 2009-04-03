@@ -112,14 +112,11 @@ void print(quex::ISLexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, 
 void get_token_from_users_queue(quex::ISLexer& qlex, quex::Token& Token)
 {
     static quex::Token   Begin[3];
-    static quex::Token*  End        = Begin + 3;
-    static quex::Token*  water_mark = Begin;
-    static quex::Token*  iterator   = water_mark;
+    static quex::Token*  End  = Begin + 3;
     
-    if( iterator == water_mark ) {
-        water_mark = qlex.receive(Begin, End);
-        iterator   = Begin;
+    if( QuexTokenQueue_is_empty(qlex._token_queue) ) {
+        qlex.receive(Begin, End);
     }
-    Token = *iterator++;
+    Token = *qlex._token_queue.read_iterator++;
 }
 #endif

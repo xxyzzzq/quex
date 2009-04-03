@@ -511,6 +511,17 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "##\n";
         std::cout << "###############################################################################\n";
 #       endif
+#       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+        QUEX_TYPE_TOKEN*    token_chunk = new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE]; 
+        QuexTokenQueue_init(_token_queue, 
+                            token_chunk,
+                            token_chunk + QUEX_SETTING_TOKEN_QUEUE_SIZE);
+#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+        QuexTokenQueue_init(_token_queue, 0, 0);
+#       else
+        token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
+#       endif
+
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -530,17 +541,6 @@ $$CONSTRUCTOR_EXTENSTION$$
                   QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
     {
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
-
-#       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        QUEX_TYPE_TOKEN*    token_chunk = new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE]; 
-        QuexTokenQueue_init(_token_queue, 
-                            token_chunk,
-                            token_chunk + QUEX_SETTING_TOKEN_QUEUE_SIZE);
-#       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-        QuexTokenQueue_init(_token_queue, 0, 0);
-#       else
-        token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
-#       endif
 
         counter.init();
 
@@ -633,6 +633,7 @@ $$MEMENTO_EXTENSIONS$$
                    self._token_queue.read_iterator,
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
         }
+        QuexTokenQueue_reset(self._token_queue);
 #       endif
 
 $$MEMENTO_EXTENSIONS_PACK$$
@@ -650,19 +651,22 @@ $$MEMENTO_EXTENSIONS_PACK$$
         self.__current_mode_p   = memento->current_mode_p;
         
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        /* When one returns from a file, the last token of the file was the terminating 
+        /* On return from a file, the last token of the file was the terminating 
          * token. It is the occurence of this token that triggers a 'return from include'.
          * Thus, the token queue **must** be empty at this point in time.                  */
         __quex_assert( QuexTokenQueue_is_empty(self._token_queue) );
+
         if( memento->token_queue.remaining_n != 0 ) {
             memcpy(self._token_queue.begin, memento->token_queue.remainder, 
                    sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
-            self._token_queue.read_iterator  = self._token_queue.begin;
-            self._token_queue.write_iterator = self._token_queue.begin + memento->token_queue.remaining_n;
-            self._token_queue.remaining_repetitions_of_last_token_n = 0;
 
             MemoryManager_TokenArray_free(memento->token_queue.remainder, memento->token_queue.remaining_n);
         }
+        /* Reset the read and write iterators */
+        self._token_queue.read_iterator  = self._token_queue.begin;
+        self._token_queue.write_iterator = self._token_queue.begin + memento->token_queue.remaining_n;
+        self._token_queue.remaining_repetitions_of_last_token_n = 0;
+        QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue);
 #       endif
 
 $$MEMENTO_EXTENSIONS_UNPACK$$

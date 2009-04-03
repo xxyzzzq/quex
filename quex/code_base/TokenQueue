@@ -58,7 +58,7 @@ namespace quex {
         __quex_assert(me->read_iterator  >= me->begin);
         __quex_assert(me->write_iterator >= me->read_iterator);
         /* If the following breaks, it means that the given queue size was to small */
-        __quex_assert(me->end_minus_safety_border >= me->begin);
+        __quex_assert(me->end_minus_safety_border >= me->begin + 1);
         if( me->write_iterator > me->end ) { 
             QUEX_ERROR_EXIT("Error: Token queue overflow. This happens if too many tokens are sent\n"
                             "       as a reaction to one single pattern match. Use quex's command line\n"

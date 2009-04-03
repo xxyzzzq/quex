@@ -197,7 +197,9 @@ In some scenarios [#f1]_ this requires extra infrastructure to be implemented.
    which is provided has at least the size of the safety border plus one. The
    safety border is defined as the macro 
 
-      ``QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER``
+               ``QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER``
+
+   If a token array of lesser size is passed, the engine throws an exception.
 
 .. rubric:: Footnotes
 

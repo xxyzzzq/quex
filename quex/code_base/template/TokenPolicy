@@ -73,4 +73,16 @@
 #define QUEX_TOKEN_POLICY_SET_4(X0, X1, X2, X3)     __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3);
 #define QUEX_TOKEN_POLICY_SET_5(X0, X1, X2, X3, X4) __QUEX_CURRENT_TOKEN_ACCESS.set(X0, X1, X2, X3, X4);
 
+
+/* Ensure that no token is sent after the token 'TERMINATION'. If files are included
+ * the token queue is reset.                                                          */
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION() \
+           __quex_assert(   _token_queue.write_iterator == _token_queue.begin \
+                         || (_token_queue.write_iterator-1)->type_id() != __QUEX_TOKEN_ID_TERMINATION)
+#else
+#   define QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION() 
+           /* empty */
+#endif
+
 #endif /* __INCLUDE_GUARD__QUEX__TOKEN_POLICY__ */
