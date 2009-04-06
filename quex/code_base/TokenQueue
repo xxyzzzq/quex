@@ -30,25 +30,25 @@ namespace quex {
     } QuexTokenQueue;
 
 #   define QuexTokenQueue_init(me, Memory, MemoryEnd) \
-          do {                                                                             \
-             me.begin                   = Memory;                                          \
-             me.end                     = MemoryEnd;                                       \
-             me.end_minus_safety_border = me.end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
-             QuexTokenQueue_reset(me);                                                     \
+          do {                                                                                 \
+             (me).begin                   = Memory;                                            \
+             (me).end                     = MemoryEnd;                                         \
+             (me).end_minus_safety_border = (me).end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
+             QuexTokenQueue_reset(me);                                                         \
           } while(0)
  
 #   define QuexTokenQueue_reset(me) \
-           do {                                                                   \
-               me.read_iterator = me.write_iterator = (QUEX_TYPE_TOKEN*)me.begin; \
-               me.remaining_repetitions_of_last_token_n = 0;                      \
+           do {                                                                         \
+               (me).read_iterator = (me).write_iterator = (QUEX_TYPE_TOKEN*)(me).begin; \
+               (me).remaining_repetitions_of_last_token_n = 0;                          \
            } while(0)
 
-#   define QuexTokenQueue_is_full(me)      (me.write_iterator >= me.end_minus_safety_border) 
-#   define QuexTokenQueue_is_empty(me)     (me.read_iterator == me.write_iterator)
-#   define QuexTokenQueue_pop(me)          (me.read_iterator++)
-#   define QuexTokenQueue_begin(me)        (me.begin)
-#   define QuexTokenQueue_back(me)         (me.end - 1)
-#   define QuexTokenQueue_available_n(me)  (me.end - me.write_iterator)
+#   define QuexTokenQueue_is_full(me)      ((me).write_iterator >= (me).end_minus_safety_border) 
+#   define QuexTokenQueue_is_empty(me)     ((me).read_iterator == (me).write_iterator)
+#   define QuexTokenQueue_pop(me)          ((me).read_iterator++)
+#   define QuexTokenQueue_begin(me)        ((me).begin)
+#   define QuexTokenQueue_back(me)         ((me).end - 1)
+#   define QuexTokenQueue_available_n(me)  ((me).end - (me).write_iterator)
 
 #   ifdef QUEX_OPTION_ASSERTS
     QUEX_INLINE void  
@@ -69,6 +69,139 @@ namespace quex {
 #   else
 #      define QUEX_TOKEN_QUEUE_ASSERT(me) /* empty */
 #   endif
+
+    typedef struct {
+        QUEX_TYPE_TOKEN*    token_list;
+        size_t              size;
+    } QuexTokenQueueRemainder;
+
+#if 0
+    QUEX_INLINE void
+    QuexTokenQueueRemainder_save(QuexTokenQueueRemainder* me, QuexTokenQueue* token_queue)
+    {
+        QUEX_TOKEN_QUEUE_ASSERT(token_queue);
+        /* State of the token queue at the entry of this function:
+         *
+         *                           [A0] [B0]   [A1] [B1]   [A2] [B2]
+         *                            |    |      |    |      |   | 
+         *    |    |      |    |      |    |      |    |      |   | 
+         *  [ token 1  ][ token 2  ][ token 3  ][ token 4  ][ token 5  ][ ....
+         *                          |                                   |
+         *                          read_iterator                       write_iterator
+         *                                          
+         *
+         * 1. Step: Allocate a plain chunk of memory, to carry the remaining tokens:
+         *
+         *                           [ store 1  ][ store 2  ][ store 3  ]
+         *
+         *          The elements of this plain chunk of memory are neither subject
+         *          to constructor nor destructor calls.
+         *
+         * 2. Step: Make a plain copy of the tokens of the remainder (from read_iterator
+         *          to write_iterator.
+         *
+         *                        [A0] [B0]   [A1] [B1]   [A2] [B2]
+         *                         |    |      |    |      |   | 
+         *                         |    |      |    |      |   | 
+         *                       [ store 1  ][ store 2  ][ store 3  ]
+         *
+         *      As a consequence, the objects to which the original tokens referred
+         *      are now referred by the stored tokens. However, at the time of 'restore'
+         *      the content is copied at the beginning of the queue. 
+         *
+         *      !! Thus, the following scenerio is conceivable:
+         *      !!
+         *      !!    [A0] [B0]   [A1] [B1]   [A2] [B2]   [A1] [B1]   [A2] [B2]
+         *      !!     |    |      |    |      |    |      |    |      |   | 
+         *      !!     |    |      |    |      |    |      |    |      |   | 
+         *      !!   [ token 1  ][ token 2  ][ token 3  ][ token 4  ][ token 5  ][ ....
+         *      !!   |                                   |
+         *      !!   begin                               |
+         *      !!   |<--------- store size ------------>|
+         *      !!
+         *      !! If this was happening, then the destructor for the objects A1, B1, ... 
+         *      !! would be called twice at the destruction time of the token queue!       
+         *      !!
+         *      !! PREVENTION: See next step.
+         *
+         * 3. Step: Calling placement new on token objects that are saved:
+         *          Resulting original token queue:
+         *
+         *                           [X1] [X1]   [Y2] [Y2]   [Z0] [Z0]   
+         *                            |    |      |    |      |   | 
+         *    |    |      |    |      |    |      |    |      |   | 
+         *  [ token 1  ][ token 2  ][ token 3  ][ token 4  ][ token 5  ][ ....
+         *                          |                                   |
+         *                          read_iterator                       write_iterator
+         *
+         *  Note, that token 3 originally not subject to 'double occurence'. However,
+         *  it may be overwritten by filling the queue, and then references to objects
+         *  would get lost.                                                         */
+        me->size = token_queue->write_iterator - token_queue->read_iterator;
+        if( me->size != 0 ) {
+            
+            /* Step 1: allocate plain chunk of memory.                              */
+            if( MemoryManager_TokenArray_allocate(&me->token_list, me->size) == false ) {
+                QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
+            }
+
+            /* Step 2: copy plain chunk of memory                                   */
+            memcpy(me->token_list, token_queue->read_iterator,
+                   sizeof(QUEX_TYPE_TOKEN) * me->size);
+
+            /* Step 3: Call cleaning placement new on objects which are subject to
+             *         potential double deletion.                                   */
+            for(QUEX_TYPE_TOKEN* iterator = token_queue->read_iterator; 
+                iterator != token_queue->write_iterator; ++iterator) {
+                /* Clean-up by placement new */
+                new ((void*)iterator) QUEX_TYPE_TOKEN;
+            }
+        }
+        QuexTokenQueue_reset(*token_queue);
+
+        QUEX_TOKEN_QUEUE_ASSERT(token_queue);
+    }
+
+    QUEX_INLINE void
+    QuexTokenQueueRemainder_restore(QuexTokenQueueRemainder* me, QuexTokenQueue* token_queue)
+    {
+        /* NOTE: When a token queue remainder is restored, this happens as a result
+         *       of 'return from included file'. The return from an included file
+         *       is triggered by a TERMINATION token. By definition, the TERMINATION
+         *       is the last token to be sent. When the user detects a TERMINATION
+         *       token, the read_iterator == write_iterator, which means that the
+         *       token queue is empty. => Thus, the 'refill' can start from the beginning.  
+         *       THIS IS TRUE WHEN THE INLCUDE_PUSH, INCLUDE_POP HAPPENS FROM OUTSIDE
+         *       THE LEXICAL ANALYZER ENGINE.                                            */
+        if( ! QuexTokenQueue_is_empty(*token_queue) ) {
+            QUEX_ERROR_EXIT("Token queue not empty on return from included file. This can\n"
+                            "only happen if include handling was done from inside analyzer\n"
+                            "actions. Please, consider directory demo/005 for an example to\n"
+                            "handle file inclusion.\n");
+        }
+        QUEX_TOKEN_QUEUE_ASSERT(token_queue);
+
+        if( me->size != 0 ) {
+            /* Step 1: Call explicit destructors for token objects that are overwritten  */
+            for(QUEX_TYPE_TOKEN* iterator = token_queue->begin; 
+                iterator != token_queue->begin + me->size; ++iterator) {
+                iterator->~QUEX_TYPE_TOKEN();
+            }
+            /* Step 2: Plain copy of objects stored in the 'remainder store'             */
+            memcpy(token_queue->begin, me->token_list, 
+                   sizeof(QUEX_TYPE_TOKEN) * me->size);
+
+            /* Step 3: De-Allocate the remainder objects                                 */
+            MemoryManager_TokenArray_free(me->token_list, me->size);
+        }
+        /* Reset the read and write iterators */
+        token_queue->read_iterator  = token_queue->begin;
+        token_queue->write_iterator = token_queue->begin + me->size;
+        token_queue->remaining_repetitions_of_last_token_n = 0;
+
+        QUEX_TOKEN_QUEUE_ASSERT(token_queue);
+    }
+#endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex

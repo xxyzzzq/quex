@@ -448,7 +448,8 @@ $$CLASS_BODY_EXTENSION$$
     private:
         struct $$LEXER_CLASS_NAME$$Memento_tag*  _parent_memento;
         //      -- include events (a file is included)
-        template<class InputHandleT> struct $$LEXER_CLASS_NAME$$Memento_tag*  memento_pack(InputHandleT*);
+        template<class InputHandleT> struct $$LEXER_CLASS_NAME$$Memento_tag*  
+            memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
         void  memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*);
 
     protected:
@@ -456,11 +457,11 @@ $$CLASS_BODY_EXTENSION$$
         void virtual on_include_exit() {}
 
     public:
-        template <class InputHandle> void  include_push(InputHandle*             new_input_handle_p, 
+        template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                         const QuexMode&          mode, 
                                                         QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
                                                         const char*              IANA_CodingName = 0x0);
-        template <class InputHandle> void  include_push(InputHandle*             new_input_handle_p, 
+        template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                         const int                MODE_ID         = -1, 
                                                         QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
                                                         const char*              IANA_CodingName = 0x0);
@@ -469,8 +470,6 @@ $$CLASS_BODY_EXTENSION$$
 #   endif
 
     private:
-        void __debug_print_transition(QuexMode* Source, QuexMode* Target);
-
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleT> 
         void                        __constructor_core(InputHandleT*, 
@@ -540,6 +539,7 @@ $$CONSTRUCTOR_EXTENSTION$$
     CLASS::__init(InputHandleT*             input_handle, 
                   QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
     {
+        __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
 
         counter.init();
@@ -571,10 +571,7 @@ $$CONSTRUCTOR_EXTENSTION$$
         CounterType  counter;
         QuexMode*    current_mode_p;
 #       if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        struct {
-            QUEX_TYPE_TOKEN*    remainder;
-            size_t              remaining_n;
-        } token_queue;
+        // QuexTokenQueueRemainder token_queue_remainder;
 #       endif
 
         struct $$LEXER_CLASS_NAME$$Memento_tag*  parent;
@@ -583,7 +580,7 @@ $$MEMENTO_EXTENSIONS$$
     } $$LEXER_CLASS_NAME$$Memento;
  
     template<class InputHandleT> inline struct $$LEXER_CLASS_NAME$$Memento_tag*
-    CLASS::memento_pack(InputHandleT* InputH)
+    CLASS::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
         CLASS& self = *this;
         $$LEXER_CLASS_NAME$$Memento* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
@@ -591,49 +588,12 @@ $$MEMENTO_EXTENSIONS$$
         /* Use placement 'new' for explicit call of constructor */
         new ((void*)memento) $$LEXER_CLASS_NAME$$Memento;
 
-
         memento->parent         = self._parent_memento;
         memento->analyser_core  = *((QuexAnalyser*)this);
         memento->counter        = self.counter;
         memento->current_mode_p = self.__current_mode_p;
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        memento->token_queue.remaining_n =   self._token_queue.write_iterator 
-                                           - self._token_queue.read_iterator;
-        if( memento->token_queue.remaining_n != 0 ) {
-            if(   MemoryManager_TokenArray_allocate(&memento->token_queue.remainder, memento->token_queue.remaining_n)
-               == false ) {
-                QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
-            }
-            /* No placement new (explicit constructor calls) are necessary. If there are objects 
-             * which are pointed to in memory, they keep being pointed to by the copy of the 
-             * pointer of the 'plain' copy. No one else is pointing to those objects later on.
-             *
-             * Before:
-             *
-             *   [A0] [B0]   [A1] [B1]   [A2] [B2]
-             *    |    |      |    |      |   | 
-             *    |    |      |    |      |   | 
-             *  [ token 1  ][ token 2  ][ token 3  ]     [ token    ][ token    ][ token    ]
-             *
-             *  previous token queue                     newly allocated backup storage
-             *
-             * After:
-             *
-             *                                            [A0] [B0]   [A1] [B1]   [A2] [B2]
-             *                                             |    |      |    |      |   | 
-             *                                             |    |      |    |      |   | 
-             *  [ token    ][ token    ][ token    ]     [ token 1  ][ token 2  ][ token 3  ]
-             *
-             *  previous token queue                     newly allocated backup storage
-             *  (which is overriden)
-             *
-             * When the token queue is written back the same applies. Only the original queue
-             * will contain pointers to the objects.                                           */
-            memcpy(memento->token_queue.remainder, 
-                   self._token_queue.read_iterator,
-                   sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
-        }
-        QuexTokenQueue_reset(self._token_queue);
+        // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
 #       endif
 
 $$MEMENTO_EXTENSIONS_PACK$$
@@ -641,7 +601,7 @@ $$MEMENTO_EXTENSIONS_PACK$$
         return memento;
     }
 
-    QUEX_INLINE void
+    inline void
     CLASS::memento_unpack($$LEXER_CLASS_NAME$$Memento* memento)
     {
         CLASS& self = *this;
@@ -651,22 +611,7 @@ $$MEMENTO_EXTENSIONS_PACK$$
         self.__current_mode_p   = memento->current_mode_p;
         
 #       if defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE ) || defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        /* On return from a file, the last token of the file was the terminating 
-         * token. It is the occurence of this token that triggers a 'return from include'.
-         * Thus, the token queue **must** be empty at this point in time.                  */
-        __quex_assert( QuexTokenQueue_is_empty(self._token_queue) );
-
-        if( memento->token_queue.remaining_n != 0 ) {
-            memcpy(self._token_queue.begin, memento->token_queue.remainder, 
-                   sizeof(QUEX_TYPE_TOKEN) * memento->token_queue.remaining_n);
-
-            MemoryManager_TokenArray_free(memento->token_queue.remainder, memento->token_queue.remaining_n);
-        }
-        /* Reset the read and write iterators */
-        self._token_queue.read_iterator  = self._token_queue.begin;
-        self._token_queue.write_iterator = self._token_queue.begin + memento->token_queue.remaining_n;
-        self._token_queue.remaining_repetitions_of_last_token_n = 0;
-        QUEX_TOKEN_QUEUE_ASSERT(&self._token_queue);
+        // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
 #       endif
 
 $$MEMENTO_EXTENSIONS_UNPACK$$

@@ -37,52 +37,18 @@ main(int argc, char** argv)
     string         Directory("example/");
     string         Filename(argv[1]);
     ifstream       istr((Directory + Filename + ".txt").c_str());
-    ifstream*      sh = 0x0;
     quex::ISLexer  qlex(&istr);
 
     qlex.file_name = Directory + Filename + ".txt";
     delete sh;
     cout << "[START]\n";
 
-    bool continue_lexing_f = true;
-
     do {
         RECEIVE(Token);
 
         print(qlex, Token, true);
 
-        switch( Token.type_id() ) {
-        default: break;
-
-        case QUEX_TKN_INCLUDE: 
-             RECEIVE(Token);
-             print(qlex, Token, true);
-             if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
-                 continue_lexing_f = false;
-                 print(qlex, "found 'include' without a subsequent filename. hm?: ", 
-                       (const char*)(Token.type_id_name().c_str()),
-                       (const char*)(Token.text().c_str()));
-                 break;
-             }
-
-             Filename = Directory + string((const char*)Token.text().c_str());
-             sh = new ifstream((const char*)(Filename.c_str()));
-             if( sh == NULL || sh->bad() ) {
-                 print(qlex, "file not found\n");
-                 return 0;
-             }
-             qlex.include_push(sh);
-             qlex.file_name = Filename;
-             break;
-
-        case QUEX_TKN_TERMINATION:
-            if( qlex.include_pop() == false ) {
-                continue_lexing_f = false;
-            } 
-            break;
-        }
-
-    } while( continue_lexing_f );
+    } while( Token.type_id() != QUEX_TKN_TERMINATION );
 
     cout << "[END]\n";
 

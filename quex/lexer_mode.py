@@ -350,11 +350,11 @@ class LexMode:
         #     somehow, it needs some matches in the base classes, otherwise it cannot
         #     act as a pattern state machine.
         if self.options["inheritable"] != "only" and self.has_matches() == False:
-            error_msg("mode '%s' was allowed without <inheritable: only> despite it contains no matches\n" % \
-                      (self.name) + \
-                      "because it contains event handlers. Finally, though, it seems not want to inherit\n" + \
-                      "any mode that contains matches. Therefore, it cannot act as a pattern detecting\n" + \
-                      "state machine and cannot be a lexical analyzer mode.",
+            error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
+                      "However, it contains no matches--only event handlers. Without pattern\n"     + \
+                      "matches it cannot act as a pattern detecting state machine, and thus\n"      + \
+                      "cannot be an independent lexical analyzer mode. Define the option\n"         + \
+                      "<inheritable: only>.", \
                       self.filename, self.line_n)
 
         # (*) Enter/Exit Transitions

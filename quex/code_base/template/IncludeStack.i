@@ -5,36 +5,40 @@
 #include <quex/code_base/template/Analyser>
 namespace quex { 
 
-    template <class InputHandle> inline void    
-    CLASS::include_push(InputHandle*             new_input_handle_p, 
+    template <class InputHandleT> inline void    
+    CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
                         const QuexMode&          mode, 
                         QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */,
                         const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-        __push(new_input_handle_p, mode.analyser_function, IANA_CodingName);
+        include_push<InputHandleT>(InputName, mode.id(), BFT, IANA_CodingName);
     }
 
-    template <class InputHandle> inline void    
-    CLASS::include_push(InputHandle*            new_input_handle_p, 
-                       const int                MODE_ID /* = -1 */, 
-                       QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
-                       const char*              IANA_CodingName /* = 0x0 */)
+    template <class InputHandleT> inline void    
+    CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
+                        const int                MODE_ID /* = -1 */, 
+                        QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
+                        const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
         __quex_assert(    MODE_ID == -1 
                       || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
-        __quex_assert(new_input_handle_p != 0x0);
         // IANA_CodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
 
         /* Store the lexical analyser's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
-        CLASS_MEMENTO*  m = memento_pack(new_input_handle_p);
+        InputHandleT*   input_handle = 0x0;
+        CLASS_MEMENTO*  m            = memento_pack(InputName, &input_handle);
+        if( m == 0x0 ) return;
+        if( input_handle == 0x0 ) {
+            QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
+        }
 
         if( MODE_ID != -1 ) this->set_mode_brutally(MODE_ID);
 
         /* Initialize the lexical analyzer for the new input stream       */
-        this->__init(new_input_handle_p, BFT, IANA_CodingName);
+        this->__init(input_handle, BFT, IANA_CodingName);
 
         /* Keep track of 'who's your daddy?'                              */
         m->parent = this->_parent_memento;

@@ -19,14 +19,19 @@ __header_definitions_txt = """
 #   include <quex/code_base/TokenQueue>
 #endif
 
-#ifdef CONTINUE
+#ifdef    CONTINUE
 #   undef CONTINUE
+#endif
+#ifdef    RETURN
+#   undef RETURN
 #endif
 
 #define RETURN   return
 #define CONTINUE $$GOTO_START_PREPARATION$$ 
-
-static QUEX_TYPE_CHARACTER  QuexLexemeNullObject = 0x0;
+#ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
+#   define __QUEX_INFO_LEXEME_NULL_DEFINED
+    QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
+#endif
 """
 
 def __header_definitions(LanguageDB):
@@ -192,7 +197,7 @@ __terminal_state_str  = """
 #define Lexeme       (me->buffer._lexeme_start_p)
 #define LexemeBegin  (me->buffer._lexeme_start_p)
 #define LexemeEnd    (me->buffer._input_p)
-#define LexemeNull   (&QuexLexemeNullObject)
+#define LexemeNull   (&__QuexLexemeNullObject)
 #define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 

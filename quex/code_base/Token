@@ -54,6 +54,7 @@ namespace quex {
         // set with the .set(..) functions when pushed.
         //
         Token(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text) { set(ID, Text); }
+        ~Token() { }
 
         // (*) convert data to string
         const __string   type_string() const;
@@ -106,7 +107,7 @@ namespace quex {
 
     inline void    
     Token::set(QUEX_TYPE_TOKEN_ID Type, const QUEX_TYPE_CHARACTER* Text)
-    { _id = Type; _text = __string(Text); }
+    { _id = Type; _text = Text; }
 
     inline void    
     Token::set(QUEX_TYPE_TOKEN_ID Type, const int Number1)
