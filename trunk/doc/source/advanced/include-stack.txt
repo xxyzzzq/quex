@@ -148,7 +148,75 @@ of the lexical analyzer:
       if there was no memento. The analyzer is in the root of all files. The most appropriate
       reaction to this return value is to stop analyzis--at least for the given file.
 
-.. note::
+The Token Queue and The Include Stack
+-------------------------------------
+
+There are two basic ways to handle the inclusion of files during analyzis.
+First, files can be included from within analyzer actions, i.e. as consequence
+of a pattern match or an event. Second, they can be included from outside when
+the ``.receive(...)`` function returns some user define ``INCLUDE`` token.  As
+long as the token policy ``users_token`` is used there is no problem and the
+functions ``include_push(...)`` and ``include_pop(...)`` as described above can
+be used without precaution. When a queue token policy is used, though, the
+possibilities of handling become plenty and varry in terms of performance and
+memory usage. Therefore, the token queues are not subject to the automatic
+include handling. This section outlines the process and explains how to
+implement ones own strategy easily.
+
+Let us review the two possibilities to handle the inclusion of files:
+
+  #. The file is included from inside pattern actions. The code fragment
+     displays how this can be done for the example of a pattern ``\input``
+     triggers the inclusion of a file.
+
+     .. code-block:: cpp
+
+         mode NORMAL : 
+              E_O_F 
+         { 
+             ...
+             "\\input" => GOSUB(READ_INCLUDED_FILENAME);
+             ...
+         }
+         ...
+         mode READ_INCLUDED_FILENAME : 
+              E_O_F 
+         {
+             [a-bA-Z_0-9]".txt" { 
+                 /* open the file to be included    */
+                 FILE*   fh = fopen(Lexeme, "r");
+                 /* push the lexical analyzer state */
+                 self.include_push(fh);
+                 /* return to the NORMAL mode       */
+                 self.enter_mode(NORMAL);
+                 /* IMPORTANT */
+                 return;
+             }
+
+             . { 
+                 my_error_message("Missing file name after '\\input'");
+             }
+         }
+
+     When an included file returns from the analyzer state must be restored. The
+     end of an inclusion is triggered by end of stream. Both modes need to support
+     the same this behavior so they inherit from a common base mode ``E_O_F``. It
+     is defined as 
+            
+     .. code-block:: cpp
+
+         mode E_O_F {
+             <<EOF>> { 
+                 /* If there was no state to restore, then we are in the root file
+                  * and return the TERMINATION token, we are totally done.          */
+                 if( self.include_pop() == false ) {
+                     self.send(QUEX_TKN_TERMINATION);
+                     return;
+                 }
+                 /* The include_pop(...) has reset the state of the analyzer. 
+                  * Nothing to be done.                                             */
+             }
+         } 
 
    The user is basically isolated from the processes behind the scenes. The consistency
    is even maintained in cases where a queue token policy is used, i.e. policy 

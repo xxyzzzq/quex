@@ -12,6 +12,23 @@ inline const char*
 CLASS::mode_name() const
 { return __current_mode_p->name; }
 
+#   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
+inline void
+QUEX_DEBUG_PRINT_TRANSITION(CLASS* me, QuexMode* Source, QuexMode* Target)
+{
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    std::cerr << "line = " << me->line_number_at_begin() << std::endl;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    std::cerr << "column = " << me->column_number_at_begin() << std::endl;
+#       endif
+    if( Source != 0x0 ) std::cerr << "FromMode: " << Source->name;
+    std::cerr << " ToMode: " << Target->name << std::endl;
+}
+#else 
+#   define QUEX_DEBUG_PRINT_TRANSITION(ME, X, Y) /* empty */
+#   endif
+
 inline void
 CLASS::set_mode_brutally(const int ModeID)
 { set_mode_brutally(*(mode_db[ModeID])); }
@@ -19,35 +36,24 @@ CLASS::set_mode_brutally(const int ModeID)
 inline void 
 CLASS::set_mode_brutally(const QuexMode& Mode) 
 { 
+    /* To be optimized aways if its function body is empty (see above) */
+    QUEX_DEBUG_PRINT_TRANSITION(this, __current_mode_p, (QuexMode*)&Mode);  
+
     __current_mode_p                        = (QuexMode*)&Mode;
     QuexAnalyser::current_analyser_function = Mode.analyser_function; 
-}
-
-inline void
-CLASS::__debug_print_transition(QuexMode* Source, QuexMode* Target)
-{
-#   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    std::cerr << "line = " << line_number_at_begin() << std::endl;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    std::cerr << "column = " << column_number_at_begin() << std::endl;
-#       endif
-    std::cerr << "FromMode: " << Source->name << " ToMode: " << Target->name << std::endl;
-#   endif
 }
 
 inline void    
 CLASS::enter_mode(/* NOT const*/ QuexMode& TargetMode) 
 {
+#   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
     /* NOT const */ QuexMode& SourceMode = mode();
-
-    /* To be optimized aways if its function body is empty (see above) */
-    __debug_print_transition(&SourceMode, &TargetMode);  
+#   endif
 
 #   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
     SourceMode.on_exit(this, &TargetMode);
 #   endif
+
     set_mode_brutally(TargetMode.id);
 
 #   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT

@@ -7,13 +7,18 @@ header {
 
 body {
     std::string file_name;
+    std::string directory;
     size_t      include_depth;
+
+    void  space(size_t Offset = 0) {
+        for(size_t i=0; i<self.include_depth + Offset; ++i) std::cout << "    ";
+    }
 }
 
 init {
     include_depth = 0;
+    directory     = "example/";
 }
-
 
 memento {
     std::string     file_name;
@@ -21,18 +26,31 @@ memento {
 }
 
 memento_pack {
+    std::string  Filename = self.directory + (const char*)InputName;
+    *input_handle = new std::ifstream(Filename.c_str(), std::ios::binary);
+
+    if( (*input_handle)->fail() ) {
+        delete *input_handle;
+        self.space(1);
+        printf("%s: file '%s' cannot be opened.\n", self.file_name.c_str(), Filename.c_str());
+        return 0x0;
+    }
     memento->file_name = self.file_name;
-    for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
-    std::cout << "Memento: including from " << self.file_name << std::endl;
+    self.space(1);
+    std::cout << ">> Memento " << std::endl;
     self.include_depth += 1;
-    /* store stream handle for 'close' on end of file */
-    memento->included_sh = InputH;
+
+    self.space(1);
+    printf("%s:%i: include '%s'.\n", self.file_name.c_str(), (int)self.line_number(), Filename.c_str());
+
+    self.file_name = Filename;
+    memento->included_sh = *input_handle;
 }
 
 memento_unpack {
     self.file_name = memento->file_name;
-    for(size_t i=0; i<=self.include_depth; ++i) std::cout << "    ";
-    std::cout << "Memento: return to " << self.file_name << std::endl;
+    self.space();
+    std::cout << "<< Memento " << std::endl;
     self.include_depth -= 1;
     /* 'close' on end of file */
     memento->included_sh->close();
@@ -42,15 +60,39 @@ memento_unpack {
 token {
    INCLUDE
    IDENTIFIER
-   WHITESPACE
    STRING
 }
 
-mode MAIN
+mode END_INCLUDED_FILE : <inheritable: only> {
+    <<EOF>> { 
+       if( self.include_pop() ) return;
+       self.send(QUEX_TKN_TERMINATION);
+       return;
+    }
+}
+
+mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
+    [a-zA-Z0-9_.]+ { 
+        /* Pop the previous mode, so that the right mode is setup when one
+         * returns from the included file.                                 */
+        self.pop_mode();
+        self.include_push<std::ifstream>(Lexeme);
+        /* IMPORTANT */
+        return;
+    }
+
+    [ \t\r\n]+      {}
+
+    . { 
+        printf("%s: missing file name after 'include'.", self.file_name.c_str());
+        exit(-1);
+    }
+}
+
+mode MAIN : END_INCLUDED_FILE
 {
-    <<EOF>>         => QUEX_TKN_TERMINATION(LexemeNull);
     //
-    "include"       => QUEX_TKN_INCLUDE(LexemeNull); 
+    "include"       => GOSUB(OPEN_INCLUDED_FILE); 
     //
     [_a-zA-Z0-9.]+  => QUEX_TKN_IDENTIFIER(Lexeme); 
     [ \t\r\n]+      {}
