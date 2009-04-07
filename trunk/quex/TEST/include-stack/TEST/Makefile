@@ -21,15 +21,15 @@ CC =  \
 hwut-info:
 	@echo $(TESTS)
 
-queue.exe:       lexer.cpp simple.qx
+queue.exe:       lexer.cpp simple.qx $(QUEX_CORE)
 	quex -i simple.qx -o ISLexer --token-policy queue
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -lefence -o $@
 
-users_token.exe: lexer.cpp simple.qx
+users_token.exe: lexer.cpp simple.qx $(QUEX_CORE)
 	quex -i simple.qx -o ISLexer --token-policy users_token
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
-users_queue.exe: lexer.cpp simple.qx
+users_queue.exe: lexer.cpp simple.qx $(QUEX_CORE)
 	quex -i simple.qx -o ISLexer --token-policy users_queue
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
