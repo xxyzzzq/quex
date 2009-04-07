@@ -24,27 +24,27 @@ CC = $(CCX) \
 hwut-info:
 	@echo $(TESTS)
 
-queue.exe: lexer.cpp 
+queue.exe:            lexer.cpp $(QUEX_CORE)
 	quex -i simple.qx -o TPLex --token-policy queue
 	$(CC) -I$(QUEX_PATH) -D__QUEX_OPTION_TEST_PSEUDO_ANALYSIS lexer.cpp $(ENGINE) -o $@
 
-users_token.exe: lexer.cpp 
+users_token.exe:      lexer.cpp  $(QUEX_CORE)
 	quex -i simple.qx -o TPLex --token-policy users_token
 	$(CC) -I$(QUEX_PATH) -D__QUEX_OPTION_TEST_PSEUDO_ANALYSIS lexer.cpp $(ENGINE) -o $@
 
-users_queue.exe: lexer.cpp 
+users_queue.exe:      lexer.cpp  $(QUEX_CORE)
 	quex -i simple.qx -o TPLex --token-policy users_queue
 	$(CC) -I$(QUEX_PATH) -D__QUEX_OPTION_TEST_PSEUDO_ANALYSIS lexer.cpp $(ENGINE) -o $@
 
-queue-real.exe: lexer.cpp 
+queue-real.exe:       lexer.cpp  $(QUEX_CORE)
 	quex -i real.qx -o TPLex --token-policy queue
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
-users_token-real.exe: lexer.cpp 
+users_token-real.exe: lexer.cpp  $(QUEX_CORE)
 	quex -i real.qx -o TPLex --token-policy users_token
 	$(CC) -I$(QUEX_PATH) lexer.cpp $(ENGINE) -o $@
 
-users_queue-real.exe: lexer.cpp 
+users_queue-real.exe: lexer.cpp  $(QUEX_CORE)
 	quex -i real.qx -o TPLex --token-policy users_queue
 	$(CCX) -I$(QUEX_PATH) -DQUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER=1 lexer.cpp $(ENGINE) -o $@
 

@@ -40,7 +40,6 @@ main(int argc, char** argv)
     quex::ISLexer  qlex(&istr);
 
     qlex.file_name = Directory + Filename + ".txt";
-    delete sh;
     cout << "[START]\n";
 
     do {

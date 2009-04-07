@@ -35,8 +35,14 @@ where the former line calls the token constructor with a numeric argument, and
 the second one calls it with the lexeme itself.  Additional arguments are
 conceivable, but they would require a user defined token class.
 
-Note, that information about the lexeme is available via the following 
-'variables' [#f1]_.
+.. _fig-lexeme-variables:
+
+.. figure:: ../../figures/lexeme-variables.*
+
+   Lexeme description variables.
+
+Figure :ref:`Lexeme variables <fig-lexeme-variables>` shows the variables [#f1]_
+which are available to access the matched lexeme. In detail they are:
 
 .. data:: Lexeme
 

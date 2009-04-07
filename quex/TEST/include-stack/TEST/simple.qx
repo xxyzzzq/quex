@@ -63,12 +63,14 @@ token {
    STRING
 }
 
-mode END_INCLUDED_FILE : <inheritable: only> {
+mode END_INCLUDED_FILE {
     <<EOF>> { 
        if( self.include_pop() ) return;
        self.send(QUEX_TKN_TERMINATION);
        return;
     }
+
+    [ \t\r\n]+  { }
 }
 
 mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
@@ -81,7 +83,6 @@ mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
         return;
     }
 
-    [ \t\r\n]+      {}
 
     . { 
         printf("%s: missing file name after 'include'.", self.file_name.c_str());
@@ -91,11 +92,8 @@ mode OPEN_INCLUDED_FILE : END_INCLUDED_FILE {
 
 mode MAIN : END_INCLUDED_FILE
 {
-    //
     "include"       => GOSUB(OPEN_INCLUDED_FILE); 
-    //
     [_a-zA-Z0-9.]+  => QUEX_TKN_IDENTIFIER(Lexeme); 
-    [ \t\r\n]+      {}
 }
 
 
