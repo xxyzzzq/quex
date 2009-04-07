@@ -17,13 +17,13 @@ inline void
 QUEX_DEBUG_PRINT_TRANSITION(CLASS* me, QuexMode* Source, QuexMode* Target)
 {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    std::cerr << "line = " << me->line_number_at_begin() << std::endl;
+    std::cout << "line = " << me->line_number_at_begin() << std::endl;
 #       endif
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    std::cerr << "column = " << me->column_number_at_begin() << std::endl;
+    std::cout << "column = " << me->column_number_at_begin() << std::endl;
 #       endif
-    if( Source != 0x0 ) std::cerr << "FromMode: " << Source->name;
-    std::cerr << " ToMode: " << Target->name << std::endl;
+    if( Source != 0x0 ) std::cout << "FromMode: " << Source->name << " ";
+    std::cout << "ToMode: " << Target->name << std::endl;
 }
 #else 
 #   define QUEX_DEBUG_PRINT_TRANSITION(ME, X, Y) /* empty */
@@ -51,13 +51,13 @@ CLASS::enter_mode(/* NOT const*/ QuexMode& TargetMode)
 #   endif
 
 #   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-    SourceMode.on_exit(this, &TargetMode);
+    SourceMode.on_exit(this, &SourceMode);
 #   endif
 
     set_mode_brutally(TargetMode.id);
 
 #   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-    TargetMode.on_entry(this, &SourceMode);         
+    TargetMode.on_entry(this, &TargetMode);         
 #   endif
 }
 

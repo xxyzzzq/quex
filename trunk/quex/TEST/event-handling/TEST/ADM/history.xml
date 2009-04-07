@@ -1,8 +1,8 @@
-<history date="Tue Apr  7 10:26:32 2009" element-n="4">
+<history date="Tue Apr  7 10:56:39 2009" element-n="4">
     <day year="2009" month="04" day="07">
         <history-init time="05:54:43"/>
         <crc-error time="08:24:24" application="transition-x.exe" choice="1" database-crc="-683060918" real-crc="2085579180"/>
         <crc-error time="08:24:24" application="transition-x.exe" choice="2" database-crc="0" real-crc="-932257635"/>
-        <test-runs-today n="10" ok-n="5" fail-n="3" else-n="2" last-run="oll korrekt" last-time="08:26:32"/>
+        <test-runs-today n="11" ok-n="6" fail-n="3" else-n="2" last-run="oll korrekt" last-time="08:56:39"/>
     </day>
 </history>
