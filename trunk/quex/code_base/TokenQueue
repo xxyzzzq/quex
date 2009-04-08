@@ -75,7 +75,7 @@ namespace quex {
         size_t              size;
     } QuexTokenQueueRemainder;
 
-#if 0
+#if 1
     QUEX_INLINE void
     QuexTokenQueueRemainder_save(QuexTokenQueueRemainder* me, QuexTokenQueue* token_queue)
     {

@@ -59,6 +59,8 @@ number counting should be in place for error reporting.
    of the pattern match.
 
 
+.. _sec-token-stamping:
+
 Stamping Tokens
 ---------------
 

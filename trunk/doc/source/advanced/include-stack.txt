@@ -153,195 +153,18 @@ of the lexical analyzer:
       if there was no memento. The analyzer is in the root of all files. The most appropriate
       reaction to this return value is to stop analyzis--at least for the given file.
 
-HOWTO
------
+.. note::
+  
+   There are two state elements of the analyzer which are *not* subject to
+   storage on inclusion. They are the
 
-There are two basic ways to handle the inclusion of files during analyzis.
-First, files can be included from within analyzer actions, i.e. as consequence
-of a pattern match or an event. Second, they can be included from outside when
-the ``.receive(...)`` function returns some user define ``INCLUDE`` token.  If
-the token policy ``users_token`` is used there is no problem with the second
-solution. Nevertheless, the first solution is more straightforward, causes less
-code fragmentation and involves less complexity. This section explains how to
-do include handling by means of analyzer actions, i.e. from 'inside'.  The
-second solution is mentioned in the :ref`Caveats <sec-include-stack-caveat>`
-section at the end of this chapter.
+       * token queue and the
 
-The 'usual' case in a programming language is that there is some keyword
-triggering a file inclusion, plus a string that identifies the stream
-to be included, e.g. ::
+       * mode stack. 
 
-    \input{math.tex}
+   Both are not stored away or re-initialized when a new file is entered. If
+   this is intended it must be done by hand.
 
-or
-
-    include header.txt
-
-The include pattern, i.e. ``\\include`` or ``#include`` triggers the 
-inclusion. But, when it triggers the file name is not yet present. One
-cannot trigger a file inclusion whenever a string matches, since it
-may also occur in other expressions. This is a case for a dedicated
-mode to be entered when the include pattern triggers. This dedicated
-mode triggers an inclusion as soon as a string came in. In practical
-this looks like this:
-
-.. code-block:: cpp
-
-    mode MAIN : BASE
-    {
-        "include"       => GOSUB(OPEN_INCLUDED_FILE); 
-        [_a-zA-Z0-9.]+  => QUEX_TKN_IDENTIFIER(Lexeme); 
-        [ \t\r\n]+      {}
-    }
-
-When the trigger ``include`` matches in mode ``MAIN`, then it transits
-into mode ``OPEN_INCLUDED_FILE``. Even though, it does match strings
-the same way as ``MAIN``, the matches in ``MAIN`` are not effected by
-this treatment. Notice, that mode ``MAIN`` is derived from ``BASE`` 
-which is to be discussed later on. The mode ``OPEN_INCLUDED_FILE``
-is defined as
-
-.. code-block:: cpp
-
-    mode OPEN_INCLUDED_FILE : BASE 
-    {
-        [a-zA-Z0-9_.]+ { 
-            /* We want to be revived in 'MAIN' mode, so pop it up before freezing. */
-            self.pop_mode();
-            /* Freeze the lexer state */
-            self.include_push<std::ifstream>(Lexeme);
-        }
-
-        . { 
-            printf("Missing file name after 'include'.");
-            exit(-1);
-        }
-    }
-
-As soon as a filename is matched the previous mode is popped from the mode
-stack, and then the analyzer state is packed into a memento using the function
-``include_push``. The memento will provide an object of class ``ifstream``, so
-it has to be told via the template parameter. The default match of this mode
-simply tells that no file name has been found. When the included file
-hits the end-of-file, one needs to return to the including file. This
-is done using the ``include_pop`` function. And, here comes the ``BASE``
-mode that all modes implement: 
-
-.. code-block:: cpp
-
-    mode BASE {
-        <<EOF>> { 
-           if( self.include_pop() ) return;
-           self.send(QUEX_TKN_TERMINATION);
-           return;
-        }
-
-        [ \t\r\n]+  { }
-    }
-
-The ``include_pop()`` function returns ``true`` if there was actually a file
-from which one had to return. It returns ``false``, if not. In the latter case
-we reached the 'end-of-file' of the root file. So, the lexical analyzis is over
-and the ``TERMINATION`` token can be sent. This is all to say about the
-framework.  We can now step on to defining the actions for packing an unpacking
-mementos. First, let the memento be extended to carry a stream handle::
-
-    memento {
-        std::ifstream*  included_sh;
-    }
-
-When the analyzer state is frozen and a new input stream is initialized, the
-``memento_pack`` section is executed. It must provide an input handle in the
-variable ``input_handle`` and receives the name of the input as a
-``QUEX_TYPE_CHARACTER`` string. The memento packer takes responsibility over
-the memory management of the string handle, so it stores it in ``included_sh``.
-
-    memento_pack {
-        *input_handle = new std::ifstream((const char*)InputName, std::ios::binary);
-
-        if( (*input_handle)->fail() ) {
-            delete *input_handle;
-            return 0x0;
-        }
-        memento->included_sh = *input_handle;
-    }
-
-At the time that the analyzer state is restored, the input stream must be closed
-and the stream object must be deleted. This happens in the ``memento_unpack`` section
-
-    memento_unpack {
-        memento->included_sh->close();
-        delete (memento->included_sh);
-    }
-
-
-Let us review the two possibilities to handle the inclusion of files:
-
-  #. The file is included from inside pattern actions. The code fragment
-     displays how this can be done for the example of a pattern ``\input``
-     triggers the inclusion of a file.
-
-     .. code-block:: cpp
-
-         mode NORMAL : 
-              E_O_F 
-         { 
-             ...
-             "\\input" => GOSUB(READ_INCLUDED_FILENAME);
-             ...
-         }
-         ...
-         mode READ_INCLUDED_FILENAME : 
-              E_O_F 
-         {
-             [a-bA-Z_0-9]".txt" { 
-                 /* open the file to be included    */
-                 FILE*   fh = fopen(Lexeme, "r");
-                 /* push the lexical analyzer state */
-                 self.include_push(fh);
-                 /* return to the NORMAL mode       */
-                 self.enter_mode(NORMAL);
-                 /* IMPORTANT */
-                 return;
-             }
-
-             . { 
-                 my_error_message("Missing file name after '\\input'");
-             }
-         }
-
-     When an included file returns from the analyzer state must be restored. The
-     end of an inclusion is triggered by end of stream. Both modes need to support
-     the same this behavior so they inherit from a common base mode ``E_O_F``. It
-     is defined as 
-            
-     .. code-block:: cpp
-
-         mode E_O_F {
-             <<EOF>> { 
-                 /* If there was no state to restore, then we are in the root file
-                  * and return the TERMINATION token, we are totally done.          */
-                 if( self.include_pop() == false ) {
-                     self.send(QUEX_TKN_TERMINATION);
-                     return;
-                 }
-                 /* The include_pop(...) has reset the state of the analyzer. 
-                  * Nothing to be done.                                             */
-             }
-         } 
-
-   The user is basically isolated from the processes behind the scenes. The consistency
-   is even maintained in cases where a queue token policy is used, i.e. policy 
-   ``queue``, or ``users_queue``. Remainders of token queues are packed together with 
-   the memento, and unpacked when the memento is unpacked. 
-
-   Since the function ``include_pop()`` is supposed to be called upon 'end of file'
-   it is assumed that this 'end of file' is the last token and no tokens remain
-   in the queue of the included file.
-
-   If a queue token policy is used and the token queue is not empty when 
-   ``include_pop()`` is called, the analyzer aborts. There is simply no token
-   to come after an 'end of file'!
 
 Memento Extensions
 ------------------
@@ -447,48 +270,132 @@ There is, however, a pitfall that needs to be considered. This will be the
 subject of the following section.
 
 
-Closing Included Files
-----------------------
+HOWTO
+-----
 
-For a file to be closed its handle must be available. Since streams and files
-are handled uniformly inside the quex handling there is a problem: not every
-stream provides a 'close' function. Further, it might not always be desired to
-close the stream as soon as a file inclusion is terminated.  Ownership lucidity
-enforces that the one who opens a file must be the one who closes it. Here is
-what might be the most consistent approach.
+There are two basic ways to handle the inclusion of files during analyzis.
+First, files can be included from within analyzer actions, i.e. as consequence
+of a pattern match or an event. Second, they can be included from outside when
+the ``.receive(...)`` function returns some user define ``INCLUDE`` token.  If
+the token policy ``users_token`` is used there is no problem with the second
+solution. Nevertheless, the first solution is more straightforward, causes less
+code fragmentation and involves less complexity. This section explains how to
+do include handling by means of analyzer actions, i.e. from 'inside'.  The
+second solution is mentioned in the :ref`Caveats <sec-include-stack-caveat>`
+section at the end of this chapter.
 
-First, the memento must contain a member to carry a file handle
+The 'usual' case in a programming language is that there is some keyword
+triggering a file inclusion, plus a string that identifies the stream
+to be included, e.g. ::
 
-.. code-block::cpp
+    \input{math.tex}
 
-   memento {
-       ...
-       FILE*   included_file_handle;
-       ...
-   }
+or::
 
+    include header.txt
 
-Then, the ``memento_pack`` and ``memento_unpack`` sections come into play.  The
-implicit argument ``InputH`` can be used to store the file handle in the
-``memento_pack`` section. On return the file handle can then be closed, i.e.
+The include pattern, i.e. ``\input`` or ``include`` triggers the 
+inclusion. But, when it triggers the file name is not yet present. One
+cannot trigger a file inclusion whenever a string matches, since it
+may also occur in other expressions. This is a case for a dedicated
+mode to be entered when the include pattern triggers. This dedicated
+mode triggers an inclusion as soon as a string came in. In practical
+this looks like this:
 
-.. code-block::cpp
+.. code-block:: cpp
+
+    mode MAIN : BASE
+    {
+        "include"       => GOSUB(OPEN_INCLUDED_FILE); 
+        [_a-zA-Z0-9.]+  => QUEX_TKN_IDENTIFIER(Lexeme); 
+        [ \t\r\n]+      {}
+    }
+
+When the trigger ``include`` matches in mode ``MAIN``, then it transits into
+mode ``OPEN_INCLUDED_FILE``. It handles strings differently from the ``MAIN``
+mode. Its string handling includes an ``include_push`` when the string has
+matched.  Notice, that mode ``MAIN`` is derived from ``BASE`` which is to be
+discussed later on. The mode ``OPEN_INCLUDED_FILE`` is defined as
+
+.. code-block:: cpp
+
+    mode OPEN_INCLUDED_FILE : BASE 
+    {
+        [a-zA-Z0-9_.]+ { 
+            /* We want to be revived in 'MAIN' mode, so pop it up before freezing. */
+            self.pop_mode();
+            /* Freeze the lexer state */
+            self.include_push<std::ifstream>(Lexeme);
+        }
+
+        . { 
+            printf("Missing file name after 'include'.");
+            exit(-1);
+        }
+    }
+
+As soon as a filename is matched the previous mode is popped from the mode
+stack, and then the analyzer state is packed into a memento using the function
+``include_push``. The memento will provide an object of class ``ifstream``, so
+it has to be told via the template parameter. The default match of this mode
+simply tells that no file name has been found. When the included file
+hits the end-of-file, one needs to return to the including file. This
+is done using the ``include_pop`` function. And, here comes the ``BASE``
+mode that all modes implement: 
+
+.. code-block:: cpp
+
+    mode BASE {
+        <<EOF>> { 
+           if( self.include_pop() ) return;
+           self.send(QUEX_TKN_TERMINATION);
+           return;
+        }
+
+        [ \t\r\n]+  { }
+    }
+
+The ``include_pop()`` function returns ``true`` if there was actually a file
+from which one had to return. It returns ``false``, if not. In the latter case
+we reached the 'end-of-file' of the root file. So, the lexical analyzis is over
+and the ``TERMINATION`` token can be sent. This is all to say about the
+framework.  We can now step on to defining the actions for packing an unpacking
+mementos. First, let the memento be extended to carry a stream handle::
+
+    memento {
+        std::ifstream*  included_sh;
+    }
+
+When the analyzer state is frozen and a new input stream is initialized, the
+``memento_pack`` section is executed. It must provide an input handle in the
+variable ``input_handle`` and receives the name of the input as a
+``QUEX_TYPE_CHARACTER`` string. The memento packer takes responsibility over
+the memory management of the string handle, so it stores it in ``included_sh``.
 
     memento_pack {
-        ...
-        memento->included_file_handle = InputH;
+        *input_handle = new std::ifstream((const char*)InputName, std::ios::binary);
+
+        if( (*input_handle)->fail() ) {
+            delete *input_handle;
+            return 0x0;
+        }
+        memento->included_sh = *input_handle;
     }
+
+At the time that the analyzer state is restored, the input stream must be closed
+and the stream object must be deleted. This happens in the ``memento_unpack`` section
 
     memento_unpack {
-        ...
-        fclose(memento->included_file_handle);
+        memento->included_sh->close();
+        delete (memento->included_sh);
     }
 
-Note, that the root file of analyzis must still be closed. If the first
-file was opened with a filename, the lexical analyzer knows that it's 
-his responsibility to close it and does so at destruction time. If a
-stream handle was passed to the constructor, then it's considered the
-user's responsibility to close the stream.
+The closing of the stream needs to happen in the ``memento_unpack`` section.
+The analyzer cannot do it on its own for a very simple reason: not every input
+handle provides a 'close' functionality. Symetrically to the ``memento_pack``
+section where the input handle is created, it is deleted in the
+``memento_unpack`` section, when the inclusion is terminated and the analyzer
+state is restored.
 
 
 Infinite Recursion Protection
@@ -514,8 +421,8 @@ solution to the above problem is fairly simple: Detect whether the current
 thing to be included is in the chain that includes it. This can be done by
 iteration over the memento chain. The member ``stream_id`` in figure
 :ref:`fig-memento-queue` is a placeholder for something that identifies an
-input stream. For example let it be a filename. Then, the memento class
-extension must contain its definition
+input stream. For example let it be the name of the included file. Then,
+the memento class extension must contain its definition
 
 .. code-block:: cpp
 
@@ -546,34 +453,33 @@ parent pointer of ``0x0`` which provides the loop termination condition.
     MyLexer  my_lexer("example.txt");
     my_lexer.file_name = "example.txt";
     ...
-    const std::string   Filename = Token.text();
-    /* Detect infinite recursion */
-    for(MyLexerMemento* iterator = my_analyzer._memento_parent;
-        iterator != 0x0;
-        iterator = iterator->parent ) {
-        /* Check wether the current file name already appears in the chain */
-        if( Filename == iterator->file_name ) {
-            REACTION_ON_INFINITE_RECURSION(Filename);
-        }
-    }
-    /* Open the file and include */
-    FILE*  fh = open(Filename.c_str(), "rb");
-    if( fh == NULL ) REACTION_ON_FILE_NOT_FOUNT(Filename);
-    my_analyzer.include_push(fh);
-    /* Set the file name **after** the include_push() ! */
-    my_analyzer.file_name = Filename;
-    ...
-
-Once, the check is done, the file can be included as usual. But the 
-``memento_pack`` must be extended.
 
 .. code-block:: cpp
 
-   memento_pack {
-       ...
-       memento->file_name = self.file_name;
-       ...
-   }
+    memento_pack {
+        /* Detect infinite recursion, i.e. re-occurence of file name           */
+        for(MyLexerMemento* iterator = my_analyzer._memento_parent;
+            iterator != 0x0; iterator = iterator->parent ) {
+            /* Check wether the current file name already appears in the chain */
+            if( iterator->file_name == (const char*)InputName ) {
+                REACTION_ON_INFINITE_RECURSION(Filename);
+            }
+        }
+        /* Open the file and include */
+        FILE*  fh = open((const char*)InputName, "rb");
+        if( fh == NULL ) MY_REACTION_ON_FILE_NOT_FOUNT(Filename);
+
+        /* Set the filename, so that it is available, in case that further
+         * inclusion is triggered.                                             */
+
+        memento->file_name = self.file_name;
+        self.file_name     = (const char*)InputName;
+    }
+
+All that remains is to reset the filename on return from the included file. Here is
+the correspondent ``memento_unpack`` section:
+
+.. code-block:: cpp
 
    memento_unpack {
        ...
@@ -586,12 +492,111 @@ Once, the check is done, the file can be included as usual. But the
 Caveats
 -------
 
-functions ``include_push(...)`` and ``include_pop(...)`` as described above can
-be used without precaution. When a queue token policy is used, though, the
-possibilities of handling become plenty and varry in terms of performance and
-memory usage. Therefore, the token queues are not subject to the automatic
-include handling. This section outlines the process and explains how to
-implement ones own strategy easily.
+Section :ref:`sec-include-stack-howto` explained a safe and sound way to do
+the inclusion of other files. It does so by handling the inclusion from 
+inside the pattern actions. This has the advantage that, independent of
+the token policy, the token stream looks as if the tokens appear in 
+one single file.
+
+The alternative method is to handle the inclusion from outside the 
+analyzer, i.e. as a reaction to the return value of the ``.receive(...)``
+functions. The 'trick' is to check for a token sequence consisting
+of the token trigger and and an input stream name. This method, together,
+with a queue token policy requires some precaution to be taken. The 
+'outer' code fragment to handle inclusion looks like
+
+.. code-block:: cpp
+
+    do {
+        qlex.receive(&Token);
+
+        switch( Token.type_id() ) {
+        default: break;
+
+        case QUEX_TKN_INCLUDE: 
+             qlex.receive(&Token);
+             if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
+                 continue_lexing_f = false;
+                 break;
+             }
+             qlex.include_push((const char*)Token.text().c_str());
+             break;
+
+        case QUEX_TKN_TERMINATION:
+             continue_lexing_f = false;
+             break;
+        }
+
+    } while( continue_lexing_f );
+
+The important thing to keep in mind is:
+
+.. warning::
+
+   The state of the lexical analyzer corresponds to the last token in the 
+   token queue! The ``.receive()`` functions only take one token from the
+   queue which is not necessarily the last one.
+
+In particular, the token queue might already be filled with many tokens after
+the input name token. Thus, the remainder of the token queue needs to be stored
+away on inclusion, and re-inserted after the inclusion finished. Quex supports
+such a management and provides two functions that store the token queue in
+a back-memory and restore it. To use them, the memento needs to contain
+a ``QuexTokenQueueRemainder`` member, i.e.
+
+.. code-block:: cpp
+
+   memento {
+       ...
+       QuexTokenQueueRemainder  token_list;
+       ...
+   }
+
+.. cfunction:: void QuexTokenQueueRemainder_save(...);
+
+    This function allocates a chunk of memory and stores the remaining tokens
+    of a token queue in it. The remaining tokens of the token queue are detached
+    from their content. Any reference to related object exists only inside the
+    saved away chunk. The remaining tokens are initialized with the placement new
+    operator, so that the queue can be deleted as usual. 
+    
+    Arguments:
+
+    .. data:: QuexTokenQueueRemainder* me
+
+       Pointer to the ``QuexTokenQueueRemainder`` struct inside the memento. 
+   
+    .. data:: QuexTokenQueue* token_queue
+
+       Token queue to be saved away. This should be ``self._token_queue`` which
+       is the token queue of the analyzer.
+
+.. cfunction:: void QuexTokenQueueRemainder_restore(...);
+
+    Restores the content of a token queue remainder into a token queue. The virtual
+    destructor is called for all overwritten tokens in the token queue. The tokens
+    copied in from the remainder are copied via plain memory copy. The place where
+    the remainder is stored is plain memory and, thus, is not subject to destructor
+    and constructor calls. The references to the related objects now resist only
+    in the restored tokens.
+
+    Arguments: Same as for ``QuexTokenQueueRemainder_save``.
+
+The two functions for saving and restoring a token queue remainder are designed
+for one sole purpose: Handling include mechanisms. This means, in particular,
+that the function ``QuexTokenQueueRemainder_restore`` is to be called
+*only* when the analyzer state is restored from a memento. This happens at
+the end of file of an included file. It is essential that the analyzer
+returns at this point, i.e. the ``<<EOF>>`` action ends with a ``return``
+statement. Then, when the user detects the ``END_OF_FILE`` token, it is
+safe to assume that the token queue is empty. The restore function only
+works on empty token queues and throws an exception if it is called in a
+different condition.
+
+The handling from outside the analyzer is both, slower and more memory
+exhaustive, than the solution presented in :ref:`sec-include-stack-howto`.  The
+only scenario where the 'outside' solution might make sense is when the
+inclusion is to be handled by the parser.
 
 .. rubric:: Footnotes
 
