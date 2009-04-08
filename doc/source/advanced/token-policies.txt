@@ -28,6 +28,15 @@ are subject of the subsequent sections.
 Let ``Token`` be a shorthand for ``QUEX_TYPE_TOKEN`` in the following 
 subsections.
 
+.. warning::
+
+   When using a queue token policy: The state of the lexical analyzer
+   corresponds to the last token in the token queue! The ``.receive()``
+   functions only take one token from the queue which is not necessarily the
+   last one. If state elements, such as line numbers or indentation, need to be
+   associated with tokens, token stamping needs to be used
+   :ref:`sec-token-stamping`.
+
 .. _advanced-safety-border:
 
 Policy 'Queue'
