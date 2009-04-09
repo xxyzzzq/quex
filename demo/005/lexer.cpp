@@ -9,18 +9,17 @@ using namespace std;
 
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
-string space(int N) 
-{ string tmp; for(int i=0; i<N; ++i) tmp += "    "; return tmp; }
+void    print(quex::tiny_lexer& qlex, quex::Token& Token, bool TextF = false);
+void    print(quex::tiny_lexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
 
 int 
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::Token       Token;
+    quex::Token       my_token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::tiny_lexer  qlex(argc == 1 ? "example.txt" : argv[1]);
-    FILE*             fh = 0x0;
 
     // (*) print the version 
     // cout << qlex.version() << endl << endl;
@@ -33,44 +32,30 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex.receive(&Token);
+        qlex.receive(&my_token);
 
         // (*) print out token information
         //     -- name of the token
-        cout << space(qlex.include_depth) << qlex.line_number() << ":  ";
-        cout << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
+        print(qlex, my_token, (const char*)my_token.text().c_str());
 
-        switch( Token.type_id() ) {
-        default: 
-            break;
-
-        case QUEX_TKN_INCLUDE: 
-            qlex.receive(&Token);
-            cout << space(qlex.include_depth) << Token.type_id_name() << "\t" << Token.text().c_str() << endl;
-            if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
+        if( my_token.type_id() == QUEX_TKN_INCLUDE ) { 
+            qlex.receive(&my_token);
+            print(qlex, my_token, (const char*)my_token.text().c_str());
+            if( my_token.type_id() != QUEX_TKN_IDENTIFIER ) {
                 continue_lexing_f = false;
-                cout << space(qlex.include_depth) << "found 'include' without a subsequent filename. hm?\n";
+                print(qlex, "found 'include' without a subsequent filename. hm?\n");
                 break;
             }
-
-            cout << space(qlex.include_depth) << ">> including: " << Token.text().c_str() << endl;
-            fh = fopen((const char*)(Token.text().c_str()), "r");
-            if( fh == NULL ) {
-                cout << space(qlex.include_depth) << "file not found\n";
-                return 0;
-            }
-            qlex.include_push(fh);
-            break;
-
-        case QUEX_TKN_TERMINATION:
-            if( qlex.include_pop() == false ) {
-                continue_lexing_f = false;
-            } else {
-                cout << space(qlex.include_depth) << "<< return from include\n";
-            }
+            print(qlex, ">> including: ", (const char*)my_token.text().c_str());
+            qlex.include_push<FILE>(my_token.text().c_str());
             break;
         }
-
+        else if( my_token.type_id() == QUEX_TKN_TERMINATION ) {
+            if( qlex.include_pop() == false ) 
+                continue_lexing_f = false;
+            else 
+                print(qlex, "<< return from include\n");
+        }
 
         ++number_of_tokens;
 
@@ -81,4 +66,23 @@ main(int argc, char** argv)
     cout << "`------------------------------------------------------------------------------------\n";
 
     return 0;
+}
+
+string  space(int N)
+{ string tmp; for(int i=0; i<N; ++i) tmp += "    "; return tmp; }
+
+void  print(quex::tiny_lexer& qlex, quex::Token& my_token, bool TextF /* = false */)
+{ 
+    cout << space(qlex.include_depth) << my_token.line_number() << ": (" << my_token.column_number() << ")";
+    cout << my_token.type_id_name();
+    if( TextF ) cout << "\t'" << my_token.text().c_str() << "'";
+    cout << endl;
+}
+
+void print(quex::tiny_lexer& qlex, const char* Str1, const char* Str2 /* = 0x0 */, const char* Str3 /* = 0x0*/)
+{
+    cout << space(qlex.include_depth) << Str1;
+    if( Str2 != 0x0 ) cout << Str2;
+    if( Str3 != 0x0 ) cout << Str3;
+    cout << endl;
 }

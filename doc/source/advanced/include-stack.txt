@@ -269,6 +269,7 @@ of the above mechanisms quex tries to facilitate this task as much as possible.
 There is, however, a pitfall that needs to be considered. This will be the 
 subject of the following section.
 
+.. _sec-include-stack-howto:
 
 HOWTO
 -----
@@ -362,6 +363,8 @@ and the ``TERMINATION`` token can be sent. This is all to say about the
 framework.  We can now step on to defining the actions for packing an unpacking
 mementos. First, let the memento be extended to carry a stream handle::
 
+.. code-block:: cpp
+
     memento {
         std::ifstream*  included_sh;
     }
@@ -371,6 +374,8 @@ When the analyzer state is frozen and a new input stream is initialized, the
 variable ``input_handle`` and receives the name of the input as a
 ``QUEX_TYPE_CHARACTER`` string. The memento packer takes responsibility over
 the memory management of the string handle, so it stores it in ``included_sh``.
+
+.. code-block:: cpp
 
     memento_pack {
         *input_handle = new std::ifstream((const char*)InputName, std::ios::binary);
@@ -510,24 +515,13 @@ with a queue token policy requires some precaution to be taken. The
     do {
         qlex.receive(&Token);
 
-        switch( Token.type_id() ) {
-        default: break;
-
-        case QUEX_TKN_INCLUDE: 
+        if( Token.type_id() == QUEX_TKN_INCLUDE ) {
              qlex.receive(&Token);
-             if( Token.type_id() != QUEX_TKN_IDENTIFIER ) {
-                 continue_lexing_f = false;
-                 break;
-             }
+             if( Token.type_id() != QUEX_TKN_FILE_NAME ) break;
              qlex.include_push((const char*)Token.text().c_str());
-             break;
+        } 
 
-        case QUEX_TKN_TERMINATION:
-             continue_lexing_f = false;
-             break;
-        }
-
-    } while( continue_lexing_f );
+    } while( Token.type_id() != QUEX_TKN_TERMINATION );
 
 The important thing to keep in mind is:
 
@@ -538,11 +532,26 @@ The important thing to keep in mind is:
    queue which is not necessarily the last one.
 
 In particular, the token queue might already be filled with many tokens after
-the input name token. Thus, the remainder of the token queue needs to be stored
-away on inclusion, and re-inserted after the inclusion finished. Quex supports
-such a management and provides two functions that store the token queue in
-a back-memory and restore it. To use them, the memento needs to contain
-a ``QuexTokenQueueRemainder`` member, i.e.
+the input name token. If this is desired, quex provides functions to save away
+the token queue remainder and restore it. They are discussed later on in this
+chapter.  The problem with the remaining token queue, however, can be avoided
+if it is ensured that the ``FILE_NAME`` token comes at the end of a token
+sequence.  This can be done similarly to what was shown in section
+:ref:`sec-include-stack-howto`. The analyzer needs to transit into a dedicated
+mode for reading the file name. On the event of matching the filename, the
+lexical analyzer needs to explicitly ``return``. 
+
+An explicit ``return`` stops the analyzis and the ``.receive(...)`` functions
+return only tokens from the stack until the stack is empty. Since the last
+token on the stack is the ``FILE_NAME`` token, it is safe to assume that the
+token stack is empty when the file name comes in. Thus, no token queue
+needs to be stored away.
+
+If, for some reason, this solution is not practical, then the remainder of the
+token queue needs to be stored away on inclusion, and re-inserted after the
+inclusion finished. Quex supports such a management and provides two functions
+that store the token queue in a back-memory and restore it. To use them, the
+memento needs to contain a ``QuexTokenQueueRemainder`` member, i.e.
 
 .. code-block:: cpp
 
@@ -593,10 +602,11 @@ safe to assume that the token queue is empty. The restore function only
 works on empty token queues and throws an exception if it is called in a
 different condition.
 
-The handling from outside the analyzer is both, slower and more memory
-exhaustive, than the solution presented in :ref:`sec-include-stack-howto`.  The
-only scenario where the 'outside' solution might make sense is when the
-inclusion is to be handled by the parser.
+The handling from outside the analyzer never brings an advantage in terms of
+computational speed or memory consumption with respect to the solution
+presented in :ref:`sec-include-stack-howto`.  The only scenario where the
+'outside' solution might make sense is when the inclusion is to be handled by
+the parser.
 
 .. rubric:: Footnotes
 

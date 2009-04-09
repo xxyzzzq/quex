@@ -1,4 +1,4 @@
-<history date="Sun Mar 29 07:51:17 2009" element-n="52">
+<history date="Thu Apr  9 07:21:28 2009" element-n="53">
     <day year="2009" month="01" day="22">
         <history-init time="06:23:29"/>
         <crc-error time="06:23:35" application="converter.exe" choice="UTF-16" database-crc="621464324" real-crc="-2041091222"/>
@@ -116,5 +116,8 @@
     </day>
     <day year="2009" month="03" day="29">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:51:17"/>
+    </day>
+    <day year="2009" month="04" day="09">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:21:28"/>
     </day>
 </history>
