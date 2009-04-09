@@ -12,10 +12,48 @@ of tokens, however, imposes that it complies to the following:
 
     * The token class must be specified in namespace queχ.
 
-    * A define macro outside the class must define a type for 
-      ``QUEX_TYPE_TOKEN_ID``. It is essential to use macro functionality 
-      rather than a typedef, since later general definition files need 
-      to verify its definition.
+    * The following macros need to be defined outside the class:
+       
+      .. describe:: QUEX_TYPE_TOKEN_ID
+
+         Defines the C-type to be used to store token-ids. It should at least
+         be large enough to carry the largest token id number.
+
+      .. describe:: QUEX_TYPE_TOKEN
+
+         The name of the token class defined in this file together with its
+         namespace.
+      
+         .. code-block:: cpp
+
+            #define QUEX_TYPE_TOKEN   my_space::lexer::MyToken
+
+      .. describe:: QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+
+         The token class without the namespace prefix, e.g.
+
+         .. code-block:: cpp
+
+            #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE   MyToken
+       
+      It is essential to use macro functionality rather than a typedef, since
+      later general definition files need to verify its definition. A good way
+      to do the definition is shown below:
+ 
+      .. code-block:: cpp
+
+         #ifndef    QUEX_TYPE_TOKEN_ID 
+         #   define QUEX_TYPE_TOKEN_ID              uint32_t
+         #endif
+         #ifdef QUEX_TYPE_TOKEN
+         #   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
+         #endif
+         #define QUEX_TYPE_TOKEN                    quex::Token
+         #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
+
+      Note, that the header file might be tolerant with respect to external definitions
+      of the token id type. However, since it defines the token class, it must assume
+      that it has not been defined yet.
 
     * A member function that maps token-ids to token-names 
     

@@ -20,11 +20,16 @@ memento {
 }
 
 memento_pack {
+    input_handle = fopen((const char*)(InputName), "r");
+    if( input_handle == NULL ) {
+        std::cout << "file not found\n";
+        return 0;
+    }
     memento->my_letter_count_store = self.letter_count;
     self.letter_count = 0;
     self.include_depth += 1;
     /* Store the file handle, so that it can be closed later */
-    memento->included_file_handle = InputH;
+    memento->included_file_handle = input_handle;
 }
 
 memento_unpack {
@@ -42,7 +47,7 @@ token {
    NUMBER
 }
 
-mode ONE_AND_ONLY
+mode MAIN
 {
     <<EOF>> {
 	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
@@ -54,11 +59,26 @@ mode ONE_AND_ONLY
     "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
     ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
     //
-    "include"   { self.send(QUEX_TKN_INCLUDE, &EmptyLexeme); self.letter_count += strlen((char*)Lexeme); }
+    "include"   { 
+        self.send(QUEX_TKN_INCLUDE, &EmptyLexeme); 
+        self.letter_count += strlen((char*)Lexeme); 
+        self.enter_mode(FIND_INCLUDE_NAME);
+        return;
+    }
     //
     ([_a-zA-Z]|("/"|"."|"'"))+  { self.send(QUEX_TKN_IDENTIFIER, Lexeme); self.letter_count += strlen((char*)Lexeme); }
     [ \t\r\n]+                  { }
 }
 
+mode FIND_INCLUDE_NAME {
+    ([_a-zA-Z]|("/"|"."|"'"))+  { 
+        self.send(QUEX_TKN_IDENTIFIER, Lexeme); 
+        self.letter_count += strlen((char*)Lexeme); 
+        /* IMPORTANT -- see documentation */
+        self.enter_mode(MAIN);
+        return;
+    }
+    [ \t\r\n]+                  { }
+}
 
 

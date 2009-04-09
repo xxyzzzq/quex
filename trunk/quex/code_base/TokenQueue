@@ -185,7 +185,7 @@ namespace quex {
             /* Step 1: Call explicit destructors for token objects that are overwritten  */
             for(QUEX_TYPE_TOKEN* iterator = token_queue->begin; 
                 iterator != token_queue->begin + me->size; ++iterator) {
-                iterator->~QUEX_TYPE_TOKEN();
+                iterator->~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();
             }
             /* Step 2: Plain copy of objects stored in the 'remainder store'             */
             memcpy(token_queue->begin, me->token_list, 

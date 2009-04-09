@@ -10,7 +10,8 @@
 #   define QUEX_TYPE_TOKEN_ID    uint32_t
 #endif
 #ifndef    QUEX_TYPE_TOKEN
-#   define QUEX_TYPE_TOKEN  quex::Token
+#   define QUEX_TYPE_TOKEN                    quex::Token
+#   define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
 #endif
 #ifndef    __QUEX_TOKEN_ID_UNINITIALIZED 
 #   define __QUEX_TOKEN_ID_UNINITIALIZED (QUEX_TYPE_TOKEN_ID)(1)

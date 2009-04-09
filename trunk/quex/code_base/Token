@@ -16,6 +16,15 @@
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN__
 #define __INCLUDE_GUARD__QUEX__TOKEN__
 
+#ifndef    QUEX_TYPE_TOKEN_ID 
+#   define QUEX_TYPE_TOKEN_ID                 uint32_t
+#endif
+#ifdef QUEX_TYPE_TOKEN
+#   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
+#endif
+#define QUEX_TYPE_TOKEN                    quex::Token
+#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
+
 // Depends on 'QUEX_TYPE_CHARACTER' being defined!
 
 #include<iostream>
@@ -26,10 +35,6 @@
 #include<quex/code_base/asserts>
 #include<quex/code_base/unicode>
 #include<quex/code_base/compatibility/inttypes.h>
-
-#ifndef    QUEX_TYPE_TOKEN_ID 
-#   define QUEX_TYPE_TOKEN_ID uint32_t
-#endif
 
 namespace quex {
 
