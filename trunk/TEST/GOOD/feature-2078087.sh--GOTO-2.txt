@@ -22,6 +22,7 @@ g++ -I/home/fschaef/prj/quex/trunk -I. \
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
+ToMode: ONE
 ## An Assert-Abortion might be an intended element of the experiment.
 LETTER '1' 
 LETTER 't' 

@@ -4,15 +4,16 @@ make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
-1:  INCLUDE	
-IDENTIFIER	auxiliary/hallo.txt
+1: (1)INCLUDE	''
+1: (9)IDENTIFIER	'auxiliary/hallo.txt'
 >> including: auxiliary/hallo.txt
-    1:  IDENTIFIER	Hallo
+    1: (1)IDENTIFIER	'Hallo'
     Per File Letter Count = 5
-    2:  <TERMINATION>	
+    2: (1)<TERMINATION>	''
 << return from include
+
 Per File Letter Count = 26
-2:  <TERMINATION>	
+2: (1)<TERMINATION>	''
 | [END] number of token = 4
 `------------------------------------------------------------------------------------
 cleaning ...

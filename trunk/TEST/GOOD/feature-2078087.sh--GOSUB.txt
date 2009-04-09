@@ -22,6 +22,7 @@ g++ -I/home/fschaef/prj/quex/trunk -I. \
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
+ToMode: ONE
 ## An Assert-Abortion might be an intended element of the experiment.
 LETTER '1' 
 LETTER '1' 
@@ -38,4 +39,4 @@ LETTER '4'
 FromMode: FOUR ToMode: THREE
 FromMode: THREE ToMode: TWO
 FromMode: TWO ToMode: ONE
-lexer: /home/fschaef/prj/quex/trunk/quex/code_base/template/mode_handling.i:70: void quex::Simple::pop_mode(): Assertion `_mode_stack.size() != 0' failed.
+lexer: /home/fschaef/prj/quex/trunk/quex/code_base/template/mode_handling.i:76: void quex::Simple::pop_mode(): Assertion `_mode_stack.size() != 0' failed.

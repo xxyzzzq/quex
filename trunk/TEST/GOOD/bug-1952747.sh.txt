@@ -1,4 +1,2 @@
 simple.qx:2:warning: Token id 'QUEX_TKN_SOMETHING' defined implicitly.
-warning: no initial mode defined via 'start'
-warning: using mode 'ONE' as initial mode
          user_specified_tkn_termination_handler(); 

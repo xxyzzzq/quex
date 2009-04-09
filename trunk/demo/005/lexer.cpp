@@ -9,9 +9,6 @@ using namespace std;
 
 QUEX_TYPE_CHARACTER  EmptyLexeme = 0x0000;  /* Only the terminating zero */
 
-void    print(quex::tiny_lexer& qlex, quex::Token& Token, bool TextF = false);
-void    print(quex::tiny_lexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
-
 int 
 main(int argc, char** argv) 
 {        
@@ -47,8 +44,7 @@ main(int argc, char** argv)
                 break;
             }
             print(qlex, ">> including: ", (const char*)my_token.text().c_str());
-            qlex.include_push<FILE>(my_token.text().c_str());
-            break;
+            qlex.include_push<FILE>((QUEX_TYPE_CHARACTER*)my_token.text().c_str());
         }
         else if( my_token.type_id() == QUEX_TKN_TERMINATION ) {
             if( qlex.include_pop() == false ) 
