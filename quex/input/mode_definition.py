@@ -171,23 +171,21 @@ def parse_mode_element(new_mode, fh):
         position = fh.tell()
 
         word = read_until_whitespace(fh)
-        if word == "}":
-            return False
+        if word == "}": return False
 
         # -- check for 'on_entry', 'on_exit', ...
         result = check_for_event_specification(word, fh, new_mode)
-        if result == True: 
-            return True # all work has been done in check_for_event_specification()
-        else:
-            fh.seek(position)
-            description = "start of mode element: regular expression"
-            pattern, pattern_state_machine = regular_expression.parse(fh)
+        if result == True: return True # all work has been done in check_for_event_specification()
 
-            if new_mode.has_pattern(pattern):
-                previous = new_mode.get_match_object(pattern)
-                error_msg("Pattern has been defined twice.", fh, DontExitF=True)
-                error_msg("First defined here.", 
-                         previous.action().filename, previous.action().line_n)
+        fh.seek(position)
+        description = "start of mode element: regular expression"
+        pattern, pattern_state_machine = regular_expression.parse(fh)
+
+        if new_mode.has_pattern(pattern):
+            previous = new_mode.get_match_object(pattern)
+            error_msg("Pattern has been defined twice.", fh, DontExitF=True)
+            error_msg("First defined here.", 
+                     previous.action().filename, previous.action().line_n)
 
 
         position    = fh.tell()

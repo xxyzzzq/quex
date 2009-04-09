@@ -1,6 +1,4 @@
 Call to quex
-warning: no initial mode defined via 'start'
-warning: using mode 'ONE_AND_ONLY' as initial mode
 Unpacking text.345
 Compiling
 ###############################################################################

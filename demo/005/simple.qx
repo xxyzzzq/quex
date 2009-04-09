@@ -2,11 +2,14 @@
 
 header {
 extern QUEX_TYPE_CHARACTER  EmptyLexeme;
+void    print(quex::tiny_lexer& qlex, quex::Token& Token, bool TextF = false);
+void    print(quex::tiny_lexer& qlex, const char* Str1, const char* Str2=0x0, const char* Str3=0x0);
+
 }
 
 body {
-    size_t  letter_count;
-    size_t  include_depth;  /* Track the include depth for fun */
+    size_t      letter_count;
+    size_t      include_depth;  /* Track the include depth for fun */
 }
 
 init {
@@ -20,8 +23,8 @@ memento {
 }
 
 memento_pack {
-    input_handle = fopen((const char*)(InputName), "r");
-    if( input_handle == NULL ) {
+    *input_handle = fopen((const char*)(InputName), "r");
+    if( *input_handle == NULL ) {
         std::cout << "file not found\n";
         return 0;
     }
@@ -29,7 +32,7 @@ memento_pack {
     self.letter_count = 0;
     self.include_depth += 1;
     /* Store the file handle, so that it can be closed later */
-    memento->included_file_handle = input_handle;
+    memento->included_file_handle = *input_handle;
 }
 
 memento_unpack {
@@ -47,20 +50,22 @@ token {
    NUMBER
 }
 
+start = MAIN;
+
 mode MAIN
 {
     <<EOF>> {
-	    self.send(QUEX_TKN_TERMINATION, &EmptyLexeme);
+	    self.send(QUEX_TKN_TERMINATION, LexemeNull);
         for(size_t i=0; i<self.include_depth; ++i) std::cout << "    ";
         std::cout << "Per File Letter Count = " << self.letter_count << std::endl;
-        RETURN;
+        return;
     }
 
-    "("         => QUEX_TKN_BRACKET_OPEN(&EmptyLexeme);
-    ")"         => QUEX_TKN_BRACKET_CLOSE(&EmptyLexeme);
+    "("         => QUEX_TKN_BRACKET_OPEN(LexemeNull);
+    ")"         => QUEX_TKN_BRACKET_CLOSE(LexemeNull);
     //
     "include"   { 
-        self.send(QUEX_TKN_INCLUDE, &EmptyLexeme); 
+        self.send(QUEX_TKN_INCLUDE, LexemeNull); 
         self.letter_count += strlen((char*)Lexeme); 
         self.enter_mode(FIND_INCLUDE_NAME);
         return;
@@ -74,8 +79,8 @@ mode FIND_INCLUDE_NAME {
     ([_a-zA-Z]|("/"|"."|"'"))+  { 
         self.send(QUEX_TKN_IDENTIFIER, Lexeme); 
         self.letter_count += strlen((char*)Lexeme); 
-        /* IMPORTANT -- see documentation */
         self.enter_mode(MAIN);
+        /* IMPORTANT -- see documentation */
         return;
     }
     [ \t\r\n]+                  { }

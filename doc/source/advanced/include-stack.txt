@@ -606,7 +606,9 @@ The handling from outside the analyzer never brings an advantage in terms of
 computational speed or memory consumption with respect to the solution
 presented in :ref:`sec-include-stack-howto`.  The only scenario where the
 'outside' solution might make sense is when the inclusion is to be handled by
-the parser.
+the parser. Since the straightforward solution is trivial, the demo/005 
+directory contains an example of the 'outer' solution. This example is a good
+starting point for this dangerous path.
 
 .. rubric:: Footnotes
 

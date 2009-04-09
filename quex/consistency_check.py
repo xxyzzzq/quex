@@ -31,9 +31,11 @@ def do(Modes):
                 break
             
         lexer_mode.initial_mode = CodeFragment(selected_mode)
-        error_msg("no initial mode defined via 'start'\n" + \
-                  "using mode '%s' as initial mode" % selected_mode, DontExitF=True,
-                  Prefix="warning")
+        if len(Modes.keys()) > 1:
+            error_msg("No initial mode defined via 'start' while more than one mode exists.\n" + \
+                      "Use for example 'start = %s;' in the quex source file to define an initial mode." % selected_mode)
+        else:
+            pass
 
 
     # -- is the start mode applicable?
