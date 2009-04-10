@@ -1,77 +1,67 @@
 #!/bin/bash
 #
-#7z x quex-0.37.1.tar.7z
-#tar xf quex-0.37.1.tar
-#rm quex-0.37.1.tar
-#
 #Usage example:
-# sudo ./create_quex_debian_package.sh quex-0.37.1 0.37.1 0
+# sudo ./run.sh   0.37.1  0
 #
-SOURCES_DIRECTORY=$1
-QUEX_VERSION=$2
-PACKAGE_VERSION=$3
+# ASSUMPTION: sources have been copied to /tmp/quex-$VERSION
+# 
+# ORIGINAL AUTHOR: Joaquin Duo, joaduo at users sourceforge net
+# MODIFIED BY:     Frank-Rene Schaefer
+#
+#-----------------------------------------------------------------------
+VERSION=$1
+PACKAGE_VERSION=$2
 
-if [ "$#" != "3" ]; then
-  echo "
-#Usage example:
- #                                    |quex source dir         |quex version  |package version
- sudo ./create_quex_debian_package.sh  /home/quex/quex-0.37.1   0.37.1         0
-  "
- exit 1
+base_dir=/tmp/quex-$VERSION
+template_dir=$QUEX_PATH/adm/packager/debian/scripts
+package_dir=$base_dir/"quex_$VERSION-$PACKAGE_VERSION""_i386"
+
+# Check assumption that sources are copied to /tmp/quex-$VERSION
+if test ! -e $base_dir; then
+else
+    echo "/tmp/quex-$VERSION must exist before calling this script."
+    exit 1
 fi
 
-#Create the new version directory
-PACKAGE_DIRECTORY="quex_$QUEX_VERSION-$PACKAGE_VERSION""_i386"
+if [[ $# < 2 ]]; then
+    echo "Please, watch this script to see how it is executed."
+    exit 1
+fi
+if [[ $# == 2 ]]; then
+    PACKAGE_VERSION="0"
+fi
+
+# Create the new version directory
 
 #Work on a temporal folder just in case
-if [ "`ls temp_package`" ]; then
-  echo "
-  \"temp_package\" directory exists
-  remove it or rename it
-  before running this script
-  
-  "
-  exit 1
-fi
 
-mkdir temp_package
+cp -a $template_dir/* $package_dir
 
-mkdir temp_package/$PACKAGE_DIRECTORY
-
-cp -a quex_installer_TEMPLATE/Fixed/* temp_package/$PACKAGE_DIRECTORY
-
-# Control File
-sed "s/##QUEX_VERSION/$QUEX_VERSION/" quex_installer_TEMPLATE/Varying/DEBIAN/control | \
-  sed "s/##PACKAGE_VERSION/$PACKAGE_VERSION/" > \
-  temp_package/$PACKAGE_DIRECTORY/DEBIAN/control
-
-#Post install file
-sed "s/##QUEX_VERSION/$QUEX_VERSION/" quex_installer_TEMPLATE/Varying/DEBIAN/postinst > \
-  temp_package/$PACKAGE_DIRECTORY/DEBIAN/postinst
-chmod 0755 temp_package/$PACKAGE_DIRECTORY/DEBIAN/postinst
-
-#Pre remove file
-sed "s/##QUEX_VERSION/$QUEX_VERSION/" quex_installer_TEMPLATE/Varying/DEBIAN/prerm > \
-  temp_package/$PACKAGE_DIRECTORY/DEBIAN/prerm
-chmod 0755 temp_package/$PACKAGE_DIRECTORY/DEBIAN/prerm
+# Update the version and package information in:
+#  -- control file
+#  -- post install file
+#  -- pre-remove file
+mkdir -p $package_dir/DEBIAN
+for file in 'control postinst prerm'; do 
+      sed "s/##QUEX_VERSION/$VERSION/" $template_dir/$file | \
+      sed "s/##PACKAGE_VERSION/$PACKAGE_VERSION/" > \
+      $package_dir/DEBIAN/$file
+      chmod 0755 $package_dir/DEBIAN/$file
+done
 
 #Copy sources to the new destination on package
-mkdir temp_package/$PACKAGE_DIRECTORY/opt/quex/quex-$QUEX_VERSION
-cp -a $SOURCES_DIRECTORY/* temp_package/$PACKAGE_DIRECTORY/opt/quex/quex-$QUEX_VERSION
+mkdir $package_dir/opt/quex/quex-$VERSION
+cp -a $base_dir/* $package_dir/opt/quex/quex-$VERSION
 
 #Set file owners
 #Need to be root for this by now, later ill use fakeroot
-sudo chown root:root -R temp_package/$PACKAGE_DIRECTORY/opt
-sudo chown root:root -R temp_package/$PACKAGE_DIRECTORY/usr
+sudo chown root:root -R $package_dir/opt
+sudo chown root:root -R $package_dir/usr
 
 #Create the package
-sudo dpkg-deb -b temp_package/$PACKAGE_DIRECTORY
+sudo dpkg-deb -b $package_dir
 
 #Copy the resulting package
-cp temp_package/*.deb ./
-
-#Remove all the temp files
-sudo rm -Rf temp_package/
-# sudo rmdir temp_package
+cp temp_package/*.deb /tmp/quex-packages/
 
 exit 0

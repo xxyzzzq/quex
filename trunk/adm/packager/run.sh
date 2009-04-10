@@ -88,11 +88,13 @@ function create_packages()
     echo "Create installers for $1"
 
     # -- create xml file for the install builder
-    $QUEX_PATH/adm/make_install_builder_script.py `pwd`/quex-$1 $1
+    $QUEX_PATH/adm/packager/make_install_builder_script.py `pwd`/quex-$1 $1
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml windows
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml linux
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
-    /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
+    ## We do the debian packages on our own-- thanks to Joaquin Duo.
+    ## /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
+    $QUEX_PATH/adm/packager/debian/run.sh $1
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml freebsd
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml solaris-intel
