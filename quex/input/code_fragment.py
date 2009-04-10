@@ -53,7 +53,7 @@ def __parse_brief_token_sender(fh, ContinueF):
 
         code = __parse_token_id_specification_by_character_code(fh)
         if code != -1: 
-            code = __create_token_sender_by_character_code(fh, CharacterCode)
+            code = __create_token_sender_by_character_code(fh, code)
         else:
             identifier, arg_list_str = __parse_function_call(fh)
             if identifier in ["GOTO", "GOSUB", "GOUP"]:
