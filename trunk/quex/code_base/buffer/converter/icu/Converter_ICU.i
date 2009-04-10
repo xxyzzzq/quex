@@ -34,10 +34,25 @@ namespace quex {
         } else {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
             case 4:  
-                me->to_handle = ucnv_open("UTF32_PlatformEndian", &me->status); 
+                /* Please, use the ICU converter utility to find correct ICU coding names:
+                 * http://demo.icu-project.org/icu-bin/convexp?s=IANA                       */
+#               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
+                me->to_handle = ucnv_open("UTF32-PlatformEndian", &me->status); 
+#               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
+                me->to_handle = ucnv_open("UTF32-LE", &me->status); 
+#               elif defined(__QUEX_OPTION_BIG_ENDIAN)
+                me->to_handle = ucnv_open("UTF32-BE", &me->status); 
+#               endif
                 break;
             case 2:  
+                /* Currently no concept exists to handle this case. See feature request 2749855 */
+#               if   defined(__QUEX_OPTION_SYSTEM_ENDIAN)
                 me->to_handle = 0x0; /* 2 byte encoding may use the 'direct converter for UChar' */
+#               elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
+                me->to_handle = ucnv_open("UTF16-LE", &me->status); 
+#               elif defined(__QUEX_OPTION_BIG_ENDIAN)
+                me->to_handle = ucnv_open("UTF16-BE", &me->status); 
+#               endif
                 break;
             case 1:  
                 me->to_handle = ucnv_open("ISO-8859-1", &me->status); 

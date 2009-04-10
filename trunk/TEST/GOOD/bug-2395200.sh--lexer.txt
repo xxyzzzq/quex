@@ -17,6 +17,7 @@
 ##          http://sourceforge.net/tracker/?group_id=168259&atid=846112
 ##
 ###############################################################################
+ToMode: ONE_AND_ONLY
 ## An Assert-Abortion might be an intended element of the experiment.
 ALIEN '#' 
 IDENTIFIER 'include' 

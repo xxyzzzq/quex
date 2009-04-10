@@ -1,2 +1,2 @@
-warning: no initial mode defined via 'start'
-warning: using mode 'MODE' as initial mode
+If no errors occur in compilation, then everything is fine
+Simlicism

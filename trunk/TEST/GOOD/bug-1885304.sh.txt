@@ -20,12 +20,19 @@
 #include<istream>  // gets: istream and wistream
 #include<quex/code_base/compatibility/inttypes.h>
 
-// IConv Coding Name for the internally used character coding. 
-// -- never use a dynamic length coding for the internal handling (e.g. never use UTF8)
-// -- never use a coding that requires more bytes than QUEX_TYPE_CHARACTER contains,
-//    e.g. do not use "UCS-4" (4 bytes) when the character type is uin16_t (2 bytes).
-// Coding must be defined before the inclusion of 'definitions' since this file will
-// otherwise define a default value
+#ifndef    __QUEX_OPTION_LITTLE_ENDIAN
+#endif
+#ifndef    __QUEX_OPTION_BIG_ENDIAN
+#endif
+#ifndef    __QUEX_OPTION_SYSTEM_ENDIAN
+#endif
+
+#if defined(__QUEX_OPTION_BIG_ENDIAN) && defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#   error "Cannot define little endian and big endian at the same time."
+#endif
+#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN)
+#   error "Either little endian or big endian must be defined."
+#endif
 
 #ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
 #endif

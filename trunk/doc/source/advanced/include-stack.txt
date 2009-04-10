@@ -282,7 +282,7 @@ the token policy ``users_token`` is used there is no problem with the second
 solution. Nevertheless, the first solution is more straightforward, causes less
 code fragmentation and involves less complexity. This section explains how to
 do include handling by means of analyzer actions, i.e. from 'inside'.  The
-second solution is mentioned in the :ref`Caveats <sec-include-stack-caveat>`
+second solution is mentioned in the :ref:`Caveats <sec-include-stack-caveat>`
 section at the end of this chapter.
 
 The 'usual' case in a programming language is that there is some keyword
@@ -361,7 +361,7 @@ from which one had to return. It returns ``false``, if not. In the latter case
 we reached the 'end-of-file' of the root file. So, the lexical analyzis is over
 and the ``TERMINATION`` token can be sent. This is all to say about the
 framework.  We can now step on to defining the actions for packing an unpacking
-mementos. First, let the memento be extended to carry a stream handle::
+mementos. First, let the memento be extended to carry a stream handle:
 
 .. code-block:: cpp
 
@@ -389,6 +389,8 @@ the memory management of the string handle, so it stores it in ``included_sh``.
 
 At the time that the analyzer state is restored, the input stream must be closed
 and the stream object must be deleted. This happens in the ``memento_unpack`` section
+
+.. code-block:: cpp
 
     memento_unpack {
         memento->included_sh->close();
@@ -606,9 +608,9 @@ The handling from outside the analyzer never brings an advantage in terms of
 computational speed or memory consumption with respect to the solution
 presented in :ref:`sec-include-stack-howto`.  The only scenario where the
 'outside' solution might make sense is when the inclusion is to be handled by
-the parser. Since the straightforward solution is trivial, the demo/005 
-directory contains an example of the 'outer' solution. This example is a good
-starting point for this dangerous path.
+the parser. Since the straightforward solution is trivial, the demo/005
+directory contains an example of the 'outer' solution. The code displayed there
+is a good starting point for this dangerous path.
 
 .. rubric:: Footnotes
 

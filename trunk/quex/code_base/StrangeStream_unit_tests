@@ -71,18 +71,17 @@ namespace quex {
     };
 
 #   define TEMPLATE_IN  template <class StdStreamType> inline
-#   define CLASS        StrangeStream<StdStreamType>
 
     TEMPLATE_IN
-    CLASS::StrangeStream(StdStreamType* SH)
+    StrangeStream<StdStreamType>::StrangeStream(StdStreamType* SH)
     {
         sh   = SH;
         seed = 17;
         /* open in _binary mode_ */
     }
 
-    TEMPLATE_IN  typename CLASS::pos_type
-    StrangeStream<StdStreamType>::__map_real_to_strange_position(CLASS::intern_pos_type Pos)
+    TEMPLATE_IN  typename StrangeStream<StdStreamType>::pos_type
+    StrangeStream<StdStreamType>::__map_real_to_strange_position(StrangeStream<StdStreamType>::intern_pos_type Pos)
     {
         uint32_t seed = 17;
         uint32_t strange_pos = 0;
@@ -94,8 +93,8 @@ namespace quex {
         return strange_pos;
     }
 
-    TEMPLATE_IN typename CLASS::intern_pos_type
-    CLASS::__map_strange_to_real_position(typename CLASS::pos_type Pos)
+    TEMPLATE_IN typename StrangeStream<StdStreamType>::intern_pos_type
+    StrangeStream<StdStreamType>::__map_strange_to_real_position(typename StrangeStream<StdStreamType>::pos_type Pos)
     {
         uint32_t strange_pos = 0;
         uint32_t seed = 17;
@@ -107,27 +106,26 @@ namespace quex {
         }
     }
 
-    TEMPLATE_IN typename CLASS::pos_type
-    CLASS::tellg()
+    TEMPLATE_IN typename StrangeStream<StdStreamType>::pos_type
+    StrangeStream<StdStreamType>::tellg()
     { return __map_real_to_strange_position(sh->tellg()); }
 
     TEMPLATE_IN void
-    CLASS::seekg(typename CLASS::pos_type Position)
+    StrangeStream<StdStreamType>::seekg(typename StrangeStream<StdStreamType>::pos_type Position)
     { sh->seekg(__map_strange_to_real_position(Position)); }
 
     TEMPLATE_IN void   
-    CLASS::read(typename CLASS::char_type* buffer, size_t Size)
+    StrangeStream<StdStreamType>::read(typename StrangeStream<StdStreamType>::char_type* buffer, size_t Size)
     { sh->read(buffer, Size); }
 
-    TEMPLATE_IN size_t CLASS::gcount() { return sh->gcount(); }
-    TEMPLATE_IN bool   CLASS::eof()    { return sh->eof(); }
-    TEMPLATE_IN bool   CLASS::bad()    { return sh->bad(); }
-    TEMPLATE_IN void   CLASS::clear()  { return sh->clear(); }
-    TEMPLATE_IN bool   CLASS::fail()   { return sh->fail(); }
+    TEMPLATE_IN size_t StrangeStream<StdStreamType>::gcount() { return sh->gcount(); }
+    TEMPLATE_IN bool   StrangeStream<StdStreamType>::eof()    { return sh->eof(); }
+    TEMPLATE_IN bool   StrangeStream<StdStreamType>::bad()    { return sh->bad(); }
+    TEMPLATE_IN void   StrangeStream<StdStreamType>::clear()  { return sh->clear(); }
+    TEMPLATE_IN bool   StrangeStream<StdStreamType>::fail()   { return sh->fail(); }
 
 
 #   undef TEMPLATE_IN
-#   undef CLASS
 
 }
 

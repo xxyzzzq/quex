@@ -6,6 +6,10 @@
 #include<quex/code_base/compatibility/inttypes.h>
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
+#if ! defined(__QUEX_OPTION_LITTLE_ENDIAN) && ! defined(__QUEX_OPTION_BIG_ENDIAN)
+#    define __QUEX_OPTION_SYSTEM_ENDIAN
+#endif
+
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID    uint32_t
 #endif
@@ -178,10 +182,6 @@ namespace quex {
         QUEX_MEMORY      /* Running quex on pure memory, without any buffer filling.       */
 
     } QuexBufferFillerTypeEnum;
-
-#   ifndef     QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING
-#       define QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING ((char*)0x0)
-#   endif
 
     struct  __QuexAnalyser_tag;
     typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);

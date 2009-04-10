@@ -66,12 +66,9 @@ namespace quex {
                                 "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
             }
 
-            const char* to_coding = IANA_InputCodingName != 0x0 ? IANA_InputCodingName 
-                                                                : QUEX_SETTING_CORE_ENGINE_DEFAULT_CHARACTER_CODING;
-
             buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
                                   QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
-                                  to_coding, /* Internal Coding: Default */0x0,
+                                  IANA_InputCodingName, /* Internal Coding: Default */0x0,
                                   TranslationBufferMemorySize);
             break;
         }

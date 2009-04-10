@@ -33,6 +33,10 @@ def do(argv):
         sys.exit(0)
 
     for variable_name, info in SETUP_INFO.items():
+        # Some parameters are not set on the command line. Their entry is not associated
+        # with a description list.
+        if type(info) != list: continue
+
         if info[1]   == LIST:
             the_list = command_line.nominus_followers(info[0])
             if setup.__dict__.has_key(variable_name):
@@ -54,6 +58,12 @@ def do(argv):
     setup.output_header_file      = __prepare_file_name(setup, "-internal.h")
     setup.output_code_file        = __prepare_file_name(setup, ".cpp")
     setup.output_core_engine_file = __prepare_file_name(setup, "-core-engine.cpp")
+
+    if setup.byte_order == "<system>": 
+        setup.byte_order = sys.byteorder 
+        setup.byte_order_is_that_of_current_system_f = True
+    else:
+        setup.byte_order_is_that_of_current_system_f = False
 
     setup.buffer_limit_code          = __get_integer("buffer_limit_code")
     setup.control_character_code_list = [setup.buffer_limit_code]
@@ -103,6 +113,7 @@ def validate(setup, command_line, argv):
 
     # ensure that options are not specified twice
     for parameter, info in SETUP_INFO.items():
+        if type(info) != list: continue
         occurence_n = 0 
         for option in info[0]:
             occurence_n += argv.count(option)
@@ -126,6 +137,7 @@ def validate(setup, command_line, argv):
     # (*) Check for 'Straying' Options ___________________________________________________
     options = []
     for key, info in SETUP_INFO.items():
+        if type(info) != list: continue
         if key in DEPRECATED: continue
         if info[1] != None: options.extend(info[0])
     options.sort(lambda a,b: cmp(a.replace("-",""), b.replace("-","")))
@@ -152,9 +164,7 @@ def validate(setup, command_line, argv):
         else:
             setup.bytes_per_ucs_code_point = int(setup.bytes_per_ucs_code_point)
 
-    if setup.byte_order == "<system>": 
-        setup.byte_order = sys.byteorder 
-    elif setup.byte_order not in ["<system>", "little", "big"]:
+    if setup.byte_order not in ["<system>", "little", "big"]:
         error_msg("Byte order (option --endian) must be 'little', 'big', or '<system>'.\n" + \
                   "Note, that this option is only interesting for cross plattform development.\n" + \
                   "By default, quex automatically chooses the endian type of your system.")

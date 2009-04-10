@@ -7,8 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
+echo "If no errors occur in compilation, then everything is fine"
 quex -i error.qx -o Simple
-g++ -I./ -I$QUEX_PATH Simple.cpp Simple-core-engine.cpp lexer.cpp -o Simlicism
+rm -f Simlicism
+g++ -I./ -I$QUEX_PATH Simple.cpp Simple-core-engine.cpp lexer.cpp -o Simlicism -Wall
+ls Simlicism
 
-rm -f  Simlicism  Simple  Simple-core-engine.cpp  Simple.cpp  Simple-token_ids Simlicism
+rm -f  Simlicism  Simple  Simple-core-engine.cpp  Simple.cpp  Simple-token_ids 
 cd $tmp

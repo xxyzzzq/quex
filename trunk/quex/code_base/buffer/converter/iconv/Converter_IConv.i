@@ -3,6 +3,7 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
 #define __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
 
+#include <quex/code_base/definitions>
 #if ! defined(QUEX_OPTION_ENABLE_ICONV)
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
 #endif
@@ -22,8 +23,16 @@ namespace quex {
         if( ToCoding == 0 ) {
             switch( sizeof(QUEX_TYPE_CHARACTER) ) {
             default:  __quex_assert(false); return;
+#           if   defined (__QUEX_OPTION_SYSTEM_ENDIAN) 
             case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
             case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
+#           elif defined(__QUEX_OPTION_LITTLE_ENDIAN)
+            case 4:  me->handle = iconv_open("UCS-4LE",  FromCoding);  break;
+            case 2:  me->handle = iconv_open("UCS-2LE",  FromCoding);  break;
+#           elif defined(__QUEX_OPTION_BIG_ENDIAN)
+            case 4:  me->handle = iconv_open("UCS-4BE",  FromCoding);  break;
+            case 2:  me->handle = iconv_open("UCS-2BE",  FromCoding);  break;
+#           endif
             case 1:  me->handle = iconv_open("ASCII",    FromCoding);  break;
             }
         } else {
