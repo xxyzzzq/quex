@@ -1,0 +1,6 @@
+#!/bin/sh
+#Remove pyc 
+find /opt/quex/quex-##QUEX_VERSION/ -iname "*.pyc" -exec rm {} \;
+#Remove enviromental variable
+sed "s/export QUEX_PATH.*$//" -i /etc/profile
+exit 0
