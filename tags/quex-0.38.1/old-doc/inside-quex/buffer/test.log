@@ -1,0 +1,233 @@
+This is pdfTeX, Version 3.14159-1.10b (Web2C 7.4.5) (format=pdflatex 2006.5.8)  5 APR 2007 23:47
+**test
+(./test.tex{/var/lib/texmf/pdftex/config/pdftex.cfg}
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, n
+ohyphenation, loaded.
+(/usr/share/texmf/tex/latex/base/book.cls
+Document Class: book 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/bk10.clo
+File: bk10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (../../DOC/header.tex
+(/usr/share/texmf/tex/latex/listings/listings.sty
+Package: listings 2002/04/01 1.0 (Carsten Heinz)
+
+(/usr/share/texmf/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+\lst@mode=\count88
+\lst@gtempboxa=\box26
+\lst@token=\toks15
+\lst@length=\count89
+\lst@currlwidth=\dimen103
+\lst@column=\count90
+\lst@pos=\count91
+\lst@lostspace=\dimen104
+\lst@width=\dimen105
+\lst@newlines=\count92
+\lst@lineno=\count93
+\c@lstlisting=\count94
+\lst@maxwidth=\dimen106
+
+(/usr/share/texmf/tex/latex/listings/lstpatch.sty
+File: lstpatch.sty 2002/10/13 1.0i (Carsten Heinz)
+)
+(/usr/share/texmf/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2002/04/01 1.0 (Carsten Heinz)
+\c@lstnumber=\count95
+\lst@skipnumbers=\count96
+\lst@framebox=\box27
+)
+(/usr/share/texmf/tex/latex/listings/listings.cfg
+File: listings.cfg 2002/04/01 v1.0 listings configuration
+))
+(/usr/share/texmf/tex/latex/graphics/color.sty
+Package: color 1999/02/16 v1.0i Standard LaTeX Color (DPC)
+
+(/usr/share/texmf/tex/latex/config/color.cfg
+File: color.cfg 2001/08/31 v1.1 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 125.
+
+(/usr/share/texmf/tex/latex/graphics/pdftex.def
+File: pdftex.def 2002/06/19 v0.03k graphics/color for pdftex
+\Gread@gobject=\count97
+))
+\@input{frs-showpic-pdf.aux}
+\openout2 = `frs-showpic-pdf.aux'.
+
+(/home/fschaef/prj/Documents/TeX-Library/frs-showpic-pdf.tex
+(/usr/share/texmf/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2001/08/31 v1.1 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 80.
+)
+\Gin@req@height=\dimen107
+\Gin@req@width=\dimen108
+)
+(/usr/share/texmf/tex/latex/misc/rotating.sty
+Package: rotating 1997/09/26, v2.13 Rotation package
+
+(/usr/share/texmf/tex/latex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\c@r@tfl@t=\count98
+\rot@float@box=\box28
+)
+\xtextwidth=\skip43
+\xcolwidth=\skip44
+\xhalfcolwidth=\skip45
+\xthirdcolwidth=\skip46
+)
+(/usr/share/texmf/tex/latex/listings/lstlang1.sty
+File: lstlang1 2002/07/31 v1.0d listings language file
+)
+(/usr/share/texmf/tex/latex/listings/lstlang1.sty
+File: lstlang1 2002/07/31 v1.0d listings language file
+)
+(/usr/share/texmf/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2002/04/01 1.0 (Carsten Heinz)
+)) (./test.aux)
+\openout1 = `test.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+ (./test.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 2.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 2.
+)
+\tf@toc=\write3
+\openout3 = `test.toc'.
+
+
+[1
+
+
+
+
+{/var/lib/texmf/dvips/config/pdftex.map}]
+Overfull \vbox (6.83331pt too high) has occurred while \output is active []
+
+
+[2
+
+]
+Chapter 1.
+(./intro.tex <figures/basic-buffer.pdf, id=20, 395.4775pt x 169.63374pt>
+File: figures/basic-buffer.pdf Graphic file (type pdf)
+
+<use figures/basic-buffer.pdf>
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 25.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 25.
+) (./API.tex [3 <./figures/basic-buffer.pdf>]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 7.
+
+(/usr/share/texmf/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 7.
+) (./mechanisms.tex
+<figures/algorzthm.pdf, id=47, 707.64375pt x 415.5525pt>
+File: figures/algorzthm.pdf Graphic file (type pdf)
+
+<use figures/algorzthm.pdf>) (./load.tex
+Overfull \vbox (6.83331pt too high) has occurred while \output is active []
+
+
+[4] <figures/load-forward.pdf, id=66, 771.88374pt x 260.975pt>
+File: figures/load-forward.pdf Graphic file (type pdf)
+
+<use figures/load-forward.pdf>
+Overfull \vbox (6.83331pt too high) has occurred while \output is active []
+
+
+[5 <./figures/algorzthm.pdf> <./figures/load-forward.pdf>]
+<figures/load-backward.pdf, id=80, 771.88374pt x 266.9975pt>
+File: figures/load-backward.pdf Graphic file (type pdf)
+
+<use figures/load-backward.pdf>) (./constructor.tex
+
+LaTeX Warning: Reference `sec:buffer/overflow' on page 6 undefined on input lin
+e 11.
+
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 21.
+(/usr/share/texmf/tex/latex/base/omlcmr.fd
+File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <10> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 21.
+)
+Overfull \vbox (6.83331pt too high) has occurred while \output is active []
+
+
+[6 <./figures/load-backward.pdf>] (./test.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 2107 strings out of 95436
+ 28284 string characters out of 1190237
+ 85438 words of memory out of 1000001
+ 5084 multiletter control sequences out of 10000+50000
+ 9228 words of font info for 33 fonts, out of 500000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 35i,8n,68p,253b,858s stack positions out of 5500i,500n,5000p,200000b,5000s
+ 89 PDF objects out of 300000
+ 0 named destinations out of 131072
+ 20 words of extra memory for PDF output out of 65536
+{/usr/share/texmf/dvips/tetex/09fbbfac.enc}</usr/share/texmf/fonts/type1/blue
+sky/cm/cmtt8.pfb>{/usr/share/texmf/dvips/tetex/aae443f0.enc}</usr/share/texmf/f
+onts/type1/bluesky/cm/cmmi8.pfb>{/usr/share/texmf/dvips/tetex/f7b6d320.enc}</us
+r/share/texmf/fonts/type1/bluesky/cm/cmss8.pfb></usr/share/texmf/fonts/type1/bl
+uesky/cm/cmtt10.pfb>{/usr/share/texmf/dvips/tetex/bbad153f.enc}</usr/share/texm
+f/fonts/type1/bluesky/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cm
+r8.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr6.pfb></usr/share/texmf/font
+s/type1/bluesky/cm/cmr7.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmmi10.pfb
+></usr/share/texmf/fonts/type1/bluesky/cm/cmss10.pfb>{/usr/share/texmf/dvips/te
+tex/74afc74c.enc}</usr/share/texmf/fonts/type1/bluesky/cm/cmti10.pfb></usr/shar
+e/texmf/fonts/type1/bluesky/cm/cmsl10.pfb></usr/share/texmf/fonts/type1/bluesky
+/cm/cmr10.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmbx10.pfb></usr/share/t
+exmf/fonts/type1/bluesky/cm/cmbx12.pfb>
+Output written on test.pdf (6 pages, 111026 bytes).

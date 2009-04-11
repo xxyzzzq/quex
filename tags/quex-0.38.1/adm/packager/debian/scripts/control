@@ -1,0 +1,17 @@
+Essential: no
+Architecture: i386
+Description: Quex lexical analyser
+Provides: quex
+Package: quex
+Section: misc
+Depends: python
+Maintainer: 
+Priority: optional
+Version: ##QUEX_VERSION-##PACKAGE_VERSION
+Installed-Size: 22989
+Description: A Mode Oriented Directly Coded Lexical Analyser Generator
+             
+             Quex is a lexical analyzer generator that produces
+             a directly coded lexical analyzer engine.
+             
+             http://quex.sourceforge.net/

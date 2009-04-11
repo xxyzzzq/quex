@@ -1,0 +1,53 @@
+makefile = Makefile
+cleaning ...
+make NDEBUG_F=-DQUEX_OPTION_ACTIVATE_ASSERTS   ##
+executing ...
+,------------------------------------------------------------------------------------
+| [START]
+(1, 1)  	STRUCT
+(1, 8)  	IDENTIFIER
+(1, 15)  	COLON
+(2, 3)  	BLOCK_OPEN
+(2, 3)  	IDENTIFIER
+(2, 10)  	IDENTIFIER
+(3, 3)  	IDENTIFIER
+(3, 10)  	IDENTIFIER
+(6, 1)  	BLOCK_CLOSE
+(6, 1)  	FUNCTION_DEF
+(6, 5)  	IDENTIFIER
+(6, 15)  	BRACKET_O
+(6, 16)  	IDENTIFIER
+(6, 20)  	BRACKET_C
+(7, 4)  	BLOCK_OPEN
+(7, 4)  	IF
+(7, 7)  	IDENTIFIER
+(7, 12)  	OP_EQUAL
+(7, 21)  	STRING
+(7, 22)  	COLON
+(8, 7)  	BLOCK_OPEN
+(8, 7)  	PRINT
+(8, 23)  	STRING
+(9, 4)  	BLOCK_CLOSE
+(9, 4)  	ELSE
+(10, 7)  	BLOCK_OPEN
+(10, 7)  	PRINT
+(10, 20)  	STRING
+(10, 22)  	IDENTIFIER
+(11, 7)  	PRINT
+(11, 35)  	STRING
+(13, 4)  	BLOCK_CLOSE
+(13, 4)  	FOR
+(13, 8)  	IDENTIFIER
+(13, 15)  	IN
+(13, 18)  	IDENTIFIER
+(13, 22)  	COLON
+(14, 7)  	BLOCK_OPEN
+(14, 7)  	PRINT
+(14, 13)  	IDENTIFIER
+(14, 22)  	STRING
+(17, 1)  	BLOCK_CLOSE
+(17, 1)  	BLOCK_CLOSE
+(17, 1)  	<TERMINATION>
+| [END] number of token = 44
+`------------------------------------------------------------------------------------
+cleaning ...
