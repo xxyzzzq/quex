@@ -8,7 +8,7 @@ DistributionDir = sys.argv[1]
 Version         = sys.argv[2]
 
 
-template_str = open(os.environ["QUEX_PATH"] + "/adm/install-builder-template.xml").read()
+template_str = open(os.environ["QUEX_PATH"] + "/adm/packager/install-builder-template.xml").read()
 
 result = blue_print(template_str,
                     [["$$VERSION$$",               Version ],

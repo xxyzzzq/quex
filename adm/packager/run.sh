@@ -94,7 +94,7 @@ function create_packages()
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml rpm
     ## We do the debian packages on our own-- thanks to Joaquin Duo.
     ## /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml deb
-    $QUEX_PATH/adm/packager/debian/run.sh $1
+    ## $QUEX_PATH/adm/packager/debian/run.sh $1
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml osx
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml freebsd
     /opt/installbuilder-5.4.11/bin/builder build ./install-builder.xml solaris-intel
