@@ -18,3 +18,4 @@ the optimization of memory consumption and analysis speed.
    line-column-number-counting.txt
    derived-class.txt
    token-class.txt
+   misc.txt
