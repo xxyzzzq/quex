@@ -57,7 +57,7 @@ Pattern-action pairs have been discussed in previous sections.
 Options
 -------
 
-The possible options for modes to be specifiedare the following.
+The possible options for modes to be specified are the following.
 
 .. data::   <inheritable: arg> 
 
