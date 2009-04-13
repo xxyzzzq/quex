@@ -21,7 +21,7 @@ CC = g++ \
      -D__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT 
 
 %.exe:   %.cpp $(QUEX_CORE)
-	$(CC) -I./. -I$(QUEX_PATH) $^ -o $@ 
+	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
 	
 clean: 
 	rm -f *.o
