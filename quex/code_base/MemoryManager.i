@@ -127,6 +127,31 @@ namespace quex {
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 #   endif
 
+#   ifdef QUEX_OPTION_POST_CATEGORIZER
+    QUEX_INLINE  QuexPostCategorizerNode*  
+    MemoryManager_PostCategorizerNode_allocate(size_t RemainderL)
+    {
+        /* Allocate in one beat: base and remainder: 
+         *
+         *   [Base   |Remainder             ]
+         *
+         * Then bend the base->name_remainder to the Remainder part of the allocated
+         * memory. Note, that this is not very efficient, since one should try to allocate
+         * the small node objects and refer to the remainder only when necessary. This
+         * would reduce cache misses.                                                      */
+        const size_t   BaseSize  = sizeof(QuexPostCategorizerNode);
+        /* Length + 1 == memory size (terminating zero) */
+        const size_t   RemainderSize = sizeof(QUEX_TYPE_CHARACTER) * (RemainderL + 1);
+        uint8_t*  base = __QUEX_ALLOCATE_MEMORY(BaseSize + RemainderSize);
+        ((QuexPostCategorizerNode*)base)->name_remainder = (const QUEX_TYPE_CHARACTER*)(base + BaseSize);
+        return (QuexPostCategorizerNode*)base;
+    }
+
+    QUEX_INLINE  void 
+    MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode* node)
+    { if( node != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)node); }
+
+#   endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex

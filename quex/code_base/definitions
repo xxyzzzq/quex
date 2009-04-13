@@ -109,6 +109,13 @@
 #   define QUEX_INPUT_HANDLE_TYPE  /* stdio.h's */ FILE 
 #endif
 
+QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
+{
+    const QUEX_TYPE_CHARACTER* iterator = Str;
+    while( *iterator != 0 ) ++iterator; 
+    return iterator - Str;
+}
+
 #ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
 #   define QUEX_SETTING_BUFFER_LIMIT_CODE  (QUEX_TYPE_CHARACTER)(0x0)
 #endif
