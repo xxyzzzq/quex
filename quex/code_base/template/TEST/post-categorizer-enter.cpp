@@ -7,12 +7,12 @@
 #include <quex/code_base/template/PostCategorizer.i>
 
 /* See: post-categorizer-common.c */
+using namespace quex;
 void post_categorizer_setup(QuexPostCategorizer* me, int Seed);
 
 int
 main(int argc, char** argv)
 {
-    using namespace quex;
 
     if( argc < 2 ) return -1;
 
@@ -23,6 +23,8 @@ main(int argc, char** argv)
     }
     const int Start = atoi(argv[1]);
     QuexPostCategorizer  pc;
+
+    post_categorizer_setup(&pc, Start);
 
     QuexPostCategorizer_print_tree(pc.root, 0);
 }
