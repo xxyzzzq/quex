@@ -1,7 +1,11 @@
+# Get: QUEX_CORE dedendencies
+include $(QUEX_PATH)/quex/code_base/core.mkd
+
 PROGRAMS = counter-column_line.exe \
 		   counter-column_line-x.exe \
 		   counter-column_line-indentation.exe \
-		   counter-column_line-indentation-x.exe
+		   counter-column_line-indentation-x.exe \
+		   post-categorizer-enter.exe
 
 all:       $(PROGRAMS) 
 
@@ -16,7 +20,7 @@ CC = g++ \
      -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
      -D__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT 
 
-%.exe:   %.cpp
+%.exe:   %.cpp $(QUEX_CORE)
 	$(CC) -I./. -I$(QUEX_PATH) $^ -o $@ 
 	
 clean: 
