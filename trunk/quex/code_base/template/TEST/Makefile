@@ -5,7 +5,8 @@ PROGRAMS = counter-column_line.exe \
 		   counter-column_line-x.exe \
 		   counter-column_line-indentation.exe \
 		   counter-column_line-indentation-x.exe \
-		   post-categorizer-enter.exe
+		   post-categorizer-enter.exe \
+		   post-categorizer-find.exe
 
 all:       $(PROGRAMS) 
 
@@ -21,7 +22,7 @@ CC = g++ \
      -D__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT 
 
 %.exe:   %.cpp $(QUEX_CORE)
-	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+	$(CC) -I./. -I$(QUEX_PATH) $< post-categorizer-common.cpp -o $@ 
 	
 clean: 
 	rm -f *.o
