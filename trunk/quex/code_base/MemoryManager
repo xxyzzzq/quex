@@ -11,6 +11,9 @@
 #if defined (QUEX_OPTION_ENABLE_ICONV)
 #   include <quex/code_base/buffer/converter/iconv/Converter_IConv>
 #endif
+#ifdef QUEX_OPTION_POST_CATEGORIZER
+#include <quex/code_base/template/PostCategorizer>
+#endif
 
 #include <quex/code_base/temporary_macros_on>
  
@@ -61,6 +64,11 @@ namespace quex {
 
     QUEX_INLINE void
     QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _free)(CLASS_MEMENTO_TAG* memory);
+#   endif
+
+#   ifdef QUEX_OPTION_POST_CATEGORIZER
+    QUEX_INLINE  QuexPostCategorizerNode*  MemoryManager_PostCategorizerNode_allocate(size_t RemainderSize);
+    QUEX_INLINE  void                      MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode*);
 #   endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
