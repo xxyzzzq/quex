@@ -1,3 +1,5 @@
+.. _sec-mode-transitions:
+
 Mode Transitions
 ================
 
@@ -73,3 +75,18 @@ in order to detect undesired mode changes.
 
 As with ``GOTO`` additional arguments indicate a token sending. Those
 arguments are applied on the constructor for the resulting token.
+
+.. note::
+
+   When a sub mode is entered the 'return mode' needs to be stored on 
+   a stack. This stack has a fixed size. It can be specified via the 
+   macro::
+
+       QUEX_SETTING_MODE_STACK_SIZE
+
+   A basis for using the sub mode feature is that there is a clear idea
+   about the possible mode transitions. Thus, the number of possible
+   'gosubs' should be determined at the time of the design of the lexical 
+   analyzer. The default setting is eight.
+
+

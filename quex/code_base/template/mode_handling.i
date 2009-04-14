@@ -74,10 +74,8 @@ inline void
 CLASS::pop_mode() 
 { 
     __quex_assert(_mode_stack.end != _mode_stack.begin);
-    QuexMode* tmp; 
-    tmp = *_mode_stack.end - 1;
-    enter_mode(*tmp); 
-    _mode_stack.end -= 1;
+    --_mode_stack.end;
+    enter_mode(**_mode_stack.end); 
 }
 
 inline void
