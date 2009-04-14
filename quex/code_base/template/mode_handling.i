@@ -73,24 +73,33 @@ CLASS::operator<<(/* NOT const*/ QuexMode& Mode)
 inline void 
 CLASS::pop_mode() 
 { 
-    __quex_assert(_mode_stack.size() != 0);
+    __quex_assert(_mode_stack.end != _mode_stack.begin);
     QuexMode* tmp; 
-    tmp = _mode_stack.back(); 
-    _mode_stack.pop_back(); 
+    tmp = *_mode_stack.end - 1;
     enter_mode(*tmp); 
+    _mode_stack.end -= 1;
 }
 
 inline void
 CLASS::pop_drop_mode() 
 { 
-    __quex_assert(_mode_stack.size() != 0);
-    _mode_stack.pop_back(); // do not care about what was popped
+    __quex_assert(_mode_stack.end != _mode_stack.begin);
+    --_mode_stack.end;
+    // do not care about what was popped
 }
     
 inline void       
 CLASS::push_mode(QuexMode& new_mode) 
 { 
-    _mode_stack.push_back(&(mode())); 
+#   ifdef QUEX_OPTION_ASSERTS
+    if( _mode_stack.end == _mode_stack.memory_end ) 
+        QUEX_ERROR_EXIT("Mode stack overflow. Adapt size of mode stack via the macro "
+                        "QUEX_SETTING_MODE_STACK_SIZE, or review mode transitions. "
+                        "I.e. check that for every GOSUB (push), there is a correspondent "
+                        "GOUP (pop).");
+#   endif
+    *_mode_stack.end = &(mode());
+    ++_mode_stack.end;
     enter_mode(new_mode); 
 }
 

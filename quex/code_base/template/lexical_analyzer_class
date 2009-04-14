@@ -16,8 +16,6 @@
 #ifndef __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
 #define __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
 
-// STL (Std C++ Lib)
-#include<vector> 
 #include<istream>  // gets: istream and wistream
 #include<quex/code_base/compatibility/inttypes.h>
 
@@ -105,8 +103,12 @@ $$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 $$SWITCH$$ QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
 #endif
-#ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
+#ifdef    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
 #   undef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+#endif
+
+#ifndef    QUEX_SETTING_MODE_STACK_SIZE 
+#   define QUEX_SETTING_MODE_STACK_SIZE   (size_t)8
 #endif
 
 // -- Verbosity
@@ -407,7 +409,11 @@ $$MODE_OBJECT_MEMBERS$$
         //
     private:
         // (*) mode stack allows for pushing and popping of lexical analysis modes
-        std::vector<QuexMode*>   _mode_stack;
+        struct {
+            QuexMode*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            QuexMode** end;
+            QuexMode** memory_end;
+        } _mode_stack;
 
         // NOTE: A pointer to an object of the token queue/object is used in order to make
         //       memory management more flexible. The token queue/token object is heavily

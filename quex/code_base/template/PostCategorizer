@@ -25,9 +25,9 @@ namespace quex {
     } QuexPostCategorizerNode;
 
     typedef struct {
-        void                enter(const QUEX_TYPE_CHARACTER* Lexeme, const int TokenID);
+        void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
+                                  const QUEX_TYPE_TOKEN_ID TokenID);
         void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
-        void                remove_by_token_id(const QUEX_TYPE_CHARACTER* Lexeme);
         QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
 
         QuexPostCategorizerNode*  root;
@@ -38,15 +38,19 @@ namespace quex {
     QuexPostCategorizerNode_compare(QuexPostCategorizerNode* me, 
                                     QUEX_TYPE_CHARACTER FirstCharacter, const QUEX_TYPE_CHARACTER* Remainder);
 
+    inline void
+    QuexPostCategorizer_enter(QuexPostCategorizer* me, 
+                              const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID);
+
     inline QuexPostCategorizerNode*
-    QuexPostCategorizer_find(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+    QuexPostCategorizer_find(const QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
 
     inline void
     QuexPostCategorizer_insert(QuexPostCategorizer* me, 
                                const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID);
 
     inline void
-    QuexPostCategorizer_delete(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+    QuexPostCategorizer_remove(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
 }
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */
