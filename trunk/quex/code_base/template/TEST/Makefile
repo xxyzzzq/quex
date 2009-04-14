@@ -6,8 +6,9 @@ PROGRAMS = counter-column_line.exe \
 		   counter-column_line-indentation.exe \
 		   counter-column_line-indentation-x.exe \
 		   post-categorizer-enter.exe \
-		   post-categorizer-delete.exe \
-		   post-categorizer-delete-2.exe \
+		   post-categorizer-remove.exe \
+		   post-categorizer-remove-2.exe \
+		   post-categorizer-remove-total.exe \
 		   post-categorizer-find.exe
 
 all:       $(PROGRAMS) 

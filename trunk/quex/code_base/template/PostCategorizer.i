@@ -8,6 +8,26 @@
 
 namespace quex {
 
+    inline void
+    QuexPostCategorizer::enter(const QUEX_TYPE_CHARACTER* Lexeme, const QUEX_TYPE_TOKEN_ID TokenID)
+    {
+        QuexPostCategorizer_enter(this, Lexeme, TokenID);
+    }
+    
+    inline void
+    QuexPostCategorizer::remove(const QUEX_TYPE_CHARACTER* Lexeme)
+    {
+        QuexPostCategorizer_remove(this, Lexeme);
+    }
+
+    inline QUEX_TYPE_TOKEN_ID 
+    QuexPostCategorizer::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
+    {
+        QuexPostCategorizerNode* found = QuexPostCategorizer_find(this, Lexeme);
+        if( found == 0x0 ) return __QUEX_TOKEN_ID_UNINITIALIZED;
+        return found->token_id;
+    }
+
     inline QuexPostCategorizerNode* 
     QuexPostCategorizerNode_new(QUEX_TYPE_CHARACTER         FirstCharacter,
                                 const QUEX_TYPE_CHARACTER*  Remainder,
@@ -39,7 +59,7 @@ namespace quex {
     }
 
     inline QuexPostCategorizerNode*
-    QuexPostCategorizer_find(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName)
+    QuexPostCategorizer_find(const QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName)
     {
         QUEX_TYPE_CHARACTER         FirstCharacter = EntryName[0];
         const QUEX_TYPE_CHARACTER*  Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
@@ -55,14 +75,14 @@ namespace quex {
     }
 
     inline void
-    QuexPostCategorizer_insert(QuexPostCategorizer* me, 
-                               const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID)
+    QuexPostCategorizer_enter(QuexPostCategorizer* me, 
+                              const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID)
     {
         QUEX_TYPE_CHARACTER         FirstCharacter = EntryName[0];
         const QUEX_TYPE_CHARACTER*  Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
-        QuexPostCategorizerNode*  node      = me->root;
-        QuexPostCategorizerNode*  prev_node = 0x0;
-        int                       result = 0;
+        QuexPostCategorizerNode*    node      = me->root;
+        QuexPostCategorizerNode*    prev_node = 0x0;
+        int                         result = 0;
 
         if( me->root == 0x0 ) {
             me->root = QuexPostCategorizerNode_new(FirstCharacter, Remainder, TokenID);
@@ -85,12 +105,12 @@ namespace quex {
     }
 
     inline void
-    QuexPostCategorizer_delete(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName)
+    QuexPostCategorizer_remove(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName)
     {
         int result = 0;
         QUEX_TYPE_CHARACTER         FirstCharacter = EntryName[0];
         const QUEX_TYPE_CHARACTER*  Remainder = FirstCharacter == 0x0 ? 0x0 : EntryName + 1;
-        QuexPostCategorizerNode*  node   = 0x0;
+        QuexPostCategorizerNode*    node   = 0x0;
         QuexPostCategorizerNode*  parent = 0x0;
         QuexPostCategorizerNode*  found  = me->root;
 
@@ -112,7 +132,16 @@ namespace quex {
         /* Found a node with 'EntryName' */
 
         /* Remove node and re-order tree */
-        if( found == parent->lesser ) {
+        if( parent == 0x0 ) {
+            if( found->lesser != 0x0 ) {
+                for(node = found->lesser; node->greater != 0x0; node = node->greater );
+                node->greater = found->greater;
+                me->root      = found->lesser;
+            } else {
+                me->root      = found->greater;
+            }
+        }
+        else if( found == parent->lesser ) {
             /* (1) 'found' is the 'lesser' child of the parent:
              *
              *                 (parent's greater tree)
@@ -124,26 +153,31 @@ namespace quex {
              *                        (lesser tree)
              *
              *     All subnodes of (greater tree) are greater than all subnodes in (lesser tree).
-             *     => (i) mount (lesser tree) to the least node of (greater tree).                */
-            for(node = found->greater; node->lesser != 0x0; node = node->lesser );
-            node->lesser = found->lesser;
-            /*     Anything in the subtree of 'found' is lesser than anything in 'parent's 
+             *     => (i) mount (lesser tree) to the least node of (greater tree).                
+             *     Anything in the subtree of 'found' is lesser than anything in 'parent's 
              *     greater tree.
              *     => (ii) mount (greater tree) to the least node of the (parent's greater tree). */
-            if( parent != 0x0 ) {
-                for(node = parent->greater; node->lesser != 0x0; node = node->lesser );
-                node->lesser = found->lesser;
+            /* parent != 0x0, see above */
+            if( found->greater != 0x0 ) {
+                for(node = found->greater; node->lesser != 0x0; node = node->lesser );
+                node->lesser   = found->lesser;
+                parent->lesser = found->greater;
+            } else {
+                parent->lesser = found->lesser;
             }
+
         } else {
             /* (2) 'found' is the 'greater' child of the parent:
              *
-             *     (i)  mount (greater tree) to the greatest node of (greater tree).                  */
-            for(node = found->lesser; node->greater != 0x0; node = node->greater );
-            node->greater = found->greater;
-            /*     (ii) mount (greater tree) to the greatest node of the (parent's greater tree).    */
-            if( parent != 0x0 ) {
-                for(node = parent->lesser; node->greater != 0x0; node = node->greater );
-                node->greater = found->greater;
+             *     (i)  mount (greater tree) to the greatest node of (greater tree).                  
+             *     (ii) mount (lesser tree) to the greatest node of the (parent's lesser tree). */
+            /* parent != 0x0, see above */
+            if( found->lesser != 0x0 ) {
+                for(node = found->lesser; node->greater != 0x0; node = node->greater );
+                node->greater   = found->greater;
+                parent->greater = found->lesser;
+            } else {
+                parent->greater = found->greater;
             }
         }
         MemoryManager_PostCategorizerNode_free(found);
