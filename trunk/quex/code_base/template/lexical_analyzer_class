@@ -542,6 +542,9 @@ $$CLASS_BODY_EXTENSION$$
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
+        _mode_stack.end        = _mode_stack.begin;
+        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+
         __init(input_handle, BFT, IANA_InputCodingName);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK

@@ -34,6 +34,12 @@ Following settings can be made on the command line:
    When using IBM's ICU library for character conversion (command line option ``--icu``),
    the intermediate buffer size is determined by this setting.
 
+.. cmacro:: QUEX_SETTING_MODE_STACK_SIZE
+
+   Defines the size of the mode stack. It defines the number of 'sub mode
+   calls' that can be done via the ``.push_mode`` and ``.pop_mode`` member
+   functions. See also section :ref:`sec-mode-transitions`.
+
 .. cmacro:: QUEX_SETTING_TOKEN_QUEUE_SIZE
 
    Defines the initial number of elements of the token queue--if it is 

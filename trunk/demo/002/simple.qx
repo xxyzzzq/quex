@@ -4,6 +4,7 @@ start = PROGRAM;
 header {
 #include <cstdlib>  // C++ adapted 'stdlib.h'
 //                  // gets:  atoi(const char*) 
+#include <vector>
 }
 
 define {
