@@ -140,7 +140,7 @@ analysis can be specified via
 
 .. code-block:: cpp
 
-   start = START_MODE
+   start = START_MODE;
 
 .. rubric:: Footnotes
 
