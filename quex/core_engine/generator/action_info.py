@@ -72,7 +72,6 @@ class UserCodeFragment(CodeFragment):
 
         CodeFragment.__init__(self, code, require_terminating_zero_f)
 
-
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
     if Language not in UserCodeFragment_OpenLinePragma.keys():
         return
