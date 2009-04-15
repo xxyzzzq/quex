@@ -15,6 +15,7 @@ ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  it        (Variable DATE=09y04m15d) make packages for sourceforge (html, pdf)"
 	@echo "  html      to make standalone HTML files"
 	@echo "  dirhtml   to make HTML files named index.html in directories"
 	@echo "  pickle    to make pickle files"
@@ -25,6 +26,15 @@ help:
 	@echo "  changes   to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck to check all external links for integrity"
 	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
+
+it: html latex
+	cd build/latex; \
+		make all-pdf; \
+	    mv Quex.pdf quex-doc-$(DATE).pdf
+	cd build; \
+		tar cfj quex-doc-html-$(DATE).tbz html/ doctrees/; \
+	mv build/*.tbz       .
+	mv build/latex/*.pdf .
 
 clean:
 	-rm -rf build/*
