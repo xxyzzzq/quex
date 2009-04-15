@@ -23,10 +23,15 @@ def parse(fh):
             token_type_member_list.append([member])
             
 def parse_token_type_options(fh):
-
-    token_id_type        = ""
-    column_counter_type  = ""
-    line_counter_type    = ""
+    """ <head:  std::string        name>
+        <head:  std::vector<int>   number_list>
+        <column:   uint32_t>
+        <line:     uint32_t>
+        <token_id: uint8_t>
+    """
+    token_id_type        = CodeFragment()
+    column_counter_type  = CodeFragment()
+    line_counter_type    = CodeFragment()
     header_variable_list = []
 
     while 1 + 1 == 2:
@@ -39,29 +44,28 @@ def parse_token_type_options(fh):
                 error_msg("token_type: Header variable specification requires\n" + \
                           "two fields, namely a variable name and a type/class.\n" + \
                           "Example: <head: std::string  name>", fh)
-            type = fields[0]
+            type = UserCodeFragment(fields[0], fh.name, get_current_line_info_number(fh))
             name = fields[1]
             header_variable_list.append([type, name])
 
         elif identifier == "token_id":
-            __verify_numeric_type(fields, "token identifier")
-            token_id_type = fields[0]
+            token_id_type = __extract_type_code_str(fields, "token identifier", fh)
 
         elif identifier == "column":
-            __verify_numeric_type(fields, "column counter")
-            column_counter_type = fields[0]
+            column_counter_type = __extract_type_code_str(fields, "column counter", fh)
     
         elif identifier == "line":
-            __verify_numeric_type(fields, "line counter")
-            line_counter_type = fields[0]
+            line_counter_type = __extract_type_code_str(fields, "line counter",fh)
     
-def __verify_numeric_type(fields, Description):
+def __extract_type_code_str(fields, Description, fh):
     if    len(fields) != 1 \
        or fields[0].find("string") != -1 \
        or fields[0].find("vector") != -1 \
        or fields[0].find("map")    != -1:
-        error_msg("token_id: The type of the %s must be a scalar numeric type.\n" % Description \
+        error_msg("token_id: The type of the %s type must be a scalar numeric type.\n" % Description \
                   "Example: <token_id: uint16_t>", fh)
+
+    return UserCodeFragment(fields[0], fh.name, get_current_line_info_number(fh))
 
 def parse_token_type_member_definition(fh):
     member_name     = ""
@@ -69,9 +73,7 @@ def parse_token_type_member_definition(fh):
     array_element_n = -1
 
     skip_whitespace(fh)
-
-    if __check(fh, "}"): 
-        return
+    if __check(fh, "}"): return
     
     # -- get the name of the pattern
     skip_whitespace(fh)
@@ -80,9 +82,7 @@ def parse_token_type_member_definition(fh):
         error_msg("Missing identifier for token struct/class member.", fh)
 
     skip_whitespace(fh)
-
     verify_next_word(fh, ":")
-
     skip_whitespace(fh)
 
     if __check(fh, "}"): 
