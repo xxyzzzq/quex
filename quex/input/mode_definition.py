@@ -64,21 +64,9 @@ def parse_mode_option_list(new_mode, fh):
         error_msg("End of file reached while options of mode '%s'." % mode_name, fh)
 
 def parse_mode_option(fh, new_mode):
-    skip_whitespace(fh)
 
-    # (*) base modes 
-    if fh.read(1) != "<": 
-        # fh.seek(-1, 1) 
-        return False
-
-    skip_whitespace(fh)
-
-    identifier = read_identifier(fh).strip()
-
-    if identifier == "":  error_msg("missing identifer after start of mode option '<'", fh)
-    skip_whitespace(fh)
-    if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
-    skip_whitespace(fh)
+    identifier = read_option_start(fh)
+    if identifier == None: return False
 
     if identifier == "skip":
         # A skipper 'eats' characters at the beginning of a pattern that belong
@@ -133,11 +121,7 @@ def parse_mode_option(fh, new_mode):
         error_msg("skip_nesting_range is not yet supported.", fh)
 
     else:
-        value, i = read_until_letter(fh, [">"], Verbose=1)
-        if i != 0:
-            error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
-
-        value = value.strip()
+        value = read_option_value(fh)
 
     # Does the specified option actually exist?
     if not lexer_mode.mode_option_info_db.has_key(identifier):

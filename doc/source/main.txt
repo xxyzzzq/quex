@@ -1,7 +1,7 @@
 .. Quex documentation master file
 
-Welcome to Quex's documentation!
-================================
+Quex Manual
+===========
 
 Contents:
 
@@ -12,9 +12,9 @@ Contents:
    intro/intro.txt
    basics/intro.txt
    usage/intro.txt
+   character-encoding/intro.txt
    advanced/intro.txt
    invocation/intro.txt
-   character-encoding/intro.txt
 
 
 Indices and tables

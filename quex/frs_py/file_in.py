@@ -465,4 +465,26 @@ def get_include_guard_extension(Filename):
             include_guard_extension += "_x%x_" % ord(letter)
     return include_guard_extension
 
+def read_option_start(fh):
+    skip_whitespace(fh)
 
+    # (*) base modes 
+    if fh.read(1) != "<": 
+        # fh.seek(-1, 1) 
+        return None
+
+    skip_whitespace(fh)
+
+    identifier = read_identifier(fh).strip()
+
+    if identifier == "":  error_msg("missing identifer after start of mode option '<'", fh)
+    skip_whitespace(fh)
+    if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
+    skip_whitespace(fh)
+    return identifier
+
+def read_option_value(fh):
+    value, i = read_until_letter(fh, [">"], Verbose=1)
+    if i != 0:
+        error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
+    return value.strip()
