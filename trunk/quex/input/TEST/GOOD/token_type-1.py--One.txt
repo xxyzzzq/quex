@@ -1,19 +1,6 @@
 -----------------------------
 IN:
-    [<head: my::math::complex G> {]
-
-OUT:
-
-type(token_id)       = 
-type(column_counter) = 
-type(line_counter)   = 
-header variables {
-    my::math::complex G
-}
-
------------------------------
-IN:
-    [<token_id: uint8_t>  {]
+    [uint8_t : token_id; {]
 
 OUT:
 
@@ -25,7 +12,7 @@ header variables {
 
 -----------------------------
 IN:
-    [<column: uint8_t>  {]
+    [uint8_t : column; {]
 
 OUT:
 
@@ -37,7 +24,7 @@ header variables {
 
 -----------------------------
 IN:
-    [<line: uint8_t>  {]
+    [uint8_t : line; {]
 
 OUT:
 

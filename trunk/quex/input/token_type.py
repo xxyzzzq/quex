@@ -22,54 +22,107 @@ class TokenTypeDescriptor:
         return txt
 
 def parse(fh):
-    # NOTE: Catching of EOF happens in caller: parse_section(...), the caller
+    descriptor = TokenTypeDescriptor()
 
-    option_list = parse_token_type_options(fh)
-    #
-    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
+    while parse_section(fh, descriptor):
+        pass
+        
+    if not check(fh, "}"):
+        fh.seek(position)
+        error_msg("Missing closing '}' at end of token_type definition.", fh);
 
-    while 1 + 1 == 2:
-        if check(fh, "{"):
-            # Combined token type members (members that can occur at the same time)
-            combined_member_list = []
-            while 1 + 1 == 2:
-                member = parse_token_type_member_definition(fh)
-                if member == None: break
-                combined_member_list.append(member)
-            # Closing '}' has been eaten by parse_token_type_member_definition(..)
-            token_type_member_list.append(combined_member_list)
-        else:
-            member = parse_token_type_member_definition(fh)
-            if member == None: break
-            token_type_member_list.append([member])
-            
-def parse_options(fh, descriptor):
-    """SYNTAX: <head:  std::string        name>
-               <head:  std::vector<int>   number_list>
-               <column:   uint32_t>
-               <line:     uint32_t>
-               <token_id: uint8_t>
-    """
+def parse_section(fh, descriptor):
     position = fh.tell()
-    allowed_list = ["head", "column", "line", "token_id"]
+    skip_whitespace(fh)
+    word = read_identifier(fh)
+
+    if word not in ["standard", "distinct", "union"]:
+        return False
+
+    if not check(fh, "{"):
+        fh.seek(position)
+        error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
+
+    if   word == "standard": parse_standard_members(fh, descriptor)
+    elif word == "distinct": parse_distinct_members(fh, descriptor)
+    elif word == "union":    parse_union_members(fh, descriptor)
+
+    if not check(fh, "}"):
+        fh.seek(position)
+        error_msg("Missing closing '}' at end of token_type section '%s'." % word, fh);
+
+    return True
+            
+def parse_standard_members(fh, descriptor, already_defined_list):
+    position = fh.tell()
+    allowed_list = ["column_number", "line_number", "token_id"]
 
     while 1 + 1 == 2:
+        try_position = fh.tell()
         try: 
-            type_code_fragment, name = parse_variable_definition(fh, AllowedList=allowed_list)
+            type_code_fragment, name = parse_variable_definition(fh) 
+
         except EndOfStreamException:
             fh.seek(position)
             error_msg("End of file reached while parsing token_type header definition.", fh)
 
-    if name == None: return
+        if name == None: return
 
-    if name == "head":
-        descriptor.header_variable_list.append([type_code_fragment, name])
-    elif identifier == "token_id":
-        descriptor.token_id_type = type_code_fragment
-    elif identifier == "column":
-        descriptor.column_counter_type = type_code_fragment
-    elif identifier == "line":
-        descriptor.line_counter_type = type_code_fragment
+        __validate_definition(type_code_fragment.filename, type_code_fragment.line_n, name,
+                              allowed_list, already_defined_list, NumericF=True)
+                              
+
+        if   name == "token_id": descriptor.token_id_type       = type_code_fragment
+        elif name == "column":   descriptor.column_counter_type = type_code_fragment
+        elif name == "line":     descriptor.line_counter_type   = type_code_fragment
+        else:
+            assert false # This should have been caught by the variable parser function
+
+        already_defined_list.append([name, type_code_fragment])
+
+def parse_distinct_members(fh, descriptor, already_defined_list):
+    position = fh.tell()
+
+    while 1 + 1 == 2:
+        try_position = fh.tell()
+        try: 
+            type_code_fragment, name = parse_variable_definition(fh) 
+
+        except EndOfStreamException:
+            fh.seek(position)
+            error_msg("End of file reached while parsing token_type header definition.", fh)
+
+        if name == None: return
+
+        __validate_definition(type_code_fragment.filename, type_code_fragment.line_n, name,
+                              [], already_defined_list, NumericF=True)
+
+        descriptor.distinct_db[name] = type_code_fragment
+
+        already_defined_list.append([name, type_code_fragment])
+
+
+def parse_union_members(fh, descriptor):
+    position = fh.tell()
+
+    while 1 + 1 == 2:
+        try_position = fh.tell()
+        try: 
+            type_code_fragment, name = parse_variable_definition(fh) 
+
+        except EndOfStreamException:
+            fh.seek(position)
+            error_msg("End of file reached while parsing token_type header definition.", fh)
+
+        if name == None: return
+
+        __validate_definition(type_code_fragment.filename, type_code_fragment.line_n, name,
+                              [], already_defined_list, NumericF=True)
+
+        descriptor.union_db[name] = type_code_fragment
+
+        already_defined_list.append([name, type_code_fragment])
+
 
 
 def parse_variable_definition(fh, AllowedList=[], DisallowedList=[], AllowCombinedF=False, NumericF=False):
@@ -82,26 +135,24 @@ def parse_variable_definition(fh, AllowedList=[], DisallowedList=[], AllowCombin
                  [ member_def ]+
               }
     """
+    position = fh.tell()
     type_name       = ""
     array_element_n = -1
 
-    if check(fh, "}"): return None, None
+    if check(fh, "}"): fh.seek(position); return None, None
     
     line_n = get_current_line_info_number(fh)
 
     type_str, i = read_until_letter(fh, ":", Verbose=True)
-    if i == -1: error_msg("token type definition: missing member type identifier.", fh)
+    if i == -1: fh.seek(position); return None, None
     type_str = type_str.strip()
 
     name_str, i = read_until_letter(fh, ";", Verbose=True)
-    if i == -1: error_msg("missing ';'" % type_str, fh)
+    if i == -1: error_msg("missing ';'", fh)
 
     name_str = name_str.strip()
 
-    __validate_definition(fh.name, line_n, type_str, name_str, 
-                          AllowedList, DisallowedList, NumericF)
-
-    return UserCodeFragment(type_str, fh.name, line_n), name
+    return UserCodeFragment(type_str, fh.name, line_n), name_str
 
 def __validate_definition(FileName, LineN, TypeStr, NameStr, 
                           AllowedList, DisallowedList, NumericF=False):
@@ -110,13 +161,14 @@ def __validate_definition(FileName, LineN, TypeStr, NameStr,
             error_msg("Name '%s' not allowed in header definition." % NameStr,
                       FileName, LineN)
 
-    elif DisallowedList != []:
-        if NameStr in map(lambda x: x[0], DisallowedList):
+    if DisallowedList != []:
+        DisallowedNameList = map(lambda x: x[0], DisallowedList)
+        if NameStr in DisallowedNameList:
             error_msg("Token type member name '%s' defined twice." % NameStr,
                       FileName, LineN, DontExitF=False)
             error_msg("Previously defined here.",
-                      x[1], x[2])
-    elif NumericF:
+                      x[1].filename, x[1].line_n)
+    if NumericF:
         if    TypeStr.find("string") != -1 \
            or TypeStr.find("vector") != -1 \
            or TypeStr.find("map")    != -1:

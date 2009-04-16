@@ -9,8 +9,8 @@ from StringIO import StringIO
 
 
 if "--hwut-info" in sys.argv:
-    print "token_type: Options;"
-    print "CHOICES: None, One, All;"
+    print "token_type: Buildt-In Members;"
+    print "CHOICES: None, One, All, Forbidden, Error, Twice;"
     sys.exit(0)
 
 OptionList = ["token_id", "column", "line"]
@@ -26,7 +26,7 @@ def test(Txt):
     print "OUT:"
     print 
     try:
-        parse_options(sh, descr)
+        parse_built_in_members(sh, descr, [])
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
         pass
@@ -35,19 +35,32 @@ def test(Txt):
 
 
 if "One" in sys.argv:
-    test("<head: my::math::complex G> {")
     for option in OptionList:
-        test("<%s: uint8_t>  {" % option)
+        test("uint8_t : %s; {" % option)
     exit(0)
 
 elif "None" in sys.argv:
     test("  {")
     test("  ")
 
-if "All" in sys.argv:
-    txt = "<head: std::string name><head: std::vector<double> something>\n"
+elif "All" in sys.argv:
+    txt = ""
     for option in OptionList:
-        txt += "<%s: uint8_t>  " % option 
+        txt += "uint8_t : %s; " % option 
     test(txt + "{")
+
+elif "Forbidden"  in sys.argv:
+    test("uint8_t  : token_it;")
+
+elif "Error"  in sys.argv:
+    test("uint8_t  : token_it")
+
+elif "Twice"  in sys.argv:
+    txt = ""
+    for option in OptionList:
+        txt += "uint8_t : %s; " % option 
+    test(txt + "uint32_t  : " + OptionList[0] + "; {")
+
+
 
 
