@@ -325,12 +325,11 @@ def get_current_line_info_number(fh):
     position = fh.tell()
     line_n = 0
     fh.seek(0)
-    for i in range(position):
-        if fh.read(1) == '\n': line_n += 1
-
-    # just to be sure without having to test this stuff ...
-    fh.seek(position)
-    return line_n
+    # When reading 'position' number of characters from '0', then we are
+    # at position 'position' at the end of the read. That means, we are where
+    # we started.
+    passed_text = fh.read(position)
+    return passed_text.count("\n")
 
 def clean_up():
     # -- delete temporary files
@@ -405,6 +404,7 @@ def read_word_list(fh, EndMarkers, Verbose=False):
         word_list.append(word)
 
 def verify_next_word(fh, Compare, Quit=True, Comment=""):
+    # read_next_word(...) skips whitespace
     word = read_next_word(fh)
     if word != Compare:
         txt = "Missing token '%s'. found '%s'." % (Compare, word)
@@ -470,21 +470,45 @@ def read_option_start(fh):
 
     # (*) base modes 
     if fh.read(1) != "<": 
-        # fh.seek(-1, 1) 
+        ##fh.seek(-1, 1) 
         return None
 
     skip_whitespace(fh)
-
     identifier = read_identifier(fh).strip()
 
     if identifier == "":  error_msg("missing identifer after start of mode option '<'", fh)
     skip_whitespace(fh)
     if fh.read(1) != ":": error_msg("missing ':' after option name '%s'" % identifier, fh)
     skip_whitespace(fh)
+
     return identifier
 
 def read_option_value(fh):
-    value, i = read_until_letter(fh, [">"], Verbose=1)
-    if i != 0:
-        error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
+
+    position = fh.tell()
+
+    value = ""
+    depth = 1
+    while 1 + 1 == 2:
+        try: 
+            letter = fh.read(1)
+        except EndOfStreamException:
+            fh.seek(position)
+            error_msg("missing closing '>' for mode option '%s'" % identifier, fh)
+
+        if letter == "<": 
+            depth += 1
+        if letter == ">": 
+            depth -= 1
+            if depth == 0: break
+        value += letter
+
     return value.strip()
+
+def check(fh, Char):
+    position = fh.tell()
+    skip_whitespace(fh)
+    dummy = fh.read(1)
+    if dummy == Char: return True
+    fh.seek(position)
+    return False

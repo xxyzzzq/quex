@@ -1,0 +1,49 @@
+-----------------------------
+IN:
+    [<head: my::math::complex G> {]
+
+OUT:
+
+type(token_id)       = 
+type(column_counter) = 
+type(line_counter)   = 
+header variables {
+    my::math::complex G
+}
+
+-----------------------------
+IN:
+    [<token_id: uint8_t>  {]
+
+OUT:
+
+type(token_id)       = uint8_t
+type(column_counter) = 
+type(line_counter)   = 
+header variables {
+}
+
+-----------------------------
+IN:
+    [<column: uint8_t>  {]
+
+OUT:
+
+type(token_id)       = 
+type(column_counter) = uint8_t
+type(line_counter)   = 
+header variables {
+}
+
+-----------------------------
+IN:
+    [<line: uint8_t>  {]
+
+OUT:
+
+type(token_id)       = 
+type(column_counter) = 
+type(line_counter)   = uint8_t
+header variables {
+}
+
