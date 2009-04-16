@@ -16,4 +16,4 @@ IN:
 
 OUT:
 
-a string:1:error: End of file reached while parsing token_type options.
+a string:1:error: End of file reached while parsing token_type header definition.

@@ -92,7 +92,9 @@ def parse_section(fh):
     #       section. Thus, the end-of-file catcher does not encompass the beginning.
     position = fh.tell()
     skip_whitespace(fh)
-    word = read_next_word(fh)
+    word = read_identifier(fh)
+    if word == "":
+        error_msg("Missing section title.", fh)
 
     try:
         # (*) determine what is defined
@@ -276,10 +278,4 @@ def parse_token_id_definitions(fh):
             if type_name != None: db[name].type_name = type_name
             db[name].positions.append([fh.name, line_n])
 
-def __check(fh, Char):
-    position = fh.tell()
-    dummy = fh.read(1)
-    if dummy == Char: return True
-    fh.seek(position)
-    return False
 
