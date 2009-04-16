@@ -61,7 +61,7 @@ def parse_mode_option_list(new_mode, fh):
 
     except EndOfStreamException:
         fh.seek(position)
-        error_msg("End of file reached while options of mode '%s'." % mode_name, fh)
+        error_msg("End of file reached while parsing options of mode '%s'." % mode_name, fh)
 
 def parse_mode_option(fh, new_mode):
 
