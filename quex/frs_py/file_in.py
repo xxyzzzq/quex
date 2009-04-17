@@ -20,6 +20,8 @@ import codecs
 from copy    import copy
 from string  import split
 
+import quex.frs_py.similarity  as similarity
+
 class EndOfStreamException(Exception):
     pass
 
@@ -512,3 +514,42 @@ def check(fh, Char):
     if dummy == Char: return True
     fh.seek(position)
     return False
+
+def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
+    """FH, and LineN work exactly the same as for error_msg(...)"""
+    assert len(WordList) != 0
+    if WordList[0].__class__.__name__ == "UserCodeFragment":
+        word_list        = map(lambda x: x.get_code(), WordList)
+        position_known_f = True
+    else:
+        word_list        = WordList
+        position_known_f = False
+
+    if Word in word_list: return true
+
+    # Word was not in list
+    similar_index = similarity.get(Word, word_list)
+
+    if similar_index == -1:
+        txt = "Acceptable is/are: "
+        for word in WordList:
+            L = len(word)
+            if length + L > 80: 
+                txt += "\n"; length = 0
+            txt += word + ", "
+            length += L
+
+        error_msg(Comment + txt, FH, LineN, DontExitF=False)
+
+    else:
+        if position_known_f:
+            similar_word_filename = WordList[similar_index].filename
+            similar_word_line_n   = WordList[similar_index].line_n
+        else:
+            similar_word_filename = FH
+            similar_word_line_n   = LineN
+
+        error_msg(Comment, FH, LineN, DontExitF=False)
+        error_msg("Did you mean '%s'?" % similar_word,
+                   similar_word_filename, similar_word_line_n, 
+                   DontExitF=not ExitF)

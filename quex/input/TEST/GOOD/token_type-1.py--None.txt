@@ -4,16 +4,4 @@ IN:
 
 OUT:
 
-type(token_id)       = 
-type(column_counter) = 
-type(line_counter)   = 
-header variables {
-}
-
------------------------------
-IN:
-    [  ]
-
-OUT:
-
 a string:1:error: End of file reached while parsing token_type header definition.

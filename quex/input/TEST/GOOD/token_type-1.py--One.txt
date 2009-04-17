@@ -1,36 +1,36 @@
 -----------------------------
 IN:
-    [uint8_t : token_id; {]
+    [{ uint8_t : id; }]
 
 OUT:
 
-type(token_id)       = uint8_t
-type(column_counter) = 
-type(line_counter)   = 
+type(token_id)      = uint8_t
+type(column_number) = 
+type(line_number)   = 
 header variables {
 }
 
 -----------------------------
 IN:
-    [uint8_t : column; {]
+    [{ uint8_t : column_number; }]
 
 OUT:
 
-type(token_id)       = 
-type(column_counter) = uint8_t
-type(line_counter)   = 
+type(token_id)      = 
+type(column_number) = uint8_t
+type(line_number)   = 
 header variables {
 }
 
 -----------------------------
 IN:
-    [uint8_t : line; {]
+    [{ uint8_t : line_number; }]
 
 OUT:
 
-type(token_id)       = 
-type(column_counter) = 
-type(line_counter)   = uint8_t
+type(token_id)      = 
+type(column_number) = 
+type(line_number)   = uint8_t
 header variables {
 }
 
