@@ -25,7 +25,6 @@ import quex.input.code_fragment      as code_fragment
 from   quex.input.setup             import setup as Setup
 from   quex.core_engine.generator.action_info import UserCodeFragment
 
-
 def do(file_list):
     global mode_db
 
@@ -96,6 +95,9 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
+    SectionTitleList = ["start", "define", "token", "mode" ] + lexer_mode.fragment_db.keys()
+
+    verify_word_in_list(NameStr, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
         # (*) determine what is defined
         #
@@ -137,8 +139,8 @@ def parse_section(fh):
             return
 
         else:
-            error_msg("sequence '%s' not recognized as valid keyword in this context\n" % word + \
-                      "use: 'mode', 'header', 'body', 'init', 'define', 'token' or 'start'", fh)
+            # This case should have been caught by the 'verify_word_in_list' function
+            assert False
 
     except EndOfStreamException:
         fh.seek(position)

@@ -68,6 +68,11 @@ def parse_mode_option(fh, new_mode):
     identifier = read_option_start(fh)
     if identifier == None: return False
 
+    verify_word_in_list(NameStr, 
+                        ["skip", "skip_range", "skip_nesting_range" ] + \
+                         lexer_mode.mode_option_info_db.keys(),
+                        "mode option", fh.name, get_current_line_info_number(fh))
+
     if identifier == "skip":
         # A skipper 'eats' characters at the beginning of a pattern that belong
         # to a specified set of characters. A useful application is most probably
@@ -123,10 +128,8 @@ def parse_mode_option(fh, new_mode):
     else:
         value = read_option_value(fh)
 
-    # Does the specified option actually exist?
-    if not lexer_mode.mode_option_info_db.has_key(identifier):
-        error_msg("tried to set option '%s' which does not exist!\n" % identifier + \
-                  "options are %s" % repr(lexer_mode.mode_option_info_db.keys()), fh)
+    # The 'verify_word_in_list()' call must have ensured that the following holds
+    assert lexer_mode.mode_option_info_db.has_key(identifier)
 
     # Is the option of the appropriate value?
     option_info = lexer_mode.mode_option_info_db[identifier]
@@ -270,10 +273,13 @@ def check_for_event_specification(word, fh, new_mode):
         return True
 
     elif len(word) >= 3 and word[:3] == "on_":    
-        error_msg("Unknown event handler '%s'. Known event handlers are:\n\n" % word + \
-                  "on_entry, on_exit, on_indentation, on_end_of_stream, on_failure. on_match\n\n" + \
-                  "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
-                  "use double quotes to bracket patterns that start with 'on_'.", fh)
+
+    allowed_list = ["on_end_of_stream", "on_entry", "on_exit", "on_failure", "on_indentation", "on_match",] 
+    comment = "Unknown event handler '%s'. \n" % word
+              "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
+              "use double quotes to bracket patterns that start with 'on_'.", fh)
+
+    verify_word_in_list(NameStr, allowed_list, comment, fh)
 
     # word was not an event specification 
     return False
