@@ -16,9 +16,8 @@ class TokenTypeDescriptor:
         txt += "type(line_number)   = %s\n" % self.line_number_type.get_code()
 
         txt += "distinct members {\n"
-        distinct_type_list = map(lambda x: x.get_code(), self.distinct_db.values())
         # '0' to make sure, that it works on an empty sequence too.
-        L = max([0] + map(lambda x: len(x[0].get_code()), distinct_type_list))
+        L = max([0] + map(lambda x: len(x.get_code()), self.distinct_db.values()))
         for name, type_code in self.distinct_db.items():
             txt += "    %s%s %s\n" % (type_code.get_code(), " " * (L - len(type_code.get_code())), name)
         txt += "}\n"
@@ -120,14 +119,13 @@ def parse_distinct_members(fh, descriptor, already_defined_list):
 
         already_defined_list.append([name, type_code_fragment])
 
-
 def parse_union_members(fh, descriptor):
     position = fh.tell()
 
     while 1 + 1 == 2:
         try_position = fh.tell()
         try: 
-            type_code_fragment, name = parse_variable_definition(fh) 
+            type_code_fragment, name = parse_variable_definition(fh, NestedF=True) 
 
         except EndOfStreamException:
             fh.seek(position)
@@ -142,14 +140,35 @@ def parse_union_members(fh, descriptor):
 
         already_defined_list.append([name, type_code_fragment])
 
+def parse_variable_definition_list(fh, SectionName, NestedF=False):
+    position = fh.tell()
+
+    db = {}
+    while 1 + 1 == 2:
+        try_position = fh.tell()
+        try: 
+            type_code_fragment, name = parse_variable_definition(fh, NestedF=True) 
+
+        except EndOfStreamException:
+            fh.seek(position)
+            error_msg("End of file reached while parsing token_type '%s' subsection." SectionName, fh)
+
+        if name == None: return db
+
+        __validate_definition(type_code_fragment, name, already_defined_list, 
+                              StandardMembersF=False)
+
+        db[name] = type_code_fragment
+
+        already_defined_list.append([name, type_code_fragment])
 
 
-def parse_variable_definition(fh, AllowedList=[], DisallowedList=[], AllowCombinedF=False, NumericF=False):
+
+def parse_variable_definition(fh, NestedF=False):
     """SYNTAX:
-              type     : member_name ;
-              type[32] : member_name ;
-              type*    : member_name ;
-              combined:
+              name0 : type;
+              name1 : type[32];
+              name2 : type*;
               {
                  [ member_def ]+
               }
@@ -161,17 +180,26 @@ def parse_variable_definition(fh, AllowedList=[], DisallowedList=[], AllowCombin
     if check(fh, "}"): fh.seek(position); return None, None
     
     line_n = get_current_line_info_number(fh)
+    skip_whitespace(fh)
+    name_str = read_identifier(fh)
+    if name_str == None:
+        if not NestedF or not check(fh, "{"): 
+            fh.seek(position); 
+            return None, None
+        sub_db = parse_variable_list(fh)
+        if not check(fh, "}"): 
+            fh.seek(position)
+            error_msg("Missing closing '}' after concurrent variable definition.", fh)
+        return sub_db
+    else:
+        name_str = name_str.strip()
+        if not check(fh, ":"): error_msg("missing ':' after identifier.", fh)
 
-    type_str, i = read_until_letter(fh, ":", Verbose=True)
-    if i == -1: fh.seek(position); return None, None
-    type_str = type_str.strip()
+        type_str, i = read_until_letter(fh, ";", Verbose=True)
+        if i == -1: error_msg("missing ';'", fh)
+        type_str = type_str.strip()
 
-    name_str, i = read_until_letter(fh, ";", Verbose=True)
-    if i == -1: error_msg("missing ';'", fh)
-
-    name_str = name_str.strip()
-
-    return UserCodeFragment(type_str, fh.name, line_n), name_str
+        return UserCodeFragment(type_str, fh.name, line_n), name_str
 
 def __validate_definition(TypeCodeFragment, NameStr, 
                           AlreadyMentionedList, StandardMembersF):
@@ -179,7 +207,8 @@ def __validate_definition(TypeCodeFragment, NameStr,
     LineN    = TypeCodeFragment.line_n
     if StandardMembersF:
         verify_word_in_list(NameStr, TokenType_StandardMemberList, 
-                            "token_type section 'standard'", FileName, LineN)
+                            "Member name '%s' not allowed in token_type section 'standard'." % NameStr, 
+                            FileName, LineN)
 
         # Standard Members are all numeric types
         TypeStr = TypeCodeFragment.get_code()
@@ -190,15 +219,15 @@ def __validate_definition(TypeCodeFragment, NameStr,
                       "Example: <token_id: uint16_t>, Found: '%s'\n" % TypeStr, fh)
     else:
         if NameStr in TokenType_StandardMemberList:
-            error_msg("Name '%s' only allowed in 'standard' section." % NameStr,
+            error_msg("Member '%s' only allowed in 'standard' section." % NameStr,
                       FileName, LineN)
 
-    name_list = map(lambda x: x[0], AlreadyMentionedList)
-    if NameStr in name_list:
+    for candidate in AlreadyMentionedList:
+        if candidate[0] != NameStr: continue 
         error_msg("Token type member name '%s' defined twice." % NameStr,
-                  FileName, LineN, DontExitF=False)
+                  FileName, LineN, DontExitF=True)
         error_msg("Previously defined here.",
-                  x[1].filename, x[1].line_n)
+                  candidate[1].filename, candidate[1].line_n)
 
 
     

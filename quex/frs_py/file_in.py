@@ -525,13 +525,14 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
         word_list        = WordList
         position_known_f = False
 
-    if Word in word_list: return true
+    if Word in word_list: return True
 
     # Word was not in list
     similar_index = similarity.get(Word, word_list)
 
     if similar_index == -1:
         txt = "Acceptable is/are: "
+        length = len(txt)
         for word in WordList:
             L = len(word)
             if length + L > 80: 
@@ -539,17 +540,18 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
             txt += word + ", "
             length += L
 
-        error_msg(Comment + txt, FH, LineN, DontExitF=False)
+        error_msg(Comment + "\n" + txt, FH, LineN, DontExitF=False)
 
     else:
+        similar_word = word_list[similar_index]
         if position_known_f:
-            similar_word_filename = WordList[similar_index].filename
-            similar_word_line_n   = WordList[similar_index].line_n
+            error_msg(Comment, FH, LineN, DontExitF=True)
+            error_msg("Did you mean '%s'?" % similar_word,
+                      WordList[similar_index].filename, 
+                      WordList[similar_index].line_n, 
+                      DontExitF=not ExitF)
         else:
-            similar_word_filename = FH
-            similar_word_line_n   = LineN
+            error_msg(Comment + "\n" + "Did you mean '%s'?" % similar_word,
+                      FH, LineN, DontExitF=not ExitF)
 
-        error_msg(Comment, FH, LineN, DontExitF=False)
-        error_msg("Did you mean '%s'?" % similar_word,
-                   similar_word_filename, similar_word_line_n, 
-                   DontExitF=not ExitF)
+    return False

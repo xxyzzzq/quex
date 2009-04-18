@@ -1,6 +1,6 @@
 -----------------------------
 IN:
-    [{ uint8_t : id; }]
+    [{ id : uint8_t; }]
 
 OUT:
 
@@ -14,7 +14,7 @@ union members {
 
 -----------------------------
 IN:
-    [{ uint8_t : column_number; }]
+    [{ column_number : uint8_t; }]
 
 OUT:
 
@@ -28,7 +28,7 @@ union members {
 
 -----------------------------
 IN:
-    [{ uint8_t : line_number; }]
+    [{ line_number : uint8_t; }]
 
 OUT:
 

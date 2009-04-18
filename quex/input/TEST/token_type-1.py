@@ -36,7 +36,7 @@ def test(Txt):
 
 if "One" in sys.argv:
     for option in OptionList:
-        test("{ uint8_t : %s; }" % option)
+        test("{ %s : uint8_t; }" % option)
     exit(0)
 
 elif "None" in sys.argv:
@@ -45,23 +45,23 @@ elif "None" in sys.argv:
 elif "All" in sys.argv:
     txt = ""
     for option in OptionList:
-        txt += "uint8_t : %s; " % option 
+        txt += "%s : uint8_t; " % option 
     test("{" + txt + "}")
 
 elif "Forbidden"  in sys.argv:
-    test("{ uint8_t  : token_it; }")
+    test("{ token_it : uint8_t; }")
 
 elif "Forbidden-2"  in sys.argv:
-    test("{ uint8_t  : kolunm_numba; }")
+    test("{ kolunm_numba : uint8_t; }")
 
 elif "Error"  in sys.argv:
-    test("{ uint8_t  : token_it }")
+    test("{ id : uint8_t }")
 
 elif "Twice"  in sys.argv:
     txt = ""
     for option in OptionList:
-        txt += "uint8_t : %s; " % option 
-    test("{" + txt + "uint32_t  : " + OptionList[0] + "; }")
+        txt += "%s : uint8_t; " % option 
+    test("{ " + txt + "%s : uint32_t;} " % OptionList[0])
 
 
 
