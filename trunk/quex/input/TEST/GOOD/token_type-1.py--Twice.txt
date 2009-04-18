@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [{uint8_t : id; uint8_t : column_number; uint8_t : line_number; uint32_t  : id; }]
+
+OUT:
+
+a string:1:error: Token type member name 'id' defined twice.
