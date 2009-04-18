@@ -1,6 +1,6 @@
 -----------------------------
 IN:
-    [{ uint8_t  : kolunm_numba; }]
+    [{ kolunm_numba : uint8_t; }]
 
 OUT:
 

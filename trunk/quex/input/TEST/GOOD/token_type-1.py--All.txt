@@ -1,6 +1,6 @@
 -----------------------------
 IN:
-    [{uint8_t : id; uint8_t : column_number; uint8_t : line_number; }]
+    [{id : uint8_t; column_number : uint8_t; line_number : uint8_t; }]
 
 OUT:
 
