@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [{ uint8_t  : token_it }]
+
+OUT:
+
+a string:1:error: missing ';'

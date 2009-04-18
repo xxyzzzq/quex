@@ -10,7 +10,7 @@ from StringIO import StringIO
 
 if "--hwut-info" in sys.argv:
     print "token_type: Buildt-In Members;"
-    print "CHOICES: None, One, All, Forbidden, Error, Twice;"
+    print "CHOICES: None, One, All, Forbidden, Forbidden-2, Error, Twice;"
     sys.exit(0)
 
 OptionList = ["id", "column_number", "line_number"]
@@ -25,8 +25,9 @@ def test(Txt):
     print 
     print "OUT:"
     print 
+    parse_section(sh, descr, [])
     try:
-        parse_section(sh, descr, [])
+        pass
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
         pass
@@ -49,6 +50,9 @@ elif "All" in sys.argv:
 
 elif "Forbidden"  in sys.argv:
     test("{ uint8_t  : token_it; }")
+
+elif "Forbidden-2"  in sys.argv:
+    test("{ uint8_t  : kolunm_numba; }")
 
 elif "Error"  in sys.argv:
     test("{ uint8_t  : token_it }")

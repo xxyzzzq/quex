@@ -1,0 +1,8 @@
+-----------------------------
+IN:
+    [{ uint8_t  : token_it; }]
+
+OUT:
+
+a string:1:error: Member name 'token_it' not allowed in token_type section 'standard'
+a string:1:error: Acceptable is/are: column_number, line_number, id, 
