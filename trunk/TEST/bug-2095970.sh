@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+#
 bug=2095970
 if [[ $1 == "--hwut-info" ]]; then
     echo "sphericalcow: $bug 0.31.3 Mode change without immediate return"
