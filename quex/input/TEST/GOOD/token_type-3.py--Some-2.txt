@@ -1,0 +1,26 @@
+-----------------------------
+IN:
+    [{ 
+                  { 
+                     name : std::string; 
+                     value : int; 
+                  }
+                  namer : std::string; number_list : std::vector<int>; 
+                }]
+
+OUT:
+
+type(token_id)      = 
+type(column_number) = 
+type(line_number)   = 
+distinct members {
+}
+union members {
+    std::vector<int> number_list
+    {
+        std::string  name
+        int          value
+    }
+    std::string      namer
+}
+
