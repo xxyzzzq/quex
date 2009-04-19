@@ -1,0 +1,16 @@
+-----------------------------
+IN:
+    [{ name : std::string; number_list : std::vector<int>; }]
+
+OUT:
+
+type(token_id)      = 
+type(column_number) = 
+type(line_number)   = 
+distinct members {
+    std::vector<int> number_list
+    std::string      name
+}
+union members {
+}
+

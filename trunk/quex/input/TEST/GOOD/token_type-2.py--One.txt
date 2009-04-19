@@ -1,0 +1,15 @@
+-----------------------------
+IN:
+    [{ name : std::string; }]
+
+OUT:
+
+type(token_id)      = 
+type(column_number) = 
+type(line_number)   = 
+distinct members {
+    std::string name
+}
+union members {
+}
+

@@ -1,0 +1,24 @@
+-----------------------------
+IN:
+    [{ 
+                  { 
+                     name : std::string; 
+                     value : int; 
+                  }
+                }
+             ]
+
+OUT:
+
+type(token_id)      = 
+type(column_number) = 
+type(line_number)   = 
+distinct members {
+}
+union members {
+    {
+        std::string name
+        int         value
+    }
+}
+
