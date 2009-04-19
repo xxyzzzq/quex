@@ -68,7 +68,7 @@ def parse_mode_option(fh, new_mode):
     identifier = read_option_start(fh)
     if identifier == None: return False
 
-    verify_word_in_list(NameStr, 
+    verify_word_in_list(identifier, 
                         ["skip", "skip_range", "skip_nesting_range" ] + \
                          lexer_mode.mode_option_info_db.keys(),
                         "mode option", fh.name, get_current_line_info_number(fh))
@@ -273,13 +273,12 @@ def check_for_event_specification(word, fh, new_mode):
         return True
 
     elif len(word) >= 3 and word[:3] == "on_":    
+        allowed_list = ["on_end_of_stream", "on_entry", "on_exit", "on_failure", "on_indentation", "on_match",] 
+        comment = "Unknown event handler '%s'. \n" % word + \
+                  "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
+                  "use double quotes to bracket patterns that start with 'on_'."
 
-    allowed_list = ["on_end_of_stream", "on_entry", "on_exit", "on_failure", "on_indentation", "on_match",] 
-    comment = "Unknown event handler '%s'. \n" % word
-              "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
-              "use double quotes to bracket patterns that start with 'on_'.", fh)
-
-    verify_word_in_list(NameStr, allowed_list, comment, fh)
+        verify_word_in_list(NameStr, allowed_list, comment, fh)
 
     # word was not an event specification 
     return False
