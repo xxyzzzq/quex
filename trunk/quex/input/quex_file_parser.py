@@ -97,7 +97,7 @@ def parse_section(fh):
 
     SectionTitleList = ["start", "define", "token", "mode" ] + lexer_mode.fragment_db.keys()
 
-    verify_word_in_list(NameStr, SectionTitleList, "Unknown quex section '%s'" % word, fh)
+    verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
         # (*) determine what is defined
         #
