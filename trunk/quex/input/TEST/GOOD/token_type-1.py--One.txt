@@ -5,8 +5,8 @@ IN:
 OUT:
 
 type(token_id)      = uint8_t
-type(column_number) = 
-type(line_number)   = 
+type(column_number) = size_t
+type(line_number)   = size_t
 distinct members {
 }
 union members {
@@ -18,9 +18,9 @@ IN:
 
 OUT:
 
-type(token_id)      = 
+type(token_id)      = QUEX_TYPE_TOKEN_ID
 type(column_number) = uint8_t
-type(line_number)   = 
+type(line_number)   = size_t
 distinct members {
 }
 union members {
@@ -32,8 +32,8 @@ IN:
 
 OUT:
 
-type(token_id)      = 
-type(column_number) = 
+type(token_id)      = QUEX_TYPE_TOKEN_ID
+type(column_number) = size_t
 type(line_number)   = uint8_t
 distinct members {
 }

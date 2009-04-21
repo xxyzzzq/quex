@@ -4,9 +4,9 @@ IN:
 
 OUT:
 
-type(token_id)      = 
-type(column_number) = 
-type(line_number)   = 
+type(token_id)      = QUEX_TYPE_TOKEN_ID
+type(column_number) = size_t
+type(line_number)   = size_t
 distinct members {
 }
 union members {

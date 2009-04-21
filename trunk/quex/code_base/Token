@@ -17,7 +17,7 @@
 #define __INCLUDE_GUARD__QUEX__TOKEN__
 
 #ifndef    QUEX_TYPE_TOKEN_ID 
-#   define QUEX_TYPE_TOKEN_ID                 uint32_t
+#   define QUEX_TYPE_TOKEN_ID              uint32_t
 #endif
 #ifdef QUEX_TYPE_TOKEN
 #   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
