@@ -4,9 +4,9 @@ from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragmen
 
 class TokenTypeDescriptor:
     def __init__(self):
-        self.token_id_type        = CodeFragment()
-        self.column_number_type   = CodeFragment()
-        self.line_number_type     = CodeFragment()
+        self.token_id_type      = CodeFragment("QUEX_TYPE_TOKEN_ID")
+        self.column_number_type = CodeFragment("size_t")
+        self.line_number_type   = CodeFragment("size_t")
         self.distinct_db = {}
         self.union_db    = {}
 

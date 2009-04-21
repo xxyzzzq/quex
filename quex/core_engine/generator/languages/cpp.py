@@ -52,12 +52,12 @@ def __local_variable_definitions(VariableInfoList):
             else:
                 type = info[0] + "*"
                 name = info[1] 
-                value = "= 0x0"
+                value = " = 0x0"
         else:
             type  = info[0]
             name  = info[1] 
-            value = "= " + info[2]
-        txt += "    %s%s %s %s;\n" % (type, " " * (L-len(type)), name, value)
+            value = " = " + info[2]
+        txt += "    %s%s %s%s;\n" % (type, " " * (L-len(type)), name, value)
     return txt
          
 __function_signature = """
