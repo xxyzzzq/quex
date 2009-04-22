@@ -4,6 +4,8 @@ from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragmen
 
 class TokenTypeDescriptor:
     def __init__(self):
+        self.class_name         = "Token"
+        self.name_space         = ["quex"]
         self.token_id_type      = CodeFragment("QUEX_TYPE_TOKEN_ID")
         self.column_number_type = CodeFragment("size_t")
         self.line_number_type   = CodeFragment("size_t")
@@ -11,7 +13,9 @@ class TokenTypeDescriptor:
         self.union_db    = {}
 
     def __repr__(self):
-        txt  = "type(token_id)      = %s\n" % self.token_id_type.get_code()
+        txt  = "class:     '%s'\n" % self.class_name
+        txt += "namespace: '%s'\n" % repr(self.name_space)[1:-1]
+        txt += "type(token_id)      = %s\n" % self.token_id_type.get_code()
         txt += "type(column_number) = %s\n" % self.column_number_type.get_code()
         txt += "type(line_number)   = %s\n" % self.line_number_type.get_code()
 

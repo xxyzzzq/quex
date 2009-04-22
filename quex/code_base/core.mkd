@@ -45,7 +45,7 @@ __QUEX_CORE = \
          ./template/buffer_access.i \
          ./template/PostCategorizer \
          ./template/token_sending.i \
-         ./template/lexical_analyzer_class \
+         ./template/AnalyzerTemplate \
          ./template/constructor.i \
          ./template/Accumulator.i \
          ./template/misc.i \
