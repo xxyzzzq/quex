@@ -1,0 +1,60 @@
+/* -*- C++ -*-   vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE$$__
+#define __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE$$__
+ 
+#ifndef    QUEX_TYPE_TOKEN_ID 
+#   define QUEX_TYPE_TOKEN_ID              $$TOKEN_ID_TYPE$$
+#endif
+
+#ifdef QUEX_TYPE_TOKEN
+#   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
+#endif
+
+#define QUEX_TYPE_TOKEN                    $$TOKEN_TYPE_WITH_NAMESPACE$$
+#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  $$TOKEN_TYPE$$
+#define QUEX_TYPE_LINE_N                   $$LINE_N_TYPE$$
+#define QUEX_TYPE_COLUMN_N                 $$COLUMN_N_TYPE$$
+
+class $$TOKEN_TYPE$$ {
+public:
+    $$TOKEN_TYPE$$();
+    $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That)           { __copy(That); }     
+$$CONSTRUCTOR_DECLARATIONS$$
+    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) { __copy(That); }     
+    ~$$TOKEN_TYPE$$();
+
+private:
+$$MEMBERS$$
+public:
+$$SET_DECLARATIONSS$$
+$$GET_DECLARATIONSS$$
+
+    private:
+        QUEX_TYPE_TOKEN_ID    _id;
+    public:
+        QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
+        const std::string&    type_id_name() const { return map_id_to_name(_id); }
+
+#   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    private:
+        QUEX_TYPE_LINE_N  _line_n;
+    public:
+        QUEX_TYPE_LINE_N  line_number() const                          { return _line_n; }
+        void              set_line_number(const $$LINE_N_TYPE$$ Value) { _line_n = Value; }
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    private:
+        QUEX_TYPE_COLUMN_N  _column_n;
+    public:
+        QUEX_TYPE_COLUMN_N  column_number() const                            { return _column_n; }
+        void                set_column_number(const $$COLUMN_N_TYPE$$ Value) { _column_n = Value; }
+#       endif
+#   endif
+};
+
+$$CONSTRUCTORS$$
+$$SETS$$
+$$GETS$$
+
+#endif /* __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE_WITHOUT_NAMESPACE$$__ */

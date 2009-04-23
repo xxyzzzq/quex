@@ -1,0 +1,17 @@
+-----------------------------
+IN:
+    [{ name : std::string; }]
+
+OUT:
+
+class:     'Token'
+namespace: ''quex''
+type(token_id)      = QUEX_TYPE_TOKEN_ID
+type(column_number) = size_t
+type(line_number)   = size_t
+distinct members {
+}
+union members {
+    std::string name
+}
+

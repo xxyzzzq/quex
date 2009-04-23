@@ -1,0 +1,47 @@
+<history date="Thu Apr 23 07:54:36 2009" element-n="25">
+    <day year="2009" month="04" day="01">
+        <history-init time="20:51:39"/>
+        <test-runs-today n="3" ok-n="1" fail-n="1" else-n="1" last-run="failure" last-time="21:05:09"/>
+    </day>
+    <day year="2009" month="04" day="02">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="failure" last-time="05:52:25"/>
+    </day>
+    <day year="2009" month="04" day="03">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="failure" last-time="11:15:55"/>
+    </day>
+    <day year="2009" month="04" day="06">
+        <crc-error time="09:56:31" application="queue.exe" choice="1" database-crc="-1022561669" real-crc="545086631"/>
+        <crc-error time="09:59:18" application="queue.exe" choice="2" database-crc="-34028147" real-crc="-199391428"/>
+        <crc-error time="10:03:07" application="users_token.exe" choice="1" database-crc="-1022561669" real-crc="1408623060"/>
+        <crc-error time="10:03:07" application="users_token.exe" choice="2" database-crc="-34028147" real-crc="1458330682"/>
+        <crc-error time="10:03:07" application="users_token.exe" choice="3" database-crc="-227926783" real-crc="-273893819"/>
+        <crc-error time="10:03:07" application="users_token.exe" choice="4" database-crc="143234477" real-crc="-1412402768"/>
+        <crc-error time="10:03:07" application="users_token.exe" choice="5" database-crc="438098510" real-crc="502946858"/>
+        <crc-error time="10:03:07" application="users_token.exe" choice="20" database-crc="1133688022" real-crc="-1349073584"/>
+        <crc-error time="10:03:07" application="users_queue.exe" choice="1" database-crc="-1022561669" real-crc="1408623060"/>
+        <crc-error time="10:03:07" application="users_queue.exe" choice="2" database-crc="-34028147" real-crc="1458330682"/>
+        <crc-error time="10:03:07" application="users_queue.exe" choice="3" database-crc="-227926783" real-crc="-273893819"/>
+        <crc-error time="10:03:07" application="users_queue.exe" choice="4" database-crc="143234477" real-crc="-1412402768"/>
+        <crc-error time="10:03:07" application="users_queue.exe" choice="5" database-crc="438098510" real-crc="502946858"/>
+        <crc-error time="10:03:07" application="users_queue.exe" choice="20" database-crc="1133688022" real-crc="-1349073584"/>
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:03:23"/>
+    </day>
+    <day year="2009" month="04" day="07">
+        <test-runs-today n="2" ok-n="1" fail-n="1" else-n="0" last-run="oll korrekt" last-time="08:57:56"/>
+    </day>
+    <day year="2009" month="04" day="09">
+        <test-runs-today n="3" ok-n="2" fail-n="1" else-n="0" last-run="oll korrekt" last-time="21:42:30"/>
+    </day>
+    <day year="2009" month="04" day="10">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="07:05:25"/>
+    </day>
+    <day year="2009" month="04" day="14">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="05:55:31"/>
+    </day>
+    <day year="2009" month="04" day="19">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:39:57"/>
+    </day>
+    <day year="2009" month="04" day="23">
+        <test-runs-today n="2" ok-n="2" fail-n="0" else-n="0" last-run="oll korrekt" last-time="05:54:36"/>
+    </day>
+</history>
