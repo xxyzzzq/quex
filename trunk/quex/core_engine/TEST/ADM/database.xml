@@ -1,34 +1,34 @@
-<test-database execution-time-sec="0.36" date="Sun Apr 19 12:40:52 2009">
+<test-database execution-time-sec="0.31" date="Thu Apr 23 07:55:31 2009">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
-        <test title="Cut Interval" make-required="True" time-sum-sec="0.06"> 
+        <test title="Cut Interval" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-cut_interval.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="1051370365"/>
+               <choice name="" result="OK" time-sec="0.05" crc="1051370365"/>
             </choice-list>
         </test>
-        <test title="Inverse" make-required="True" time-sum-sec="0.05"> 
+        <test title="Inverse" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="1433382430"/>
+               <choice name="" result="OK" time-sec="0.04" crc="1433382430"/>
             </choice-list>
         </test>
-        <test title="Difference" make-required="True" time-sum-sec="0.05"> 
+        <test title="Difference" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.05" crc="2115164504"/>
+               <choice name="" result="OK" time-sec="0.04" crc="2115164504"/>
             </choice-list>
         </test>
-        <test title="Intersection" make-required="True" time-sum-sec="0.06"> 
+        <test title="Intersection" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="892506273"/>
+               <choice name="" result="OK" time-sec="0.05" crc="892506273"/>
             </choice-list>
         </test>
-        <test title="Union" make-required="True" time-sum-sec="0.06"> 
+        <test title="Union" make-required="True" time-sum-sec="0.04"> 
             <application file-name="test-NumberSet-union.py" info-request-time="1237805541L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="973910203"/>
+               <choice name="" result="OK" time-sec="0.04" crc="973910203"/>
             </choice-list>
         </test>
         <test title="Condition Code Generation" make-required="True" time-sum-sec="0.05"> 
