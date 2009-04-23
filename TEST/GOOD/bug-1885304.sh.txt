@@ -255,6 +255,16 @@ namespace quex {
 
 
 
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    typedef struct SimpleMemento_tag {
+        QuexAnalyser analyser_core;
+        CounterType  counter;
+        QuexMode*    current_mode_p;
+        struct SimpleMemento_tag*  parent;
+
+    } SimpleMemento;
+#   endif
+
     class CLASS :
         protected QuexAnalyser {
 
@@ -446,7 +456,7 @@ namespace quex {
     private:
         struct SimpleMemento_tag*  _parent_memento;
         //      -- include events (a file is included)
-        template<class InputHandleT> struct SimpleMemento_tag*  
+        template<class InputHandleT> SimpleMemento*  
             memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
         void  memento_unpack(struct SimpleMemento_tag*);
 
@@ -579,20 +589,8 @@ namespace quex {
     }
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
-    typedef struct SimpleMemento_tag {
-        QuexAnalyser analyser_core;
-        CounterType  counter;
-        QuexMode*    current_mode_p;
-#       if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        // QuexTokenQueueRemainder token_queue_remainder;
-#       endif
-
-        struct SimpleMemento_tag*  parent;
-
-
-    } SimpleMemento;
  
-    template<class InputHandleT> inline struct SimpleMemento_tag*
+    template<class InputHandleT> inline SimpleMemento*
     CLASS::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
         CLASS& self = *this;

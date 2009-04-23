@@ -75,7 +75,7 @@ db["C++"] = {
     "$language":      "C++",
     "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
     "$class-member-def":   lambda TypeStr, MaxTypeNameL, VariableName, MaxVariableL:
-                           "    %s%s %s\n" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr), VariableName),
+                           "    %s%s %s\n" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr), VariableName)),
     "$MODUL$":        cpp,
     "$require-terminating-zero-preparation": cpp.__require_terminating_zero_preparation,
     "$function_def":  "bool\n$$function_name$$(const int input)\n{\n", # still needed ?? fschaef 07y3m20d

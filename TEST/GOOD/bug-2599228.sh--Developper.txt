@@ -44,7 +44,7 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./template/buffer_access.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./template/PostCategorizer
 /home/fschaef/prj/quex/trunk/quex/code_base/./template/token_sending.i
-/home/fschaef/prj/quex/trunk/quex/code_base/./template/lexical_analyzer_class
+/home/fschaef/prj/quex/trunk/quex/code_base/./template/AnalyzerTemplate
 /home/fschaef/prj/quex/trunk/quex/code_base/./template/constructor.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./template/Accumulator.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./template/misc.i

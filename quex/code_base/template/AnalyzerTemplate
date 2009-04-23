@@ -275,6 +275,16 @@ namespace quex {
     
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    typedef struct $$LEXER_CLASS_NAME$$Memento_tag {
+        QuexAnalyser analyser_core;
+        CounterType  counter;
+        QuexMode*    current_mode_p;
+        struct $$LEXER_CLASS_NAME$$Memento_tag*  parent;
+$$MEMENTO_EXTENSIONS$$
+    } $$LEXER_CLASS_NAME$$Memento;
+#   endif
+
     class CLASS :
         protected QuexAnalyser {
 
@@ -464,7 +474,7 @@ $$CLASS_BODY_EXTENSION$$
     private:
         struct $$LEXER_CLASS_NAME$$Memento_tag*  _parent_memento;
         //      -- include events (a file is included)
-        template<class InputHandleT> struct $$LEXER_CLASS_NAME$$Memento_tag*  
+        template<class InputHandleT> $$LEXER_CLASS_NAME$$Memento*  
             memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
         void  memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*);
 
@@ -585,20 +595,8 @@ $$CONSTRUCTOR_EXTENSTION$$
     }
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
-    typedef struct $$LEXER_CLASS_NAME$$Memento_tag {
-        QuexAnalyser analyser_core;
-        CounterType  counter;
-        QuexMode*    current_mode_p;
-#       if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        // QuexTokenQueueRemainder token_queue_remainder;
-#       endif
-
-        struct $$LEXER_CLASS_NAME$$Memento_tag*  parent;
-
-$$MEMENTO_EXTENSIONS$$
-    } $$LEXER_CLASS_NAME$$Memento;
  
-    template<class InputHandleT> inline struct $$LEXER_CLASS_NAME$$Memento_tag*
+    template<class InputHandleT> inline $$LEXER_CLASS_NAME$$Memento*
     CLASS::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
         CLASS& self = *this;
