@@ -21,13 +21,12 @@ public:
     $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That)           { __copy(That); }     
 $$CONSTRUCTOR_DECLARATIONS$$
     $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) { __copy(That); }     
-    ~$$TOKEN_TYPE$$();
+    $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
 
 private:
 $$MEMBERS$$
 public:
-$$SET_DECLARATIONSS$$
-$$GET_DECLARATIONSS$$
+$$SETTERS_GETTERS$$
 
     private:
         QUEX_TYPE_TOKEN_ID    _id;
@@ -40,21 +39,29 @@ $$GET_DECLARATIONSS$$
     private:
         QUEX_TYPE_LINE_N  _line_n;
     public:
-        QUEX_TYPE_LINE_N  line_number() const                          { return _line_n; }
-        void              set_line_number(const $$LINE_N_TYPE$$ Value) { _line_n = Value; }
+        QUEX_TYPE_LINE_N    line_number() const                           { return _line_n; }
+        void                set_line_number(const QUEX_TYPE_LINE_N Value) { _line_n = Value; }
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
     private:
         QUEX_TYPE_COLUMN_N  _column_n;
     public:
-        QUEX_TYPE_COLUMN_N  column_number() const                            { return _column_n; }
-        void                set_column_number(const $$COLUMN_N_TYPE$$ Value) { _column_n = Value; }
+        QUEX_TYPE_COLUMN_N  column_number() const                             { return _column_n; }
+        void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
 #       endif
 #   endif
 };
 
 $$CONSTRUCTORS$$
-$$SETS$$
-$$GETS$$
+
+$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+{
+$$DESTRUCTOR$$
+}
+
+$$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
+{
+$$COPY$$
+}
 
 #endif /* __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE_WITHOUT_NAMESPACE$$__ */

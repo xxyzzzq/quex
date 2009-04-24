@@ -10,7 +10,7 @@ from StringIO import StringIO
 
 if "--hwut-info" in sys.argv:
     print "token_type: Buildt-In Members;"
-    print "CHOICES: None, One, All, Forbidden, Forbidden-2, Error, Twice;"
+    print "CHOICES: None, One, All, Forbidden, Forbidden-2, Error, Error-2, Twice;"
     sys.exit(0)
 
 OptionList = ["id", "column_number", "line_number"]
@@ -56,6 +56,9 @@ elif "Forbidden-2"  in sys.argv:
 
 elif "Error"  in sys.argv:
     test("{ id : uint8_t }")
+
+elif "Error-2"  in sys.argv:
+    test("{ id : std::string; }")
 
 elif "Twice"  in sys.argv:
     txt = ""
