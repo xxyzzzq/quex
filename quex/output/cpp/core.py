@@ -135,7 +135,7 @@ def write_engine_header(Modes, Setup):
                 ["$$CONVERTER_NEW$$",                converter_new_str],
                 ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
                 ["$$INCLUDE_GUARD_EXTENSION$$",      include_guard_extension],
-                ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.get_code()],
+                ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.get_pure_code()],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
                 ["$$LEXER_BUILD_VERSION$$",          VersionID],
                 ["$$LEXER_CLASS_FRIENDS$$",          friends_str],

@@ -14,6 +14,9 @@ class CodeFragment:
     def get_code(self):
         return self.__code
 
+    def get_pure_code(self):
+        return self.__code
+
     def set_require_terminating_zero_f(self):
         self.__require_terminating_zero_f = True
 
@@ -47,7 +50,7 @@ UserCodeFragment_OpenLinePragma = {
    }
 
 class UserCodeFragment(CodeFragment):
-    def __init__(self, Code, Filename, LineN, LanguageDB=None, AddReferenceCodeF=False):
+    def __init__(self, Code, Filename, LineN, LanguageDB=None):
         assert type(Code)       in [str, unicode]
         assert type(LanguageDB) == dict or LanguageDB == None
         assert type(Filename)   in [str, unicode]
@@ -56,21 +59,24 @@ class UserCodeFragment(CodeFragment):
         self.filename = Filename
         self.line_n   = LineN
 
-        # No clue yet, how to deal with languages other than C/C++ here.
-        if AddReferenceCodeF and Code.strip() != "":
-            txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
-            txt += Code
-            if txt[-1] != "\n": txt = txt + "\n"
-            txt += UserCodeFragment_OpenLinePragma["C"][0] + "\n"
-            code = txt
-        else:
-            code = Code
-
         require_terminating_zero_f = False
         if LanguageDB != None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
             require_terminating_zero_f = True
 
-        CodeFragment.__init__(self, code, require_terminating_zero_f)
+        CodeFragment.__init__(self, Code, require_terminating_zero_f)
+
+    def get_code(self):
+        return self.adorn_with_source_reference(self.get_pure_code())
+
+    def adorn_with_source_reference(self, Code):
+        if Code.strip() == "": return Code
+
+        txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
+        txt += Code
+        if txt[-1] != "\n": txt = txt + "\n"
+        txt += UserCodeFragment_OpenLinePragma["C"][0] + "\n"
+        return txt
+
 
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
     if Language not in UserCodeFragment_OpenLinePragma.keys():

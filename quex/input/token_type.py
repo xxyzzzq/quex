@@ -4,46 +4,86 @@ from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragmen
 
 class TokenTypeDescriptor:
     def __init__(self):
-        self.class_name         = "Token"
-        self.name_space         = ["quex"]
+        self.class_name            = "Token"
+        self.open_for_derivation_f = False
+        self.name_space            = ["quex"]
         self.token_id_type      = CodeFragment("QUEX_TYPE_TOKEN_ID")
         self.column_number_type = CodeFragment("size_t")
         self.line_number_type   = CodeFragment("size_t")
         self.distinct_db = {}
         self.union_db    = {}
 
+    def distinct_members_type_name_length_max(self):
+        return max([0] + map(lambda x: len(x.get_pure_code()), self.distinct_db.values()))
+
+    def distinct_members_variable_name_length_max(self):
+        return max([0] + map(lambda x: x, self.distinct_db.keys()))
+
+    def union_members_type_name_length_max(self):
+        max_length = 0
+        for type_descr in self.union_db.values():
+            if type(type_descr) == dict:
+                length = 4 + max([0] + map(lambda x: len(x.get_pure_code()), type_descr.values()))
+            else:
+                length = len(type_descr.get_pure_code())
+            if length > max_length: max_length = length
+        return max_length
+
+    def union_members_variable_name_length_max(self):
+        max_length = 0
+        for name, type_descr in self.union_db.items():
+            if type(type_descr) == dict:
+                length = 4 + max([0] + map(lambda x: len(x), type_descr.keys()))
+            else:
+                length = len(name)
+            if length > max_length: max_length = length
+        return max_length
+
+    def get_member_db(self):
+        db = {}
+        for name, type_code in self.distinct_db.items():
+            db[name] = [type_code, name]
+        for name, type_descr in self.union_db.items():
+            if type(type_descr) == dict:
+                for sub_name, sub_type in type_descr.items():
+                    db[sub_name] = [sub_type, name + "." + sub_name]
+            else:
+                db[name] = [type_descr, name]
+        return db
+
     def __repr__(self):
         txt  = "class:     '%s'\n" % self.class_name
+        if self.open_for_derivation_f: 
+            txt += "           (with virtual destructor)\n"
         txt += "namespace: '%s'\n" % repr(self.name_space)[1:-1]
-        txt += "type(token_id)      = %s\n" % self.token_id_type.get_code()
-        txt += "type(column_number) = %s\n" % self.column_number_type.get_code()
-        txt += "type(line_number)   = %s\n" % self.line_number_type.get_code()
+        txt += "type(token_id)      = %s\n" % self.token_id_type.get_pure_code()
+        txt += "type(column_number) = %s\n" % self.column_number_type.get_pure_code()
+        txt += "type(line_number)   = %s\n" % self.line_number_type.get_pure_code()
 
         txt += "distinct members {\n"
         # '0' to make sure, that it works on an empty sequence too.
-        L = max([0] + map(lambda x: len(x.get_code()), self.distinct_db.values()))
+        L = self.distinct_members_type_name_length_max()
         for name, type_code in self.distinct_db.items():
-            txt += "    %s%s %s\n" % (type_code.get_code(), " " * (L - len(type_code.get_code())), name)
+            txt += "    %s%s %s\n" % (type_code.get_pure_code(), " " * (L - len(type_code.get_pure_code())), name)
         txt += "}\n"
         txt += "union members {\n"
 
         # '0' to make sure, that it works on an empty sequence too.
-        L = 0
-        for name, type_descr in self.union_db.items():
-            if type(type_descr) == dict:
-                length = 4 + max([0] + map(lambda x: len(x.get_code()), type_descr.values()))
-            else:
-                length = len(type_descr.get_code())
-            if length > L: L = length
-
+        L = self.union_members_type_name_length_max()
         for name, type_descr in self.union_db.items():
             if type(type_descr) == dict:
                 txt += "    {\n"
                 for sub_name, sub_type in type_descr.items():
-                    txt += "        %s%s %s\n" % (sub_type.get_code(), " " * (L - len(sub_type.get_code())-4), sub_name)
+                    txt += "        %s%s %s\n" % \
+                           (sub_type.get_pure_code(), 
+                            " " * (L - len(sub_type.get_pure_code())-4), 
+                            sub_name)
                 txt += "    }\n"
             else:
-                txt += "    %s%s %s\n" % (type_descr.get_code(), " " * (L - len(type_descr.get_code())), name)
+                txt += "    %s%s %s\n" % \
+                       (type_descr.get_pure_code(), 
+                        " " * (L - len(type_descr.get_pure_code())), 
+                        name)
         txt += "}\n"
 
         return txt
@@ -62,12 +102,25 @@ def parse(fh):
     if not check(fh, "{"):
         return None
 
-    while parse_section(fh, descriptor):
-        pass
+    already_defined_list = []
+    position = fh.tell()
+    result   = True
+    while result == True:
+        try: 
+            x = fh.tell()
+            print "##", fh.read()
+            fh.seek(x)
+            result = parse_section(fh, descriptor, already_defined_list)
+        except EndOfStreamException:
+            fh.seek(position)
+            error_msg("End of file reached while parsing token_type section.", fh)
+
         
     if not check(fh, "}"):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.", fh);
+
+    return descriptor
 
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
@@ -79,6 +132,9 @@ def parse_section(fh, descriptor, already_defined_list):
     word = read_identifier(fh)
     if word == "":
         fh.seek(position)
+        if check(fh, "}"): 
+            fh.seek(position) 
+            return False
         error_msg("Missing token_type section ('standard', 'distinct', or 'union').", fh)
 
     verify_word_in_list(word, SubsectionList, 
@@ -248,12 +304,12 @@ def __validate_definition(TypeCodeFragment, NameStr,
                             FileName, LineN)
 
         # Standard Members are all numeric types
-        TypeStr = TypeCodeFragment.get_code()
+        TypeStr = TypeCodeFragment.get_pure_code()
         if    TypeStr.find("string") != -1 \
            or TypeStr.find("vector") != -1 \
            or TypeStr.find("map")    != -1:
-            error_msg("Numeric type required.\n" % Description + \
-                      "Example: <token_id: uint16_t>, Found: '%s'\n" % TypeStr, fh)
+            error_msg("Numeric type required.\n" + \
+                      "Example: <token_id: uint16_t>, Found: '%s'\n" % TypeStr, FileName, LineN)
     else:
         if NameStr in TokenType_StandardMemberList:
             error_msg("Member '%s' only allowed in 'standard' section." % NameStr,
@@ -286,7 +342,7 @@ def something_different(fh):
 
     if check(fh, "[") == false:
         skip_whitespace(fh)
-        if __check(fh, ";"): 
+        if not check(fh, ";"): 
             error_msg("Missing ';' after token struct/class member '%s' definition." % \
                       member_name, fh)
     else:
