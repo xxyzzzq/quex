@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [ {name =;}]
+
+OUT:
+
+a string:1:error: Missing identifier in token type name.
