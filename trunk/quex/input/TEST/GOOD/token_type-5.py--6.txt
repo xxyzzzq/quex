@@ -6,7 +6,7 @@ OUT:
 
 class:     'ispringen'
 namespace: ''europa', 'deutschland''
-type(token_id)      = QUEX_TYPE_TOKEN_ID
+type(token_id)      = size_t
 type(column_number) = size_t
 type(line_number)   = size_t
 distinct members {

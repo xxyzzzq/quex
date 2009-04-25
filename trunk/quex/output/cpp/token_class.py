@@ -12,7 +12,9 @@ def do(Descr):
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
                       ["$$SETTERS_GETTERS$$",  get_setter_getter(Descr)],
-                      ["$$CONSTRUCTORS$$",     get_constructors(Descr)],
+                      ["$$COPY$$",             Descr.copy.get_code()],
+                      ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
+                      ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                      ])
     return txt
 
@@ -41,8 +43,8 @@ def get_basic_template(Descr):
 
 def get_distinct_members(Descr):
     # '0' to make sure, that it works on an empty sequence too.
-    TL = Descr.distinct_members_type_name_length_max()
-    NL = Descr.distinct_members_variable_name_length_max()
+    TL = Descr.type_name_length_max()
+    NL = Descr.variable_name_length_max()
     txt = ""
     for name, type_code in Descr.distinct_db.items():
         txt += __member(type_code, TL, name, NL)
@@ -50,8 +52,8 @@ def get_distinct_members(Descr):
 
 def get_union_members(Descr):
     # '0' to make sure, that it works on an empty sequence too.
-    TL = Descr.union_members_type_name_length_max()
-    NL = Descr.union_members_variable_name_length_max()
+    TL = Descr.type_name_length_max()
+    NL = Descr.variable_name_length_max()
     
     txt = "union {\n"
     for name, type_descr in Descr.union_db.items():
@@ -72,8 +74,8 @@ def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL):
 
 def get_setter_getter(Descr):
     """NOTE: All names are unique even in combined unions."""
-    TL = Descr.distinct_members_type_name_length_max()
-    NL = Descr.distinct_members_variable_name_length_max()
+    TL = Descr.type_name_length_max()
+    NL = Descr.variable_name_length_max()
     variable_db = Descr.get_member_db()
     txt = ""
     for variable_name, info in variable_db.items():
@@ -86,7 +88,7 @@ def get_setter_getter(Descr):
                   access)
         txt += type_code.adorn_with_source_reference(my_def)
         my_def = "void%s set_%s(%s Value) %s{ %s = Value; }\n" \
-               % (type_str,                " " * (TL - len("void")), 
+               % (" " * (TL - len("void")), 
                   variable_name, type_str, " " * (NL + TL - (len(type_str) + len(variable_name))), 
                   access)
         txt += type_code.adorn_with_source_reference(my_def)

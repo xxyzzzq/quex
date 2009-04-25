@@ -23,7 +23,7 @@ def do(Modes):
                   Prefix="consistency check")
 
     # -- is the initial mode defined
-    if lexer_mode.initial_mode.get_code() == "":
+    if lexer_mode.initial_mode.get_pure_code() == "":
         # find first mode that can actually be applied
         for mode in Modes.values():
             if mode.options["inheritable"] != "only":
@@ -39,12 +39,12 @@ def do(Modes):
 
 
     # -- is the start mode applicable?
-    if Modes.has_key(lexer_mode.initial_mode.get_code()) == False:
-        error_msg("Start mode '%s' has not been defined anywhere." % lexer_mode.initial_mode.get_code(),
+    if Modes.has_key(lexer_mode.initial_mode.get_pure_code()) == False:
+        error_msg("Start mode '%s' has not been defined anywhere." % lexer_mode.initial_mode.get_pure_code(),
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
-    if Modes[lexer_mode.initial_mode.get_code()].options["inheritable"] == "only":
-        error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.get_code(),
+    if Modes[lexer_mode.initial_mode.get_pure_code()].options["inheritable"] == "only":
+        error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.get_pure_code(),
                   lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
 
     # -- check for circular inheritance

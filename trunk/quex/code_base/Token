@@ -41,7 +41,7 @@ namespace quex {
     class Token {
     public:
         // Quex Token Policy: _____________________________________________________
-        static const std::string&  map_id_to_name(QUEX_TYPE_TOKEN_ID);
+        static const char*  map_id_to_name(QUEX_TYPE_TOKEN_ID);
         //_________________________________________________________________________
 
     private:
@@ -70,7 +70,7 @@ namespace quex {
         // (*) member acces
         //     -- read
         QUEX_TYPE_TOKEN_ID        type_id() const      { return _id; }
-        const std::string&        type_id_name() const { return map_id_to_name(_id); }
+        const std::string         type_id_name() const { return map_id_to_name(_id); }
         const __string&           text() const         { return _text; }
         const std::string         utf8_text() const;
         int                       number()             { return _number; }

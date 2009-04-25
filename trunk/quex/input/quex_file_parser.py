@@ -205,15 +205,17 @@ def parse_initial_mode_definition(fh):
     # specify the name of the intial lexical analyser mode
     skip_whitespace(fh)
     mode_name = read_identifier(fh)
+    if mode_name == "":
+        error_msg("Missing identifier after 'start ='", fh)
     verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
 
-    if lexer_mode.initial_mode.get_code() != "":
+    if lexer_mode.initial_mode.get_pure_code() != "":
         error_msg("start mode defined more than once!", fh, DontExitF=True)
         error_msg("previously defined here",
                   lexer_mode.initial_mode.filename,
                   lexer_mode.initial_mode.line_n)
         
-    lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh), None)
+    lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh))
 
 def parse_token_id_definitions(fh):
     """Parses token definitions of the form:
