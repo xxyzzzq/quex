@@ -1,0 +1,21 @@
+-----------------------------
+IN:
+    [constructor{ The world is a { nice } place. }]
+
+OUT:
+
+class:     'Token'
+namespace: ''quex''
+type(token_id)      = QUEX_TYPE_TOKEN_ID
+type(column_number) = size_t
+type(line_number)   = size_t
+distinct members {
+}
+union members {
+}
+constructor {
+
+#line 1 "a string"
+ The world is a { nice } place. 
+/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
+}

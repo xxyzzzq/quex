@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.42" date="Fri Apr 24 06:29:53 2009">
+<test-database execution-time-sec="0.00" date="Sat Apr 25 07:31:47 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
         <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="0.00"> 
@@ -42,17 +42,27 @@
                <choice name="Twice-2" result="OK" time-sec="0.00" crc="1705118108"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" make-required="True" time-sum-sec="0.42"> 
+        <test title="Constructor, Copy, Destructor" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="token_type-4.py" info-request-time="1240637502L"/>
+            <choice-list number="5">
+               <choice name="Constructor" result="OK" time-sec="0.00" crc="1950777843"/>
+               <choice name="Constructor-1" result="OK" time-sec="0.00" crc="-2133051472"/>
+               <choice name="Constructor-2" result="OK" time-sec="0.00" crc="723556916"/>
+               <choice name="Destructor" result="OK" time-sec="0.00" crc="122109698"/>
+               <choice name="Copy" result="OK" time-sec="0.00" crc="-1908563411"/>
+            </choice-list>
+        </test>
+        <test title="Buildt-In Members" make-required="True" time-sum-sec="0.00"> 
             <application file-name="token_type-1.py" info-request-time="1240547205L"/>
             <choice-list number="8">
-               <choice name="None" result="OK" time-sec="0.05" crc="208866227"/>
-               <choice name="One" result="OK" time-sec="0.05" crc="1124868876"/>
-               <choice name="All" result="OK" time-sec="0.04" crc="-2096268013"/>
-               <choice name="Forbidden" result="OK" time-sec="0.07" crc="-2044264628"/>
-               <choice name="Twice" result="OK" time-sec="0.06" crc="-1689627234"/>
-               <choice name="Error" result="OK" time-sec="0.04" crc="-1819419458"/>
-               <choice name="Forbidden-2" result="OK" time-sec="0.06" crc="1414248299"/>
-               <choice name="Error-2" result="OK" time-sec="0.05" crc="-1695835805"/>
+               <choice name="None" result="OK" time-sec="0.00" crc="208866227"/>
+               <choice name="One" result="OK" time-sec="0.00" crc="1124868876"/>
+               <choice name="All" result="OK" time-sec="0.00" crc="-2096268013"/>
+               <choice name="Forbidden" result="OK" time-sec="0.00" crc="-2044264628"/>
+               <choice name="Twice" result="OK" time-sec="0.00" crc="-1689627234"/>
+               <choice name="Error" result="OK" time-sec="0.00" crc="-1819419458"/>
+               <choice name="Forbidden-2" result="OK" time-sec="0.00" crc="1414248299"/>
+               <choice name="Error-2" result="OK" time-sec="0.00" crc="-1695835805"/>
             </choice-list>
         </test>
         <test title="Distinct Members" make-required="True" time-sum-sec="0.00"> 
