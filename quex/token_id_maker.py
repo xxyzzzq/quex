@@ -45,7 +45,6 @@ file_str = \
 #define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_$$DATE_IG$$__
 
 #include<cstdio> // for: 'std::sprintf'
-#include<map>    // for: 'token-id' <-> 'name map'
 
 /* Definition of essential token identifiers that the analyser engine requires. */
 #if defined(__QUEX_TOKEN_ID_TERMINATION) || defined(__QUEX_TOKEN_ID_UNINITIALIZED)
@@ -71,32 +70,24 @@ $$CONTENT$$
 
 func_str = \
 """
-    inline const std::string&
+    inline const char*
     $$TOKEN_CLASS$$::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
-       static bool virginity_f = true;
-       static std::map<QUEX_TYPE_TOKEN_ID, std::string>  db;
-       static std::string  error_string("");
-       static std::string  uninitialized_string("<UNINITIALIZED>");
-       static std::string  termination_string("<TERMINATION>");
-       
-       // NOTE: In general no assumptions can be made that the QUEX_TYPE_TOKEN_ID
-       //       is an integer. Thus, no switch statement is used. 
-       if( virginity_f ) {
-           virginity_f = false;
-           // Create the Database mapping TokenID -> TokenName
-           $$TOKEN_ID_CASES$$
+       static char  error_string[64];
+       static const char  uninitialized_string[] = "<UNINITIALIZED>";
+       static const char  termination_string[]   = "<TERMINATION>";
+$$TOKEN_NAMES$$       
+       /* NOTE: This implementation works only for token id types that are 
+        *       some type of integer or enum. In case an alien type is to
+        *       used, this function needs to be redefined.                  */
+       switch( TokenID ) {
+       default: {
+           std::snprintf(error_string, 63, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+           return error_string;
        }
-
-       if     ( TokenID == __QUEX_TOKEN_ID_TERMINATION ) return termination_string;
-       else if( TokenID == __QUEX_TOKEN_ID_UNINITIALIZED ) return uninitialized_string;
-       std::map<QUEX_TYPE_TOKEN_ID, std::string>::const_iterator it = db.find(TokenID);
-       if( it != db.end() ) return (*it).second;
-       else {
-          char tmp[64];
-          std::sprintf(tmp, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
-          error_string = std::string(tmp);
-          return error_string;
+       case __QUEX_TOKEN_ID_TERMINATION:   return termination_string;
+       case __QUEX_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
+$$TOKEN_ID_CASES$$
        }
     }
 """
@@ -169,12 +160,14 @@ def do(global_setup):
     # NO LONGER: token_id_txt += "} // namespace quex\n" 
 
     # -- define the function for token names
-    db_build_txt = ""
+    switch_cases = ""
+    token_names  = ""
     for token_name in lexer_mode.token_id_db.keys():
-        db_build_txt += '\n           db[%s%s] %s= std::string("%s");' % (setup.token_prefix,
-                                                                          token_name,
-                                                                          space(token_name),
-                                                                          token_name)
+        if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
+        switch_cases += "       case %s%s:%s return token_id_str_%s;\n" % \
+                        (setup.token_prefix, token_name, space(token_name), token_name)
+        token_names  += "       static const char  token_id_str_%s[]%s = \"%s\";\n" % \
+                        (token_name, space(token_name), token_name)
     
     t = time.localtime()
     date_str = "%iy%im%id_%ih%02im%02is" % (t[0], t[1], t[2], t[3], t[4], t[5])
@@ -186,7 +179,8 @@ def do(global_setup):
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", setup.token_class_file],
                           ["$$DATE_IG$$",                     date_str],
-                          ["$$TOKEN_ID_CASES$$",              db_build_txt],
+                          ["$$TOKEN_ID_CASES$$",              switch_cases],
+                          ["$$TOKEN_NAMES$$",                 token_names],
                           ["$$TOKEN_PREFIX$$",                setup.token_prefix],
                           ["$$TOKEN_CLASS$$",                 setup.token_class]])
 

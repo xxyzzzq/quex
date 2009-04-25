@@ -40,7 +40,7 @@ def parse(fh, CodeFragmentName,
 def __parse_normal(fh, code_fragment_name):
     line_n = get_current_line_info_number(fh) + 1
     code   = read_until_closing_bracket(fh, "{", "}")
-    return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
+    return UserCodeFragment(code, fh.name, line_n, LanguageDB)
 
 def __parse_brief_token_sender(fh, ContinueF):
     # shorthand for { self.send(TKN_SOMETHING); CONTINUE; }
@@ -63,7 +63,7 @@ def __parse_brief_token_sender(fh, ContinueF):
 
         if code != "": 
             if ContinueF: code += "CONTINUE;\n"
-            return UserCodeFragment(code, fh.name, line_n, LanguageDB, AddReferenceCodeF=True)
+            return UserCodeFragment(code, fh.name, line_n, LanguageDB)
         else:
             return None
 

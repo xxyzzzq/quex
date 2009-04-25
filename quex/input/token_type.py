@@ -1,5 +1,6 @@
 from quex.frs_py.file_in                    import *
 from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragment
+from quex.input.code_fragment import __parse_normal as parse_normal_code_fragment
 
 
 class TokenTypeDescriptor:
@@ -7,17 +8,28 @@ class TokenTypeDescriptor:
         self.class_name            = "Token"
         self.open_for_derivation_f = False
         self.name_space            = ["quex"]
-        self.token_id_type      = CodeFragment("QUEX_TYPE_TOKEN_ID")
+        self.token_id_type      = CodeFragment("size_t")
         self.column_number_type = CodeFragment("size_t")
         self.line_number_type   = CodeFragment("size_t")
+        self.constructor        = CodeFragment("")
+        self.copy               = CodeFragment("")
+        self.destructor         = CodeFragment("")
         self.distinct_db = {}
         self.union_db    = {}
+
+    def type_name_length_max(self):
+        return max(self.distinct_members_type_name_length_max(),
+                   self.union_members_type_name_length_max())
+
+    def variable_name_length_max(self):
+        return max(self.distinct_members_variable_name_length_max(),
+                   self.union_members_variable_name_length_max())
 
     def distinct_members_type_name_length_max(self):
         return max([0] + map(lambda x: len(x.get_pure_code()), self.distinct_db.values()))
 
     def distinct_members_variable_name_length_max(self):
-        return max([0] + map(lambda x: x, self.distinct_db.keys()))
+        return max([0] + map(lambda x: len(x), self.distinct_db.keys()))
 
     def union_members_type_name_length_max(self):
         max_length = 0
@@ -86,6 +98,22 @@ class TokenTypeDescriptor:
                         name)
         txt += "}\n"
 
+        # constructor / copy / destructor
+        if self.constructor.get_pure_code() != "":
+            txt += "constructor {\n"
+            txt += self.constructor.get_code()
+            txt += "}"
+        
+        if self.copy.get_pure_code() != "":
+            txt += "copy {\n"
+            txt += self.copy.get_code()
+            txt += "}"
+
+        if self.destructor.get_pure_code() != "":
+            txt += "destructor {\n"
+            txt += self.destructor.get_code()
+            txt += "}"
+
         return txt
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
@@ -100,7 +128,7 @@ def parse(fh):
     descriptor = TokenTypeDescriptor()
 
     if not check(fh, "{"):
-        return None
+        error_msg("Missing opening '{' at begin of token_type definition", fh)
 
     already_defined_list = []
     position = fh.tell()
@@ -108,7 +136,6 @@ def parse(fh):
     while result == True:
         try: 
             x = fh.tell()
-            print "##", fh.read()
             fh.seek(x)
             result = parse_section(fh, descriptor, already_defined_list)
         except EndOfStreamException:
@@ -125,7 +152,7 @@ def parse(fh):
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
 
-    SubsectionList = ["standard", "distinct", "union"]
+    SubsectionList = ["name", "standard", "distinct", "union", "constructor", "destructor", "copy"]
 
     position = fh.tell()
     skip_whitespace(fh)
@@ -140,19 +167,57 @@ def parse_section(fh, descriptor, already_defined_list):
     verify_word_in_list(word, SubsectionList, 
                         "Subsection '%s' not allowed in token_type section." % word, fh)
 
-    if not check(fh, "{"):
+    if word == "name":
+        parse_token_type_name(fh, descriptor)
+
+    elif not check(fh, "{"):
         fh.seek(position)
         error_msg("Missing opening '{' at begin of token_type section '%s'." % word, fh);
 
-    if   word == "standard": parse_standard_members(fh, descriptor, already_defined_list)
-    elif word == "distinct": parse_distinct_members(fh, descriptor, already_defined_list)
-    elif word == "union":    parse_union_members(fh, descriptor, already_defined_list)
+    elif word in ["standard", "distinct", "union"]:
+        if   word == "standard": parse_standard_members(fh, descriptor, already_defined_list)
+        elif word == "distinct": parse_distinct_members(fh, descriptor, already_defined_list)
+        elif word == "union":    parse_union_members(fh, descriptor, already_defined_list)
 
-    if not check(fh, "}"):
-        fh.seek(position)
-        error_msg("Missing closing '}' at end of token_type section '%s'." % word, fh);
+        if not check(fh, "}"):
+            fh.seek(position)
+            error_msg("Missing closing '}' at end of token_type section '%s'." % word, fh);
+
+    else:
+        # word in ["constructor", "destructor", "copy"]
+        try:
+            code_fragment = parse_normal_code_fragment(fh, word)
+        except:
+            error_msg("End of file reached while parsing token_type section '%s'." % word, fh);
+
+        if   word == "constructor": descriptor.constructor = code_fragment
+        elif word == "destructor":  descriptor.destructor  = code_fragment
+        elif word == "copy":        descriptor.copy        = code_fragment
+        else: 
+            assert False, "This section should not be reachable"
 
     return True
+
+def parse_token_type_name(fh, descriptor):
+    # NOTE: Catching of EOF happens in caller: parse(...)
+    if not check(fh, "="):
+        error_msg("Missing '=' for token_type name specification.", fh)
+
+    name_list = []
+    while 1 + 1 == 2:
+        skip_whitespace(fh)
+        name = read_identifier(fh)
+
+        if name == "": error_msg("Missing identifier in token type name.", fh)
+        name_list.append(name)
+
+        if   check(fh, "::"): continue
+        elif check(fh, ";"):  break
+        else:                 error_msg("Missing identifier in token type name.", fh)
+
+    assert name_list != []
+    descriptor.class_name = name_list[-1]
+    descriptor.name_space = name_list[:-1]
             
 def parse_standard_members(fh, descriptor, already_defined_list):
     position = fh.tell()

@@ -507,11 +507,14 @@ def read_option_value(fh):
 
     return value.strip()
 
-def check(fh, Char):
+def check(fh, Word):
     position = fh.tell()
-    skip_whitespace(fh)
-    dummy = fh.read(1)
-    if dummy == Char: return True
+    try:
+        skip_whitespace(fh)
+        dummy = fh.read(len(Word))
+        if dummy == Word: return True
+    except:
+        pass
     fh.seek(position)
     return False
 

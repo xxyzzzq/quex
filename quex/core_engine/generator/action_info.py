@@ -60,7 +60,7 @@ class UserCodeFragment(CodeFragment):
         self.line_n   = LineN
 
         require_terminating_zero_f = False
-        if LanguageDB != None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, code):
+        if LanguageDB != None and LanguageDB["$require-terminating-zero-preparation"](LanguageDB, Code):
             require_terminating_zero_f = True
 
         CodeFragment.__init__(self, Code, require_terminating_zero_f)

@@ -18,9 +18,9 @@
 class $$TOKEN_TYPE$$ {
 public:
     $$TOKEN_TYPE$$();
-    $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That)           { __copy(That); }     
+    $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
 $$CONSTRUCTOR_DECLARATIONS$$
-    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) { __copy(That); }     
+    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That);
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
 
 private:
@@ -52,7 +52,16 @@ $$SETTERS_GETTERS$$
 #   endif
 };
 
-$$CONSTRUCTORS$$
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+{
+$$CONSTRUCTOR$$
+}
+
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+{
+$$CONSTRUCTOR$$
+    __copy(That);
+}
 
 $$TOKEN_CLASS$$::~$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
 {
