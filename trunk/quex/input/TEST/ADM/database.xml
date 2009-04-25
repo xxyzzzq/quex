@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Sat Apr 25 07:31:47 2009">
+<test-database execution-time-sec="0.00" date="Sat Apr 25 08:22:51 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
         <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="0.00"> 
@@ -50,6 +50,18 @@
                <choice name="Constructor-2" result="OK" time-sec="0.00" crc="723556916"/>
                <choice name="Destructor" result="OK" time-sec="0.00" crc="122109698"/>
                <choice name="Copy" result="OK" time-sec="0.00" crc="-1908563411"/>
+            </choice-list>
+        </test>
+        <test title="Class Name and Namespace" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="token_type-5.py" info-request-time="1240640550L"/>
+            <choice-list number="7">
+               <choice name="0" result="OK" time-sec="0.00" crc="-207523798"/>
+               <choice name="1" result="OK" time-sec="0.00" crc="-1509632192"/>
+               <choice name="2" result="OK" time-sec="0.00" crc="1121155850"/>
+               <choice name="3" result="OK" time-sec="0.00" crc="1742035025"/>
+               <choice name="4" result="OK" time-sec="0.00" crc="-522799254"/>
+               <choice name="5" result="OK" time-sec="0.00" crc="-1311577154"/>
+               <choice name="6" result="OK" time-sec="0.00" crc="-726030630"/>
             </choice-list>
         </test>
         <test title="Buildt-In Members" make-required="True" time-sum-sec="0.00"> 
