@@ -75,11 +75,11 @@ class UserCodeFragment(CodeFragment):
         txt += Code
         if ReturnToSourceF:
             if txt[-1] != "\n": txt = txt + "\n"
-            txt += self.get_return_to_source_reference()
+            txt += get_return_to_source_reference()
         return txt
     
-    def get_return_to_source_reference(self):
-        return "\n" + UserCodeFragment_OpenLinePragma["C"][0] + "\n"
+def get_return_to_source_reference():
+    return "\n" + UserCodeFragment_OpenLinePragma["C"][0] + "\n"
 
 
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):

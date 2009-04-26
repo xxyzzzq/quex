@@ -58,7 +58,7 @@ class TokenTypeDescriptor:
         for name, type_descr in self.union_db.items():
             if type(type_descr) == dict:
                 for sub_name, sub_type in type_descr.items():
-                    db[sub_name] = [sub_type, name + "." + sub_name]
+                    db[sub_name] = [sub_type, "content." + name + "." + sub_name]
             else:
                 db[name] = [type_descr, name]
         return db
@@ -152,7 +152,7 @@ def parse(fh):
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
 
-    SubsectionList = ["name", "standard", "distinct", "union", "constructor", "destructor", "copy"]
+    SubsectionList = ["name", "standard", "distinct", "union", "constructor", "destructor", "copy", "inheritable"]
 
     position = fh.tell()
     skip_whitespace(fh)
@@ -169,6 +169,10 @@ def parse_section(fh, descriptor, already_defined_list):
 
     if word == "name":
         parse_token_type_name(fh, descriptor)
+
+    elif word == "inheritable":
+        descriptor.open_for_derivation_f = True
+        verify_next_word(fh, ";")
 
     elif not check(fh, "{"):
         fh.seek(position)
