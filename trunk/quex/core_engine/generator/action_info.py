@@ -68,14 +68,18 @@ class UserCodeFragment(CodeFragment):
     def get_code(self):
         return self.adorn_with_source_reference(self.get_pure_code())
 
-    def adorn_with_source_reference(self, Code):
+    def adorn_with_source_reference(self, Code, ReturnToSourceF=True):
         if Code.strip() == "": return Code
 
         txt  = '\n#line %i "%s"\n' % (self.line_n, self.filename)
         txt += Code
-        if txt[-1] != "\n": txt = txt + "\n"
-        txt += UserCodeFragment_OpenLinePragma["C"][0] + "\n"
+        if ReturnToSourceF:
+            if txt[-1] != "\n": txt = txt + "\n"
+            txt += self.get_return_to_source_reference()
         return txt
+    
+    def get_return_to_source_reference(self):
+        return "\n" + UserCodeFragment_OpenLinePragma["C"][0] + "\n"
 
 
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):

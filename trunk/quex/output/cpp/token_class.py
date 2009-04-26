@@ -37,6 +37,7 @@ def get_basic_template(Descr):
             [["$$TOKEN_CLASS$$",               Descr.class_name],
              ["$$TOKEN_ID_TYPE$$",             Descr.token_id_type.get_pure_code()],
              ["$$TOKEN_TYPE_WITH_NAMESPACE$$", namespace_str + Descr.class_name],
+             ["$$TOKEN_TYPE$$",                Descr.class_name],
              ["$$VIRTUAL_DESTRUCTOR$$",        virtual_destructor_str],
              ["$$LINE_N_TYPE$$",               Descr.line_number_type.get_pure_code()],
              ["$$COLUMN_N_TYPE$$",             Descr.column_number_type.get_pure_code()]])
@@ -82,16 +83,18 @@ def get_setter_getter(Descr):
         type_code = info[0]
         access    = info[1]
         type_str  = type_code.get_pure_code()
-        my_def = "%s%s %s() const       %s{ return %s; }\n" \
+        my_def = "    %s%s %s() const     %s{ return %s; }" \
                % (type_str,      " " * (TL - len(type_str)), 
-                  variable_name, " " * (NL - len(variable_name)), 
+                  variable_name, " " * ((NL + TL)- len(variable_name)), 
                   access)
-        txt += type_code.adorn_with_source_reference(my_def)
-        my_def = "void%s set_%s(%s Value) %s{ %s = Value; }\n" \
+        txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
+        my_def = "    void%s set_%s(%s Value) %s{ %s = Value; }" \
                % (" " * (TL - len("void")), 
                   variable_name, type_str, " " * (NL + TL - (len(type_str) + len(variable_name))), 
                   access)
-        txt += type_code.adorn_with_source_reference(my_def)
+        txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
+
+    txt += type_code.get_return_to_source_reference()
     return txt
 
 

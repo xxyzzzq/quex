@@ -75,7 +75,7 @@ db["C++"] = {
     "$language":      "C++",
     "$comment-delimiters": [["/*", "*/", ""], ["//", "\n", ""], ["\"", "\"", "\\\""]],
     "$namespace-ref":      lambda NameList:
-                           reduce(lambda x, y: x + "::" + y, NameList),
+                           reduce(lambda x, y: x + "::" + y, NameList) + "::",
     "$class-member-def":   lambda TypeStr, MaxTypeNameL, VariableName, MaxVariableL:
                            "    %s%s %s\n" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName),
     "$MODUL$":        cpp,

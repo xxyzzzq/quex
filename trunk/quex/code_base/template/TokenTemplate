@@ -19,7 +19,6 @@ class $$TOKEN_TYPE$$ {
 public:
     $$TOKEN_TYPE$$();
     $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
-$$CONSTRUCTOR_DECLARATIONS$$
     $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That);
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
 
