@@ -15,6 +15,8 @@
 #define QUEX_TYPE_LINE_N                   $$LINE_N_TYPE$$
 #define QUEX_TYPE_COLUMN_N                 $$COLUMN_N_TYPE$$
 
+$$NAMESPACE_OPEN$$
+
 class $$TOKEN_TYPE$$ {
 public:
     $$TOKEN_TYPE$$();
@@ -23,9 +25,11 @@ public:
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
 
 private:
-$$MEMBERS$$
+$$DISTINCT_MEMBERS$$
+$$UNION_MEMBERS$$
 public:
 $$SETTERS_GETTERS$$
+$$QUICK_SETTERS$$
 
     private:
         QUEX_TYPE_TOKEN_ID    _id;
@@ -62,7 +66,7 @@ $$CONSTRUCTOR$$
     __copy(That);
 }
 
-$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
 {
 $$DESTRUCTOR$$
 }
@@ -71,5 +75,7 @@ $$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
 {
 $$COPY$$
 }
+
+$$NAMESPACE_CLOSE$$
 
 #endif /* __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE_WITHOUT_NAMESPACE$$__ */
