@@ -170,19 +170,12 @@ following command line options can be used.
 Additionally, there are options for specialists who want to provide their own
 token-class:
 
-.. cmdoption:: --token-class name
-        
-        ``name`` = Name of the token class that the user defined. Note that the 
-        token class needs to be specified in namespace quex. 
-        
-        DEFAULT = ``token``
-
 .. cmdoption:: `--token-class-file` filename:
         
         ``filename`` = Name of file that contains the definition of the
         token class. 
         
-        DEFAULT = ``$(QUEX_PATH)/code_base/token``
+        DEFAULT = ``$(QUEX_PATH)/code_base/Token``
 
 .. cmdoption:: --odir, --output-dir directory
 

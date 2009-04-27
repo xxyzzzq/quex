@@ -126,6 +126,11 @@ def write_engine_header(Modes, Setup):
     elif Setup.converter_iconv_f:             converter_new_str = "QuexConverter_IConv_new()"
     elif Setup.converter_user_new_func != "": converter_new_str = Setup.converter_user_new_func
 
+    token_class_definition_file_name = Setup.input_token_class_file.replace("//","/")
+    if     lexer_mode.token_type_definition != None \
+       and lexer_mode.token_type_definition.file_name != "":
+           token_class_definition_file_name = lexer_mode.token_type_definition.file_name
+
     txt = blue_print(txt,
             [
                 ["$$BUFFER_LIMIT_CODE$$",            "0x%X" % Setup.buffer_limit_code],
@@ -153,8 +158,7 @@ def write_engine_header(Modes, Setup):
                 ["$$PRETTY_INDENTATION$$",               "     " + " " * (len(LexerClassName)*2 + 2)],
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
                 ["$$QUEX_VERSION$$",                     QuexVersionID],
-                ["$$TOKEN_CLASS$$",                      Setup.input_token_class_name],
-                ["$$TOKEN_CLASS_DEFINITION_FILE$$",      Setup.input_token_class_file.replace("//","/")],
+                ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_definition_file_name],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
                 ["$$TOKEN_QUEUE_SIZE$$",                 repr(Setup.token_queue_size)],
                 ["$$TOKEN_QUEUE_SAFETY_BORDER$$",        repr(Setup.token_queue_safety_border)],
@@ -164,11 +168,10 @@ def write_engine_header(Modes, Setup):
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
 
-    fh_out = open(QuexClassHeaderFileOutput, "wb")
+    fh_out = open_file_or_die(QuexClassHeaderFileOutput, Mode="wb")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     fh_out.write(txt)
     fh_out.close()
-
 
 def write_mode_class_implementation(Modes, Setup):
     LexerClassName              = Setup.output_engine_name
@@ -194,14 +197,12 @@ def write_mode_class_implementation(Modes, Setup):
     txt += "} // END: namespace quex\n"
 
     txt = blue_print(txt, [["$$LEXER_CLASS_NAME$$",         LexerClassName],
-                          ["$$TOKEN_CLASS$$",              TokenClassName],
-                          ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
+                           ["$$LEXER_DERIVED_CLASS_NAME$$", DerivedClassName]])
     
-    fh_out = open(ModeClassImplementationFile, "wb")
+    fh_out = open_file_or_die(ModeClassImplementationFile, Mode="wb")
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     fh_out.write(txt)
     fh_out.close()
-
 
 quex_mode_init_call_str = """
         $$MN$$.id   = LEX_ID_$$MN$$;

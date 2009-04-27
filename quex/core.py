@@ -47,7 +47,7 @@ def do():
     token_id_maker.do(Setup) 
 
     # (4) [Optional] Make a customized token class
-    token_class_maker.do(Setup)
+    token_class_maker.do()
 
     # (4) implement the lexer mode-specific analyser functions
     inheritance_info_str  = "Information about what pattern 'comes' from what mode in the inheritance tree.\n\n"
@@ -71,7 +71,7 @@ def do():
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file
-    fh = open(Setup.output_core_engine_file, "wb")
+    fh = open_file_or_die(Setup.output_core_engine_file, Mode="wb")
     if os.linesep != "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
     fh.write(analyzer_code)
     fh.close()

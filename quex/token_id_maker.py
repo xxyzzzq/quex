@@ -184,7 +184,7 @@ def do(global_setup):
                           ["$$TOKEN_PREFIX$$",                setup.token_prefix],
                           ["$$TOKEN_CLASS$$",                 setup.token_class]])
 
-    fh = open(setup.output_file, "wb")
+    fh = open_file_or_die(Setup.output_file, Mode="wb")
     if os.linesep != "\n": content = content.replace("\n", os.linesep)
     fh.write(content)
     fh.close()
@@ -207,7 +207,7 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
     done_list    = []
     unfound_list = []
     while work_list != []:
-        fh = open(work_list.pop())
+        fh = open_file_or_die(work_list.pop(), Mode="rb")
         content = fh.read()
         fh.close()
 

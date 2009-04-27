@@ -5,6 +5,7 @@ from quex.input.code_fragment import __parse_normal as parse_normal_code_fragmen
 
 class TokenTypeDescriptor:
     def __init__(self):
+        self.file_name             = ""
         self.class_name            = "Token"
         self.open_for_derivation_f = False
         self.name_space            = ["quex"]
@@ -64,7 +65,10 @@ class TokenTypeDescriptor:
         return db
 
     def __repr__(self):
-        txt  = "class:     '%s'\n" % self.class_name
+        txt = ""
+        if self.file_name != "": 
+            txt += "file name: '%s'\n" % self.file_name
+        txt += "class:     '%s'\n" % self.class_name
         if self.open_for_derivation_f: 
             txt += "           (with virtual destructor)\n"
         txt += "namespace: '%s'\n" % repr(self.name_space)[1:-1]
@@ -152,7 +156,7 @@ def parse(fh):
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
 
-    SubsectionList = ["name", "standard", "distinct", "union", "constructor", "destructor", "copy", "inheritable"]
+    SubsectionList = ["name", "standard", "distinct", "union", "constructor", "destructor", "copy", "inheritable", "file_name"]
 
     position = fh.tell()
     skip_whitespace(fh)
@@ -172,6 +176,11 @@ def parse_section(fh, descriptor, already_defined_list):
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True
+        verify_next_word(fh, ";")
+
+    elif word == "file_name":
+        verify_next_word(fh, "=")
+        descriptor.file_name = read_until_letter(fh, ";")
         verify_next_word(fh, ";")
 
     elif not check(fh, "{"):

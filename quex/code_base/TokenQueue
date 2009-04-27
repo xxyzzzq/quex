@@ -2,6 +2,10 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
 
+#ifndef QUEX_TYPE_TOKEN 
+#   error "Error: The macro QUEX_TYPE_TOKEN must be defined before the inclusion of this file."
+#endif
+
 #include <quex/code_base/definitions>
 #include <quex/code_base/asserts>
 #include <quex/code_base/MemoryManager>

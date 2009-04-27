@@ -27,7 +27,6 @@ SETUP_INFO = {
     "input_lexer_class_friends":      [["--friend-class"],                   LIST],
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
     "input_token_class_file":         [["--token-class-file"],               "", "quex/code_base/Token"],
-    "input_token_class_name":         [["--token-class"],                    "", "Token"],
     "input_token_counter_offset":     [["--token-offset"],                   "10000"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
     "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
@@ -61,6 +60,7 @@ SETUP_INFO = {
     "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
     "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
     "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
+    "input_token_class_name":         [["--token-class"],                    "", "Token"],    # DEPRECATED
 }
 
 DEPRECATED = { 
@@ -110,6 +110,10 @@ DEPRECATED = {
   "disable_return_token_id_f":      
      ("Flag --no-return-token-id is no longer supported. In recent versions of quex\n" + \
       "token-IDs are not passed as return values at all.", "0.37.1"), 
+  "input_token_class_name":  
+     ("The specification of the customized token class name via flag '--token-class' has been\n" + \
+      "deprecated. The file containing the token class definition needs to define a macro\n" + \
+      "QUEX_TYPE_TOKEN specifying  the token class.", "0.38.3"),
 }
  
 

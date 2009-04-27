@@ -131,7 +131,7 @@ def do(Modes, setup):
                       ["%%QUEX_OUTPUT_FILESTEM%%",         setup.output_file_stem],
              ])
 
-    fh_out = open(QuexClassHeaderFileOutput, "w")
+    fh_out = open_file_or_die(QuexClassHeaderFileOutput, "wb")
     fh_out.write(txt)
     fh_out.close()
 
