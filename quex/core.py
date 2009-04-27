@@ -33,20 +33,23 @@ def do():
 
     mode_db = __get_mode_db(Setup)
 
-    # (*) get list of modes that are actually implemented
+    # (*) Get list of modes that are actually implemented
     #     (abstract modes only serve as common base)
     mode_list      = filter(lambda mode: mode.options["inheritable"] != "only", mode_db.values())
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
-    # (2) implement the 'quex' core class from a template
+    # (2) Implement the 'quex' core class from a template
     #
     # -- do the coding of the class framework
     quex_class_out.do(mode_db, Setup)
 
-    # (3) create the token ids
+    # (3) Generate the token ids
     token_id_maker.do(Setup) 
 
-    # (3) implement the lexer mode-specific analyser functions
+    # (4) [Optional] Make a customized token class
+    token_class_maker.do(Setup)
+
+    # (4) implement the lexer mode-specific analyser functions
     inheritance_info_str  = "Information about what pattern 'comes' from what mode in the inheritance tree.\n\n"
     inheritance_info_str += "[1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index\n\n"
     analyzer_code = ""
