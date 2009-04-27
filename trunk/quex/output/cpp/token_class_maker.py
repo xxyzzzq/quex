@@ -1,11 +1,24 @@
 from quex.input.setup import setup as Setup
-from quex.frs_py.file_in import error_msg
+from quex.frs_py.file_in import error_msg, open_file_or_die
 from quex.frs_py.string_handling import blue_print
 import quex.core_engine.generator.action_info as action_info
 
 LanguageDB = Setup.language_db
 
-def do(Descr):
+def do():
+    token_class_definition_file_name = Setup.input_token_class_file.replace("//","/")
+    if     lexer_mode.token_type_definition != None \
+       and lexer_mode.token_type_definition.file_name != "":
+           token_class_definition_file_name = lexer_mode.token_type_definition.file_name
+
+    txt = _do(lexer_mode.token_type_definition)
+
+    fh_out = open_file_or_die(token_class_definition_file_name, Mode="wb")
+    if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
+    fh_out.write(txt)
+    fh_out.close()
+
+def _do(Descr):
     Descr.__class__.__name__ == "TokenTypeDescription"
 
     txt = get_basic_template(Descr)
@@ -26,10 +39,7 @@ def get_basic_template(Descr):
     TemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
                     + "/template/TokenTemplate").replace("//","/")
 
-    try:
-        template_str = open(TemplateFile, "rb").read()
-    except:
-        error_msg("Error -- could not find token class template file.")
+    template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     
     namespace_str = LanguageDB["$namespace-ref"](Descr.name_space) 
 
@@ -102,7 +112,6 @@ def get_setter_getter(Descr):
 
     txt += action_info.get_return_to_source_reference()
     return txt
-
 
 def get_quick_setters(Descr):
     """NOTE: All names are unique even in combined unions."""

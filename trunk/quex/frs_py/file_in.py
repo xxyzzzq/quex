@@ -348,8 +348,8 @@ def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
 
     except:
         if Env != None:
-            error_msg("is environment variable '%s' set propperly?" % Env, DontExitF=True)
-        error_msg("cannot open file '%s'" % FileName)
+            error_msg("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
+        error_msg("Cannot open file '%s'" % FileName)
         sys.exit(-1)
 
 def indented_open(Filename, Indentation = 3):

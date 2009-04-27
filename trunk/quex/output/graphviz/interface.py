@@ -69,16 +69,19 @@ def get_supported_graphic_format_description():
 def _call_dot(Code, OutputFormat, OutputFile, GetStdErrF=False):
     # (*) initiate call to the graphviz utility ('dot') and use a sample file
     #     for reference.
-    # try:
-    fd, input_file_name = tempfile.mkstemp(".quex.dot", "TMP")
-    fh = os.fdopen(fd, "w")
-    fh.write(Code)
-    fh.close()
+    try:
+        fd, input_file_name = tempfile.mkstemp(".quex.dot", "TMP")
+        fh = os.fdopen(fd, "w")
+        fh.write(Code)
+        fh.close()
 
-    fd_err, error_file = tempfile.mkstemp(".quex.err", "TMP")
-    fd_out, out_file   = tempfile.mkstemp(".quex.out", "TMP")
-    fh_err = os.fdopen(fd_err, "w")
-    fh_out = os.fdopen(fd_out, "w")
+        fd_err, error_file = tempfile.mkstemp(".quex.err", "TMP")
+        fd_out, out_file   = tempfile.mkstemp(".quex.out", "TMP")
+        fh_err = os.fdopen(fd_err, "w")
+        fh_out = os.fdopen(fd_out, "w")
+    except:
+        error_msg("Call to graphviz utility could not be initiated due to problems\n" + \
+                  "creating temporary files.")
 
     # except:
     #    error_msg("File access error while preparing graphviz code.")

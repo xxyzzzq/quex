@@ -227,6 +227,13 @@ $$LEX_ID_DEFINITIONS$$
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
 #include "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
+#ifndef QUEX_TYPE_TOKEN 
+#   error "Error: The macro QUEX_TYPE_TOKEN has not been defined in the file $$TOKEN_CLASS_DEFINITION_FILE$$."
+#endif
+#ifndef QUEX_TYPE_TOKEN_ID
+#   error "Error: The macro QUEX_TYPE_TOKEN_ID has not been defined in the file $$TOKEN_CLASS_DEFINITION_FILE$$."
+#endif
+
 #include<quex/code_base/definitions>
 
 #ifdef __QUEX_OPTION_UNIT_TEST
@@ -362,7 +369,7 @@ $$MEMENTO_EXTENSIONS$$
         int         map_mode_to_mode_id(const QuexMode& Mode) const;
 
         // (*) Token sending
-        void        send(const $$TOKEN_CLASS$$& That);
+        void        send(const QUEX_TYPE_TOKEN& That);
         void        send(const QUEX_TYPE_TOKEN_ID TokenID);
         void        send_n(const int N, const QUEX_TYPE_TOKEN_ID TokenID);
         template <typename ContentT> 

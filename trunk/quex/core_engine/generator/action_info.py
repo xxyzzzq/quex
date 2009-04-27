@@ -105,7 +105,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     fh.close()
 
-    fh = open(filename, "w")
+    fh = open_file_or_die(filename, Mode="w")
     fh.write(new_content)
     fh.close()
 
