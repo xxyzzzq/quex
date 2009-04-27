@@ -20,6 +20,7 @@ from   quex.token_id_maker          import TokenInfo
 from   quex.exception               import RegularExpressionException
 import quex.lexer_mode               as lexer_mode
 import quex.input.mode_definition    as mode_definition
+import quex.input.token_type         as token_type_definition
 import quex.input.regular_expression as regular_expression
 import quex.input.code_fragment      as code_fragment
 from   quex.input.setup             import setup as Setup
@@ -95,7 +96,7 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "define", "token", "mode", "token_type" ] + lexer_mode.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
@@ -111,6 +112,7 @@ def parse_section(fh):
         #                            of the engine (e.g. "my_member = -1;")
         #     -- 'define { ... }' => define patterns shorthands such as IDENTIFIER for [a-z]+
         #     -- 'token { ... }'  => define token ids
+        #     -- 'token_type { ... }'  => define a customized token type
         #
         if word in lexer_mode.fragment_db.keys():
             element_name = lexer_mode.fragment_db[word]
@@ -130,9 +132,9 @@ def parse_section(fh):
             parse_token_id_definitions(fh)
             return
 
-        # elif word == "token_type":       
-        #    parse_token_type_definitions(fh)
-        #    return
+        elif word == "token_type":       
+            token_type_definition.parse(fh)
+            return
 
         elif word == "mode":
             mode_definition.parse(fh)
