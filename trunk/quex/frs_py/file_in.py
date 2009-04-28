@@ -339,30 +339,38 @@ def clean_up():
         os.system("rm %s" % file)
 
 def open_file_or_die(FileName, Mode="rb", Env=None, Codec=""):
+    file_name = FileName.replace("//","/")
     try:
-        fh = open(FileName, Mode)
+        fh = open(file_name, Mode)
         # if Codec != "": 
         #    enc, dec, reader, writer = codecs.lookup('utf-8')
         #    fh = reader(fh)
         return fh
-
     except:
         if Env != None:
             error_msg("Is environment variable '%s' set propperly?" % Env, DontExitF=True)
         error_msg("Cannot open file '%s'" % FileName)
         sys.exit(-1)
 
-def indented_open(Filename, Indentation = 3):
+def write_safely_and_close(FileName, txt):
+    file_name = FileName.replace("//","/")
+    fh = open_file_or_die(FileName, Mode="wb")
+    if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
+    fh.write(txt)
+    fh.close()
+
+def indented_open(Filename, Indentation = 3, Reference="quex"):
     """Opens a file but indents all the lines in it. In fact, a temporary
     file is created with all lines of the original file indented. The filehandle
     returned points to the temporary file."""
     
     IndentString = " " * Indentation
     
+    file_name = FileName.replace("//","/")
     try:
-        fh = open(Filename, "rb")
+        fh = open(file_name, "rb")
     except:
-        print "%s:error: indented opening of file '%s' " % (this_name, Filename)
+        print "%s:error: failed to open file '%s' " % (Reference, Filename)
         sys.exit(-1)
     new_content = ""
     for line in fh.readlines():

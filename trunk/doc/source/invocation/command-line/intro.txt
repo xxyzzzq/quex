@@ -173,7 +173,9 @@ token-class:
 .. cmdoption:: `--token-class-file` filename:
         
         ``filename`` = Name of file that contains the definition of the
-        token class. 
+        token class. Note, that the setting provided here is possibly 
+        overwritten if the ``token_type`` section defines a file name
+        explicity (see :ref:`sec-customized-token-class`).
         
         DEFAULT = ``$(QUEX_PATH)/code_base/Token``
 

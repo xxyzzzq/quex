@@ -86,10 +86,8 @@ def do(argv):
 
     # (*) Default values
     #     (Please, do not change this, otherwise no 'empty' options can be detected.)
-    if setup.input_token_class_file == "": 
-        setup.input_token_class_file = SETUP_INFO["input_token_class_file"][2]
-    if setup.input_token_class_name == "": 
-        setup.input_token_class_name = SETUP_INFO["input_token_class_name"][2]
+    if setup.token_class_file == "": 
+        setup.token_class_file = SETUP_INFO["token_class_file"][2]
 
     # (*) return setup ___________________________________________________________________
     return
@@ -200,22 +198,10 @@ def validate(setup, command_line, argv):
     __check_identifier(setup, "output_engine_name",    "Engine name")
     if setup.input_derived_class_name != "": 
         __check_identifier(setup, "input_derived_class_name", "Derived class name")
-    if setup.input_token_class_name != "": 
-        __check_identifier(setup, "input_token_class_name",   "Token class name")
     
-    # '--token-class' and '--token-class-file' needs to appear together
-    if setup.input_token_class_name != "" and setup.input_token_class_file == "":
-        error_msg("User defined token class '%s':\n" % setup.input_token_class_name + \
-                  "Specifying a user-defined token class via '--token-class' requires\n" + \
-                  "that the token class file, also, needs to be specified via '--token-class-file'.")
-    if setup.input_token_class_file != "" and setup.input_token_class_name == "":
-        error_msg("User defined token class file '%s':\n" % setup.input_token_class_file + \
-                  "Specifying a user-defined token class file via '--token-class-file' requires\n" + \
-                  "that the token class, also, needs to be specified via '--token-class'.")
-
     # __check_identifier("token_id_termination",     "Token id for termination")
     # __check_identifier("token_id_uninitialized",   "Token id for uninitialized")
-    __check_file_name(setup, "input_token_class_file", "file containing user defined token class")
+    __check_file_name(setup, "token_class_file",         "file containing token class definition")
     __check_file_name(setup, "input_derived_class_file", "file containing user derived lexer class")
 
     __check_file_name(setup, "input_foreign_token_id_file", "file containing user token ids")

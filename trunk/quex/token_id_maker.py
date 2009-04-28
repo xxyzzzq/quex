@@ -6,7 +6,10 @@ import re
 
 from GetPot import GetPot
 
-import quex.frs_py.file_in  as file_in
+from   quex.frs_py.file_in  import open_file_or_die, \
+                                   write_safely_and_close, \
+                                   delete_comment, \
+                                   extract_identifiers_with_specific_prefix
 import quex.lexer_mode      as lexer_mode
 
 from quex.frs_py.string_handling import blue_print
@@ -23,8 +26,6 @@ class Setup:
     def __init__(self, GlobalSetup):
 
         self.output_file      = GlobalSetup.output_token_id_file
-        self.token_class_file = GlobalSetup.input_token_class_file
-        self.token_class      = GlobalSetup.input_token_class_name
         self.token_prefix     = GlobalSetup.input_token_id_prefix
         self.id_count_offset  = GlobalSetup.input_token_counter_offset
         self.input_foreign_token_id_file = GlobalSetup.input_foreign_token_id_file
@@ -71,7 +72,7 @@ $$CONTENT$$
 func_str = \
 """
     inline const char*
-    $$TOKEN_CLASS$$::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
+    QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
        static char  error_string[64];
        static const char  uninitialized_string[] = "<UNINITIALIZED>";
@@ -131,9 +132,6 @@ def do(global_setup):
         global_setup.output_token_id_file = global_setup.input_user_token_id_file
         return
     
-    ## print "   token class file = '%s'" % global_setup.input_token_class_file
-    ## print "   => '%s'" % global_setup.output_token_id_file
-    
     #______________________________________________________________________________________
     L = max(map(lambda name: len(name), lexer_mode.token_id_db.keys()))
     def space(Name):
@@ -172,22 +170,17 @@ def do(global_setup):
     t = time.localtime()
     date_str = "%iy%im%id_%ih%02im%02is" % (t[0], t[1], t[2], t[3], t[4], t[5])
 
-    
     file_str = file_str.replace("$$CONTENT$$", func_str)
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
-                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", setup.token_class_file],
+                          ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(global_setup)],
                           ["$$DATE_IG$$",                     date_str],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],
                           ["$$TOKEN_NAMES$$",                 token_names],
-                          ["$$TOKEN_PREFIX$$",                setup.token_prefix],
-                          ["$$TOKEN_CLASS$$",                 setup.token_class]])
+                          ["$$TOKEN_PREFIX$$",                setup.token_prefix]])
 
-    fh = open_file_or_die(Setup.output_file, Mode="wb")
-    if os.linesep != "\n": content = content.replace("\n", os.linesep)
-    fh.write(content)
-    fh.close()
+    write_safely_and_close(setup.output_file, content)
 
 def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, IncludeRE):
     """This function somehow interprets the user defined token id file--if there is
@@ -213,10 +206,10 @@ def parse_token_id_file(ForeignTokenIdFile, TokenPrefix, CommentDelimiterList, I
 
         # delete any comment inside the file
         for opener, closer in CommentDelimiterList:
-            content = file_in.delete_comment(content, opener, closer, LeaveNewlineDelimiter=True)
+            content = delete_comment(content, opener, closer, LeaveNewlineDelimiter=True)
 
         # add any found token id to the list
-        token_id_finding_list = file_in.extract_identifiers_with_specific_prefix(content, TokenPrefix)
+        token_id_finding_list = extract_identifiers_with_specific_prefix(content, TokenPrefix)
         for token_name, line_n in token_id_finding_list:
             prefix_less_token_name = token_name[len(TokenPrefix):]
             # NOTE: The line number might be wrong, because of the comment deletion

@@ -26,7 +26,7 @@ SETUP_INFO = {
     #                                                                              # be included in generated file.
     "input_lexer_class_friends":      [["--friend-class"],                   LIST],
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
-    "input_token_class_file":         [["--token-class-file"],               "", "quex/code_base/Token"],
+    "token_class_file":               [["--token-class-file"],               "", "quex/code_base/Token"],
     "input_token_counter_offset":     [["--token-offset"],                   "10000"],
     "token_id_termination":           [["--token-id-termination"],           "0"],
     "token_id_uninitialized":         [["--token-id-uninitialized"],         "1"],
@@ -60,7 +60,7 @@ SETUP_INFO = {
     "string_accumulator_f":           [["--string-accumulator", "--sacc"],   FLAG],           # DEPRECATED
     "disable_token_queue_f":          [["--no-token-queue", "--ntq"],        FLAG],           # DEPRECATED     
     "disable_return_token_id_f":      [["--no-return-token-id"],             FLAG],           # DEPRECATED
-    "input_token_class_name":         [["--token-class"],                    "", "Token"],    # DEPRECATED
+    "input_token_class_name":         [["--token-class"],                    "##Token##"],    # DEPRECATED
 }
 
 DEPRECATED = { 

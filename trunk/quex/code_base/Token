@@ -1,17 +1,4 @@
 // -*- C++ -*-    vim: set syntax=cpp:
-//
-// Token handling is **very** time critical ! We have two types of tokens:
-//
-//   class Token: a token as presented to the 'parser' for example.
-//                such tokens are reference counted. they can therefore
-//                be copied arround very efficiently and speedy.
-//
-//   Both classes share the Token_data_core, i.e. the content of a token
-//   is in both cases the same and defined in the base class of both
-//   token classes.
-//
-//
-//   (C) 2006-2008 Frank R. Schaefer
 //////////////////////////////////////////////////////////////////////////////////////////
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN__
 #define __INCLUDE_GUARD__QUEX__TOKEN__
