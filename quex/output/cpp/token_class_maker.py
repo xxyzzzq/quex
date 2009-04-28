@@ -1,22 +1,18 @@
-from quex.input.setup import setup as Setup
-from quex.frs_py.file_in import error_msg, open_file_or_die
-from quex.frs_py.string_handling import blue_print
+from   quex.frs_py.file_in                    import error_msg, write_safely_and_close, open_file_or_die
+from   quex.frs_py.string_handling            import blue_print
+import quex.lexer_mode                        as lexer_mode
 import quex.core_engine.generator.action_info as action_info
+from   quex.input.setup                       import setup as Setup
 
 LanguageDB = Setup.language_db
 
 def do():
-    token_class_definition_file_name = Setup.input_token_class_file.replace("//","/")
-    if     lexer_mode.token_type_definition != None \
-       and lexer_mode.token_type_definition.file_name != "":
-           token_class_definition_file_name = lexer_mode.token_type_definition.file_name
+    if lexer_mode.token_type_definition == None: return
 
-    txt = _do(lexer_mode.token_type_definition)
+    txt       = _do(lexer_mode.token_type_definition)
 
-    fh_out = open_file_or_die(token_class_definition_file_name, Mode="wb")
-    if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
-    fh_out.write(txt)
-    fh_out.close()
+    file_name = lexer_mode.token_type_definition.get_file_name(Setup.output_engine_name)
+    write_safely_and_close(file_name, txt) 
 
 def _do(Descr):
     Descr.__class__.__name__ == "TokenTypeDescription"
@@ -73,7 +69,7 @@ def get_union_members(Descr):
     txt = "    union {\n"
     for name, type_descr in Descr.union_db.items():
         if type(type_descr) == dict:
-            txt += "        stuct {\n"
+            txt += "        struct {\n"
             for sub_name, sub_type in type_descr.items():
                 txt += __member(sub_type, TL, sub_name, NL, IndentationOffset=" " * 8)
             txt += "\n        } %s;\n" % name
@@ -86,7 +82,7 @@ def get_union_members(Descr):
 def __member(TypeCode, MaxTypeNameL, VariableName, MaxVariableNameL, IndentationOffset=""):
     my_def  = IndentationOffset
     my_def += LanguageDB["$class-member-def"](TypeCode.get_pure_code(), MaxTypeNameL, 
-                                             VariableName, MaxVariableNameL)
+                                              VariableName, MaxVariableNameL)
     return TypeCode.adorn_with_source_reference(my_def, ReturnToSourceF=False)
 
 def get_setter_getter(Descr):
@@ -99,7 +95,7 @@ def get_setter_getter(Descr):
         type_code = info[0]
         access    = info[1]
         type_str  = type_code.get_pure_code()
-        my_def = "    %s%s %s() const     %s{ return %s; }" \
+        my_def = "    %s%s get_%s() const  %s{ return %s; }" \
                % (type_str,      " " * (TL - len(type_str)), 
                   variable_name, " " * ((NL + TL)- len(variable_name)), 
                   access)
@@ -135,19 +131,23 @@ def get_quick_setters(Descr):
             txt += "const %s& Value%i, " % (type_info.get_pure_code(), i)
         txt = txt[:-2]
         txt += ") { "
+        i = -1
         for name, type_info in ArgList:
+            i += 1
             txt += "%s = Value%i; " % (variable_db[name][1], i)
         txt += "}\n"
         return txt
 
-    def __combined_quick_setters(member_db):
+    def __combined_quick_setters(member_db, AllOnlyF=False):
         txt = ""
         member_list = member_db.items()
         # sort the members with respect to their occurence in the token_type section
         member_list.sort(lambda x, y: cmp(x[1].line_n, y[1].line_n))
         L = len(member_list)
-        presence_map = [ 1 ] + [ 0 ] * (L - 1)  
         PresenceAll  = [ 1 ] * L
+        if AllOnlyF: presence_map = PresenceAll
+        else:        presence_map = [ 1 ] + [ 0 ] * (L - 1)  
+
         while 1 + 1 == 2:
             # build the argument list consisting of a permutation of distinct members
             arg_list = []
@@ -173,7 +173,7 @@ def get_quick_setters(Descr):
     # (*) Quick setters for union members
     for name, type_info in Descr.union_db.items():
         if type(type_info) != dict: txt += __quick_setter([[name, type_info]])
-        else:                       txt += __combined_quick_setters(type_info)
+        else:                       txt += __combined_quick_setters(type_info, AllOnlyF=True)
 
     return txt
 

@@ -1,13 +1,13 @@
 /* -*- C++ -*-   vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE$$__
-#define __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE$$__
+#ifndef __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
+#define __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
  
-#ifndef    QUEX_TYPE_TOKEN_ID 
-#   define QUEX_TYPE_TOKEN_ID              $$TOKEN_ID_TYPE$$
-#endif
-
 #ifdef QUEX_TYPE_TOKEN
 #   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
+#endif
+
+#ifndef    QUEX_TYPE_TOKEN_ID 
+#   define QUEX_TYPE_TOKEN_ID              $$TOKEN_ID_TYPE$$
 #endif
 
 #define QUEX_TYPE_TOKEN                    $$TOKEN_TYPE_WITH_NAMESPACE$$
@@ -35,7 +35,8 @@ $$QUICK_SETTERS$$
         QUEX_TYPE_TOKEN_ID    _id;
     public:
         QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
-        const std::string&    type_id_name() const { return map_id_to_name(_id); }
+        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
+        const std::string     type_id_name() const { return map_id_to_name(_id); }
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -53,9 +54,11 @@ $$QUICK_SETTERS$$
         void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
 #       endif
 #   endif
+    private:
+        void __copy(const $$TOKEN_CLASS$$& That);
 };
 
-$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$()
 {
 $$CONSTRUCTOR$$
 }
@@ -71,6 +74,7 @@ $$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
 $$DESTRUCTOR$$
 }
 
+void
 $$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
 {
 $$COPY$$
@@ -78,4 +82,4 @@ $$COPY$$
 
 $$NAMESPACE_CLOSE$$
 
-#endif /* __INCLUDE_GUARD__QUEX__TOKEN__$$TOKEN_TYPE_WITHOUT_NAMESPACE$$__ */
+#endif /* __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__ */

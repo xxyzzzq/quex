@@ -1,5 +1,7 @@
 from quex.frs_py.file_in import is_identifier_start, \
-                                is_identifier_continue
+                                is_identifier_continue, \
+                                open_file_or_die, \
+                                write_safely_and_close
 
 import quex.core_engine.generator.skip_code as skip_code
 
@@ -86,9 +88,7 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
     if Language not in UserCodeFragment_OpenLinePragma.keys():
         return
 
-    try:    fh = open(filename)
-    except: raise "error: file to straighten line pragmas not found: '%s'" % \
-            filename
+    fh = open_file_or_die(filename)
 
     new_content = ""
     line_n      = 0
@@ -98,16 +98,14 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
         if line.find(LinePragmaInfo[0]) != -1:
             if Language == "C":
                 line = LinePragmaInfo[1]
-                line = line.replace("NUMBER", repr(int(line_n)))
+                line = line.replace("NUMBER", repr(int(line_n + 1)))
                 line = line.replace("FILENAME", filename)
                 line = line + "\n"
         new_content += line
 
     fh.close()
 
-    fh = open_file_or_die(filename, Mode="w")
-    fh.write(new_content)
-    fh.close()
+    write_safely_and_close(filename, new_content)
 
 class PatternActionInfo:
     def __init__(self, PatternStateMachine, Action, Pattern="", IL = None, ModeName=""):

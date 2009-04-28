@@ -104,3 +104,10 @@ the user defined token class name. The command line option ``--token-class-file`
 tells queχ the name of the file where this class is defined. As long as this
 options are not defined queχ will not consider user defined token classes and
 provide the standard token class.
+
+.. _sec-customized-token-class:
+
+Customized Token Classes
+------------------------
+
+-- mention all used types in the ``header`` section.

@@ -126,7 +126,7 @@ def do(Modes, setup):
                       ["%%QUEX_TEMPLATE_DIR%%",            setup.QUEX_TEMPLATE_DB_DIR],
                       ["%%QUEX_VERSION%%",                 QuexVersionID],
                       ["%%TOKEN_CLASS%%",                  setup.input_token_class_name],
-                      ["%%TOKEN_CLASS_DEFINITION_FILE%%",  setup.input_token_class_file.replace("//","/")],
+                      ["%%TOKEN_CLASS_DEFINITION_FILE%%",  token_class_definition_file_name],
                       ["%%TOKEN_ID_DEFINITION_FILE%%",     setup.output_token_id_file.replace("//","/")],
                       ["%%QUEX_OUTPUT_FILESTEM%%",         setup.output_file_stem],
              ])

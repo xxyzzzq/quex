@@ -5,7 +5,7 @@ from quex.input.code_fragment import __parse_normal as parse_normal_code_fragmen
 
 class TokenTypeDescriptor:
     def __init__(self):
-        self.file_name             = ""
+        self.__file_name           = ""
         self.class_name            = "Token"
         self.open_for_derivation_f = False
         self.name_space            = ["quex"]
@@ -17,6 +17,10 @@ class TokenTypeDescriptor:
         self.destructor         = CodeFragment("")
         self.distinct_db = {}
         self.union_db    = {}
+
+    def get_file_name(self, EngineName):
+        if self.__file_name == "": return EngineName + "-token_class"
+        else:                      return self.__file_name
 
     def type_name_length_max(self):
         return max(self.distinct_members_type_name_length_max(),
@@ -61,13 +65,13 @@ class TokenTypeDescriptor:
                 for sub_name, sub_type in type_descr.items():
                     db[sub_name] = [sub_type, "content." + name + "." + sub_name]
             else:
-                db[name] = [type_descr, name]
+                db[name] = [type_descr, "content." + name]
         return db
 
     def __repr__(self):
         txt = ""
-        if self.file_name != "": 
-            txt += "file name: '%s'\n" % self.file_name
+        if self.__file_name != "": 
+            txt += "file name: '%s'\n" % self.__file_name
         txt += "class:     '%s'\n" % self.class_name
         if self.open_for_derivation_f: 
             txt += "           (with virtual destructor)\n"
@@ -156,7 +160,8 @@ def parse(fh):
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
 
-    SubsectionList = ["name", "standard", "distinct", "union", "constructor", "destructor", "copy", "inheritable", "file_name"]
+    SubsectionList = ["name", "standard", "distinct", "union", "constructor", 
+                      "destructor", "copy", "inheritable", "file_name"]
 
     position = fh.tell()
     skip_whitespace(fh)
@@ -180,7 +185,7 @@ def parse_section(fh, descriptor, already_defined_list):
 
     elif word == "file_name":
         verify_next_word(fh, "=")
-        descriptor.file_name = read_until_letter(fh, ";")
+        descriptor.set_file_name(read_until_letter(fh, ";"))
         verify_next_word(fh, ";")
 
     elif not check(fh, "{"):

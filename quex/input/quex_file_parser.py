@@ -133,7 +133,7 @@ def parse_section(fh):
             return
 
         elif word == "token_type":       
-            token_type_definition.parse(fh)
+            lexer_mode.token_type_definition = token_type_definition.parse(fh)
             return
 
         elif word == "mode":

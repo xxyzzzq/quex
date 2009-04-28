@@ -222,6 +222,10 @@ $$LEX_ID_DEFINITIONS$$
 #   define CLASS_MEMENTO      $$LEXER_CLASS_NAME$$Memento
 #endif
 
+// START: User defined header content. 
+$$USER_DEFINED_HEADER$$
+// END:
+
 /* TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it won't
  *                    override the QUEX_TYPE_TOKEN_ID.                               */
 #include "$$TOKEN_ID_DEFINITION_FILE$$"
@@ -268,14 +272,7 @@ namespace quex {
 
 // START:
 $$LEXER_DERIVED_CLASS_DECL$$
-// :END
-
-// User defined header content. _________________________________________________
-//
-// This is pasted after the definitions, such that the user can make use of them.
-// START:
-$$USER_DEFINED_HEADER$$
-// :END
+// END:
 
 #include <quex/code_base/temporary_macros_on>
 namespace quex {

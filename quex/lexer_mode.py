@@ -509,8 +509,14 @@ shorthand_db = {}
 #-----------------------------------------------------------------------------------------
 token_id_db = {}
 
-
 #-----------------------------------------------------------------------------------------
 # token_type_definition: Object that defines a (user defined) token class.
 #-----------------------------------------------------------------------------------------
 token_type_definition = None
+
+def get_token_class_file_name(Setup):
+    file_name = Setup.token_class_file
+    if token_type_definition != None:
+        file_name = token_type_definition.get_file_name(Setup.output_engine_name)
+    return file_name
+

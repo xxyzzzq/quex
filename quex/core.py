@@ -2,7 +2,7 @@ from copy import copy
 import os
 import sys
 
-from   quex.frs_py.file_in import error_msg
+from   quex.frs_py.file_in import error_msg, write_safely_and_close
 
 from   quex.input.setup import setup as Setup
 import quex.token_id_maker                      as token_id_maker
@@ -17,6 +17,7 @@ import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check
 import quex.output.cpp.core                     as quex_class_out
 import quex.output.cpp.action_code_formatter    as action_code_formatter
+import quex.output.cpp.token_class_maker        as token_class_maker
 import quex.output.graphviz.interface           as plot_generator
 
 def do():
@@ -71,14 +72,13 @@ def do():
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file
-    fh = open_file_or_die(Setup.output_core_engine_file, Mode="wb")
-    if os.linesep != "\n": analyzer_code = analyzer_code.replace("\n", os.linesep)
-    fh.write(analyzer_code)
-    fh.close()
+    write_safely_and_close(Setup.output_core_engine_file, analyzer_code)
 
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_file_stem, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_core_engine_file, "C")
     UserCodeFragment_straighten_open_line_pragmas(Setup.output_code_file, "C")
+    if lexer_mode.token_type_definition != None:
+        UserCodeFragment_straighten_open_line_pragmas(lexer_mode.get_token_class_file_name(Setup), "C")
 
 def get_code_for_mode(Mode, ModeNameList):
 
