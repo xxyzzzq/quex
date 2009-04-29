@@ -1,0 +1,10 @@
+<test-database execution-time-sec="0.00" date="Wed Apr 29 08:16:48 2009">
+    <last-used-diff-display-program name=""/>
+    <test title="Constructor" make-required="True" time-sum-sec="0.00"> 
+        <application file-name="simple.exe" info-request-time="1240985804L"/>
+        <make-procedure success="True" />
+        <choice-list number="1">
+           <choice name="" result="OK" time-sec="0.00" crc="1973324921"/>
+        </choice-list>
+    </test>
+</test-database>

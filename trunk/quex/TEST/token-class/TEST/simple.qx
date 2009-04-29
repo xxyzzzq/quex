@@ -1,0 +1,64 @@
+header {
+#include <vector>
+#include <string>
+#include <iostream>
+}
+token_type {
+   name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
+
+   distinct {
+       name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+       number_list :  std::vector<int>;
+   }
+   union {
+       { 
+          mini_x       : int8_t;
+          mini_y       : int8_t;
+       }
+       { 
+          big_x        : int16_t;
+          big_y        : int16_t;
+       }
+       who_is_that     : uint16_t;
+   }
+   inheritable;
+   constructor { std::cout << "Constructor\n"; }
+   destructor  { std::cout << "Destructor\n"; }
+   copy        { std::cout << "Copy\n"; }
+}
+
+token {
+    N1a
+    N1b
+    N1c
+    
+    N2a
+    N2b
+    N2c
+    
+    N3a
+    N3b
+    N3c
+    
+    WHO
+}
+
+start = REAL;
+
+mode REAL : { 
+    1      => QUEX_TKN_N1a(Lexeme); 
+    mini_1 => QUEX_TKN_N1b((int8_t)1, (int8_t)1); 
+    big_1  => QUEX_TKN_N1c((int16_t)1, (int16_t)1);
+    /**/
+    2      => QUEX_TKN_N2a(Lexeme); 
+    mini_2 => QUEX_TKN_N2b((int8_t)2, (int8_t)2); 
+    big_2  => QUEX_TKN_N2c((int16_t)2, (int16_t)2);
+    /**/
+    3      => QUEX_TKN_N3a(Lexeme); 
+    mini_3 => QUEX_TKN_N3b((int8_t)3, (int8_t)3); 
+    big_3  => QUEX_TKN_N3c((int16_t)3, (int16_t)3);
+    /**/
+    who    => QUEX_TKN_WHO((uint16_t)4711);
+    /**/
+    [ \t\n] { }
+}
