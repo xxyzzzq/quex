@@ -112,4 +112,12 @@ Customized Token Classes
 
 -- mention all used types in the ``header`` section, e.g. 'vector', 'iostream' ...
 -- there maybe should at least one member that can take a QUEX_TYPE_CHARACTER*
+-- default copy: plain copy of all members
+
+       std::cout << "Copy\n"; 
+       /* copy all members */
+       name        = That.name;
+       number_list = That.number_list;
+       /* plain content copy of the union content */
+       content     = That.content;
 
