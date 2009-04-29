@@ -10,6 +10,10 @@
 #    define __QUEX_OPTION_SYSTEM_ENDIAN
 #endif
 
+#if 0
+/* The token id type and the token type shall be defined along with the
+ * token class definition. Delete this part, as soon as there are no
+ * problems with unit tests. Otherwise uncomment. <09y04m28d fschaef>   */
 #ifndef    QUEX_TYPE_TOKEN_ID
 #   define QUEX_TYPE_TOKEN_ID    uint32_t
 #endif
@@ -17,6 +21,8 @@
 #   define QUEX_TYPE_TOKEN                    quex::Token
 #   define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
 #endif
+#endif
+
 #ifndef    __QUEX_TOKEN_ID_UNINITIALIZED 
 #   define __QUEX_TOKEN_ID_UNINITIALIZED (QUEX_TYPE_TOKEN_ID)(1)
 #endif

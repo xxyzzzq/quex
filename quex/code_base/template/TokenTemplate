@@ -1,6 +1,8 @@
 /* -*- C++ -*-   vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
 #define __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
+
+#include <quex/code_base/definitions>
  
 #ifdef QUEX_TYPE_TOKEN
 #   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
@@ -21,7 +23,8 @@ class $$TOKEN_TYPE$$ {
 public:
     $$TOKEN_TYPE$$();
     $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
-    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That);
+    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) 
+    { __copy(That); return *this; }
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
 
 private:
@@ -29,6 +32,7 @@ $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
 public:
 $$SETTERS_GETTERS$$
+    void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
 $$QUICK_SETTERS$$
 
     private:
@@ -58,23 +62,26 @@ $$QUICK_SETTERS$$
         void __copy(const $$TOKEN_CLASS$$& That);
 };
 
+inline
 $$TOKEN_CLASS$$::$$TOKEN_CLASS$$()
 {
 $$CONSTRUCTOR$$
 }
 
+inline
 $$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
 {
 $$CONSTRUCTOR$$
     __copy(That);
 }
 
+inline
 $$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
 {
 $$DESTRUCTOR$$
 }
 
-void
+inline void
 $$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
 {
 $$COPY$$

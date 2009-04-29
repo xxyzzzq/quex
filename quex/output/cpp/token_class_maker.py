@@ -95,12 +95,12 @@ def get_setter_getter(Descr):
         type_code = info[0]
         access    = info[1]
         type_str  = type_code.get_pure_code()
-        my_def = "    %s%s get_%s() const  %s{ return %s; }" \
+        my_def = "    %s%s get_%s() const %s{ return %s; }" \
                % (type_str,      " " * (TL - len(type_str)), 
                   variable_name, " " * ((NL + TL)- len(variable_name)), 
                   access)
         txt += type_code.adorn_with_source_reference(my_def, ReturnToSourceF=False)
-        my_def = "    void%s set_%s(%s Value) %s{ %s = Value; }" \
+        my_def = "    void%s set_%s(%s& Value) %s{ %s = Value; }" \
                % (" " * (TL - len("void")), 
                   variable_name, type_str, " " * (NL + TL - (len(type_str) + len(variable_name))), 
                   access)
@@ -124,13 +124,14 @@ def get_quick_setters(Descr):
         signature = map(lambda x: x[1].get_pure_code(), ArgList)
         if signature in used_signature_list:
             return ""
-        txt = "    void set("
+        txt = "    void set(const QUEX_TYPE_TOKEN_ID ID, "
         i = -1
         for name, type_info in ArgList:
             i += 1
             txt += "const %s& Value%i, " % (type_info.get_pure_code(), i)
         txt = txt[:-2]
-        txt += ") { "
+        txt += ")\n    { "
+        txt += "_id = ID; "
         i = -1
         for name, type_info in ArgList:
             i += 1
