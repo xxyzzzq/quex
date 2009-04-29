@@ -24,7 +24,16 @@ token_type {
    inheritable;
    constructor { std::cout << "Constructor\n"; }
    destructor  { std::cout << "Destructor\n"; }
-   copy        { std::cout << "Copy\n"; }
+   copy        { 
+       std::cout << "Copy\n"; 
+       /* copy token id */
+       _id         = That._id;
+       /* copy all members */
+       name        = That.name;
+       number_list = That.number_list;
+       /* plain content copy of the union content */
+       content     = That.content;
+   }
 }
 
 token {

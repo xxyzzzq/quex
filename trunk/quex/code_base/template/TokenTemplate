@@ -85,6 +85,9 @@ inline void
 $$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
 {
 $$COPY$$
+    /* If the user even misses to copy the token id, then there's
+     * something seriously wrong.                                 */
+    __quex_assert(this->_id == That._id);
 }
 
 $$NAMESPACE_CLOSE$$

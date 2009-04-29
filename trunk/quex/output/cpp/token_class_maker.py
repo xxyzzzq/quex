@@ -18,12 +18,21 @@ def _do(Descr):
     Descr.__class__.__name__ == "TokenTypeDescription"
 
     txt = get_basic_template(Descr)
+
+    if Descr.copy.get_pure_code() == "":
+        # Default copy operation: Plain Copy of token memory
+        copy_str = "__QUEX_STD_memcpy((void*)this, (void*)That, sizeof(QUEX_TYPE_TOKEN));\n"
+    else:
+        copy_str = Descr.copy.get_code()
+
+
+
     txt = blue_print(txt,
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
                       ["$$SETTERS_GETTERS$$",  get_setter_getter(Descr)],
                       ["$$QUICK_SETTERS$$",    get_quick_setters(Descr)],
-                      ["$$COPY$$",             Descr.copy.get_code()],
+                      ["$$COPY$$",             copy_str],
                       ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
                       ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
