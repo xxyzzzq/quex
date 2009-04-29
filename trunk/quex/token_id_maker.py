@@ -10,9 +10,11 @@ from   quex.frs_py.file_in  import open_file_or_die, \
                                    write_safely_and_close, \
                                    delete_comment, \
                                    extract_identifiers_with_specific_prefix
-import quex.lexer_mode      as lexer_mode
+import quex.lexer_mode             as lexer_mode
+from   quex.frs_py.string_handling import blue_print
+from   quex.input.setup            import setup as Setup
 
-from quex.frs_py.string_handling import blue_print
+LanguageDB = Setup.language_db
 
 class TokenInfo:
     def __init__(self, Name, ID, TypeName=None, Filename="", LineN=-1):
@@ -61,16 +63,14 @@ file_str = \
 
 $$TOKEN_ID_DEFINITIONS$$
 
-namespace quex {
-
 $$CONTENT$$
 
-}
 #endif // __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_GENERATED__
 """
 
 func_str = \
 """
+$$NAMESPACE_OPEN$$
     inline const char*
     QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
@@ -91,6 +91,7 @@ $$TOKEN_NAMES$$
 $$TOKEN_ID_CASES$$
        }
     }
+$$NAMESPACE_CLOSE$$
 """
 
 def do(global_setup):
@@ -166,6 +167,10 @@ def do(global_setup):
                         (setup.token_prefix, token_name, space(token_name), token_name)
         token_names  += "       static const char  token_id_str_%s[]%s = \"%s\";\n" % \
                         (token_name, space(token_name), token_name)
+
+    name_space = ["quex"]
+    if lexer_mode.token_type_definition != None: 
+        name_space = lexer_mode.token_type_definition.name_space
     
     t = time.localtime()
     date_str = "%iy%im%id_%ih%02im%02is" % (t[0], t[1], t[2], t[3], t[4], t[5])
@@ -176,6 +181,8 @@ def do(global_setup):
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(global_setup)],
                           ["$$DATE_IG$$",                     date_str],
+                          ["$$NAMESPACE_OPEN$$",              LanguageDB["$namespace-open"](name_space)],
+                          ["$$NAMESPACE_CLOSE$$",             LanguageDB["$namespace-close"](name_space)],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],
                           ["$$TOKEN_NAMES$$",                 token_names],
                           ["$$TOKEN_PREFIX$$",                setup.token_prefix]])

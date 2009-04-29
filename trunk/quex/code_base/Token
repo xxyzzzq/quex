@@ -3,6 +3,8 @@
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN__
 #define __INCLUDE_GUARD__QUEX__TOKEN__
 
+#include <quex/code_base/definitions>
+
 #ifndef    QUEX_TYPE_TOKEN_ID 
 #   define QUEX_TYPE_TOKEN_ID              uint32_t
 #endif
