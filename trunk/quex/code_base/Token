@@ -43,6 +43,7 @@ namespace quex {
     public:
         Token() {} 
         Token(const Token& That) { __copy(That); }     
+        void __copy(const Token& That);
 
         // note, that tokens are created in a bunch on the token stack and only
         // set with the .set(..) functions when pushed.
@@ -70,8 +71,6 @@ namespace quex {
         void    set(QUEX_TYPE_TOKEN_ID ID, const QUEX_TYPE_CHARACTER* Text);
         void    set(QUEX_TYPE_TOKEN_ID ID, const int   Number1);
 
-    private:
-        void __copy(const Token& That);
 
 #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
