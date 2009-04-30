@@ -1,14 +1,201 @@
 User defined Token Classes
 ==========================
 
-Queχ provides a default token class that allows the storage of a string object,
-an int value. Note, that any complex structure might be transformed later
-on by the parser based on the given string. In some cases, though, it may
-be promising to implement a dedicated token class that is optimal in memory
-and speed with respect to a specific problem. For these cases, queχ allows
-the user to specify his own token class. The token queue does not require
-any adaption, since it is implemented as a template. The context of usages
-of tokens, however, imposes that it complies to the following:
+For some tokens the token identifier is sufficient information for the parse.
+This is true for tokens of the kind ``OPERATOR_PLUS`` which tells that a plus
+sign was detected. Other token types might require some information about the
+actually found lexeme. A token containing an identifier might have to carry the
+lexeme that actually represents the identifier. A number token might carry the
+actual number that was found.  Queχ provides a default token class that allows
+the storage of a string object, an integer value. It is, however, conceivable
+that there is more complex information to be stored in the token, or that the
+information can be stored more efficiently. For this case, quex allows the
+definition of a customized token class.  The first subsection introduces a
+convienent feature of quex that allows to specify a token class without
+worries.  The second subsection explains the detailed requirements for a
+customized, user written token class. 
+
+Before continuing the reader should be aware, though, that there are two basic
+ways to treat token information:
+
+#. Interpreting the lexeme at the time of lexical analysis. 
+
+   This requires in a sophisticated token class which can carry all 
+   related information.
+
+#. Interpreting the lexeme at parsing time, when a syntax tree is build.
+
+   This requires only a very basic token class that carries only the 
+   lexeme itself. 
+
+The interpretation of the lexeme needs to be done anyway.  The first
+approach puts the weight on the sholders of the lexical analyzer, the second
+approach places the responsibility on the parser. For fine tuning 
+both approaches should be studies with respect to their memory print and cache
+locality. It might not be the first approach which is always preferable.
+
+The remaining framework of quex does not any adaptions to a customized token
+class. If the token class is designed according certain rules, then it fits
+smoothly in any generated engine.
+
+.. _sec-customized-token-class:
+
+Easy Customized Token Classes
+-----------------------------
+
+Quex has the ability to generate a customized token class that satisfies 
+all formal requirements automatically: In the code section ``token_type`` 
+a dedicated token type can be specified with a minimum amount of 
+information. The underlying model of a general token class is displayed
+in figure `Token Class Model <fig-token-class-model>`. The memory of
+token object consists of three regions:
+
+#. A region that contains *mandatory* information that each token requires, 
+   such as a token id, and (optionally) line and column numbers[#f1]_.
+
+   Quex provides a means to specify the concrete type of those mandatory 
+   members.
+
+#. A region that contains *distinct* members, i.e. members that appear
+   in each token object, but which are not mandatory. Each place in the
+   memory is associated with a specific type.
+
+   For distinct members, both, type and member name can be specified.
+
+#. A region of *union* members which is a chunk of memory which can 
+   be viewed differently, depending on the token id. This way, 
+   the *same* piece of memory can be associated with multiple
+   types.
+
+The following is a list of all possible fields in a ``token_type`` section. All
+fields are of the form ``keyword``, followed by ``{``, followed by content,
+followed by ``}``.
+
+.. data:: standard
+
+   .. code-block:: cpp
+
+        standard {
+            id            : unsigned;
+            line_number   : unsigned;
+            column_number : unsigned;
+        }
+
+.. data:: distinct
+
+   .. code-block:: cpp
+
+   distinct {
+       name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+       number_list :  std::vector<int>;
+   }
+
+.. data:: union
+
+   .. code-block:: cpp
+
+       union {
+           { 
+              mini_x : int8_t;
+              mini_y : int8_t;
+           }
+           { 
+              big_x  : int16_t;
+              big_y  : int16_t;
+           }
+           position  : uint16_t;
+       }
+
+.. constructor::
+
+
+   .. code-block:: cpp
+
+       constructor { std::cout << "Constructor\n"; }
+
+.. destructor::
+
+   .. code-block:: cpp
+
+       destructor { std::cout << "Destructor\n"; }
+
+.. copy::
+
+   .. code-block:: cpp
+
+       copy { 
+           std::cout << "Copy\n"; 
+           /* Copy core elements: id, line, and column number */
+           _id         = That._id;
+       #      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+       #      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+                  _line_n = That._line_n;
+       #      endif
+       #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+                         _column_n = That._column_n;
+       #      endif
+       #      endif
+
+           /* copy all members */
+           name        = That.name;
+           number_list = That.number_list;
+           /* plain content copy of the union content */
+           content     = That.content;
+       }
+
+Customized tokens can named and placed in a particular namespace using 
+
+.. data:: name = [namespace ... ::] token class name ';'
+
+   .. code-block:: cpp
+
+       name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
+
+In C++, when classes can be inherited they better provide a virtual destructor.
+If this is required the flag
+
+.. data:: inheritable ';'
+
+can be specified. 
+
+
+
+-- mention all used types in the ``header`` section, e.g. 'vector', 'iostream' ...
+-- there maybe should at least one member that can take a QUEX_TYPE_CHARACTER*
+-- default copy: plain copy of all members
+
+       std::cout << "Copy\n"; 
+       /* Copy core elements: id, line, and column number */
+       _id = That._id;
+#      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+       _line_n = That._line_n;
+#      endif
+#      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+       _column_n = That._column_n;
+#      endif
+       /* copy all members */
+       name        = That.name;
+       number_list = That.number_list;
+       /* plain content copy of the union content */
+       content     = That.content;
+
+-- token id, line, and column number should be copied
+
+    _id = That._id;
+#ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    _line_n = That._line_n;
+#   endif
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    _column_n = That._column_n;
+#   endif
+#endif
+
+.. _sec-customized-token-class-formal:
+
+Formal Requirements on Token Classes.
+-------------------------------------
 
     * The token class must be specified in namespace queχ.
 
@@ -95,6 +282,9 @@ of tokens, however, imposes that it complies to the following:
       
       .. cfunction:: QUEX_TYPE_TOKEN_ID   type_id()
 
+    * There must be a ``__copy(...)`` member function that copies the content
+      of the token.
+
 As long as these conventions are respected the user created token class will
 interoperate with the framework smoothly. The inner structure of the token
 class can be freely implemented according to the programmer's optimization
@@ -105,19 +295,7 @@ tells queχ the name of the file where this class is defined. As long as this
 options are not defined queχ will not consider user defined token classes and
 provide the standard token class.
 
-.. _sec-customized-token-class:
+.. rubric:: Footnotes
 
-Customized Token Classes
-------------------------
-
--- mention all used types in the ``header`` section, e.g. 'vector', 'iostream' ...
--- there maybe should at least one member that can take a QUEX_TYPE_CHARACTER*
--- default copy: plain copy of all members
-
-       std::cout << "Copy\n"; 
-       /* copy all members */
-       name        = That.name;
-       number_list = That.number_list;
-       /* plain content copy of the union content */
-       content     = That.content;
-
+.. [#f1] Section :ref:sec-token-stamping` discusses when line and column numbers 
+   are required inside the token object.

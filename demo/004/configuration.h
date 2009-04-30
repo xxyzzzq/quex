@@ -31,11 +31,11 @@
            using namespace quex;
 
 #   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
-#      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); quex::Token token; qlex.token = &token;
+#      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); register quex::Token token; qlex.token = &token;
 #      define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(); token_id = qlex.token->type_id();
 #      define BENCHMARK_SETTING_RESET          qlex._reset();
 #   else
-#      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); quex::Token token; // qlex.token = &token;
+#      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); register quex::Token token; // qlex.token = &token;
 #      define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(&token); token_id = token.type_id();
 #      define BENCHMARK_SETTING_RESET          qlex._reset();
 #   endif

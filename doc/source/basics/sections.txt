@@ -104,6 +104,12 @@ for the given section-name. The available sections are the following:
    Extensions to the lexical analyzer constructor. This is the place to initialize
    the additional members mentioned in the ``body`` section.
 
+A customized token type can easily be defined in a section called
+
+.. data:: token_type
+
+   Defines a customized token class, see :ref:`Easy Customized Token Classes <sec-customized-token-class>`.
+
 Quex supports the inclusion of other files or streams during analyzis. This
 is done by means of a include stack handler :ref:`Include Stack <sec-include-stack>`. It writes the
 relevant state information into a so called *memento* [#f2]_ when it dives

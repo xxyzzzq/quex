@@ -23,6 +23,7 @@ class $$TOKEN_TYPE$$ {
 public:
     $$TOKEN_TYPE$$();
     $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
+    void __copy(const $$TOKEN_CLASS$$& That);
     $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) 
     { __copy(That); return *this; }
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
@@ -58,8 +59,6 @@ $$QUICK_SETTERS$$
         void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
 #       endif
 #   endif
-    private:
-        void __copy(const $$TOKEN_CLASS$$& That);
 };
 
 inline
@@ -88,6 +87,14 @@ $$COPY$$
     /* If the user even misses to copy the token id, then there's
      * something seriously wrong.                                 */
     __quex_assert(this->_id == That._id);
+#ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    __quex_assert(_line_n == That._line_n);
+#   endif
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    __quex_assert(_column_n == That._column_n);
+#   endif
+#endif
 }
 
 $$NAMESPACE_CLOSE$$

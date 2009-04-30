@@ -63,12 +63,12 @@ namespace quex {
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
-            *result_p = *(QuexTokenQueue_pop(_token_queue));
+            result_p->__copy(*(QuexTokenQueue_pop(_token_queue)));
             return;  
         } 
         else if( _token_queue.remaining_repetitions_of_last_token_n ) {
             --(_token_queue.remaining_repetitions_of_last_token_n);
-            *result_p = *(QuexTokenQueue_back(_token_queue));
+            result_p->__copy(*(QuexTokenQueue_back(_token_queue)));
             return;
         }
 
@@ -81,7 +81,7 @@ namespace quex {
             QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
-        *result_p = *QuexTokenQueue_pop(_token_queue);
+        result_p->__copy(*QuexTokenQueue_pop(_token_queue));
 
         return;
     }

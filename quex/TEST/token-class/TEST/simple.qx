@@ -6,6 +6,11 @@ header {
 token_type {
    name = europa::deutschland::baden_wuertemberg::ispringen::MeinToken;
 
+   standard {
+        id            :    unsigned;
+        line_number   :    unsigned;
+        column_number :    unsigned;
+   }
    distinct {
        name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
        number_list :  std::vector<int>;
@@ -26,8 +31,17 @@ token_type {
    destructor  { std::cout << "Destructor\n"; }
    copy        { 
        std::cout << "Copy\n"; 
-       /* copy token id */
+       /* Copy core elements: id, line, and column number */
        _id         = That._id;
+#      ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#      ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+              _line_n = That._line_n;
+#      endif
+#      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+                     _column_n = That._column_n;
+#      endif
+#      endif
+
        /* copy all members */
        name        = That.name;
        number_list = That.number_list;

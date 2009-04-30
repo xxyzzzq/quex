@@ -73,7 +73,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
 {
     using namespace std;
     //quex::token*   TokenP;
-    int            token_id = TKN_TERMINATION;
+    register int     token_id = TKN_TERMINATION;
     //
     // -- repeat the experiment, so that it takes at least 20 seconds
     const clock_t  StartTime = clock();
