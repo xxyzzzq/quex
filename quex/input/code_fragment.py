@@ -189,7 +189,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
 
     # after 'send' the token queue is filled and one can safely return
     if TokenName.find(Setup.input_token_id_prefix) != 0:
-        error_msg("token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
+        error_msg("Token identifier does not begin with token prefix '%s'\n" % Setup.input_token_id_prefix + \
                   "found: '%s'" % TokenName, fh)
 
     # occasionally add token id automatically to database
@@ -206,8 +206,25 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                 TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
 
     tail = ArgListStr
-    if tail != "": tail = ", " + tail
-    return "self.send(%s%s);\n" % (TokenName, tail)
+    tail_field_list = tail.split(",")
+    explicit_member_names_f = False
+    for arg in tail_field_list:
+        if arg.find("=") != -1: explicit_member_names_f = True
+
+    if explicit_member_names_f:
+        member_value_pairs = map(lambda x: x.split("="), tail_field_list)
+        txt = "self.send(%s);\n" % token_id
+        txt = "token_p = self.current_token();\n"
+        for member, value in member_value_pairs:
+            if value == "":
+                error_msg("One explicit argument name mentioned requires all arguments to\n" + \
+                          "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
+                          % member, fh)
+            else:
+                txt += "token_p->set_%s(%s);\n" % (member, value)
+    else:
+        if tail != "": tail = ", " + tail
+        return "self.send(%s%s);\n" % (TokenName, tail)
 
 def __create_mode_transition_and_token_sender(fh, Command, ArgListStr):
     assert Command in ["GOTO", "GOSUB", "GOUP"]
