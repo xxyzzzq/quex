@@ -89,7 +89,7 @@ member function
 
 .. cfunction:: QUEX_TYPE_TOKEN*  token_object()
 
-The pointer to this object may be used to prepare the token object before sending
+The pointer to this object may be used to prepare the token object *before* sending
 it out. Modes can be switched with the ``<<``-operator, as shown in the example, or
 ``enter_mode``. For example
 

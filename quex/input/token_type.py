@@ -22,6 +22,9 @@ class TokenTypeDescriptor:
         if self.__file_name == "": return EngineName + "-token_class"
         else:                      return self.__file_name
 
+    def set_file_name(self, FileName):
+        self.__file_name = FileName
+
     def type_name_length_max(self):
         return max(self.distinct_members_type_name_length_max(),
                    self.union_members_type_name_length_max())

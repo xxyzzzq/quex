@@ -202,9 +202,11 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
             msg += "\nNote, that tokens in the token { ... } section are automatically prefixed."
         error_msg(msg, fh, DontExitF=True)
 
+        # Enter the implicit token id definition in the database
         lexer_mode.token_id_db[prefix_less_TokenName] = \
                 TokenInfo(prefix_less_TokenName, None, None, fh.name, get_current_line_info_number(fh)) 
 
+    # create the token sender
     tail = ArgListStr
     tail_field_list = tail.split(",")
     explicit_member_names_f = False
@@ -213,15 +215,18 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
 
     if explicit_member_names_f:
         member_value_pairs = map(lambda x: x.split("="), tail_field_list)
-        txt = "self.send(%s);\n" % token_id
-        txt = "token_p = self.current_token();\n"
+        txt = ""
         for member, value in member_value_pairs:
             if value == "":
                 error_msg("One explicit argument name mentioned requires all arguments to\n" + \
                           "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
                           % member, fh)
             else:
-                txt += "token_p->set_%s(%s);\n" % (member, value)
+                txt += "self.token_object()->set_%s(%s);\n" % (member.strip(), value.strip())
+
+        # Box the token, stamp it with an id and 'send' it
+        txt += "self.send(%s);\n" % TokenName
+        return txt
     else:
         if tail != "": tail = ", " + tail
         return "self.send(%s%s);\n" % (TokenName, tail)
