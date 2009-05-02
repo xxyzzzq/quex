@@ -6,6 +6,13 @@
 
 namespace quex { 
 
+    inline QUEX_TYPE_TOKEN*  
+    CLASS::token_object()
+    {
+        CLASS& self = *this;
+        return __QUEX_CURRENT_TOKEN_P;
+    }
+
     inline void   
     CLASS::send(const QUEX_TYPE_TOKEN& That) 
     {

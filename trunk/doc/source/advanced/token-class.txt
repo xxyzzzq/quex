@@ -274,6 +274,10 @@ does exactly the same as the previously mentioned one.
            new(&number_list) std::vector<int>(That.number_list);
        }
 
+The output filename of the generated token class can be specified via
+
+.. data:: file_name = name ';'
+
 The token class can named and placed in a particular namespace using 
 
 .. data:: name = [namespace ... ::] token class name ';'
