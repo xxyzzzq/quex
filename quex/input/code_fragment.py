@@ -214,6 +214,9 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
         if arg.find("=") != -1: explicit_member_names_f = True
 
     if explicit_member_names_f:
+        if lexer_mode.token_type_definition == None:
+            error_msg("Explicit name specifier in token sender only allowed in conjunction with\n" + \
+                      "customized token clases. Use section 'token_type'.\n", fh)
         member_value_pairs = map(lambda x: x.split("="), tail_field_list)
         txt = ""
         for member, value in member_value_pairs:
