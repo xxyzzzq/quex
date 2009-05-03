@@ -222,7 +222,9 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                           "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
                           % member, fh)
             else:
-                txt += "self.token_object()->set_%s(%s);\n" % (member.strip(), value.strip())
+                access = token_description.get_member_access(member.strip())
+                txt += "%s = %s;\n" % (access, value.strip())
+
 
         # Box the token, stamp it with an id and 'send' it
         txt += "self.send(%s);\n" % TokenName

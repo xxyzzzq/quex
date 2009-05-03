@@ -71,6 +71,11 @@ class TokenTypeDescriptor:
                 db[name] = [type_descr, "content." + name]
         return db
 
+    def get_member_access(self, MemberName):
+        assert db.has_key(MemberName)
+        return get_member_db()[MemberName][1]
+
+
     def __repr__(self):
         txt = ""
         if self.__file_name != "": 
