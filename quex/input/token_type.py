@@ -3,83 +3,43 @@ from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragmen
 from quex.input.code_fragment import __parse_normal as parse_normal_code_fragment
 
 
-class TokenTypeDescriptor:
-    def __init__(self):
-        self.__file_name           = ""
-        self.class_name            = "Token"
-        self.open_for_derivation_f = False
-        self.name_space            = ["quex"]
-        self.token_id_type      = CodeFragment("size_t")
-        self.column_number_type = CodeFragment("size_t")
-        self.line_number_type   = CodeFragment("size_t")
-        self.constructor        = CodeFragment("")
-        self.copy               = CodeFragment("")
-        self.destructor         = CodeFragment("")
-        self.distinct_db = {}
-        self.union_db    = {}
-
-    def get_file_name(self, EngineName):
-        if self.__file_name == "": return EngineName + "-token_class"
-        else:                      return self.__file_name
+class TokenTypeDescriptorCore:
+    """Object used during the generation of the TokenTypeDescriptor."""
+    def __init__(self, Core=None):
+        if Core == None:
+            self._file_name            = ""
+            self.class_name            = "Token"
+            self.open_for_derivation_f = False
+            self.name_space            = ["quex"]
+            self.token_id_type      = CodeFragment("size_t")
+            self.column_number_type = CodeFragment("size_t")
+            self.line_number_type   = CodeFragment("size_t")
+            self.constructor        = CodeFragment("")
+            self.copy               = CodeFragment("")
+            self.destructor         = CodeFragment("")
+            self.distinct_db = {}
+            self.union_db    = {}
+        else:
+            self._file_name            = Core._file_name
+            self.class_name            = Core.class_name
+            self.open_for_derivation_f = Core.open_for_derivation_f
+            self.name_space            = Core.name_space
+            self.token_id_type         = Core.token_id_type
+            self.column_number_type    = Core.column_number_type
+            self.line_number_type      = Core.line_number_type
+            self.constructor           = Core.constructor
+            self.copy                  = Core.copy
+            self.destructor            = Core.destructor
+            self.distinct_db           = Core.distinct_db
+            self.union_db              = Core.union_db
 
     def set_file_name(self, FileName):
-        self.__file_name = FileName
-
-    def type_name_length_max(self):
-        return max(self.distinct_members_type_name_length_max(),
-                   self.union_members_type_name_length_max())
-
-    def variable_name_length_max(self):
-        return max(self.distinct_members_variable_name_length_max(),
-                   self.union_members_variable_name_length_max())
-
-    def distinct_members_type_name_length_max(self):
-        return max([0] + map(lambda x: len(x.get_pure_code()), self.distinct_db.values()))
-
-    def distinct_members_variable_name_length_max(self):
-        return max([0] + map(lambda x: len(x), self.distinct_db.keys()))
-
-    def union_members_type_name_length_max(self):
-        max_length = 0
-        for type_descr in self.union_db.values():
-            if type(type_descr) == dict:
-                length = 4 + max([0] + map(lambda x: len(x.get_pure_code()), type_descr.values()))
-            else:
-                length = len(type_descr.get_pure_code())
-            if length > max_length: max_length = length
-        return max_length
-
-    def union_members_variable_name_length_max(self):
-        max_length = 0
-        for name, type_descr in self.union_db.items():
-            if type(type_descr) == dict:
-                length = 4 + max([0] + map(lambda x: len(x), type_descr.keys()))
-            else:
-                length = len(name)
-            if length > max_length: max_length = length
-        return max_length
-
-    def get_member_db(self):
-        db = {}
-        for name, type_code in self.distinct_db.items():
-            db[name] = [type_code, name]
-        for name, type_descr in self.union_db.items():
-            if type(type_descr) == dict:
-                for sub_name, sub_type in type_descr.items():
-                    db[sub_name] = [sub_type, "content." + name + "." + sub_name]
-            else:
-                db[name] = [type_descr, "content." + name]
-        return db
-
-    def get_member_access(self, MemberName):
-        assert db.has_key(MemberName)
-        return get_member_db()[MemberName][1]
-
+        self._file_name = FileName
 
     def __repr__(self):
         txt = ""
-        if self.__file_name != "": 
-            txt += "file name: '%s'\n" % self.__file_name
+        if self._file_name != "": 
+            txt += "file name: '%s'\n" % self._file_name
         txt += "class:     '%s'\n" % self.class_name
         if self.open_for_derivation_f: 
             txt += "           (with virtual destructor)\n"
@@ -132,6 +92,88 @@ class TokenTypeDescriptor:
 
         return txt
 
+
+class TokenTypeDescriptor(TokenTypeDescriptorCore):
+    """The final product."""
+    def __init__(self, Core):
+        assert isinstance(Core, TokenTypeDescriptorCore)
+        TokenTypeDescriptorCore.__init__(self, Core)
+
+        # (*) Max length of variables etc. for pretty printing
+        max_length = 0
+        for type_descr in self.union_db.values():
+            if type(type_descr) == dict:
+                length = 4 + max([0] + map(lambda x: len(x.get_pure_code()), type_descr.values()))
+            else:
+                length = len(type_descr.get_pure_code())
+            if length > max_length: max_length = length
+        self.__union_members_type_name_length_max = max_length
+
+        max_length = 0
+        for name, type_descr in self.union_db.items():
+            if type(type_descr) == dict:
+                length = 4 + max([0] + map(lambda x: len(x), type_descr.keys()))
+            else:
+                length = len(name)
+            if length > max_length: max_length = length
+        self.__union_members_variable_name_length_max = max_length
+
+        # 
+        self.__distinct_members_type_name_length_max = \
+               max([0] + map(lambda x: len(x.get_pure_code()), self.distinct_db.values()))
+        self.__distinct_members_variable_name_length_max = \
+               max([0] + map(lambda x: len(x), self.distinct_db.keys()))
+        self.__type_name_length_max = \
+               max(self.__distinct_members_type_name_length_max,
+                   self.__union_members_type_name_length_max)
+        self.__variable_name_length_max = \
+               max(self.__distinct_members_variable_name_length_max,
+                   self.__union_members_variable_name_length_max)
+
+        # (*) Member DB: [member name] --> [type info, access info]
+        db = {}
+        for name, type_code in self.distinct_db.items():
+            db[name] = [type_code, name]
+        for name, type_descr in self.union_db.items():
+            if type(type_descr) == dict:
+                for sub_name, sub_type in type_descr.items():
+                    db[sub_name] = [sub_type, "content." + name + "." + sub_name]
+            else:
+                db[name] = [type_descr, "content." + name]
+        self.__member_db = db
+
+    def get_file_name(self):
+        return self._file_name
+
+    def type_name_length_max(self):
+        return self.__type_name_length_max
+
+    def type_name_length_max(self):
+        return self.__type_name_length_max
+
+    def variable_name_length_max(self):
+        return self.__variable_name_length_max
+
+    def distinct_members_type_name_length_max(self):
+        return self.__distinct_members_type_name_length_max
+
+    def distinct_members_variable_name_length_max(self):
+        return self.__distinct_members_variable_name_length_max
+
+    def union_members_type_name_length_max(self):
+        return self.__union_members_type_name_length_max
+
+    def union_members_variable_name_length_max(self):
+        return self.__union_members_variable_name_length_max
+
+    def get_member_db(self):
+        return self.__member_db
+
+    def get_member_access(self, MemberName):
+        assert self.__member_db.has_key(MemberName)
+        return self.__member_db[MemberName][1]
+
+
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
 
 __data_name_index_counter = -1
@@ -141,7 +183,8 @@ def data_name_index_counter_get():
     return __data_name_index_counter
 
 def parse(fh):
-    descriptor = TokenTypeDescriptor()
+       
+    descriptor = TokenTypeDescriptorCore()
 
     if not check(fh, "{"):
         error_msg("Missing opening '{' at begin of token_type definition", fh)
@@ -163,7 +206,7 @@ def parse(fh):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.", fh);
 
-    return descriptor
+    return TokenTypeDescriptor(descriptor)
 
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
