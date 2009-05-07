@@ -225,7 +225,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                           "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
                           % member, fh)
             else:
-                access = token_description.get_member_access(member.strip())
+                access = lexer_mode.token_type_definition.get_member_access(member.strip())
                 txt += "%s = %s;\n" % (access, value.strip())
 
 

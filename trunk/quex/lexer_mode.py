@@ -517,6 +517,8 @@ token_type_definition = None
 def get_token_class_file_name(Setup):
     file_name = Setup.token_class_file
     if token_type_definition != None:
-        file_name = token_type_definition.get_file_name(Setup.output_engine_name)
+        file_name = token_type_definition.get_file_name()
+        if file_name == "":
+            file_name = Setup.output_engine_name + "-token-class"
     return file_name
 
