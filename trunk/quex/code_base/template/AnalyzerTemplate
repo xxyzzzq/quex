@@ -612,7 +612,6 @@ $$CONSTRUCTOR_EXTENSTION$$
     template<class InputHandleT> inline $$LEXER_CLASS_NAME$$Memento*
     CLASS::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
-        CLASS& self = *this;
         $$LEXER_CLASS_NAME$$Memento* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
 
         /* Use placement 'new' for explicit call of constructor */
@@ -634,7 +633,6 @@ $$MEMENTO_EXTENSIONS_PACK$$
     inline void
     CLASS::memento_unpack($$LEXER_CLASS_NAME$$Memento* memento)
     {
-        CLASS& self = *this;
         self._parent_memento    = memento->parent;
         *((QuexAnalyser*)this)  = memento->analyser_core;
         self.counter            = memento->counter;

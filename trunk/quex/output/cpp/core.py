@@ -10,15 +10,18 @@ from quex.frs_py.file_in  import open_file_or_die, \
 
 import quex.lexer_mode              as lexer_mode
 import quex.output.cpp.mode_classes as mode_classes
+from   quex.input.setup             import setup as Setup
+
+LanguageDB = Setup.language_db
 
 
-def do(Modes, Setup):
+def do(Modes):
 
-    write_engine_header(Modes, Setup)
+    write_engine_header(Modes)
 
-    write_mode_class_implementation(Modes, Setup)
+    write_mode_class_implementation(Modes)
 
-def write_engine_header(Modes, Setup):
+def write_engine_header(Modes):
 
     QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/template/AnalyzerTemplate").replace("//","/")
@@ -174,7 +177,7 @@ def write_token_class_declaration():
     if lexer_mode.token_type_definition == None:
         txt += "namespace quex {\n"
         txt += "    class Token;\n"
-        txt += "};\n"
+        txt += "}\n"
     else: 
         TCD = lexer_mode.token_type_definition
         txt += LanguageDB["$namespace-open"](TCD.name_space)
@@ -182,7 +185,7 @@ def write_token_class_declaration():
         txt += LanguageDB["$namespace-close"](TCD.name_space)
     return txt
 
-def write_mode_class_implementation(Modes, Setup):
+def write_mode_class_implementation(Modes):
     LexerClassName              = Setup.output_engine_name
     TokenClassName              = Setup.input_token_class_name
     OutputFilestem              = Setup.output_file_stem

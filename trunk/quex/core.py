@@ -42,7 +42,7 @@ def do():
     # (2) Implement the 'quex' core class from a template
     #
     # -- do the coding of the class framework
-    quex_class_out.do(mode_db, Setup)
+    quex_class_out.do(mode_db)
 
     # (3) Generate the token ids
     token_id_maker.do(Setup) 
