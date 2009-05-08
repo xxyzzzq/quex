@@ -40,7 +40,7 @@ token_type {
               _line_n = That._line_n;
 #      endif
 #      ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                     _column_n = That._column_n;
+              _column_n = That._column_n;
 #      endif
 #      endif
 

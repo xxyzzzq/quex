@@ -1,14 +1,14 @@
-<test-database execution-time-sec="0.00" date="Fri May  8 05:27:02 2009">
+<test-database execution-time-sec="0.01" date="Fri May  8 07:16:21 2009">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.00"> 
-        <application file-name="simple-queue.exe" info-request-time="1241753219L"/>
+        <application file-name="simple-queue.exe" info-request-time="1241759778L"/>
         <make-procedure success="True" />
         <choice-list number="1">
            <choice name="" result="OK" time-sec="0.00" crc="1973324921"/>
         </choice-list>
     </test>
     <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1241753222L"/>
+        <application file-name="simple.exe" info-request-time="1241759781L"/>
         <make-procedure success="True" />
         <choice-list number="1">
            <choice name="" result="OK" time-sec="0.00" crc="1973324921"/>
