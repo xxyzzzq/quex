@@ -24,6 +24,8 @@ public:
     $$TOKEN_TYPE$$();
     $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
     void __copy(const $$TOKEN_CLASS$$& That);
+    /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
+     *                BETTER USE __copy(That)                                */
     $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) 
     { __copy(That); return *this; }
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
@@ -69,8 +71,8 @@ $$CONSTRUCTOR$$
 inline
 $$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
 {
-$$CONSTRUCTOR$$
     __copy(That);
+$$CONSTRUCTOR$$
 }
 
 inline

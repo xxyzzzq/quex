@@ -83,7 +83,7 @@ $$TOKEN_NAMES$$
         *       used, this function needs to be redefined.                  */
        switch( TokenID ) {
        default: {
-           std::snprintf(error_string, 63, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+           std::sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
            return error_string;
        }
        case __QUEX_TOKEN_ID_TERMINATION:   return termination_string;
