@@ -28,7 +28,6 @@ public:
     { __copy(That); return *this; }
     $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
 
-private:
 $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
 public:

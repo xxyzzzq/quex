@@ -157,6 +157,7 @@ def write_engine_header(Modes, Setup):
                 ["$$QUEX_TEMPLATE_DIR$$",                Setup.QUEX_TEMPLATE_DB_DIR],
                 ["$$QUEX_VERSION$$",                     QuexVersionID],
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
+                ["$$TOKEN_CLASS_DECLARATION$$",          write_token_class_declaration()],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
                 ["$$TOKEN_QUEUE_SIZE$$",                 repr(Setup.token_queue_size)],
                 ["$$TOKEN_QUEUE_SAFETY_BORDER$$",        repr(Setup.token_queue_safety_border)],
@@ -167,6 +168,19 @@ def write_engine_header(Modes, Setup):
              ])
 
     write_safely_and_close(QuexClassHeaderFileOutput, txt)
+
+def write_token_class_declaration():
+    txt = ""
+    if lexer_mode.token_type_definition == None:
+        txt += "namespace quex {\n"
+        txt += "    class Token;\n"
+        txt += "};\n"
+    else: 
+        TCD = lexer_mode.token_type_definition
+        txt += LanguageDB["$namespace-open"](TCD.name_space)
+        txt += "class %s;\n" % TCD.class_name
+        txt += LanguageDB["$namespace-close"](TCD.name_space)
+    return txt
 
 def write_mode_class_implementation(Modes, Setup):
     LexerClassName              = Setup.output_engine_name
