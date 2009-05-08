@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Thu Apr 23 07:51:56 2009
+DATE:  Sat May  9 00:41:05 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Thu Apr 23 07:54:22 2009
+DATE:  Sat May  9 00:49:31 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -286,7 +286,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Thu Apr 23 07:54:22 2009
+DATE:  Sat May  9 00:22:29 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/TEST/event-handling/TEST
-DATE:  Thu Apr 23 07:54:27 2009
+DATE:  Sat May  9 00:22:35 2009
 TITLE: Event Handlers
 
 -------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ TITLE: Event Handlers
 
 ===============================================================================
 ENTER: quex/TEST/include-stack/TEST
-DATE:  Thu Apr 23 07:54:36 2009
+DATE:  Sat May  9 00:22:42 2009
 TITLE: Include Stack Handling
 
 -------------------------------------------------------------------------------
@@ -374,8 +374,26 @@ TITLE: Include Stack Handling
                                                   
 
 ===============================================================================
+ENTER: quex/TEST/token-class/TEST
+DATE:  Sat May  9 00:22:48 2009
+TITLE: Customized Token Class
+
+-------------------------------------------------------------------------------
+ -- With token policy 'queue'.
+        simple.exe ......................................................[OK]
+ -- With token policy 'users_token'.
+        simple-queue.exe ................................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
+
+===============================================================================
 ENTER: quex/TEST/token-policies/TEST
-DATE:  Thu Apr 23 07:54:49 2009
+DATE:  Sat May  9 00:23:00 2009
 TITLE: Tests related to token queues
 
 -------------------------------------------------------------------------------
@@ -414,7 +432,7 @@ TITLE: Tests related to token queues
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Thu Apr 23 07:54:50 2009
+DATE:  Sat May  9 00:23:01 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -440,7 +458,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Thu Apr 23 07:54:55 2009
+DATE:  Sat May  9 00:23:09 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -504,7 +522,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Thu Apr 23 07:55:02 2009
+DATE:  Sat May  9 00:23:17 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -580,7 +598,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Thu Apr 23 07:55:09 2009
+DATE:  Sat May  9 00:23:26 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -656,7 +674,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Thu Apr 23 07:55:23 2009
+DATE:  Sat May  9 00:23:43 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -751,7 +769,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Thu Apr 23 07:55:30 2009
+DATE:  Sat May  9 00:51:53 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -820,7 +838,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Thu Apr 23 07:55:31 2009
+DATE:  Sat May  9 00:23:53 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -854,7 +872,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Thu Apr 23 07:57:43 2009
+DATE:  Sat May  9 00:26:21 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -1034,7 +1052,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Thu Apr 23 07:57:48 2009
+DATE:  Sat May  9 00:26:27 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -1097,7 +1115,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Thu Apr 23 07:57:53 2009
+DATE:  Sat May  9 00:26:34 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1145,11 +1163,6 @@ TITLE: State Machine Operations
     The Philosophical Cut
         test-ambiguous_post_condition-philosophical_cut.py ..............[OK]
 
- -- Ranking of state machines:
-
-    Pattern priorization
-        OUTDATED-test-ranking.py ..............................[NO GOOD FILE]
-
  -- StateMachine:
 
     Cloning
@@ -1180,8 +1193,6 @@ TITLE: State Machine Operations
         test-StateMachine-trace-origin-clone.py .........................[OK]
     Hopcroft optimization (minimize state set)
         test-StateMachine-trace-origin-hopcroft-optimization.py .........[OK]
-    Inverse
-        OUTDATED-test-StateMachine-trace-origin-inverse.py ....[NO GOOD FILE]
     NFA to DFA (subset construction)
         test-StateMachine-trace-origin-create-DFA.py ....................[OK]
     NFA to DFA (subset construction) II
@@ -1203,7 +1214,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Thu Apr 23 07:57:54 2009
+DATE:  Sat May  9 00:26:34 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1231,7 +1242,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Thu Apr 23 07:58:14 2009
+DATE:  Sat May  9 00:26:59 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1258,6 +1269,21 @@ TITLE: Character Set Queries
                         Twice ...........................................[OK]
                         Error ...........................................[OK]
                         Forbidden-2 .....................................[OK]
+                        Error-2 .........................................[OK]
+    Class Name and Namespace
+        token_type-5.py 0 ...............................................[OK]
+                        1 ...............................................[OK]
+                        2 ...............................................[OK]
+                        3 ...............................................[OK]
+                        4 ...............................................[OK]
+                        5 ...............................................[OK]
+                        6 ...............................................[OK]
+    Constructor, Copy, Destructor
+        token_type-4.py Constructor .....................................[OK]
+                        Constructor-1 ...................................[OK]
+                        Constructor-2 ...................................[OK]
+                        Destructor ......................................[OK]
+                        Copy ............................................[OK]
     Distinct Members
         token_type-2.py None ............................................[OK]
                         One .............................................[OK]
@@ -1284,8 +1310,24 @@ TITLE: Character Set Queries
                                                   
 
 ===============================================================================
+ENTER: quex/output/cpp/TEST
+DATE:  Sat May  9 00:26:59 2009
+TITLE: Basic Code Writing Functionality
+
+-------------------------------------------------------------------------------
+ -- Token Class Template
+        test-token_class.py .............................................[OK]
+-------------------------------------------------------------------------------
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
+
+===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Thu Apr 23 07:58:16 2009
+DATE:  Sat May  9 00:27:01 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1314,6 +1356,7 @@ demo/TEST ...............................................................[OK]
 quex/TEST ...............................................................[OK]
 quex/TEST/event-handling/TEST ...........................................[OK]
 quex/TEST/include-stack/TEST ............................................[OK]
+quex/TEST/token-class/TEST ..............................................[OK]
 quex/TEST/token-policies/TEST ...........................................[OK]
 quex/code_base/TEST .....................................................[OK]
 quex/code_base/buffer/TEST ..............................................[OK]
@@ -1327,5 +1370,6 @@ quex/core_engine/regular_expression/TEST ................................[OK]
 quex/core_engine/state_machine/TEST .....................................[OK]
 quex/frs_py/TEST ........................................................[OK]
 quex/input/TEST .........................................................[OK]
+quex/output/cpp/TEST ....................................................[OK]
 quex/output/graphviz/TEST ...............................................[OK]
 ===============================================================================

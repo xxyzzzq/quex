@@ -37,7 +37,8 @@ int
 main(int  argc, char** argv)
 {
     my_tester                y;
-    CounterWithIndentation   x(&y);
+    CounterWithIndentation   x;
+    x._the_lexer = &y;
     y.counter = &x;
     x._line_number_at_end = 1;
         

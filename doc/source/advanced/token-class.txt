@@ -299,11 +299,32 @@ objects can be specified via three code sections.
            new(&number_list) std::vector<int>(That.number_list);
        }
 
-The output filename of the generated token class can be specified via
+Additionally, content may be added to the class' body using the following
+code section:
+
+.. data:: body
+
+   This allows to add member functions, friend declarations, etc. being added
+   the token class. The content of this section is pasted as-is into the
+   class body. Example:
+
+   .. code-block:: cpp
+
+      body {
+          void    register();
+          void    de_register();
+      private:
+          friend  class MyParser;
+      }
+
+The token class is written into a file that can be specified via
 
 .. data:: file_name = name ';'
 
-The token class can be named and placed in a particular namespace using 
+
+If no file name is specified the name is generated as engine name +
+``"-token-class"``. The name of the token class and its namespace can be
+specified via 
 
 .. data:: name = [namespace ... ::] token class name ';'
 

@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 def test(Tag, Txt):
-    descr = TokenTypeDescriptor()
+    descr = TokenTypeDescriptorCore()
     sh = StringIO(Tag + Txt)
     sh.name = "a string"
     print "-----------------------------"
@@ -23,13 +23,11 @@ def test(Tag, Txt):
     print 
     print "OUT:"
     print 
-    parse_section(sh, descr, [])
     try:
-        pass
+        parse_section(sh, descr, [])
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
-        pass
-    print descr
+    print TokenTypeDescriptor(descr)
 
 
 if   "Constructor" in sys.argv:

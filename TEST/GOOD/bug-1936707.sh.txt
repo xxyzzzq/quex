@@ -7,5 +7,6 @@ command line: Graphviz is not installed or does not work propperly.
 command line: Please, visit http://www.graphviz.org to download the software.
 
 (3) Run with missing command line argument
-command line: Option '--plot' must be followed by a graphic format specifier (bmp, svg, jpg, ...)
+command line: Option '--plot'
+command line: not followed by anything.
 
