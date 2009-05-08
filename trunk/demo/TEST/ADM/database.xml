@@ -1,23 +1,23 @@
-<test-database execution-time-sec="25.12" date="Fri May  8 07:46:07 2009">
+<test-database execution-time-sec="11.46" date="Sat May  9 00:49:31 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
-        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="15.66"> 
+        <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="3.10"> 
             <application file-name="other-compilers-sun.sh" info-request-time="1237805529L"/>
             <choice-list number="6">
-               <choice name="000" result="OK" time-sec="2.11" crc="-10986171"/>
-               <choice name="001" result="OK" time-sec="2.30" crc="-1704816547"/>
-               <choice name="002" result="OK" time-sec="2.84" crc="-212896739"/>
-               <choice name="003" result="OK" time-sec="4.02" crc="-1583256978"/>
-               <choice name="005" result="OK" time-sec="2.13" crc="-702642080"/>
-               <choice name="006" result="OK" time-sec="2.27" crc="-1743718636"/>
+               <choice name="000" result="OK" time-sec="0.00" crc="-10986171"/>
+               <choice name="001" result="OK" time-sec="0.00" crc="-1704816547"/>
+               <choice name="002" result="OK" time-sec="3.10" crc="-212896739"/>
+               <choice name="003" result="OK" time-sec="0.00" crc="-1583256978"/>
+               <choice name="005" result="OK" time-sec="0.00" crc="-702642080"/>
+               <choice name="006" result="OK" time-sec="0.00" crc="-1743718636"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" make-required="True" time-sum-sec="0.00"> 
+        <test title="Intel's icpc" make-required="True" time-sum-sec="2.62"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1237805529L"/>
             <choice-list number="6">
                <choice name="000" result="OK" time-sec="0.00" crc="489948922"/>
                <choice name="001" result="OK" time-sec="0.00" crc="-1613846080"/>
-               <choice name="002" result="OK" time-sec="0.00" crc="1894295425"/>
+               <choice name="002" result="OK" time-sec="2.62" crc="1894295425"/>
                <choice name="003" result="OK" time-sec="0.00" crc="-1136246422"/>
                <choice name="005" result="OK" time-sec="0.00" crc="-1393780127"/>
                <choice name="006" result="OK" time-sec="0.00" crc="1476464169"/>
@@ -25,11 +25,11 @@
         </test>
     </group>
     <group name="demo/000">
-        <test title="Single Mode Example" make-required="True" time-sum-sec="4.26"> 
+        <test title="Single Mode Example" make-required="True" time-sum-sec="0.00"> 
             <application file-name="000.sh" info-request-time="1237805529L"/>
             <choice-list number="2">
-               <choice name="NDEBUG" result="OK" time-sec="2.10" crc="-1674132255"/>
-               <choice name="DEBUG" result="OK" time-sec="2.16" crc="-1134124828"/>
+               <choice name="NDEBUG" result="OK" time-sec="0.00" crc="-1674132255"/>
+               <choice name="DEBUG" result="OK" time-sec="0.00" crc="-1134124828"/>
             </choice-list>
         </test>
     </group>
@@ -43,11 +43,11 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="0.00"> 
+        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="5.74"> 
             <application file-name="002.sh" info-request-time="1237805529L"/>
             <choice-list number="2">
-               <choice name="NDEBUG" result="OK" time-sec="0.00" crc="-1787106835"/>
-               <choice name="DEBUG" result="OK" time-sec="0.00" crc="-1787106835"/>
+               <choice name="NDEBUG" result="OK" time-sec="2.78" crc="-1787106835"/>
+               <choice name="DEBUG" result="OK" time-sec="2.96" crc="-1787106835"/>
             </choice-list>
         </test>
     </group>
@@ -120,11 +120,11 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Direct Buffer Access (8Bit and WChar Strings)" make-required="True" time-sum-sec="5.19"> 
+        <test title="Direct Buffer Access (8Bit and WChar Strings)" make-required="True" time-sum-sec="0.00"> 
             <application file-name="009.sh" info-request-time="1237805529L"/>
             <choice-list number="2">
-               <choice name="lexer" result="OK" time-sec="2.71" crc="13704092"/>
-               <choice name="wlexer" result="OK" time-sec="2.49" crc="13704092"/>
+               <choice name="lexer" result="OK" time-sec="0.00" crc="13704092"/>
+               <choice name="wlexer" result="OK" time-sec="0.00" crc="13704092"/>
             </choice-list>
         </test>
     </group>

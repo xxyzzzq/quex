@@ -19,15 +19,16 @@ namespace quex {
 //       last end, such as _line_number_at_begin = _line_number_at_end.
 //       This has to happen outside these functions.
 inline 
-CounterWithIndentation::CounterWithIndentation(CLASS* TheLexer)
-    : _the_lexer(TheLexer)
-{ init(); }
+CounterWithIndentation::CounterWithIndentation()
+    : _the_lexer((CLASS*)0x0)
+{ 
+    init();
+}
 
 inline 
 CounterWithIndentation::CounterWithIndentation(const CounterWithIndentation& That)
     : _the_lexer(That._the_lexer)
 { 
-
     _indentation                 = That._indentation;
     _indentation_count_enabled_f = That._indentation_count_enabled_f;
     _indentation_event_enabled_f = That._indentation_event_enabled_f;

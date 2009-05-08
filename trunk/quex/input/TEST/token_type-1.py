@@ -16,7 +16,7 @@ if "--hwut-info" in sys.argv:
 OptionList = ["id", "column_number", "line_number"]
 
 def test(Txt):
-    descr = TokenTypeDescriptor()
+    descr = TokenTypeDescriptorCore()
     sh = StringIO("standard " + Txt)
     sh.name = "a string"
     print "-----------------------------"
@@ -25,13 +25,13 @@ def test(Txt):
     print 
     print "OUT:"
     print 
-    parse_section(sh, descr, [])
     try:
-        pass
+        parse_section(sh, descr, [])
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
         pass
-    print descr
+
+    print TokenTypeDescriptor(descr)
 
 
 if "One" in sys.argv:

@@ -39,12 +39,6 @@ CLASS::CLASS()
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    , accumulator(this)
-#   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , counter(this)
-#   endif
 {
     CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0);
 }
@@ -58,12 +52,6 @@ CLASS::CLASS(const std::string&       Filename,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    , accumulator(this)
-#   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , counter(this)
-#   endif
 {
     QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
     // Buffer: Size = (see macro def.), Fallback = 10 Characters
@@ -87,12 +75,6 @@ CLASS::CLASS(std::istream*            p_input_stream,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    , accumulator(this)
-#   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , counter(this)
-#   endif
 {
     QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
@@ -108,12 +90,6 @@ CLASS::CLASS(std::wistream*           p_input_stream,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    , accumulator(this)
-#   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , counter(this)
-#   endif
 {
     QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
@@ -130,12 +106,6 @@ CLASS::CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream,
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    , accumulator(this)
-#   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , counter(this)
-#   endif
 {
     QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
@@ -150,12 +120,6 @@ CLASS::CLASS(std::FILE* fh,
 : 
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    , accumulator(this)
-#   endif
-#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    , counter(this)
-#   endif
 {
     QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
     if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");

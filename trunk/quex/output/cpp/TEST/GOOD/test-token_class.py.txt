@@ -28,6 +28,8 @@ public:
     MeinToken();
     MeinToken(const MeinToken& That);
     void __copy(const MeinToken& That);
+    /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
+     *                BETTER USE __copy(That)                                */
     MeinToken operator=(const MeinToken& That) 
     { __copy(That); return *this; }
     virtual ~MeinToken();
@@ -140,6 +142,8 @@ public:
         void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
 #       endif
 #   endif
+    public:
+
 };
 
 inline
@@ -158,6 +162,7 @@ MeinToken::MeinToken()
 inline
 MeinToken::MeinToken(const MeinToken& That)
 {
+    __copy(That);
 
 #line 20 "a string"
 
@@ -166,7 +171,6 @@ MeinToken::MeinToken(const MeinToken& That)
 
 /* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */
 
-    __copy(That);
 }
 
 inline

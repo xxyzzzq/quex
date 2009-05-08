@@ -560,6 +560,12 @@ $$CLASS_BODY_EXTENSION$$
         token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #       endif
 
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        accumulator._the_lexer = this;
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        counter._the_lexer = this;
+#       endif
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN

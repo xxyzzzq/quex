@@ -196,7 +196,7 @@ const int LEX_ID_ONE_AND_ONLY = 1;
 
 namespace quex {
     class Token;
-};
+}
 
 
 // START: User defined header content. 
@@ -543,6 +543,12 @@ namespace quex {
         token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #       endif
 
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        accumulator._the_lexer = this;
+#       endif
+#       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+        counter._the_lexer = this;
+#       endif
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
@@ -609,7 +615,6 @@ namespace quex {
     template<class InputHandleT> inline SimpleMemento*
     CLASS::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
-        CLASS& self = *this;
         SimpleMemento* memento = MemoryManager_SimpleMemento_allocate();
 
         /* Use placement 'new' for explicit call of constructor */
@@ -631,7 +636,6 @@ namespace quex {
     inline void
     CLASS::memento_unpack(SimpleMemento* memento)
     {
-        CLASS& self = *this;
         self._parent_memento    = memento->parent;
         *((QuexAnalyser*)this)  = memento->analyser_core;
         self.counter            = memento->counter;
@@ -3152,7 +3156,7 @@ namespace quex {
         *       used, this function needs to be redefined.                  */
        switch( TokenID ) {
        default: {
-           std::snprintf(error_string, 63, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+           std::sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
            return error_string;
        }
        case __QUEX_TOKEN_ID_TERMINATION:   return termination_string;

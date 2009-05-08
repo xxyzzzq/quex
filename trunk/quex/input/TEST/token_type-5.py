@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
     sys.exit(0)
 
 def test(Txt):
-    descr = TokenTypeDescriptor()
+    descr = TokenTypeDescriptorCore()
     txt = "{" + Txt + "}"
     sh = StringIO(txt)
     sh.name = "a string"
@@ -24,13 +24,11 @@ def test(Txt):
     print 
     print "OUT:"
     print 
-    descr = parse(sh)
     try:
-        pass
+        descr = parse(sh)
     except Exception, inst:
         print "Exception Caught: " + inst.__class__.__name__ 
-        pass
-    print descr
+    print TokenTypeDescriptor(descr)
 
 
 arg = sys.argv[1]
