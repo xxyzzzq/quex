@@ -27,8 +27,9 @@ main(int argc, char** argv)
     //     if no command line argument is specified user file 'example.txt'
     quex::Simple     qlex(argc == 1 ? "example.txt" : argv[1]);
 
-    // (*) print the version 
-    // cout << qlex->version() << endl << endl;
+
+    // (*) Access the '__nonsense__' member to ensure it has been generated
+    token.__nonsense__ = 0;
 
     cout << "[START]\n";
 

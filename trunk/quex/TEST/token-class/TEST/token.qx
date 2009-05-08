@@ -31,6 +31,7 @@ token_type {
    inheritable;
    constructor { std::cout << "Constructor\n"; }
    destructor  { std::cout << "Destructor\n"; }
+   body        { int __nonsense__; }
    copy        { 
        std::cout << "Copy\n"; 
        /* Copy core elements: id, line, and column number */
