@@ -37,16 +37,30 @@ def do(argv):
         # with a description list.
         if type(info) != list: continue
 
-        if info[1]   == LIST:
-            the_list = command_line.nominus_followers(info[0])
-            if setup.__dict__.has_key(variable_name):
-                setup.__dict__[variable_name].extend(the_list)        
-            else:
-                setup.__dict__[variable_name] = the_list
-        elif info[1] == FLAG:
+        if info[1] == FLAG:
             setup.__dict__[variable_name] = command_line.search(info[0])        
-        else:
-            setup.__dict__[variable_name] = command_line.follow(info[1], info[0])
+
+        elif info[1] == LIST:
+            if not command_line.search(info[0]):
+                setup.__dict__[variable_name] = []
+            else:
+                the_list = command_line.nominus_followers(info[0])
+                if the_list == []:
+                    error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
+
+                if setup.__dict__.has_key(variable_name):
+                    setup.__dict__[variable_name].extend(the_list)        
+                else:
+                    setup.__dict__[variable_name] = the_list
+
+        elif command_line.search(info[0]):
+            if not command_line.search(info[0]):
+                setup.__dict__[variable_name] = info[1]
+            else:
+                value = command_line.follow("--EMPTY--", info[0])
+                if value == "--EMPTY--":
+                    error_msg("Option %s\nnot followed by anything." % repr(info[0])[1:-1])
+                setup.__dict__[variable_name] = value
 
     setup.QUEX_VERSION          = QUEX_VERSION
     setup.QUEX_INSTALLATION_DIR = QUEX_INSTALLATION_DIR
@@ -83,11 +97,6 @@ def do(argv):
         #
         parse_token_id_file(setup.input_foreign_token_id_file, setup.input_token_id_prefix, 
                             CommentDelimiterList, IncludeRE)
-
-    # (*) Default values
-    #     (Please, do not change this, otherwise no 'empty' options can be detected.)
-    if setup.token_class_file == "": 
-        setup.token_class_file = SETUP_INFO["token_class_file"][2]
 
     # (*) return setup ___________________________________________________________________
     return
@@ -227,7 +236,6 @@ def validate(setup, command_line, argv):
     elif setup.token_policy in ["mini_queue", "users_mini_queue"]:
         error_msg("Token policy '%s' not yet supported." % setup.token_policy)
 
-
 def __check_file_name(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     CommandLineOption = SETUP_INFO[Candidate][0]
@@ -238,12 +246,13 @@ def __check_file_name(setup, Candidate, Name):
                 error_msg("Quex refuses to work with file names that start with '-' (minus).\n"  + \
                           "Received '%s' for %s (%s)" % (value, name, repr(CommandLineOption)[1:-1]))
             if os.access(name, os.F_OK) == False:
-                error_msg("File %s cannot be found.\n" % name)
+                error_msg("File %s (%s)\ncannot be found." % (name, Name))
     else:
-        if value == "" or value[0] == "-": 
-            return
-        if os.access(value, os.F_OK) == False:
-            error_msg("File %s cannot be found.\n" % value)
+        QUEX_PATH = os.environ["QUEX_PATH"]
+        if value == "" or value[0] == "-":              return
+        if os.access(value, os.F_OK):                   return
+        if os.access(QUEX_PATH + "/" + value, os.F_OK): return
+        error_msg("File %s (%s)\ncannot be found." % (value, Name))
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
