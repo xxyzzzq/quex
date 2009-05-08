@@ -100,20 +100,20 @@ followed by ``}``.
 
    .. code-block:: cpp
 
-        standard {
-            id            : unsigned;
-            line_number   : unsigned;
-            column_number : unsigned;
-        }
+       standard {
+           id            : unsigned;
+           line_number   : unsigned;
+           column_number : unsigned;
+       }
 
 .. data:: distinct
 
    .. code-block:: cpp
 
-   distinct {
-       name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
-       number_list :  std::vector<int>;
-   }
+       distinct {
+           name        :  std::basic_string<QUEX_TYPE_CHARACTER>;
+           number_list :  std::vector<int>;
+       }
 
 .. data:: union
 
@@ -162,6 +162,7 @@ argument. As mentioned, the setter must be identified via the type.
 The above setters would allow token senders inside a mode to be defined as
 
   .. code-block:: cpp
+
     mode TEST { 
         1      => QUEX_TKN_N1a(Lexeme); 
         mini_1 => QUEX_TKN_N1b((int8_t)1, (int8_t)1); 
@@ -179,7 +180,7 @@ The above setters would allow token senders inside a mode to be defined as
     }
 
 displays how the terms in the brackets identify the setter. The ``send`` member
-functions work exactly the same. If more then one variable has the same type,
+functions work exactly the same. If more then one variable have the same type,
 then there are two alternatives: First, one relies on explicit C-code
 fragments :ref:`sec:c-code-fragments` and uses
 
@@ -193,15 +194,14 @@ named setters such as
      .. code-block:: cpp
 
         ...
-        QUEX_TYPE_TOKEN* t = self.token_object();
-        t->set_name(Lexeme);
-        t->set_mini_1(LexemeL); 
+        self.token_object()->set_name(Lexeme);
+        self.token_object()->set_mini_1(LexemeL); 
         ...
          
-Second, the senders may be called with *named* arguments. This is more 
-convinient. The names of the members to be set have to appear before
-the ``=`` sign, the values they are assigned to appear after it. For example,
-the code fragment
+Second, the brief token senders may be called with *named* arguments. This is
+more convinient. The names of the token class members and their assigned values
+are specified by a sequence of the form: ``member = value``. For example, the
+                                           code fragment
 
      .. code-block:: cpp
 
@@ -209,25 +209,50 @@ the code fragment
         "mypattern" => QUEX_TKN_MY_TOKEN(name=Lexeme, mini_x=LexemeL);
         ...
 
-does exactly the same as the previously mentioned one.
+does exactly the same as the previously mentioned one. Standard operations to
+objects can be specified via three code sections.
+
+.. note::
+
+   The assigment operator '=' is provided along the token class. However,
+   there is a potential a major performance loss due to its passing of a 
+   return value. When copying tokens, better rely on the ``__copy`` 
+   member function.
 
 
-.. constructor::
+.. data:: constructor
 
+   This code section determines the behavior at construction time. The token 
+   class provides a default constructor and a copy constructor. In case of the
+   copy constructor, the code segment is executed *after* the copy operation (see below).
+   Example:
 
    .. code-block:: cpp
 
-       constructor { std::cout << "Constructor\n"; }
+       constructor { 
+           pointer_to_something = 0x0;            /* default */
+           std::cout << "Constructor\n"; 
+       }
 
-.. destructor::
+.. data:: destructor
+
+   The destructor code segment is executed at the time of the destruction of the
+   token object. Here, all resources owned by the token need to be released. Example:
 
    .. code-block:: cpp
 
-       destructor { std::cout << "Destructor\n"; }
+       destructor { 
+           if( pointer_to_something != 0x0 ) delete pointer_to_something;
+           std::cout << "Destructor\n"; 
+       }
 
-.. copy::
+.. data:: copy
 
-      Implicit Argument: ``That`` which is a reference to the token to be copied.
+   This code segment allows for the definition of customized copy operations. It is
+   executed when the member function ``__copy`` is called or when the assigment 
+   operator is used. 
+
+   Implicit Argument: ``That`` which is a reference to the token to be copied.
 
    .. code-block:: cpp
 
@@ -278,7 +303,7 @@ The output filename of the generated token class can be specified via
 
 .. data:: file_name = name ';'
 
-The token class can named and placed in a particular namespace using 
+The token class can be named and placed in a particular namespace using 
 
 .. data:: name = [namespace ... ::] token class name ';'
 
@@ -305,7 +330,6 @@ If this is required the flag
 .. data:: inheritable ';'
 
 can be specified. 
-
 
 .. _sec-customized-token-class-formal:
 

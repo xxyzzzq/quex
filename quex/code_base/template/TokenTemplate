@@ -60,6 +60,8 @@ $$QUICK_SETTERS$$
         void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
 #       endif
 #   endif
+    public:
+$$BODY$$
 };
 
 inline

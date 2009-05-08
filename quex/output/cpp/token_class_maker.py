@@ -35,6 +35,7 @@ def _do(Descr):
                       ["$$COPY$$",             copy_str],
                       ["$$CONSTRUCTOR$$",      Descr.constructor.get_code()],
                       ["$$DESTRUCTOR$$",       Descr.destructor.get_code()],
+                      ["$$BODY$$",             Descr.body.get_code()],
                       ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
                       ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
                      ])

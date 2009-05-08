@@ -17,6 +17,7 @@ class TokenTypeDescriptorCore:
             self.constructor        = CodeFragment("")
             self.copy               = CodeFragment("")
             self.destructor         = CodeFragment("")
+            self.body               = CodeFragment("")
             self.distinct_db = {}
             self.union_db    = {}
         else:
@@ -30,6 +31,7 @@ class TokenTypeDescriptorCore:
             self.constructor           = Core.constructor
             self.copy                  = Core.copy
             self.destructor            = Core.destructor
+            self.body                  = Core.body
             self.distinct_db           = Core.distinct_db
             self.union_db              = Core.union_db
 
@@ -88,6 +90,11 @@ class TokenTypeDescriptorCore:
         if self.destructor.get_pure_code() != "":
             txt += "destructor {\n"
             txt += self.destructor.get_code()
+            txt += "}"
+
+        if self.body.get_pure_code() != "":
+            txt += "body {\n"
+            txt += self.body.get_code()
             txt += "}"
 
         return txt
@@ -211,8 +218,10 @@ def parse(fh):
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
 
-    SubsectionList = ["name", "standard", "distinct", "union", "constructor", 
-                      "destructor", "copy", "inheritable", "file_name"]
+    SubsectionList = ["name", "file_name", 
+                      "standard", "distinct", "union", 
+                      "constructor", "destructor", "copy", "body",
+                      "inheritable"]
 
     position = fh.tell()
     skip_whitespace(fh)
@@ -253,7 +262,7 @@ def parse_section(fh, descriptor, already_defined_list):
             error_msg("Missing closing '}' at end of token_type section '%s'." % word, fh);
 
     else:
-        # word in ["constructor", "destructor", "copy"]
+        # word in ["constructor", "destructor", "copy", "body"]
         try:
             code_fragment = parse_normal_code_fragment(fh, word)
         except:
@@ -262,6 +271,7 @@ def parse_section(fh, descriptor, already_defined_list):
         if   word == "constructor": descriptor.constructor = code_fragment
         elif word == "destructor":  descriptor.destructor  = code_fragment
         elif word == "copy":        descriptor.copy        = code_fragment
+        elif word == "body":        descriptor.body        = code_fragment
         else: 
             assert False, "This section should not be reachable"
 
