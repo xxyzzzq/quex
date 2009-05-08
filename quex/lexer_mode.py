@@ -520,5 +520,6 @@ def get_token_class_file_name(Setup):
         file_name = token_type_definition.get_file_name()
         if file_name == "":
             file_name = Setup.output_engine_name + "-token-class"
+
     return file_name
 

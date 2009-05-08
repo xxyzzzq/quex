@@ -226,7 +226,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                           % member, fh)
             else:
                 access = lexer_mode.token_type_definition.get_member_access(member.strip())
-                txt += "%s = %s;\n" % (access, value.strip())
+                txt += "self.token_object()->%s = %s;\n" % (access, value.strip())
 
 
         # Box the token, stamp it with an id and 'send' it

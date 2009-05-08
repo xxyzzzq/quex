@@ -11,7 +11,7 @@ def do():
 
     txt       = _do(lexer_mode.token_type_definition)
 
-    file_name = lexer_mode.token_type_definition.get_file_name(Setup.output_engine_name)
+    file_name = lexer_mode.get_token_class_file_name(Setup)
     write_safely_and_close(file_name, txt) 
 
 def _do(Descr):

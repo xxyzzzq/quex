@@ -222,6 +222,8 @@ $$LEX_ID_DEFINITIONS$$
 #   define CLASS_MEMENTO      $$LEXER_CLASS_NAME$$Memento
 #endif
 
+$$TOKEN_CLASS_DECLARATION$$
+
 // START: User defined header content. 
 $$USER_DEFINED_HEADER$$
 // END:
