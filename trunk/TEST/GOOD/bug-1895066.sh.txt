@@ -1,5 +1,5 @@
 
 Output from constructed header:_______________________________________
 
-(standard input):272:#line 4 "error.qx"
-(standard input):275:#line 275 "Simple"
+(standard input):233:#line 4 "error.qx"
+(standard input):237:#line 238 "Simple"
