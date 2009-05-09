@@ -1,9 +1,10 @@
-<test-database execution-time-sec="0.06" date="Sat May  9 05:56:49 2009">
+<test-database execution-time-sec="0.00" date="Sat May  9 06:39:58 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Token Class Template" make-required="True" time-sum-sec="0.06"> 
+    <test title="Token Class Template" make-required="True" time-sum-sec="0.00"> 
         <application file-name="test-token_class.py" info-request-time="1240807901L"/>
+        <make-procedure success="False" />
         <choice-list number="1">
-           <choice name="" result="OK" time-sec="0.06" crc="1874127570"/>
+           <choice name="" result="OK" time-sec="0.00" crc="1874127570"/>
         </choice-list>
     </test>
 </test-database>
