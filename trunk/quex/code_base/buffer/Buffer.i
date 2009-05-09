@@ -362,8 +362,8 @@ namespace quex {
                me->_input_p = QuexBuffer_text_end(me);  /* No reload possible */
            } else {
                /* Reload until delta is reachable inside buffer. */
-               int delta    = (int)CharacterN; 
-               int distance = QuexBuffer_distance_input_to_text_end(me);
+               ptrdiff_t delta    = (ptrdiff_t)CharacterN; 
+               ptrdiff_t distance = (ptrdiff_t)QuexBuffer_distance_input_to_text_end(me);
                do {
                    delta -= distance;
 
@@ -375,7 +375,7 @@ namespace quex {
                    } 
                    /* After loading forward, we need to increment ... the way the game is to be played. */
                    ++(me->_input_p);
-                   distance = QuexBuffer_distance_input_to_text_end(me);
+                   distance = (ptrdiff_t)QuexBuffer_distance_input_to_text_end(me);
 
                    if( delta < distance ) {
                        /* _input_p + delta < text_end, thus no further reload necessary. */
@@ -410,8 +410,8 @@ namespace quex {
                me->_input_p = QuexBuffer_content_front(me);
            } else {
                /* Reload until delta is reachable inside buffer. */
-               int delta    = (int)CharacterN; 
-               int distance = me->_input_p - QuexBuffer_content_front(me);
+               ptrdiff_t delta    = (ptrdiff_t)CharacterN; 
+               ptrdiff_t distance = (ptrdiff_t)(me->_input_p - QuexBuffer_content_front(me));
                do {
                    delta -= distance;
 
@@ -422,7 +422,7 @@ namespace quex {
                        break;
                    } 
                    /* After loading backwards, we need **not** to increment ... the way the game is to be played. */
-                   distance = me->_input_p - QuexBuffer_content_front(me);
+                   distance = (ptrdiff_t)(me->_input_p - QuexBuffer_content_front(me));
 
                    if( delta < distance ) {
                        /* _input_p + delta < text_end, thus no further reload necessary. */

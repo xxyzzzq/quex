@@ -148,7 +148,7 @@ namespace quex {
     Token::utf8_text() const
     {
         uint8_t          utf8[7];
-        int              utf8_length = -1;
+        size_t           utf8_length = (size_t)-1;
         std::string      tmp;
         Token::__string  tmp2 = _text;
 

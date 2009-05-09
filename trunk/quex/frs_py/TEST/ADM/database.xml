@@ -1,10 +1,10 @@
-<test-database execution-time-sec="0.16" date="Sat May  9 00:26:34 2009">
+<test-database execution-time-sec="0.16" date="Sat May  9 05:56:27 2009">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.04"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.06"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="-957083127"/>
+               <choice name="" result="OK" time-sec="0.06" crc="-957083127"/>
             </choice-list>
         </test>
         <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.05"> 
@@ -13,10 +13,10 @@
                <choice name="" result="OK" time-sec="0.05" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.04"> 
+        <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.03"> 
             <application file-name="test-delete_comment.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.04" crc="1761513741"/>
+               <choice name="" result="OK" time-sec="0.03" crc="1761513741"/>
             </choice-list>
         </test>
     </group>

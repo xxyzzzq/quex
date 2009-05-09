@@ -36,12 +36,12 @@ inline void
 Counter::init()
 {
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-    _line_number_at_begin = 0;
-    _line_number_at_end   = 1;
+    _line_number_at_begin = (size_t)0;
+    _line_number_at_end   = (size_t)1;
 #   endif
 #   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    _column_number_at_begin = 0;
-    _column_number_at_end   = 1; 
+    _column_number_at_begin = (size_t)0;
+    _column_number_at_end   = (size_t)1; 
 #   endif
 }
 
@@ -75,12 +75,12 @@ Counter::count(QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd)
 }
 
 inline void  
-Counter::count_NoNewline(const int LexemeLength) 
+Counter::count_NoNewline(const ptrdiff_t LexemeLength) 
 {
     __quex_assert( LexemeLength > 0 );
 
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-    _column_number_at_end += LexemeLength;
+    _column_number_at_end += (size_t)LexemeLength;
 #   endif
 
     __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
@@ -93,7 +93,7 @@ Counter::count_FixNewlineN(QUEX_TYPE_CHARACTER* Lexeme,
 {
     __quex_assert( LexemeEnd > Lexeme );
 #   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-    _line_number_at_end += LineNIncrement;
+    _line_number_at_end += (size_t)LineNIncrement;
 #   endif
 
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -127,8 +127,8 @@ Counter::__count_newline_n_backwards(QUEX_TYPE_CHARACTER* it,
 inline QUEX_TYPE_CHARACTER*
 Counter::__count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,
                                             QUEX_TYPE_CHARACTER* End,
-                                            const int        LexemeLength,
-                                            const bool       LicenseToIncrementLineCountF /*=false*/)
+                                            const ptrdiff_t      LexemeLength,
+                                            const bool           LicenseToIncrementLineCountF /*=false*/)
 // RETURNS: Pointer to the first newline or the beginning of the lexeme.
 //
 // This function increases _line_number_at_end if a newline occurs and 
@@ -163,7 +163,7 @@ Counter::__count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,
             //    by the length of the string -1, since counting starts at zero
             // -- _column_number_at_begin = _column_number_at_end - LexemeLength (just take the old one)
 #           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end += LexemeLength;
+            _column_number_at_end += (size_t)LexemeLength;
 #           endif
             return it;
         }
@@ -171,7 +171,8 @@ Counter::__count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,
 #   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
     // -- in case that newline occurs, the column index is equal to
     //    the number of letters from newline to end of string
-    _column_number_at_end = End - it;
+    __quex_assert(End >= it);
+    _column_number_at_end = (size_t)(End - it);
 #   endif
 #   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
     if( LicenseToIncrementLineCountF ) ++_line_number_at_end;
