@@ -502,11 +502,11 @@ namespace quex {
             uint8_t*              witerator   = utf8_encoded_str; 
             QUEX_TYPE_CHARACTER*  End         = buffer->_memory._back; 
             QUEX_TYPE_CHARACTER*  iterator    = buffer->_lexeme_start_p; 
-            int                   utf8_length = 0;
+            size_t                utf8_length = (size_t)0;
             
             for(; witerator < WEnd &&  iterator != End ; ++iterator) {
                 utf8_length = Quex_unicode_to_utf8(*iterator, witerator);
-                if( utf8_length < 0 || utf8_length > 6) continue;
+                if( utf8_length < (size_t)0 || utf8_length > (size_t)6) continue;
                 witerator += utf8_length;
                 *witerator = '\0';
             }

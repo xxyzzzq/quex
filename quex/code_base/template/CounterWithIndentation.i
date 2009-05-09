@@ -149,7 +149,7 @@ CounterWithIndentation::icount(QUEX_TYPE_CHARACTER* Lexeme,
             //               no column number overflow / restart at '1'
             // no indentation enabled => no indentation increment
 #           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end += LexemeEnd - Begin;
+            _column_number_at_end += (size_t)(LexemeEnd - Begin);
 #           endif
             return;
         }
@@ -198,7 +198,7 @@ CounterWithIndentation::icount_NoNewline(QUEX_TYPE_CHARACTER* Lexeme,
         //               no column number overflow / restart at '1'
         // no indentation enabled => no indentation increment
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_end += LexemeL;
+        _column_number_at_end += (size_t)LexemeL;
 #       endif
         return;
     }
@@ -257,7 +257,7 @@ CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHA
     do { 
         if( *it != ' ' ) { 
             _indentation_count_enabled_f = false;
-            _indentation += it - start_consideration_it;
+            _indentation += (size_t)(it - start_consideration_it);
             // Line and column number need to be counted before the indentation handler
             // is called. this way it has to correct information.
             __count_indentation_aux(start_consideration_it, Begin, End, LicenseToCountF);

@@ -11,16 +11,16 @@ namespace quex {
         void  init();
 
         void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
-        void  count_NoNewline(const int CharacterN);
+        void  count_NoNewline(const ptrdiff_t LexemeL);
         void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
                                 const int LineNIncrement);
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        int  _line_number_at_begin;   // line where current pattern starts
-        int  _line_number_at_end;     // line after current pattern
+        size_t  _line_number_at_begin;   // line where current pattern starts
+        size_t  _line_number_at_end;     // line after current pattern
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        int  _column_number_at_begin;  // column where current pattern starts
-        int  _column_number_at_end;    // column after current pattern
+        size_t  _column_number_at_begin;  // column where current pattern starts
+        size_t  _column_number_at_end;    // column after current pattern
 #       endif
 
         // (*) helper functions
@@ -30,8 +30,8 @@ namespace quex {
 
         QUEX_TYPE_CHARACTER* __count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,
                                                                 QUEX_TYPE_CHARACTER* End,
-                                                                const int    LexemeLength,
-                                                                const bool   LicenseToIncrementLineCountF=false);
+                                                                const ptrdiff_t  LexemeLength,
+                                                                const bool       LicenseToIncrementLineCountF=false);
     };
 
     struct CounterPseudo {

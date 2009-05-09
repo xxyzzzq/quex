@@ -9,7 +9,7 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE int 
+    QUEX_INLINE size_t 
     Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, uint8_t* utf8_result)
     {
         /* PURPOSE: This function converts the specified unicode character
