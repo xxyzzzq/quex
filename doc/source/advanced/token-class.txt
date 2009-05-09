@@ -40,8 +40,8 @@ smoothly in any generated engine.
 
 .. _sec-customized-token-class:
 
-Easy Customized Token Classes
------------------------------
+Customized Token Classes
+------------------------
 
 Quex has the ability to generate a customized token class that satisfies 
 all formal requirements automatically: In the code section ``token_type`` 
@@ -285,8 +285,6 @@ objects can be specified via three code sections.
    .. code-block:: cpp
 
        copy { 
-           std::cout << "Copy\n"; 
-
            /* Explicit Deletion of non-trivial members */
            name.~std::basic_string<QUEX_TYPE_CHARACTER>();
            number_list.~std::vector<int>();
