@@ -19,7 +19,7 @@ echo "makefile =" Makefile
 echo "cleaning ..."
 make clean   >& /dev/null
 echo "make $arg1 $3 ##"
-make  $arg1 $3 >& /dev/null
+make  $arg1 $3 | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
 echo "executing ..."
 if [[ -z $application ]]; then
     ./lexer $args_to_lexer
