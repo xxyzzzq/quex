@@ -1,0 +1,25 @@
+<test-database execution-time-sec="0.04" date="Sat May  9 05:52:43 2009">
+    <last-used-diff-display-program name=""/>
+    <group name="Mode Transitions">
+        <test title="transition-x.qx" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="transition-x.exe" info-request-time="1241841160L"/>
+            <make-procedure success="True" />
+            <choice-list number="4">
+               <choice name="1" result="OK" time-sec="0.00" crc="2085579180"/>
+               <choice name="2" result="OK" time-sec="0.00" crc="-932257635"/>
+               <choice name="3" result="OK" time-sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time-sec="0.00" crc="1083790284"/>
+            </choice-list>
+        </test>
+        <test title="transition.qx" make-required="True" time-sum-sec="0.03"> 
+            <application file-name="transition.exe" info-request-time="1241841163L"/>
+            <make-procedure success="True" />
+            <choice-list number="4">
+               <choice name="1" result="OK" time-sec="0.00" crc="2085579180"/>
+               <choice name="2" result="OK" time-sec="0.02" crc="-932257635"/>
+               <choice name="3" result="OK" time-sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time-sec="0.00" crc="-811812121"/>
+            </choice-list>
+        </test>
+    </group>
+</test-database>

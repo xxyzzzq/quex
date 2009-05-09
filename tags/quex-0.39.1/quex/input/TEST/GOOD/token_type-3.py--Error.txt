@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [{ something : uint8_t }]
+
+OUT:
+
+a string:1:error: missing ';'
