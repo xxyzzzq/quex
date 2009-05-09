@@ -32,9 +32,9 @@ it: html latex
 		make all-pdf; \
 	    mv Quex.pdf quex-doc-$(DATE).pdf
 	cd build; \
-		tar cfj quex-doc-html-$(DATE).tbz html/ doctrees/; \
-	mv build/*.tbz       .
-	mv build/latex/*.pdf .
+		tar cfj quex-doc-html-$(DATE).tbz html/ doctrees/; 
+	mv build/quex-doc-html-$(DATE).tbz .
+	mv build/latex/quex-doc-$(DATE).pdf .
 
 clean:
 	-rm -rf build/*
