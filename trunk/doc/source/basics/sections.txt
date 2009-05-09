@@ -108,7 +108,7 @@ A customized token type can easily be defined in a section called
 
 .. data:: token_type
 
-   Defines a customized token class, see :ref:`Easy Customized Token Classes <sec-customized-token-class>`.
+   Defines a customized token class, see :ref:`Customized Token Classes <sec-customized-token-class>`.
 
 Quex supports the inclusion of other files or streams during analyzis. This
 is done by means of a include stack handler :ref:`Include Stack <sec-include-stack>`. It writes the

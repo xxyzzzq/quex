@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+#
 # PURPOSE: Helper script to create database files that describe the mapping from
 #          unicode characters to character codes of a particular encoding.
 #
@@ -12,6 +13,7 @@
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
+from quex.frs_py.file_in                                            import open_file_or_die
 from quex.core_engine.interval_handling                             import Interval
 from quex.core_engine.regular_expression.snap_backslashed_character import __parse_hex_number
 
@@ -49,8 +51,39 @@ def translate(CodecDB, NSet):
 
      return result
 
+def get_codec_db_list():
+    """
+       ...
+       [ CODEC_NAME  [CODEC_NAME_LIST]  [LANGUAGE_NAME_LIST] ]
+       ...
+    """
+    file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/list.txt"
+    fh        = open_file_or_die(file_name, "rb")
+    # FIELD SEPARATOR:  ';'
+    # RECORD SEPARATOR: '\n'
+    # FIELDS:           [Python Coding Name]   [Aliases]   [Languages] 
+    # Aliases and Languages are separated by ','
+    db_list = []
+    for line in fh.readlines():
+        line = line.strip()
+        if len(line) == 0 or line[0] == "#": continue
+        fields = map(lambda x: x.strip(), line.split(";"))
+        try:
+            codec         = fields[0]
+            aliases_list  = map(lambda x: x.strip(), fields[1].split(","))
+            language_list = map(lambda x: x.strip(), fields[2].split(","))
+        except:
+            print "Error in line:\n%s\n" % line
+        db_list.append(codec, aliases_list, language_list)
 
+    return db_list
 
+def get_distinct_codec_name_for_alias(CodecAlias):
+    codec_db_list = get_codec_db_list()
+    for record in codec_db_list:
+        if CodecAlias in record[1] or CodecAlias == record[0]: 
+            return record[0]
+    return None
 
 def get_codec_database(Codec):
     """Provides the information about the relation of character codes in a particular 
@@ -61,10 +94,10 @@ def get_codec_database(Codec):
          (SourceInterval2, TargetInterval2_Begin), ... ]
 
     """
-    try:
-        fh = open(os.environ["QUEX_PATH"] + "/quex/data_base/codecs/%s.dat" % Codec, "rb")
-    except:
-        error_msg("Codec '%s' is not available with current version of quex.")
+    distinct_code = get_distinct_codec_name_for_alias(Codec)
+    file_name     = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/%s.dat" % distinct_codec
+
+    fh = open_file_or_die(file_name, "rb")
 
     # Read coding into data structure
     db = []
@@ -84,6 +117,10 @@ def get_codec_database(Codec):
 
 
 def __help(TargetEncoding, TargetEncodingName):
+    """Writes a database file for a given TargetEncodingName. The 
+       TargetEncodingName is required to name the file where the 
+       data is to be stored.
+    """
     encoder     = codecs.getencoder(TargetEncoding)
     prev_output = -1
     db          = []
@@ -138,31 +175,15 @@ def __help(TargetEncoding, TargetEncodingName):
 
         
 if __name__ == "__main__":
-    # x = Translator("950")
-    # x = do("arabic")
     fh = open("list.txt")
-    for line in fh.readlines():
-        line = line.strip()
-        if len(line) == 0 or line[0] == "#": continue
-        fields = map(lambda x: x.strip(), line.split(";"))
-        try:
-            codec      = fields[0]
-            languages  = fields[2]
-        except:
-            print "Error in line:\n%s\n" % line
-        print languages, "(", codec, ")"
-        __help(codec, languages)
-
-
-    # if len(sys.argv) != 3:
-    #    print "This script requires exactly 2 arguments:"
-    #    print "   $1 encoding name (see http://docs.python.org/library/codecs.html#encodings-and-unicode)\n"
-    #    print "   $2 Language(s)"
-    #    sys.exit()
-    #    do(sys.argv[1], sys.argv[2])
+    # FIELD SEPARATOR:  ';'
+    # RECORD SEPARATOR: '\n'
+    # FIELDS:           [Python Coding Name]   [Aliases]   [Languages] 
+    # Aliases and Languages are separated by ','
+    db_list = get_codec_db_list()
+    for record in db_list:
+        codec         = record[0]
+        language_list = record[2]
+        print language_list, "(", codec, ")"
+        __help(codec, language_list)
             
-            
-
-
-
-

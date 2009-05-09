@@ -6,13 +6,13 @@ cp037;       IBM037, IBM039;                        English
 cp424;       EBCDIC-CP-HE, IBM424;                  Hebrew
 cp437;       437, IBM437;                           English
 cp500;       EBCDIC-CP-BE, EBCDIC-CP-CH, IBM500;    Western Europe
-cp737;       ;                                     Greek
-cp775;       IBM775                                Baltic languages
+cp737;       ;                                      Greek
+cp775;       IBM775;                                Baltic languages
 cp850;       850, IBM850;                           Western Europe
 cp852;       852, IBM852;                           Central and Eastern Europe
 cp855;       855, IBM855;                           Bulgarian, Byelorussian, Macedonian, Russian, Serbian
-cp856;       ;                                     Hebrew
-cp857;       857, IBM857                           Turkish
+cp856;       ;                                      Hebrew
+cp857;       857, IBM857;                           Turkish
 cp860;       860, IBM860;                           Portuguese
 cp861;       861, CP-IS, IBM861;                    Icelandic
 cp862;       862, IBM862;                           Hebrew
@@ -21,13 +21,13 @@ cp864;       IBM864;                                Arabic
 cp865;       865, IBM865;                           Danish, Norwegian
 cp866;       866, IBM866;                           Russian
 cp869;       869, CP-GR, IBM869;                    Greek
-cp874;       ;                                     Thai
-cp875;       ;                                     Greek
+cp874;       ;                                      Thai
+cp875;       ;                                      Greek
 cp932;       932, ms932, mskanji, ms-kanji;         Japanese
 cp949;       949, ms949, uhc;                       Korean
 cp950;       950, ms950;                            Traditional Chinese
-cp1006;      ;                                     Urdu
-cp1026;      ibm1026                               Turkish
+cp1006;      ;                                      Urdu
+cp1026;      ibm1026;                               Turkish
 cp1140;      ibm1140;                               Western Europe
 #
 cp1250;      windows-1250;        Central and Eastern Europe

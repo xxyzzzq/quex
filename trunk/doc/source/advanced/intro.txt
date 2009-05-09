@@ -13,9 +13,9 @@ the optimization of memory consumption and analysis speed.
 .. toctree::
 
    token-policies.txt
+   token-class.txt
+   line-column-number-counting.txt
    include-stack.txt
    indentation-blocks.txt
-   line-column-number-counting.txt
    derived-class.txt
-   token-class.txt
    misc.txt
