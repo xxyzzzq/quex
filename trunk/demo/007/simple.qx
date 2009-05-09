@@ -1,6 +1,21 @@
 // -*- C++ -*- vim: set syntax=cpp:
 start = DERIVED;
 
+token {
+    PERIOD
+    FISCHERS
+    FISCHES
+    FRITZ
+    FISCH
+    NOTHING
+    MATH_OPERATOR_LIST
+    GRABS
+    SWORDFISH
+    FOOLS_AROUND
+    TROUTS
+    SOMETHING_IMPOSSIBLE
+}
+
 mode BASE :
 <inheritable: only>  
 {    

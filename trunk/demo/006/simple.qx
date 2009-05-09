@@ -1,4 +1,15 @@
 // -*- C++ -*-
+token {
+    HEY________________
+    HALLO______________
+    LETTER_____________
+    HEY_P___HEY________
+    HEY_____HEY_HALLO_P
+    HEY_P___HEY_ETC____
+    HEY_____HEY________
+    HEY_HEY____________
+    WHITESPACE
+}
 mode ONE_AND_ONLY
 {
     <<EOF>>   => QUEX_TKN_TERMINATION((const uint8_t*)"");
