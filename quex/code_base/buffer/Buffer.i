@@ -299,7 +299,7 @@ namespace quex {
     {
         /* Returns a pointer to the position after the last text content inside the buffer. */
         if( me->_memory._end_of_file_p != 0 ) return me->_memory._end_of_file_p;
-        else                          return me->_memory._back;   
+        else                                  return me->_memory._back;   
     }
 
     QUEX_INLINE size_t
@@ -441,7 +441,6 @@ namespace quex {
        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
     }
 
-
     QUEX_INLINE size_t  
     QuexBuffer_tell(QuexBuffer* me)
     {
@@ -501,10 +500,59 @@ namespace quex {
         *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
+    QUEX_INLINE size_t          
+    QuexBuffer_move_away_passed_content(QuexBufferMemory* me)
+    /* PURPOSE: Moves buffer content that has been passed by out of the buffer.
+     *
+     * Example:  
+     *
+     *   buffer before: 
+     *                         _input_p
+     *                            |
+     *            [case( x < 10 ) { print; } else ]
+     *
+     *   buffer after:   
+     *              _input_p
+     *                 |
+     *            [case( x < 10 ) { print; } else ]
+     *
+     *            |----|
+     *         fallback size                                                       */
+    { 
+        QUEX_TYPE_CHARACTER*  ContentFront      = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER*  RemainderBegin    = me->_input_p;
+        QUEX_TYPE_CHARACTER*  RemainderEnd      = me->_end_of_file_p;
+        QUEX_TYPE_CHARACTER*  MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
+        size_t                MoveRegionSize    = RemainderEnd - MoveRegionBegin;
+        ptrdiff_t             Distance_LexemeStart_to_InputP = me->_input_p - me->_lexeme_start_p;
+
+        /* Asserts ensure, that we are running in 'buffer-based-mode' */
+        __quex_assert(buffer._content_character_index_begin == 0); 
+
+        /* If the distance to content front <= the fallback size, no move possible.  */
+        if( MoveRegionBegin <= ContentFront ) { return (size_t)0; }
+
+        __QUEX_STD_memmove((void*)ContentFront,
+                           (void*)MoveRegionBegin,
+                           MoveRegionSize * sizeof(QUEX_TYPE_CHARACTER));
+
+
+        /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
+         * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
+
+        QuexBuffer_end_of_file_set(buffer, ContentFront + MoveRegionSize);
+
+        /* (*) Pointer adaption:
+         *     IMPORTANT: This function is called outside the 'engine' so the 
+         *                next char to be read is: '_input_p' not '_input_p + 1'    */
+        me->_input_p        = ContentFront + FallBackN;   
+        me->_lexeme_start_p = me->_input_p - Distance_LexemeStart_to_InputP; 
+    }
 
     QUEX_INLINE size_t          
     QuexBufferMemory_size(QuexBufferMemory* me)
     { return me->_back - me->_front + 1; }
+
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

@@ -58,7 +58,7 @@ if __name__ == "__main__":
         if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
         else:                               core.do_plot()  # plot transition graphs
 
-    except "": # AssertionError:
+    except Exception: # AssertionError:
         error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")
 
 

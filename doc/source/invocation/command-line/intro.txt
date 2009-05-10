@@ -265,6 +265,18 @@ options:
         then this option is not required, since quex finds this out by its own.
         If you create an engine for a different plattform, you must know its byte ordering
         scheme, i.e. little endian or big endian, and specify it after `--endian`'. 
+
+        According to the setting of this option one of the three macros is defined 
+        in the header files:
+
+            * ``__QUEX_OPTION_SYSTEM_ENDIAN`` 
+            * ``__QUEX_OPTION_LITTLE_ENDIAN``
+            * ``__QUEX_OPTION_BIG_ENDIAN``
+
+        Those macros are of primary use for character code converters. The
+        converters need to know what the analyser engines number representation
+        is. However, the user might want to use them for his own special
+        purposes (using ``#ifdef __QUEX_OPTION_BIG_ENDIAN ... #endif``).
         
         DEFAULT=`"<system>"`
 
