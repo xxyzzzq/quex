@@ -31,8 +31,7 @@ namespace quex {
          *      buffer->_input_p        = front;
          *      buffer->_lexeme_start_p = front;            
          *
-         * (we might want to allow to append during lexical analysis)
-         */
+         * (we might want to allow to append during lexical analysis) */
         return copy_size;
     }
 
