@@ -316,10 +316,9 @@ $$MEMENTO_EXTENSIONS$$
         virtual ~CLASS();
 
         /* Direct Access to Memory */
-        bool                  buffer_copy(QUEX_TYPE_CHARACTER* Content, const size_t Size);
-        bool                  buffer_append(QUEX_TYPE_CHARACTER* Content, const size_t Size);
+        size_t                buffer_append(QUEX_TYPE_CHARACTER* Content, const size_t Size);
         void                  buffer_prepare(const size_t CharacterN);
-        QUEX_TYPE_CHARACTER*  buffer_begin();
+        QUEX_TYPE_CHARACTER*  buffer_input_begin();
         QUEX_TYPE_CHARACTER*  buffer_end();
         size_t                buffer_size();
         QUEX_TYPE_CHARACTER*  buffer_text_end();
@@ -490,10 +489,6 @@ $$CLASS_BODY_EXTENSION$$
         template<class InputHandleT> $$LEXER_CLASS_NAME$$Memento*  
             memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
         void  memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*);
-
-    protected:
-        void virtual on_include(const char* Filename) {}
-        void virtual on_include_exit() {}
 
     public:
         template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
