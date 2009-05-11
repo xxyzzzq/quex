@@ -501,7 +501,7 @@ namespace quex {
     }
 
     QUEX_INLINE size_t          
-    QuexBuffer_move_away_passed_content(QuexBufferMemory* me)
+    QuexBuffer_move_away_passed_content(QuexBuffer* me)
     /* PURPOSE: Moves buffer content that has been passed by out of the buffer.
      *
      * Example:  
@@ -519,15 +519,14 @@ namespace quex {
      *            |----|
      *         fallback size                                                       */
     { 
-        QUEX_TYPE_CHARACTER*  ContentFront      = QuexBuffer_content_front(buffer);
+        QUEX_TYPE_CHARACTER*  ContentFront      = QuexBuffer_content_front(me);
         QUEX_TYPE_CHARACTER*  RemainderBegin    = me->_input_p;
-        QUEX_TYPE_CHARACTER*  RemainderEnd      = me->_end_of_file_p;
+        QUEX_TYPE_CHARACTER*  RemainderEnd      = me->_memory._end_of_file_p;
         QUEX_TYPE_CHARACTER*  MoveRegionBegin   = RemainderBegin - (ptrdiff_t)QUEX_SETTING_BUFFER_MIN_FALLBACK_N;
         size_t                MoveRegionSize    = RemainderEnd - MoveRegionBegin;
-        ptrdiff_t             Distance_LexemeStart_to_InputP = me->_input_p - me->_lexeme_start_p;
 
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
-        __quex_assert(buffer._content_character_index_begin == 0); 
+        __quex_assert(me->_content_character_index_begin == 0); 
 
         /* If the distance to content front <= the fallback size, no move possible.  */
         if( MoveRegionBegin <= ContentFront ) { return (size_t)0; }
@@ -540,13 +539,16 @@ namespace quex {
         /* Anything before '_input_p + 1' is considered to be 'past'. However, leave
          * a number of 'FALLBACK' to provide some pre-conditioning to work.          */
 
-        QuexBuffer_end_of_file_set(buffer, ContentFront + MoveRegionSize);
+        QuexBuffer_end_of_file_set(me, ContentFront + MoveRegionSize);
 
         /* (*) Pointer adaption:
          *     IMPORTANT: This function is called outside the 'engine' so the 
          *                next char to be read is: '_input_p' not '_input_p + 1'    */
-        me->_input_p        = ContentFront + FallBackN;   
-        me->_lexeme_start_p = me->_input_p - Distance_LexemeStart_to_InputP; 
+        me->_input_p        = ContentFront + QUEX_SETTING_BUFFER_MIN_FALLBACK_N;   
+        /* NOTE: This operation can only happen from outside the lexical analysis
+         *       process, i.e. either in a TERMINAL (pattern action) or outside the
+         *       receive function calls.                                            */
+        me->_lexeme_start_p = me->_input_p; 
     }
 
     QUEX_INLINE size_t          
