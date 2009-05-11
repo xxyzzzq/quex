@@ -14,25 +14,29 @@ main(int argc, char** argv)
     // (*) create token
     quex::Token        Token;
     // (*) create the lexical analyser
-    //     if no command line argument is specified user file 'example.txt'
-    quex::tiny_lexer   qlex = new quex::tiny_lexer();
+    quex::tiny_lexer   qlex();
 
     cout << ",------------------------------------------------------------------------------------\n";
 
     while( 1 + 1 == 2 ) {
-        qlex.buffer_prepare_append();
+        // Initialize the filling of the fill region
+        qlex.buffer_fill_region_init();
 
-        int count_n = receive_transmission(qlex.buffer_text_end(), qlex.buffer_remaining_free_space());
-        qlex.buffer_appended(count_n);
+        // Call the low lever driver to fill the fill region
+        int count_n = receive_transmission(qlex.buffer_fill_region_begin(), 
+                                           qlex.buffer_fill_region_size());
+
+        // Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
+        qlex.buffer_fill_region_set_size(count_n);
 
         cout << "[[Received " << count_n << " characters in chunk.]]\n";
-        
+
         // Loop until the 'termination' token arrives
         do {
             qlex.receive(&Token);
             cout << string(Token) << endl;
         } while( Token.type_id() != QUEX_TKN_TERMINATION && Token.type_id() != QUEX_TKN_BYE );
-        
+
         if( Token.type_id() == QUEX_TKN_BYE ) break;
     }
 
