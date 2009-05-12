@@ -39,11 +39,12 @@ namespace quex {
         return ContentBegin + copy_size;
     }
 
-    inline void
-    CLASS::buffer_fill_region_prepare(const size_t CharacterN)
+    inline QUEX_TYPE_CHARACTER*
+    CLASS::buffer_fill_region_prepare()
     {
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);
+        return QuexBuffer_text_end(&buffer); 
     }
 
     inline QUEX_TYPE_CHARACTER*  CLASS::buffer_fill_region_begin()

@@ -6,18 +6,48 @@ A generated lexical analyzer runs its analysis on data located in
 a buffer. In general, this buffer is filled automatically by the
 underlying buffer management which relies on some type of input
 stream. It is, however, possible to access the buffer directly which,
-in some cases may be advantegous. There are three possible ways
-to access the input buffer:
+in some cases may be advantegous. The following methods can be 
+supplied to setup the analyzer's character buffer. The term 'framework'
+is used to refer to some kind of entity that delivers the data.
 
-#. *Copying* content into the buffer at a given address.
-#. *Direct filling* of the buffer at a given address.
-#. Via an *input policy*, so that the buffer management
-   may rely on it.
+#. *Copying* content into the buffer.
+
+   **Scenario**: The framework provides its data in chunks and
+   specifies itself the data's memory location.
+
+   **Example**: ``demo/010/copy.cpp``.
+
+#. *Immediate Filling* of the buffer.
+
+   **Scenario**: The framework writes its data in chunks into
+   a memory location which is specified by the user.
+
+   **Example**: ``demo/010/fill.cpp``.
+
+#. *Pointing* to a memory address where the buffer shall analyze data.
+
+   **Scenario**: The (hardware level) framework writes data into
+   some pre-defined address space, and copying is considered too time exhaustive.
+
+   **Example**: ``demo/010/point.cpp``.
+
+#. Via an *input policy*, so that the buffer management may rely on it.
+
+   **Scenarios**: Same as for *Copying* and *Immediate Filling*.
+   The advantage of this method is that it is for the engine and the 
+   user seemingless. With this method, there is no complexity to be
+   added 'outside'.
 
 In this section all three processes are described. The first two methods can be
 implemented using the member functions of the lexical analyzer object. The
 third method, i.e. providing a customized input policy requires some extra
 coding, but is invisible to the outside the analysis process.
+
+.. note:: 
+
+   With the methods *Copying*, *Immediate Filling*, and *Pointing* no implicit
+   character code converters can be applied. If this is required, the users
+   needs to call them explicitly.
 
 
 Direct Buffer Access
@@ -26,11 +56,11 @@ Direct Buffer Access
 Direct buffer access can be performed by means of the following member functions:
 
     QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* TerminatedContent);
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* Content, const size_t Size);
+    QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, ContentEnd);
     QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
     QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
     QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_size();
+    size_t                buffer_fill_region_size();
     void                  buffer_fill_region_finish(const size_t FilledCharacterN);
 
 -- pre-conditions / fall back region
@@ -46,10 +76,21 @@ position. The following displays its usage:
 
 .. code-block:: cpp
     
+    chunk_begin = chunk_end;
     while( 1 + 1 == 2 ) {
-        end_of_fill = qlex.buffer_fill_region_append(cin.getline());
+        // -- Receive content from a messaging framework
+        if( chunk_begin == chunk_end ) {
+            chunk_size = messaging_framework_receive(&chunk_begin);
+            chunk_end  = chunk_begin + size;
+        } else {
+            // If chunk_begin != chunk_end, this means that there are still
+            // some characters in the pipeline. Let us use them first.
+        }
 
-        // Loop until the 'termination' token arrives
+        // -- Copy buffer content into the analyzer's buffer
+        chunk_begin = qlex.buffer_fill_region_append(chunk_begin, chunk_end);
+
+        // -- Loop until the 'termination' token arrives
         do {
             qlex.receive(&Token);
             cout << string(Token) << endl;
@@ -57,6 +98,24 @@ position. The following displays its usage:
 
         if( Token.type_id() == QUEX_TKN_BYE ) break;
     }
+
+In this scenario, a messaging framework delivers a pointer to a received chunk
+and returns its size. The pointer is written to ``chunk_begin`` and then return
+value is assigned to ``chunk_size``.  Next, the function
+``buffer_fill_region_append`` tries to copy all characters from ``chunk_begin``
+to ``chunk_end``. Then, it returns the pointer to the first character that
+could not be transferred into the buffer because of overflow.  If it is equal to
+``chunk_end`` then this means that the whole chunk has been copied into the
+buffer. Once, the buffer is filled, the analysis starts until it reaches a
+termination token. 
+
+On the next run it is checked wether there are still characters in the
+pipeline. If all characters are copied into the buffer, then
+``buffer_fill_region_append(...)`` returns ``chunk_end``. Thus, by a simple
+comparison between ``chunk_begin`` and ``chunk_end`` it can be tested wether
+new data needs to be received from the messaging framework or not. In this way,
+the loop continues until, eventually, the token ``QUEX_TKN_BYE`` arrives
+and the program breaks out of the outer while loop.
 
 
 Direct Filling

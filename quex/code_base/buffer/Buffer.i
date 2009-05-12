@@ -500,7 +500,7 @@ namespace quex {
         *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
     }
 
-    QUEX_INLINE size_t          
+    QUEX_INLINE void          
     QuexBuffer_move_away_passed_content(QuexBuffer* me)
     /* PURPOSE: Moves buffer content that has been passed by out of the buffer.
      *
@@ -529,7 +529,7 @@ namespace quex {
         __quex_assert(me->_content_character_index_begin == 0); 
 
         /* If the distance to content front <= the fallback size, no move possible.  */
-        if( MoveRegionBegin <= ContentFront ) { return (size_t)0; }
+        if( MoveRegionBegin <= ContentFront ) { return; }
 
         __QUEX_STD_memmove((void*)ContentFront,
                            (void*)MoveRegionBegin,
