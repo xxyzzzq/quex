@@ -321,8 +321,8 @@ $$MEMENTO_EXTENSIONS$$
         QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_size();
-        void                  buffer_fill_region_terminate(const size_t LoadedN);
+        size_t                buffer_fill_region_size();
+        void                  buffer_fill_region_finish(const size_t LoadedN);
 
         // -- token stream: read next token
         void  get_token() 
