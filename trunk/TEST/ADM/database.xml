@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.00" date="Sat May  9 21:55:38 2009">
+<test-database execution-time-sec="0.00" date="Tue May 12 21:22:26 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="0.00"> 
@@ -322,7 +322,7 @@
         <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.00" crc="-1322276558"/>
+               <choice name="" result="OK" time-sec="0.00" crc="1671981210"/>
             </choice-list>
         </test>
         <test title="1905768" make-required="True" time-sum-sec="0.00"> 
@@ -332,7 +332,7 @@
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="bug-1935701.exe" info-request-time="1241840866L"/>
+            <application file-name="bug-1935701.exe" info-request-time="1242077556L"/>
             <make-procedure success="False" />
             <choice-list number="2">
                <choice name="FILE" result="OK" time-sec="0.00" crc="-953317363"/>

@@ -17,9 +17,9 @@ namespace quex {
         QuexBuffer_move_away_passed_content(&buffer);
 
         /* Determine the insertion position and copy size. */
-        const size_t          RemainingSize =   QuexBuffer_content_back(&buffer)
-                                              - QuexBuffer_text_end(&buffer) + 1;
         QUEX_TYPE_CHARACTER*  text_end      = QuexBuffer_text_end(&buffer);
+        const size_t          RemainingSize =   QuexBuffer_content_back(&buffer)
+                                              - text_end + 1;
 
         if( copy_size > RemainingSize ) copy_size = RemainingSize;
 
@@ -29,13 +29,15 @@ namespace quex {
         __QUEX_STD_memmove(text_end, ContentBegin, copy_size * sizeof(QUEX_TYPE_CHARACTER));
 
         /* When lexing directly on the buffer, the end of file pointer is always set. */
-        QuexBuffer_end_of_file_set(&buffer, text_end + copy_size - 1);
+        QUEX_TYPE_CHARACTER*   end_of_file_p = text_end + copy_size - 1;
+        QuexBuffer_end_of_file_set(&buffer, end_of_file_p);
 
         /* NOT:
          *      buffer->_input_p        = front;
          *      buffer->_lexeme_start_p = front;            
          *
          * We might want to allow to append during lexical analysis. */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
         return ContentBegin + copy_size;
     }
 
