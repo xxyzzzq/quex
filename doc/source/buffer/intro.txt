@@ -1,0 +1,42 @@
+.. _sec-buffer-handling:
+
+Buffer Handling
+===============
+
+This chapter discusses the interactions of quex and the buffer management. The
+knowledge about this is helpful for the implemention a customized buffer
+handling procedure and the understanding of the generated analyzer code. Let
+the term 'engine' refer to the analyzer that quex generates.
+
+The process of lexical analysis is based on an iteration over a sequence of
+characters which appear to the engine as (unsigned) integer values. They are 
+lined up in chunks of memory of *equal size* [#f1]_. The fact that they
+occupy cells of equal size simplifies the iteration [#f2]_ and thus is 
+essential for performance.
+
+For efficiency reasons, the characters to be analyzed are located in a 
+chunk of memory which is an integer multiple of the character size. Since
+the character size is equal for each character, it is safe to assume that
+a buffer border never cuts in the middle of a character. For dynamically
+sized encodings, such as UTF-8, a converter is used that transforms
+the input stream into a sequence equally sized Unicode characters 
+(see section :ref:`sec-character-encodings`).
+
+Reload Forward
+--------------
+
+Each implemented state in the state machine has an 'appendix' which
+is executed if the current character does not trigger a transition
+to another state. The appendix 
+
+
+.. rubric:: Footnotes
+
+.. [#f1] When using the ASCII character set each of the integer values
+         occupies one byte. However, there are other codings with two
+         or four bytes per character.
+
+.. [#f2] The iteration step basically consists then of an addition
+         of a constant integer to the input pointer and a dereferencing.
+         The addition of a constant integer is accomplished very 
+         efficiently by most modern CPUs.

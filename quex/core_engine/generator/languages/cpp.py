@@ -69,7 +69,7 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnaly
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
 #   if defined (__QUEX_SETTING_PLAIN_C)
-#      define self (*me)
+#      define self (*((QUEX_LEXER_CLASS*)me));
 #   else
        using namespace quex;
        QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);

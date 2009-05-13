@@ -100,8 +100,12 @@ namespace quex {
         QuexBufferMemory_init(&(me->_memory), memory, BufferMemorySize);      
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
-        me->_memory._end_of_file_p = (Memory == 0x0) ? me->_memory._back
-                                     :                 me->_memory._front + 1 + ContentSize; 
+        /* At this point, there is some memory: either allocated or provided by user. 
+         * NOTE: For direct memory access, the 'end_of_file_p' indicates the fill level. 
+         * NOTE: When working directly on memory, the 'end_of_file_p != 0x0' will
+         *       cause the QuexAnalyser_buffer_reload_forward(...) function to fail,
+         *       and thus initiates the return to the last acceptance state.            */
+        QuexBuffer_end_of_file_set(me, me->_memory._front + 1 + ContentSize);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
