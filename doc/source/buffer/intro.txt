@@ -25,9 +25,35 @@ the input stream into a sequence equally sized Unicode characters
 Reload Forward
 --------------
 
-Each implemented state in the state machine has an 'appendix' which
-is executed if the current character does not trigger a transition
-to another state. The appendix 
+Each implemented state in the state machine has an 'appendix' which is executed
+if the current character does not trigger a transition to another state. Then the
+following happens:
+
+#. **current character ≠ buffer limit code**: No pattern is able to match
+   against the current input. The terminal router determines what pattern won the
+   race and the program proceeds with the execution of the winning pattern's action. 
+
+#. **current character = buffer limit code**: Try to reload the buffer with 
+   more data. 
+
+   *  **current character not located at end of file pointer**: 
+   
+      In this case it just reached the buffer border. The reload succeeds,
+      pointers are adapted, and the current state is re-entered with the first
+      loaded character as input. 
+   
+   *  **current character located at end of file pointer**: The reload fails [#f3]_.
+
+      #. No more pattern can match the input and the program proceeds to the terminal
+         router. 
+         
+      #. The action of the winning pattern is performed.
+
+      #. The analysis starts at the end of file pointer.
+
+      #. The initial state chokes the buffer limit code, detects
+         ``end of file`` and the program proceeds to the terminal for the end
+         of file action.
 
 
 .. rubric:: Footnotes
@@ -40,3 +66,8 @@ to another state. The appendix
          of a constant integer to the input pointer and a dereferencing.
          The addition of a constant integer is accomplished very 
          efficiently by most modern CPUs.
+
+.. [#f3] If the end of file pointer is located inside the buffer region, this
+         means that the last buffer load already took all content out of 
+         the file under analysis. Since there is no more data left in the file,
+         the reload will return ``false``.
