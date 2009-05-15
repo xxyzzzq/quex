@@ -157,7 +157,7 @@ namespace quex {
         for(Token::__string::iterator it = tmp2.begin(); it != tmp2.end() ; ++it) {
             /* Convert Character To UTF-8 */
             utf8_length = Quex_unicode_to_utf8((QUEX_TYPE_CHARACTER)*it, utf8);
-            if( utf8_length < 0 || utf8_length > 6) continue;
+            if( utf8_length == ((size_t)-1) || utf8_length > 6) continue;
             utf8[utf8_length] = '\0';
             tmp += std::string((const char*)utf8);        
         }

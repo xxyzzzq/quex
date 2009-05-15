@@ -90,9 +90,12 @@ namespace quex {
                                    QUEX_TYPE_CHARACTER*  Memory      /* = 0x0 */,
                                    const size_t          ContentSize /* = 0   */)
     {
-        /* Constructs a buffer for running only on memory, no 'filler' is involved. */
+        /* Constructs a buffer for running only on memory, no 'filler' is involved.     */
         QUEX_TYPE_CHARACTER*   memory = Memory;
         __quex_assert(ContentSize <= BufferMemorySize - 2);
+        /* If the memory is not preset, then then content must be zero. It is expected
+         * to be loaded later on.                                                       */
+        __quex_assert(Memory != 0x0 || ContentSize == 0);
 
         if( memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(BufferMemorySize);
         me->filler = 0x0;
@@ -106,6 +109,8 @@ namespace quex {
          *       cause the QuexAnalyser_buffer_reload_forward(...) function to fail,
          *       and thus initiates the return to the last acceptance state.            */
         QuexBuffer_end_of_file_set(me, me->_memory._front + 1 + ContentSize);
+        //me->_memory._end_of_file_p = (Memory == 0x0) ? me->_memory._back 	         
+    	//                             :                 me->_memory._front + 1 + ContentSize;
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);

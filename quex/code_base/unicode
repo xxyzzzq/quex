@@ -39,7 +39,7 @@ namespace quex {
         __quex_assert(UCS_CharacterCode >= 0);
 
         /* cannot convert surrogate pairs */
-        if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return -1;
+        if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return (size_t)-1;
 
         /* Determine number of bytes in the utf8 representation of the character */
         if      (UCS_CharacterCode <= 0x0000007f)       n = 1;

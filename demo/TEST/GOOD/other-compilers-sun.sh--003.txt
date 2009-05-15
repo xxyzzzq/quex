@@ -11,6 +11,18 @@ program.qx:21:warning: Token id 'QUEX_TKN_THAI_NUMBER' defined implicitly.
 program.qx:24:warning: Token id 'QUEX_TKN_GREEK_IDENTIFIER' defined implicitly.
 program.qx:24:warning: NOTE: 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER' has been defined in a token { ... } section!
 program.qx:24:warning: Note, that tokens in the token { ... } section are automatically prefixed.
+sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
 executing ...
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 

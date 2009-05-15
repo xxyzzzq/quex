@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.40" date="Mon May 11 23:38:32 2009">
+<test-database execution-time-sec="0.36" date="Thu May 14 21:28:57 2009">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.06"> 
@@ -31,10 +31,10 @@
                <choice name="" result="OK" time-sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
-        <test title="Condition Code Generation" make-required="True" time-sum-sec="0.06"> 
+        <test title="Condition Code Generation" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-condition-code.py" info-request-time="1237805541L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time-sec="0.06" crc="-1284156277"/>
+               <choice name="" result="OK" time-sec="0.05" crc="-1284156277"/>
             </choice-list>
         </test>
     </group>
