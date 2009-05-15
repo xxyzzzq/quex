@@ -8,6 +8,10 @@ main(int argc, char** argv)
         printf("Tell and Seek: Bytes Per Character (BPC)=%i;\n", sizeof(QUEX_TYPE_CHARACTER));
         return 0;
     }
+    if( argc == 1 ) {
+        printf("Command line argument required.\n");
+        return 0;
+    }
 
     QuexBuffer           buffer;
     size_t               SeekIndices[] = { 11, 8, 9, 10, 4, 5, 12, 3, 0, 1, 2, 6, 7, 999 };

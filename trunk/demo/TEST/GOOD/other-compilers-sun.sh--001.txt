@@ -2,6 +2,18 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
+sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -Wall passed to ld, if ld is invoked, ignored otherwise
+sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
 executing ...
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 

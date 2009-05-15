@@ -8,6 +8,10 @@ main(int argc, char** argv)
         printf("CHOICES:  1, 2, 3, 4, 5;\n");
         return 0;
     }
+    if( argc == 1 ) {
+        printf("Command line argument required.\n");
+        return 0;
+    }
 
     QuexBuffer           buffer;
     int                  memory_size   = 12;

@@ -13,6 +13,10 @@ main(int argc, char** argv)
         printf("Forward: Copy Fallback Region (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
         return 0;
     }
+    if( argc == 1 ) {
+        printf("Command line argument required.\n");
+        return 0;
+    }
 
     using namespace quex;
 
@@ -23,15 +27,16 @@ main(int argc, char** argv)
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
     stderr = stdout;
 
-    printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
-    printf("## NOTE: FallbackN = %i!\n", QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
-    printf("## NOTE: When copying, it can be assumed that the _input_p stands on _memory._back\n");
-
     /* Filler = 0x0, otherwise, buffer would start loading content */
     buffer.filler = 0x0;
     QuexBuffer_construct_wo_filler(&buffer, memory_size, 0, 0);
 
+    printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
+    printf("## NOTE: FallbackN = %i!\n", QUEX_SETTING_BUFFER_MIN_FALLBACK_N);
+    printf("## NOTE: When copying, it can be assumed that the _input_p stands on _memory._back\n");
     buffer._input_p = buffer._memory._back;
+    printf("## NOTE: And the end of file has not been reached yet.\n");
+    buffer._memory._end_of_file_p = 0x0;
 
     /* We want to observe the standard error output in HWUT, so redirect to stdout */
     for(buffer._lexeme_start_p = buffer._memory._back; 

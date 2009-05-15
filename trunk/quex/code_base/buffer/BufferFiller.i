@@ -204,14 +204,15 @@ namespace quex {
          *     The fallback region is related to the lexeme start pointer. The lexeme start 
          *     pointer always needs to lie inside the buffer, because applications might read
          *     their characters from it. The 'stretch' [lexeme start, current_p] must be 
-         *     contained in the new buffer (precisely in the fallback region). */
+         *     contained in the new buffer (precisely in the fallback region).                        */
+        /* Copying forward shall **only** happen when new content is to be loaded. This is not the case
+         * if EOF is reached and the _memory._memory._end_of_file_p lies inside the buffer. Thus the _input_p
+         * must have reached the upper border of the buffer.                                          */
+        __quex_assert(buffer->_memory._end_of_file_p == 0x0);
+        __quex_assert(buffer->_input_p == buffer->_memory._back);
         QUEX_BUFFER_ASSERT_CONSISTENCY(buffer);
         __quex_assert((int)Distance_LexemeStart_to_InputP == buffer->_input_p - buffer->_lexeme_start_p);
         __quex_assert(Distance_LexemeStart_to_InputP < QuexBuffer_content_size(buffer));
-        /* Copying forward shall **only** happen when new content is to be loaded. This is not the case
-         * if EOF as reached and the _memory._memory._end_of_file_p lies inside the buffer. Thus the _input_p
-         * must have reached the upper border of the buffer. */
-        __quex_assert(buffer->_input_p == buffer->_memory._back);
 
         /* (*) Fallback region = max(default size, necessary size)*/
         const size_t FallBackN = QUEX_SETTING_BUFFER_MIN_FALLBACK_N > Distance_LexemeStart_to_InputP 

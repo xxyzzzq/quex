@@ -1,15 +1,6 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=icpc ##
-simple.qx:6:warning: Token id 'QUEX_TKN_HEY________________' defined implicitly.
-simple.qx:7:warning: Token id 'QUEX_TKN_HALLO______________' defined implicitly.
-simple.qx:8:warning: Token id 'QUEX_TKN_LETTER_____________' defined implicitly.
-simple.qx:9:warning: Token id 'QUEX_TKN_HEY_P___HEY________' defined implicitly.
-simple.qx:10:warning: Token id 'QUEX_TKN_HEY_____HEY_HALLO_P' defined implicitly.
-simple.qx:11:warning: Token id 'QUEX_TKN_HEY_P___HEY_ETC____' defined implicitly.
-simple.qx:12:warning: Token id 'QUEX_TKN_HEY_____HEY________' defined implicitly.
-simple.qx:13:warning: Token id 'QUEX_TKN_HEY_HEY____________' defined implicitly.
-simple.qx:14:warning: Token id 'QUEX_TKN_WHITESPACE' defined implicitly.
 executing ...
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 

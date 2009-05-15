@@ -13,6 +13,10 @@ main(int argc, char** argv)
         printf("CHOICES:  Normal, StartOfStream;\n");
         return 0;
     }
+    if( argc == 1 ) {
+        printf("Command line argument required.\n");
+        return 0;
+    }
 
     using namespace quex;
 
