@@ -11,12 +11,12 @@ endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
-SOURCES  = tiny_lexer  tiny_lexer.cpp  tiny_lexer-token_ids  tiny_lexer-core-engine.cpp
+SOURCES  = tiny_lexer.cpp tiny_lexer-core-engine.cpp
 
 # (*) COMPILER SETTINGS ________________________________________________________
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
-COMPILER = g++ -ggdb -Wall -pedantic 
+COMPILER = g++ -ggdb -Wall -pedantic -DQUEX_TYPE_CHARACTER=uint8_t
 CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(NDEBUG_F) -DQUEX_OPTION_ASSERTS
 
 # (*) RULES ____________________________________________________________________
@@ -24,16 +24,19 @@ all: copy.exe fill.exe point.exe
 
 # -- char application
           
-%.exe: %.cpp $(SOURCES) $(QUEX_CORE)
-	$(CC) -o $@ $< tiny_lexer.cpp tiny_lexer-core-engine.cpp 
+%.exe: %.cpp $(SOURCES:.cpp=.o) $(QUEX_CORE) messaging-framework.o
+	$(CC) -o $@ $< tiny_lexer.o tiny_lexer-core-engine.o messaging-framework.o
           
 $(SOURCES): simple.qx $(QUEX_CORE)
-	quex -i simple.qx --engine tiny_lexer 
+	quex -i simple.qx --engine tiny_lexer --token-policy users_token
 
+%.o: %.cpp $(QUEX_CORE)
+	$(CC) -c $< -o $@  
+          
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch simple.qx
-	rm -f $(SOURCES)
+	rm -f tiny_lexer*
 	rm -f $(WSOURCES)
 	rm -f *.o
 	rm -f copy fill point

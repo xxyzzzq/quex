@@ -7,69 +7,68 @@
 size_t messaging_framework_receive(uint8_t** buffer);
 void   messaging_framework_release(uint8_t* buffer);
 
+typedef struct {
+    QUEX_TYPE_CHARACTER* begin;
+    QUEX_TYPE_CHARACTER* end;
+    size_t               size;
+} MemoryChunk;
+
+void swap(QUEX_TYPE_TOKEN* A, QUEX_TYPE_TOKEN* B)
+{ QUEX_TYPE_TOKEN* tmp = A; B = A; A = tmp; }
+
 int 
 main(int argc, char** argv) 
 {        
     using namespace std;
 
-    // (*) create token
-    quex::Token           token;
-    // (*) create the lexical analyser
-    quex::tiny_lexer      qlex;
-    QUEX_TYPE_CHARACTER*  msg         = 0x0;
-    QUEX_TYPE_CHARACTER*  chunk_begin = 0x0;
-    QUEX_TYPE_CHARACTER*  chunk_end   = chunk_begin;
-    size_t                chunk_size  = 0;
+    quex::Token    token_bank[2];
+    quex::Token*   prev_token;
+    quex::Token*   current_token;
 
+    quex::tiny_lexer      qlex;   /* No args to constructor --> raw memory */
+    QUEX_TYPE_CHARACTER*  msg = 0x0;
+    MemoryChunk           chunk;
+    QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;
+
+    prev_token    = &(token_bank[1]);
+    current_token = &(token_bank[0]);
+    current_token->set(QUEX_TKN_TERMINATION);
     while( 1 + 1 == 2 ) {
         // -- Receive content from a messaging framework
-        if( chunk_begin == chunk_end ) {
+        // The function 'buffer_fill_region_append()' may possibly not
+        // concatinate all content, so it needs to be tested wether new
+        // content needs to be loaded.
+        if( chunk.begin == chunk.end ) {
             if( msg != 0x0 ) messaging_framework_release(msg);
-            chunk_size  = messaging_framework_receive(&msg);
-            chunk_begin = msg;
-            chunk_end   = chunk_begin + chunk_size;
+            chunk.size  = messaging_framework_receive(&msg);
+            chunk.begin = msg;
+            chunk.end   = chunk.begin + chunk.size;
         } else {
-            // If chunk_begin != chunk_end, this means that there are still
+            // If chunk.begin != chunk.end, this means that there are still
             // some characters in the pipeline. Let us use them first.
         }
 
         // -- Copy buffer content into the analyzer's buffer
-        chunk_begin = qlex.buffer_fill_region_append(chunk_begin, chunk_end);
+        chunk.begin = qlex.buffer_fill_region_append(chunk.begin, chunk.end);
 
         // -- Loop until the 'termination' token arrives
-        do {
-            qlex.receive(&token);
-            cout << string(token) << endl;
-        } while( token.type_id() != QUEX_TKN_TERMINATION && token.type_id() != QUEX_TKN_BYE );
+        while( 1 + 1 == 2 ) {
+            prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
+            
+            swap(prev_token, current_token);
 
-        if( token.type_id() == QUEX_TKN_BYE ) break;
+            qlex.receive(current_token);
+            if( current_token->type_id() == QUEX_TKN_TERMINATION || current_token->type_id() == QUEX_TKN_BYE )
+                break;
+            if( prev_token->type_id() != QUEX_TKN_TERMINATION ) 
+                cout << string(*prev_token) << endl;
+        }
+
+        if( current_token->type_id() == QUEX_TKN_BYE ) break;
+
+        qlex.buffer_input_pointer_set(prev_lexeme_start_p);
     }
 
     return 0;
 }
 
-size_t 
-messaging_framework_receive(uint8_t** buffer)
-{
-    static char   data[] = "hello 4711 bonjour 0815 world 7777 le 31451 monde 00 welt 1234567890 hallo 1212 hello bye";
-    const size_t  L = sizeof(data) / sizeof(char);
-    char*         iterator = data;
-    size_t        size = random() * 5 + 1;
-
-    assert(iterator < data + L);
-    if( iterator + size >= data + L ) size = L - (iterator - data); 
-
-    *buffer = (uint8_t*)malloc(size * sizeof(uint8_t));
-    
-    memcpy(buffer, iterator, size);
-
-    iterator += size;
-
-    return size;
-}
-
-void 
-messaging_framework_release(uint8_t* buffer)
-{
-    free((void*)buffer);
-}
