@@ -37,8 +37,9 @@ namespace quex {
 
         if( MODE_ID != -1 ) this->set_mode_brutally(MODE_ID);
 
-        /* Initialize the lexical analyzer for the new input stream       */
-        this->__init(input_handle, BFT, IANA_CodingName);
+        /* Initialize the lexical analyzer for the new input stream.             */
+        /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
+        this->__init(input_handle, BFT, IANA_CodingName, 0x0, 0);
 
         /* Keep track of 'who's your daddy?'                              */
         m->parent = this->_parent_memento;

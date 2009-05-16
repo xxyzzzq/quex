@@ -15,7 +15,10 @@ def do():
     write_safely_and_close(file_name, txt) 
 
 def _do(Descr):
-    Descr.__class__.__name__ == "TokenTypeDescription"
+    # The following things must be ensured before the function is called
+    assert Descr != None
+    assert Descr.__class__.__name__ == "TokenTypeDescriptor"
+    assert Descr.get_member_db().keys() != []
 
     txt = get_basic_template(Descr)
 
@@ -42,6 +45,7 @@ def _do(Descr):
     return txt
 
 def get_basic_template(Descr):
+    
     TemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
                     + "/template/TokenTemplate").replace("//","/")
 

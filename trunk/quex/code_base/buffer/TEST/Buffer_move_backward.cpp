@@ -25,6 +25,7 @@ main(int argc, char** argv)
     *(buffer._memory._back - 1) = '0';
 
     buffer._input_p = buffer._memory._back - 1;
+    QuexBuffer_end_of_file_set(&buffer, buffer._memory._back);
 
     test_move_backward(&buffer, StepSize);
 }

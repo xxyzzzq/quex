@@ -42,7 +42,7 @@ import quex.core               as core
 from quex.frs_py.file_in  import error_msg
 
 if __name__ == "__main__":
-    try:
+    ## try:
         # (*) Call only for query? ___________________________________________________________
         if query_parser.do(sys.argv):   # if quex has been called for UCS property
             sys.exit(0)                 # query, then no further processing is performed
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
         else:                               core.do_plot()  # plot transition graphs
 
-    except Exception: # AssertionError:
-        error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")
+    #except Exception: # AssertionError:
+    #    error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")
 
 

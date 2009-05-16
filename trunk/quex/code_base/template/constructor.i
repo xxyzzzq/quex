@@ -44,6 +44,18 @@ CLASS::CLASS()
 }
 
 inline
+CLASS::CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize)
+: 
+    // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
+    // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
+    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
+    __file_handle_allocated_by_constructor(0x0)
+{
+    CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0, 
+                                    BufferMemoryBegin, BufferMemorySize);
+}
+
+inline
 CLASS::CLASS(const std::string&       Filename, 
              const char*              IANA_InputCodingName /* = 0x0 */, 
              QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */)

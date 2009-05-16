@@ -225,7 +225,12 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                           "be mentioned explicitly. Value '%s' mentioned without argument.\n" \
                           % member, fh)
             else:
-                access = lexer_mode.token_type_definition.get_member_access(member.strip())
+                member_name = member.strip()
+                if lexer_mode.token_type_definition.has_member(member_name) == False:
+                    error_msg("Explicit member '%s' not present in token type description.\n" % member_name + \
+                            "Token members are: %s" % repr(lexer_mode.token_type_definition.get_member_db().keys())[1:-1],
+                            fh)
+                access = lexer_mode.token_type_definition.get_member_access(member_name)
                 txt += "self.token_object()->%s = %s;\n" % (access, value.strip())
 
 
