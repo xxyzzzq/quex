@@ -25,13 +25,14 @@ main(int argc, char** argv)
     int                  memory_size = 12;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
+    /* We want to observe the standard error output in HWUT, so redirect to stdout */
     stderr = stdout;
-
-    printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
-    printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
     QuexBuffer_construct_wo_filler(&buffer, memory_size, 0, 0);
+
+    printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
+    printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");
 
     buffer._input_p = buffer._memory._front;
 
@@ -43,12 +44,12 @@ main(int argc, char** argv)
         buffer._content_character_index_end   = memory_size - 2; /* impossible, start of stream */
     }
 
-    /* We want to observe the standard error output in HWUT, so redirect to stdout */
     for(buffer._lexeme_start_p = buffer._memory._front + 1; 
         buffer._lexeme_start_p != buffer._memory._back; 
         ++(buffer._lexeme_start_p) ) { 
 
         memcpy((char*)(buffer._memory._front+1), (char*)content, (memory_size-2)*sizeof(QUEX_TYPE_CHARACTER));
+        QuexBuffer_end_of_file_set(&buffer, buffer._memory._back);
         /**/
         printf("------------------------------\n");
         printf("lexeme start = %i (--> '%c')\n", 

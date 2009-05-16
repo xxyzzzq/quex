@@ -298,6 +298,7 @@ $$MEMENTO_EXTENSIONS$$
 
     public:
         CLASS();
+        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize);
         CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
         CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
@@ -323,6 +324,8 @@ $$MEMENTO_EXTENSIONS$$
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
         size_t                buffer_fill_region_size();
         void                  buffer_fill_region_finish(const size_t LoadedN);
+        QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
+        void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
         // -- token stream: read next token
         void  get_token() 
@@ -508,11 +511,15 @@ $$CLASS_BODY_EXTENSION$$
         template <class InputHandleT> 
         void                        __constructor_core(InputHandleT*, 
                                                        QuexBufferFillerTypeEnum, 
-                                                       const char* IConvInputCodingName);
+                                                       const char* IANA_InputCodingName,
+                                                       QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
+                                                       size_t                BufferMemorySize = 0);
         template <class InputHandleT> 
         void                        __init(InputHandleT*  input_handle, 
                                            QuexBufferFillerTypeEnum  BFT, 
-                                           const char* IANA_InputCodingName);
+                                           const char*               IANA_InputCodingName,
+                                           QUEX_TYPE_CHARACTER*      BufferMemory,    
+                                           size_t                    BufferMemorySize);
 
 
         QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
@@ -521,7 +528,9 @@ $$CLASS_BODY_EXTENSION$$
 
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
-                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
+                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
+                              QUEX_TYPE_CHARACTER*      BufferMemory,    /* = 0x0 */
+                              size_t                    BufferMemorySize /* = 0 */)
     {
 #       if defined(QUEX_OPTION_ASSERTS) && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         std::cout << "###############################################################################\n";
@@ -569,7 +578,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
         _mode_stack.end        = _mode_stack.begin;
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-        __init(input_handle, BFT, IANA_InputCodingName);
+        __init(input_handle, BFT, IANA_InputCodingName, BufferMemorySize, BufferMemorySize);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -580,7 +589,9 @@ $$CONSTRUCTOR_EXTENSTION$$
 
     template <class InputHandleT> inline void
     CLASS::__init(InputHandleT*             input_handle, 
-                  QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
+                  QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
+                  QUEX_TYPE_CHARACTER*      BufferMemory,    /* = 0x0 */
+                  size_t                    BufferMemorySize /* = 0 */)
     {
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
@@ -597,7 +608,7 @@ $$CONSTRUCTOR_EXTENSTION$$
         } else {
             QuexAnalyser_construct_wo_filler((QuexAnalyser*)this,
                                              __current_mode_p->analyser_function,
-                                             QUEX_SETTING_BUFFER_SIZE, 0, 0);
+                                             QUEX_SETTING_BUFFER_SIZE, BufferMemory, BufferMemorySize);
         }
     }   
 

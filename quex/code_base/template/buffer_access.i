@@ -12,12 +12,14 @@ namespace quex {
         size_t                copy_size     = ContentEnd - ContentBegin;
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
         __quex_assert(buffer._content_character_index_begin == 0); 
+        __quex_assert(buffer._memory._end_of_file_p != 0x0); 
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
 
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);
 
         /* Determine the insertion position and copy size. */
-        QUEX_TYPE_CHARACTER*  text_end      = QuexBuffer_text_end(&buffer);
+        QUEX_TYPE_CHARACTER*  text_end      =   buffer._memory._end_of_file_p;
         const size_t          RemainingSize =   QuexBuffer_content_back(&buffer)
                                               - text_end + 1;
 
@@ -29,8 +31,7 @@ namespace quex {
         __QUEX_STD_memmove(text_end, ContentBegin, copy_size * sizeof(QUEX_TYPE_CHARACTER));
 
         /* When lexing directly on the buffer, the end of file pointer is always set. */
-        QUEX_TYPE_CHARACTER*   end_of_file_p = text_end + copy_size - 1;
-        QuexBuffer_end_of_file_set(&buffer, end_of_file_p);
+        QuexBuffer_end_of_file_set(&buffer, text_end + copy_size);
 
         /* NOT:
          *      buffer->_input_p        = front;
@@ -63,9 +64,18 @@ namespace quex {
     inline void
     CLASS::buffer_fill_region_finish(const size_t CharacterN)
     {
-        QuexBuffer_init(&buffer, /* ResetF */ false);
+        __quex_assert(buffer._memory._end_of_file_p + CharacterN <= buffer._memory._back);
         /* When lexing directly on the buffer, the end of file pointer is always set. */
         QuexBuffer_end_of_file_set(&buffer, 
-                                   QuexBuffer_content_front(&buffer) + CharacterN - 1); 
+                                   buffer._memory._end_of_file_p + CharacterN); 
     }
+
+    inline QUEX_TYPE_CHARACTER*  
+    CLASS::buffer_lexeme_start_pointer_get() 
+    { return buffer._lexeme_start_p; }
+
+    inline void
+    CLASS::buffer_input_pointer_set(QUEX_TYPE_CHARACTER* Adr)
+    { buffer._input_p = Adr; }
+
 }

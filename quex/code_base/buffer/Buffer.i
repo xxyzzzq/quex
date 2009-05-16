@@ -109,8 +109,6 @@ namespace quex {
          *       cause the QuexAnalyser_buffer_reload_forward(...) function to fail,
          *       and thus initiates the return to the last acceptance state.            */
         QuexBuffer_end_of_file_set(me, me->_memory._front + 1 + ContentSize);
-        //me->_memory._end_of_file_p = (Memory == 0x0) ? me->_memory._back 	         
-    	//                             :                 me->_memory._front + 1 + ContentSize;
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);

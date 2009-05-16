@@ -173,11 +173,16 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
     def union_members_variable_name_length_max(self):
         return self.__union_members_variable_name_length_max
 
+    def has_member(self, MemberName):
+        return self.__member_db.has_key(MemberName)
+
     def get_member_db(self):
         return self.__member_db
 
     def get_member_access(self, MemberName):
-        assert self.__member_db.has_key(MemberName)
+        assert self.__member_db.has_key(MemberName), \
+               "Member database does not provide member name '%s'.\n" % MemberName + \
+               "Available: " + repr(self.__member_db.keys())
         return self.__member_db[MemberName][1]
 
 
@@ -213,7 +218,11 @@ def parse(fh):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.", fh);
 
-    return TokenTypeDescriptor(descriptor)
+    result = TokenTypeDescriptor(descriptor)
+    if result.get_member_db().keys() == []:
+        error_msg("Section 'token_type' does not define any members.", fh)
+
+    return result
 
 def parse_section(fh, descriptor, already_defined_list):
     assert type(already_defined_list) == list
