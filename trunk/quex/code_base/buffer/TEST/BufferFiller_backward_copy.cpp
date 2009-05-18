@@ -22,14 +22,14 @@ main(int argc, char** argv)
 
     QuexBuffer           buffer;
     QUEX_TYPE_CHARACTER  content[]   = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}; 
-    int                  memory_size = 12;
+    int                  memory_size = sizeof(content) / sizeof(QUEX_TYPE_CHARACTER) + 2;
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
     /* We want to observe the standard error output in HWUT, so redirect to stdout */
     stderr = stdout;
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
-    QuexBuffer_construct_wo_filler(&buffer, memory_size, 0, 0);
+    QuexBuffer_construct_wo_filler(&buffer, 0x0, memory_size);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
     printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");

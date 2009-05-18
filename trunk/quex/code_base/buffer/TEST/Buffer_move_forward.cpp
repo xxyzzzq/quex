@@ -20,7 +20,7 @@ main(int argc, char** argv)
 
     assert(QUEX_SETTING_BUFFER_MIN_FALLBACK_N == 5);
 
-    QuexBuffer_construct_wo_filler(&buffer, memory_size, 0, 0);
+    QuexBuffer_construct_wo_filler(&buffer, 0x0, memory_size);
 
     for(int i = 1; i < memory_size - 2 ; ++i) *(buffer._memory._front + i) = '0' + i;
     *(buffer._memory._back - 1) = '0';

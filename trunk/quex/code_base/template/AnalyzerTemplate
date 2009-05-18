@@ -578,7 +578,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
         _mode_stack.end        = _mode_stack.begin;
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-        __init(input_handle, BFT, IANA_InputCodingName, BufferMemorySize, BufferMemorySize);
+        __init(input_handle, BFT, IANA_InputCodingName, BufferMemory, BufferMemorySize);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -599,6 +599,10 @@ $$CONSTRUCTOR_EXTENSTION$$
         counter.init();
 
         if( BFT != QUEX_MEMORY ) {
+            /* If a buffer filler is active, we cannot work directly on raw memory. */
+            __quex_assert(BufferMemory == 0x0);
+            __quex_assert(BufferMemorySize == 0x0);
+
             QuexAnalyser_construct((QuexAnalyser*)this,
                                    __current_mode_p->analyser_function,
                                    input_handle,
@@ -606,9 +610,11 @@ $$CONSTRUCTOR_EXTENSTION$$
                                    QUEX_SETTING_BUFFER_SIZE,
                                    QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
         } else {
+            /* Directly working on specific memory, makes fillers impossible. */
             QuexAnalyser_construct_wo_filler((QuexAnalyser*)this,
                                              __current_mode_p->analyser_function,
-                                             QUEX_SETTING_BUFFER_SIZE, BufferMemory, BufferMemorySize);
+                                             BufferMemory,
+                                             BufferMemorySize != 0 ? BufferMemorySize : QUEX_SETTING_BUFFER_SIZE);
         }
     }   
 
