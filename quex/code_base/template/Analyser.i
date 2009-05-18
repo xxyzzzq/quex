@@ -49,11 +49,10 @@ namespace quex {
     QUEX_INLINE void
     QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
                                      QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                                     const size_t                 BufferMemorySize,
-                                     QUEX_TYPE_CHARACTER*         Memory      /* = 0x0 */,
-                                     const size_t                 ContentSize /* = 0 */)
+                                     QUEX_TYPE_CHARACTER*         Memory,
+                                     const size_t                 MemorySize)
     {
-        QuexBuffer_construct_wo_filler(&me->buffer, BufferMemorySize, Memory, ContentSize);
+        QuexBuffer_construct_wo_filler(&me->buffer, Memory, MemorySize);
         me->current_analyser_function = AnalyserFunction;
 
         /* Double check that everything is setup propperly. */
