@@ -86,8 +86,8 @@ namespace quex {
 
     QUEX_INLINE void
     QuexBuffer_construct_wo_filler(QuexBuffer*           me, 
-                                   QUEX_TYPE_CHARACTER*  Memory     /* = 0x0 */,
-                                   const size_t          MemorySize /* = 0   */)
+                                   QUEX_TYPE_CHARACTER*  Memory,
+                                   const size_t          MemorySize)
     {
         /* Constructs a buffer for running only on memory, no 'filler' is involved.     */
         QUEX_TYPE_CHARACTER*   memory = Memory;
@@ -109,7 +109,7 @@ namespace quex {
          *       cause the QuexAnalyser_buffer_reload_forward(...) function to fail,
          *       and thus initiates the return to the last acceptance state.            
          * NOTE: The last character of content is located at "_front + size - 1".       */
-        QuexBuffer_end_of_file_set(me, me->_memory._front + MemorySize - 1);
+        QuexBuffer_end_of_file_set(me, me->_memory._front + 1);
 
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
