@@ -40,7 +40,8 @@ CLASS::CLASS()
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0);
+    CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0, 
+                                    0x0, QUEX_SETTING_BUFFER_SIZE);
 }
 
 inline
@@ -51,6 +52,7 @@ CLASS::CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize)
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
+    __quex_assert(BufferMemorySize > 2);
     CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0, 
                                     BufferMemoryBegin, BufferMemorySize);
 }

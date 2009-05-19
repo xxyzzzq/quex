@@ -30,6 +30,7 @@ main(int argc, char** argv)
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
     QuexBuffer_construct_wo_filler(&buffer, 0x0, memory_size);
+    QuexBuffer_end_of_file_unset(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");
     printf("## NOTE: When copying backward, it can be assumed: _input_p = _memory._front\n");

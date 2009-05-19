@@ -512,8 +512,8 @@ $$CLASS_BODY_EXTENSION$$
         void                        __constructor_core(InputHandleT*, 
                                                        QuexBufferFillerTypeEnum, 
                                                        const char* IANA_InputCodingName,
-                                                       QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
-                                                       size_t                BufferMemorySize = 0);
+                                                       QUEX_TYPE_CHARACTER*  BufferMemory          = 0x0,
+                                                       size_t                BufferMemorySize      = 0);
         template <class InputHandleT> 
         void                        __init(InputHandleT*  input_handle, 
                                            QuexBufferFillerTypeEnum  BFT, 
@@ -529,8 +529,8 @@ $$CLASS_BODY_EXTENSION$$
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
                               QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
-                              QUEX_TYPE_CHARACTER*      BufferMemory,    /* = 0x0 */
-                              size_t                    BufferMemorySize /* = 0 */)
+                              QUEX_TYPE_CHARACTER*      BufferMemory,    
+                              size_t                    BufferMemorySize)
     {
 #       if defined(QUEX_OPTION_ASSERTS) && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         std::cout << "###############################################################################\n";
@@ -590,8 +590,8 @@ $$CONSTRUCTOR_EXTENSTION$$
     template <class InputHandleT> inline void
     CLASS::__init(InputHandleT*             input_handle, 
                   QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
-                  QUEX_TYPE_CHARACTER*      BufferMemory,    /* = 0x0 */
-                  size_t                    BufferMemorySize /* = 0 */)
+                  QUEX_TYPE_CHARACTER*      BufferMemory,         
+                  size_t                    BufferMemorySize)
     {
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
@@ -611,10 +611,11 @@ $$CONSTRUCTOR_EXTENSTION$$
                                    QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
         } else {
             /* Directly working on specific memory, makes fillers impossible. */
+            __quex_assert(BufferMemorySize > 2);
             QuexAnalyser_construct_wo_filler((QuexAnalyser*)this,
                                              __current_mode_p->analyser_function,
                                              BufferMemory,
-                                             BufferMemorySize != 0 ? BufferMemorySize : QUEX_SETTING_BUFFER_SIZE);
+                                             BufferMemorySize);
         }
     }   
 
