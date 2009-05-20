@@ -1,3 +1,5 @@
+.. _sec-include-stack:
+
 Include Stack
 =============
 

@@ -12,7 +12,7 @@ typedef struct {
 } MemoryChunk;
 
 void swap(QUEX_TYPE_TOKEN** A, QUEX_TYPE_TOKEN** B)
-{ QUEX_TYPE_TOKEN* tmp = *A; *B = *A; *A = tmp; }
+{ QUEX_TYPE_TOKEN* tmp = *A; *A = *B; *B = tmp; }
 
 int 
 main(int argc, char** argv) 
@@ -58,10 +58,11 @@ main(int argc, char** argv)
 
             qlex.receive(current_token);
 
-            if( current_token->type_id() != QUEX_TKN_TERMINATION ) 
-                cout << string(*prev_token) << endl;
             if( current_token->type_id() == QUEX_TKN_TERMINATION || current_token->type_id() == QUEX_TKN_BYE )
                 break;
+
+            if( prev_token->type_id() != QUEX_TKN_TERMINATION )
+                cout << "Consider: " << string(*prev_token) << endl;
         }
 
         // -- If the 'end of all' token appeared, leave!
