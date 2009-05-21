@@ -83,6 +83,28 @@ messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER* BufferBegin, size_t
     return size;
 }
 
+size_t 
+messaging_framework_receive_into_buffer_syntax_chunk(QUEX_TYPE_CHARACTER* BufferBegin, size_t BufferSize)
+    /* Simulate a low lever driver that is able to fill a specified position in memory. */
+{
+    size_t         index_list[] = {0, 10, 29, 58, 72, 89, 98};
+    static size_t  cursor = 0;
+
+    // Apply the messaging_framework_data + ... so that we compute in enties
+    // of QUEX_TYPE_CHARACTER* and not '1'. Size shall be the number of characters.
+    size_t size = (  (messaging_framework_data + index_list[cursor + 1]) 
+                   - (messaging_framework_data + index_list[cursor])) * sizeof(QUEX_TYPE_CHARACTER);
+
+    if( size > BufferSize ) size = BufferSize; 
+
+    // If the target buffer cannot carry it, we drop it.
+    memcpy(BufferBegin, messaging_framework_data + index_list[cursor], size); 
+
+    cursor += 1;
+
+    return size;
+}
+
 QUEX_TYPE_CHARACTER   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 size_t
