@@ -79,6 +79,8 @@ namespace quex {
                               BufferMemorySize);      
 
         QuexBuffer_init(me, /* OnlyResetF */ false);
+
+        me->_memory_has_external_owner_f = false;
         
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
@@ -113,6 +115,8 @@ namespace quex {
 
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
+        me->_memory_has_external_owner_f = (Memory != 0x0);
+
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
@@ -121,7 +125,9 @@ namespace quex {
     QuexBuffer_destruct(QuexBuffer* me)
     {
         if( me->filler != 0x0 ) me->filler->_destroy(me->filler); 
-        MemoryManager_BufferMemory_free(me->_memory._front);
+
+        if( me->_memory_has_external_owner_f == false ) 
+            MemoryManager_BufferMemory_free(me->_memory._front);
     }
 
     QUEX_INLINE void

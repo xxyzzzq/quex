@@ -402,7 +402,6 @@ $$MEMENTO_EXTENSIONS$$
         // (*) Version information
         const char* version() const; // created by quex for version/date information
 
-    private:
         // (*) Helper
         void    move_forward(const size_t);
         void    move_backward(const size_t);

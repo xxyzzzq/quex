@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
-    echo "demo/009: Direct Buffer Access (8Bit and WChar Strings)"
+    echo "demo/009: Strings of 'char' and 'wchar_t'"
     echo "CHOICES:  lexer, wlexer;"
     echo "SAME;"
     exit

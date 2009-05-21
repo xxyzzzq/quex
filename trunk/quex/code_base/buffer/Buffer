@@ -53,6 +53,7 @@ namespace quex {
     
     typedef struct { 
         QuexBufferMemory      _memory;
+        bool                  _memory_has_external_owner_f;
 
         /* (*) Iterator positions for lexical analysis */
         QUEX_TYPE_CHARACTER*  _input_p;
