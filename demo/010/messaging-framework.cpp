@@ -5,12 +5,13 @@
 #include <quex/code_base/asserts>
 #include "messaging-framework.h"
 
-static QUEX_TYPE_CHARACTER   messaging_framework_data[] = "hello 4711 bonjour 0815 world 7777 le 31451 monde le monde 00 welt 1234567890 hallo 1212 hello bye";
+static QUEX_TYPE_CHARACTER   messaging_framework_data[] = 
+       "hello 4711 bonjour 0815 world 7777 le 31451 monde le monde 00 welt 1234567890 hallo 1212 hello bye";
 static size_t                messaging_framework_data_size()
 { return sizeof(messaging_framework_data) / sizeof(QUEX_TYPE_CHARACTER); }
 
 size_t 
-messaging_framework_receive(QUEX_TYPE_CHARACTER** buffer)
+messaging_framework_receive(QUEX_TYPE_CHARACTER** rx_buffer)
     /* Simulate the reception into a place that is defined by the low 
      * level driver. The low level driver reports the address of that place
      * and the size.                                                         */
@@ -22,7 +23,7 @@ messaging_framework_receive(QUEX_TYPE_CHARACTER** buffer)
 
     if( size >= remainder_size ) size = remainder_size; 
 
-    *buffer = iterator; 
+    *rx_buffer = iterator; 
     iterator += size;
 
     if( size != 0 ) {
@@ -34,6 +35,26 @@ messaging_framework_receive(QUEX_TYPE_CHARACTER** buffer)
     return size;
 }
 
+size_t 
+messaging_framework_receive_syntax_chunk(QUEX_TYPE_CHARACTER** rx_buffer)
+    /* Simulate the reception into a place that is defined by the low 
+     * level driver. The low level driver reports the address of that place
+     * and the size.                                                         */
+{
+    size_t         index_list[] = {0, 10, 29, 58, 72, 89, 98};
+    static size_t  cursor = 0;
+
+    *rx_buffer = messaging_framework_data + index_list[cursor]; 
+
+    // Apply the messaging_framework_data + ... so that we compute in enties
+    // of QUEX_TYPE_CHARACTER* and not '1'. Size shall be the number of characters.
+    const size_t Size =   (messaging_framework_data + index_list[cursor + 1]) 
+                        - (messaging_framework_data + index_list[cursor]);
+
+    cursor += 1;
+
+    return Size;
+}
 void 
 messaging_framework_release(uint8_t* buffer)
     /* A messaging framework that provide the address of the received content
@@ -69,7 +90,7 @@ messaging_framework_receive_to_internal_buffer()
     /* Simular a low level driver that iself has a hardware fixed position in memory 
      * which it fills on demand.                                                      */
 {
-    memcpy(MESSAGING_FRAMEWORK_BUFFER, messaging_framework_data, messaging_framework_data_size());
+    memcpy(MESSAGING_FRAMEWORK_BUFFER + 1, messaging_framework_data, messaging_framework_data_size());
     return messaging_framework_data_size();
 }
 

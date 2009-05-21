@@ -42,7 +42,7 @@ main(int argc, char** argv)
             if( current_token->type_id() == QUEX_TKN_TERMINATION || current_token->type_id() == QUEX_TKN_BYE )
                 break;
             if( prev_token->type_id() != QUEX_TKN_TERMINATION ) 
-                cout << string(*prev_token) << endl;
+                cout << "Consider: " << string(*prev_token) << endl;
         }
 
         if( current_token->type_id() == QUEX_TKN_BYE ) break;

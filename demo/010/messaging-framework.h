@@ -7,6 +7,7 @@
 extern QUEX_TYPE_CHARACTER   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 extern size_t messaging_framework_receive(QUEX_TYPE_CHARACTER** buffer);
+extern size_t messaging_framework_receive_syntax_chunk(QUEX_TYPE_CHARACTER** buffer);
 extern size_t messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER*, size_t);
 extern size_t messaging_framework_receive_to_internal_buffer();
 extern void   messaging_framework_release(uint8_t*);
