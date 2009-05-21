@@ -95,7 +95,13 @@ First, let us treat the case that the incoming frames are considered to be be
 is less complicated than the case where frame borders appear arbitrarily, because
 any trailing lexeme can be considered terminated and the analyzer does not need
 to wait for the next frame to possibly complete what started at the end of the last
-frame. The following paragraphs discuss the implementation of this use case. First,
+frame. 
+
+Syntactically Chunked Input Frames
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+
+The following paragraphs discuss the implementation of this use case. First,
 two pointers are required that keep track of the memory positions which
 are copied to the buffer.
 
@@ -110,16 +116,151 @@ A ``chunk`` of type ``MemoryChunk`` later contains information about the
 current content to be copied into the analyzer's buffer. ``.begin`` designates
 the beginning of the remaining content to be copied into the analyzer's buffer.
 ``.end`` points to the end of the currently available content as received from
-the messaging framework.  
+the messaging framework. The following segment shows which variables are
+required for the analyzis process.
+
+.. code-block:: cpp
+
+    int
+    main(int argc, char** argv)
+    {
+        quex::tiny_lexer      qlex;            // No args to constructor --> raw memory 
+        quex::Token           token;           // Two tokens required, one for look-ahead
+        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
+        MemoryChunk           chunk;
+
+The analyzis start with the following:
+
+.. code-block:: cpp
+
+        // -- trigger reload at loop start
+        chunk.end = chunk.begin;
+
+        // LOOP
+        while( 1 + 1 == 2 ) {
+            // -- Receive content from a messaging framework
+            if( chunk.begin == chunk.end ) {
+                // -- If the receive buffer has been read, it can be released.
+                if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
+                // -- Setup the pointers 
+                const size_t Size  = messaging_framework_receive_syntax_chunk(&rx_buffer);
+                chunk.begin = rx_buffer;
+                chunk.end   = chunk.begin + Size;
+            }
+
+            // -- Loop until the 'termination' token arrives
+            while( 1 + 1 == 2 ) {
+                qlex.receive(&token);
+
+                if( token.type_id() == QUEX_TKN_TERMINATION ) break;
+                if( token.type_id() == QUEX_TKN_BYE )         return 0;
+
+                cout << "Consider: " << string(token) << endl;
+            }
+        }
+
+At the beginning of the loop it is checked wether it is necessary to get
+new content from the messaging framework. If so, the previously received
+'receive buffer' may be released for ulterior use. Then the messaging
+framework is called and it returns information about the memory position
+and the size where the received data has been stored. Now, the content
+needs to be copied into the analyzer's buffer.
+
+.. code-block:: cpp
+
+           chunk.begin = qlex.buffer_fill_region_append(chunk.begin, chunk.end);
+
+This function call ensures that 'old content' is moved out of the buffer. Then,
+it tries to copy as much content as possible from ``chunk.begin`` to ``chunk.end``.
+If there is not enough space to copy all of it, it returns the pointer to the
+end of the copied region. This value is stored in ``chunk.begin`` so that it
+triggers the copying of the remainder the next time of this function call.
+Now, the buffer is filled and the real analyzis can start. 
+
+.. code-block:: cpp
+
+            // -- Loop until the 'termination' token arrives
+            while( 1 + 1 == 2 ) {
+                qlex.receive(&token);
+
+                if( token.type_id() == QUEX_TKN_TERMINATION ) break;
+                if( token.type_id() == QUEX_TKN_BYE )         return 0;
+
+                cout << "Consider: " << string(token) << endl;
+            }
+
+When a ``TERMINATION`` token is detected a new frame must be loaded. The
+inner analyzis loop is left and the outer loop loads new content. If the
+``BYE`` token appears the analyzis is done. Any token that is not one
+of the two abovementioned ones is a token to be considered by the parser.
+It follows the complete code of the analyzer for syntactically chunked
+input frames:
+
+.. code-block:: cpp
+
+    #include "tiny_lexer"
+    #include "messaging-framework.h"
+
+    typedef struct {
+        QUEX_TYPE_CHARACTER* begin;
+        QUEX_TYPE_CHARACTER* end;
+    } MemoryChunk;
+
+    int 
+    main(int argc, char** argv) 
+    {        
+        using namespace std;
+
+        quex::tiny_lexer      qlex;            // No args to constructor --> raw memory 
+        quex::Token           token;           // Two tokens required, one for look-ahead
+        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
+        MemoryChunk           chunk;
+
+        // -- trigger reload of memory
+        chunk.begin = chunk.end;
+
+        // -- LOOP until 'bye' token arrives
+        while( 1 + 1 == 2 ) {
+            // -- Receive content from a messaging framework
+            if( chunk.begin == chunk.end ) {
+                // -- If the receive buffer has been read, it can be released.
+                if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
+                // -- Setup the pointers 
+                const size_t Size  = messaging_framework_receive_syntax_chunk(&rx_buffer);
+                chunk.begin = rx_buffer;
+                chunk.end   = chunk.begin + Size;
+            } else {
+                // If chunk.begin != chunk.end, this means that there are still
+                // some characters in the pipeline. Let us use them first.
+            }
+
+            // -- Copy buffer content into the analyzer's buffer
+            chunk.begin = qlex.buffer_fill_region_append(chunk.begin, chunk.end);
+
+            // -- Loop until the 'termination' token arrives
+            while( 1 + 1 == 2 ) {
+                qlex.receive(&token);
+
+                // TERMINATION => possible reload
+                // BYE         => end of game
+                if( token.type_id() == QUEX_TKN_TERMINATION ) break;
+                if( token.type_id() == QUEX_TKN_BYE )         return 0;
+
+                cout << "Consider: " << string(token) << endl;
+            }
+        }
+
+        return 0;
+    }
 
 
+Arbitrarily Chunked Input Frames
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-
-
-In case that frames can be broken *in between*
-syntactical entities, more consideration is required. The fact that a pattern
-is matched does not necessarily mean, that it is the 'winning' pattern. For
-example, the frame at time '0'::
+In case that frames can be broken *in between* syntactical entities, more
+consideration is required. The fact that a pattern is matched does not
+necessarily mean, that it is the 'winning' pattern. For example, the frame
+at time '0'::
 
     frame[time=0]  [for name in print]
 
@@ -170,41 +311,23 @@ The following code fragment shows all required variables and their initializatio
         chunk.begin = chunk.end;
 
 Two token pointers are used to play the role of look-ahead alternatingly. The
-tokens to which these pointers point are in the ``token_array``. The current
-token id is set to ``TERMINATION`` to indicate that a reload happend. Setting
-``.begin = .end`` indicates that new content needs to be loaded. Now, the 
-analyzer loop may be entered, as shown in the subsequent code fragment.
+tokens to which these pointers point are in the ``token_array``. The
+current token id is set to ``TERMINATION`` to indicate that a reload
+happend. The loading of new frame content happens exactly the same way
+as for syntactically chunked input frames.
 
 .. code-block:: cpp
     
     while( 1 + 1 == 2 ) {
-        // -- Receive content from a messaging framework
         if( chunk.begin == chunk.end ) {
-            // -- If the receive buffer has been read, it can be released.
             if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
-            // -- Setup the pointers 
             const size_t  Size = messaging_framework_receive(&rx_buffer);
             chunk.begin = rx_buffer;
             chunk.end   = chunk.begin + Size;
         } 
 
-At the beginning of the loop it is checked wether it is necessary to get
-new content from the messaging framework. If so, the previously received
-'receive buffer' may be released for ulterior use. Then the messaging
-framework is called and it returns information about the memory position
-and the size where the received data has been stored. Now, the content
-needs to be copied into the analyzer's buffer.
-
-.. code-block:: cpp
-
-        chunk.begin = qlex.buffer_fill_region_append(chunk.begin, chunk.end);
-
-This function call ensures that 'old content' is moved out of the buffer. Then,
-it tries to copy as much content as possible from ``chunk.begin`` to ``chunk.end``.
-If there is not enough space to copy all of it, it returns the pointer to the
-end of the copied region. This value is stored in ``chunk.begin`` so that it
-triggers the copying of the remainder the next time of this function call.
-Now, the buffer is filled and the analyzis might start. 
+The inner analyzis loop, though, differs because a look-ahead token
+must be considered.
 
 .. code-block:: cpp
 
@@ -216,11 +339,8 @@ Now, the buffer is filled and the analyzis might start.
 
             qlex.receive(current_token);
 
-            // TERMINATION => possible reload
-            // BYE         => end of game
-            if(    current_token->type_id() == QUEX_TKN_TERMINATION 
-                || current_token->type_id() == QUEX_TKN_BYE )
-                break;
+            if( current_token->type_id() == QUEX_TKN_TERMINATION ) break;
+            if( current_token->type_id() == QUEX_TKN_BYE )         return 0;
 
             // If the previous token was not a TERMINATION, it can be considered
             // by the syntactical analyzer (parser).
@@ -257,7 +377,7 @@ setup. The handling of the loop exit is shown below.
     chunks. This is possible if a pattern contains potentially a sequence of 
     other patterns. Consider the mode
 
-    .. code-block:: cpp
+.. code-block:: cpp
 
         mode {
             "le"       => QUEX_TKN_ARTICLE;
@@ -266,14 +386,14 @@ setup. The handling of the loop exit is shown below.
             "le monde" => QUEX_TKN_NEWSPAPER;
         }
 
-    which is fed with the frames
+    which is fed with the frames::
 
         frame[time=0] [le]
         frame[time=0] [ ]
         frame[time=0] [monde]
 
     In this case the program waits propperly after ``le`` has arrived, but when
-    the white space arrives, the content of the buffer is
+    the white space arrives, the content of the buffer is::
 
          [... le ]
 
@@ -285,10 +405,97 @@ setup. The handling of the loop exit is shown below.
     a single token ``NEWSPAPER`` which matches ``le monde``.
     
     If frame are this small, two things can be done. Either copy as much frames
-    into the buffer as possible before starting the analyzis, or apply more than
-    one look-ahead. The first solution is, of course, simpler. However, in case of a 
-    blocking receive function, it might be not as efficient as the second 
-    solution.
+    into the buffer as possible before starting the analyzis, or apply more
+    than one look-ahead. The first solution is, of course, simpler. However, in
+    case of a blocking receive function, it might be not as efficient as the
+    second solution.
+
+The complete code to do the analyzis of arbitrarily chunked input frames is
+shown below.
+
+.. code-block:: cpp
+
+    #include "tiny_lexer"
+    #include "messaging-framework.h"
+
+    typedef struct {
+        QUEX_TYPE_CHARACTER* begin;
+        QUEX_TYPE_CHARACTER* end;
+    } MemoryChunk;
+
+    void swap(QUEX_TYPE_TOKEN** A, QUEX_TYPE_TOKEN** B)
+    { QUEX_TYPE_TOKEN* tmp = *A; *A = *B; *B = tmp; }
+
+    int 
+    main(int argc, char** argv) 
+    {        
+        using namespace std;
+
+        quex::tiny_lexer      qlex;       // No args to constructor --> raw memory 
+        quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
+        quex::Token*   prev_token;        // Use pointers to swap quickly.
+        quex::Token*   current_token;     // 
+        QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  // A pointer to the receive buffer that
+        //                                      // the messaging framework provides.
+        MemoryChunk           chunk;      // Pointers to the memory positions under
+        //                                // consideration.
+        QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; // Store the start of the 
+        //                                               // lexeme for possible 
+        //                                               // backup.
+
+        // -- initialize the token pointers
+        prev_token    = &(token_bank[1]);
+        current_token = &(token_bank[0]);
+        current_token->set(QUEX_TKN_TERMINATION);
+        // -- trigger reload of memory
+        chunk.begin = chunk.end;
+
+        // -- LOOP until 'bye' token arrives
+        while( 1 + 1 == 2 ) {
+            // -- Receive content from a messaging framework
+            if( chunk.begin == chunk.end ) {
+                // -- If the receive buffer has been read, it can be released.
+                if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
+                // -- Setup the pointers 
+                const size_t Size  = messaging_framework_receive(&rx_buffer);
+                chunk.begin = rx_buffer;
+                chunk.end   = chunk.begin + Size;
+            }
+
+            // -- Copy buffer content into the analyzer's buffer
+            chunk.begin = qlex.buffer_fill_region_append(chunk.begin, chunk.end);
+
+            // -- Loop until the 'termination' token arrives
+            while( 1 + 1 == 2 ) {
+                prev_lexeme_start_p = qlex.buffer_lexeme_start_pointer_get();
+                
+                // Let the previous token be the current token of the previous run.
+                swap(&prev_token, &current_token);
+
+                qlex.receive(current_token);
+
+                // TERMINATION => possible reload
+                // BYE         => end of game
+                if( current_token->type_id() == QUEX_TKN_TERMINATION ) break;
+                if( current_token->type_id() == QUEX_TKN_BYE )         return 0;
+
+                // If the previous token was not a TERMINATION, it can be considered
+                // by the syntactical analyzer (parser).
+                if( prev_token->type_id() != QUEX_TKN_TERMINATION )
+                    cout << "Consider: " << string(*prev_token) << endl;
+            }
+
+            // -- If the 'bye' token appeared, leave!
+            if( current_token->type_id() == QUEX_TKN_BYE ) break;
+
+            // -- Reset the input pointer, so that the last lexeme before TERMINATION
+            //    enters the matching game again.
+            qlex.buffer_input_pointer_set(prev_lexeme_start_p);
+        }
+
+        return 0;
+    }
+
 
 Direct Filling
 ..............
