@@ -17,7 +17,7 @@ main(int argc, char** argv)
     size_t receive_n = messaging_framework_receive_to_internal_buffer();
 
     // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
-    qlex.buffer_fill_region_finish(receive_n);
+    qlex.buffer_fill_region_finish(receive_n-1);
 
     // -- Loop until the 'termination' token arrives
     do {
@@ -27,7 +27,7 @@ main(int argc, char** argv)
             cout << "## ";
 
         if( token.type_id() != QUEX_TKN_TERMINATION )
-            cout << string(token) << endl;
+            cout << "Consider: " << string(token) << endl;
         
     } while( token.type_id() != QUEX_TKN_TERMINATION );
 
