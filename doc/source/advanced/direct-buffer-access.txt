@@ -570,8 +570,8 @@ directory implements an example.
 
 .. note::
 
-   The ``Pointing`` method is very seductive to be used in the context of 
-   hardware input buffers or shared memory. However, at the time of this
-   writing, a quex generated engine is not able to work on read-only memory.
-   It needs to be able to place the buffer limit code in an arbitrary 
-   position inside the buffer.
+   The ``Pointing`` method is very seductive to be used in the context of
+   hardware input buffers or shared memory. In such cases care is to be taken,
+   because at the time of this writing, a quex generated engine is not
+   able to work on read-only memory.  It needs to be able to place
+   the buffer limit code in an arbitrary position inside the buffer.
