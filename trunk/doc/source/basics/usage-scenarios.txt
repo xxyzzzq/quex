@@ -9,6 +9,7 @@ with the engine is required. In this section, a set of scenarios is identified.
 The reader is encourage to compare his use case with the ones mentioned below
 and to apply the appropriate interaction scheme.
 
+
 #. **File**: The whole stream of data is present at the time where the engine
    starts its analysis. This is the typical case when the input consists of
    files provided by some type of file system.
@@ -64,20 +65,21 @@ and to apply the appropriate interaction scheme.
     other derivate of ``istream`` or ``FILE*``. Essential is that all data is available
     as soon at the moment the engine expects it.
 
+.. _sec-syntax-chunks:
        
 #. **Syntactically Chunked Input**: In this scenario, the engine is fed with
     chunks of character streams which appear in a time separate manner. Thus,
     the engine does not necessarily get a reply when it asks to refill its
-    buffer. It is assumed that the chunk itself is sufficient to judge about
-    the given tokens. There are no tails to be appended, so that a lexeme is
-    completed.::
+    buffer. In the syntactically chunked case, though, it is assumed that the 
+    frame itself is sufficient to categorize the stream into tokens.
+    There are no tails to be appended, so that a lexeme is completed.
+    This may be a frame sequence which is fed to a command line interpreter:::
 
        frame[time=0]:  [print "hello world"]
        frame[time=1]:  [plot "myfile.dat" u 1:4] 
        frame[time=2]:  [display on screen 45, 32 pri] 
 
-    Consider, for example, a command line interpreter that executes commands on
-    each newline character. The command line from start to end is passed to the
+    The command line from start to end is passed to the
     analyzer engine. If there is a keyword ``print`` and the line ends with
     "``pri``", then the engine does not have to wait for the next line in order
     to check wether it completes the ``print`` keyword. It is imposed that each
@@ -85,11 +87,13 @@ and to apply the appropriate interaction scheme.
     identifier or whatsoever the language proposes (most likely 'error').
 
     This scenario requires direct buffer access. It can be treated by means
-    of :ref:`Copying`, :ref:`Filling`, or :ref:`Pointing` as mentioned in the
+    of :ref:`sec-copying`, :ref:`sec-filling`, or :ref:`sec-pointing` as mentioned in the
     dedicated sections.
 
+.. _sec-arbitrary-chunks:
+
 #. **Arbitrarily Chunked Input**: In this scenario, the analyzer needs to wait
-    at the point it reaches the end of a character chunk because there might be
+    at the point it reaches the end of a character frame because there might be
     a tail that completes the lexeme::
 
        frame[time=0]:  [print "hello world"; plo]
@@ -99,7 +103,7 @@ and to apply the appropriate interaction scheme.
     This might happen when input comes through a network connection and the
     frame content is not synchronized with the frame size.  This scenario,
     also, requires direct buffer access. It can be treated by means of
-    :ref:`Copying`, :ref:`Filling`, but not with :ref:`Pointing`.
+    :ref:`sec-copying`, :ref:`sec-filling`, but not with :ref:`sec-pointing`.
 
 In the view of the author, these use case cover all possible scenarios. However,
 do not hesitate to write a email if there is a scenario which cannot be handled 
