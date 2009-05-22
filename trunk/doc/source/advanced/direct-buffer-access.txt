@@ -263,12 +263,11 @@ at time '0'::
     frame[time=0]  [for name in print]
 
 matches at the end ``print`` which might be a keyword. The lexical analyzer
-will return a KEYWORD token followed by a TERMINATION token. The TERMINATION
-token tells the the end of a frame is reached, and thus, the previous token 
-is not reliable. Let the above frame be continued by::
+will return a KEYWORD token followed by a TERMINATION token. Let the above
+frame be continued as::
 
     frame[time=0]  [for name in print]
-    frame[time=0]  [er_list: send file to name;]
+    frame[time=1]  [er_list: send file to name;]
 
 which makes clear the actually the lexeme ``printer_list`` is to be matched.
 To deal with such cases one look-ahead token is required. A token is only to be
@@ -386,27 +385,25 @@ setup. The handling of the loop exit is shown below.
 
     which is fed with the frames::
 
-        frame[time=0] [le]
-        frame[time=0] [ ]
-        frame[time=0] [monde]
+        frame[time=0] [le ]
+        frame[time=1] [monde]
 
-    In this case the program waits propperly after ``le`` has arrived, but when
-    the white space arrives, the content of the buffer is::
-
-         [... le ]
-
-    When the terminating token arrives the longest match holds which is ``le``
-    and the analysis continues with the whitespace. The whitespace again is a
-    valid token and thus no TERMINATING token is sent immediately which would
-    trigger a re-consideration of what started with ``le``. Eventually, the
-    token sequence will be: ``ARTICLE``, ``SPACE``, ``WORLD`` instead of
-    a single token ``NEWSPAPER`` which matches ``le monde``.
+    When the first frame border is reached now, the longest complete match
+    holds, which is ``le`` (``ARTICLE``) and the analysis continues with the '
+    ' (``WHITESPACE``). Thus, ``WHITESPACE`` will be the last token before the
+    TERMINATION token. The reconsideration triggered by the ``TERMINATION`` token
+    is only concerned with the last token, i.e. ``WHITESPACE``, but does not go
+    back to the start of ``le``.  Eventually, the token sequence will be:
+    ``ARTICLE``, ``SPACE``, ``WORLD`` instead of a single token ``NEWSPAPER``
+    which matches ``le monde``.
     
-    If frame are this small, two things can be done. Either copy as much frames
-    into the buffer as possible before starting the analyzis, or apply more
-    than one look-ahead. The first solution is, of course, simpler. However, in
-    case of a blocking receive function, it might be not as efficient as the
-    second solution.
+    If frames are this small and token definitions overlap in such a manner,
+    then two things can be done. Either as much frames need to be copied
+    into the buffer as possible before starting the analyzis, or more
+    than one look-ahead token needs to be consirdered. The first
+    solution is, of course, simpler. However, in case of a blocking
+    receive function, it might be not as efficient as the second
+    solution.
 
 The complete code to do the analyzis of arbitrarily chunked input frames is
 shown below.
@@ -571,3 +568,10 @@ tells the analyzer about the number of characters that make up the content.
 Now, the analyzis may start. The file ``point.cpp`` in the ``demo/010``
 directory implements an example. 
 
+.. note::
+
+   The ``Pointing`` method is very seductive to be used in the context of 
+   hardware input buffers or shared memory. However, at the time of this
+   writing, a quex generated engine is not able to work on read-only memory.
+   It needs to be able to place the buffer limit code in an arbitrary 
+   position inside the buffer.
