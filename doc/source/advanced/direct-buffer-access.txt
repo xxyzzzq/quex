@@ -1,3 +1,5 @@
+.. _sec-customized-buffer-access:
+
 Customized Buffer Filling Procedures.
 =====================================
 
@@ -31,16 +33,6 @@ is used to refer to some kind of entity that delivers the data.
 
    **Example**: ``demo/010/point.cpp``.
 
-#. Via an *input policy*, so that the buffer management may rely on it.
-
-   Same as for *Copying* and *Immediate Filling*.  The advantage of this method
-   is that it is for the engine and the user seemingless. With this method,
-   there is no complexity to be added 'outside'.
-
-In this section all processes are described. The first three methods can be
-implemented using the member functions of the lexical analyzer object. The last
-method, i.e. providing a customized input policy requires some extra coding.
-
 .. note:: 
 
    With the methods *Immediate Filling*, and *Pointing* no implicit
@@ -52,29 +44,44 @@ method, i.e. providing a customized input policy requires some extra coding.
    is specified.
 
 In case of interrupted character streams, there is no direct way for the
-analyzer engine to determine wether a stream is terminated or not. Thus,
-either a 'end of analyzis' pattern must be introduced, or the analyzis
-is to be supervised by another thread which may end the analyzis based 
-on time-out conditions. In the following description it is assumed that
-there exists a pattern that tells the analyzer that the stream is ended.
-It produces a ``BYE`` token.
+analyzer engine to determine wether a stream is terminated or not. Thus, either
+a 'end of analyzis' pattern must be introduced, or the analyzis is to be
+supervised by another thread which may end the analyzis based on time-out
+conditions. In the following description it is assumed that there exists a
+pattern that tells the analyzer that the stream is ended.  It produces a
+``BYE`` token.  Direct buffer access can be performed by means of the following
+member functions:
+
+    .. code-block:: cpp
+
+        QUEX_TYPE_CHARACTER*  buffer_fill_region_append(ContentBegin, ContentEnd);
+        QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
+        QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
+        QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
+        size_t                buffer_fill_region_size();
+        void                  buffer_fill_region_finish(FilledCharacterN);
+
+Analyzers that work directly on user managed memory should use one of 
+the following constructors:
+
+    .. code-block:: cpp
+
+        MyLexer();
+        MyLexer(QUEX_TYPE_CHARACTER* Begin, size_t Size);
+
+where ``MyLexer`` is the user specified engine name. For file based input the
+analyzer can navigate backwards in an arbitrary manner. This is not possible if
+the buffer is filled by the user. This becomes essential when so called
+'pre-conditions' require a backward lexical analyzis (see
+:ref:`sec-pre-and-post-conditions`). Then the setting of the macro::
+
+        QUEX_SETTING_BUFFER_MIN_FALLBACK_N
+
+determines the maximum length of the pre-condition pattern. If no pre-condition
+pattern is used, this might be neglected.
 
 
-Direct Buffer Access
---------------------
-
-Direct buffer access can be performed by means of the following member functions:
-
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* TerminatedContent);
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, ContentEnd);
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
-    QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
-    size_t                buffer_fill_region_size();
-    void                  buffer_fill_region_finish(const size_t FilledCharacterN);
-
--- pre-conditions / fall back region
--- calling constructor with no argument == raw buffer handling
+.. _sec-copying:
 
 Copying Content
 ...............
@@ -129,6 +136,8 @@ required for the analyzis process.
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
 
+        ...
+
 The analyzis start with the following:
 
 .. code-block:: cpp
@@ -147,17 +156,7 @@ The analyzis start with the following:
                 chunk.begin = rx_buffer;
                 chunk.end   = chunk.begin + Size;
             }
-
-            // -- Loop until the 'termination' token arrives
-            while( 1 + 1 == 2 ) {
-                qlex.receive(&token);
-
-                if( token.type_id() == QUEX_TKN_TERMINATION ) break;
-                if( token.type_id() == QUEX_TKN_BYE )         return 0;
-
-                cout << "Consider: " << string(token) << endl;
-            }
-        }
+            ...
 
 At the beginning of the loop it is checked wether it is necessary to get
 new content from the messaging framework. If so, the previously received
@@ -252,7 +251,6 @@ input frames:
 
         return 0;
     }
-
 
 Arbitrarily Chunked Input Frames
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -377,14 +375,14 @@ setup. The handling of the loop exit is shown below.
     chunks. This is possible if a pattern contains potentially a sequence of 
     other patterns. Consider the mode
 
-.. code-block:: cpp
+    .. code-block:: cpp
 
-        mode {
-            "le"       => QUEX_TKN_ARTICLE;
-            "monde"    => QUEX_TKN_WORLD;
-            " "        => QUEX_TKN_SPACE;
-            "le monde" => QUEX_TKN_NEWSPAPER;
-        }
+            mode {
+                "le"       => QUEX_TKN_ARTICLE;
+                "monde"    => QUEX_TKN_WORLD;
+                " "        => QUEX_TKN_SPACE;
+                "le monde" => QUEX_TKN_NEWSPAPER;
+            }
 
     which is fed with the frames::
 
@@ -497,40 +495,79 @@ shown below.
     }
 
 
+.. _sec-filling:
+
 Direct Filling
 ..............
 
-The method of direct buffer filling is the most memory and calculation time
-efficient. In this case, the analyzer provides a pointer to an address where
-new content can be filled in. Additionally, it provides the maximum fill
-size and/or the end address of the space to be filled. This information
-can be passed to some low level driver that fills the buffer. This way
-no extra copying is required. Instead, the low level driver works directly
-on the lexical analyzer's buffer. The following code fragment implements 
-this approach:
+Instead of copying the input, the memory of the lexical analyzer can
+be filled directly. The address and size of the current region
+to be filled can be accessed via the member functions:
 
 .. code-block:: cpp
-    
-    while( 1 + 1 == 2 ) {
-        // Initialize the filling of the fill region
+
+        QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
+        QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
+        size_t                buffer_fill_region_size();
+
+In order to get rid of content that has already been treated the function
+
+.. code-block:: cpp
+
         qlex.buffer_fill_region_prepare();
 
-        // Call the low lever driver to fill the fill region
-        int count_n = receive_transmission(qlex.buffer_fill_region_begin(), 
-                                           qlex.buffer_fill_region_size());
+must be called before filling. As in the Copying case, it moves used
+content out of the buffer and, thus, creates space for new content. Finally,
+after new content has been filled in, the analyzer must be informed
+about the new 'end of memory'. This happens via a call to the
+function
 
-        // Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
-        qlex.buffer_fill_region_finish(count_n);
+.. code-block:: cpp
 
-        cout << "[[Received " << count_n << " characters in chunk.]]\n";
+        qlex.buffer_fill_region_finish();
 
-        // Loop until the 'termination' token arrives
-        do {
-            qlex.receive(&Token);
-            cout << string(Token) << endl;
-        } while( Token.type_id() != QUEX_TKN_TERMINATION && Token.type_id() != QUEX_TKN_BYE );
+The core of an analyzis process based on direct filling looks like the
+following:
 
-        if( Token.type_id() == QUEX_TKN_BYE ) break;
-    }
+.. code-block:: cpp
 
+        // -- Initialize the filling of the fill region
+        qlex.buffer_fill_region_prepare();
+
+        // -- Call the low lever driver to fill the fill region
+        size_t receive_n = receive_into_buffer(qlex.buffer_fill_region_begin(), 
+                                               qlex.buffer_fill_region_size());
+
+        // -- Inform the buffer about the number of loaded characters NOT NUMBER OF BYTES!
+        qlex.buffer_fill_region_finish(receive_n);
+
+Note, that there is no ``chunk.begin`` information to be updated as in the
+case of Copying. The remaining framework for syntactically chunked and arbitrary
+chunked input is exactly the same as for the copying case. Source code examples
+can be reviewed in the ``demo/010`` directory. 
+
+.. _sec-pointing:
+
+Pointing
+........
+
+The 'Pointing' method implies that the user *owns* the piece of memory which is
+used by the lexical analyzer. A constructor call
+
+.. code-block:: cpp
+
+    quex::MyLexer      qlex(BUFFER_ADR, BUFFER_SIZE); 
+
+announces the memory to be used by the engine. Note, that the first position
+to be written to must be ``BUFFER_ADR + 1``, because the first element of
+the memory is filled with the buffer limit code. When the content of the
+buffer is filled a call to 
+
+.. code-block:: cpp
+
+    qlex.buffer_fill_region_finish(receive_n);
+
+tells the analyzer about the number of characters that make up the content.
+Now, the analyzis may start. The file ``point.cpp`` in the ``demo/010``
+directory implements an example. 
 
