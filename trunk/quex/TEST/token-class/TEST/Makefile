@@ -14,7 +14,7 @@ CC = g++ -ggdb -Wall \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 
 hwut-info:
-	@echo $(TESTS)
+	@echo $(TESTS) ::SCRIPTS::
 
 simple-queue.exe: lexer.cpp $(QUEX_CORE) token.qx send-via-name.qx
 	quex -i token.qx send-via-name.qx -o Simple --token-policy queue

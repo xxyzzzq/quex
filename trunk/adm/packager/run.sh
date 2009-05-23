@@ -41,7 +41,7 @@ function collect_distribution_file_list()
 
     find trunk/quex $directory/demo  -type f  > $input
 
-    echo "trunk/LPGL.txt"              >> $input
+    echo "trunk/LGPL.txt"              >> $input
     echo "trunk/COPYRIGHT.txt"         >> $input
     echo "trunk/README"                >> $input
     echo "trunk/unit_test_results.txt" >> $input

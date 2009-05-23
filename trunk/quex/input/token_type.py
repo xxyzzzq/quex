@@ -431,7 +431,7 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
         if not GroupF or not check(fh, "{"): 
             fh.seek(position); 
             return None
-        sub_db = parse_variable_definition_list(fh, "concurrent union variables", already_defined_list)
+        sub_db = parse_variable_definition_list(fh, "Concurrent union variables", already_defined_list)
         if not check(fh, "}"): 
             fh.seek(position)
             error_msg("Missing closing '}' after concurrent variable definition.", fh)
@@ -439,7 +439,11 @@ def parse_variable_definition(fh, GroupF=False, already_defined_list=[]):
 
     else:
         name_str = name_str.strip()
-        if not check(fh, ":"): error_msg("missing ':' after identifier '%s'." % name_str, fh)
+        if not check(fh, ":"): error_msg("Missing ':' after identifier '%s'." % name_str, fh)
+        
+        if fh.read(1).isspace() == False:
+            error_msg("Missing whitespace after ':' after identifier '%s'.\n" % name_str \
+                    + "The notation has to be: variable-name ':' type ';'.", fh)
 
         type_str, i = read_until_letter(fh, ";", Verbose=True)
         if i == -1: error_msg("missing ';'", fh)

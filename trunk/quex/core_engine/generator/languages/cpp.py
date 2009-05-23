@@ -30,7 +30,7 @@ __header_definitions_txt = """
 #define CONTINUE $$GOTO_START_PREPARATION$$ 
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
 #   define __QUEX_INFO_LEXEME_NULL_DEFINED
-    QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
+    static QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
 #endif
 """
 

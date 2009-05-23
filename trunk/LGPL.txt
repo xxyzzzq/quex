@@ -11,12 +11,12 @@
  ||
 ==================================================================
 
-The Software is free of charge, distributed open source under LPGL, 
+The Software is free of charge, distributed open source under LGPL, 
 provided the following restriction:
 
 -- There is no license for products targeting military purpose. --
 
-Note, that if any part of the LPGL contradicts with the former restriction,
+Note, that if any part of the LGPL contradicts with the former restriction,
 the former restriction has precedence. The 'no warranty clause' holds
 in any case. 
 ___________________________________________________________________________

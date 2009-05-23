@@ -16,7 +16,7 @@ def get(Word, WordList):
 
 def compute_distance(A, B):
     vector = compute_motion_vector(A, B)
-    pre_move = -1000
+    prev_move = -1000
     sum = 0.0
     for i in range(len(A)):
         move = vector[i]

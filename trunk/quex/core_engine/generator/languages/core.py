@@ -92,7 +92,7 @@ db["C++"] = {
     "$namespace-open":     __open_namespace,
     "$namespace-close":    __close_namespace,
     "$namespace-ref":      lambda NameList:
-                           reduce(lambda x, y: x + "::" + y, NameList) + "::",
+                           reduce(lambda x, y: x + "::" + y, [""] + NameList) + "::",
     "$class-member-def":   lambda TypeStr, MaxTypeNameL, VariableName, MaxVariableL:
                            "    %s%s %s;" % (TypeStr, " " * (MaxTypeNameL - len(TypeStr)), VariableName),
     "$MODUL$":        cpp,
