@@ -1,2 +1,0 @@
-token_type-token.qx:2:error: Subsection 'token' not allowed in token_type section.
-token_type-token.qx:2:error: Did you mean 'name'?
