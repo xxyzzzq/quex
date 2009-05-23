@@ -53,8 +53,7 @@ def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, Elemen
 
     """       
     start_line_n = get_current_line_info_number(fh)
-    dummy, i = read_until_letter(fh, ["{"], Verbose=True)
-    if i == -1: 
+    if check(fh, "{") == False: 
         error_msg("missing '{' after %s statement" % CodeFragmentName, fh)
     #
     line_n = start_line_n       
@@ -220,68 +219,30 @@ def parse_initial_mode_definition(fh):
     lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh))
 
 def parse_token_id_definitions(fh):
-    """Parses token definitions of the form:
-  
-          TOKEN_ID_NAME [Number] [TypeName] 
-          
-       For example:
-
-          TKN_IDENTIFIER   1002  std::string
-  
-       defines an token_id with value 1002 and type std::string.
-   
-          TKN_NUMBER   std::double
-          TKN_FLAG     1008
-          TKN_NUMBER   2999       
-         
-       defines an id TKN_NUMBER, where the type is set to 'std::string'. Then
-       TKN_FLAG is defined as numerical value 1008. Finally an addition to 
-       TKN_NUMBER is made, saying that is has the numerical value of 2999.       
-          
-    """
     # NOTE: Catching of EOF happens in caller: parse_section(...)
     #
-    record_list = __parse_domain_of_whitespace_separated_elements(fh, "define", 
-                                                                  ["TOKEN-ID-NAME", 
-                                                                   "[Number]", "[TypeName]"], 1)
-    db = lexer_mode.token_id_db
-    for record in record_list:
-        # NOTE: record[-1] -> line text, record[-2] -> line number
-        #       record[:-2] fields of the line
-        line_n    = record[-2]
-        name      = record[0]
-        type_name = None
-        number    = None
-        #
+    token_prefix = Setup.input_token_id_prefix
+    db           = lexer_mode.token_id_db
+
+    if not check(fh, "{"):
+        error_msg("missing opening '{' for after 'token' section identifier.\n", fh)
+
+    while check(fh, "}") == False:
+        skip_whitespace(fh)
+
+        candidate = read_until_whitespace(fh)
+
+        if is_identifier(candidate) == False:
+            error_msg("'%s' is not a valid token identifier." % candidate, fh)
+
         # -- check the name, if it starts with the token prefix paste a warning
-        token_prefix = Setup.input_token_id_prefix
-        if name.find(token_prefix) == 0:
-            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (name, token_prefix) + \
+        if candidate.find(token_prefix) == 0:
+            error_msg("Token identifier '%s' starts with token prefix '%s'.\n" % (candidate, token_prefix) + \
                       "Token prefix is mounted automatically. This token id appears in the source\n" + \
-                      "code as '%s%s'." % (token_prefix, name), \
+                      "code as '%s%s'." % (token_prefix, candidate), \
                       fh, DontExitF=True)
 
-        #
-        if len(record) - 2 > 1: 
-            candidate = record[1]
-            # does candidate consist only of digits ? --> number
-            # is first character a letter or '_' ?    --> type_name     
-            if candidate.isdigit():           number    = long(candidate)
-            elif is_identifier(candidate[0]): type_name = candidate
-        #
-        if len(record) - 2 > 2:
-            candidate = record[2]
-            # is first character a letter or '_' ?      
-            if is_identifier(candidate[0]): 
-                if type_name != None:
-                    error_msg("Token can only have *one* type associated with it", fh, line_n)
-                type_name = candidate
-        #
-        if not db.has_key(name): 
-            db[name] = TokenInfo(name, number, type_name, fh.name, line_n)
-        else:
-            if number != None:    db[name].id        = number
-            if type_name != None: db[name].type_name = type_name
-            db[name].positions.append([fh.name, line_n])
+        if not db.has_key(candidate): 
+            db[candidate] = TokenInfo(candidate, None, Filename=fh.name, LineN=get_current_line_info_number(fh))
 
 

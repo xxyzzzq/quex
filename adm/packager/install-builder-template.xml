@@ -3,7 +3,7 @@
     <fullName>Quex</fullName>
     <version>$$VERSION$$</version>
     <readmeFile>$$QUEX_PATH$$/README</readmeFile>
-    <licenseFile>$$QUEX_PATH$$/LPGL.txt</licenseFile>
+    <licenseFile>$$QUEX_PATH$$/LGPL.txt</licenseFile>
     <splashImage>$$QUEX_PATH$$/adm/logo/quex-logo.png</splashImage>
     <compressionAlgorithm>lzma</compressionAlgorithm>
     <enableRollback>1</enableRollback>

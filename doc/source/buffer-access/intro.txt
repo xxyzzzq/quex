@@ -1,7 +1,7 @@
-.. _sec-customized-buffer-access:
+.. _sec-direct-buffer-access:
 
-Customized Buffer Filling Procedures.
-=====================================
+Direct Buffer Access
+====================
 
 
 A generated lexical analyzer runs its analysis on data located in 

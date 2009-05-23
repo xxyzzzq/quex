@@ -3,7 +3,7 @@
 #define __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
 /* -*- C++ -*- vim: set syntax=cpp: 
  * (C) 2008 Frank-Rene Schaefer 
- * LPGL -- ABSOLUTELY NO WARRANTY */
+ * LGPL -- ABSOLUTELY NO WARRANTY */
 #include <sys/types.h>
 #include <iostream>
 #include <quex/code_base/compatibility/inttypes.h>
