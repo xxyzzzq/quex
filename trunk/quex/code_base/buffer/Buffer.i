@@ -90,6 +90,14 @@ namespace quex {
     QuexBuffer_construct_wo_filler(QuexBuffer*           me, 
                                    QUEX_TYPE_CHARACTER*  Memory,
                                    const size_t          MemorySize)
+    /* NOTE: This function sets the content or fill level of the buffer to zero.
+     *       To change this, the function 
+     *
+     *             QuexBuffer_end_of_file_set(...);
+     *
+     *       must be called.
+     */
+
     {
         /* Constructs a buffer for running only on memory, no 'filler' is involved.     */
         QUEX_TYPE_CHARACTER*   memory = Memory;
@@ -105,13 +113,9 @@ namespace quex {
 
         QuexBufferMemory_init(&(me->_memory), memory, MemorySize);      
 
-        /* At this point, there is some memory: either allocated or provided by user. 
-         * NOTE: For direct memory access, the 'end_of_file_p' indicates the fill level. 
-         * NOTE: When working directly on memory, the 'end_of_file_p != 0x0' will
-         *       cause the QuexAnalyser_buffer_reload_forward(...) function to fail,
-         *       and thus initiates the return to the last acceptance state.            
-         * NOTE: The last character of content is located at "_front + size - 1".       */
-        QuexBuffer_end_of_file_set(me, me->_memory._front + 1);
+        /* Assume by default, that the memory is filled up to the limit. If this is not
+         * the case, the value must be adapted.                                         */
+        QuexBuffer_end_of_file_set(me, me->_memory._back);
 
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
@@ -144,12 +148,6 @@ namespace quex {
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
 #       endif
-
-        if( ! ResetF || me->_content_character_index_begin != 0 ) {
-            /* NOTE: On 'reset' the end of file pointer has to remain, if no reload is re-
-             *       quired. Reload is required if _content_character_index_begin == 0.  */
-            //me->_memory._end_of_file_p = 0x0;
-        }
 
         if( me->filler != 0x0 ) {
             if( ResetF ) {

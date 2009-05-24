@@ -615,6 +615,16 @@ $$CONSTRUCTOR_EXTENSTION$$
                                              __current_mode_p->analyser_function,
                                              BufferMemory,
                                              BufferMemorySize);
+            /* TWO CASES:
+             * (1) The user provides a buffer memory: --> assume it is filled to the end.
+             * (2) The user does not provide memory:  --> the memory IS empty.             */
+            if( BufferMemory == 0x0 ) {
+                /* 'buffer._memory._front' has been set at this point in time.             */
+                QuexBuffer_end_of_file_set(&buffer, buffer._memory._front + 1);
+            }
+            /* When working on plain memory, the '_end_of_file_p' must be set to indicate
+             * the end of the content.                                                     */
+            __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
     }   
 

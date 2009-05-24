@@ -133,7 +133,7 @@ namespace quex {
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
 
         /* (*) Check for the three possibilities mentioned above */
-        if     ( buffer->_input_p == buffer->_memory._front )       { return 0; }      /* (1)*/
+        if     ( buffer->_input_p == buffer->_memory._front )         { return 0; }      /* (1)*/
         else if( buffer->_input_p == buffer->_memory._end_of_file_p ) { return 0; }      /* (2)*/
         else if( buffer->_input_p != buffer->_memory._back  ) {                     
             QUEX_ERROR_EXIT("Call to 'load_forward() but '_input_p' not on buffer border.\n" 

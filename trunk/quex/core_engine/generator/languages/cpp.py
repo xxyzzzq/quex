@@ -169,7 +169,8 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += "    if( 0 == 1 ) {\n"
     txt += "        int unused = 0;\n"
     for mode_name in ModeNameList:
-        txt += "        unused = unused + %s.id;\n" % mode_name
+        txt += "        unused += (int)%s.id;\n" % mode_name
+    txt += "        unused += (int)__QuexLexemeNullObject;\n"
     ## This was once we did not know ... if there was a goto to the initial state or not.
     ## txt += "        goto %s;\n" % label.get(StateMachineName, InitialStateIndex)
 

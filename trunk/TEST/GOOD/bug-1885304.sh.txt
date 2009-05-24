@@ -281,6 +281,7 @@ namespace quex {
 
     public:
         CLASS();
+        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize);
         CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
         CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
         CLASS(std::wistream*            p_input_stream, const char* IConvInputCodingName = 0x0, 
@@ -301,6 +302,8 @@ namespace quex {
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
         size_t                buffer_fill_region_size();
         void                  buffer_fill_region_finish(const size_t LoadedN);
+        QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
+        void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
         // -- token stream: read next token
         void  get_token() 
@@ -376,7 +379,6 @@ namespace quex {
         //
         // (*) Version information
 
-    private:
         // (*) Helper
         void    move_forward(const size_t);
         void    move_backward(const size_t);
@@ -491,11 +493,15 @@ namespace quex {
         template <class InputHandleT> 
         void                        __constructor_core(InputHandleT*, 
                                                        QuexBufferFillerTypeEnum, 
-                                                       const char* IConvInputCodingName);
+                                                       const char* IANA_InputCodingName,
+                                                       QUEX_TYPE_CHARACTER*  BufferMemory          = 0x0,
+                                                       size_t                BufferMemorySize      = 0);
         template <class InputHandleT> 
         void                        __init(InputHandleT*  input_handle, 
                                            QuexBufferFillerTypeEnum  BFT, 
-                                           const char* IANA_InputCodingName);
+                                           const char*               IANA_InputCodingName,
+                                           QUEX_TYPE_CHARACTER*      BufferMemory,    
+                                           size_t                    BufferMemorySize);
 
 
         QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
@@ -504,7 +510,9 @@ namespace quex {
 
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
-                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
+                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
+                              QUEX_TYPE_CHARACTER*      BufferMemory,    
+                              size_t                    BufferMemorySize)
     {
 #       if defined(QUEX_OPTION_ASSERTS) && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
         std::cout << "###############################################################################\n";
@@ -568,7 +576,7 @@ namespace quex {
         _mode_stack.end        = _mode_stack.begin;
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-        __init(input_handle, BFT, IANA_InputCodingName);
+        __init(input_handle, BFT, IANA_InputCodingName, BufferMemory, BufferMemorySize);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -579,7 +587,9 @@ namespace quex {
 
     template <class InputHandleT> inline void
     CLASS::__init(InputHandleT*             input_handle, 
-                  QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName)
+                  QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
+                  QUEX_TYPE_CHARACTER*      BufferMemory,         
+                  size_t                    BufferMemorySize)
     {
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally(LEX_ID_ONE_AND_ONLY);
@@ -587,6 +597,10 @@ namespace quex {
         counter.init();
 
         if( BFT != QUEX_MEMORY ) {
+            /* If a buffer filler is active, we cannot work directly on raw memory. */
+            __quex_assert(BufferMemory == 0x0);
+            __quex_assert(BufferMemorySize == 0x0);
+
             QuexAnalyser_construct((QuexAnalyser*)this,
                                    __current_mode_p->analyser_function,
                                    input_handle,
@@ -594,9 +608,22 @@ namespace quex {
                                    QUEX_SETTING_BUFFER_SIZE,
                                    QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
         } else {
+            /* Directly working on specific memory, makes fillers impossible. */
+            __quex_assert(BufferMemorySize > 2);
             QuexAnalyser_construct_wo_filler((QuexAnalyser*)this,
                                              __current_mode_p->analyser_function,
-                                             QUEX_SETTING_BUFFER_SIZE, 0, 0);
+                                             BufferMemory,
+                                             BufferMemorySize);
+            /* TWO CASES:
+             * (1) The user provides a buffer memory: --> assume it is filled to the end.
+             * (2) The user does not provide memory:  --> the memory IS empty.             */
+            if( BufferMemory == 0x0 ) {
+                /* 'buffer._memory._front' has been set at this point in time.             */
+                QuexBuffer_end_of_file_set(&buffer, buffer._memory._front + 1);
+            }
+            /* When working on plain memory, the '_end_of_file_p' must be set to indicate
+             * the end of the content.                                                     */
+            __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
     }   
 
@@ -728,7 +755,7 @@ namespace quex {
 
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
 #   define __QUEX_INFO_LEXEME_NULL_DEFINED
-    QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
+    static QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
 #endif
 #include <quex/code_base/temporary_macros_on>
 
@@ -740,7 +767,7 @@ Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me)
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
 #   if defined (__QUEX_SETTING_PLAIN_C)
-#      define self (*me)
+#      define self (*((QUEX_LEXER_CLASS*)me));
 #   else
        using namespace quex;
        QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
@@ -3051,7 +3078,8 @@ __REENTRY_PREPARATION:
     /* that is never reached (and deleted by the compiler anyway).*/
     if( 0 == 1 ) {
         int unused = 0;
-        unused = unused + ONE_AND_ONLY.id;
+        unused += (int)ONE_AND_ONLY.id;
+        unused += (int)__QuexLexemeNullObject;
     }
 }
 #include <quex/code_base/temporary_macros_off>

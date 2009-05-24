@@ -1,6 +1,6 @@
 makefile = Makefile
 cleaning ...
-make NDEBUG_F=-DNDEBUG   ##
+make NDEBUG_F=-DQUEX_OPTION_ASSERTS_DISABLED  ##
 executing ...
 ,------------------------------------------------------------------------------------
 | [START]
