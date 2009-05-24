@@ -99,7 +99,11 @@ feature of quex:
 
 .. data:: demo/009
 
-          shows how an interactive parser can be implemented for ``char`` and ``wchar_t`` input stream.
+          shows how analyzers can be implemented for ``char`` and ``wchar_t`` string streams.
+
+.. data:: demo/010
+
+          shows how to access the analyzer's memory buffer directly.
 
 The author of this document suggests that the user looks at these
 sample applications first before continuing with the remainder of this text. 

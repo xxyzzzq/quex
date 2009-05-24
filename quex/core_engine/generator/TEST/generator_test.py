@@ -342,11 +342,12 @@ test_program_db = {
     {
         QuexAnalyser   lexer_state;
         int            success_f = 0;
-        char           TestString[] = "\0$$TEST_STRING$$\0";
+        char           TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
         QuexAnalyser_construct_wo_filler(&lexer_state, Mr_UnitTest_analyser_function, 
-                                         MemorySize, TestString, MemorySize-2);
+                                         TestString, MemorySize);
+        QuexBuffer_end_of_file_set(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
         printf("(*) result:\\n");

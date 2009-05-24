@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Sat May  9 05:50:13 2009
+DATE:  Sun May 24 00:58:54 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -57,6 +57,8 @@ TITLE: Regression Tests on Fixed Bugs
         bug-2349109.sh newline-skipper ..................................[OK]
                        non-newline-skipper ..............................[OK]
                        newline-skipper-utf8 .............................[OK]
+    2635012 0.36.4 Include Stack Disablement
+        bug-2635012.sh ..................................................[OK]
 
  -- marcoantonelli:
 
@@ -185,7 +187,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Sat May  9 05:52:37 2009
+DATE:  Sun May 24 01:01:19 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -273,9 +275,18 @@ TITLE: Demo-Applications
 
  -- demo/009:
 
-    Direct Buffer Access (8Bit and WChar Strings)
+    Strings of 'char' and 'wchar_t'
         009.sh lexer ....................................................[OK]
                wlexer ...................................................[OK]
+
+ -- demo/010:
+
+    Direct Buffer Access (Arbitrary Chunked)
+        010.sh copy .....................................................[OK]
+               fill .....................................................[OK]
+    Direct Buffer Access (Syntactically Chunked)
+        010b.sh copy ....................................................[OK]
+                fill ....................................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _ 
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -286,7 +297,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Sat May  9 05:52:38 2009
+DATE:  Sun May 24 01:01:19 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -307,7 +318,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/TEST/event-handling/TEST
-DATE:  Sat May  9 05:52:43 2009
+DATE:  Sun May 24 01:01:24 2009
 TITLE: Event Handlers
 
 -------------------------------------------------------------------------------
@@ -334,7 +345,7 @@ TITLE: Event Handlers
 
 ===============================================================================
 ENTER: quex/TEST/include-stack/TEST
-DATE:  Sat May  9 05:52:51 2009
+DATE:  Sun May 24 01:01:32 2009
 TITLE: Include Stack Handling
 
 -------------------------------------------------------------------------------
@@ -375,10 +386,15 @@ TITLE: Include Stack Handling
 
 ===============================================================================
 ENTER: quex/TEST/token-class/TEST
-DATE:  Sat May  9 05:52:56 2009
+DATE:  Sun May 24 01:01:37 2009
 TITLE: Customized Token Class
 
 -------------------------------------------------------------------------------
+ -- Miscellaneous Sample Runs
+        misc.sh empty ...................................................[OK]
+                no-namespace ............................................[OK]
+                double-colon ............................................[OK]
+                token ...................................................[OK]
  -- With token policy 'queue'.
         simple.exe ......................................................[OK]
  -- With token policy 'users_token'.
@@ -393,7 +409,7 @@ TITLE: Customized Token Class
 
 ===============================================================================
 ENTER: quex/TEST/token-policies/TEST
-DATE:  Sat May  9 05:53:10 2009
+DATE:  Sun May 24 01:01:50 2009
 TITLE: Tests related to token queues
 
 -------------------------------------------------------------------------------
@@ -432,7 +448,7 @@ TITLE: Tests related to token queues
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Sat May  9 05:53:11 2009
+DATE:  Sun May 24 01:01:51 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -458,7 +474,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Sat May  9 05:53:16 2009
+DATE:  Sun May 24 01:01:56 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -522,7 +538,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Sat May  9 05:53:24 2009
+DATE:  Sun May 24 01:02:04 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -598,7 +614,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Sat May  9 05:53:32 2009
+DATE:  Sun May 24 01:02:11 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -674,7 +690,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Sat May  9 05:53:46 2009
+DATE:  Sun May 24 01:02:25 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -769,7 +785,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Sat May  9 05:53:54 2009
+DATE:  Sun May 24 01:02:33 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -838,7 +854,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Sat May  9 05:53:55 2009
+DATE:  Sun May 24 01:02:33 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -872,7 +888,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Sat May  9 05:56:14 2009
+DATE:  Sun May 24 01:05:06 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -1052,7 +1068,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Sat May  9 05:56:20 2009
+DATE:  Sun May 24 01:05:11 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -1115,7 +1131,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Sat May  9 05:56:27 2009
+DATE:  Sun May 24 01:05:16 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1214,7 +1230,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Sat May  9 05:56:27 2009
+DATE:  Sun May 24 01:05:17 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1242,7 +1258,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Sat May  9 05:56:48 2009
+DATE:  Sun May 24 01:05:38 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1311,7 +1327,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/cpp/TEST
-DATE:  Sat May  9 05:56:49 2009
+DATE:  Sun May 24 01:05:38 2009
 TITLE: Basic Code Writing Functionality
 
 -------------------------------------------------------------------------------
@@ -1327,7 +1343,7 @@ TITLE: Basic Code Writing Functionality
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Sat May  9 05:56:50 2009
+DATE:  Sun May 24 01:05:39 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

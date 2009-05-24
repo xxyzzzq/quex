@@ -35,13 +35,12 @@ is used to refer to some kind of entity that delivers the data.
 
 .. note:: 
 
-   With the methods *Immediate Filling*, and *Pointing* no implicit
-   character code converters can be applied. If this is required, the users
-   needs to call them explicitly. A so called 'buffer filler' can be created
-   ouside the quex engine.
+   NOTE: Conversion on 'Copy' not implement in current version of quex.
 
-   The method *Copying* performs the conversion internally, if a filler 
-   is specified.
+   With the methods *Copy* implicit character code converter may be applied.
+   For *Immediate Fill* or *Pointing* the converters have to be called
+   them explicitly. A so called 'buffer filler' can be created ouside the quex
+   engine.
 
 In case of interrupted character streams, there is no direct way for the
 analyzer engine to determine wether a stream is terminated or not. Thus, either

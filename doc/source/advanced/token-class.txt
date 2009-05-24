@@ -132,7 +132,7 @@ followed by ``}``.
        }
 
 The variable definitions inside these regions create automatically a framework
-that is able to deal with the token senders :ref:`sec:usage-sending-token`.
+that is able to deal with the token senders :ref:`sec:usage-sending-tokens`.
 These token senders work like overloaded functions in C++. This means that the
 particularly used setters are resolved via the type of the passed arguments. 
 For the three sections above the following setters are defined in the token 
@@ -201,7 +201,7 @@ named setters such as
 Second, the brief token senders may be called with *named* arguments. This is
 more convinient. The names of the token class members and their assigned values
 are specified by a sequence of the form: ``member = value``. For example, the
-                                           code fragment
+code fragment
 
      .. code-block:: cpp
 
@@ -564,7 +564,7 @@ following constraints:
 
     * A member function that maps token-ids to token-names 
     
-      .. cfunction:: static const std::string& map_id_to_name(token::id_type)
+      .. cfunction:: const char* map_id_to_name(token::id_type)
    
       that maps any token-id to a human readable string. Note, that queχ does generate 
       this function automatically, as long as it is not told not to do 
@@ -604,6 +604,33 @@ following constraints:
 
     * There must be a ``__copy(...)`` member function that copies the content
       of the token.
+
+    * The must be member and member function definitions for line and column 
+      numbers which are dependent on compilation macros. The user must
+      provide the functionality of the example code segment below.
+
+      .. _code-block:: cpp
+
+         #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+         #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+                private:
+                    size_t  _line_n;
+                public:
+                    size_t  line_number() const                 { return _line_n; }
+                    void    set_line_number(const size_t Value) { _line_n = Value; }
+         #       endif
+         #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+                private:
+                    size_t  _column_n;
+                public:
+                    size_t  column_number() const                 { return _column_n; }
+                    void    set_column_number(const size_t Value) { _column_n = Value; }
+         #       endif
+         #   endif
+
+      The conditional compilation must also be implemented for the ``__copy``
+      operation which copies those values.
+
 
 As long as these conventions are respected the user created token class will
 interoperate with the framework smoothly. The inner structure of the token
