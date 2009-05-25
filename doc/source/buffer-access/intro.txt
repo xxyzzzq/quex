@@ -369,9 +369,8 @@ setup. The handling of the loop exit is shown below.
 
 .. warning::
 
-    The procedure with one look-ahead token might fail in case of very small memory
-    chunks. This is possible if a pattern contains potentially a sequence of 
-    other patterns. Consider the mode
+    The procedure with one look-ahead token might fail in case that a pattern
+    contains potentially a sequence of other patterns. Consider the mode
 
     .. code-block:: cpp
 
@@ -382,27 +381,27 @@ setup. The handling of the loop exit is shown below.
                 "le monde" => QUEX_TKN_NEWSPAPER;
             }
 
-    which is fed with the frames::
+    Where the begin of the ``NEWSPAPER`` pattern ``le `` can be made
+    up of a sequence ``le``  (``ARTICLE``) and `` `` (``WHITESPACE``).
+    Consider the frame sequence::
 
         frame[time=0] [le ]
         frame[time=1] [monde]
 
     When the first frame border is reached now, the longest complete match
-    holds, which is ``le`` (``ARTICLE``) and the analysis continues with the '
-    ' (``WHITESPACE``). Thus, ``WHITESPACE`` will be the last token before the
+    holds, which is ``le`` (``ARTICLE``) and the analysis continues with the ``  ``
+    (``WHITESPACE``). Thus, ``WHITESPACE`` will be the last token before the
     TERMINATION token. The reconsideration triggered by the ``TERMINATION`` token
     is only concerned with the last token, i.e. ``WHITESPACE``, but does not go
     back to the start of ``le``.  Eventually, the token sequence will be:
     ``ARTICLE``, ``SPACE``, ``WORLD`` instead of a single token ``NEWSPAPER``
     which matches ``le monde``.
     
-    If frames are this small and token definitions overlap in such a manner,
-    then two things can be done. Either as much frames need to be copied
-    into the buffer as possible before starting the analyzis, or more
-    than one look-ahead token needs to be consirdered. The first
-    solution is, of course, simpler. However, in case of a blocking
-    receive function, it might be not as efficient as the second
-    solution.
+    A safe solution requires therefore *N* look-ahead tokens plus one, the
+    current token. The *N* can be computed as the maximum number of
+    sub-patterns into which a pattern in the analyzer might be broken down.
+    The usual 'keyword'-'identifier' race can be solved with one look-ahead
+    token as explained in this section.
 
 The complete code to do the analyzis of arbitrarily chunked input frames is
 shown below.
