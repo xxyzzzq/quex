@@ -28,7 +28,9 @@ namespace quex {
         static void    seek(std::FILE* me, long& Pos) { std::fseek(me, Pos, SEEK_SET); }
 
         static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
-        { return fread(buffer_position, 1, ByteNToRead, ih); }
+        { 
+            return fread(buffer_position, 1, ByteNToRead, ih); 
+        }
     };
 
     template <class StdStreamType>
@@ -50,16 +52,28 @@ namespace quex {
         static size_t  load_bytes(StdStreamType* me, void* buffer_position, const size_t ByteNToRead) 
         { 
             __quex_assert(CharacterSize != 0);
-            /* std::fprintf(stdout, "tell 0 = %i\n", (long)(me->tellg()));*/
-            const stream_position position_before = me->tellg();
+            const stream_position   position_before = me->tellg();
+            /* NOTE: 'position_before == (stream_position)-1' indicated an error, i.e. 
+             *       there is no position that can be determined (e.g. user interaction streams. */
             
+            fprintf(stderr, "BEFORE:  pos: %08X; good: %i; eof: %i; bad: %i; fail: %i;\n",
+                    (int)position_before, (int)me->eof(), (int)me->eof(), (int)me->bad(), (int)me->fail());
+
             me->read((character_type*)buffer_position, ByteNToRead / CharacterSize);
             
             const size_t Result = me->gcount();
 
+            fprintf(stderr, "AFTER:   pos: %08X; good: %i; eof: %i; bad: %i; fail: %i;\n",
+                    (int)me->tellg(), (int)me->eof(), (int)me->eof(), (int)me->bad(), (int)me->fail());
             if( me->eof() && ! me->bad() ) {
                 me->clear();
-                me->seekg(position_before + (stream_offset)(Result));
+                /* A position can only be seeked, if it is valid. Interactive input streams
+                 * may not return a valid stream position, because they have none.           */
+                if( position_before != (stream_position)-1 ) {
+                    me->seekg(position_before + (stream_offset)(Result));
+                }
+                fprintf(stderr, "AFTER 2: pos: %08X; good: %i; eof: %i; bad: %i; fail: %i;\n",
+                        (int)me->tellg(), (int)me->eof(), (int)me->eof(), (int)me->bad(), (int)me->fail());
             } else if( me->fail() ) {
                 throw std::runtime_error("Fatal error during stream reading.");
             }

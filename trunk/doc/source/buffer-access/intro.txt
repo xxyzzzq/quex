@@ -401,7 +401,7 @@ setup. The handling of the loop exit is shown below.
     current token. The *N* can be computed as the maximum number of
     sub-patterns into which a pattern in the analyzer might be broken down.
     The usual 'keyword'-'identifier' race can be solved with one look-ahead
-    token as explained in this section.
+    token as explained above in this section.
 
 The complete code to do the analyzis of arbitrarily chunked input frames is
 shown below.

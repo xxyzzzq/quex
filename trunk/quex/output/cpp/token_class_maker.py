@@ -18,7 +18,7 @@ def _do(Descr):
     # The following things must be ensured before the function is called
     assert Descr != None
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
-    assert Descr.get_member_db().keys() != []
+    ## ALLOW: Descr.get_member_db().keys() == []
 
     txt = get_basic_template(Descr)
 
@@ -79,6 +79,7 @@ def get_union_members(Descr):
     # '0' to make sure, that it works on an empty sequence too.
     TL = Descr.type_name_length_max()
     NL = Descr.variable_name_length_max()
+    if len(Descr.union_db) == 0: return ""
     
     txt = "    union {\n"
     for name, type_descr in Descr.union_db.items():
@@ -156,6 +157,8 @@ def get_quick_setters(Descr):
     def __combined_quick_setters(member_db, AllOnlyF=False):
         txt = ""
         member_list = member_db.items()
+        if member_list == []: return ""
+
         # sort the members with respect to their occurence in the token_type section
         member_list.sort(lambda x, y: cmp(x[1].line_n, y[1].line_n))
         L = len(member_list)
