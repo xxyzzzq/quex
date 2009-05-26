@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=1892809
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug "
+    echo "sphericalcow: $bug 0.20.4 \\x, \\X, \\U accept too many digits"
     exit
 fi
 

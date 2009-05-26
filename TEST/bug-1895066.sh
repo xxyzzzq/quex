@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=1895066
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug "
+    echo "sphericalcow: $bug 0.20.8 #line directive after header contents missing"
     exit
 fi
 

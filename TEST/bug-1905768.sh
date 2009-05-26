@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=1905768
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug "
+    echo "sphericalcow: $bug 0.22.9 doesn't create analyzer function for event only modes"
     exit
 fi
 
