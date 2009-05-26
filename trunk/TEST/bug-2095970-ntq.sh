@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 bug=2095970
 if [[ $1 == "--hwut-info" ]]; then
-    echo "sphericalcow: $bug (without token queue)"
+    echo "sphericalcow: $bug 0.31.3 Mode change w/o immediate return. w/o token queue"
     echo "CHOICES: Normal, NormalNoAsserts, NoModeDetection, NoModeDetectionNoAsserts, NoModeDetection_ErrorCase;"
     exit
 fi
