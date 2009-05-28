@@ -371,7 +371,7 @@ class PropertyInfoDB:
                        "Received '%s = %s'." % (PropertyName, Value)
 
         elif Value == None:
-            return "None-Binary property '%s' must have a value.\n" % PropertyName + \
+            return "Non-Binary property '%s' must have a value.\n" % PropertyName + \
                    "Expected something like '%s = Value'.\n" % PropertyName + \
                    "Possible Values: " + \
                    property.get_value_list_help()

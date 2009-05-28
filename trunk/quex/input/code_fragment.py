@@ -103,8 +103,10 @@ def read_character_code(fh):
         # is supposed to be one.
         character_code = ucs_property_db.get_character_set("Name", ucs_name)
         if type(character_code) in [str, unicode]:
-            error_msg("%s does not identify a known unicode character." % ucs_name, fh) 
-        if type(character_code) not in [int, long]:
+            verify_word_in_list(ucs_name, ucs_property_db["Name"].code_point_db,
+                                "%s does not identify a known unicode character." % ucs_name, 
+                                fh)
+        elif type(character_code) not in [int, long]:
             error_msg("%s relates to more than one character in unicode database." % ucs_name, fh) 
         return character_code
 
@@ -226,10 +228,9 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
                           % member, fh)
             else:
                 member_name = member.strip()
-                if lexer_mode.token_type_definition.has_member(member_name) == False:
-                    error_msg("Explicit member '%s' not present in token type description.\n" % member_name + \
-                            "Token members are: %s" % repr(lexer_mode.token_type_definition.get_member_db().keys())[1:-1],
-                            fh)
+                verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
+                                    "Explicit member '%s' not present in token type description.\n" % member_name, 
+                                    fh)
                 access = lexer_mode.token_type_definition.get_member_access(member_name)
                 txt += "self.token_object()->%s = %s;\n" % (access, value.strip())
 

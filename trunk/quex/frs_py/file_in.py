@@ -529,7 +529,9 @@ def check(fh, Word):
 def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
     """FH, and LineN work exactly the same as for error_msg(...)"""
     assert len(WordList) != 0
-    if WordList[0].__class__.__name__ == "UserCodeFragment":
+    if type(WordList) == dict:
+        word_list = WordList.keys()
+    elif WordList[0].__class__.__name__ == "UserCodeFragment":
         word_list        = map(lambda x: x.get_code(), WordList)
         position_known_f = True
     else:

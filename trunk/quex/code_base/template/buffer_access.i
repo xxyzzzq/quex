@@ -25,10 +25,13 @@ namespace quex {
 
         if( copy_size > RemainingSize ) copy_size = RemainingSize;
 
-        /* Let us use 'move', because we can never know if the user might want
-         * to copy arround content from inside the buffer. 'copy' would assume
-         * that the target and source do not overlap.                          */
-        __QUEX_STD_memmove(text_end, ContentBegin, copy_size * sizeof(QUEX_TYPE_CHARACTER));
+        const size_t ByteN = copy_size * sizeof(QUEX_TYPE_CHARACTER);
+        /* memcpy() might fail if the source and drain domain overlap! */
+#       ifdef QUEX_OPTION_ASSERTS 
+        if( text_end > ContentBegin ) __quex_assert(text_end >= ContentBegin + ByteN);
+        else                          __quex_assert(text_end <= ContentBegin - ByteN);
+#       endif
+        __QUEX_STD_memcpy(text_end, ContentBegin, ByteN);
 
         /* When lexing directly on the buffer, the end of file pointer is always set. */
         QuexBuffer_end_of_file_set(&buffer, text_end + copy_size);

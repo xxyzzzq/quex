@@ -43,7 +43,7 @@ namespace quex {
                                       size_t       (*tell_character_index)(QuexBufferFiller*),
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
-                                                                      QUEX_TYPE_CHARACTER* buffer, const size_t),
+                                                                      QUEX_TYPE_CHARACTER*, const size_t),
                                       void         (*destroy)(QuexBufferFiller*))
     {
         __quex_assert(me != 0x0);
@@ -133,17 +133,17 @@ namespace quex {
         QUEX_DEBUG_PRINT_BUFFER_LOAD(buffer, "FORWARD(entry)");
 
         /* (*) Check for the three possibilities mentioned above */
-        if     ( buffer->_input_p == buffer->_memory._front )         { return 0; }      /* (1)*/
-        else if( buffer->_input_p == buffer->_memory._end_of_file_p ) { return 0; }      /* (2)*/
+        if     ( buffer->_input_p == buffer->_memory._front )         { return 0; }   /* (1)*/
+        else if( buffer->_input_p == buffer->_memory._end_of_file_p ) { return 0; }   /* (2)*/
         else if( buffer->_input_p != buffer->_memory._back  ) {                     
             QUEX_ERROR_EXIT("Call to 'load_forward() but '_input_p' not on buffer border.\n" 
                             "(Check character encoding)");  
         }
         else if( buffer->_memory._end_of_file_p != 0x0 ) { 
-            /* End of file has been reached before, we cannot load more.               */
+            /* End of file has been reached before, we cannot load more.                    */
             return 0;                               
         }
-        /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                        * (3)*/  
+        /* HERE: _input_p ---> LAST ELEMENT OF THE BUFFER!                             * (3)*/  
 
 
         /*___________________________________________________________________________________*/
