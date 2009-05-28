@@ -1,0 +1,25 @@
+# TODO: This file needs some editing before it can be useful.
+#
+set [remote_server frs.sourceforge.net]
+set [password      $argv 0]
+
+# Open an ftp session to a remote server, and wait for a username prompt.
+spawn sftp fschaef@$remote_server
+expect "password:"
+# Send the username, and then wait for a password prompt.
+send "$password\r"
+expect "sftp>"
+# Switch to binary mode, and then wait for an ftp prompt.
+send "bin\r"
+expect "sftp>"
+# Turn off prompting.
+send "prompt\r"
+expect "sftp>"
+# 
+send "cd uploads\r"
+expect "sftp>"
+# Exit the ftp session, and wait for a special end-of-file character.
+send "put /tmp/quex-packages/quex-*\r"
+expect "sftp>"
+send "bye\r"
+expect eof

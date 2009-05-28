@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [ {name = ispringen::;}]
+
+OUT:
+
+a string:1:error: Missing identifier in token type name.
