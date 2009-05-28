@@ -95,9 +95,7 @@ namespace quex {
      *
      *             QuexBuffer_end_of_file_set(...);
      *
-     *       must be called.
-     */
-
+     *       must be called.                                                            */
     {
         /* Constructs a buffer for running only on memory, no 'filler' is involved.     */
         QUEX_TYPE_CHARACTER*   memory = Memory;

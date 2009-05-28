@@ -30,6 +30,20 @@ namespace quex {
         static size_t  load_bytes(std::FILE* ih, void* buffer_position, const size_t ByteNToRead) 
         { 
             return fread(buffer_position, 1, ByteNToRead, ih); 
+            /* Consider the following implementation 
+               -- unit tests should be implemented for all input policies.                   
+            const stream_position   position_before = ftell(ih);
+
+            const size_t Result = fread(buffer_position, 1, ByteNToRead, ih); 
+            if( feof(ih) && ! ferror(ih) ) {
+                clearerror(ih);
+                /-* A position can only be seeked, if it is valid. Interactive input streams
+                 -* may not return a valid stream position, because they have none.           *-/
+                if( position_before != (stream_position)-1 ) {
+                    fseek(position_before + (stream_offset)(Result));
+                }
+            }
+            */ 
         }
     };
 
@@ -56,15 +70,10 @@ namespace quex {
             /* NOTE: 'position_before == (stream_position)-1' indicated an error, i.e. 
              *       there is no position that can be determined (e.g. user interaction streams. */
             
-            fprintf(stderr, "BEFORE:  pos: %08X; good: %i; eof: %i; bad: %i; fail: %i;\n",
-                    (int)position_before, (int)me->eof(), (int)me->eof(), (int)me->bad(), (int)me->fail());
-
             me->read((character_type*)buffer_position, ByteNToRead / CharacterSize);
             
             const size_t Result = me->gcount();
 
-            fprintf(stderr, "AFTER:   pos: %08X; good: %i; eof: %i; bad: %i; fail: %i;\n",
-                    (int)me->tellg(), (int)me->eof(), (int)me->eof(), (int)me->bad(), (int)me->fail());
             if( me->eof() && ! me->bad() ) {
                 me->clear();
                 /* A position can only be seeked, if it is valid. Interactive input streams
@@ -72,8 +81,6 @@ namespace quex {
                 if( position_before != (stream_position)-1 ) {
                     me->seekg(position_before + (stream_offset)(Result));
                 }
-                fprintf(stderr, "AFTER 2: pos: %08X; good: %i; eof: %i; bad: %i; fail: %i;\n",
-                        (int)me->tellg(), (int)me->eof(), (int)me->eof(), (int)me->bad(), (int)me->fail());
             } else if( me->fail() ) {
                 throw std::runtime_error("Fatal error during stream reading.");
             }

@@ -15,9 +15,7 @@ namespace quex {
          * to unicode of size sizeof(QUEX_TYPE_CHARACTER). 
          *
          * It is the task of the particular implementation to provide the 'to coding'
-         * which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.
-         *
-         */
+         * which is appropriate for sizeof(QUEX_TYPE_CHARACTER), i.e. ASCII, UCS2, UCS4.   */
 
         bool    (*convert)(struct QuexConverter_tag*, 
                            uint8_t**             source, const uint8_t*             SourceEnd, 
