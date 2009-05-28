@@ -2,7 +2,7 @@
 bug=2796383
 if [[ $1 == "--hwut-info" ]]; then
     echo "sphericalcow: $bug 0.39.3 does not handle token_type without distinct section;"
-    echo "CHOICES: case-1, case-2;"
+    echo "CHOICES: case-1, case-2, case-3, case-4, case-5;"
     exit
 fi
 
