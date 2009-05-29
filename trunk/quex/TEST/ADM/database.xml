@@ -1,16 +1,14 @@
-<test-database execution-time-sec="0.15" date="Thu May 28 01:59:06 2009">
+<test-database execution-time-sec="0.21" date="Thu May 28 12:10:04 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.09"> 
+    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.15"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1237805543L"/>
-        <make-procedure success="False" time_sec="0.000000"/>
         <choice-list number="1">
-           <choice name="" result="OK" time_sec="0.09" crc="1073473981"/>
+           <choice name="" result="OK" time_sec="0.15" crc="1073473981"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
         <test title="__parse_token_id_file" make-required="True" time-sum-sec="0.06"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1237805543L"/>
-            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.06" crc="-1492277791"/>
             </choice-list>
