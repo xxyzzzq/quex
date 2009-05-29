@@ -1,0 +1,3 @@
+mode X {
+    "a"  => UC ZERO_WIDTH_JOINEL;
+}

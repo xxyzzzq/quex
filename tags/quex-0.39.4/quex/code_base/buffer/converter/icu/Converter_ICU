@@ -1,0 +1,34 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2009 Frank-Rene Schaefer
+ * NO WARRANTY */
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__
+#define __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/converter/Converter>
+#include <quex/code_base/buffer/converter/icu/special_headers.h>
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+
+    typedef struct {
+        QuexConverter  base;
+
+        UConverter*  from_handle;
+        UConverter*  to_handle;
+        UErrorCode   status;
+
+        UChar        pivot_buffer[QUEX_SETTING_ICU_PIVOT_BUFFER_SIZE];
+        UChar*       pivot_iterator_begin;
+        UChar*       pivot_iterator_end;
+
+    } QuexConverter_ICU;
+
+    QUEX_INLINE QuexConverter* QuexConverter_ICU_new();
+
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+}
+#endif
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICU__ */

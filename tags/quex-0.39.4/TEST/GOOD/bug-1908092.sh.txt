@@ -1,0 +1,9 @@
+(1) without --token-class-file
+command line: File error.qx (quex source file)
+command line: cannot be found.
+(2) --token-class-file
+command line: File Otto (file containing token class definition)
+command line: cannot be found.
+(3) --token-class-file without argument
+command line: Option '--token-class-file'
+command line: not followed by anything.
