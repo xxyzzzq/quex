@@ -104,7 +104,7 @@ def read_character_code(fh):
         character_code = ucs_property_db.get_character_set("Name", ucs_name)
         if type(character_code) in [str, unicode]:
             verify_word_in_list(ucs_name, ucs_property_db["Name"].code_point_db,
-                                "%s does not identify a known unicode character." % ucs_name, 
+                                "The string %s\ndoes not identify a known unicode character." % ucs_name, 
                                 fh)
         elif type(character_code) not in [int, long]:
             error_msg("%s relates to more than one character in unicode database." % ucs_name, fh) 
@@ -197,6 +197,8 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
     # occasionally add token id automatically to database
     prefix_less_TokenName = TokenName[len(Setup.input_token_id_prefix):]
     if not lexer_mode.token_id_db.has_key(prefix_less_TokenName):
+        # DO NOT ENFORCE THE TOKEN ID TO BE DEFINED, BECAUSE WHEN THE TOKEN ID
+        # IS DEFINED IN C-CODE, THE IDENTIFICATION IS NOT 100% SAFE.
         msg = "Token id '%s' defined implicitly." % TokenName
         if TokenName in lexer_mode.token_id_db.keys():
             msg += "\nNOTE: '%s' has been defined in a token { ... } section!" % \
@@ -229,7 +231,7 @@ def __create_token_sender_by_token_name(fh, TokenName, ArgListStr):
             else:
                 member_name = member.strip()
                 verify_word_in_list(member_name, lexer_mode.token_type_definition.get_member_db(), 
-                                    "Explicit member '%s' not present in token type description.\n" % member_name, 
+                                    "No member:   '%s' in token type description." % member_name, 
                                     fh)
                 access = lexer_mode.token_type_definition.get_member_access(member_name)
                 txt += "self.token_object()->%s = %s;\n" % (access, value.strip())
