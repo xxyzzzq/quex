@@ -70,6 +70,7 @@ function collect_distribution_file_list()
 
     # -- create tar file for ./trunk
     echo "-- Snapshot"
+    cp $output TO-BE-DELETED.txt
     tar cf /tmp/quex-$1.tar `cat $output`
     echo `ls -lh /tmp/quex-$1.tar`
 

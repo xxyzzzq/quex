@@ -24,7 +24,7 @@ def _do(Descr):
 
     if Descr.copy.get_pure_code() == "":
         # Default copy operation: Plain Copy of token memory
-        copy_str = "__QUEX_STD_memcpy((void*)this, (void*)That, sizeof(QUEX_TYPE_TOKEN));\n"
+        copy_str = "__QUEX_STD_memcpy((void*)this, (void*)&That, sizeof(QUEX_TYPE_TOKEN));\n"
     else:
         copy_str = Descr.copy.get_code()
 
