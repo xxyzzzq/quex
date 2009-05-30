@@ -609,9 +609,8 @@ following constraints:
       numbers which are dependent on compilation macros. The user must
       provide the functionality of the example code segment below.
 
-      .. _code-block:: cpp
+      .. code-block:: cpp
 
-         /**/
          #   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
          #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
                 private:

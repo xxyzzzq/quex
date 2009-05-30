@@ -148,8 +148,8 @@ namespace quex {
 
         /*___________________________________________________________________________________*/
         /* (1) Handle fallback region */
-        const size_t  FallBackN    = __QuexBufferFiller_forward_compute_fallback_region(buffer, 
-                                                                                        Distance_LexemeStart_to_InputP);
+        const size_t  FallBackN = __QuexBufferFiller_forward_compute_fallback_region(buffer, 
+                                                                                     Distance_LexemeStart_to_InputP);
         const size_t  DesiredLoadN = ContentSize - FallBackN;
         __quex_assert(FallBackN < ContentSize);
         __QuexBufferFiller_forward_copy_fallback_region(buffer, FallBackN);

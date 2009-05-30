@@ -68,9 +68,9 @@ def parse_mode_option(fh, new_mode):
     identifier = read_option_start(fh)
     if identifier == None: return False
 
-    verify_word_in_list(identifier, 
-                        ["skip", "skip_range", "skip_nesting_range" ] + \
-                         lexer_mode.mode_option_info_db.keys(),
+    mode_option_name_list = ["skip", "skip_range", "skip_nesting_range" ] + \
+                            lexer_mode.mode_option_info_db.keys()
+    verify_word_in_list(identifier, mode_option_name_list,
                         "mode option", fh.name, get_current_line_info_number(fh))
 
     if identifier == "skip":
