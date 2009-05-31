@@ -46,6 +46,7 @@ namespace quex {
 
     }
 
+#   if 0
     inline void*
     CLASS::buffer_fill_region_append_convert(void* ContentBegin, void* ContentEnd)
     /* Appends the content first into a 'raw' buffer and then converts it. This
@@ -100,6 +101,7 @@ namespace quex {
 
         return content_begin;
     }
+#   endif
 
     inline QUEX_TYPE_CHARACTER*
     CLASS::buffer_fill_region_prepare()
