@@ -1,0 +1,8 @@
+Use Case 1:
+
+Use Case 2:
+error-2.qx:9:warning: Mode without pattern and event handlers needs to be 'inheritable only'.
+error-2.qx:9:warning: <inheritable: only> has been added automatically.
+command line: No initial mode defined via 'start' while more than one mode exists.
+command line: Use for example 'start = A;' in the quex source file to define an initial mode.
+
