@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Thu May 28 23:12:28 2009
+DATE:  Sat May 30 21:16:43 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -174,6 +174,8 @@ TITLE: Regression Tests on Fixed Bugs
                        case-3 ..................................[OK]
                        case-4 ..................................[OK]
                        case-5 ..................................[OK]
+    2798423 0.39.4 token_type default __copy function does not compile
+        bug-2798423.sh .........................................[OK]
 
  -- yaroslav_xp:
 
@@ -193,7 +195,7 @@ TITLE: Regression Tests on Fixed Bugs
 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Thu May 28 12:10:03 2009
+DATE:  Sat May 30 21:08:18 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -303,7 +305,7 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Thu May 28 12:10:04 2009
+DATE:  Sat May 30 21:08:19 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -324,7 +326,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/TEST/did-you-mean/TEST
-DATE:  Thu May 28 12:10:13 2009
+DATE:  Sat May 30 21:08:27 2009
 TITLE: Check Applications of 'Did you mean'.
 
 -------------------------------------------------------------------------------
@@ -344,7 +346,7 @@ TITLE: Check Applications of 'Did you mean'.
 
 ===============================================================================
 ENTER: quex/TEST/event-handling/TEST
-DATE:  Thu May 28 12:10:18 2009
+DATE:  Sat May 30 21:08:32 2009
 TITLE: Event Handlers
 
 -------------------------------------------------------------------------------
@@ -371,7 +373,7 @@ TITLE: Event Handlers
 
 ===============================================================================
 ENTER: quex/TEST/include-stack/TEST
-DATE:  Thu May 28 12:10:27 2009
+DATE:  Sat May 30 21:08:41 2009
 TITLE: Include Stack Handling
 
 -------------------------------------------------------------------------------
@@ -412,7 +414,7 @@ TITLE: Include Stack Handling
 
 ===============================================================================
 ENTER: quex/TEST/token-class/TEST
-DATE:  Thu May 28 12:10:34 2009
+DATE:  Sat May 30 21:08:46 2009
 TITLE: Customized Token Class
 
 -------------------------------------------------------------------------------
@@ -435,7 +437,7 @@ TITLE: Customized Token Class
 
 ===============================================================================
 ENTER: quex/TEST/token-policies/TEST
-DATE:  Thu May 28 12:10:48 2009
+DATE:  Sat May 30 21:08:58 2009
 TITLE: Tests related to token queues
 
 -------------------------------------------------------------------------------
@@ -474,7 +476,7 @@ TITLE: Tests related to token queues
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Thu May 28 12:10:50 2009
+DATE:  Sat May 30 21:08:59 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -500,7 +502,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Thu May 28 12:10:58 2009
+DATE:  Sat May 30 21:09:06 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -564,7 +566,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Thu May 28 12:11:09 2009
+DATE:  Sat May 30 21:09:12 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -640,7 +642,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Thu May 28 12:11:19 2009
+DATE:  Sat May 30 21:09:20 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -716,7 +718,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Thu May 28 12:11:37 2009
+DATE:  Sat May 30 21:09:34 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -811,7 +813,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Thu May 28 12:11:46 2009
+DATE:  Sat May 30 21:09:41 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -880,7 +882,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Thu May 28 12:11:47 2009
+DATE:  Sat May 30 21:09:42 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -914,7 +916,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Thu May 28 12:14:23 2009
+DATE:  Sat May 30 21:11:54 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -1094,7 +1096,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Thu May 28 12:14:28 2009
+DATE:  Sat May 30 21:11:59 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -1157,7 +1159,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Thu May 28 12:14:35 2009
+DATE:  Sat May 30 21:12:05 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1256,7 +1258,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Thu May 28 12:14:35 2009
+DATE:  Sat May 30 21:12:05 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1284,7 +1286,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Thu May 28 12:15:00 2009
+DATE:  Sat May 30 21:12:26 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1353,7 +1355,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/cpp/TEST
-DATE:  Thu May 28 12:15:00 2009
+DATE:  Sat May 30 21:12:26 2009
 TITLE: Basic Code Writing Functionality
 
 -------------------------------------------------------------------------------
@@ -1369,7 +1371,7 @@ TITLE: Basic Code Writing Functionality
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Thu May 28 12:15:02 2009
+DATE:  Sat May 30 21:12:27 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.

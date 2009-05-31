@@ -38,6 +38,16 @@ The remaining framework of quex does not any adaptions to a customized token
 class. If the token class is designed according certain rules, then it fits
 smoothly in any generated engine.
 
+.. warning::
+
+   When an *accumulator* is used (see command line option
+   ``--no-string-accumulator``) then the user
+   token class must consider its requirements. The accumulator uses a token
+   class constructor which receives a pointer of type ``const
+   QUEX_TOKEN_TYPE*``. In consequence such a member needs to be defined. This
+   requirement can be circumvented by calling quex with
+   ``--no-string-accumulator`` or ``--nsacc``.
+
 .. _sec-customized-token-class:
 
 Customized Token Classes
