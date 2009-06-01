@@ -269,6 +269,7 @@ namespace quex {
         MemoryManager_BufferFiller_Converter_free(me);
     }
 
+
     TEMPLATE_IN(InputHandleT) size_t 
     __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*  me) 
     {
@@ -329,6 +330,31 @@ namespace quex {
         return LoadedByteN;
     }
 
+    TEMPLATE_IN(InputHandleT) void 
+    QuexBufferFiller_Converter_move_away_passed_content(TEMPLATED(QuexBufferFiller_Converter)*  me)
+    /* Service function for 'direct buffer' access to the lexical analyzer. */
+    {
+        TEMPLATED(QuexRawBuffer)*  buffer          = &me->raw_buffer;
+        const size_t               RemainingBytesN = buffer->end - buffer->iterator;
+        QUEX_ASSERT_BUFFER_INFO(buffer);
+        __quex_assert((size_t)(buffer->end - buffer->begin) >= RemainingBytesN);
+
+        /* There are cases (e.g. when a broken multibyte sequence occured at the end of 
+         * the buffer) where there are bytes left in the raw buffer. These need to be
+         * moved to the beginning of the buffer.                                        */
+        if( RemainingBytesN != 0 ) {
+            /* Be careful: Maybe one can use 'memcpy()' which is a bit faster but the
+             * following is safe against overlaps.                                      */
+            /* Cast to uint8_t to avoid a spurious function overload                    */
+            __QUEX_STD_memmove((uint8_t*)(buffer->begin), (uint8_t*)(buffer->iterator), RemainingBytesN);
+        }
+
+        /* In any case, we start reading from the beginning of the raw buffer. */
+        buffer->iterator = buffer->begin; 
+
+        /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
+        QUEX_ASSERT_BUFFER_INFO(buffer);
+    }
 
     TEMPLATE_IN(InputHandleT) void   
     __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 

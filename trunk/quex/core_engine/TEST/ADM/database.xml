@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.34" date="Sat May 30 21:09:42 2009">
+<test-database execution-time-sec="0.34" date="Mon Jun  1 03:10:34 2009">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.06"> 
@@ -13,10 +13,10 @@
                <choice name="" result="OK" time_sec="0.04" crc="1433382430"/>
             </choice-list>
         </test>
-        <test title="Difference" make-required="True" time-sum-sec="0.04"> 
+        <test title="Difference" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1237805542L"/>
             <choice-list number="1">
-               <choice name="" result="OK" time_sec="0.04" crc="2115164504"/>
+               <choice name="" result="OK" time_sec="0.05" crc="2115164504"/>
             </choice-list>
         </test>
         <test title="Intersection" make-required="True" time-sum-sec="0.06"> 

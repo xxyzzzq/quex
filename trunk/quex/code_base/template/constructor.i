@@ -4,10 +4,10 @@ namespace quex {
 
 
 inline QuexBufferFillerTypeEnum
-CLASS::__constructor_filler_assert(QuexBufferFillerTypeEnum BFT, const char* IANA_InputCodingName)
+CLASS::__constructor_filler_assert(QuexBufferFillerTypeEnum BFT, const char* CharacterEncodingName)
 {
     QuexBufferFillerTypeEnum buffer_filler_type = BFT;
-    if( IANA_InputCodingName == 0x0 ) {
+    if( CharacterEncodingName == 0x0 ) {
         if( buffer_filler_type != QUEX_AUTO && buffer_filler_type != QUEX_PLAIN ) {
             QUEX_ERROR_EXIT("Input coding is left to '0x0' which means plain character encoding.\n"
                             "However, the buffer filler type is chosen to something different.\n");
@@ -32,34 +32,29 @@ CLASS::__constructor_filler_assert(QuexBufferFillerTypeEnum BFT, const char* IAN
 }
 
 
-inline
-CLASS::CLASS()
-: 
-    // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
-    // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
-    self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
-    __file_handle_allocated_by_constructor(0x0)
-{
-    CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0, 
-                                    0x0, QUEX_SETTING_BUFFER_SIZE);
-}
 
 inline
-CLASS::CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize)
+CLASS::CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize,
+             const char* CharacterEncodingName /* = 0x0 */)
 : 
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
     // Decision: "ease-of-use preceeds protection against a tremendous stupidity."
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    __quex_assert(BufferMemorySize > 2);
-    CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, 0x0, 
-                                    BufferMemoryBegin, BufferMemorySize);
+    if( BufferMemoryBegin == 0x0 ) {
+        CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, CharacterEncodingName, 
+                                        0x0, QUEX_SETTING_BUFFER_SIZE);
+    } else {
+        __quex_assert(BufferMemorySize > 2);
+        CLASS::__constructor_core<FILE>(0x0, QUEX_MEMORY, CharacterEncodingName, 
+                                        BufferMemoryBegin, BufferMemorySize);
+    }
 }
 
 inline
 CLASS::CLASS(const std::string&       Filename, 
-             const char*              IANA_InputCodingName /* = 0x0 */, 
+             const char*              CharacterEncodingName /* = 0x0 */, 
              QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */)
 : 
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
@@ -67,7 +62,7 @@ CLASS::CLASS(const std::string&       Filename,
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
+    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, CharacterEncodingName);
     // Buffer: Size = (see macro def.), Fallback = 10 Characters
     // prefer FILE* based buffers, because we can turn low-level buffering off.
     // ownership of FILE* id passed to the input strategy of the buffer
@@ -75,14 +70,14 @@ CLASS::CLASS(const std::string&       Filename,
     if( fh == NULL ) QUEX_ERROR_EXIT("Error on attempt to open specified file.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
-    __constructor_core(fh, bft, IANA_InputCodingName);
+    __constructor_core(fh, bft, CharacterEncodingName);
     // Recall, that this thing as to be deleted/closed
     __file_handle_allocated_by_constructor = fh;
 }
 
 inline
 CLASS::CLASS(std::istream*            p_input_stream, 
-             const char*              IANA_InputCodingName /* = 0x0 */,
+             const char*              CharacterEncodingName /* = 0x0 */,
              QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */)
 :
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
@@ -90,14 +85,14 @@ CLASS::CLASS(std::istream*            p_input_stream,
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
+    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, CharacterEncodingName);
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    __constructor_core(p_input_stream, bft, IANA_InputCodingName);
+    __constructor_core(p_input_stream, bft, CharacterEncodingName);
 }
 
 inline
 CLASS::CLASS(std::wistream*           p_input_stream, 
-             const char*              IANA_InputCodingName /* = 0x0 */,
+             const char*              CharacterEncodingName /* = 0x0 */,
              QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */)
 :
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
@@ -105,15 +100,15 @@ CLASS::CLASS(std::wistream*           p_input_stream,
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
+    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, CharacterEncodingName);
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    __constructor_core(p_input_stream, bft, IANA_InputCodingName);
+    __constructor_core(p_input_stream, bft, CharacterEncodingName);
 }
 
 #if defined(__QUEX_OPTION_UNIT_TEST)
 template<class UnderlyingStreamT> inline
 CLASS::CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-             const char*                              IANA_InputCodingName /* = 0x0 */,
+             const char*                              CharacterEncodingName /* = 0x0 */,
              QuexBufferFillerTypeEnum                 BFT /* = QUEX_AUTO */)
 :
     // NOTE: dynamic_cast<>() would request derived class to be **defined**! 
@@ -121,25 +116,25 @@ CLASS::CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream,
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
+    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, CharacterEncodingName);
     if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-    __constructor_core(p_input_stream, bft, IANA_InputCodingName);
+    __constructor_core(p_input_stream, bft, CharacterEncodingName);
 }
 #endif
 
 inline
 CLASS::CLASS(std::FILE* fh, 
-             const char*              IANA_InputCodingName /* = 0x0 */,
+             const char*              CharacterEncodingName /* = 0x0 */,
              QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */)
 : 
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, IANA_InputCodingName);
+    QuexBufferFillerTypeEnum bft = __constructor_filler_assert(BFT, CharacterEncodingName);
     if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
     setbuf(fh, 0);   // turn off system based buffering!
     //               // this is essential to profit from the quex buffer!
-    __constructor_core(fh, bft, IANA_InputCodingName);
+    __constructor_core(fh, bft, CharacterEncodingName);
 }
 
 

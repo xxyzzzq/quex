@@ -20,6 +20,18 @@ namespace quex {
     template <class InputHandleT> struct InputPolicy;
 
     template <>
+    struct InputPolicy<void*> { 
+        typedef long   stream_position;
+        typedef long   stream_offset;
+
+        /* The 'void' specialization is only a placeholder for direct memory access.
+         * Functions below are not to be called.                                       */
+        static long    tell(void* me)                         { __quex_assert(false); }
+        static void    seek(void* me, long& Pos)              { __quex_assert(false); } 
+        static size_t  load_bytes(void*, void*, const size_t) { __quex_assert(false); } 
+    };
+
+    template <>
     struct InputPolicy<std::FILE*> { 
         typedef long   stream_position;
         typedef long   stream_offset;

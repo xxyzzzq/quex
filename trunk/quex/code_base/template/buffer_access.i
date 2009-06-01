@@ -1,6 +1,30 @@
 // -*- C++ -*- vim:set syntax=cpp:
 namespace quex { 
 
+    inline size_t
+    MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
+                         uint8_t* source_begin_p, uint8_t* source_end_p)
+        /* Inserts as many bytes as possible into the array from 'drain_begin_p'
+         * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
+         * ends at 'source_end_p'.
+         *
+         * RETURNS: Number of bytes that have been copied.                      */
+    {
+        /* Determine the insertion size. */
+        const size_t DrainSize = drain_end_p  - drain_begin_p;
+        size_t       size      = source_end_p - source_begin_p;
+        if( DrainSize < size ) size = DrainSize;
+
+        /* memcpy() might fail if the source and drain domain overlap! */
+#       ifdef QUEX_OPTION_ASSERTS 
+        if( drain_begin_p > source_begin_p ) __quex_assert(drain_begin_p >= source_begin_p + size);
+        else                                 __quex_assert(drain_begin_p <= source_begin_p - size);
+#       endif
+        __QUEX_STD_memcpy(drain_begin_p, source_begin_p, size);
+
+        return size;
+    }
+
     inline QUEX_TYPE_CHARACTER*
     CLASS::buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
                                      QUEX_TYPE_CHARACTER* ContentEnd)
@@ -20,74 +44,73 @@ namespace quex {
         /* Determine the insertion position. */
         QUEX_TYPE_CHARACTER*  insertion_p = buffer._memory._end_of_file_p;
 
-        /* Determine the insertion size. */
-        size_t         copy_size = ContentEnd - ContentBegin;
-        const size_t   RemainingSize = QuexBuffer_content_back(&buffer) - insertion_p + 1;
-
-        if( copy_size > RemainingSize ) copy_size = RemainingSize;
-
-        const size_t ByteN = copy_size * sizeof(QUEX_TYPE_CHARACTER);
-        /* memcpy() might fail if the source and drain domain overlap! */
-#       ifdef QUEX_OPTION_ASSERTS 
-        if( insertion_p > ContentBegin ) __quex_assert(insertion_p >= ContentBegin + ByteN);
-        else                             __quex_assert(insertion_p <= ContentBegin - ByteN);
-#       endif
-        __QUEX_STD_memcpy(insertion_p, ContentBegin, ByteN);
+        const size_t CopiedByteN = MemoryManager_insert((uint8_t*)insertion_p,  
+                                                        (uint8_t*)(QuexBuffer_content_back(&buffer) + 1),
+                                                        (uint8_t*)ContentBegin, 
+                                                        (uint8_t*)ContentEnd);
+        const size_t CopiedCharN = CopiedByteN / sizeof(QUEX_TYPE_CHARACTER);
 
         /* When lexing directly on the buffer, the end of file pointer is always set. */
-        QuexBuffer_end_of_file_set(&buffer, insertion_p + copy_size);
+        QuexBuffer_end_of_file_set(&buffer, insertion_p + CopiedCharN);
 
         /* NOT:
          *      buffer->_input_p        = front;
          *      buffer->_lexeme_start_p = front;            
          * We might want to allow to append during lexical analysis. */
         QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
-        return ContentBegin + copy_size;
-
+        return ContentBegin + CopiedCharN;
     }
 
-#   if 0
-    inline void*
-    CLASS::buffer_fill_region_append_convert(void* ContentBegin, void* ContentEnd)
+    inline uint8_t*
+    CLASS::buffer_fill_region_append_convert(uint8_t* ContentBegin, uint8_t* ContentEnd)
     /* Appends the content first into a 'raw' buffer and then converts it. This
      * is useful in cases where the 'break' may appear in between characters, or
      * where the statefulness of the converter cannot be controlled.              */
     {
-        /* Converting the incoming data using the given converter. */
-        TEMPLATED(QuexBufferFiller_Converter)*  filler = (TEMPLATED(QuexBufferFiller_Converter)*)buffer.filler;
-        QUEX_TYPE_CHARACTER* remainder_p = 0x0; 
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
+        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
 
-        /* Move away unused passed buffer content. */
+        /* (1) Append the content to the 'raw' buffer. */
+        /*     -- Move away passed buffer content.                                      */
+        QuexBufferFiller_Converter_move_away_passed_content(filler);
+
+        const size_t CopiedByteN = MemoryManager_insert(filler->raw_buffer.end, 
+                                                        filler->raw_buffer.memory_end,
+                                                        (uint8_t*)ContentBegin, 
+                                                        (uint8_t*)ContentEnd);
+
+        filler->raw_buffer.end = filler->raw_buffer.end + CopiedByteN;
+
+        /* (2) Convert data from the 'raw' buffer into the analyzer buffer.             */
+
+        /*     -- Move away passed buffer content.                                      */
         QuexBuffer_move_away_passed_content(&buffer);
 
-        /* Append the content to the 'raw' buffer */
-        remainder_p = QuexBufferFiller_Converter_append_raw_data(filler, ContentBegin, ContentEnd);
-
-        /* Determine the insertion position. */
+        /*     -- Perform the conversion.                                               */
         QUEX_TYPE_CHARACTER*  insertion_p = buffer._memory._end_of_file_p;
+        filler->converter->convert(filler->converter, 
+                                   &filler->raw_buffer.iterator, filler->raw_buffer.end,
+                                   &insertion_p,                 QuexBuffer_content_back(&buffer) + 1);
 
-        me->converter->convert(me->converter, 
-                               &me->raw_buffer.iterator, me->raw_buffer.end,
-                               &insertion_p,             QuexBuffer_content_back(&buffer));
+        /*      -- 'convert' has adapted the insertion_p so that is points to the first 
+         *         position after the last filled position.                             */
+        QuexBuffer_end_of_file_set(&buffer, insertion_p);
 
-        const size_t ConvertedCharN = insertion_position_after_p - insertion_position_before_p;
-
-        /* When lexing directly on the buffer, the end of file pointer is always set. */
-        QuexBuffer_end_of_file_set(&buffer, insertion_p + ConvertedCharN);
-
-        return remainder_p;
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
+        return ContentBegin + CopiedByteN;
     }
 
-    inline void*
-    CLASS::buffer_fill_region_append_convert_directly(void* ContentBegin, 
-                                                      void* ContentEnd)
+#   if 0
+    inline uint8_t*
+    CLASS::buffer_fill_region_append_convert_directly(uint8_t* ContentBegin, 
+                                                      uint8_t* ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
      * analyzer buffer. Note, that this can only be used, if it is safe to assume
      * that appended chunks do not break in between the encoding of a single 
      * character.                                                                  */
     {
         TEMPLATED(QuexBufferFiller_Converter)*  filler = (TEMPLATED(QuexBufferFiller_Converter)*)buffer.filler;
-        void*  content_begin = ContentBegin;
+        uint8_t*  content_begin = ContentBegin;
 
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);

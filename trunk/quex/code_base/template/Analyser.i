@@ -16,8 +16,8 @@ namespace quex {
     QuexAnalyser_construct(QuexAnalyser* me,
                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
-                           QuexBufferFillerTypeEnum     InputCodingType,
-                           const char*                  IANA_InputCodingName, 
+                           QuexBufferFillerTypeEnum     BufferFillerType,
+                           const char*                  CharacterEncodingName, 
                            const size_t                 BufferMemorySize,
                            const size_t                 TranslationBufferMemorySize)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
@@ -35,7 +35,7 @@ namespace quex {
 #       endif
         QuexBuffer_construct(&me->buffer, 
                              input_handle,
-                             InputCodingType, IANA_InputCodingName,
+                             BufferFillerType, CharacterEncodingName,
                              BufferMemorySize,
                              TranslationBufferMemorySize);
 
@@ -47,12 +47,16 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QuexAnalyser_construct_wo_filler(QuexAnalyser* me,
-                                     QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                                     QUEX_TYPE_CHARACTER*         Memory,
-                                     const size_t                 MemorySize)
+    QuexAnalyser_construct_for_direct_memory_access(QuexAnalyser* me,
+                                                    QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                                                    QUEX_TYPE_CHARACTER*         Memory,
+                                                    const size_t                 MemorySize,
+                                                    const char*                  CharacterEncodingName,
+                                                    const size_t                 TranslationBufferMemorySize)
     {
-        QuexBuffer_construct_wo_filler(&me->buffer, Memory, MemorySize);
+        QuexBuffer_construct_for_direct_memory_access(&me->buffer, Memory, MemorySize, 
+                                                      CharacterEncodingName,
+                                                      TranslationBufferMemorySize);
         me->current_analyser_function = AnalyserFunction;
 
         /* Double check that everything is setup propperly. */
