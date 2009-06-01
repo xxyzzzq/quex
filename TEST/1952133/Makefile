@@ -49,7 +49,7 @@ $(APPLICATION): $(APPLICATION).o \
 
 # -- engine and object files
 %.o: %.cpp $(ENGINE_SOURCES)
-	$(CC) $< -o $@
+	$(CC) -Wall $< -ggdb -o $@
 
 $(ENGINE_SOURCES): $(MODE_FILES)
 	@quex -i $(MODE_FILES) --engine $(ENGINE_NAME)  >& tmp.txt

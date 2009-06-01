@@ -16,6 +16,9 @@ PACKAGE_VERSION=$2
 #Config
 BIN_DIRECTORY='/usr/local/bin'
 
+#sudo does not seem to inherit path files
+QUEX_PATH=/home/fschaef/prj/quex/trunk/
+
 if [[ $# < 1 ]]; then
     echo "Please, watch this script to see how it is executed."
     exit 1

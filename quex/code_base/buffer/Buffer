@@ -86,13 +86,15 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void
     QuexBuffer_construct(QuexBuffer* me, InputHandleT* input_handle,
-                         QuexBufferFillerTypeEnum InputCodingType, const char* IANA_InputCodingName, 
+                         QuexBufferFillerTypeEnum InputCodingType, const char* CharacterEncodingName, 
                          const size_t BufferMemorySize,
                          const size_t TranslationBufferMemorySize);
     QUEX_INLINE void
-    QuexBuffer_construct_wo_filler(QuexBuffer*   me, 
-                                   QUEX_TYPE_CHARACTER*  Memory      /* = 0x0 */,
-                                   const size_t          MemorySize  /* = 0   */);
+    QuexBuffer_construct_for_direct_memory_access(QuexBuffer*   me, 
+                                                  QUEX_TYPE_CHARACTER*  Memory      /* = 0x0 */,
+                                                  const size_t          MemorySize  /* = 0   */,
+                                                  const char*           CharacterEncodingName,
+                                                  const size_t          TranslationBufferMemorySize);
 
     QUEX_INLINE void
     QuexBuffer_reset(QuexBuffer* me);

@@ -297,21 +297,21 @@ $$MEMENTO_EXTENSIONS$$
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
-        CLASS();
-        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize);
-        CLASS(const std::string&        Filename,       const char* IConvInputCodingName = 0x0, 
+        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize,
+              const char* CharacterEncodingName = 0x0);
+        CLASS(const std::string&        Filename,       const char* CharacterEncodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
-        CLASS(std::istream*             p_input_stream, const char* IConvInputCodingName = 0x0, 
+        CLASS(std::istream*             p_input_stream, const char* CharacterEncodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
-        CLASS(std::wistream*            p_input_stream, const char* IConvInputCodingName = 0x0, 
+        CLASS(std::wistream*            p_input_stream, const char* CharacterEncodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
 #       if defined(__QUEX_OPTION_UNIT_TEST)
         template <class UnderlyingStreamT>
         CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-              const char*                              IConvInputCodingName = 0x0, 
+              const char*                              CharacterEncodingName = 0x0, 
               QuexBufferFillerTypeEnum                 ICT=QUEX_AUTO);
 #       endif
-        CLASS(std::FILE*                input_fh,       const char* IConvInputCodingName = 0x0, 
+        CLASS(std::FILE*                input_fh,       const char* CharacterEncodingName = 0x0, 
               QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
 
         virtual ~CLASS();
@@ -319,6 +319,8 @@ $$MEMENTO_EXTENSIONS$$
         /* Direct Access to Memory */
         QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
                                                         QUEX_TYPE_CHARACTER* ContentEnd);
+        uint8_t*              buffer_fill_region_append_convert(uint8_t* ContentBegin, 
+                                                                uint8_t* ContentEnd);
         QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
@@ -510,24 +512,25 @@ $$CLASS_BODY_EXTENSION$$
         template <class InputHandleT> 
         void                        __constructor_core(InputHandleT*, 
                                                        QuexBufferFillerTypeEnum, 
-                                                       const char* IANA_InputCodingName,
+                                                       const char* CharacterEncodingName,
                                                        QUEX_TYPE_CHARACTER*  BufferMemory          = 0x0,
                                                        size_t                BufferMemorySize      = 0);
         template <class InputHandleT> 
         void                        __init(InputHandleT*  input_handle, 
                                            QuexBufferFillerTypeEnum  BFT, 
-                                           const char*               IANA_InputCodingName,
+                                           const char*               CharacterEncodingName,
                                            QUEX_TYPE_CHARACTER*      BufferMemory,    
                                            size_t                    BufferMemorySize);
 
 
         QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
-                                                                const char* IANA_InputCodingName);
+                                                                const char* CharacterEncodingName);
     };
 
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
-                              QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
+                              QuexBufferFillerTypeEnum  BFT, 
+                              const char*               CharacterEncodingName,
                               QUEX_TYPE_CHARACTER*      BufferMemory,    
                               size_t                    BufferMemorySize)
     {
@@ -577,7 +580,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
         _mode_stack.end        = _mode_stack.begin;
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-        __init(input_handle, BFT, IANA_InputCodingName, BufferMemory, BufferMemorySize);
+        __init(input_handle, BFT, CharacterEncodingName, BufferMemory, BufferMemorySize);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -588,7 +591,8 @@ $$CONSTRUCTOR_EXTENSTION$$
 
     template <class InputHandleT> inline void
     CLASS::__init(InputHandleT*             input_handle, 
-                  QuexBufferFillerTypeEnum  BFT, const char* IANA_InputCodingName,
+                  QuexBufferFillerTypeEnum  BFT, 
+                  const char*               CharacterEncodingName,
                   QUEX_TYPE_CHARACTER*      BufferMemory,         
                   size_t                    BufferMemorySize)
     {
@@ -598,23 +602,25 @@ $$CONSTRUCTOR_EXTENSTION$$
         counter.init();
 
         if( BFT != QUEX_MEMORY ) {
-            /* If a buffer filler is active, we cannot work directly on raw memory. */
+            /* Anything other than direct memory access, uses the 'normal' constructor.     */
             __quex_assert(BufferMemory == 0x0);
             __quex_assert(BufferMemorySize == 0x0);
 
             QuexAnalyser_construct((QuexAnalyser*)this,
                                    __current_mode_p->analyser_function,
                                    input_handle,
-                                   BFT, IANA_InputCodingName, 
+                                   BFT, CharacterEncodingName, 
                                    QUEX_SETTING_BUFFER_SIZE,
                                    QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
         } else {
-            /* Directly working on specific memory, makes fillers impossible. */
+            /* Directly working on specific memory. */
             __quex_assert(BufferMemorySize > 2);
-            QuexAnalyser_construct_wo_filler((QuexAnalyser*)this,
-                                             __current_mode_p->analyser_function,
-                                             BufferMemory,
-                                             BufferMemorySize);
+            QuexAnalyser_construct_for_direct_memory_access((QuexAnalyser*)this,
+                                                            __current_mode_p->analyser_function,
+                                                            BufferMemory,
+                                                            BufferMemorySize,
+                                                            CharacterEncodingName,
+                                                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
             /* TWO CASES:
              * (1) The user provides a buffer memory: --> assume it is filled to the end.
              * (2) The user does not provide memory:  --> the memory IS empty.             */

@@ -25,7 +25,7 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void
     QuexBuffer_construct(QuexBuffer*  me, InputHandleT*  input_handle,
-                         QuexBufferFillerTypeEnum  FillerType, const char*  IANA_InputCodingName, 
+                         QuexBufferFillerTypeEnum  FillerType, const char*  CharacterEncodingName, 
                          const size_t  BufferMemorySize,
                          const size_t  TranslationBufferMemorySize)
     {
@@ -37,7 +37,7 @@ namespace quex {
         __quex_assert( input_handle != 0x0 );
 
         if( filler_type == QUEX_AUTO ) {
-            if( IANA_InputCodingName == 0x0 ) {
+            if( CharacterEncodingName == 0x0 ) {
                 filler_type = QUEX_PLAIN;
             } else {
                 filler_type = QUEX_CONVERTER;
@@ -47,13 +47,16 @@ namespace quex {
 #           endif
             }
         }
+        __quex_assert(filler_type != QUEX_AUTO);
+
         switch( filler_type ) {
+        default:
+            __quex_assert(false);
+            break;
+
         case QUEX_MEMORY:
             QUEX_ERROR_EXIT("Constructor function cannot handle BufferFiller of type QUEX_MEMORY,\n"
-                            "Please, use QuexBuffer_construct_wo_filler(...).\n");
-
-        case QUEX_AUTO:
-            QUEX_ERROR_EXIT("Cannot instantiate BufferFiller of type QUEX_AUTO.\n");
+                            "Please, use QuexBuffer_construct_for_direct_memory_access(...).\n");
 
         case QUEX_PLAIN: 
             buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
@@ -68,7 +71,7 @@ namespace quex {
 
             buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
                                   QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
-                                  IANA_InputCodingName, /* Internal Coding: Default */0x0,
+                                  CharacterEncodingName, /* Internal Coding: Default */0x0,
                                   TranslationBufferMemorySize);
             break;
         }
@@ -87,9 +90,11 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QuexBuffer_construct_wo_filler(QuexBuffer*           me, 
-                                   QUEX_TYPE_CHARACTER*  Memory,
-                                   const size_t          MemorySize)
+    QuexBuffer_construct_for_direct_memory_access(QuexBuffer*           me, 
+                                                  QUEX_TYPE_CHARACTER*  Memory,
+                                                  const size_t          MemorySize,
+                                                  const char*           CharacterEncodingName,
+                                                  const size_t          TranslationBufferMemorySize)
     /* NOTE: This function sets the content or fill level of the buffer to zero.
      *       To change this, the function 
      *
@@ -108,6 +113,23 @@ namespace quex {
         __quex_assert(MemorySize > 2);
 
         if( Memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(MemorySize);
+
+        if( CharacterEncodingName == 0x0 ) {
+            me->filler = 0x0;
+        } else {
+
+            if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
+                QUEX_ERROR_EXIT("Direct memory access constructor:\n" \
+                                "Use of buffer filler type 'QUEX_CONVERTER' while " \
+                                "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
+                                "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
+            }
+
+            me->filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(/* input handle = */(void*)0x0, 
+                                       QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
+                                       CharacterEncodingName, /* Internal Coding: Default */0x0,
+                                       TranslationBufferMemorySize);
+        }
 
         QuexBufferMemory_init(&(me->_memory), memory, MemorySize);      
 

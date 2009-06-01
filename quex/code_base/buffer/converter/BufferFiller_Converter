@@ -153,11 +153,12 @@ namespace quex {
                                    const char*       ToCoding,
                                    size_t            RawBufferSize);
 
-    TEMPLATE_IN(InputHandleT) size_t __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*);
+    TEMPLATE_IN(InputHandleT) void    QuexBufferFiller_Converter_move_away_passed_content(TEMPLATED(QuexBufferFiller_Converter)*);
+    TEMPLATE_IN(InputHandleT) size_t  __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*);
 
-    TEMPLATE_IN(InputHandleT) void   __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
-                                                          uint8_t* Begin, size_t SizeInBytes,
-                                                          STREAM_POSITION_TYPE(InputHandleT) StartPosition);
+    TEMPLATE_IN(InputHandleT) void    __QuexRawBuffer_init(TEMPLATED(QuexRawBuffer)* me, 
+                                                           uint8_t* Begin, size_t SizeInBytes,
+                                                           STREAM_POSITION_TYPE(InputHandleT) StartPosition);
 
 #ifdef QUEX_OPTION_ASSERTS
 #   define QUEX_ASSERT_BUFFER_INFO(BI)                         \

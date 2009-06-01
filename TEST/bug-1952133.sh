@@ -10,7 +10,9 @@ echo "## Buffer Size = $1"
 tmp=`pwd`
 cd $bug/ 
 make clean
-make BUFFER_SIZE=$1
+make BUFFER_SIZE=$1 >& tmp.txt
+cat tmp.txt | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
+rm tmp.txt
 ./lexer error-example.txt 
 make clean
 
