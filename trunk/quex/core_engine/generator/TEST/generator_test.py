@@ -345,8 +345,8 @@ test_program_db = {
         char           TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
-        QuexAnalyser_construct_wo_filler(&lexer_state, Mr_UnitTest_analyser_function, 
-                                         TestString, MemorySize);
+        QuexAnalyser_construct_for_direct_memory_access(&lexer_state, Mr_UnitTest_analyser_function, 
+                                         TestString, MemorySize, 0x0, 0);
         QuexBuffer_end_of_file_set(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);

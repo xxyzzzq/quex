@@ -60,24 +60,38 @@ member functions:
         size_t                buffer_fill_region_size();
         void                  buffer_fill_region_finish(FilledCharacterN);
 
-Analyzers that work directly on user managed memory should use one of 
-the following constructors:
+Analyzers that work directly on user managed memory should use 
+the following constructor:
 
     .. code-block:: cpp
 
-        MyLexer();
-        MyLexer(QUEX_TYPE_CHARACTER* Begin, size_t Size);
+        MyLexer(QUEX_TYPE_CHARACTER* MemoryBegin, size_t Size, 
+                const char*  CharacterEncodingName       = 0x0,
+                const sizt_t TranslationBufferMemorySize = 0);
 
-where ``MyLexer`` is the user specified engine name. For file based input the
-analyzer can navigate backwards in an arbitrary manner. This is not possible if
-the buffer is filled by the user. This becomes essential when so called
-'pre-conditions' require a backward lexical analyzis (see
-:ref:`sec-pre-and-post-conditions`). Then the setting of the macro::
+where ``MyLexer`` is the user specified engine name. The arguments
+``MemoryBegin`` and ``Size`` may be set to zero, if the analyzer shall allocate
+the memory on its own. The last two arguments are only of interest if the
+incoming input is to be converted from a non-unicode character set to
+unicode/ASCII. 
+
+The input navigation when using direct memory access is fundamentally different
+from the navigation for file based input. For file based input the analyzer can navigate
+backwards in an arbitrary manner. This is not possible if the buffer is filled
+by the user. The maximum amount that can be navigated backwars [#f1]_ is determined 
+by the fallback region. Its size is determined by the macro
 
         QUEX_SETTING_BUFFER_MIN_FALLBACK_N
 
 determines the maximum length of the pre-condition pattern. If no pre-condition
-pattern is used, this might be neglected.
+pattern is used, this might be neglected. 
+
+.. note:: 
+
+   The presented methods are based on the token policy *User's Token*, i.e.
+   the command line must contain ``--token-policy users_token`` when quex
+   is called. Queue based policies might also be used, once the basic 
+   principles have been understood.
 
 
 .. _sec-copying:
@@ -130,7 +144,7 @@ required for the analyzis process.
     int
     main(int argc, char** argv)
     {
-        quex::tiny_lexer      qlex;            // No args to constructor --> raw memory 
+        quex::tiny_lexer      qlex(0x0, 0);    // No args to constructor --> raw memory 
         quex::Token           token;           // Two tokens required, one for look-ahead
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
@@ -209,7 +223,7 @@ input frames:
     {        
         using namespace std;
 
-        quex::tiny_lexer      qlex;            // No args to constructor --> raw memory 
+        quex::tiny_lexer      qlex(0x0, 0);    // No args to constructor --> raw memory 
         quex::Token           token;           // Two tokens required, one for look-ahead
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
@@ -282,7 +296,7 @@ The following code fragment shows all required variables and their initializatio
     int
     main(int argc, char**) {
     
-        quex::tiny_lexer      qlex;       // No args to constructor --> raw memory 
+        quex::tiny_lexer  qlex(0x0, 0);   // No args to constructor --> raw memory 
 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
@@ -424,7 +438,7 @@ shown below.
     {        
         using namespace std;
 
-        quex::tiny_lexer      qlex;       // No args to constructor --> raw memory 
+        quex::tiny_lexer   qlex(0x0, 0);  // No args to constructor --> raw memory 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
         quex::Token*   current_token;     // 
@@ -573,3 +587,9 @@ directory implements an example.
    because at the time of this writing, a quex generated engine is not
    able to work on read-only memory.  It needs to be able to place
    the buffer limit code in an arbitrary position inside the buffer.
+
+.. rubric:: Footnotes
+
+.. [#f1] Backward navigation may appear due to calls to ``seek()``, but also when pre-conditions require a
+         backward lexical analyzis (see :ref:`sec-pre-and-post-conditions`). 
+
