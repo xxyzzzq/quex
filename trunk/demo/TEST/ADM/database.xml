@@ -1,4 +1,4 @@
-<test-database execution-time-sec="141.57" date="Mon Jun  1 22:47:19 2009">
+<test-database execution-time-sec="142.85" date="Thu Jun  4 20:18:34 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC         CHOICES" make-required="True" time-sum-sec="7.79"> 
@@ -136,11 +136,11 @@
                <choice name="fill" result="FAIL" time_sec="2.47" crc="1069985610"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="4.55"> 
+        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="5.83"> 
             <application file-name="010.sh" info-request-time="1242869795L"/>
             <choice-list number="2">
-               <choice name="copy" result="FAIL" time_sec="2.37" crc="-323974352"/>
-               <choice name="fill" result="FAIL" time_sec="2.18" crc="-323974352"/>
+               <choice name="copy" result="OK" time_sec="0.24" crc="-323974352"/>
+               <choice name="fill" result="OK" time_sec="5.59" crc="-323974352"/>
             </choice-list>
         </test>
     </group>

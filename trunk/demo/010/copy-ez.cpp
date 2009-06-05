@@ -15,7 +15,7 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::tiny_lexer      qlex;            // No args to constructor --> raw memory 
+    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
     quex::Token           token;           // Two tokens required, one for look-ahead
     QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
     MemoryChunk           chunk;

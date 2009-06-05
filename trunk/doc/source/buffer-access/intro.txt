@@ -93,6 +93,26 @@ pattern is used, this might be neglected.
    is called. Queue based policies might also be used, once the basic 
    principles have been understood.
 
+.. warning::
+
+   Is is highly recommdedable to define an ``on_failure`` handler for each
+   lexical analyzer mode which sends something different from ``TERMINATION``.
+   The ``TERMINATION`` token is used in the strategies below to indicate the
+   end of the currently present content. By default, a quex engine sends a
+   ``TERMINATION`` token on failure, and thus the strategies below might hang
+   up in an endless loop as soon as something is parsed which is not expected.
+   A line such as 
+
+   .. code-block:: cpp
+
+      mode X {
+         ...
+         on_failure  => QUEX_TKN_MY_FAILURE_ID(Lexeme);
+         ...
+      }
+
+   helps to avoid such subtle and confusing misbehavior.
+
 
 .. _sec-copying:
 
@@ -120,7 +140,6 @@ frame.
 Syntactically Chunked Input Frames
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-
 The following paragraphs discuss the implementation of this use case. First,
 two pointers are required that keep track of the memory positions which
 are copied to the buffer.
@@ -144,7 +163,7 @@ required for the analyzis process.
     int
     main(int argc, char** argv)
     {
-        quex::tiny_lexer      qlex(0x0, 0);    // No args to constructor --> raw memory 
+        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);    // No args to constructor --> raw memory 
         quex::Token           token;           // Two tokens required, one for look-ahead
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
@@ -223,7 +242,7 @@ input frames:
     {        
         using namespace std;
 
-        quex::tiny_lexer      qlex(0x0, 0);    // No args to constructor --> raw memory 
+        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);    // No args to constructor --> raw memory 
         quex::Token           token;           // Two tokens required, one for look-ahead
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
@@ -296,7 +315,7 @@ The following code fragment shows all required variables and their initializatio
     int
     main(int argc, char**) {
     
-        quex::tiny_lexer  qlex(0x0, 0);   // No args to constructor --> raw memory 
+        quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
@@ -438,7 +457,7 @@ shown below.
     {        
         using namespace std;
 
-        quex::tiny_lexer   qlex(0x0, 0);  // No args to constructor --> raw memory 
+        quex::tiny_lexer   qlex((QUEX_TYPE_CHARACTER*)0x0, 0);  // No args to constructor --> raw memory 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
         quex::Token*   current_token;     // 
@@ -565,7 +584,7 @@ used by the lexical analyzer. A constructor call
 
 .. code-block:: cpp
 
-    quex::MyLexer      qlex(BUFFER_ADR, BUFFER_SIZE); 
+    quex::MyLexer   qlex((QUEX_TYPE_CHARACTER*)BUFFER_ADR, BUFFER_SIZE); 
 
 announces the memory to be used by the engine. Note, that the first position
 to be written to must be ``BUFFER_ADR + 1``, because the first element of
@@ -587,6 +606,63 @@ directory implements an example.
    because at the time of this writing, a quex generated engine is not
    able to work on read-only memory.  It needs to be able to place
    the buffer limit code in an arbitrary position inside the buffer.
+
+
+Character Conversions
+.....................
+
+It is very well possible to do character set conversions combined with direct
+buffer access. This enables the implementation command lines with UTF-8 encoding,
+for example. To enable character set conversion, the constructor must receive
+the name of the character set as the third argument, e.g.
+
+    .. code-block:: cpp
+
+        quex::MyLexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, "UTF-8");
+
+And the engine must be created with a converter flag (``--iconv`` or ``--icu``)
+or one of the macros ``-DQUEX_OPTION_ENABLE_ICONV`` or
+``-DQUEX_OPTION_ENABLE_ICU`` must be defined for compilation. Customized
+converters might also be used (see section
+                               :ref:`sec-customized-converters`). The
+process of analyzis is the same, except for one single line in the code.
+Instead of appending plain content to the fill region it has to be
+converted. The interface functions take 'byte' pointers, since it is
+assumed that the input is raw. There are two possible cases:
+
+#. The input is chunked arbitrarily and encoded characters might be cut at
+   frame border. In this case, the function 
+
+   .. code-block:: cpp
+
+        uint8_t*  
+        buffer_fill_region_append_conversion(uint8_t* Begin, uint8_t* End);
+
+    has to be used. This is the *safe* way of doing character conversion.
+
+    The return value is the pointer to the next content byte to be appended. If 
+    it is equal to ``End`` the whole content area from ``Begin`` to ``End``
+    has beend appended.
+
+
+#. The input chunks never cut in between an encoded character.  In this case,
+   the function
+
+   .. code-block:: cpp
+
+        uint8_t*
+        buffer_fill_region_append_conversion_direct(uint8_t* Begin, uint8_t* End);
+
+   might be used. It does not use an intermediate buffer that stocks
+   incoming data. Thus, it is faster and uses less memory. The raw 
+   buffer size of the converter can be set to zero, i.e. you
+   can compile with ``-DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=0``.
+
+   The returned pointer corresponds to what has been said about the previous
+   function.
+
+   This function is only to be used in case of 100% certainty that input frames
+   only contain complete characters.
 
 .. rubric:: Footnotes
 

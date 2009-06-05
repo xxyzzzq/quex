@@ -25,6 +25,7 @@ namespace quex {
         return size;
     }
 
+
     inline QUEX_TYPE_CHARACTER*
     CLASS::buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
                                      QUEX_TYPE_CHARACTER* ContentEnd)
@@ -36,7 +37,9 @@ namespace quex {
         /* Asserts ensure, that we are running in 'buffer-based-mode' */
         __quex_assert(buffer._content_character_index_begin == 0); 
         __quex_assert(buffer._memory._end_of_file_p != 0x0); 
+        __quex_assert(ContentEnd > ContentBegin);
         QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(ContentBegin, ContentEnd);
 
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);
@@ -62,13 +65,15 @@ namespace quex {
     }
 
     inline uint8_t*
-    CLASS::buffer_fill_region_append_convert(uint8_t* ContentBegin, uint8_t* ContentEnd)
+    CLASS::buffer_fill_region_append_conversion(uint8_t* ContentBegin, uint8_t* ContentEnd)
     /* Appends the content first into a 'raw' buffer and then converts it. This
      * is useful in cases where the 'break' may appear in between characters, or
      * where the statefulness of the converter cannot be controlled.              */
     {
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
+        __quex_assert(ContentEnd > ContentBegin);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
 
         /* (1) Append the content to the 'raw' buffer. */
         /*     -- Move away passed buffer content.                                      */
@@ -79,7 +84,7 @@ namespace quex {
                                                         (uint8_t*)ContentBegin, 
                                                         (uint8_t*)ContentEnd);
 
-        filler->raw_buffer.end = filler->raw_buffer.end + CopiedByteN;
+        filler->raw_buffer.end += CopiedByteN;
 
         /* (2) Convert data from the 'raw' buffer into the analyzer buffer.             */
 
@@ -94,37 +99,48 @@ namespace quex {
 
         /*      -- 'convert' has adapted the insertion_p so that is points to the first 
          *         position after the last filled position.                             */
+        /*      -- double check that no buffer limit code is mixed under normal content */
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer._memory._end_of_file_p, insertion_p);
+
         QuexBuffer_end_of_file_set(&buffer, insertion_p);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
         return ContentBegin + CopiedByteN;
     }
 
-#   if 0
     inline uint8_t*
-    CLASS::buffer_fill_region_append_convert_directly(uint8_t* ContentBegin, 
-                                                      uint8_t* ContentEnd)
+    CLASS::buffer_fill_region_append_conversion_direct(uint8_t* content_begin, 
+                                                       uint8_t* ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
      * analyzer buffer. Note, that this can only be used, if it is safe to assume
      * that appended chunks do not break in between the encoding of a single 
      * character.                                                                  */
     {
-        TEMPLATED(QuexBufferFiller_Converter)*  filler = (TEMPLATED(QuexBufferFiller_Converter)*)buffer.filler;
-        uint8_t*  content_begin = ContentBegin;
+        /* The buffer filler for direct memory handling must be of a 'void' specialization. */
+        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
+        __quex_assert(ContentEnd > content_begin);
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
 
-        /* Move away unused passed buffer content. */
+        /*     -- Move away passed buffer content.                                      */
         QuexBuffer_move_away_passed_content(&buffer);
-        
-        /* Determine the insertion position. */
+
+        /*     -- Perform the conversion.                                               */
         QUEX_TYPE_CHARACTER*  insertion_p = buffer._memory._end_of_file_p;
+        filler->converter->convert(filler->converter, 
+                                   &content_begin, ContentEnd,
+                                   &insertion_p,  QuexBuffer_content_back(&buffer) + 1);
 
-        me->converter->convert(me->converter, 
-                               &content_begin, ContentEnd,
-                               &insertion_p,   QuexBuffer_content_back(&buffer));
+        /*      -- 'convert' has adapted the insertion_p so that is points to the first 
+         *         position after the last filled position.                             */
+        /*      -- double check that no buffer limit code is mixed under normal content */
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer._memory._end_of_file_p, insertion_p);
 
+        QuexBuffer_end_of_file_set(&buffer, insertion_p);
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
+        /* 'content_begin' has been adapted by the converter. */
         return content_begin;
     }
-#   endif
 
     inline QUEX_TYPE_CHARACTER*
     CLASS::buffer_fill_region_prepare()
@@ -149,7 +165,12 @@ namespace quex {
     CLASS::buffer_fill_region_finish(const size_t CharacterN)
     {
         __quex_assert(buffer._memory._end_of_file_p + CharacterN <= buffer._memory._back);
-        /* When lexing directly on the buffer, the end of file pointer is always set. */
+        /* We assume that the content from '_end_of_file_p' to '_end_of_file_p + CharacterN'
+         * has been filled with data.                                                        */
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer._memory._end_of_file_p, 
+                                                buffer._memory._end_of_file_p + CharacterN);
+
+        /* When lexing directly on the buffer, the end of file pointer is always set.        */
         QuexBuffer_end_of_file_set(&buffer, 
                                    buffer._memory._end_of_file_p + CharacterN); 
     }

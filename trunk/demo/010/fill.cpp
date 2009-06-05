@@ -15,7 +15,7 @@ main(int argc, char** argv)
     quex::Token           token_bank[2];
     quex::Token*          prev_token;
     quex::Token*          current_token;
-    quex::tiny_lexer      qlex;           /* No args to constructor --> raw memory */
+    quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0); /* No args to constructor --> raw memory */
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0;
 
     prev_token    = &(token_bank[1]);

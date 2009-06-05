@@ -6,8 +6,8 @@
 #include "messaging-framework.h"
 
 typedef struct {
-    QUEX_TYPE_CHARACTER* begin;
-    QUEX_TYPE_CHARACTER* end;
+    uint8_t* begin;
+    uint8_t* end;
 } MemoryChunk;
 
 void swap(QUEX_TYPE_TOKEN** A, QUEX_TYPE_TOKEN** B)
@@ -18,16 +18,16 @@ main(int argc, char** argv)
 {        
     using namespace std;
 
-    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
+    quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0, "UTF-8");   // No args to constructor --> raw memory 
 
     quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
     quex::Token*   prev_token;        // Use pointers to swap quickly.
     quex::Token*   current_token;     // 
 
-    QUEX_TYPE_CHARACTER*  rx_buffer = 0x0;  // A pointer to the receive buffer that
-    //                                      // the messaging framework provides.
+    uint8_t*       rx_buffer = 0x0;   // A pointer to the receive buffer that
+    //                                // the messaging framework provides.
 
-    MemoryChunk           chunk;      // Pointers to the memory positions under
+    MemoryChunk    chunk;             // Pointers to the memory positions under
     //                                // consideration.
 
     QUEX_TYPE_CHARACTER*  prev_lexeme_start_p = 0x0; // Store the start of the 
@@ -66,7 +66,7 @@ main(int argc, char** argv)
         //     different from 'chunk.end'. This would indicate the there
         //     are still bytes left. The next call of '_apend(...)' will
         //     deal with it.)
-        chunk.begin = qlex.buffer_fill_region_append(chunk.begin, chunk.end);
+        chunk.begin = qlex.buffer_fill_region_append_conversion_direct(chunk.begin, chunk.end);
 
         // -- Loop until the 'termination' token arrives
         while( 1 + 1 == 2 ) {
@@ -79,13 +79,16 @@ main(int argc, char** argv)
 
             // TERMINATION => possible reload
             // BYE         => end of game
-            if( current_token->type_id() == QUEX_TKN_TERMINATION || current_token->type_id() == QUEX_TKN_BYE )
+            if( current_token->type_id() == QUEX_TKN_TERMINATION )
                 break;
 
             // If the previous token was not a TERMINATION, it can be considered
             // by the syntactical analyzer (parser).
             if( prev_token->type_id() != QUEX_TKN_TERMINATION )
                 cout << "Consider: " << string(*prev_token) << endl;
+
+            if( current_token->type_id() == QUEX_TKN_BYE ) 
+                break;
         }
 
         // -- If the 'bye' token appeared, leave!
@@ -95,6 +98,7 @@ main(int argc, char** argv)
         //    enters the matching game again.
         qlex.buffer_input_pointer_set(prev_lexeme_start_p);
     }
+    cout << "Consider: " << string(*prev_token) << endl;
 
     return 0;
 }

@@ -71,7 +71,9 @@ $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE
 //       Templatifying the lexer would be possible, but the author has in mind to bring out
 //       a 'pure C' version of the quex generated engine. Thus templating would make this 
 //       goal harder achievable.
-#define QUEX_TYPE_CHARACTER   $$QUEX_TYPE_CHARACTER$$
+#ifndef QUEX_TYPE_CHARACTER
+#   define QUEX_TYPE_CHARACTER   $$QUEX_TYPE_CHARACTER$$
+#endif 
 
 #define QUEX_VERSION  "$$QUEX_VERSION$$"
 // OPTIONS: ____________________________________________________________________
@@ -198,7 +200,16 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 #        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)0)
 #    endif
 #endif
-#define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  $$CONVERTER_NEW$$
+/* The call the the 'new' function for the converter, i.e. the function that
+ * allocates the converter and initializes it. If it is 0x0, this means that
+ * the converter pointer is set to 0x0.                                      */
+#if   defined (QUEX_OPTION_ENABLE_ICONV)
+#     define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_IConv_new()
+#elif defined (QUEX_OPTION_ENABLE_ICU)
+#     define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_ICU_new()
+#else 
+#     define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  $$CONVERTER_NEW$$
+#endif
 
 // Begin of line pre-condition requires an extra flag in the buffer
 // structure. Only out-comment this in case of tough memory restrictions,
@@ -319,8 +330,10 @@ $$MEMENTO_EXTENSIONS$$
         /* Direct Access to Memory */
         QUEX_TYPE_CHARACTER*  buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
                                                         QUEX_TYPE_CHARACTER* ContentEnd);
-        uint8_t*              buffer_fill_region_append_convert(uint8_t* ContentBegin, 
-                                                                uint8_t* ContentEnd);
+        uint8_t*              buffer_fill_region_append_conversion(uint8_t* ContentBegin, 
+                                                                   uint8_t* ContentEnd);
+        uint8_t*              buffer_fill_region_append_conversion_direct(uint8_t* ContentBegin, 
+                                                                          uint8_t* ContentEnd);
         QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
