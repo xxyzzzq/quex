@@ -26,9 +26,9 @@ namespace quex {
 
         /* The 'void' specialization is only a placeholder for direct memory access.
          * Functions below are not to be called.                                       */
-        static long    tell(void* me)                         { __quex_assert(false); return -1L; }
+        static long    tell(void* me)                         { /* dummy operation */ return -1L; }
         static void    seek(void* me, long& Pos)              { __quex_assert(false); } 
-        static size_t  load_bytes(void*, void*, const size_t) { __quex_assert(false); return (size_t)-1; } 
+        static size_t  load_bytes(void*, void*, const size_t) { /* dummy operation */ return (size_t)0; } 
     };
 
     template <>

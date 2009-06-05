@@ -11,7 +11,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#ifndef QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+#ifndef    QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
 #   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  0x0
 #endif
 

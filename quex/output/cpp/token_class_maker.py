@@ -28,8 +28,6 @@ def _do(Descr):
     else:
         copy_str = Descr.copy.get_code()
 
-
-
     txt = blue_print(txt,
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
@@ -143,7 +141,9 @@ def get_quick_setters(Descr):
         i = -1
         for name, type_info in ArgList:
             i += 1
-            txt += "const %s& Value%i, " % (type_info.get_pure_code(), i)
+            type_str = type_info.get_pure_code()
+            if type_str.find("const") != -1: type_str = type_str[5:]
+            txt += "const %s& Value%i, " % (type_str, i)
         txt = txt[:-2]
         txt += ")\n    { "
         txt += "_id = ID; "
@@ -152,6 +152,7 @@ def get_quick_setters(Descr):
             i += 1
             txt += "%s = Value%i; " % (variable_db[name][1], i)
         txt += "}\n"
+
         return txt
 
     def __combined_quick_setters(member_db, AllOnlyF=False):
@@ -192,6 +193,7 @@ def get_quick_setters(Descr):
     for name, type_info in Descr.union_db.items():
         if type(type_info) != dict: txt += __quick_setter([[name, type_info]])
         else:                       txt += __combined_quick_setters(type_info, AllOnlyF=True)
+
 
     return txt
 

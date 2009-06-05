@@ -7,6 +7,7 @@
 #    define QUEX_BUFFER_ASSERT_CONSISTENCY_LIGHT(B)    /* empty */
 #    define QUEX_BUFFER_ASSERT_CONSISTENCY(B)          /* empty */
 #    define QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(B)  /* empty */
+#    define QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(Begin, End) /* empty */
 
 #else
 #    include <quex/code_base/definitions>
@@ -70,23 +71,31 @@ namespace quex {
     }
 
     QUEX_INLINE void
+    QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(QUEX_TYPE_CHARACTER* Begin, 
+                                            QUEX_TYPE_CHARACTER* End)
+    {
+        QUEX_TYPE_CHARACTER* iterator = 0x0;
+
+        for(iterator = Begin; iterator != End; ++iterator) {
+            if( *iterator != QUEX_SETTING_BUFFER_LIMIT_CODE ) continue;
+
+            if( iterator == Begin ) {
+                QUEX_ERROR_EXIT("Buffer limit code character appeared as first character in buffer.\n"
+                                "This is most probably a load failure.");
+            } else {
+                QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.");
+            }
+        }
+    }
+
+    QUEX_INLINE void
     QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(const QuexBuffer* buffer)
     {
-        QUEX_TYPE_CHARACTER* iterator = buffer->_memory._front + 1;
-        QUEX_TYPE_CHARACTER* End      = buffer->_memory._back;
+        QUEX_TYPE_CHARACTER* End = buffer->_memory._back;
 
         if( buffer->_memory._front == 0x0 && buffer->_memory._back == 0x0 ) return;
         if( buffer->_memory._end_of_file_p != 0x0 ) End = buffer->_memory._end_of_file_p;
-        for(; iterator != End; ++iterator) {
-            if( *iterator == QUEX_SETTING_BUFFER_LIMIT_CODE ) {
-                if( iterator == buffer->_memory._front + 1 ) {
-                    QUEX_ERROR_EXIT("Buffer limit code character appeared as first character in buffer.\n"
-                                    "This is most probably a load failure.");
-                } else {
-                    QUEX_ERROR_EXIT("Buffer limit code character appeared as normal text content.");
-                }
-            }
-        }
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer->_memory._front + 1, End);
     }
 
 #   if ! defined(__QUEX_SETTING_PLAIN_C)

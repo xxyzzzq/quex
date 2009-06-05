@@ -5,21 +5,30 @@
 #include <quex/code_base/asserts>
 #include "messaging-framework.h"
 
-static QUEX_TYPE_CHARACTER   messaging_framework_data[] = 
+#ifndef __QUEX_OPTION_MESSAGE_UTF8
+    static QUEX_TYPE_CHARACTER   messaging_framework_data[] = 
        "hello 4711 bonjour 0815 world 7777 le 31451 monde le monde 00 welt 1234567890 hallo 1212 hello bye";
+#else
+    static ELEMENT_TYPE messaging_framework_data[] = 
+       "Ελληνικά • Euskara • فارسی • Frysk • Galego • 한국어 • हिन्दी bye";
+#endif
 static size_t                messaging_framework_data_size()
-{ return sizeof(messaging_framework_data) / sizeof(QUEX_TYPE_CHARACTER); }
+{ 
+    ELEMENT_TYPE* iterator = messaging_framework_data;
+    for(; *iterator != 0; ++iterator);
+    return (iterator - messaging_framework_data + 1) * sizeof(ELEMENT_TYPE);
+}
 
 size_t 
-messaging_framework_receive(QUEX_TYPE_CHARACTER** rx_buffer)
+messaging_framework_receive(ELEMENT_TYPE** rx_buffer)
     /* Simulate the reception into a place that is defined by the low 
      * level driver. The low level driver reports the address of that place
      * and the size.                                                         */
 {
-    static QUEX_TYPE_CHARACTER*  iterator = messaging_framework_data;
-    const size_t                 remainder_size =   messaging_framework_data_size() - 1
-                                                  - (iterator - messaging_framework_data);
-    size_t                       size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
+    static ELEMENT_TYPE*  iterator = messaging_framework_data;
+    const size_t          remainder_size =   messaging_framework_data_size() - 1 
+                                           - (iterator - messaging_framework_data);
+    size_t                size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
 
     if( size >= remainder_size ) size = remainder_size; 
 
@@ -29,14 +38,18 @@ messaging_framework_receive(QUEX_TYPE_CHARACTER** rx_buffer)
     if( size != 0 ) {
         __quex_assert(iterator < messaging_framework_data + messaging_framework_data_size());
     } else {
+        /*
+        printf("%08X %08X\n", (int)iterator, (int)(messaging_framework_data + messaging_framework_data_size()));
+        printf("%04X %04X\n", (int)*iterator, (int)*(messaging_framework_data + messaging_framework_data_size()));
         __quex_assert(iterator == messaging_framework_data + messaging_framework_data_size());
+        */
     }
 
     return size;
 }
 
 size_t 
-messaging_framework_receive_syntax_chunk(QUEX_TYPE_CHARACTER** rx_buffer)
+messaging_framework_receive_syntax_chunk(ELEMENT_TYPE** rx_buffer)
     /* Simulate the reception into a place that is defined by the low 
      * level driver. The low level driver reports the address of that place
      * and the size.                                                         */
@@ -47,7 +60,7 @@ messaging_framework_receive_syntax_chunk(QUEX_TYPE_CHARACTER** rx_buffer)
     *rx_buffer = messaging_framework_data + index_list[cursor]; 
 
     // Apply the messaging_framework_data + ... so that we compute in enties
-    // of QUEX_TYPE_CHARACTER* and not '1'. Size shall be the number of characters.
+    // of ELEMENT_TYPE* and not '1'. Size shall be the number of characters.
     const size_t Size =   (messaging_framework_data + index_list[cursor + 1]) 
                         - (messaging_framework_data + index_list[cursor]);
 
@@ -56,7 +69,7 @@ messaging_framework_receive_syntax_chunk(QUEX_TYPE_CHARACTER** rx_buffer)
     return Size;
 }
 void 
-messaging_framework_release(uint8_t* buffer)
+messaging_framework_release(ELEMENT_TYPE* buffer)
     /* A messaging framework that provide the address of the received content
      * (a rx buffer) usually requires to release the rx buffer buffer at some point
      * in time.                                                                       */
@@ -65,11 +78,11 @@ messaging_framework_release(uint8_t* buffer)
 }
 
 size_t 
-messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER* BufferBegin, size_t BufferSize)
+messaging_framework_receive_into_buffer(ELEMENT_TYPE* BufferBegin, size_t BufferSize)
     /* Simulate a low lever driver that is able to fill a specified position in memory. */
 {
-    static QUEX_TYPE_CHARACTER*  iterator = messaging_framework_data;
-    size_t                       size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
+    static ELEMENT_TYPE*  iterator = messaging_framework_data;
+    size_t                size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
 
     assert(iterator < messaging_framework_data + messaging_framework_data_size());
     if( iterator + size >= messaging_framework_data + messaging_framework_data_size() - 1 ) 
@@ -84,16 +97,16 @@ messaging_framework_receive_into_buffer(QUEX_TYPE_CHARACTER* BufferBegin, size_t
 }
 
 size_t 
-messaging_framework_receive_into_buffer_syntax_chunk(QUEX_TYPE_CHARACTER* BufferBegin, size_t BufferSize)
+messaging_framework_receive_into_buffer_syntax_chunk(ELEMENT_TYPE* BufferBegin, size_t BufferSize)
     /* Simulate a low lever driver that is able to fill a specified position in memory. */
 {
     size_t         index_list[] = {0, 10, 29, 58, 72, 89, 98};
     static size_t  cursor = 0;
 
     // Apply the messaging_framework_data + ... so that we compute in enties
-    // of QUEX_TYPE_CHARACTER* and not '1'. Size shall be the number of characters.
+    // of ELEMENT_TYPE* and not '1'. Size shall be the number of characters.
     size_t size = (  (messaging_framework_data + index_list[cursor + 1]) 
-                   - (messaging_framework_data + index_list[cursor])) * sizeof(QUEX_TYPE_CHARACTER);
+                   - (messaging_framework_data + index_list[cursor])) * sizeof(ELEMENT_TYPE);
 
     if( size > BufferSize ) size = BufferSize; 
 
@@ -105,14 +118,15 @@ messaging_framework_receive_into_buffer_syntax_chunk(QUEX_TYPE_CHARACTER* Buffer
     return size;
 }
 
-QUEX_TYPE_CHARACTER   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
+ELEMENT_TYPE   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 size_t
 messaging_framework_receive_to_internal_buffer()
     /* Simular a low level driver that iself has a hardware fixed position in memory 
      * which it fills on demand.                                                      */
 {
-    memcpy(MESSAGING_FRAMEWORK_BUFFER + 1, messaging_framework_data, messaging_framework_data_size());
+    memcpy(MESSAGING_FRAMEWORK_BUFFER + 1, messaging_framework_data, 
+           messaging_framework_data_size() * sizeof(ELEMENT_TYPE));
     return messaging_framework_data_size();
 }
 

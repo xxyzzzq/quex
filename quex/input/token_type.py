@@ -1,6 +1,7 @@
 from quex.frs_py.file_in                    import *
 from quex.core_engine.generator.action_info import UserCodeFragment, CodeFragment
 from quex.input.code_fragment import __parse_normal as parse_normal_code_fragment
+from quex.input.setup                       import setup as Setup
 
 
 class TokenTypeDescriptorCore:
@@ -102,9 +103,12 @@ class TokenTypeDescriptorCore:
 
 class TokenTypeDescriptor(TokenTypeDescriptorCore):
     """The final product."""
-    def __init__(self, Core):
+    def __init__(self, Core, FileNameOfDefinition, LineNOfDefinition):
         assert isinstance(Core, TokenTypeDescriptorCore)
         TokenTypeDescriptorCore.__init__(self, Core)
+
+        self.file_name_of_token_type_definition = FileNameOfDefinition
+        self.line_n_of_token_type_definition    = LineNOfDefinition
 
         # (*) Max length of variables etc. for pretty printing
         max_length = 0
@@ -185,6 +189,41 @@ class TokenTypeDescriptor(TokenTypeDescriptorCore):
                "Available: " + repr(self.__member_db.keys())
         return self.__member_db[MemberName][1]
 
+    def __member_can_accept_a_QUEX_TYPE_CHARACTER_string(self, TypeInfo):
+        """For some functionality inside the engine a 'set' function is required
+           which can receive a QUEX_TYPE_CHARACTER pointer. This function 
+           checks wether the given argument list represents such a function.
+        """
+        type_info = TypeInfo.get_pure_code()
+        type_info = type_info.strip()
+        type_info = type_info.replace(" ", "")
+        type_info = type_info.replace("\t", "")
+        type_info = type_info.replace("\n", "")
+        if type_info == "constQUEX_TYPE_CHARACTER*": return True
+        if type_info == "std::basic_string<QUEX_TYPE_CHARACTER>": return True
+        if     Setup.bytes_per_ucs_code_point == 1 \
+           and type_info in ["char*", "unsigned char*", "uint8_t*", "int8_t*", "std::string"]: return True
+        if     Setup.bytes_per_ucs_code_point == "wchar_t" \
+           and type_info in ["wchar_t*", "unsigned wchar_t*", "std::wstring"]: return True
+        return False
+
+    def consistency_check(self):
+        # (*) If the 'accumulator' feature is active there *must* be a quick setter
+        #     that can take a QUEX_TYPE_CHARACTER*.
+        member_for_QUEX_TYPE_CHARACTER_P_present_f = False
+        for info in self.__member_db.values():
+            if self.__member_can_accept_a_QUEX_TYPE_CHARACTER_string(info[0]):
+                member_for_QUEX_TYPE_CHARACTER_P_present_f = True
+
+        if Setup.token_type_disable_stringless_check_f: return
+
+        if member_for_QUEX_TYPE_CHARACTER_P_present_f == False:
+            error_msg(_warning_msg, 
+                      self.file_name_of_token_type_definition,
+                      self.line_n_of_token_type_definition,
+                      DontExitF=True)
+            if Setup.disable_string_accumulator_f == False:
+                error_msg(_warning_msg2, DontExitF=True)
 
 TokenType_StandardMemberList = ["column_number", "line_number", "id"]
 
@@ -203,6 +242,7 @@ def parse(fh):
 
     already_defined_list = []
     position = fh.tell()
+    begin_line_n = get_current_line_info_number(fh)
     result   = True
     while result == True:
         try: 
@@ -218,7 +258,7 @@ def parse(fh):
         fh.seek(position)
         error_msg("Missing closing '}' at end of token_type definition.", fh);
 
-    result = TokenTypeDescriptor(descriptor)
+    result = TokenTypeDescriptor(descriptor, fh.name, begin_line_n)
     if     result.get_member_db().keys() == [] \
        and result.class_name == "Token" \
        and result.token_id_type.__class__.__name__      == "CodeFragment" \
@@ -228,6 +268,7 @@ def parse(fh):
                   "modify any standard member types, nor does it define a class\n" + \
                   "different from 'Token'.", fh)
 
+    result.consistency_check()
     return result
 
 def parse_section(fh, descriptor, already_defined_list):
@@ -334,7 +375,7 @@ def parse_standard_members(fh, descriptor, already_defined_list):
         elif name == "column_number": descriptor.column_number_type = type_code_fragment
         elif name == "line_number":   descriptor.line_number_type   = type_code_fragment
         else:
-            assert false # This should have been caught by the variable parser function
+            assert False # This should have been caught by the variable parser function
 
         already_defined_list.append([name, type_code_fragment])
 
@@ -503,7 +544,7 @@ def something_different(fh):
     if type_name == "":
         error_msg("Missing type name for token struct/class member.", fh)
 
-    if check(fh, "[") == false:
+    if check(fh, "[") == False:
         skip_whitespace(fh)
         if not check(fh, ";"): 
             error_msg("Missing ';' after token struct/class member '%s' definition." % \
@@ -517,7 +558,7 @@ def something_different(fh):
 
         skip_whitespace(fh)
 
-        if check(fh, "]") == false:
+        if check(fh, "]") == False:
             error_msg("Missing closing ']' in '%s' array definition." % member_name, fh)
 
         if check(fh, ";"): 
@@ -526,4 +567,46 @@ def something_different(fh):
 
     return TokenTypeMember(member_name, type_name, array_element_n)
 
+_warning_msg = \
+"""The implemented token type does not have a member which can
+directly accept a QUEX_TYPE_CHARACTER pointer, i.e like
 
+    content : const QUEX_TYPE_TOKEN*;
+
+or 
+
+    content : std::basic_string<QUEX_TYPE_TOKEN>;
+
+This means, that you might not be able to pass the 'Lexeme' 
+to a token constructor. To disable this warning set one of 
+the command line flag:
+
+    '--token-type-stringless-allowed' or '--ttsa'.
+
+Note, that the stringless check is not perfect and is not
+aware of the conversions and constructors of all the member
+types. If you are sure that one of your members can receive
+the QUEX_TYPE_CHARACTER pointer through a conversion
+operator or a constructor, please, disable this warning 
+as mentioned above.
+
+In any case: If you can compile generated code dispite of
+this warning you can set the command line flags above. The
+fact that it compiles is prove enough that such a member
+exists.
+"""
+
+_warning_msg2 = \
+"""The 'Accumulator' feature is activated, which mandatorily
+requires such a member as mentioned above. Please, do one of
+the following:
+
+-- deactivate the stringless check as mentioned above, if
+   you are sure that the stringless check missed something.
+
+-- deactivate the accumulator feature using command line options:
+   '--no-string-accumulator' or  '--nsacc'.
+
+-- specify at least one member in the token class that can 
+   receive a QUEX_TYPE_CHARACTER pointer.
+"""

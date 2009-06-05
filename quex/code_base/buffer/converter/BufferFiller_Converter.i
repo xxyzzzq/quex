@@ -316,13 +316,13 @@ namespace quex {
         const size_t LoadedByteN = \
                      QUEX_INPUT_POLICY_LOAD_BYTES(me->ih, InputHandleT, FillStartPosition, FillSize);
 
-        buffer->end = buffer->begin + LoadedByteN + RemainingBytesN;
 
         buffer->end_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         /* '.character_index' remains to be updated after character conversion */
 
         /* In any case, we start reading from the beginning of the raw buffer. */
         buffer->iterator = buffer->begin; 
+        buffer->end      = buffer->begin + LoadedByteN + RemainingBytesN;
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
         QUEX_ASSERT_BUFFER_INFO(buffer);
@@ -351,7 +351,11 @@ namespace quex {
 
         /* In any case, we start reading from the beginning of the raw buffer. */
         buffer->iterator = buffer->begin; 
-
+        buffer->end      = buffer->begin + RemainingBytesN;
+#       ifdef QUEX_OPTION_ASSERTS
+        __QUEX_STD_memset((uint8_t*)(buffer->begin) + RemainingBytesN, 0xFF, 
+                          (size_t)(buffer->memory_end - buffer->begin - RemainingBytesN));
+#       endif
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_RAW_BUFFER_LOAD(LoadedByteN);*/
         QUEX_ASSERT_BUFFER_INFO(buffer);
     }
