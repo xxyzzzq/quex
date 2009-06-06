@@ -1,19 +1,19 @@
-<test-database execution-time-sec="0.09" date="Mon Jun  1 03:09:19 2009">
+<test-database execution-time-sec="0.03" date="Sat Jun  6 00:33:08 2009">
     <last-used-diff-display-program name=""/>
     <group name="Mode Transitions">
-        <test title="transition-x.qx" make-required="True" time-sum-sec="0.07"> 
-            <application file-name="transition-x.exe" info-request-time="1243818557L"/>
-            <make-procedure success="True" time_sec="2.665197"/>
+        <test title="transition-x.qx" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="transition-x.exe" info-request-time="1244241185L"/>
+            <make-procedure success="True" time_sec="2.597503"/>
             <choice-list number="4">
-               <choice name="1" result="OK" time_sec="0.02" crc="2085579180"/>
-               <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
-               <choice name="3" result="OK" time_sec="0.02" crc="741669396"/>
-               <choice name="error" result="OK" time_sec="0.02" crc="1083790284"/>
+               <choice name="1" result="OK" time_sec="0.00" crc="2085579180"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
+               <choice name="error" result="OK" time_sec="0.00" crc="1083790284"/>
             </choice-list>
         </test>
         <test title="transition.qx" make-required="True" time-sum-sec="0.02"> 
-            <application file-name="transition.exe" info-request-time="1243818559L"/>
-            <make-procedure success="True" time_sec="2.524177"/>
+            <application file-name="transition.exe" info-request-time="1244241188L"/>
+            <make-procedure success="True" time_sec="2.472798"/>
             <choice-list number="4">
                <choice name="1" result="OK" time_sec="0.00" crc="2085579180"/>
                <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>

@@ -7,7 +7,7 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i simple.qx -o Simple --nsacc
+quex -i simple.qx -o Simple --nsacc --token-type-no-stringless-check
 rm -f *.o
 echo "No error -- is just fine"
 gcc -c -Wall -I$QUEX_PATH -I. *.cpp

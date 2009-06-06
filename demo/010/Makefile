@@ -22,7 +22,10 @@ UTF8_OBJS = $(SOURCES:.cpp=-utf8.o) messaging-framework-utf8.o
 #     (change COMPILER to whatever you use as compiler on the command line,
 #      e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 COMPILER = g++ -ggdb -Wall -pedantic 
-CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(NDEBUG_F) -DQUEX_OPTION_ASSERTS
+CC = $(COMPILER) -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
+	 -DQUEX_OPTION_ASSERTS \
+	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
+
 CC_UTF8 = $(CC) -D__QUEX_OPTION_MESSAGE_UTF8 \
 		        -DQUEX_TYPE_CHARACTER=wchar_t \
 		        -DQUEX_OPTION_ENABLE_ICONV 
@@ -32,7 +35,7 @@ all: $(FILES)
 
 # -- char application
           
-%-conversion-direct.exe: %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 
+%-conversion-direct.exe: %-conversion-direct.cpp $(UTF8_OBJS) $(QUEX_CORE) 
 	$(CC_UTF8) -o $@ $< $(UTF8_OBJS) 
 
 %-conversion.exe: %-conversion.cpp $(UTF8_OBJS) $(QUEX_CORE) 

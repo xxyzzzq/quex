@@ -52,7 +52,7 @@ main(int argc, char** argv)
             // -- If the receive buffer has been read, it can be released.
             if( rx_buffer != 0x0 ) messaging_framework_release(rx_buffer);
             // -- Setup the pointers 
-            const size_t Size  = messaging_framework_receive(&rx_buffer);
+            const size_t Size  = messaging_framework_receive_whole_characters(&rx_buffer);
             chunk.begin = rx_buffer;
             chunk.end   = chunk.begin + Size;
         } else {

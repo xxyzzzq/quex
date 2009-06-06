@@ -54,7 +54,7 @@ member functions:
     .. code-block:: cpp
 
         QUEX_TYPE_CHARACTER*  buffer_fill_region_append(ContentBegin, ContentEnd);
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
+        void                  buffer_fill_region_prepare();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
         size_t                buffer_fill_region_size();
@@ -663,6 +663,26 @@ assumed that the input is raw. There are two possible cases:
 
    This function is only to be used in case of 100% certainty that input frames
    only contain complete characters.
+
+The two mentioned functions above are for the handling via 'copying'. On the 
+other hand it is possible to use conversion with direct filling. Correspondent
+to the functions introduced in :ref:`Filling`, the following function group
+allows to fill the conversion buffer directly and perform the conversions.
+
+   .. code-block:: cpp
+
+        void       buffer_conversion_fill_region_prepare(); 
+        uint8_t*   buffer_conversion_fill_region_begin();
+        uint8_t*   buffer_conversion_fill_region_end();
+        size_t     buffer_conversion_fill_region_size();
+        void       buffer_conversion_fill_region_finish(const size_t ByteN);
+
+The functions work on ``uint8_t`` data, i.e. 'bytes' rather than
+``QUEX_TYPE_CHARACTER``.  The interact directly with the 'raw' buffer on
+which the converter works.
+
+For all three methods, there a sample applications in the ``demo/010``
+directory.
 
 .. rubric:: Footnotes
 

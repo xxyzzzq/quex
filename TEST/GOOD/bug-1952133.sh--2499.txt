@@ -1,10 +1,5 @@
 ## Buffer Size = 2499
 clean
-g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=2499 -DQUEX_OPTION_ACTIVATE_ASSERTS  lexer.cpp -o lexer.o
-g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=2499 -DQUEX_OPTION_ACTIVATE_ASSERTS  tiny_lexer.cpp -o tiny_lexer.o
-g++ -c -fPIC -Wno-deprecated -Wall -I./ -I/home/fschaef/prj/quex/trunk  -DQUEX_SETTING_BUFFER_SIZE=2499 -DQUEX_OPTION_ACTIVATE_ASSERTS  tiny_lexer-core-engine.cpp -o tiny_lexer-core-engine.o
-g++ ./lexer.o tiny_lexer.o tiny_lexer-core-engine.o \
-          -o lexer 
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 
 ## define 'QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED' which only disables

@@ -179,6 +179,12 @@ token-class:
         
         DEFAULT = ``$(QUEX_PATH)/code_base/Token``
 
+.. cmdoption:: `--token-type-no-stringless-check`, `--ttnsc`
+
+        Disable the 'stringless check' for customized token types. If the user
+        defines a token type that cannot take a ``QUEX_TYPE_CHARACTER*`` then
+        quex posts a warning. By means of this flag the warning is disabled.
+
 .. cmdoption:: --odir, --output-dir directory
 
         ``directory`` = name of the output directory where generated files are 

@@ -8,6 +8,7 @@ import quex.input.token_type             as parser
 import quex.input.setup         
 
 quex.input.setup.setup.QUEX_TEMPLATE_DB_DIR = os.environ["QUEX_PATH"] + "/quex/code_base/"
+quex.input.setup.setup.bytes_per_ucs_code_point = 1
 
 if "--hwut-info" in sys.argv:
     print "Token Class Template"
