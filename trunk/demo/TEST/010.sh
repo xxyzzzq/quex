@@ -6,7 +6,7 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 cd $QUEX_PATH/demo/010
-make  $1.exe >& tmp.txt
-cat tmp.txt | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
-./$1.exe 
 make clean >& /dev/null
+make  $1.exe >& tmp.txt
+cat tmp.txt | awk ' ! /g\+\+/ ' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
+./$1.exe 

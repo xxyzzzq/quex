@@ -334,11 +334,16 @@ $$MEMENTO_EXTENSIONS$$
                                                                    uint8_t* ContentEnd);
         uint8_t*              buffer_fill_region_append_conversion_direct(uint8_t* ContentBegin, 
                                                                           uint8_t* ContentEnd);
-        QUEX_TYPE_CHARACTER*  buffer_fill_region_prepare();
+        void                  buffer_fill_region_prepare();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_begin();
         QUEX_TYPE_CHARACTER*  buffer_fill_region_end();
         size_t                buffer_fill_region_size();
         void                  buffer_fill_region_finish(const size_t LoadedN);
+        void                  buffer_conversion_fill_region_prepare(); 
+        uint8_t*              buffer_conversion_fill_region_begin();
+        uint8_t*              buffer_conversion_fill_region_end();
+        size_t                buffer_conversion_fill_region_size();
+        void                  buffer_conversion_fill_region_finish(const size_t  ByteN);
         QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
         void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 

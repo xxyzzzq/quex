@@ -13,7 +13,7 @@ test.qx:2:warning: This means, that you might not be able to pass the 'Lexeme'
 test.qx:2:warning: to a token constructor. To disable this warning set one of 
 test.qx:2:warning: the command line flag:
 test.qx:2:warning: 
-test.qx:2:warning:     '--token-type-stringless-allowed' or '--ttsa'.
+test.qx:2:warning:     '--token-type-no-stringless-check' or '--ttnsc'.
 test.qx:2:warning: 
 test.qx:2:warning: Note, that the stringless check is not perfect and is not
 test.qx:2:warning: aware of the conversions and constructors of all the member

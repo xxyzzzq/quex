@@ -15,6 +15,7 @@
 extern ELEMENT_TYPE   MESSAGING_FRAMEWORK_BUFFER[MESSAGING_FRAMEWORK_BUFFER_SIZE];
 
 extern size_t messaging_framework_receive(ELEMENT_TYPE** buffer);
+extern size_t messaging_framework_receive_whole_characters(ELEMENT_TYPE** rx_buffer);
 extern size_t messaging_framework_receive_syntax_chunk(ELEMENT_TYPE** buffer);
 extern size_t messaging_framework_receive_into_buffer(ELEMENT_TYPE*, size_t);
 extern size_t messaging_framework_receive_into_buffer_syntax_chunk(ELEMENT_TYPE* BufferBegin, 

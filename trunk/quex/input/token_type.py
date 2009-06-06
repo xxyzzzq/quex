@@ -103,7 +103,7 @@ class TokenTypeDescriptorCore:
 
 class TokenTypeDescriptor(TokenTypeDescriptorCore):
     """The final product."""
-    def __init__(self, Core, FileNameOfDefinition, LineNOfDefinition):
+    def __init__(self, Core, FileNameOfDefinition="", LineNOfDefinition=-1):
         assert isinstance(Core, TokenTypeDescriptorCore)
         TokenTypeDescriptorCore.__init__(self, Core)
 
@@ -581,7 +581,7 @@ This means, that you might not be able to pass the 'Lexeme'
 to a token constructor. To disable this warning set one of 
 the command line flag:
 
-    '--token-type-stringless-allowed' or '--ttsa'.
+    '--token-type-no-stringless-check' or '--ttnsc'.
 
 Note, that the stringless check is not perfect and is not
 aware of the conversions and constructors of all the member

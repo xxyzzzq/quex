@@ -13,7 +13,7 @@ error.qx:2:warning: This means, that you might not be able to pass the 'Lexeme'
 error.qx:2:warning: to a token constructor. To disable this warning set one of 
 error.qx:2:warning: the command line flag:
 error.qx:2:warning: 
-error.qx:2:warning:     '--token-type-stringless-allowed' or '--ttsa'.
+error.qx:2:warning:     '--token-type-no-stringless-check' or '--ttnsc'.
 error.qx:2:warning: 
 error.qx:2:warning: Note, that the stringless check is not perfect and is not
 error.qx:2:warning: aware of the conversions and constructors of all the member
@@ -55,7 +55,7 @@ error.qx:2:warning: This means, that you might not be able to pass the 'Lexeme'
 error.qx:2:warning: to a token constructor. To disable this warning set one of 
 error.qx:2:warning: the command line flag:
 error.qx:2:warning: 
-error.qx:2:warning:     '--token-type-stringless-allowed' or '--ttsa'.
+error.qx:2:warning:     '--token-type-no-stringless-check' or '--ttnsc'.
 error.qx:2:warning: 
 error.qx:2:warning: Note, that the stringless check is not perfect and is not
 error.qx:2:warning: aware of the conversions and constructors of all the member

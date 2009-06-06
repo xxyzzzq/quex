@@ -3,6 +3,8 @@ import sys
 import os
 
 sys.path.append(os.environ["QUEX_PATH"])
+import quex.input.setup         
+quex.input.setup.setup.token_type_disable_stringless_check_f = True
 
 from quex.input.token_type import *
 from StringIO import StringIO

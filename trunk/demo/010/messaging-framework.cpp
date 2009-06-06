@@ -38,11 +38,42 @@ messaging_framework_receive(ELEMENT_TYPE** rx_buffer)
     if( size != 0 ) {
         __quex_assert(iterator < messaging_framework_data + messaging_framework_data_size());
     } else {
-        /*
-        printf("%08X %08X\n", (int)iterator, (int)(messaging_framework_data + messaging_framework_data_size()));
-        printf("%04X %04X\n", (int)*iterator, (int)*(messaging_framework_data + messaging_framework_data_size()));
         __quex_assert(iterator == messaging_framework_data + messaging_framework_data_size());
-        */
+    }
+
+    return size;
+}
+
+size_t 
+messaging_framework_receive_whole_characters(ELEMENT_TYPE** rx_buffer)
+    /* Simulate the reception into a place that is defined by the low 
+     * level driver. The low level driver reports the address of that place
+     * and the size.                                                         */
+{
+    static ELEMENT_TYPE*  iterator = messaging_framework_data;
+    const size_t          remainder_size =   messaging_framework_data_size() - 1 
+                                           - (iterator - messaging_framework_data);
+    size_t                size = (size_t)(float(random()) / float(RAND_MAX) * 5.0) + 1;
+
+    if( size >= remainder_size ) size = remainder_size; 
+
+    *rx_buffer = iterator; 
+    iterator += size;
+
+    /* We are dealing here with the UTF-8 type of message */
+    __quex_assert(sizeof(ELEMENT_TYPE) == sizeof(uint8_t));
+
+    /* If the two highest bits == '10' then it is a follow character in 
+     * a utf8 encoded character. Thus, search for the first non '10' 
+     * which indicates that we are pointing to a new letter.            */
+    while( (*iterator & 0xC0) == 0x80 ) ++iterator;
+
+    size = iterator - *rx_buffer;
+
+    if( size != 0 ) {
+        __quex_assert(iterator < messaging_framework_data + messaging_framework_data_size());
+    } else {
+        __quex_assert(iterator == messaging_framework_data + messaging_framework_data_size());
     }
 
     return size;

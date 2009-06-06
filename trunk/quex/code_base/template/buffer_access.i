@@ -109,7 +109,7 @@ namespace quex {
     }
 
     inline uint8_t*
-    CLASS::buffer_fill_region_append_conversion_direct(uint8_t* content_begin, 
+    CLASS::buffer_fill_region_append_conversion_direct(uint8_t* ContentBegin, 
                                                        uint8_t* ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
      * analyzer buffer. Note, that this can only be used, if it is safe to assume
@@ -118,14 +118,15 @@ namespace quex {
     {
         /* The buffer filler for direct memory handling must be of a 'void' specialization. */
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
-        __quex_assert(ContentEnd > content_begin);
+        __quex_assert(ContentEnd > ContentBegin);
         QUEX_BUFFER_ASSERT_CONSISTENCY(&buffer);
 
         /*     -- Move away passed buffer content.                                      */
         QuexBuffer_move_away_passed_content(&buffer);
 
         /*     -- Perform the conversion.                                               */
-        QUEX_TYPE_CHARACTER*  insertion_p = buffer._memory._end_of_file_p;
+        QUEX_TYPE_CHARACTER*  insertion_p   = buffer._memory._end_of_file_p;
+        uint8_t*              content_begin = ContentBegin;
         filler->converter->convert(filler->converter, 
                                    &content_begin, ContentEnd,
                                    &insertion_p,  QuexBuffer_content_back(&buffer) + 1);
@@ -142,24 +143,28 @@ namespace quex {
         return content_begin;
     }
 
-    inline QUEX_TYPE_CHARACTER*
+    inline void
     CLASS::buffer_fill_region_prepare()
     {
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);
-        return QuexBuffer_text_end(&buffer); 
     }
 
     inline QUEX_TYPE_CHARACTER*  CLASS::buffer_fill_region_begin()
-    { return QuexBuffer_text_end(&buffer); }
-    
+    { 
+        return QuexBuffer_text_end(&buffer); 
+    }
+
     inline QUEX_TYPE_CHARACTER*  CLASS::buffer_fill_region_end()
-    { return QuexBuffer_content_back(&buffer) + 1; }
-    
+    { 
+        return QuexBuffer_content_back(&buffer) + 1; 
+    }
+
     inline size_t
     CLASS::buffer_fill_region_size()
-    { return buffer_fill_region_end() - buffer_fill_region_begin(); }
-
+    { 
+        return buffer_fill_region_end() - buffer_fill_region_begin(); 
+    }
 
     inline void
     CLASS::buffer_fill_region_finish(const size_t CharacterN)
@@ -173,6 +178,59 @@ namespace quex {
         /* When lexing directly on the buffer, the end of file pointer is always set.        */
         QuexBuffer_end_of_file_set(&buffer, 
                                    buffer._memory._end_of_file_p + CharacterN); 
+    }
+
+    inline void
+    CLASS::buffer_conversion_fill_region_prepare() 
+    {
+        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
+
+        /* It is always assumed that the buffer filler w/ direct buffer accesss
+         * is a converter. Now, move away past content in the raw buffer.       */
+        QuexBufferFiller_Converter_move_away_passed_content(filler);
+    }
+
+    inline uint8_t*  CLASS::buffer_conversion_fill_region_begin()
+    { 
+        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
+        return filler->raw_buffer.end;
+    }
+    
+    inline uint8_t*  CLASS::buffer_conversion_fill_region_end()
+    { 
+        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
+
+        return filler->raw_buffer.memory_end;
+    }
+    
+    inline size_t
+    CLASS::buffer_conversion_fill_region_size()
+    { 
+        return buffer_conversion_fill_region_end() - buffer_conversion_fill_region_begin(); 
+    }
+
+    inline void
+    CLASS::buffer_conversion_fill_region_finish(const size_t  ByteN)
+    {
+        QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
+
+        filler->raw_buffer.end += ByteN;
+
+        /*     -- Move away passed buffer content.                                      */
+        QuexBuffer_move_away_passed_content(&buffer);
+
+        /*     -- Perform the conversion.                                               */
+        QUEX_TYPE_CHARACTER*  insertion_p = buffer._memory._end_of_file_p;
+        filler->converter->convert(filler->converter, 
+                                   &filler->raw_buffer.iterator, filler->raw_buffer.end,
+                                   &insertion_p,                 QuexBuffer_content_back(&buffer) + 1);
+
+        /*      -- 'convert' has adapted the insertion_p so that is points to the first 
+         *         position after the last filled position.                             */
+        /*      -- double check that no buffer limit code is mixed under normal content */
+        QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer._memory._end_of_file_p, insertion_p);
+
+        QuexBuffer_end_of_file_set(&buffer, insertion_p);
     }
 
     inline QUEX_TYPE_CHARACTER*  
