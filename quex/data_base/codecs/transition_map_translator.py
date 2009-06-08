@@ -1,63 +1,24 @@
 #! /usr/bin/env python
 #
-# PURPOSE: Helper script to create database files that describe the mapping from
-#          unicode characters to character codes of a particular encoding.
-#
-#    $1 Encoding name (see http://docs.python.org/library/codecs.html#encodings-and-unicode)
-#
-#    $2 Language(s)
-#
 # (C) 2009 Frank-Rene Schaefer
 # ABSOLUTELY NO WARRANTY
 
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
+import codecs
+
 from quex.frs_py.file_in                                            import open_file_or_die
 from quex.core_engine.interval_handling                             import Interval
 from quex.core_engine.regular_expression.snap_backslashed_character import __parse_hex_number
 
-import codecs
-
-def translate(CodecDB, NSet):
-    """Converts the given number set according the information provided in the 
-       codec database 'CodecDB'. Use function get_codec_database() in order to
-       read in the codec database for a specific character coding.
-    """
-    interval_list = NSet.get_intervals(PromiseNotToChangeAnythingF=True)
-    result        = NumberSet()
-    CodecL        = len(CodecDB)
-
-    # Assume that the CodecDB is sorted, and so is the number set.
-    codec_i = 0
-    for interval in interval_list:
-        # Find intersecting interval
-        for index in range(codec_i, CodecL): 
-            codec_interval = CodecDB[index][0]
-            if interval.begin > codec_interval.end: 
-                codec_i += 1
-                continue
-            if interval.end   > codec_interval.end:
-                error_message("No mapping for '%s'" % interval.get_utf8_string())
-
-            offset = interval.begin - codec_interval.begin
-            length = interval.end   - interval.begin
-
-            # Append the new interval
-            codec_target_interval_begin = CodecDB[index][1]
-            # 
-            result.add_interval(Interval(codec_target_interval_begin + offset,
-                                         codec_target_interval_begin + length))
-
-     return result
-
-def get_codec_db_list():
+def get_codec_list_db():
     """
        ...
        [ CODEC_NAME  [CODEC_NAME_LIST]  [LANGUAGE_NAME_LIST] ]
        ...
     """
-    file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/list.txt"
+    file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/00-ALL.txt"
     fh        = open_file_or_die(file_name, "rb")
     # FIELD SEPARATOR:  ';'
     # RECORD SEPARATOR: '\n'
@@ -74,49 +35,101 @@ def get_codec_db_list():
             language_list = map(lambda x: x.strip(), fields[2].split(","))
         except:
             print "Error in line:\n%s\n" % line
-        db_list.append(codec, aliases_list, language_list)
+        db_list.append([codec, aliases_list, language_list])
 
     return db_list
 
-def get_distinct_codec_name_for_alias(CodecAlias):
-    codec_db_list = get_codec_db_list()
-    for record in codec_db_list:
+def get_supported_language_list():
+    result = []
+    for record in get_codec_list_db():
+        result.extend(record[2])
+    return result
+
+def get_supported_codec_list():
+    file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/00-SUPPORTED.txt"
+    fh        = open_file_or_die(file_name, "rb")
+    return fh.read().split()
+
+def get_codecs_for_language(Language):
+    result = []
+    for record in get_codec_list_db():
+        if Language in record[2]: result.append(record[0])
+    if result == []:
+        verify_word_in_list(Language, get_supported_language_list(),
+                "No codec found for language '%s'." % Language)
+    return result
+
+def __get_distinct_codec_name_for_alias(CodecAlias):
+    for record in get_codec_list_db():
         if CodecAlias in record[1] or CodecAlias == record[0]: 
             return record[0]
-    return None
 
-def get_codec_database(Codec):
+    error_msg("Character encoding '%s' unknown to current version of quex." % CodecAlias)
+
+def get_codec_transformation_info(Codec):
     """Provides the information about the relation of character codes in a particular 
        coding to unicode character codes. It is provided in the following form:
 
-       [ (SourceInterval0, TargetInterval0_Begin), 
-         (SourceInterval1, TargetInterval1_Begin),
-         (SourceInterval2, TargetInterval2_Begin), ... ]
+       [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
+         (Source1_Begin, Source1_End, TargetInterval1_Begin),
+         (Source2_Begin, Source2_End, TargetInterval2_Begin), 
+         ... 
+       ]
 
     """
-    distinct_code = get_distinct_codec_name_for_alias(Codec)
+    distinct_code = __get_distinct_codec_name_for_alias(Codec)
     file_name     = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/%s.dat" % distinct_codec
 
-    fh = open_file_or_die(file_name, "rb")
+    try: 
+        fh = open(file_name, "rb")
+    except:
+        error_msg("No file found for codec '%s'. Codec not supported by quex." % distinct_code)
 
     # Read coding into data structure
-    db = []
+    transformation_list = []
     try:
+        line_n = -1
         for line in fh.readlines():
+            line_n += 1
             if line == "" or line[0] == "#": continue
             fields = line.split()
-            in_interval        = Interval(int(fields[0]), int(fields[0]) + int(fields[1]))
-            out_interval_begin = int(fields[2])
+            source_begin = int(fields[0])
+            source_end   = source_begin + int(fields[1])
+            target_begin = int(fields[2])
 
-            db.append((in_interval, out_interval_begin))
+            transformation_list.append([source_begin, source_end, target_begin])
     except:
-        error_msg("Syntax error in database file for codec '%s'." % Codec)
+        error_msg("Syntax error in database file for codec '%s'." % Codec, fh.name, line_n)
 
-    return db
+    return transformation_list
 
+def __get_transformation(encoder, CharCode):
+    # Returns the encoding for the given character code, 
+    # plus the number of bytes which it occupies.
+    input_str = unichr(CharCode)
+    try:    
+        result = encoder(input_str)[0]
+    except: 
+        # '-1' stands for: 'no encoding for given unicode character'
+        return -1, -1
 
+    if len(result) >= 2 and result == "\\u":
+        # For compatibility with versions of python <= 2.5, convert the unicode
+        # string by hand.
+        n = (len(result) - 2) / 2
+        return __parse_hex_number(result[2:], len(result) - 2), n
 
-def __help(TargetEncoding, TargetEncodingName):
+    else:
+        L = len(result) 
+        if   L == 1: return ord(result), 1
+        elif L == 2: return ord(result[0]) * 256      + ord(result[1]), 2
+        elif L == 3: return ord(result[0]) * 65536    + ord(result[1]) * 256 + ord(result[2]), 3
+        elif L == 4: return ord(result[0]) * 16777216L + ord(result[0]) * 65536 + ord(result[1]) * 256 + ord(result[2]), 4
+        else:
+            print "Character Encoding of > 4 Bytes."
+            return -1, 5
+
+def __create_database_file(TargetEncoding, TargetEncodingName):
     """Writes a database file for a given TargetEncodingName. The 
        TargetEncodingName is required to name the file where the 
        data is to be stored.
@@ -124,31 +137,23 @@ def __help(TargetEncoding, TargetEncodingName):
     encoder     = codecs.getencoder(TargetEncoding)
     prev_output = -1
     db          = []
+    bytes_per_char = -1
     for input in range(0x110000):
+        output, n = __get_transformation(encoder, input)
+        # output, n = __get_transformation(encoder, input)
 
-        input_str = unichr(input)
-        try:    result = encoder(input_str)[0]
-        except: result = None
-
-        if result == None:
-            # '-1' stands for: 'no encoding for given unicode character'
-            output = -1
-
-        elif len(result) >= 2 and result == "\\u":
-            # For compatibility with versions of python <= 2.5, convert the unicode
-            # string by hand.
-            output = __parse_hex_number(result[2:], len(result) - 2)
-
-        else:
-            if len(result)   == 1: output = ord(result)
-            elif len(result) == 2: output = ord(result[0]) * 256 + ord(result[1])
-            elif len(result) == 3: output = ord(result[0]) * 65536 + ord(result[1]) * 256 + ord(result[2])
+        if bytes_per_char == -1: 
+            bytes_per_char = n
+        elif n != -1 and bytes_per_char != n:
+            print "# not a constant size byte format."
+            return
 
         # Detect discontinuity in the mapping
         if   prev_output == -1:
             if output != -1:
                 input_interval        = Interval(input)
                 target_interval_begin = output
+
         elif output != prev_output + 1:
             # If interval was valid, append it to the database
             input_interval.end    = input
@@ -172,18 +177,19 @@ def __help(TargetEncoding, TargetEncodingName):
         fh.write("%X %X %X\n" % (i.begin, i.end - i.begin, t))
     fh.close()
 
-
         
 if __name__ == "__main__":
+    # PURPOSE: Helper script to create database files that describe the mapping from
+    #          unicode characters to character codes of a particular encoding.
     fh = open("list.txt")
     # FIELD SEPARATOR:  ';'
     # RECORD SEPARATOR: '\n'
     # FIELDS:           [Python Coding Name]   [Aliases]   [Languages] 
     # Aliases and Languages are separated by ','
-    db_list = get_codec_db_list()
+    db_list = get_codec_list_db()
     for record in db_list:
         codec         = record[0]
         language_list = record[2]
         print language_list, "(", codec, ")"
-        __help(codec, language_list)
+        __create_database_file(codec, language_list)
             
