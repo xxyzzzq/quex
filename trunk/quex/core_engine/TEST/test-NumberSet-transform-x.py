@@ -75,4 +75,4 @@ def test(Comment, A, TrafoInfo):
     print "#  CheckF  = " + repr(x.is_equal(result))
     print "#"
 
-test("All in 1",       create_random_number_set(), create_random_transformation_info())
+test("All in 1", create_random_number_set(), create_random_transformation_info())

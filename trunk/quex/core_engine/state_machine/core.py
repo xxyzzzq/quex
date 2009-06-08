@@ -70,6 +70,9 @@ class State:
 
     def add_transition(self, Trigger, TargetStateIdx): 
         self.__transition_map.add_transition(Trigger, TargetStateIdx)
+
+    def transform(self, TrafoInfo):
+        self.__transition_map.transform(TrafoInfo)
     
     def clone(self, ReplacementDictionary=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
@@ -599,6 +602,10 @@ class StateMachine:
     def filter_dominated_origins(self):
         for state in self.states.values(): 
             state.origins().delete_dominated()
+
+    def transform(self, TrafoInfo):
+        for state in self.states.values():
+            state.transform(TrafoInfo)
 
     def __repr__(self):
         return self.get_string(NormalizeF=True)

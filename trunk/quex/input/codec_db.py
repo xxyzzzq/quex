@@ -103,6 +103,12 @@ def get_codec_transformation_info(Codec):
 
     return transformation_list
 
+def get_supported_unicode_character_set(CodecAlias):
+    result = NumberSet()
+    for source_begin, source_end, target_begin in get_codec_transformation_info(CodecAlias):
+        result.quick_append_interval(Interval(target_begin, target_begin + (source_end - source_begin)))
+    return result
+
 def __get_transformation(encoder, CharCode):
     # Returns the encoding for the given character code, 
     # plus the number of bytes which it occupies.

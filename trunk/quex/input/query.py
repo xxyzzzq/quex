@@ -5,12 +5,13 @@ from StringIO import StringIO
 from quex.frs_py.file_in       import error_msg
 from quex.core_engine.utf8     import map_unicode_to_utf8
 from quex.input.ucs_db_parser  import ucs_property_db
+from quex.input.codec_db       import codec_db
 from quex.exception            import RegularExpressionException
-from quex.GetPot import GetPot
 
 import quex.input.regular_expression as regular_expression
 
 OPTION_DB = {
+        "--codec":             ["Information about supported characters of a codec."],
         "--property":          ["Querying properties"],
         "--set-by-property":   ["Determining character set by property"],
         "--set-by-expression": ["Determining character set by property"],
@@ -49,7 +50,8 @@ def do(ARGV):
     cl = GetPot(ARGV)
 
     try:
-        if   search_and_validate(cl, "--property"):          __handle_property(cl)
+        if   search_and_validate(cl, "--codec"):             __handle_codec(cl)
+        elif search_and_validate(cl, "--property"):          __handle_property(cl)
         elif search_and_validate(cl, "--set-by-property"):   __handle_set_by_property(cl)
         elif search_and_validate(cl, "--set-by-expression"): __handle_set_by_expression(cl)
         elif search_and_validate(cl, "--property-match"):    __handle_property_match(cl)
@@ -60,6 +62,21 @@ def do(ARGV):
         error_msg(x.message)
 
     return False
+
+def __handle_codec(cl):
+    codec_name    = cl.follow("", "--codec")
+    supported_codec_list = codec_db.get_supported_codec_list()
+    if codec_name == "":
+        print "Missing argument after '--codec'. Supported codecs are:"
+        i = -1
+        for name in supported_codec_list:
+            i += 1
+            print name + ", ",
+            if i == 8: i = 0; print 
+
+    character_set = codec_db.get_supported_unicode_character_set(codec_name)
+    __display_set(character_set, cl)
+
 
 def __handle_property(cl):
     property_follower = cl.follow("", "--property")

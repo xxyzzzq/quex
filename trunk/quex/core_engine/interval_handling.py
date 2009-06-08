@@ -16,6 +16,7 @@
 
 from copy import copy, deepcopy
 
+from   quex.frs_py.file_in                       import error_msg
 import quex.core_engine.generator.languages.core as languages
 import quex.core_engine.utf8                     as utf8
 import sys
@@ -208,7 +209,6 @@ class Interval:
         txt += "%i %f\n" % (self.begin, y_coordinate)
         return txt
 
-            
 class NumberSet:
     """Represents an arbitrary set of numbers. The set is described
        in terms of intervals, i.e. objects of class 'Interval'. This
@@ -643,6 +643,70 @@ class NumberSet:
 
         return NumberSet(interval_list, ArgumentIsYoursF=True)
         
+    def transform(self, TransformationInfo):
+        """Transforms the given NumberSet from into a new NumberSet according 
+           to the given TransformationInfo. The TransformationInfo is a list of
+           elements consisting of 
+
+           [ SourceInterval_Begin, SourceInterval_End, TargetInterval_Begin ]
+
+           For example an element '[ 32, 49, 256 ]' means that all characters 
+           from 32 to 48 are transformed into 256 to 372. The function assumes
+           that the entries are sorted with respect to SourceInterval_Begin.
+        """
+        assert type(TransformationInfo) == list
+
+        # Assume that the CodecDB is sorted, and so is the number set.
+        interval_n  = len(self.__intervals)
+        todo_i      = -1
+        trafo_i     = 0
+        result_list = []
+        while todo_i < interval_n - 1:
+            ## print "##i", self.__intervals, trafo_i
+            todo_i += 1
+            interval = self.__intervals[todo_i]
+
+            # Find intersecting interval
+            interval_used_f = False
+            begin           = interval.begin
+            end             = interval.end
+            for source_begin, source_end, target_begin in TransformationInfo[trafo_i:]: 
+                ## print "##", interval, source_begin, source_end
+                if begin >= source_end: 
+                    trafo_i += 1; continue
+                if end   <= source_begin:
+                    if not interval_used_f:
+                        error_msg("No mapping for '%s'" % interval.get_utf8_string())
+                    else:
+                        break
+
+                offset  = begin - source_begin
+                max_end = target_begin + (source_end - source_begin)
+
+                new_begin = target_begin + offset
+                new_end   = new_begin    + (end - begin)
+                if new_end > max_end: 
+                    new_end = max_end
+                    interval.begin = new_begin
+                    interval.end   = max_end
+                    self.__intervals.insert(todo_i + 1, Interval(begin + (max_end - new_begin), end))
+                    interval_n += 1
+                    break
+
+                # We might use the current interval to store the result, if it has
+                # not been used yet, otherwise create a new one. Reducing the number
+                # of constructor calls increases speed.
+                if not interval_used_f: 
+                    interval_used_f = True
+                    interval.begin  = new_begin
+                    interval.end    = new_end
+                else: 
+                    self.__intervals.insert(todo_i, Interval(new_begin, new_end))
+                    todo_i     += 1
+                    interval_n += 1
+        self.clean()
+
+                    
     def clean(self, SortF=True):
         """Combines adjacent and intersecting intervals to one.
         """
@@ -676,7 +740,6 @@ class NumberSet:
                     current.end = next.end
 
         new_intervals.append(current)
-
 
         self.__intervals = new_intervals
 
