@@ -1,26 +1,30 @@
-<test-database execution-time-sec="10.77" date="Sat Jun  6 22:36:04 2009">
+<test-database execution-time-sec="10.77" date="Sun Jun  7 22:55:21 2009">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-cut_interval.py" info-request-time="1237805542L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.07" crc="1051370365"/>
             </choice-list>
         </test>
         <test title="Inverse" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-inverse.py" info-request-time="1237805542L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.05" crc="1433382430"/>
             </choice-list>
         </test>
         <test title="Difference" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-difference.py" info-request-time="1237805542L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.05" crc="2115164504"/>
             </choice-list>
         </test>
         <test title="Transform" make-required="True" time-sum-sec="0.14"> 
             <application file-name="test-NumberSet-transform.py" info-request-time="1244317502L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="3">
                <choice name="1" result="OK" time_sec="0.04" crc="856175348"/>
                <choice name="2" result="OK" time_sec="0.05" crc="103827339"/>
@@ -29,24 +33,28 @@
         </test>
         <test title="Intersection" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-intersection.py" info-request-time="1237805542L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.07" crc="892506273"/>
             </choice-list>
         </test>
         <test title="Union" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-NumberSet-union.py" info-request-time="1237805541L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.05" crc="973910203"/>
             </choice-list>
         </test>
         <test title="Condition Code Generation" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-NumberSet-condition-code.py" info-request-time="1237805541L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.07" crc="-1284156277"/>
             </choice-list>
         </test>
         <test title="Transform Large NumberSets / Transformations" make-required="True" time-sum-sec="10.22"> 
             <application file-name="test-NumberSet-transform-x.py" info-request-time="1244320438L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="7">
                <choice name="10" result="OK" time_sec="0.00" crc="1378888075"/>
                <choice name="1000" result="OK" time_sec="0.78" crc="-646722016"/>
@@ -61,6 +69,7 @@
     <group name="Utf8-Module">
         <test title="Map UTF8 String To Unicode Values" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-utf8-UCS-to-UTF8.py" info-request-time="1237805542L"/>
+            <make-procedure success="False" time_sec="0.000000"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.05" crc="-99051650"/>
             </choice-list>
