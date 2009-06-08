@@ -353,6 +353,20 @@ class TransitionMap:
 
             self.add_transition(trigger_set, target)
 
+    def transform(self, TrafoInfo):
+        """Transforms all related NumberSets from Unicode to a given Target 
+           Encoding according to the given TransformationInfo. The 
+           TransformationInfo is a list of elements consisting of 
+
+           [ SourceInterval_Begin, SourceInterval_End, TargetInterval_Begin ]
+
+           For example an element '[ 32, 49, 256 ]' means that all characters 
+           from 32 to 48 are transformed into 256 to 372. The function assumes
+           that the entries are sorted with respect to SourceInterval_Begin.
+        """
+        for number_set in self.__db.values():
+            number_set.transform(TrafoInfo)
+
     def has_one_of_triggers(self, CharacterCodeList):
         assert type(CharacterCodeList) == list
         for code in CharacterCodeList:
