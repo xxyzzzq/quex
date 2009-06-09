@@ -607,6 +607,10 @@ class StateMachine:
         for state in self.states.values():
             state.transform(TrafoInfo)
 
+        if self.__core.pre_context_sm() != None:
+            for state in self.__core.pre_context_sm().values():
+                state.transform(TrafoInfo)
+
     def __repr__(self):
         return self.get_string(NormalizeF=True)
 
