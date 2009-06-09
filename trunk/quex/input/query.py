@@ -5,19 +5,21 @@ from StringIO import StringIO
 from quex.frs_py.file_in       import error_msg
 from quex.core_engine.utf8     import map_unicode_to_utf8
 from quex.input.ucs_db_parser  import ucs_property_db
-from quex.input.codec_db       import codec_db
 from quex.exception            import RegularExpressionException
 
+from   quex.GetPot             import GetPot
+import quex.input.codec_db           as codec_db
 import quex.input.regular_expression as regular_expression
 
 OPTION_DB = {
-        "--codec":             ["Information about supported characters of a codec."],
-        "--property":          ["Querying properties"],
-        "--set-by-property":   ["Determining character set by property"],
-        "--set-by-expression": ["Determining character set by property"],
-        "--property-match":    ["Find property values that match wildcards"],
-        "--numeric":           ["Display sets numerically",  ["--set-by-property", "--set-by-expression"]],
-        "--intervals":         ["Display sets by intervals", ["--set-by-property", "--set-by-expression"]],
+        "--codec":              ["Information about supported characters of a codec."],
+        "--codec-for-language": ["Lists possible codecs for a given language."],
+        "--property":           ["Querying properties"],
+        "--set-by-property":    ["Determining character set by property"],
+        "--set-by-expression":  ["Determining character set by property"],
+        "--property-match":     ["Find property values that match wildcards"],
+        "--numeric":            ["Display sets numerically",  ["--set-by-property", "--set-by-expression"]],
+        "--intervals":          ["Display sets by intervals", ["--set-by-property", "--set-by-expression"]],
 }
 
 def get_supported_command_line_option_description():
@@ -50,12 +52,13 @@ def do(ARGV):
     cl = GetPot(ARGV)
 
     try:
-        if   search_and_validate(cl, "--codec"):             __handle_codec(cl)
-        elif search_and_validate(cl, "--property"):          __handle_property(cl)
-        elif search_and_validate(cl, "--set-by-property"):   __handle_set_by_property(cl)
-        elif search_and_validate(cl, "--set-by-expression"): __handle_set_by_expression(cl)
-        elif search_and_validate(cl, "--property-match"):    __handle_property_match(cl)
-        else:                                                return False
+        if   search_and_validate(cl, "--codec"):              __handle_codec(cl)
+        elif search_and_validate(cl, "--codec-for-language"): __handle_codec_for_language(cl)
+        elif search_and_validate(cl, "--property"):           __handle_property(cl)
+        elif search_and_validate(cl, "--set-by-property"):    __handle_set_by_property(cl)
+        elif search_and_validate(cl, "--set-by-expression"):  __handle_set_by_expression(cl)
+        elif search_and_validate(cl, "--property-match"):     __handle_property_match(cl)
+        else:                                                 return False
         return True
 
     except RegularExpressionException, x:
@@ -66,17 +69,38 @@ def do(ARGV):
 def __handle_codec(cl):
     codec_name    = cl.follow("", "--codec")
     supported_codec_list = codec_db.get_supported_codec_list()
+
     if codec_name == "":
-        print "Missing argument after '--codec'. Supported codecs are:"
-        i = -1
+        txt      = "Missing argument after '--codec'. Supported codecs are:\n\n"
+        line_txt = ""
         for name in supported_codec_list:
-            i += 1
-            print name + ", ",
-            if i == 8: i = 0; print 
+            line_txt += name + ", "
+            if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
+        txt += line_txt
+        error_msg(txt)
 
     character_set = codec_db.get_supported_unicode_character_set(codec_name)
     __display_set(character_set, cl)
 
+    print
+    print "Codec is designed for:"
+    print repr(codec_db.get_supported_language_list(codec_name))[1:-1]
+
+def __handle_codec_for_language(cl):
+    language_name = cl.follow("", "--codec-for-language")
+
+    supported_language_list = codec_db.get_supported_language_list()
+
+    if language_name == "":
+        txt      = "Missing argument after '--codec-for-language'. Supported languages are:\n\n"
+        line_txt = ""
+        for name in supported_language_list:
+            line_txt += name + ", "
+            if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
+        txt += line_txt
+        error_msg(txt)
+
+    print "Possible Codecs: " + repr(codec_db.get_codecs_for_language(language_name))[1:-1]
 
 def __handle_property(cl):
     property_follower = cl.follow("", "--property")
@@ -210,7 +234,6 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]
 
     interval_list = CharSet.get_intervals(PromiseNotToChangeAnythingF=True)
-
     if Display == "hex":
         CharactersPerLine = 8
         ColumnWidth       = 6
@@ -227,7 +250,7 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
     # just to make sure ...
     character_list.sort()
 
-    last_start_character_of_line = 0
+    last_start_character_of_line = -1
     last_horizontal_offset       = 0
     for character_code in character_list:
         start_character_of_line = character_code - character_code % CharactersPerLine
@@ -244,7 +267,10 @@ def __print_set_single_characters(CharSet, Display, ScreenWidth):
         if Display == "hex":
             sys.stdout.write("%05X " % character_code)
         else:
-            sys.stdout.write("%s " % map_unicode_to_utf8(character_code))
+            if character_code >= 0x20:
+                sys.stdout.write("%s " % map_unicode_to_utf8(character_code))
+            else:
+                sys.stdout.write("? ")
 
         last_start_character_of_line = start_character_of_line
         last_horizontal_offset       = horizontal_offset
