@@ -14,6 +14,7 @@ from quex.core_engine.regular_expression.snap_backslashed_character import __par
 
 __codec_list_db = []
 __supported_codec_list = []
+__supported_codec_list_plus_aliases = []
 
 def get_codec_list_db():
     """
@@ -45,15 +46,27 @@ def get_codec_list_db():
 
     return __codec_list_db
 
-def get_supported_codec_list():
+def get_supported_codec_list(IncludeAliasesF=False):
+    assert type(IncludeAliasesF) == bool
+
     global __supported_codec_list
-    if __supported_codec_list != []: return __supported_codec_list
+    if __supported_codec_list != []: 
+        if IncludeAliasesF: return __supported_codec_list_plus_aliases
+        else:               return __supported_codec_list
 
     file_name = os.environ["QUEX_PATH"] + "/quex/data_base/codecs/00-SUPPORTED.txt"
     fh        = open_file_or_die(file_name, "rb")
 
     __supported_codec_list = fh.read().split()
-    return __supported_codec_list
+    __supported_codec_list.sort()
+    codec_db_list = get_codec_list_db()
+    for codec_name, aliases_list, dummy in codec_db_list:
+        if codec_name in __supported_codec_list: 
+            __supported_codec_list_plus_aliases.extend(filter(lambda x: x != "", aliases_list))
+        
+    __supported_codec_list_plus_aliases.sort()
+    if IncludeAliasesF: return __supported_codec_list_plus_aliases
+    else:               return __supported_codec_list
 
 def get_supported_language_list(CodecName=None):
     if CodecName == None:
@@ -62,6 +75,7 @@ def get_supported_language_list(CodecName=None):
             for language in record[2]:
                 if language not in result: 
                     result.append(language)
+        result.sort()
         return result
     else:
         for record in get_codec_list_db():

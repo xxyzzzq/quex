@@ -12,7 +12,7 @@ import quex.input.codec_db           as codec_db
 import quex.input.regular_expression as regular_expression
 
 OPTION_DB = {
-        "--codec":              ["Information about supported characters of a codec."],
+        "--codec-info":         ["Information about supported characters of a codec."],
         "--codec-for-language": ["Lists possible codecs for a given language."],
         "--property":           ["Querying properties"],
         "--set-by-property":    ["Determining character set by property"],
@@ -52,7 +52,7 @@ def do(ARGV):
     cl = GetPot(ARGV)
 
     try:
-        if   search_and_validate(cl, "--codec"):              __handle_codec(cl)
+        if   search_and_validate(cl, "--codec-info"):         __handle_codec(cl)
         elif search_and_validate(cl, "--codec-for-language"): __handle_codec_for_language(cl)
         elif search_and_validate(cl, "--property"):           __handle_property(cl)
         elif search_and_validate(cl, "--set-by-property"):    __handle_set_by_property(cl)
@@ -67,16 +67,17 @@ def do(ARGV):
     return False
 
 def __handle_codec(cl):
-    codec_name    = cl.follow("", "--codec")
-    supported_codec_list = codec_db.get_supported_codec_list()
+    codec_name = cl.follow("", "--codec-info")
+    supported_codec_list = codec_db.get_supported_codec_list(IncludeAliasesF=True)
 
     if codec_name == "":
-        txt      = "Missing argument after '--codec'. Supported codecs are:\n\n"
+        txt      = "Missing argument after '--codec-info'. Supported codecs are:\n\n"
         line_txt = ""
         for name in supported_codec_list:
             line_txt += name + ", "
             if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
         txt += line_txt
+        txt = txt[:-2] + "."
         error_msg(txt)
 
     character_set = codec_db.get_supported_unicode_character_set(codec_name)
@@ -98,6 +99,7 @@ def __handle_codec_for_language(cl):
             line_txt += name + ", "
             if len(line_txt) > 50: txt += line_txt + "\n"; line_txt = ""
         txt += line_txt
+        txt = txt[:-2] + "."
         error_msg(txt)
 
     print "Possible Codecs: " + repr(codec_db.get_codecs_for_language(language_name))[1:-1]

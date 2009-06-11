@@ -14,6 +14,7 @@ SETUP_INFO = {
     "no_dos_carriage_return_newline_f":  [["--no-DOS"],                      FLAG],
     "token_policy":                   [["--token-policy", "--tp"],           "queue"],                
     "disable_string_accumulator_f":   [["--no-string-accumulator", "--nsacc"], FLAG],
+    "engine_character_encoding":      [["--codec"],                          ""],
     "converter_iconv_f":              [["--iconv"],                          FLAG],
     "converter_icu_f":                [["--icu"],                            FLAG],
     "converter_user_new_func":        [["--converter-new", "--cn"],          ""],
