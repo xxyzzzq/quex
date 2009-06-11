@@ -236,6 +236,13 @@ def validate(setup, command_line, argv):
     elif setup.token_policy in ["mini_queue", "users_mini_queue"]:
         error_msg("Token policy '%s' not yet supported." % setup.token_policy)
 
+    # Internal engine character encoding
+    if setup.engine_character_encoding != "":
+        verify_word_in_list(setup.engine_character_encoding,
+                            codec_db.get_supported_codec_list(),
+                            "Codec '%s' is not supported." % setup.engine_character_encoding)
+                
+
 def __check_file_name(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
     CommandLineOption = SETUP_INFO[Candidate][0]

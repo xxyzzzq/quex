@@ -159,6 +159,9 @@ def get_generator_input(Mode):
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine()
 
+        if Setup.engine_character_encoding != "":
+            transformation.do(pattern_state_machine, Setup.engine_character_encoding)
+
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
