@@ -568,3 +568,12 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
                       FH, LineN, DontExitF=not ExitF)
 
     return False
+
+def error_msg_file_not_found(FileName, FH=-1, LineN=None):
+    """FH and LineN follow format of 'error_msg(...)'"""
+    directory = os.path.dirname(FileName)
+    if directory == "": directory = os.path.normpath("./"); suffix = "."
+    else:               suffix = "in directory\n'%s'." % directory
+    files_in_directory = os.listdir(directory)
+    verify_word_in_list(FileName, files_in_directory, 
+                        "File '%s' not found%s" % (FileName, suffix), FH, LineN)

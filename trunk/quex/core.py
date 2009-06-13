@@ -11,7 +11,8 @@ from   quex.core_engine.generator.action_info   import UserCodeFragment_straight
                                                        CodeFragment
 from quex.token_id_maker                        import TokenInfo
 
-import quex.core_engine.generator.core          as generator
+import quex.core_engine.state_machine.transformation  as transformation
+import quex.core_engine.generator.core                as generator
 from   quex.core_engine.generator.action_info   import PatternActionInfo
 import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check

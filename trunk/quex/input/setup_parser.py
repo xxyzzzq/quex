@@ -4,11 +4,12 @@ import sys
 import os
 
 from   quex.GetPot                 import GetPot
-from   quex.frs_py.file_in         import open_file_or_die, error_msg, is_identifier, \
+from   quex.frs_py.file_in         import open_file_or_die, error_msg, error_msg_file_not_found, is_identifier, \
                                           extract_identifiers_with_specific_prefix, \
-                                          delete_comment
+                                          delete_comment, verify_word_in_list
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
+import quex.input.codec_db as codec_db
 from   quex.token_id_maker import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, DEPRECATED
@@ -253,13 +254,15 @@ def __check_file_name(setup, Candidate, Name):
                 error_msg("Quex refuses to work with file names that start with '-' (minus).\n"  + \
                           "Received '%s' for %s (%s)" % (value, name, repr(CommandLineOption)[1:-1]))
             if os.access(name, os.F_OK) == False:
-                error_msg("File %s (%s)\ncannot be found." % (name, Name))
+                # error_msg("File %s (%s)\ncannot be found." % (name, Name))
+                error_msg_file_not_found(name)
     else:
         QUEX_PATH = os.environ["QUEX_PATH"]
         if value == "" or value[0] == "-":              return
         if os.access(value, os.F_OK):                   return
         if os.access(QUEX_PATH + "/" + value, os.F_OK): return
-        error_msg("File %s (%s)\ncannot be found." % (value, Name))
+        # error_msg("File %s (%s)\ncannot be found." % (value, Name))
+        error_msg_file_not_found(Name)
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
