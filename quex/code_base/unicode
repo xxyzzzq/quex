@@ -1,4 +1,11 @@
-/* -*- C++ -*- vim: set syntax=cpp: */
+/* -*- C++ -*- vim: set syntax=cpp:
+ * 
+ * ACKNOWLEDGEMENT: The following functions have been derived from segments of the
+ *                  utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.    
+ *
+ * (C) 2005-2009 Frank-Rene Schaefer                                                */
+
+
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__UNICODE
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__UNICODE
 
@@ -10,7 +17,7 @@ namespace quex {
 #endif
 
     QUEX_INLINE size_t 
-    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, uint8_t* utf8_result)
+    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, char* utf8_result)
     {
         /* PURPOSE: This function converts the specified unicode character
          *          into its utf8 representation. The result is stored
@@ -22,10 +29,7 @@ namespace quex {
          *          zero after the last byte of the representation.
          *
          * RETURNS: Number of bytes that was required to convert the character
-         *          into its utf8 representation.
-         *
-         * ACKNOWLEDGEMENT: The following function was derived from segments of the
-         * utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.                */
+         *          into its utf8 representation.                               */
         const uint8_t NEXT	= 0x80;
         const uint8_t LEN2	= 0xc0;
         const uint8_t LEN3	= 0xe0;
@@ -33,8 +37,8 @@ namespace quex {
         const uint8_t LEN5	= 0xf8;
         const uint8_t LEN6	= 0xfc;
         /**/
-        uint8_t*  p = utf8_result;
-        size_t    n = 0;
+        char*   p = utf8_result;
+        size_t  n = 0;
 
         __quex_assert(UCS_CharacterCode >= 0);
 
@@ -97,10 +101,30 @@ namespace quex {
         }
 
         /* NOTE: Do not check here for forbitten UTF-8 characters.
-         * They cannot appear here because we do proper convertion. */
+         * They cannot appear here because we do proper conversion. */
         return n;
     }
 
+    QUEX_INLINE size_t
+    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, char *Drain, size_t DrainSize)
+    {
+        QUEX_TYPE_CHARACTER *source_iterator, *source_end;
+        char                *drain_iterator, *drain_end;
+
+        __quex_assert(Source != 0x0);
+        __quex_assert(Drain != 0x0);
+
+        drain_iterator = Drain;
+        drain_end      = Drain  + DrainSize;
+        source_end     = Source + SourceSize;
+
+        for (source_iterator = Source; source_iterator < source_iterator; ++source_iterator) {
+            if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
+            drain_iterator += Quex_unicode_to_utf8(*source_iterator, drain_iterator);
+        }
+
+        return (size_t)(drain_iterator - Drain);
+    }
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
