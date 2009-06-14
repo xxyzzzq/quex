@@ -1,0 +1,38 @@
+
+(*) Single Interval A
+
+    [0] at 00000000: Codec Interval [1000000,1000014)
+
+        unicode = 0x000000 + (CodecCode - 0x1000000);
+        *p = BYTE_0; ++p;
+
+
+(*) Single Interval B
+
+    [1] at 00000080: Codec Interval [1000000,1000014)
+
+        unicode = 0x000080 + (CodecCode - 0x1000000);
+        *(p++) = LEN2 | (BYTE_0 >> 6) | ((BYTE_1 & 0x07) << 2);
+        *(p++) = NEXT | BYTE_0 & 0x3f;
+
+
+(*) Single Interval C
+
+    [2] at 00000800: Codec Interval [1000000,1000014)
+
+        unicode = 0x000800 + (CodecCode - 0x1000000);
+        *(p++) = LEN3 | ((BYTE_1 & 0xf0) >> 4);
+        *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+        *(p++) = NEXT | BYTE_0 & 0x3f;
+
+
+(*) Single Interval E
+
+    [3] at 00010000: Codec Interval [1000000,1000014)
+
+        unicode = 0x010000 + (CodecCode - 0x1000000);
+        *(p++) = LEN4 | ((BYTE_2 & 0x1f) >> 2);
+        *(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);
+        *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+        *(p++) = NEXT | BYTE_0 & 0x3f;
+

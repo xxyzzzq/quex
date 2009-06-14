@@ -7,6 +7,7 @@ import quex.output.cpp.converter as converter
 if "--hwut-info" in sys.argv:
     print "Converter: Determine UTF-8 Range Map for Codec"
     print "CHOICES:   1, 2, 3, 4;"
+
 def test(Msg, TrafoInfo):
     print
     print "(*) " + Msg

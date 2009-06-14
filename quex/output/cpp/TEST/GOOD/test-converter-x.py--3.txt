@@ -1,0 +1,66 @@
+
+(*) Intervals over borders (all)
+
+    [0] at 00000000: Codec Interval [1000000,1000080)
+    [1] at 00000080: Codec Interval [1000080,1000081)
+    [1] at 00000081: Codec Interval [2000081,2000800)
+    [2] at 00000800: Codec Interval [2000800,2000801)
+    [2] at 00000801: Codec Interval [3000801,3010000)
+    [3] at 00010000: Codec Interval [3010000,3010001)
+    [3] at 00010001: Codec Interval [4010001,4200000)
+    [4] at 00200000: Codec Interval [4200000,4200001)
+
+    if( input < 0x3000801) {
+        if( input < 0x2000081) {
+            if( input < 0x1000080) {
+                unicode = 0x000000 + (CodecCode - 0x1000000);
+                *p = BYTE_0; ++p;
+            else {
+                unicode = 0x000080 + (CodecCode - 0x1000080);
+                *(p++) = LEN2 | (BYTE_0 >> 6) | ((BYTE_1 & 0x07) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            }
+        else {
+            if( input < 0x2000800) {
+                unicode = 0x000081 + (CodecCode - 0x2000081);
+                *(p++) = LEN2 | (BYTE_0 >> 6) | ((BYTE_1 & 0x07) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            else {
+                unicode = 0x000800 + (CodecCode - 0x2000800);
+                *(p++) = LEN3 | ((BYTE_1 & 0xf0) >> 4);
+                *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            }
+        }
+    else {
+        if( input < 0x4010001) {
+            if( input < 0x3010000) {
+                unicode = 0x000801 + (CodecCode - 0x3000801);
+                *(p++) = LEN3 | ((BYTE_1 & 0xf0) >> 4);
+                *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            else {
+                unicode = 0x010000 + (CodecCode - 0x3010000);
+                *(p++) = LEN4 | ((BYTE_2 & 0x1f) >> 2);
+                *(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);
+                *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            }
+        else {
+            if( input < 0x4200000) {
+                unicode = 0x010001 + (CodecCode - 0x4010001);
+                *(p++) = LEN4 | ((BYTE_2 & 0x1f) >> 2);
+                *(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);
+                *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            else {
+                unicode = 0x200000 + (CodecCode - 0x4200000);
+                *(p++) = LEN5 | BYTE_3 & 0x03;
+                *(p++) = NEXT | (BYTE_2 >> 2);
+                *(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);
+                *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+                *(p++) = NEXT | BYTE_0 & 0x3f;
+            }
+        }
+    }
+
