@@ -1,0 +1,32 @@
+
+(*) 4 Intervals
+
+    [0] at 00000000: Codec Interval [100000,100010)
+    [1] at 00000080: Codec Interval [200000,200010)
+    [2] at 00000800: Codec Interval [300000,300010)
+    [3] at 00010000: Codec Interval [400000,400010)
+
+    if( input < 0x300000) {
+        if( input < 0x200000) {
+            unicode = 0x000000 + (CodecCode - 0x100000);
+            *p = BYTE_0; ++p;
+        else {
+            unicode = 0x000080 + (CodecCode - 0x200000);
+            *(p++) = LEN2 | (BYTE_0 >> 6) | ((BYTE_1 & 0x07) << 2);
+            *(p++) = NEXT | BYTE_0 & 0x3f;
+        }
+    else {
+        if( input < 0x400000) {
+            unicode = 0x000800 + (CodecCode - 0x300000);
+            *(p++) = LEN3 | ((BYTE_1 & 0xf0) >> 4);
+            *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+            *(p++) = NEXT | BYTE_0 & 0x3f;
+        else {
+            unicode = 0x010000 + (CodecCode - 0x400000);
+            *(p++) = LEN4 | ((BYTE_2 & 0x1f) >> 2);
+            *(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);
+            *(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);
+            *(p++) = NEXT | BYTE_0 & 0x3f;
+        }
+    }
+
