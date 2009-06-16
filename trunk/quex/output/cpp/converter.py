@@ -3,14 +3,32 @@ import sys
 sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
 from quex.core_engine.interval_handling import Interval
-from   quex.input.setup import setup as Setup
+from quex.frs_py.string_handling        import blue_print
+from quex.input.setup                   import setup as Setup
 
 LanguageDB = Setup.language_db
 
 utf8_converter_function_txt = \
 """
+/* -*- C++ -*- vim: set syntax=cpp:
+ * 
+ * ACKNOWLEDGEMENT: Parts of the following have been derived from segments of the
+ *                  utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.    
+ *
+ * (C) 2005-2009 Frank-Rene Schaefer                                                */
+
+#ifndef __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
+#define __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/asserts>
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#   include <stdexcept>
+namespace quex { 
+#endif
 char*
-Quex_converter_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER* input, char* output)
+Quex_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER input, char* p)
 {
     const char NEXT	= 0x80;
     const char LEN2	= 0xc0;
@@ -18,23 +36,64 @@ Quex_converter_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER* input, char* output)
     const char LEN4	= 0xf0;
     const char LEN5	= 0xf8;
     const char LEN6	= 0xfc;
+    uint32_t   unicode = 0xFFFF;
+
+    /* The unicode range simply does not go beyond 0x10FFFF */
+    __quex_assert(input < 0x110000);
+    /* If the following assert fails, then QUEX_TYPE_CHARACTER needs to be chosen
+     * of 'unsigned' type, e.g. 'unsigned char' instead of 'char'.                */
+    __quex_assert(input > 0);
 
 #   if defined(__QUEX_OPTION_LITTLE_ENDIAN)
-#   define QUEX_BYTE_0  (((char*)unicode)[3])
-#   define QUEX_BYTE_1  (((char*)unicode)[2])
-#   define QUEX_BYTE_2  (((char*)unicode)[1])
-#   define QUEX_BYTE_3  (((char*)unicode)[0])
-#   else
-#   define QUEX_BYTE_0  (((char*)unicode)[0])
-#   define QUEX_BYTE_1  (((char*)unicode)[1])
-#   define QUEX_BYTE_2  (((char*)unicode)[2])
-#   define QUEX_BYTE_3  (((char*)unicode)[3])
+#   define QUEX_BYTE_0  (*( ((char*)&unicode) + 3 ))
+#   define QUEX_BYTE_1  (*( ((char*)&unicode) + 2 ))
+#   define QUEX_BYTE_2  (*( ((char*)&unicode) + 1 ))
+#   define QUEX_BYTE_3  (*( ((char*)&unicode) + 0 ))
+#   else                             
+#   define QUEX_BYTE_0  (*( ((char*)&unicode) + 0 ))
+#   define QUEX_BYTE_1  (*( ((char*)&unicode) + 1 ))
+#   define QUEX_BYTE_2  (*( ((char*)&unicode) + 2 ))
+#   define QUEX_BYTE_3  (*( ((char*)&unicode) + 3 ))
 #   endif
 
 $$BODY$$
     return p;
+
+#   undef QUEX_BYTE_0 
+#   undef QUEX_BYTE_1 
+#   undef QUEX_BYTE_2 
+#   undef QUEX_BYTE_3 
 }
+
+QUEX_INLINE size_t
+Quex_$$CODEC$$_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, char *Drain, size_t DrainSize)
+{
+    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
+    char                *drain_iterator, *drain_end;
+
+    __quex_assert(Source != 0x0);
+    __quex_assert(Drain != 0x0);
+
+    drain_iterator = Drain;
+    drain_end      = Drain  + DrainSize;
+    source_end     = Source + SourceSize;
+
+    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
+        drain_iterator = Quex_$$CODEC$$_to_utf8(*source_iterator, drain_iterator);
+    }
+
+    return (size_t)(drain_iterator - Drain);
+}
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
+
+#endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__ */
+
 """
+
 def write(TrafoInfo, CodecName):
     """
     PURPOSE: Writes converters for conversion towards Unicode (wchar_t) and utf8.
@@ -43,7 +102,7 @@ def write(TrafoInfo, CodecName):
     function_body    = get_converter_to_utf8(conversion_table)
 
     return blue_print(utf8_converter_function_txt, 
-                      [["$$CODEC$$", codec_name],
+                      [["$$CODEC$$", CodecName],
                        ["$$BODY$$",  function_body]])
 
 class UTF8_ConversionInfo:
@@ -137,42 +196,42 @@ def implement_utf8_conversion(Info, Depth):
     assert isinstance(Info, UTF8_ConversionInfo)
 
     # Conversion to Unicode
-    txt = "unicode = 0x%06X + (CodecCode - 0x%06X);\n" % \
+    txt = "unicode = 0x%06X + (input - 0x%06X);\n" % \
            (Info.codec_interval_begin_unicode, Info.codec_interval_begin)
 
     # Byte Split
     txt += {
             0: 
-            "*p = BYTE_0; ++p;\n",
+            "*p = QUEX_BYTE_0; ++p;\n",
             1:
-            "*(p++) = LEN2 | (BYTE_0 >> 6) | ((BYTE_1 & 0x07) << 2);\n" + \
-            "*(p++) = NEXT | BYTE_0 & 0x3f;\n",
+            "*(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);\n" + \
+            "*(p++) = NEXT | QUEX_BYTE_0 & 0x3f;\n",
 
             2:
-            "*(p++) = LEN3 | ((BYTE_1 & 0xf0) >> 4);\n" + \
-            "*(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | BYTE_0 & 0x3f;\n",
+            "*(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+            "*(p++) = NEXT | QUEX_BYTE_0 & 0x3f;\n",
 
             3:
-            "*(p++) = LEN4 | ((BYTE_2 & 0x1f) >> 2);\n" + \
-            "*(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);\n" + \
-            "*(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | BYTE_0 & 0x3f;\n", 
+            "*(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);\n" + \
+            "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+            "*(p++) = NEXT | QUEX_BYTE_0 & 0x3f;\n", 
 
             4:
-            "*(p++) = LEN5 | BYTE_3 & 0x03;\n" + \
-            "*(p++) = NEXT | (BYTE_2 >> 2);\n" + \
-            "*(p++) = NEXT | ((BYTE_1 & 0xf0) >> 4) | ((BYTE_2 & 0x03) << 4);\n" + \
-            "*(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | BYTE_0 & 0x3f;\n",
+            "*(p++) = LEN5 | QUEX_BYTE_3 & 0x03;\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
+            "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+            "*(p++) = NEXT | QUEX_BYTE_0 & 0x3f;\n",
 
             5:
-            "*(p++) = LEN6 | ((BYTE_3 & 0x40) >> 6);\n" + \
-            "*(p++) = NEXT | BYTE_3 & 0x3f;\n" + \
-            "*(p++) = NEXT | (BYTE_2 >> 2);\n" + \
-            "*(p++) = NEXT | (BYTE_1 >> 4) | ((BYTE_2 & 0x03) << 4);\n" + \
-            "*(p++) = NEXT | (BYTE_0 >> 6) | ((BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | BYTE_0 & 0x3f;\n",
+            "*(p++) = LEN6 | ((QUEX_BYTE_3 & 0x40) >> 6);\n" + \
+            "*(p++) = NEXT | QUEX_BYTE_3 & 0x3f;\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_1 >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
+            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+            "*(p++) = NEXT | QUEX_BYTE_0 & 0x3f;\n",
 
     }[Info.utf8_range_index] 
 
@@ -194,13 +253,13 @@ def get_converter_to_utf8(ConversionTable):
         elif L == 2:
             Middle = "0x%06X" % conversion_list[1].codec_interval_begin
             txt += LanguageDB["$if <"](Middle) + implement_utf8_conversion(conversion_list[0], Depth)
-            txt += LanguageDB["$else"] + "\n"  + implement_utf8_conversion(conversion_list[1], Depth)
+            txt += LanguageDB["$endif-else"] + "\n"  + implement_utf8_conversion(conversion_list[1], Depth)
             txt += LanguageDB["$end-else"]
         else:
             mid_index = int(float(L)/2)
             Middle    = "0x%06X" % conversion_list[mid_index].codec_interval_begin
             txt += LanguageDB["$if <"](Middle) + __bracket(conversion_list[:mid_index], Depth+1)
-            txt += LanguageDB["$else"] + "\n"  + __bracket(conversion_list[mid_index:], Depth+1)
+            txt += LanguageDB["$endif-else"] + "\n"  + __bracket(conversion_list[mid_index:], Depth+1)
             txt += LanguageDB["$end-else"]
         return "    " + txt[:-1].replace("\n", "\n    ") + "\n"
 

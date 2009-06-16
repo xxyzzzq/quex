@@ -16,7 +16,7 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE size_t 
+    QUEX_INLINE char*
     Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, char* utf8_result)
     {
         /* PURPOSE: This function converts the specified unicode character
@@ -102,11 +102,11 @@ namespace quex {
 
         /* NOTE: Do not check here for forbitten UTF-8 characters.
          * They cannot appear here because we do proper conversion. */
-        return n;
+        return p;
     }
 
     QUEX_INLINE size_t
-    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, char *Drain, size_t DrainSize)
+    Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, char *Drain, size_t DrainSize)
     {
         QUEX_TYPE_CHARACTER *source_iterator, *source_end;
         char                *drain_iterator, *drain_end;
@@ -118,13 +118,14 @@ namespace quex {
         drain_end      = Drain  + DrainSize;
         source_end     = Source + SourceSize;
 
-        for (source_iterator = Source; source_iterator < source_iterator; ++source_iterator) {
+        for (source_iterator = Source; source_iterator < source_end; ++source_iterator) {
             if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
-            drain_iterator += Quex_unicode_to_utf8(*source_iterator, drain_iterator);
+            drain_iterator = Quex_unicode_to_utf8(*source_iterator, drain_iterator);
         }
 
         return (size_t)(drain_iterator - Drain);
     }
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
