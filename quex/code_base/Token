@@ -147,21 +147,15 @@ namespace quex {
     inline const std::string
     Token::utf8_text() const
     {
-        char             utf8[7];
-        size_t           utf8_length = (size_t)-1;
+        char             utf8_buffer[280];
         std::string      tmp;
         Token::__string  tmp2 = _text;
 
         if( tmp2.length() > 48 ) tmp2 = tmp2.substr(0, 48);
 
-        for(Token::__string::iterator it = tmp2.begin(); it != tmp2.end() ; ++it) {
-            /* Convert Character To UTF-8 */
-            utf8_length = Quex_unicode_to_utf8((QUEX_TYPE_CHARACTER)*it, utf8);
-            if( utf8_length == ((size_t)-1) || utf8_length > 6) continue;
-            utf8[utf8_length] = '\0';
-            tmp += std::string((const char*)utf8);        
-        }
-        return tmp;
+        Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 280);
+
+        return std::string(utf8_buffer);
     }
 
 

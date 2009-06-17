@@ -25,8 +25,8 @@ cl_has(int argc, char** argv, const char* What)
 inline void
 show_this(const char* Name, QuexBuffer* buffer, QUEX_TYPE_CHARACTER* Pos, char Appendix)
 {
-    static uint8_t      utf8_char_str[7];
-    size_t              utf8_char_str_length = (size_t)0;
+    static char  utf8_char_str[7];
+    char*        p = 0x0;
     QUEX_TYPE_CHARACTER UC = *Pos;
 
     if( UC == '\0' ) { 
@@ -37,8 +37,8 @@ show_this(const char* Name, QuexBuffer* buffer, QUEX_TYPE_CHARACTER* Pos, char A
         printf("%s= %i (--> '\\n')%c", (char*)Name, (int)(Pos - buffer->_memory._front - 1), 
                Appendix);
     } else {
-        utf8_char_str_length = quex::Quex_unicode_to_utf8(UC, utf8_char_str);
-        utf8_char_str[utf8_char_str_length] = '\0';
+        p = quex::Quex_unicode_to_utf8(UC, utf8_char_str);
+        *p = '\0';
         printf("%s= %i (--> '%s')%c", 
                (char*)Name,
                (int)(Pos - buffer->_memory._front - 1), 

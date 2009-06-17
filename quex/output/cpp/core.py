@@ -125,6 +125,7 @@ def write_engine_header(Modes):
     txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
 
+    # Buffer filler converter (0x0 means: no buffer filler converter)
     converter_new_str = "(QuexConverter*)0x0"
     if Setup.converter_user_new_func != "": converter_new_str = Setup.converter_user_new_func + "()"
 
@@ -342,3 +343,5 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
            constructor_txt,    \
            mode_functions_txt, \
            friends_txt
+
+

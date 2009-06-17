@@ -1,12 +1,15 @@
 from StringIO import StringIO
 from   quex.input.setup import setup as Setup
 
-from   quex.frs_py.file_in          import EndOfStreamException, error_msg
-from   quex.exception               import RegularExpressionException
-import quex.lexer_mode              as lexer_mode
+from   quex.frs_py.file_in                 import EndOfStreamException, error_msg
+from   quex.exception                      import RegularExpressionException
+from   quex.core_engine.interval_handling  import NumberSet 
+from   quex.core_engine.state_machine.core import StateMachine 
+import quex.lexer_mode                          as lexer_mode
+import quex.core_engine.state_machine.transformation as transformation
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.regular_expression.character_set_expression as charset_expression
-import quex.core_engine.regular_expression.snap_character_string as snap_character_string
+import quex.core_engine.regular_expression.snap_character_string    as snap_character_string
 
 def parse(fh, AllowNothingIsFineF=False):
 
@@ -18,9 +21,6 @@ def parse(fh, AllowNothingIsFineF=False):
                                          DOS_CarriageReturnNewlineF = not Setup.no_dos_carriage_return_newline_f,
                                          AllowNothingIsFineF        = AllowNothingIsFineF)
 
-        # (*) error in regular expression?
-        if pattern_state_machine == None:
-            error_msg("No valid regular expression detected.", fh)
 
     except RegularExpressionException, x:
         fh.seek(start_position)
@@ -30,25 +30,34 @@ def parse(fh, AllowNothingIsFineF=False):
         fh.seek(start_position)
         error_msg("End of file reached while parsing regular expression.", fh)
 
-    end_position = fh.tell()
+    return __post_process(fh, start_position, pattern_state_machine, ReturnRE_StringF=True)
 
-    fh.seek(start_position)
-    regular_expression = fh.read(end_position - start_position)
+def parse_character_string(Txt_or_File, PatternStringF=False):
 
-    return regular_expression, pattern_state_machine
+    sh, sh_ref, start_position = __prepare_text_or_file_stream(Txt_or_File)
 
+    try:
+        # -- parse regular expression, build state machine
+        state_machine = snap_character_string.do(sh)
+        state_machine = regex.__clean_and_validate(state_machine, 
+                                                   Setup.buffer_limit_code, 
+                                                   AllowNothingIsFineF=False)
+
+        if state_machine == None:
+            error_msg("No valid regular character string expression detected.", sh_ref)
+
+    except RegularExpressionException, x:
+        error_msg("Regular expression parsing:\n" + x.message, sh_ref)
+
+    except EndOfStreamException:
+        if sh_ref != -1: sh_ref.seek(start_position)
+        error_msg("End of character string reached while parsing.", sh_ref)
+
+    return __post_process(sh, start_position, state_machine, PatternStringF)
 
 def parse_character_set(Txt_or_File, PatternStringF=False):
 
-    if Txt_or_File.__class__ in [file, StringIO]:
-        sh       = Txt_or_File
-        sh_ref   = sh
-        position = sh.tell()
-    else:
-        sh     = StringIO(Txt_or_File)
-        sh_ref = -1
-
-    start_position = sh.tell()
+    sh, sh_ref, start_position = __prepare_text_or_file_stream(Txt_or_File)
 
     try:
         # -- parse regular expression, build state machine
@@ -65,53 +74,45 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
         error_msg("Regular expression parsing:\n" + x.message, sh_ref)
 
     except EndOfStreamException:
-        if sh_ref != -1: sh_ref.seek(position)
+        if sh_ref != -1: sh_ref.seek(start_position)
         error_msg("End of character set expression reached while parsing.", sh_ref)
 
-    if PatternStringF:
-        assert sh.__class__ != StringIO
-        end_position = sh.tell()
-        sh.seek(start_position)
-        regular_expression = sh.read(end_position - start_position)
-        return regular_expression, character_set
+    return __post_process(sh, start_position, character_set, PatternStringF)
 
-    return character_set
 
-def parse_character_string(Txt_or_File, PatternStringF=False):
-
+def __prepare_text_or_file_stream(Txt_or_File):
     if Txt_or_File.__class__ in [file, StringIO]:
         sh       = Txt_or_File
         sh_ref   = sh
-        position = sh.tell()
     else:
         sh     = StringIO(Txt_or_File)
         sh_ref = -1
 
-    start_position = sh.tell()
+    return sh, sh_ref, sh.tell()
 
-    try:
-        # -- parse regular expression, build state machine
-        state_machine = snap_character_string.do(sh)
-        state_machine = regex.__clean_and_validate(state_machine, 
-                                                   Setup.buffer_limit_code, 
-                                                   AllowNothingIsFineF=False)
+def __post_process(fh, StartPosition, object, ReturnRE_StringF):
+    assert    object == None                   \
+           or isinstance(object, StateMachine) \
+           or isinstance(object, NumberSet)
 
-        if state_machine == None:
-            error_msg("No valid regular character string expression detected.", sh_ref)
+    if isinstance(fh, StringIO):
+        regular_expression = ""
+    else:
+        end_position = fh.tell()
+        fh.seek(StartPosition)
+        regular_expression = fh.read(end_position - StartPosition)
 
-    except RegularExpressionException, x:
-        error_msg("Regular expression parsing:\n" + x.message, sh_ref)
+    # (*) error in regular expression?
+    if object == None:
+        error_msg("No valid regular expression detected, found '%s'." % regular_expression, fh)
 
-    except EndOfStreamException:
-        if sh_ref != -1: sh_ref.seek(position)
-        error_msg("End of character string reached while parsing.", sh_ref)
+    # (*) [Optional] convert state machine / number set to a codec different from unicode
+    trafo_info = Setup.engine_character_encoding_transformation_info 
+    if trafo_info != None:
+        if isinstance(object, StateMachine): transformation.do(object, trafo_info, fh)
+        else:                                transformation.do_set(object, trafo_info, fh)
 
-    if PatternStringF:
-        assert sh.__class__ != StringIO
-        end_position = sh.tell()
-        sh.seek(start_position)
-        regular_expression = sh.read(end_position - start_position)
-        return regular_expression, state_machine
+    if ReturnRE_StringF: return regular_expression, object
+    else:                return object
 
-    return state_machine
 

@@ -72,7 +72,10 @@ class State:
         self.__transition_map.add_transition(Trigger, TargetStateIdx)
 
     def transform(self, TrafoInfo):
-        self.__transition_map.transform(TrafoInfo)
+        """RETURNS: True  transformation successful
+                    False transformation failed, number set possibly in inconsistent state!
+        """
+        return self.__transition_map.transform(TrafoInfo)
     
     def clone(self, ReplacementDictionary=None):
         """Creates a copy of all transitions, but replaces any state index with the ones 
@@ -604,12 +607,17 @@ class StateMachine:
             state.origins().delete_dominated()
 
     def transform(self, TrafoInfo):
+        """RETURNS: True  transformation successful
+                    False transformation failed, number set possibly in inconsistent state!
+        """
         for state in self.states.values():
-            state.transform(TrafoInfo)
+            if state.transform(TrafoInfo) == False: return False
 
         if self.__core.pre_context_sm() != None:
             for state in self.__core.pre_context_sm().values():
-                state.transform(TrafoInfo)
+                if state.transform(TrafoInfo) == False: return False
+
+        return True
 
     def __repr__(self):
         return self.get_string(NormalizeF=True)

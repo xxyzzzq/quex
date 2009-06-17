@@ -653,6 +653,9 @@ class NumberSet:
            For example an element '[ 32, 49, 256 ]' means that all characters 
            from 32 to 48 are transformed into 256 to 372. The function assumes
            that the entries are sorted with respect to SourceInterval_Begin.
+
+           RETURNS: True  transformation successful
+                    False transformation failed, number set possibly in inconsistent state!
         """
         assert type(TransformationInfo) == list
 
@@ -676,7 +679,8 @@ class NumberSet:
                     trafo_i += 1; continue
                 if end   <= source_begin:
                     if not interval_used_f:
-                        error_msg("No mapping for '%s'" % interval.get_utf8_string())
+                        # 'interval' could not be transformed 
+                        return False
                     else:
                         break
 
@@ -705,6 +709,7 @@ class NumberSet:
                     todo_i     += 1
                     interval_n += 1
         self.clean()
+        return True
 
                     
     def clean(self, SortF=True):

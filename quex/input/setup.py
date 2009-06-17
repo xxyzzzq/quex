@@ -128,3 +128,4 @@ for key, entry in SETUP_INFO.items():
     setup.__dict__[key] = default_value
 
 setup.language_db = quex_core_engine_generator_languages_db["C++"]
+setup.engine_character_encoding_transformation_info = None

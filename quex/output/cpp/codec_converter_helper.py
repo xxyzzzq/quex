@@ -4,7 +4,9 @@ sys.path.append(os.environ["QUEX_PATH"])
 from copy import copy
 from quex.core_engine.interval_handling import Interval
 from quex.frs_py.string_handling        import blue_print
+from quex.frs_py.file_in                import write_safely_and_close
 from quex.input.setup                   import setup as Setup
+from quex.input.setup_parser            import __prepare_file_name
 
 LanguageDB = Setup.language_db
 
@@ -42,8 +44,9 @@ Quex_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER input, char* p)
     __quex_assert(input < 0x110000);
     /* If the following assert fails, then QUEX_TYPE_CHARACTER needs to be chosen
      * of 'unsigned' type, e.g. 'unsigned char' instead of 'char'.                */
-    __quex_assert(input > 0);
+    __quex_assert(input >= 0);
 
+#if 0
 #   if defined(__QUEX_OPTION_LITTLE_ENDIAN)
 #   define QUEX_BYTE_0  (*( ((char*)&unicode) + 3 ))
 #   define QUEX_BYTE_1  (*( ((char*)&unicode) + 2 ))
@@ -55,6 +58,12 @@ Quex_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER input, char* p)
 #   define QUEX_BYTE_2  (*( ((char*)&unicode) + 2 ))
 #   define QUEX_BYTE_3  (*( ((char*)&unicode) + 3 ))
 #   endif
+#else
+#   define QUEX_BYTE_0  ((uint8_t)((unicode & 0xFF)))
+#   define QUEX_BYTE_1  ((uint8_t)((unicode & 0xFF00) >> 8))
+#   define QUEX_BYTE_2  ((uint8_t)((unicode & 0xFF0000) >> 16))
+#   define QUEX_BYTE_3  ((uint8_t)((unicode & 0xFF000000) >> 24))
+#endif
 
 $$BODY$$
     return p;
@@ -93,6 +102,17 @@ Quex_$$CODEC$$_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, ch
 #endif /* __INCLUDE_GUARD_QUEX__CHARACTER_CONVERTER_$$CODEC$$__ */
 
 """
+
+def do():
+    if Setup.engine_character_encoding == "": return
+
+    assert Setup.engine_character_encoding_transformation_info != None
+
+    txt = write(Setup.engine_character_encoding_transformation_info, 
+                Setup.engine_character_encoding)
+
+    file_name = __prepare_file_name("-converter-%s" % Setup.engine_character_encoding)
+    write_safely_and_close(file_name, txt) 
 
 def write(TrafoInfo, CodecName):
     """
