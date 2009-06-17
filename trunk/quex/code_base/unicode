@@ -43,7 +43,7 @@ namespace quex {
         __quex_assert(UCS_CharacterCode >= 0);
 
         /* cannot convert surrogate pairs */
-        if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return (size_t)-1;
+        if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return 0x0;
 
         /* Determine number of bytes in the utf8 representation of the character */
         if      (UCS_CharacterCode <= 0x0000007f)       n = 1;
@@ -102,14 +102,16 @@ namespace quex {
 
         /* NOTE: Do not check here for forbitten UTF-8 characters.
          * They cannot appear here because we do proper conversion. */
-        return p;
+        return p + n;
     }
 
     QUEX_INLINE size_t
     Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, char *Drain, size_t DrainSize)
     {
-        QUEX_TYPE_CHARACTER *source_iterator, *source_end;
-        char                *drain_iterator, *drain_end;
+        QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
+        QUEX_TYPE_CHARACTER*  source_end = 0x0;
+        char*                 drain_iterator = 0x0; 
+        char*                 drain_end = 0x0;
 
         __quex_assert(Source != 0x0);
         __quex_assert(Drain != 0x0);
@@ -118,7 +120,7 @@ namespace quex {
         drain_end      = Drain  + DrainSize;
         source_end     = Source + SourceSize;
 
-        for (source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
             if( drain_end - drain_iterator < (ptrdiff_t)7 ) break;
             drain_iterator = Quex_unicode_to_utf8(*source_iterator, drain_iterator);
         }

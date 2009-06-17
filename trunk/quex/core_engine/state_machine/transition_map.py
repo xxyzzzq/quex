@@ -363,10 +363,14 @@ class TransitionMap:
            For example an element '[ 32, 49, 256 ]' means that all characters 
            from 32 to 48 are transformed into 256 to 372. The function assumes
            that the entries are sorted with respect to SourceInterval_Begin.
+
+           RETURNS: True  transformation successful
+                    False transformation failed, number set possibly in inconsistent state!
         """
         for number_set in self.__db.values():
-            number_set.transform(TrafoInfo)
-
+            if number_set.transform(TrafoInfo) == False: return False
+        return True
+            
     def has_one_of_triggers(self, CharacterCodeList):
         assert type(CharacterCodeList) == list
         for code in CharacterCodeList:

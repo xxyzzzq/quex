@@ -11,14 +11,14 @@ from   quex.core_engine.generator.action_info   import UserCodeFragment_straight
                                                        CodeFragment
 from quex.token_id_maker                        import TokenInfo
 
-import quex.core_engine.state_machine.transformation  as transformation
-import quex.core_engine.generator.core                as generator
+import quex.core_engine.generator.core          as     generator
 from   quex.core_engine.generator.action_info   import PatternActionInfo
 import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check
 import quex.output.cpp.core                     as quex_class_out
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.cpp.token_class_maker        as token_class_maker
+import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
 import quex.output.graphviz.interface           as plot_generator
 
 def do():
@@ -40,18 +40,21 @@ def do():
     mode_list      = filter(lambda mode: mode.options["inheritable"] != "only", mode_db.values())
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
-    # (2) Implement the 'quex' core class from a template
+    # (*) Implement the 'quex' core class from a template
     #
     # -- do the coding of the class framework
     quex_class_out.do(mode_db)
 
-    # (3) Generate the token ids
+    # (*) Generate the token ids
     token_id_maker.do(Setup) 
 
-    # (4) [Optional] Make a customized token class
+    # (*) [Optional] Make a customized token class
     token_class_maker.do()
+    
+    # (*) [Optional] Generate a converter helper
+    codec_converter_helper.do()
 
-    # (4) implement the lexer mode-specific analyser functions
+    # (*) implement the lexer mode-specific analyser functions
     inheritance_info_str  = "Information about what pattern 'comes' from what mode in the inheritance tree.\n\n"
     inheritance_info_str += "[1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index\n\n"
     analyzer_code = ""
@@ -159,9 +162,6 @@ def get_generator_input(Mode):
     for pattern_info in match_info_list:
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine()
-
-        if Setup.engine_character_encoding != "":
-            transformation.do(pattern_state_machine, Setup.engine_character_encoding)
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.

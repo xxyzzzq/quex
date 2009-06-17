@@ -52,6 +52,7 @@ import quex.core_engine.state_machine.setup_pre_context       as setup_pre_conte
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
+import quex.core_engine.state_machine.transformation          as transformation
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
@@ -69,7 +70,6 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF):
 
     # (*) Delete transitions that make practically no sense
     __delete_transitions_on_code_points_below_zero(sm)
-
 
     # (*) 'Nothing is fine' is not a pattern that we can accept. See the discussion
     #     in the module "quex.core_engine.generator.core.py"
@@ -116,7 +116,8 @@ def __delete_transitions_on_code_points_below_zero(sm):
                 trigger_set.cut_interval(Interval(-sys.maxint, 0))
 
 def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
-       DOS_CarriageReturnNewlineF=False, AllowNothingIsFineF=False):
+       DOS_CarriageReturnNewlineF   = False, 
+       AllowNothingIsFineF          = False): 
 
 
     if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)

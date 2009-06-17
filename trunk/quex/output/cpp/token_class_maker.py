@@ -3,6 +3,7 @@ from   quex.frs_py.string_handling            import blue_print
 import quex.lexer_mode                        as lexer_mode
 import quex.core_engine.generator.action_info as action_info
 from   quex.input.setup                       import setup as Setup
+from   quex.input.setup_parser                import __prepare_file_name
 
 LanguageDB = Setup.language_db
 
@@ -12,6 +13,7 @@ def do():
     txt       = _do(lexer_mode.token_type_definition)
 
     file_name = lexer_mode.get_token_class_file_name(Setup)
+    file_name = __prepare_file_name(file_name)
     write_safely_and_close(file_name, txt) 
 
 def _do(Descr):

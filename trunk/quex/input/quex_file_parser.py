@@ -192,7 +192,8 @@ def parse_pattern_name_definitions(fh):
                                              pattern_name)
 
         # -- parse regular expression, build state machine
-        regular_expression_obj, state_machine = regular_expression.parse(fh, AllowNothingIsFineF=True)
+        regular_expression_obj, state_machine = \
+                regular_expression.parse(fh, AllowNothingIsFineF=True) 
         
         lexer_mode.shorthand_db[pattern_name] = \
                 lexer_mode.PatternShorthand(pattern_name, state_machine, 

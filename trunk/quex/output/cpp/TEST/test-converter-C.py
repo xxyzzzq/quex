@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.output.cpp.converter as converter
+import quex.output.cpp.codec_converter_helper as codec_converter_helper
 import quex.input.codec_db       as codec_db
 
 if "--hwut-info" in sys.argv:
@@ -12,7 +12,7 @@ if "--hwut-info" in sys.argv:
 
 def test(CodecName):
     trafo_info = codec_db.get_codec_transformation_info(CodecName)
-    code_str   = converter.write(trafo_info, CodecName)
+    code_str   = codec_converter_helper.write(trafo_info, CodecName)
     fh = open("converter-tester.h", "w")
     fh.write(code_str)
     fh.close()

@@ -68,11 +68,11 @@ def do(argv):
     setup.QUEX_TEMPLATE_DB_DIR  = QUEX_TEMPLATE_DB_DIR
             
     # (*) Output files
-    setup.output_file_stem        = __prepare_file_name(setup, "")
-    setup.output_token_id_file    = __prepare_file_name(setup, "-token_ids")
-    setup.output_header_file      = __prepare_file_name(setup, "-internal.h")
-    setup.output_code_file        = __prepare_file_name(setup, ".cpp")
-    setup.output_core_engine_file = __prepare_file_name(setup, "-core-engine.cpp")
+    setup.output_file_stem        = __prepare_file_name("")
+    setup.output_token_id_file    = __prepare_file_name("-token_ids")
+    setup.output_header_file      = __prepare_file_name("-internal.h")
+    setup.output_code_file        = __prepare_file_name(".cpp")
+    setup.output_core_engine_file = __prepare_file_name("-core-engine.cpp")
 
     if setup.byte_order == "<system>": 
         setup.byte_order = sys.byteorder 
@@ -242,6 +242,8 @@ def validate(setup, command_line, argv):
         verify_word_in_list(setup.engine_character_encoding,
                             codec_db.get_supported_codec_list(),
                             "Codec '%s' is not supported." % setup.engine_character_encoding)
+        setup.engine_character_encoding_transformation_info = \
+              codec_db.get_codec_transformation_info(setup.engine_character_encoding)
                 
 
 def __check_file_name(setup, Candidate, Name):
@@ -285,10 +287,11 @@ def __get_integer(MemberName):
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
         error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
 
-def __prepare_file_name(Setup, Suffix):
-    FileName = Setup.output_engine_name + Suffix
-    if Setup.output_directory == "": return FileName
-    else:                            return os.path.normpath(Setup.output_directory + "/" + FileName)
+def __prepare_file_name(Suffix):
+    global setup
+    FileName = setup.output_engine_name + Suffix
+    if setup.output_directory == "": return FileName
+    else:                            return os.path.normpath(setup.output_directory + "/" + FileName)
 
 def __get_supported_command_line_option_description(NormalModeOptions):
     txt = "OPTIONS:\n"

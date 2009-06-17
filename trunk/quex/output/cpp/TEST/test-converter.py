@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.output.cpp.converter as converter
+import quex.output.cpp.codec_converter_helper as codec_converter_helper
 
 if "--hwut-info" in sys.argv:
     print "Converter: Determine UTF-8 Range Map for Codec"
@@ -15,7 +15,7 @@ def test(Msg, TrafoInfo):
     for record in TrafoInfo:
         print "    [%06X,%06X) --> %06X" % (record[0], record[1], record[2])
     print
-    for record in converter.get_utf8_conversion_table(TrafoInfo):
+    for record in codec_converter_helper.get_utf8_conversion_table(TrafoInfo):
         print "    " + repr(record)
 
 if "1" in sys.argv:

@@ -2,7 +2,7 @@
 import os
 import sys
 sys.path.append(os.environ["QUEX_PATH"])
-import quex.output.cpp.converter as converter
+import quex.output.cpp.codec_converter_helper as codec_converter_helper
 
 if "--hwut-info" in sys.argv:
     print "Converter: Determine UTF-8 Range Map for Codec"
@@ -14,11 +14,11 @@ def test(Msg, ConversionInfoList):
     print 
     conversion_info = []
     for x in ConversionInfoList:
-        info = converter.UTF8_ConversionInfo(x[0], x[1], x[2], x[3])
+        info = codec_converter_helper.UTF8_ConversionInfo(x[0], x[1], x[2], x[3])
         print "    " + repr(info)
         conversion_info.append(info)
     print
-    print converter.get_converter_to_utf8(conversion_info)
+    print codec_converter_helper.get_converter_to_utf8(conversion_info)
 
 
 if "1" in sys.argv:
@@ -45,7 +45,7 @@ elif "3" in sys.argv:
                   [0x81,    0x801,    0x2000081], 
                   [0x801,   0x10001,  0x3000801], 
                   [0x10001, 0x200001, 0x4010001] ]
-    ConvInfo = converter.get_utf8_conversion_table(TrafoInfo)
+    ConvInfo = codec_converter_helper.get_utf8_conversion_table(TrafoInfo)
     ConvInfo = map(lambda x: [x.utf8_range_index, 
                               x.codec_interval_begin_unicode, 
                               x.codec_interval_begin,
