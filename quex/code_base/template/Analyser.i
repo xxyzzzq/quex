@@ -96,7 +96,7 @@ namespace quex {
          *      post conditions. Then, no acceptance positions are involved, because
          *      the start of the lexeme shall not drop before the begin of the buffer 
          *      and the end of the core pattern, is of course, after the start of the 
-         *      lexeme. => there will be no reload backwards. */
+         *      lexeme. => there will be no reload backwards.                            */
         return true;
     }
 

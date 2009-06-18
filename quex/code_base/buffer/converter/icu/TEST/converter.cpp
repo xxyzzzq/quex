@@ -93,14 +93,14 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 void 
 print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
 {
-    uint8_t   utf8_c[10];
-    size_t    utf8_c_length = (size_t)-1;
+    char      utf8_c[10];
+    char*     p = 0x0;
     assert(End > Begin);
 
     size_t    i = 0;
     for(QUEX_TYPE_CHARACTER* iterator = Begin; iterator != End; ++iterator, ++i) {
-        utf8_c_length         = quex::Quex_unicode_to_utf8(*iterator, utf8_c);
-        utf8_c[utf8_c_length] = '\0';
+        p  = quex::Quex_unicode_to_utf8(*iterator, utf8_c);
+        *p = '\0';
 
         printf("$%04X: ", (int)i * sizeof(QUEX_TYPE_CHARACTER));
         switch( sizeof(QUEX_TYPE_CHARACTER) ) {

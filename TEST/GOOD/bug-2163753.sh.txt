@@ -14,3 +14,4 @@ rm -rf Simple-token_ids
 rm -rf Simple.cpp
 rm -rf Simple
 rm -rf a.out
+touch simple.qx

@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Tue Jun 16 23:06:45 2009
+DATE:  Wed Jun 17 21:10:24 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -8,15 +8,15 @@ TITLE: Regression Tests on Fixed Bugs
  -- attardi:
 
     2001602 RE matching UTF8 l quote uno
-        bug-2001602.sh .......................................[FAIL]
+        bug-2001602.sh .........................................[OK]
     2001787 RE Problem with inverted whitespace
         bug-2001787.sh .........................................[OK]
     2002070 Output buffer overflow
-        bug-2002070.sh .......................................[FAIL]
+        bug-2002070.sh .........................................[OK]
     2002474 Segmentation Fault while UTF-8 Decoding
         bug-2002474.sh ...............................[NO GOOD FILE]
     2004927 UTF-8 RE Extra Comma Matched
-        bug-2004927.sh .......................................[FAIL]
+        bug-2004927.sh .........................................[OK]
     2599228 0.36.1 QUEX_CORE variable not adapted to installed version
         bug-2599228.sh Developper ..............................[OK]
                        Else ....................................[OK]
@@ -40,23 +40,23 @@ TITLE: Regression Tests on Fixed Bugs
     1952747 TKN_TERMINATION
         bug-1952747.sh .........................................[OK]
     2078087 (feature) Mode transition shortcuts GOTO, GOSUB, GOUP
-        feature-2078087.sh GOTO ..............................[FAIL]
-                           GOSUB .............................[FAIL]
-                           GOSUB-2 ...........................[FAIL]
-                           GOTO-2 ............................[FAIL]
+        feature-2078087.sh GOTO ................................[OK]
+                           GOSUB ...............................[OK]
+                           GOSUB-2 .............................[OK]
+                           GOTO-2 ..............................[OK]
     2161098 0.32.1 Range Skipper Line Number Counter
-        bug-2161098.sh c_comments ............................[FAIL]
-                       shell_comments ........................[FAIL]
-                       funny_comments ........................[FAIL]
+        bug-2161098.sh c_comments ..............................[OK]
+                       shell_comments ..........................[OK]
+                       funny_comments ..........................[OK]
     2209142 0.33.1-pre-release
-        bug-2209142.sh error .................................[FAIL]
-                       good ..................................[FAIL]
+        bug-2209142.sh error ...................................[OK]
+                       good ....................................[OK]
     2277660 character count pre-determination
         bug-2277660.sh .........................................[OK]
     2349109 0.33.5 Line and Column number counts with Set skippers
-        bug-2349109.sh newline-skipper .......................[FAIL]
-                       non-newline-skipper ...................[FAIL]
-                       newline-skipper-utf8 ..................[FAIL]
+        bug-2349109.sh newline-skipper .........................[OK]
+                       non-newline-skipper .....................[OK]
+                       newline-skipper-utf8 ....................[OK]
     2635012 0.36.4 Include Stack Disablement
         bug-2635012.sh .........................................[OK]
 
@@ -81,12 +81,12 @@ TITLE: Regression Tests on Fixed Bugs
 
     2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)
         bug-2395200.sh error-lexer .............................[OK]
-                       lexer .................................[FAIL]
+                       lexer ...................................[OK]
 
  -- sphericalcow:
 
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh .......................................[FAIL]
+        bug-1885304.sh .........................................[OK]
     1885846 Empty RE in define section
         bug-1885846.sh .........................................[OK]
     1885855 P{ ...} syntax does not work outside of [
@@ -144,7 +144,7 @@ TITLE: Regression Tests on Fixed Bugs
     1905768 0.22.9 doesn't create analyzer function for event only modes
         bug-1905768.sh .........................................[OK]
     1908092 0.23.5 uses --token-class without --token-class-file
-        bug-1908092.sh .......................................[FAIL]
+        bug-1908092.sh .........................................[OK]
     1908436 0.23.6 rule precedence reversed for identical patterns
         bug-1908436.sh .........................................[OK]
     1935701 - 0.24.7 buffer handling size mismatch
@@ -155,7 +155,7 @@ TITLE: Regression Tests on Fixed Bugs
     1969629 0.25.4 token list with just TERMINATION treated empty
         bug-1969629.sh .........................................[OK]
     2087087 0.31.1 --set-by switches suppress command error diagnostics
-        bug-2087087.sh .......................................[FAIL]
+        bug-2087087.sh .........................................[OK]
     2095970 0.31.3 Mode change w/o immediate return. w/o token queue
         bug-2095970-ntq.sh Normal ..............................[OK]
                            NormalNoAsserts .....................[OK]
@@ -169,18 +169,18 @@ TITLE: Regression Tests on Fixed Bugs
                        NoModeDetectionNoAsserts ................[OK]
                        NoModeDetection_ErrorCase ...............[OK]
     2796383 0.39.3 does not handle token_type without distinct section
-        bug-2796383.sh case-1 ................................[FAIL]
-                       case-2 ................................[FAIL]
-                       case-3 ................................[FAIL]
-                       case-4 ................................[FAIL]
-                       case-5 ................................[FAIL]
+        bug-2796383.sh case-1 ..................................[OK]
+                       case-2 ..................................[OK]
+                       case-3 ..................................[OK]
+                       case-4 ..................................[OK]
+                       case-5 ..................................[OK]
     2798423 0.39.4 token_type default __copy function does not compile
-        bug-2798423.sh .......................................[FAIL]
+        bug-2798423.sh .........................................[OK]
     2799244 0.39.5 attempts to call unimplemented token set() function
-        bug-2799244.sh error .................................[FAIL]
-                       good-1 ................................[FAIL]
-                       good-2 ................................[FAIL]
-                       test ..................................[FAIL]
+        bug-2799244.sh error ...................................[OK]
+                       good-1 ..................................[OK]
+                       good-2 ..................................[OK]
+                       test ....................................[OK]
 
  -- yaroslav_xp:
 
@@ -189,48 +189,18 @@ TITLE: Regression Tests on Fixed Bugs
                            NotExist ............................[OK]
                            NoWrite .............................[OK]
     2163753 0.32.1 Incorrect on_failure behavior
-        bug-2163753.sh .......................................[FAIL]
+        bug-2163753.sh .........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
 
-Error: bug-2001602.sh 
-Error: bug-2002070.sh 
-Error: bug-2004927.sh 
-Error: feature-2078087.sh GOTO
-Error: feature-2078087.sh GOSUB
-Error: feature-2078087.sh GOSUB-2
-Error: feature-2078087.sh GOTO-2
-Error: bug-2161098.sh c_comments
-Error: bug-2161098.sh shell_comments
-Error: bug-2161098.sh funny_comments
-Error: bug-2209142.sh error
-Error: bug-2209142.sh good
-Error: bug-2349109.sh newline-skipper
-Error: bug-2349109.sh non-newline-skipper
-Error: bug-2349109.sh newline-skipper-utf8
-Error: bug-2395200.sh lexer
-Error: bug-1885304.sh 
-Error: bug-1908092.sh 
-Error: bug-2087087.sh 
-Error: bug-2796383.sh case-1
-Error: bug-2796383.sh case-2
-Error: bug-2796383.sh case-3
-Error: bug-2796383.sh case-4
-Error: bug-2796383.sh case-5
-Error: bug-2798423.sh 
-Error: bug-2799244.sh error
-Error: bug-2799244.sh good-1
-Error: bug-2799244.sh good-2
-Error: bug-2799244.sh test
-Error: bug-2163753.sh 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Tue Jun 16 23:10:57 2009
+DATE:  Wed Jun 17 21:14:25 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -241,14 +211,14 @@ TITLE: Demo-Applications
         other-compilers-intel.sh 000 ...........................[OK]
                                  001 ...........................[OK]
                                  002 ...........................[OK]
-                                 003 .........................[FAIL]
+                                 003 ...........................[OK]
                                  005 ...........................[OK]
                                  006 ...........................[OK]
     Sun Microsystem's sunCC
         other-compilers-sun.sh 000 .............................[OK]
                                001 .............................[OK]
                                002 .............................[OK]
-                               003 ...........................[FAIL]
+                               003 .............................[OK]
                                005 .............................[OK]
                                006 .............................[OK]
 
@@ -273,17 +243,17 @@ TITLE: Demo-Applications
  -- demo/003:
 
     Unicode Based Lexical Analyzis (Using GNU's Lib IConv)
-        003.sh BPC=2 .........................................[FAIL]
-               BPC=2_NDEBUG ..................................[FAIL]
-               BPC=4 .........................................[FAIL]
-               BPC=4_NDEBUG ..................................[FAIL]
-               BPC=wchar_t ...................................[FAIL]
+        003.sh BPC=2 ...........................................[OK]
+               BPC=2_NDEBUG ....................................[OK]
+               BPC=4 ...........................................[OK]
+               BPC=4_NDEBUG ....................................[OK]
+               BPC=wchar_t .....................................[OK]
     Unicode Based Lexical Analyzis (Using IBM's ICU Library)
-        003-icu.sh BPC=2 .....................................[FAIL]
-                   BPC=2_NDEBUG ..............................[FAIL]
-                   BPC=4 .....................................[FAIL]
-                   BPC=4_NDEBUG ..............................[FAIL]
-                   BPC=wchar_t ...............................[FAIL]
+        003-icu.sh BPC=2 .......................................[OK]
+                   BPC=2_NDEBUG ................................[OK]
+                   BPC=4 .......................................[OK]
+                   BPC=4_NDEBUG ................................[OK]
+                   BPC=wchar_t .................................[OK]
 
  -- demo/004:
 
@@ -319,53 +289,32 @@ TITLE: Demo-Applications
  -- demo/009:
 
     Strings of 'char' and 'wchar_t'
-        009.sh lexer .........................................[FAIL]
-               wlexer ........................................[FAIL]
+        009.sh lexer ...........................................[OK]
+               wlexer ..........................................[OK]
 
  -- demo/010:
 
     Direct Buffer Access & Character Set Conversion
-        010c.sh copy-conversion ..............................[FAIL]
-                copy-conversion-direct .......................[FAIL]
-                fill-conversion-direct .......................[FAIL]
+        010c.sh copy-conversion ................................[OK]
+                copy-conversion-direct .........................[OK]
+                fill-conversion-direct .........................[OK]
     Direct Buffer Access (Arbitrary Chunked)
-        010.sh copy ..........................................[FAIL]
-               fill ..........................................[FAIL]
+        010.sh copy ............................................[OK]
+               fill ............................................[OK]
     Direct Buffer Access (Syntactically Chunked)
-        010b.sh copy .........................................[FAIL]
-                fill .........................................[FAIL]
+        010b.sh copy ...........................................[OK]
+                fill ...........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
 
-Error: other-compilers-intel.sh 003
-Error: other-compilers-sun.sh 003
-Error: 003.sh BPC=2
-Error: 003.sh BPC=2_NDEBUG
-Error: 003.sh BPC=4
-Error: 003.sh BPC=4_NDEBUG
-Error: 003.sh BPC=wchar_t
-Error: 003-icu.sh BPC=2
-Error: 003-icu.sh BPC=2_NDEBUG
-Error: 003-icu.sh BPC=4
-Error: 003-icu.sh BPC=4_NDEBUG
-Error: 003-icu.sh BPC=wchar_t
-Error: 009.sh lexer
-Error: 009.sh wlexer
-Error: 010c.sh copy-conversion
-Error: 010c.sh copy-conversion-direct
-Error: 010c.sh fill-conversion-direct
-Error: 010.sh copy
-Error: 010.sh fill
-Error: 010b.sh copy
-Error: 010b.sh fill
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Tue Jun 16 23:10:57 2009
+DATE:  Wed Jun 17 21:14:26 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
@@ -386,7 +335,7 @@ TITLE: Miscellaneous Basic Tests
 
 ===============================================================================
 ENTER: quex/TEST/did-you-mean/TEST
-DATE:  Tue Jun 16 23:11:06 2009
+DATE:  Wed Jun 17 21:58:15 2009
 TITLE: Check Applications of 'Did you mean'.
 
 -------------------------------------------------------------------------------
@@ -395,7 +344,35 @@ TITLE: Check Applications of 'Did you mean'.
  -- UCS Character Code Names
         ucs-character-name.sh 1 ................................[OK]
                               2 ................................[OK]
-                              3 ................................[OK]
+                              3 ..............................[FAIL]
+-------------------------------------------------------------------------------
+ _____     _ _                  _ 
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+                                  
+
+Error: ucs-character-name.sh 3
+===============================================================================
+ENTER: quex/TEST/event-handling/TEST
+DATE:  Wed Jun 17 21:14:39 2009
+TITLE: Event Handlers
+
+-------------------------------------------------------------------------------
+
+ -- Mode Transitions:
+
+    transition-x.qx
+        transition-x.exe 1 .....................................[OK]
+                         2 .....................................[OK]
+                         3 .....................................[OK]
+                         error .................................[OK]
+    transition.qx
+        transition.exe 1 .......................................[OK]
+                       2 .......................................[OK]
+                       3 .......................................[OK]
+                       error ...................................[OK]
 -------------------------------------------------------------------------------
   ___  _ _   _  __                        _     _ 
  / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -405,43 +382,8 @@ TITLE: Check Applications of 'Did you mean'.
                                                   
 
 ===============================================================================
-ENTER: quex/TEST/event-handling/TEST
-DATE:  Tue Jun 16 23:11:11 2009
-TITLE: Event Handlers
-
--------------------------------------------------------------------------------
-
- -- Mode Transitions:
-
-    transition-x.qx
-        transition-x.exe 1 ...................................[FAIL]
-                         2 ...................................[FAIL]
-                         3 ...................................[FAIL]
-                         error ...............................[FAIL]
-    transition.qx
-        transition.exe 1 .....................................[FAIL]
-                       2 .....................................[FAIL]
-                       3 .....................................[FAIL]
-                       error .................................[FAIL]
--------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
-
-Error: transition-x.exe 1
-Error: transition-x.exe 2
-Error: transition-x.exe 3
-Error: transition-x.exe error
-Error: transition.exe 1
-Error: transition.exe 2
-Error: transition.exe 3
-Error: transition.exe error
-===============================================================================
 ENTER: quex/TEST/include-stack/TEST
-DATE:  Tue Jun 16 23:11:19 2009
+DATE:  Wed Jun 17 21:14:47 2009
 TITLE: Include Stack Handling
 
 -------------------------------------------------------------------------------
@@ -482,36 +424,33 @@ TITLE: Include Stack Handling
 
 ===============================================================================
 ENTER: quex/TEST/token-class/TEST
-DATE:  Tue Jun 16 23:11:20 2009
+DATE:  Wed Jun 17 22:10:04 2009
 TITLE: Customized Token Class
 
 -------------------------------------------------------------------------------
  -- With token policy 'queue'.
-        simple.exe ....................................[MAKE FAILED]
+        simple.exe .............................................[OK]
  -- With token policy 'users_token'.
-        simple-queue.exe ..............................[MAKE FAILED]
+        simple-queue.exe .......................................[OK]
 
  -- Miscellaneous Sample Runs CHOICES:
 
     Miscellaneous Sample Runs
         misc.sh empty ..........................................[OK]
-                no-namespace .................................[FAIL]
+                no-namespace ...................................[OK]
                 double-colon ...................................[OK]
                 token ..........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
 
-Error: simple.exe 
-Error: simple-queue.exe 
-Error: misc.sh no-namespace
 ===============================================================================
 ENTER: quex/TEST/token-policies/TEST
-DATE:  Tue Jun 16 23:11:33 2009
+DATE:  Wed Jun 17 21:15:05 2009
 TITLE: Tests related to token queues
 
 -------------------------------------------------------------------------------
@@ -550,7 +489,7 @@ TITLE: Tests related to token queues
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Tue Jun 16 23:11:34 2009
+DATE:  Wed Jun 17 21:15:06 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -576,7 +515,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Tue Jun 16 23:11:40 2009
+DATE:  Wed Jun 17 21:15:12 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -640,7 +579,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Tue Jun 16 23:11:46 2009
+DATE:  Wed Jun 17 21:15:19 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -648,17 +587,17 @@ TITLE: Input Buffers Based on the IConv - Library
  -- Converter:
 
     Plain 16 bit
-        converter-16.exe UTF-8 ........................[MAKE FAILED]
-                         UTF-16 .......................[MAKE FAILED]
+        converter-16.exe UTF-8 .................................[OK]
+                         UTF-16 ................................[OK]
     Plain 32 bit
-        converter-32.exe UTF-8 ........................[MAKE FAILED]
-                         UTF-16 .......................[MAKE FAILED]
+        converter-32.exe UTF-8 .................................[OK]
+                         UTF-16 ................................[OK]
     Possible 'statefulness' has been ruled out (16 bit)
-        converter-statefulness-16.exe UTF-8 ...........[MAKE FAILED]
-                                      UTF-16 ..........[MAKE FAILED]
+        converter-statefulness-16.exe UTF-8 ....................[OK]
+                                      UTF-16 ...................[OK]
     Possible 'statefulness' has been ruled out (32 bit)
-        converter-statefulness-32.exe UTF-8 ...........[MAKE FAILED]
-                                      UTF-16 ..........[MAKE FAILED]
+        converter-statefulness-32.exe UTF-8 ....................[OK]
+                                      UTF-16 ...................[OK]
 
  -- Move by Offset:
 
@@ -707,24 +646,16 @@ TITLE: Input Buffers Based on the IConv - Library
                    2 ...........................................[OK]
                    7 ...........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
 
-Error: converter-16.exe UTF-8
-Error: converter-16.exe UTF-16
-Error: converter-32.exe UTF-8
-Error: converter-32.exe UTF-16
-Error: converter-statefulness-16.exe UTF-8
-Error: converter-statefulness-16.exe UTF-16
-Error: converter-statefulness-32.exe UTF-8
-Error: converter-statefulness-32.exe UTF-16
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Tue Jun 16 23:11:53 2009
+DATE:  Wed Jun 17 21:15:28 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -732,17 +663,17 @@ TITLE: Testing the ICU Converter Adaption
  -- Converter:
 
     Plain 16 bit
-        converter-16.exe UTF-8 ........................[MAKE FAILED]
-                         UTF-16 .......................[MAKE FAILED]
+        converter-16.exe UTF-8 .................................[OK]
+                         UTF-16 ................................[OK]
     Plain 32 bit
-        converter-32.exe UTF-8 ........................[MAKE FAILED]
-                         UTF-16 .......................[MAKE FAILED]
+        converter-32.exe UTF-8 .................................[OK]
+                         UTF-16 ................................[OK]
     Possible 'statefulness' has been ruled out (16 bit)
-        converter-statefulness-16.exe UTF-8 ...........[MAKE FAILED]
-                                      UTF-16 ..........[MAKE FAILED]
+        converter-statefulness-16.exe UTF-8 ....................[OK]
+                                      UTF-16 ...................[OK]
     Possible 'statefulness' has been ruled out (32 bit)
-        converter-statefulness-32.exe UTF-8 ...........[MAKE FAILED]
-                                      UTF-16 ..........[MAKE FAILED]
+        converter-statefulness-32.exe UTF-8 ....................[OK]
+                                      UTF-16 ...................[OK]
 
  -- Move by Offset:
 
@@ -791,24 +722,16 @@ TITLE: Testing the ICU Converter Adaption
                    8 ...........................................[OK]
                    9 ...........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
 
-Error: converter-16.exe UTF-8
-Error: converter-16.exe UTF-16
-Error: converter-32.exe UTF-8
-Error: converter-32.exe UTF-16
-Error: converter-statefulness-16.exe UTF-8
-Error: converter-statefulness-16.exe UTF-16
-Error: converter-statefulness-32.exe UTF-8
-Error: converter-statefulness-32.exe UTF-16
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Tue Jun 16 23:12:08 2009
+DATE:  Wed Jun 17 21:15:42 2009
 TITLE: Plain Buffer Filler (without conversion)
 
 
@@ -905,7 +828,7 @@ TITLE: Plain Buffer Filler (without conversion)
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Tue Jun 16 23:12:16 2009
+DATE:  Wed Jun 17 21:15:49 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -974,7 +897,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Tue Jun 16 23:12:27 2009
+DATE:  Wed Jun 17 21:16:00 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -1020,7 +943,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Tue Jun 16 23:16:27 2009
+DATE:  Wed Jun 17 21:18:15 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -1200,7 +1123,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Tue Jun 16 23:16:36 2009
+DATE:  Wed Jun 17 21:18:20 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -1263,7 +1186,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Tue Jun 16 23:16:46 2009
+DATE:  Wed Jun 17 21:18:25 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1362,7 +1285,7 @@ TITLE: State Machine Operations
 
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Tue Jun 16 23:16:46 2009
+DATE:  Wed Jun 17 21:18:26 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1390,7 +1313,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Tue Jun 16 23:17:24 2009
+DATE:  Wed Jun 17 22:10:41 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1416,7 +1339,7 @@ TITLE: Character Set Queries
                         Forbidden ..............................[OK]
                         Twice ..................................[OK]
                         Error ..................................[OK]
-                        Forbidden-2 ............................[OK]
+                        Forbidden-2 ..........................[FAIL]
                         Error-2 ................................[OK]
     Class Name and Namespace
         token_type-5.py 0 ......................................[OK]
@@ -1450,16 +1373,17 @@ TITLE: Character Set Queries
                         Twice ..................................[OK]
                         Twice-2 ................................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _ 
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-                                                  
+ _____     _ _                  _ 
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+                                  
 
+Error: token_type-1.py Forbidden-2
 ===============================================================================
 ENTER: quex/output/cpp/TEST
-DATE:  Tue Jun 16 23:17:28 2009
+DATE:  Wed Jun 17 21:18:49 2009
 TITLE: Basic Code Writing Functionality
 
 -------------------------------------------------------------------------------
@@ -1491,7 +1415,7 @@ TITLE: Basic Code Writing Functionality
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Tue Jun 16 23:17:30 2009
+DATE:  Wed Jun 17 21:18:51 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1515,18 +1439,18 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 SUMMARY:
-TEST ..................................................................[FAIL]
-demo/TEST .............................................................[FAIL]
+TEST ....................................................................[OK]
+demo/TEST ...............................................................[OK]
 quex/TEST ...............................................................[OK]
-quex/TEST/did-you-mean/TEST .............................................[OK]
-quex/TEST/event-handling/TEST .........................................[FAIL]
+quex/TEST/did-you-mean/TEST ...........................................[FAIL]
+quex/TEST/event-handling/TEST ...........................................[OK]
 quex/TEST/include-stack/TEST ............................................[OK]
-quex/TEST/token-class/TEST ............................................[FAIL]
+quex/TEST/token-class/TEST ..............................................[OK]
 quex/TEST/token-policies/TEST ...........................................[OK]
 quex/code_base/TEST .....................................................[OK]
 quex/code_base/buffer/TEST ..............................................[OK]
-quex/code_base/buffer/converter/iconv/TEST ............................[FAIL]
-quex/code_base/buffer/converter/icu/TEST ..............................[FAIL]
+quex/code_base/buffer/converter/iconv/TEST ..............................[OK]
+quex/code_base/buffer/converter/icu/TEST ................................[OK]
 quex/code_base/buffer/plain/TEST ........................................[OK]
 quex/code_base/template/TEST ............................................[OK]
 quex/core_engine/TEST ...................................................[OK]
@@ -1534,7 +1458,7 @@ quex/core_engine/generator/TEST .........................................[OK]
 quex/core_engine/regular_expression/TEST ................................[OK]
 quex/core_engine/state_machine/TEST .....................................[OK]
 quex/frs_py/TEST ........................................................[OK]
-quex/input/TEST .........................................................[OK]
+quex/input/TEST .......................................................[FAIL]
 quex/output/cpp/TEST ....................................................[OK]
 quex/output/graphviz/TEST ...............................................[OK]
 ===============================================================================

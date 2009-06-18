@@ -417,6 +417,7 @@ class TransitionMap:
         msg = ""
         # normal state transitions
         for target_state_index, trigger_set in sorted_transitions:
+            # trigger_str = str(trigger_set)
             trigger_str = trigger_set.get_utf8_string()
             if StateIndexMap == None: target_str  = "%i" % target_state_index
             else:                     target_str  = "%i" % StateIndexMap[target_state_index]
