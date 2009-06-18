@@ -1,27 +1,27 @@
-<test-database execution-time-sec="0.40" date="Tue Jun 16 23:11:20 2009">
+<test-database execution-time-sec="0.47" date="Wed Jun 17 22:10:04 2009">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.01"> 
-        <application file-name="simple-queue.exe" info-request-time="1244660205L"/>
-        <make-procedure success="False" time_sec="4.654975"/>
+        <application file-name="simple-queue.exe" info-request-time="1245269401L"/>
+        <make-procedure success="True" time_sec="3.510915"/>
         <choice-list number="1">
-           <choice name="" result="MAKE FAILED" time_sec="0.01" crc="1973324921"/>
+           <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
     </test>
-    <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.01"> 
-        <application file-name="simple.exe" info-request-time="1244660210L"/>
-        <make-procedure success="False" time_sec="4.696833"/>
+    <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.00"> 
+        <application file-name="simple.exe" info-request-time="1245269403L"/>
+        <make-procedure success="True" time_sec="2.583608"/>
         <choice-list number="1">
-           <choice name="" result="MAKE FAILED" time_sec="0.01" crc="1973324921"/>
+           <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
         </choice-list>
     </test>
     <group name="Miscellaneous Sample Runs CHOICES">
-        <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.38"> 
+        <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.46"> 
             <application file-name="misc.sh" info-request-time="1243020114L"/>
             <choice-list number="4">
-               <choice name="empty" result="OK" time_sec="0.09" crc="-1191820474"/>
-               <choice name="no-namespace" result="FAIL" time_sec="0.11" crc="-201766705"/>
-               <choice name="double-colon" result="OK" time_sec="0.09" crc="-223322448"/>
-               <choice name="token" result="OK" time_sec="0.09" crc="-2070729528"/>
+               <choice name="empty" result="OK" time_sec="0.10" crc="-1191820474"/>
+               <choice name="no-namespace" result="OK" time_sec="0.14" crc="-201766705"/>
+               <choice name="double-colon" result="OK" time_sec="0.12" crc="-223322448"/>
+               <choice name="token" result="OK" time_sec="0.11" crc="-1412753469"/>
             </choice-list>
         </test>
     </group>

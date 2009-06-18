@@ -257,14 +257,14 @@ def __check_file_name(setup, Candidate, Name):
                           "Received '%s' for %s (%s)" % (value, name, repr(CommandLineOption)[1:-1]))
             if os.access(name, os.F_OK) == False:
                 # error_msg("File %s (%s)\ncannot be found." % (name, Name))
-                error_msg_file_not_found(name)
+                error_msg_file_not_found(name, Name)
     else:
         QUEX_PATH = os.environ["QUEX_PATH"]
         if value == "" or value[0] == "-":              return
         if os.access(value, os.F_OK):                   return
         if os.access(QUEX_PATH + "/" + value, os.F_OK): return
         # error_msg("File %s (%s)\ncannot be found." % (value, Name))
-        error_msg_file_not_found(Name)
+        error_msg_file_not_found(value, Name)
 
 def __check_identifier(setup, Candidate, Name):
     value = setup.__dict__[Candidate]
@@ -287,9 +287,10 @@ def __get_integer(MemberName):
         option_name = repr(SETUP_INFO[MemberName][0])[1:-1]
         error_msg("Cannot convert '%s' into an integer for '%s'" % (code, option_name))
 
-def __prepare_file_name(Suffix):
+def __prepare_file_name(Suffix, FileStemIncludedF=False):
     global setup
-    FileName = setup.output_engine_name + Suffix
+    if FileStemIncludedF: FileName = Suffix
+    else:                 FileName = setup.output_engine_name + Suffix
     if setup.output_directory == "": return FileName
     else:                            return os.path.normpath(setup.output_directory + "/" + FileName)
 

@@ -153,7 +153,8 @@ namespace quex {
 
         if( tmp2.length() > 48 ) tmp2 = tmp2.substr(0, 48);
 
-        Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 280);
+        char* end = Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 280);
+        *end = '\0'; /* terminating zero */
 
         return std::string(utf8_buffer);
     }

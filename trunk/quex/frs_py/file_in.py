@@ -544,7 +544,7 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
     similar_index = similarity.get(Word, word_list)
 
     if similar_index == -1:
-        txt = "Acceptable is/are: "
+        txt = "Acceptable: "
         length = len(txt)
         for word in WordList:
             L = len(word)
@@ -553,6 +553,7 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
             txt += word + ", "
             length += L
 
+        if txt != "": txt = txt[:-2] + "."
         error_msg(Comment + "\n" + txt, FH, LineN, DontExitF=False)
 
     else:
@@ -569,11 +570,14 @@ def verify_word_in_list(Word, WordList, Comment, FH=-1, LineN=None, ExitF=True):
 
     return False
 
-def error_msg_file_not_found(FileName, FH=-1, LineN=None):
+def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
     """FH and LineN follow format of 'error_msg(...)'"""
     directory = os.path.dirname(FileName)
     if directory == "": directory = os.path.normpath("./"); suffix = "."
     else:               suffix = "in directory\n'%s'." % directory
+    comment = ""
+    if Comment != "": comment = "(%s) " % Comment
     files_in_directory = os.listdir(directory)
     verify_word_in_list(FileName, files_in_directory, 
-                        "File '%s' not found%s" % (FileName, suffix), FH, LineN)
+                        "File '%s' %snot found%s" % (FileName, comment, suffix), FH, LineN)
+    

@@ -5,4 +5,6 @@ command line:     --property
 command line:     --intervals (only with '--set-by-property', '--set-by-expression')
 command line:     --set-by-expression
 command line:     --set-by-property
+command line:     --codec-for-language
+command line:     --codec-info
 command line: 

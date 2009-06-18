@@ -23,3 +23,4 @@ clean:
 	rm -rf $(X).cpp
 	rm -rf $(X)
 	rm -rf a.out
+	touch simple.qx

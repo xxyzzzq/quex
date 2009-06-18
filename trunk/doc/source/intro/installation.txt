@@ -105,6 +105,12 @@ feature of quex:
 
           shows how to access the analyzer's memory buffer directly.
 
+.. data:: demo/011
+
+          provides an example of how to adapt the character encoding of the
+          lexical analyzer engine without using converters.
+
+
 The author of this document suggests that the user looks at these
 sample applications first before continuing with the remainder of this text. 
 With the background of easy-to-use examples to serve as starting point

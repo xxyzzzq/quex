@@ -105,7 +105,7 @@ namespace quex {
         return p + n;
     }
 
-    QUEX_INLINE size_t
+    QUEX_INLINE char*
     Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, char *Drain, size_t DrainSize)
     {
         QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
@@ -125,7 +125,7 @@ namespace quex {
             drain_iterator = Quex_unicode_to_utf8(*source_iterator, drain_iterator);
         }
 
-        return (size_t)(drain_iterator - Drain);
+        return drain_iterator;
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
