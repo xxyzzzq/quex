@@ -6,8 +6,8 @@ main(int argc, char** argv)
 {
     using namespace quex;
 
-    const size_t Start      = 0x0;
-    const size_t CharacterN = 255;
+    const size_t         Start      = 0x0;
+    const size_t         CharacterN = 255;
     QUEX_TYPE_CHARACTER  source[256];
     uint8_t              drain[4096];
     uint8_t              drain_ref[4096];
@@ -16,13 +16,14 @@ main(int argc, char** argv)
     for(int i=Start; i < Start + CharacterN; ++i) source[i-Start] = i;
 
     /* Convert the whole array */
-    size_t Size = CONVERT_TO_UTF8(source, CharacterN, (char*)drain, 4095);
-    drain[Size] = '\0'; /* terminating zero */
+    uint8_t*     drain_end = CONVERT_TO_UTF8(source, CharacterN, (uint8_t*)drain, 4095);
+    const int    Size = (int)(drain_end - (uint8_t*)drain);
+    *drain_end = '\0'; /* terminating zero */
 
-    printf("Result (%i):\n", (int)Size);
+    printf("Result (%i):\n", Size);
     for(int i=0; i<Size; ++i) {
         if( i % 16 == 0 ) printf("\n");
-        printf("%02X.", drain[i]);
+        printf("%02X.", (int)(drain[i]));
     }
     printf("\n");
     
@@ -37,7 +38,12 @@ main(int argc, char** argv)
 #   endif
 
     FILE* fh = fopen("reference-" __QUEX_CODEC "-to-utf8.txt", "rb");
-    fread(drain_ref, 1, 4096, fh);
+    const size_t RefSize = fread(drain_ref, 1, 4096, fh);
+
+    if( RefSize != Size ) {
+        printf("Reference Size = %i, Size = %i --> Error\n", (int)RefSize, (int)Size);
+        return -1;
+    }
 
     /* Compare the output */
     printf("Check result (no response == OK)\n");
