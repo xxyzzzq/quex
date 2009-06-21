@@ -1,0 +1,11 @@
+.. _sec-engine-codec:
+
+Analyzer Engine Codec
+=====================
+
+Apapting the internal codec of the generated lexical analyzer engine happens by
+means of the command line flag ``--codec``. When a codec is specified the
+internal engine will no longer run on unicode, but rather on the specified
+codec. Figure :ref:`<fig-codec-adaption-1>` and :ref:`<fig-codec-adaption-2>`
+show an engine in unicode and the adapted engine for the codec ISO8859-7
+(Greek).
