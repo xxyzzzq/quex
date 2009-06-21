@@ -16,8 +16,8 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE char*
-    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, char* utf8_result)
+    QUEX_INLINE uint8_t*
+    Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, uint8_t* utf8_result)
     {
         /* PURPOSE: This function converts the specified unicode character
          *          into its utf8 representation. The result is stored
@@ -37,8 +37,8 @@ namespace quex {
         const uint8_t LEN5	= 0xf8;
         const uint8_t LEN6	= 0xfc;
         /**/
-        char*   p = utf8_result;
-        size_t  n = 0;
+        uint8_t* p = utf8_result;
+        size_t   n = 0;
 
         __quex_assert(UCS_CharacterCode >= 0);
 
@@ -105,13 +105,13 @@ namespace quex {
         return p + n;
     }
 
-    QUEX_INLINE char*
-    Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, char *Drain, size_t DrainSize)
+    QUEX_INLINE uint8_t*
+    Quex_unicode_to_utf8_string(QUEX_TYPE_CHARACTER *Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
     {
         QUEX_TYPE_CHARACTER*  source_iterator = 0x0;
         QUEX_TYPE_CHARACTER*  source_end = 0x0;
-        char*                 drain_iterator = 0x0; 
-        char*                 drain_end = 0x0;
+        uint8_t*              drain_iterator = 0x0; 
+        uint8_t*              drain_end = 0x0;
 
         __quex_assert(Source != 0x0);
         __quex_assert(Drain != 0x0);

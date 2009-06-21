@@ -25,7 +25,7 @@ def compute_distance(A, B):
         if   B[i] == A[i]:                     prev_move = 0; continue
         elif B[i].lower() == A[i].lower():     sum += 0.1; continue
         elif is_quite_close(B[i], A[i]):       sum += 0.2; continue
-        elif move != 0 and move == prev_move:  sum += 1.0 / 2.0
+        elif move != 0 and move == prev_move:  pass
         else:                                  sum += 1.0
         prev_move = move
 

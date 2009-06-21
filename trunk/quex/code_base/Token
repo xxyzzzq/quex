@@ -32,9 +32,9 @@ namespace quex {
         // Quex Token Policy: _____________________________________________________
         static const char*  map_id_to_name(QUEX_TYPE_TOKEN_ID);
         //_________________________________________________________________________
+        typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
     private:
-        typedef std::basic_string<QUEX_TYPE_CHARACTER> __string;
 
         QUEX_TYPE_TOKEN_ID _id;
         __string           _text;
@@ -147,16 +147,16 @@ namespace quex {
     inline const std::string
     Token::utf8_text() const
     {
-        char             utf8_buffer[280];
+        uint8_t          utf8_buffer[280];
         std::string      tmp;
         Token::__string  tmp2 = _text;
 
         if( tmp2.length() > 48 ) tmp2 = tmp2.substr(0, 48);
 
-        char* end = Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 280);
+        uint8_t* end = Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 280);
         *end = '\0'; /* terminating zero */
 
-        return std::string(utf8_buffer);
+        return std::string((char*)utf8_buffer);
     }
 
 
