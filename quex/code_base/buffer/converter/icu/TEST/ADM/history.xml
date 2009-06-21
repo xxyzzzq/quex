@@ -1,4 +1,4 @@
-<history date="Fri Jun 19 00:30:01 2009" element-n="77">
+<history date="Sun Jun 21 15:05:52 2009" element-n="77">
     <day year="2009" month="01" day="22">
         <history-init time="06:23:29"/>
         <crc-error time="06:23:35" application="converter.exe" choice="UTF-16" database-crc="621464324" real-crc="-2041091222"/>
