@@ -465,15 +465,17 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix=""):
 
     if not DontExitF: sys.exit(-1)
 
+def make_safe_identifier(String, NoCodeF=True):
+    txt = ""
+    for letter in String:
+        if letter.isalpha() or letter.isdigit() or letter == "_": txt += letter.upper()
+        elif NoCodeF:                                             txt += "_" 
+        else:                                                     txt += "_x%x_" % ord(letter)
+    return txt
+
 def get_include_guard_extension(Filename):
     """Transforms the letters of a filename, so that they can appear in a C-macro."""
-    include_guard_extension = ""
-    for letter in Filename:
-        if letter.isalpha() or letter.isdigit() or letter == "_":
-            include_guard_extension += letter.upper()
-        else:
-            include_guard_extension += "_x%x_" % ord(letter)
-    return include_guard_extension
+    return make_safe_identifier(Filename, NoCodeF=False)
 
 def read_option_start(fh):
     skip_whitespace(fh)

@@ -24,25 +24,53 @@ except:
     print("error: Please, use Python versions 2.x.")
     sys.exit(-1)
        
-
-
-# (*) Check if everything is correctly installed
-import quex.DEFINITIONS
-quex.DEFINITIONS.check()
-
-import tempfile
-
-# This script needs to be located one directory above 'quex.'
-# so that it ca get the imports straight.
-from   quex.input.setup        import setup as Setup
-import quex.input.setup_parser as setup_parser
-import quex.input.query        as query_parser
-import quex.core               as core
-
+#def __exeption_handler(TheException):
+#    if isinstance(TheException, AssertionError):
+#        error_msg("Assertion error -- please report a bug under\n" + \
+#                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+#
+#    elif isinstance(TheException, KeyboardInterrupt): 
+#        print
+#        error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
+#
+#    #elif isinstance(TheException, Exception):
+#    else:
+#        error_msg("Unknown exception occured -- please, report a bug under\n" + \
+#                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    
 from quex.frs_py.file_in  import error_msg
 
+try:
+    # (*) Check if everything is correctly installed
+    import quex.DEFINITIONS
+    quex.DEFINITIONS.check()
+
+    import tempfile
+
+    # This script needs to be located one directory above 'quex.'
+    # so that it ca get the imports straight.
+    from   quex.input.setup        import setup as Setup
+    import quex.input.setup_parser as setup_parser
+    import quex.input.query        as query_parser
+    import quex.core               as core
+
+
+except AssertionError:
+    error_msg("Assertion error -- please report a bug under\n" + \
+              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+
+except KeyboardInterrupt: 
+    print
+    error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
+
+#except Exception:
+#    error_msg("Unknown exception occured -- please, report a bug under\n" + \
+#              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    
+
+
 if __name__ == "__main__":
-    ## try:
+    try:
         # (*) Call only for query? ___________________________________________________________
         if query_parser.do(sys.argv):   # if quex has been called for UCS property
             sys.exit(0)                 # query, then no further processing is performed
@@ -58,7 +86,15 @@ if __name__ == "__main__":
         if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
         else:                               core.do_plot()  # plot transition graphs
 
-    #except Exception: # AssertionError:
-    #    error_msg("Assertion error -- please report a bug at http://quex.sourceforge.net.")
+    except AssertionError:
+        error_msg("Assertion error -- please report a bug under\n" + \
+                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
+    except KeyboardInterrupt: 
+        print
+        error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
+    #except Exception:
+    #    error_msg("Unknown exception occured -- please, report a bug under\n" + \
+    #              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+        
