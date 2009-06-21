@@ -14,7 +14,7 @@
         
             unicode = 0x000080 + (input - 0x200000);
             *(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);
-            *(p++) = NEXT | QUEX_BYTE_0 & 0x3f;
+            *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
         }
     } else {
     
@@ -22,14 +22,14 @@
             unicode = 0x000800 + (input - 0x300000);
             *(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);
             *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-            *(p++) = NEXT | QUEX_BYTE_0 & 0x3f;
+            *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
         } else {
         
             unicode = 0x010000 + (input - 0x400000);
             *(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);
             *(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);
             *(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);
-            *(p++) = NEXT | QUEX_BYTE_0 & 0x3f;
+            *(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);
         }
     }
 

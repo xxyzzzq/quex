@@ -18,7 +18,7 @@ def test(Msg, ConversionInfoList):
         print "    " + repr(info)
         conversion_info.append(info)
     print
-    print codec_converter_helper.get_converter_to_utf8(conversion_info)
+    print codec_converter_helper.utf8_converter_get(conversion_info)
 
 
 if "1" in sys.argv:
@@ -45,7 +45,7 @@ elif "3" in sys.argv:
                   [0x81,    0x801,    0x2000081], 
                   [0x801,   0x10001,  0x3000801], 
                   [0x10001, 0x200001, 0x4010001] ]
-    ConvInfo = codec_converter_helper.get_utf8_conversion_table(TrafoInfo)
+    ConvInfo = codec_converter_helper.utf8_conversion_table_get(TrafoInfo)
     ConvInfo = map(lambda x: [x.utf8_range_index, 
                               x.codec_interval_begin_unicode, 
                               x.codec_interval_begin,

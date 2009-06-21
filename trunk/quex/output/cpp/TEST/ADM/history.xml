@@ -1,4 +1,4 @@
-<history date="Wed Jun 17 21:18:49 2009" element-n="23">
+<history date="Sun Jun 21 03:55:30 2009" element-n="27">
     <day year="2009" month="04" day="25">
         <history-init time="06:37:01"/>
         <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="06:37:01"/>
@@ -65,5 +65,13 @@
     </day>
     <day year="2009" month="06" day="17">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="19:18:49"/>
+    </day>
+    <day year="2009" month="06" day="18">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="22:36:00"/>
+    </day>
+    <day year="2009" month="06" day="20">
+        <crc-error time="10:23:42" application="test-converter-x.py" choice="2" database-crc="-603542148" real-crc="-837076251"/>
+        <crc-error time="10:23:47" application="test-converter-x.py" choice="1" database-crc="-395531614" real-crc="282607372"/>
+        <test-runs-today n="4" ok-n="2" fail-n="2" else-n="0" last-run="oll korrekt" last-time="10:23:49"/>
     </day>
 </history>
