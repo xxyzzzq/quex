@@ -354,6 +354,15 @@ this feature:
         Note, for this option to work, the graphviz package needs to be installed 
         (see www.graphviz.org).
 
+.. cmdoption:: --plot-character-display, --pcd  ['hex', 'utf8']
+
+        Specifies how the character of the state transition are to be displayed. When ``hex``
+        is specified then character will be displayed with the Unicode code point in 
+        hexidecimal. If ``utf8`` is specified the character will be displayed 'as is' 
+        in UTF8 notation. 
+
+        DEFAULT=`"utf8"`
+
 .. cmdoption:: --plot-format-list
 
         Lists all possible graphic formats for which quex can produce transition

@@ -41,6 +41,7 @@ SETUP_INFO = {
     "output_engine_name":             [["-o", "--engine"],                   "lexer"],    
     "post_categorizer_f":             [["--post-categorizer"],               FLAG],
     "plot_graphic_format":            [["--plot"],                           ""],
+    "plot_character_display":         [["--plot-character-display", "--pcd"],  "utf8"],
     "plot_graphic_format_list_f":     [["--plot-format-list"],               FLAG],
     "output_directory":               [["--output-directory", "--odir"],     ""],
     #

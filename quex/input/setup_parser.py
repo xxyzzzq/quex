@@ -119,6 +119,10 @@ def validate(setup, command_line, argv):
             error_msg("Option '%s' must be followed by a graphic format specifier (bmp, svg, jpg, ...)" % \
                       plot_option)
 
+    if setup.plot_character_display not in ["hex", "utf8"]:
+        error_msg("Plot character display must be either 'hex' or 'utf8'.\nFound: '%s'" % 
+                  setup.plot_character_display)
+
     # ensure that options are not specified twice
     for parameter, info in SETUP_INFO.items():
         if type(info) != list: continue

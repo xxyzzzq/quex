@@ -24,26 +24,27 @@ class Generator(GeneratorBase):
 
         self.graphic_format = GraphicFormat
 
-    def do(self):
+    def do(self, Option="utf8"):
         """Prepare output in the 'dot' language, that graphviz uses."""
+        assert Option in ["utf8", "hex"]
         assert_graphviz_installed()
 
-        self.__do(self.sm, self.state_machine_name + "." + self.graphic_format)
+        self.__do(self.sm, self.state_machine_name + "." + self.graphic_format, Option)
 
         if self.pre_context_sm != None:
             file_name = "%s-pre-condition.%s" % (self.state_machine_name, self.graphic_format)
             self.pre_context_file_name = file_name
-            self.__do(self.pre_context_sm, file_name)
+            self.__do(self.pre_context_sm, file_name, Option)
 
         if self.papc_backward_detector_state_machine_list != []:
             self.backward_detector_file_name = []
             for sm in self.papc_backward_detector_state_machine_list:
                 file_name = "%s_%i.%s" % (self.state_machine_name, sm.get_id(), self.graphic_format)
                 self.backward_detector_file_name.append(file_name)
-                self.__do(sm, file_name)
+                self.__do(sm, file_name, Option)
 
-    def __do(self, state_machine, name):
-        dot_code = state_machine.get_graphviz_string(NormalizeF=True)
+    def __do(self, state_machine, name, Option="utf8"):
+        dot_code = state_machine.get_graphviz_string(NormalizeF=True, Option=Option)
         _call_dot(dot_code, self.graphic_format, name)
     
 def get_supported_graphic_formats():
