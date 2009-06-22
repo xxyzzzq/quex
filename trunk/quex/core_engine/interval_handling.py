@@ -177,7 +177,7 @@ class Interval:
         # else:                                    return "'" + chr(Code) + "'"
 
     def get_string(self, Option="", Delimiter=", "):
-        if Option == "hex":    __repr = lambda x: "%05X" % x
+        if Option == "hex":    __repr = lambda x: "%04X" % x
         elif Option == "utf8": __repr = lambda x: self.__utf8_char(x)
         else:                  __repr = repr
         
@@ -750,6 +750,12 @@ class NumberSet:
 
     def __repr__(self):
         return repr(self.__intervals)
+
+    def get_string(self, Option="", Delimiter=", "):
+        txt = ""
+        for interval in self.__intervals:
+            txt += interval.get_string(Option, Delimiter) + " "
+        return txt
 
     def get_utf8_string(self):
         msg = ""

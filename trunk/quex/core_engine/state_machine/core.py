@@ -105,8 +105,9 @@ class State:
         msg += self.transitions().get_string(fill_str, StateIndexMap)
         return msg
 
-    def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
-        return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap)
+    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option):
+        assert Option in ["hex", "utf8"]
+        return self.transitions().get_graphviz_string(OwnStateIdx, StateIndexMap, Option)
 
 class StateMachineCoreInfo:
     def __init__(self, ID, 
@@ -691,7 +692,9 @@ class StateMachine:
 
         return msg
 
-    def get_graphviz_string(self, NormalizeF=False):
+    def get_graphviz_string(self, NormalizeF=False, Option="utf8"):
+        assert Option in ["hex", "utf8"]
+
         # (*) normalize the state indices
         index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
 
@@ -713,7 +716,7 @@ class StateMachine:
             state           = self.states[state_i]
             if state.is_acceptance(): 
                 acceptance_state_str += "%i; " % int(printed_state_i)
-            transition_str += state.get_graphviz_string(printed_state_i, index_map)
+            transition_str += state.get_graphviz_string(printed_state_i, index_map, Option)
 
         if acceptance_state_str != "": acceptance_state_str = acceptance_state_str[:-2]
         return blue_print(frame_txt, [["$$ACCEPTANCE_STATES$$", acceptance_state_str],

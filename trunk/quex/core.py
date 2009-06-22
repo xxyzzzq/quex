@@ -201,7 +201,7 @@ def do_plot():
         plotter = plot_generator.Generator(pattern_action_pair_list, 
                                            StateMachineName = mode.name,
                                            GraphicFormat    = Setup.plot_graphic_format)
-        plotter.do()
+        plotter.do(Option=Setup.plot_character_display)
 
 def __get_mode_db(Setup):
     # (0) check basic assumptions

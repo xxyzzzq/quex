@@ -410,15 +410,15 @@ class TransitionMap:
 
         return msg
 
-    def get_graphviz_string(self, OwnStateIdx, StateIndexMap):
+    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
+        assert Option in ["hex", "utf8"]
         sorted_transitions = self.get_map().items()
         sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
 
         msg = ""
         # normal state transitions
         for target_state_index, trigger_set in sorted_transitions:
-            # trigger_str = str(trigger_set)
-            trigger_str = trigger_set.get_utf8_string()
+            trigger_str = trigger_set.get_string(Option)
             if StateIndexMap == None: target_str  = "%i" % target_state_index
             else:                     target_str  = "%i" % StateIndexMap[target_state_index]
             msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
