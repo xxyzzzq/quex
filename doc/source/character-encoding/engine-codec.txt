@@ -6,6 +6,51 @@ Analyzer Engine Codec
 Apapting the internal codec of the generated lexical analyzer engine happens by
 means of the command line flag ``--codec``. When a codec is specified the
 internal engine will no longer run on unicode, but rather on the specified
-codec. Figure :ref:`<fig-codec-adaption-1>` and :ref:`<fig-codec-adaption-2>`
-show an engine in unicode and the adapted engine for the codec ISO8859-7
-(Greek).
+codec. Consider the example of a lexical analyzer definition for some greek
+text to be encoded in ISO-8859-7:
+
+.. code-block:: cpp
+
+    define {
+        CAPITAL   [ΆΈΉΊΌΎ-Ϋ]   
+        LOWERCASE [ά-ώ]
+        NUMBER    [0-9][0-9.,]+
+    }
+
+    mode X :
+    <skip: [ \t\n]>
+    {
+        {CAPITAL}{LOWERCASE}+  => QUEX_TKN_WORD(Lexeme);
+        {NUMBER}               => QUEX_TKN_NUMBER(Lexeme);
+        km2|"%"|{LOWERCASE}+   => QUEX_TKN_UNIT(Lexeme);
+    }
+
+The resulting state machine in Unicode is shown in 
+Figure :ref:`Unicode Engine <fig-codec-unicode>`. This engine could 
+either fed by converted file content using a converting buffer filler. 
+Alternatively, it can be converted so that it directly parses ISO8859-7
+encoded characters. Specifying on the command line::
+
+   > quex (...) --codec iso8859_7 (...)
+
+does the job. 
+
+.. _fig-codec-unicode:
+
+.. figure:: ../figures/state-machine-codec-unicode.*
+   
+   Sample lexical analyzer with an internal engine codec 'Unicode'.
+
+The result is a converted state machine as shown in figure
+:ref:`ISO8859-7 Eninge <fig-codec-iso8859-7>`. that the state machine
+basically remains the same, only the transition rules have been adapted.
+
+.. _fig-codec-iso8859-7:
+
+.. figure:: ../figures/state-machine-codec-iso8859-7.*
+
+   Sample lexical analyzer with an internal engine codec 'ISO8859-7' (greek).
+
+It is worth mentioning that the command line arguments ``--codec-info`` providing
+information about the list of codecs and ``--codec-for-language`` are usefule
+for making decisions about what codec to choose.

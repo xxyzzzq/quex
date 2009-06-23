@@ -39,6 +39,7 @@ generated converters can be plugged into the process.
 .. toctree::
 
    process.txt
+   engine-codec.txt
    converter.txt
    user-defined.txt
 
