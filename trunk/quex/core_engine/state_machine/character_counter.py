@@ -125,7 +125,6 @@ def __dive(state_machine, state_index, character_n, passed_state_list, Character
 
     return result
 
-
 def ____dive(state_machine, state_index, character_n, passed_state_list, CharacterToCount):
     state = state_machine.states[state_index]
 

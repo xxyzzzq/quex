@@ -25,8 +25,8 @@ cl_has(int argc, char** argv, const char* What)
 inline void
 show_this(const char* Name, QuexBuffer* buffer, QUEX_TYPE_CHARACTER* Pos, char Appendix)
 {
-    static char  utf8_char_str[7];
-    char*        p = 0x0;
+    static uint8_t  utf8_char_str[7];
+    uint8_t*        p = 0x0;
     QUEX_TYPE_CHARACTER UC = *Pos;
 
     if( UC == '\0' ) { 
