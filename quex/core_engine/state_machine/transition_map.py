@@ -418,7 +418,8 @@ class TransitionMap:
         msg = ""
         # normal state transitions
         for target_state_index, trigger_set in sorted_transitions:
-            trigger_str = trigger_set.get_string(Option)
+            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
+            else:                trigger_str = trigger_set.get_string(Option)
             if StateIndexMap == None: target_str  = "%i" % target_state_index
             else:                     target_str  = "%i" % StateIndexMap[target_state_index]
             msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))

@@ -142,10 +142,10 @@ def get_codec_transformation_info(Codec, FH=-1, LineN=None):
 
     return transformation_list
 
-def get_supported_unicode_character_set(CodecAlias):
+def get_supported_unicode_character_set(CodecAlias, FH=-1, LineN=None):
     result = NumberSet()
-    for source_begin, source_end, target_begin in get_codec_transformation_info(CodecAlias):
-        result.quick_append_interval(Interval(source_begin, source_end))
+    for source_begin, source_end, target_begin in get_codec_transformation_info(CodecAlias, FH, LineN):
+        result.add_interval(Interval(source_begin, source_end))
     return result
 
 def __get_transformation(encoder, CharCode):

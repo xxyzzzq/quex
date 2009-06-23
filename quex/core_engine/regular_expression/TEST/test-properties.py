@@ -14,7 +14,7 @@ if "--hwut-info" in sys.argv:
     print "Unicode properties: Simple"
     sys.exit(0)
     
-def test(TestString, NumbersF=False):
+def test(TestString, NumbersF=False, HexF=False):
     print
     print "expression = \"" + TestString + "\""
     stream = StringIO.StringIO(TestString)
@@ -22,6 +22,8 @@ def test(TestString, NumbersF=False):
         result = character_set_expression.snap_set_expression(stream)
         if NumbersF == False:
             print "result     = " + result.get_utf8_string() 
+        elif HexF:
+            print "result     = " + result.get_string(Option="hex") 
         else:
             print "result     = " + repr(result) 
     except exception.RegularExpressionException, x:
@@ -35,3 +37,5 @@ test("\\P{Script=Arabic}", NumbersF=True)
 test("\\N{KANGXI RADICAL RICE}", NumbersF=True)    
 test("\\G{KANGXI RADICAL RICE}", NumbersF=True)    
 test("\\G{Nd}")    
+test("\\E{iso8859_6}", NumbersF=True, HexF=True)    
+test("\\E{cp737}", NumbersF=True, HexF=True)    

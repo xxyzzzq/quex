@@ -24,6 +24,7 @@
 #                 "inverse"      '(' set_term ')'
 #                 set_expression
 # 
+import quex.input.codec_db as codec_db
 import quex.core_engine.regular_expression.traditional_character_set as traditional_character_set
 import quex.core_engine.regular_expression.property                  as property
 import quex.core_engine.regular_expression.auxiliary                 as aux
@@ -32,7 +33,8 @@ from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.file_in                 import read_until_letter, \
                                                 read_until_non_letter, \
-                                                skip_whitespace
+                                                skip_whitespace, \
+                                                check
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit
@@ -89,15 +91,6 @@ def snap_set_expression(stream):
     elif x[0] == "[":
         stream.seek(-1, 1)
         result = traditional_character_set.do(stream)   
-    elif x == "\\P": 
-        stream.seek(-2, 1)
-        result = property.do(stream)
-    elif x == "\\N": 
-        stream.seek(-2, 1)
-        result = property.do_shortcut(stream, "N", "na") # UCS Property: Name
-    elif x == "\\G": 
-        stream.seek(-2, 1)
-        result = property.do_shortcut(stream, "G", "gc") # UCS Property: General_Category
     else:
         result = None
 
@@ -115,6 +108,12 @@ def snap_property_set(stream):
     elif x == "\\G": 
         stream.seek(position)
         return property.do_shortcut(stream, "G", "gc") # UCS Property: General_Category
+    elif x == "\\E": 
+        skip_whitespace(stream)
+        if check(stream, "{") == False:
+            error_msg("Missing '{' after '\\E'.", stream)
+        encoding_name = __snap_until(stream, "}").strip()
+        return codec_db.get_supported_unicode_character_set(encoding_name, stream)
     else:
         stream.seek(position)
         return None

@@ -93,8 +93,8 @@ get_input(char* Choice, uint8_t* buffer, size_t BufferSize)
 void 
 print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
 {
-    char      utf8_c[10];
-    char*     p = 0x0;
+    uint8_t      utf8_c[10];
+    uint8_t*     p = 0x0;
     assert(End > Begin);
 
     size_t    i = 0;
