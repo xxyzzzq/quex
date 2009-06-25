@@ -1,6 +1,7 @@
 from quex.core_engine.interval_handling import Interval, NumberSet
 
 __distance_db = {}
+
 def get_newline_n(state_machine):   
     """
        Counts the number of newlines that appear until the acceptance state. 
