@@ -36,13 +36,15 @@ elif "FalseCases" in sys.argv:
     test('"12"|"A"', '"1"')
     test('12', '1')
     test('"1BAC"|"1BBC"', '"1ABC"')
-else:
-    test('"123"+')
-    test('X"123"?')
-    test('"123"?X')
-    test('"123"*X')
-    test('X"123"*')
 
+elif "GoodCases" in sys.argv:
+    test('"123"+',  '"123"')
+    test('X"123"?', 'X"123"')
+    test('"123"?X', '"123"X')
+    test('"123"*X', '"123"X')
+    test('X"123"*', 'X"123"')
+
+elif "FalseCasesII" in sys.argv:
     test('abc("123"+)')
     test('abc("123"?)')
     test('abc("123"*)')
