@@ -711,7 +711,6 @@ class NumberSet:
         self.clean()
         return True
 
-                    
     def clean(self, SortF=True):
         """Combines adjacent and intersecting intervals to one.
         """
