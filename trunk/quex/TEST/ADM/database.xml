@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.16" date="Mon Jun 22 22:29:39 2009">
+<test-database execution-time-sec="0.18" date="Mon Jun 22 22:43:46 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.10"> 
+    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.12"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1237805543L"/>
         <choice-list number="1">
-           <choice name="" result="OK" time_sec="0.10" crc="1073473981"/>
+           <choice name="" result="OK" time_sec="0.12" crc="1073473981"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

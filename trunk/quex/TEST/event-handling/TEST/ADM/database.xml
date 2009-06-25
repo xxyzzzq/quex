@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.03" date="Mon Jun 22 22:30:03 2009">
+<test-database execution-time-sec="0.04" date="Mon Jun 22 22:44:08 2009">
     <last-used-diff-display-program name=""/>
     <group name="Mode Transitions">
         <test title="transition-x.qx" make-required="True" time-sum-sec="0.02"> 
-            <application file-name="transition-x.exe" info-request-time="1245702600L"/>
-            <make-procedure success="True" time_sec="3.105380"/>
+            <application file-name="transition-x.exe" info-request-time="1245703445L"/>
+            <make-procedure success="True" time_sec="2.867649"/>
             <choice-list number="4">
                <choice name="1" result="OK" time_sec="0.00" crc="2085579180"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
+               <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
                <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
                <choice name="error" result="OK" time_sec="0.00" crc="1083790284"/>
             </choice-list>
         </test>
-        <test title="transition.qx" make-required="True" time-sum-sec="0.02"> 
-            <application file-name="transition.exe" info-request-time="1245702603L"/>
-            <make-procedure success="True" time_sec="2.595614"/>
+        <test title="transition.qx" make-required="True" time-sum-sec="0.03"> 
+            <application file-name="transition.exe" info-request-time="1245703448L"/>
+            <make-procedure success="True" time_sec="2.712878"/>
             <choice-list number="4">
                <choice name="1" result="OK" time_sec="0.00" crc="2085579180"/>
-               <choice name="2" result="OK" time_sec="0.00" crc="-932257635"/>
+               <choice name="2" result="OK" time_sec="0.02" crc="-932257635"/>
                <choice name="3" result="OK" time_sec="0.00" crc="741669396"/>
-               <choice name="error" result="OK" time_sec="0.01" crc="-811812121"/>
+               <choice name="error" result="OK" time_sec="0.00" crc="-811812121"/>
             </choice-list>
         </test>
     </group>

@@ -123,14 +123,13 @@ class TransitionMap:
         return None
 
     def get_resulting_target_state_index_list(self, Trigger):
+        result = []
         if Trigger.__class__.__name__ == "NumberSet":
-            result = []
             for target_index, trigger_set in self.__db.items():
                 if trigger_set.has_intersection(Trigger) and target_index not in result:
                     result.append(target_index) 
 
         else:
-            result = []
             for target_index, trigger_set in self.__db.items():
                 if trigger_set.contains(Trigger) and target_index not in result:
                     result.append(target_index) 
@@ -140,7 +139,7 @@ class TransitionMap:
                 if target_index not in result:
                     result.append(self.__epsilon_target_index_list)
 
-        return result_list
+        return result
 
     def get_map(self):
         return self.__db
