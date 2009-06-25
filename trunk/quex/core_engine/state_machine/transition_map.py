@@ -108,9 +108,12 @@ class TransitionMap:
         return self.__db.keys()
 
     def get_target_state_index_list(self):
+        """Union of target states that can be reached either via epsilon transition
+           or 'real' transition via character.
+        """
         result = self.__db.keys()
         for index in self.__epsilon_target_index_list:
-            result.append(index)
+            if index not in result: result.append(index)
         return result
 
     def get_resulting_target_state_index(self, Trigger):
@@ -120,11 +123,17 @@ class TransitionMap:
         return None
 
     def get_resulting_target_state_index_list(self, Trigger):
-        """NOTE: This function makes sense for NFA's"""
-        result = []
-        for target_index, trigger_set in self.__db.items():
-            if trigger_set.contains(Trigger) and target_index not in result:
-                result.append(target_index) 
+        if Trigger.__class__.__name__ == "NumberSet":
+            result = []
+            for target_index, trigger_set in self.__db.items():
+                if trigger_set.has_intersection(Trigger) and target_index not in result:
+                    result.append(target_index) 
+
+        else:
+            result = []
+            for target_index, trigger_set in self.__db.items():
+                if trigger_set.contains(Trigger) and target_index not in result:
+                    result.append(target_index) 
 
         if self.__epsilon_target_index_list != []:
             for target_index in self.__epsilon_target_index_list:
