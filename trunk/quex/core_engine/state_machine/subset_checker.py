@@ -87,4 +87,5 @@ class Checker:
         return True
 
 def do(SuperSM, AllegedSubSM):
+    is precondition(super) a super set of precondition(alleged)
     return Checker(SuperSM, AllegedSubSM).do()
