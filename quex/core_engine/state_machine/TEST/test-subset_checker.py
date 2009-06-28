@@ -7,8 +7,8 @@ import quex.core_engine.regular_expression.core      as regex
 import quex.core_engine.state_machine.subset_checker as subset_checker
 
 if "--hwut-info" in sys.argv:
-    print "Predetermined Character Count: Characters"
-    print "CHOICES: Easy, FalseCases;"
+    print "Pattern Subset Determination"
+    print "CHOICES: Easy, FalseCases, GoodCases, FalseCasesII, GoodCasesII, Misc, Pre-Post-Conditions;"
     sys.exit(0)
     
 def test(A, B):
@@ -45,34 +45,33 @@ elif "GoodCases" in sys.argv:
     test('X"123"*', 'X"123"')
 
 elif "FalseCasesII" in sys.argv:
-    test('abc("123"+)')
-    test('abc("123"?)')
-    test('abc("123"*)')
+    test('abc("123"+)xyz',       'abcyz')
+    test('abc("123"|"ABC")xyz',  'abc1B3xyz')
+    test('abc("123"|"ABCD")xyz', 'abcABCxyc')
 
-    test('abc("123"+)xyz')
-    test('abc("123"?)xyz')
-    test('abc("123"*)xyz')
+elif "GoodCasesII" in sys.argv:
+    test('abc("123"+)xyz', 'abc123123123123xyz')
+    test('abc("123"?)xyz', 'abcxyz')
+    test('abc("123"*)xyz', 'abcxyz')
+    test('abc("123"|"ABC")?xyz', 'abcxyz')
+    test('abc("123"|"ABC")?xyz', 'abcABCxyz')
+    test('abc("123"|"ABC")*xyz', 'abcxyz')
+    test('abc("123"|"ABC")*xyz', 'abcABC123xyz')
 
-    test('abc("123"|"ABC")xyz')
-    test('abc("123"|"ABCD")xyz')
-    test('abc("123"|"ABC")+xyz')
-    test('abc("123"|"ABC")?xyz')
-    test('abc("123"|"ABC")*xyz')
+elif "Misc" in sys.argv:
+    test('X("a"|"x"?|"e"|"g")', 'X')
+    test('X("a"|"x"?|"e"|"g")', 'Xx')
+    test('"a"|"x"+|"e"|"g"', 'x{20}')
+    test('X("a"|"x"*|"e"|"g")', 'X')
+    test('X("a"|"x"*|"e"|"g")', 'Xx{20}')
 
-    test('"a"|"c"|"e"|"g"')
-    test('X("a"|"x"?|"e"|"g")')
-    test('"a"|"x"+|"e"|"g"')
-    test('X("a"|"x"*|"e"|"g")')
+    test('abc("123"|("ABC"|"XYZ")+)+"123"("AAA"|"BBB"|"CCC")?xyz', 'abc123ABC123AAAxyz')
 
-    test('abc("123"|("ABC"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
-    test('abc("123"|("ABCD"|"XYZ"))"123"("AAA"|"BBB"|"CCC")xyz')
-
+elif "Pre-Post-Conditions":
     # with pre and post-conditions
-    test('"123"/"Z"')
-    test('"123"+/"Z"')
-    test('("123"|"ABC")/"Z"')
-    test('"123"/"ABC"|"XYZ"')
-    test('"123"/"ABC"|"X"*')
-    test('"123"/"ABC"|"X"?')
-    test('"123"/"ABC"|""')
-    test('"123"/"XYZ"+')
+    test('A/B',      'AB')
+    test('A/B/',     'B')
+    test('A/B(C?)/', 'A/B/')
+    test('A/B(C?)/', 'A+/B/')
+    test('B$',  'B')
+    test('^B',  'B')

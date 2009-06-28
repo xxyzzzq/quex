@@ -101,6 +101,9 @@ def __post_process(fh, StartPosition, object, ReturnRE_StringF):
         end_position = fh.tell()
         fh.seek(StartPosition)
         regular_expression = fh.read(end_position - StartPosition)
+        if regular_expression == "":
+            regular_expression = fh.read(1)
+            fh.seek(-1, 1)
 
     # (*) error in regular expression?
     if object == None:

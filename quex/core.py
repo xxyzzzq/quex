@@ -133,7 +133,7 @@ def get_generator_input(Mode):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
-    match_info_list = Mode.pattern_action_pairs().values()
+    match_info_list = Mode.get_pattern_action_pairs()
 
     # (*) sort the patterns:
     #
@@ -142,7 +142,7 @@ def get_generator_input(Mode):
     #     -- The sequence of the state machines determines the state machine ids. Patterns
     #        that are created earlier have a 'smaller' state machine id than patterns 
     #        that are created later. 
-    #     -- The state machine id stands for the 'privilidge' of a pattern. A pattern
+    #     -- The state machine id stands for the 'privilege' of a pattern. A pattern
     #        with a lower state machine id has a higher priviledge than a pattern with
     #        a higher id. The state machine id is used for **sorting** during code
     #        generation.

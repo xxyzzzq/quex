@@ -1,0 +1,3 @@
+command line: File 'data/.qx' (quex source file) not foundin directory
+command line: 'data'.
+command line: Acceptable: .svn, DELETION-good.qx, DELETION-fail.qx, PRIORITY-fail.qx, PRIORITY-good.qx.

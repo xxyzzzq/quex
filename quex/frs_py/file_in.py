@@ -423,11 +423,12 @@ def verify_next_word(fh, Compare, Quit=True, Comment=""):
         error_msg(txt, fh)
     return word
         
-def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix=""):
+def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=True):
     # fh        = filehandle [1] or filename [2]
     # LineN     = line_number of error
     # DontExitF = True then no exit from program
     #           = False then total exit from program
+    # WarningF  = Asked only if DontExitF is set. 
     #
     # count line numbers (this is a kind of 'dirty' solution for not
     # counting line numbers on the fly. it does not harm at all and
@@ -455,7 +456,7 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix=""):
             else:
                 line_n = -1
                 Filename = ""
-        if DontExitF: 
+        if DontExitF and WarningF: 
             prefix = "%s:%i:warning" % (Filename, line_n + 1)   
         else:
             prefix = "%s:%i:error" % (Filename, line_n + 1)   
