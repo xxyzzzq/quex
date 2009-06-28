@@ -22,13 +22,13 @@ def test(RE_Core, RE_PostCondition):
 
     # reset the index, so that things get a litter less 'historic'
     try:
-        core_sm           = regex.do(string_stream_Core)
+        core_sm           = regex.do(string_stream_Core, {}, -1)
     except RegularExpressionException, x:
         print "Core Pattern:\n" + repr(x)
         return
 
     try:
-        post_context_sm = regex.do(string_stream_PostCondition)
+        post_context_sm = regex.do(string_stream_PostCondition, {}, -1)
     except RegularExpressionException, x:
         print "Post Condition Pattern:\n" + repr(x)
         return

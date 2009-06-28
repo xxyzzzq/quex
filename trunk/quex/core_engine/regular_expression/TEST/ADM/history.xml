@@ -1,4 +1,4 @@
-<history date="Mon Jun 22 22:48:13 2009" element-n="252">
+<history date="Sat Jun 27 23:10:38 2009" element-n="253">
     <day year="2008" month="02" day="10">
         <history-init time="09:57:16"/>
         <crc-error time="09:57:16" application="test-pattern-matching.py" choice="" database-crc="1144357218" real-crc="1999050120"/>
@@ -660,5 +660,8 @@
     </day>
     <day year="2009" month="06" day="22">
         <test-runs-today n="6" ok-n="4" fail-n="2" else-n="0" last-run="oll korrekt" last-time="20:48:13"/>
+    </day>
+    <day year="2009" month="06" day="27">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:10:38"/>
     </day>
 </history>

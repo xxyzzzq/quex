@@ -42,7 +42,7 @@ inheritance_info, generator_input = coder.get_generator_input(mode)
 
 print "/*\n" + inheritance_info + "*/\n"
 
-for match_obj in mode.pattern_action_pairs().values():
+for match_obj in mode.get_pattern_action_pairs():
     print match_obj
 
 for action_info in generator_input:

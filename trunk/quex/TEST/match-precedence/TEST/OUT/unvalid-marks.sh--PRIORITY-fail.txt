@@ -1,0 +1,6 @@
+data/PRIORITY-fail.qx:4:warning: Token id 'QUEX_TKN_THING' defined implicitly.
+data/PRIORITY-fail.qx:24:warning: Pattern 'q' was marked with PRIORITY-MARK but does not
+data/PRIORITY-fail.qx:24:warning: exist in any base mode of mode 'Z'.
+data/PRIORITY-fail.qx:26:warning: Pattern 'p' was marked with PRIORITY-MARK but does not
+data/PRIORITY-fail.qx:26:warning: exist in any base mode of mode 'Z'.
+command line: Process of lexical analyzer generation aborted due to inacceptable user input.

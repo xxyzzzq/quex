@@ -208,13 +208,14 @@ def parse_action_code(new_mode, fh, pattern, pattern_state_machine):
             # use its id.
             fh.seek(-1, 1)
             verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
-            new_mode.add_match_priority(pattern, pattern_state_machine, pattern_state_machine.get_id(), fh)
+            new_mode.add_match_priority(pattern, pattern_state_machine, pattern_state_machine.get_id(), 
+                                        fh.name, get_current_line_info_number(fh))
 
         elif word == "DELETION":
             # This mark deletes any pattern that was inherited with the same 'name'
             fh.seek(-1, 1)
             verify_next_word(fh, ";", Comment="Since quex version 0.33.5 this is required.")
-            new_mode.add_match_deletion(pattern, pattern_state_machine, fh)
+            new_mode.add_match_deletion(pattern, pattern_state_machine, fh.name, get_current_line_info_number(fh))
             
         else:
             error_msg("missing token '{', 'PRIORITY-MARK', 'DELETION', or '=>' after '%s'.\n" % pattern + \
