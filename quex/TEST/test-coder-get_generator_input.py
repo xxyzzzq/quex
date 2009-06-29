@@ -8,7 +8,7 @@ import quex.input.setup
 import quex.core                                as coder
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
-from   quex.lexer_mode                          import LexMode 
+from   quex.lexer_mode                          import ModeDescription 
 from   quex.core_engine.generator.action_info   import CodeFragment
 
 
@@ -23,7 +23,7 @@ pattern_action_pair_list = [
     ('[ \\t\\n]+', "WHITESPACE")
 ]
 
-mode = LexMode("TEST", "", 0)
+mode = ModeDescription("TEST", "", 0)
 i = -1
 for pattern, action in pattern_action_pair_list:
     i += 1

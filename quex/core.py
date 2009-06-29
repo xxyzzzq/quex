@@ -93,7 +93,7 @@ def get_code_for_mode(Mode, ModeNameList):
     if Mode.on_end_of_stream_code_fragments() == []:
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
-        Mode.on_end_of_stream = CodeFragment(txt)
+        Mode.events["on_end_of_stream"] = CodeFragment(txt)
 
     end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
@@ -102,7 +102,7 @@ def get_code_for_mode(Mode, ModeNameList):
     if Mode.on_failure_code_fragments() == []:
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
-        Mode.on_failure = CodeFragment(txt)
+        Mode.events["on_failure"] = CodeFragment(txt)
 
     default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 
                                               "on_failure", None, Default_ActionF=True)
@@ -210,7 +210,9 @@ def __get_mode_db(Setup):
     # (1) input: do the pattern analysis, in case exact counting of newlines is required
     #            (this might speed up the lexer, but nobody might care ...)
     #            pattern_db = analyse_patterns.do(pattern_file)    
-    mode_db = quex_file_parser.do(Setup.input_mode_files)
+    mode_description_db = quex_file_parser.do(Setup.input_mode_files)
+
+    lexer_mode.implement_mode_db(mode_description_db)
 
     # (*) perform consistency check 
     consistency_check.do(mode_db)

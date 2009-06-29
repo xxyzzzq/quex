@@ -12,7 +12,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
        -- The task of this function is it to adorn the action code for each pattern with
           code for line and column number counting.
     """
-    assert Mode.__class__.__name__                == "LexMode"
+    assert Mode.__class__.__name__                == "ModeDescription"
     assert type(SafePatternStr)                   == str
     assert PatternStateMachine.__class__.__name__ == "StateMachine" or PatternStateMachine == None
     assert type(Default_ActionF)                  == bool
@@ -36,7 +36,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
-    if Mode.on_indentation.get_code() != "":
+    if Mode.has_indentation_based_event():
         lc_count_code = __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
 
     else:

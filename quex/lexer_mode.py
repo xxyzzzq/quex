@@ -25,13 +25,25 @@ from quex.frs_py.file_in import error_msg
 from quex.core_engine.generator.action_info import *
 import quex.core_engine.state_machine.subset_checker as subset_checker
 
+# ModeDescription/Mode Objects:
+#
+# During parsing 'ModeDescription' objects are generated. Once parsing is over, 
+# the descriptions are translated into 'real' mode objects where code can be generated
+# from. All matters of inheritance and pattern resolution are handled in the
+# transition from description to real mode.
+#-----------------------------------------------------------------------------------------
+# mode_description_db: storing the mode information into a dictionary:
+#                      key  = mode name
+#                      item = ModeDescription object
+#-----------------------------------------------------------------------------------------
+mode_description_db = {}
+
 #-----------------------------------------------------------------------------------------
 # mode_db: storing the mode information into a dictionary:
-#          key  = mode name
-#          item = LexMode object
+#            key  = mode name
+#            item = Mode object
 #-----------------------------------------------------------------------------------------
-mode_db = {}
-
+mode_description_db = {}
 
 class OptionInfo:
     """This type is used only in context of a dictionary, the key
@@ -42,9 +54,9 @@ class OptionInfo:
         if Type == "list" and Domain == -1: self.domain = []
         else:                               self.domain = Domain
 
-class LexMode:
+class ModeDescription:
     def __init__(self, Name, Filename, LineN):
-        global mode_db
+        global mode_description_db
 
         self.filename = Filename
         self.line_n   = LineN
@@ -66,13 +78,8 @@ class LexMode:
         # in case that this variable is still [].
         self.__pattern_action_pair_list = []  
 
-        # register at the mode database
-        mode_db[Name] = self
-
         # (*) set the information about possible options
         self.options = {}       # option settings
-
-        # -- default settings for options
         self.options["inheritable"]        = "yes"
         self.options["exit"]               = []
         self.options["entry"]              = []
@@ -81,26 +88,26 @@ class LexMode:
         self.options["skip-range"]         = []
         self.options["skip-nesting-range"] = []
 
-        self.on_entry         = CodeFragment()
-        self.on_exit          = CodeFragment()
-        self.on_match         = CodeFragment()
-        self.on_failure       = CodeFragment()
-        self.on_end_of_stream = CodeFragment()
-        self.on_indentation   = CodeFragment()
+        self.events = {}
+        self.events["on_entry"]         = CodeFragment()
+        self.events["on_exit"]          = CodeFragment()
+        self.events["on_match"]         = CodeFragment()
+        self.events["on_failure"]       = CodeFragment()
+        self.events["on_end_of_stream"] = CodeFragment()
+        self.events["on_indentation"]   = CodeFragment()
 
         # A flag indicating wether the mode has gone trough
         # consistency check.
         self.consistency_check_done_f             = False
         self.inheritance_circularity_check_done_f = False
 
+        # Register ModeDescription at the mode database
+        mode_description_db[Name] = self
+
     def has_event_handler(self):
-        if   self.on_entry.get_code()         != "": return True
-        elif self.on_exit.get_code()          != "": return True
-        elif self.on_match.get_code()         != "": return True
-        elif self.on_failure.get_code()       != "": return True
-        elif self.on_end_of_stream.get_code() != "": return True
-        elif self.on_indentation.get_code()   != "": return True
-        else:                                        return False
+        for fragment in self.events.values():
+            if fragment.get_code() != "": return True
+        return False
 
     def has_pattern(self, PatternStr):
         return self.__matches.has_key(PatternStr)
@@ -115,7 +122,7 @@ class LexMode:
         if self.__matches != {}: return True
 
         for name in self.base_modes:
-           if mode_db[name].has_matches(): return True
+           if mode_description_db[name].has_matches(): return True
 
         return False
 
@@ -184,7 +191,7 @@ class LexMode:
         """Collect all event handlers with the given FragmentName from all base classes.
            Returns list of 'CodeFragment'.
         """
-        fragment = self.__dict__[FragmentName]
+        fragment = self.events[FragmentName]
         if fragment == None or fragment.get_code() == "":
             code_fragment_list = []
         else:      
@@ -193,7 +200,7 @@ class LexMode:
 
         for base_mode_name in self.base_modes:
             # -- get 'on_match' handler from the base mode
-            base_mode     = mode_db[base_mode_name]
+            base_mode     = mode_description_db[base_mode_name]
             base_fragment_list = { 
                     "on_entry":          base_mode.on_entry_code_fragments,
                     "on_exit":           base_mode.on_exit_code_fragments,
@@ -224,7 +231,7 @@ class LexMode:
             max_pattern_id = -1
             for base_mode_name in self.base_modes:
 
-                base_pattern_action_pairs = mode_db[base_mode_name].get_pattern_action_pairs(Depth + 1)
+                base_pattern_action_pairs = mode_description_db[base_mode_name].get_pattern_action_pairs(Depth + 1)
                 result.extend(base_pattern_action_pairs)
 
                 for match in base_pattern_action_pairs:
@@ -340,7 +347,7 @@ class LexMode:
         if Depth != 0: str = "** " + ("   " * Depth) + self.name + "\n"
         else:          str = "** <" + self.name + ">\n"
         for base_mode_name in self.base_modes:
-            mode = mode_db[base_mode_name]
+            mode = mode_description_db[base_mode_name]
             str += mode.inheritance_structure_string(Depth + 1)
         return str
 
@@ -355,7 +362,7 @@ class LexMode:
         base_mode_collection = copy(self.base_modes)
         for base_mode in self.base_modes:
             # -- append base_mode to the base modes of current mode
-            base_mode_collection_candidates = mode_db[base_mode].get_base_modes()
+            base_mode_collection_candidates = mode_description_db[base_mode].get_base_modes()
             for candidate in base_mode_collection_candidates:
                 if candidate not in base_mode_collection:
                     base_mode_collection.append(candidate)
@@ -400,7 +407,7 @@ class LexMode:
         #
         for base_mode_name in self.base_modes:
             # -- is base mode inheritable?
-            if mode_db[base_mode_name].options["inheritable"] == "no":
+            if mode_description_db[base_mode_name].options["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is **not inheritable**." % \
                           (self.name, base_mode_name), self.filename, self.line_n)
 
@@ -422,13 +429,13 @@ class LexMode:
         # (*) Enter/Exit Transitions
         for mode_name in self.options["exit"]:
             # -- does other mode exist?
-            if mode_db.has_key(mode_name) == False:
+            if mode_description_db.has_key(mode_name) == False:
                 error_msg("Mode '%s'\nhas  an exit to mode '%s'\nbut no such mode exists." % \
                           (self.name, mode_name), self.filename, self.line_n)
 
             # -- does other mode have an entry for this mode?
             #    (does this or any of the base modes have an entry to the other mode?)
-            other_mode = mode_db[mode_name]
+            other_mode = mode_description_db[mode_name]
             #    -- no restrictions => OK
             if other_mode.options["entry"] == []: continue
             #    -- restricted entry => check if this mode ore one of the base modes can enter
@@ -443,14 +450,14 @@ class LexMode:
 
         for mode_name in self.options["entry"]:
             # -- does other mode exist?
-            if mode_db.has_key(mode_name) == False:
+            if mode_description_db.has_key(mode_name) == False:
                 error_msg("Mode '%s'\nhas an entry from mode '%s'\nbut no such mode exists." % \
                           (self.name, mode_name),
                           self.filename, self.line_n)
 
             # -- does other mode have an exit for this mode?
             #    (does this or any of the base modes have an exit to the other mode?)
-            other_mode = mode_db[mode_name]
+            other_mode = mode_description_db[mode_name]
             #    -- no restrictions => OK
             if other_mode.options["exit"] == []: continue
             #    -- restricted exit => check if this mode ore one of the base modes can enter
@@ -492,19 +499,25 @@ class LexMode:
 
         self.consistency_check_done_f = True
 
-        
 
-    #def get_number_of_post_conditioned_patterns(self):
-    #    """NOTE: The number of post conditions determines the size of an array. However,
-    #             the analyser, later one determines it again and then it is correct. But,
-    #             still keep in mind that this number is 'crucial'!
-    #    """
-    #    pattern_action_pairs = self.get_pattern_action_pairs()
-    #    post_condition_n = 0
-    #    for match in self.get_pattern_action_pairs.values():
-    #        if match.pattern_state_machine.core().post_context_id() != -1L:
-    #            post_condition_n += 1
-    #    return post_condition_n
+class Mode(ModeDescription):
+    def __init__(self, Other):
+        """Translate a ModeDescription into a real Mode. Here is the place were 
+           all rules of inheritance mechanisms and pattern precedence are applied.
+        """
+        assert isinstance(Other, ModeDescription)
+        #for name, member in Other.__dict__.items():
+        #    self.__dict__[name] = member
+        self.base_mode_sequence = Other.get_base_modes()
+
+        # (1) Collect Event Handlers
+        for name in ["on_entry", "on_exit", "on_indentation", "on_match", "on_end_of_stream",  "on_failure"]:
+            self.__collect_event_handlers(name)
+
+    def has_indentation_based_event(self):
+        return self.events["on_indentation"].get_code() != ""
+
+    def __collect_event_handlers(self, Event):
 
 #-----------------------------------------------------------------------------------------
 # mode option information/format: 
@@ -513,14 +526,14 @@ mode_option_info_db = {
    # -- a mode can be inheritable or not or only inheritable. if a mode
    #    is only inheritable it is not printed on its on, only as a base
    #    mode for another mode. default is 'yes'
-   "inheritable": OptionInfo("single", ["no", "yes", "only"]),
+   "inheritable":       OptionInfo("single", ["no", "yes", "only"]),
    # -- a mode can restrict the possible modes to exit to. this for the
    #    sake of clarity. if no exit is explicitly mentioned all modes are
    #    possible. if it is tried to transit to a mode which is not in
    #    the list of explicitly stated exits, an error occurs.
    #    entrys work respectively.
-   "exit":        OptionInfo("list"),
-   "entry":       OptionInfo("list"),
+   "exit":              OptionInfo("list"),
+   "entry":             OptionInfo("list"),
    # -- a mode can restrict the exits and entrys explicitly mentioned
    #    then, a derived mode cannot add now exits or entrys
    "restrict":          OptionInfo("list", ["exit", "entry"]),

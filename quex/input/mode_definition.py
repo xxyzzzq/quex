@@ -20,7 +20,7 @@ def parse(fh):
         error_msg("missing identifier at beginning of mode definition.", fh)
 
     # NOTE: constructor does register this mode in the mode_db
-    new_mode  = lexer_mode.LexMode(mode_name, fh.name, get_current_line_info_number(fh))
+    new_mode  = lexer_mode.ModeDescription(mode_name, fh.name, get_current_line_info_number(fh))
 
     # (*) inherited modes / options
     skip_whitespace(fh)
@@ -229,58 +229,35 @@ def parse_action_code(new_mode, fh, pattern, pattern_state_machine):
 
 def check_for_event_specification(word, fh, new_mode):
 
-    if word == "on_entry":
-        # Event: enter into mode
-        new_mode.on_entry = code_fragment.parse(fh, "%s::on_entry event handler" % new_mode.name)
-        return True
+    if len(word) < 3:     return False
+    if word[:3] != "on_": return False
+
+    # We allow '<<EOF>>' and '<<FAIL>>' out of respect for classical tools like 'lex'
+    if   word == "<<EOF>>":   word = "on_end_of_stream"
+    elif word == "<<FAIL>>:": word = "on_failure"
+
+    allowed_list = ["on_end_of_stream", "on_entry", "on_exit", "on_failure", "on_indentation", "on_match",] 
     
-    elif word == "on_exit":
-        # Event: exit from mode
-        new_mode.on_exit = code_fragment.parse(fh, "%s::on_exit event handler" % new_mode.name)
-        return True
+    comment = "Unknown event handler '%s'. \n" % word + \
+              "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
+              "use double quotes to bracket patterns that start with 'on_'."
 
-    elif word == "on_match":
-        # Event: exit from mode
-        new_mode.on_match = code_fragment.parse(fh, "%s::on_match event handler" % new_mode.name)
-        return True
+    verify_word_in_list(NameStr, allowed_list, comment, fh)
 
-    elif  word == "on_indentation":
-        # Event: start of indentation, 
-        #        first non-whitespace after whitespace
-        new_mode.on_indentation = code_fragment.parse(fh, "%s::on_indentation event handler" % new_mode.name)
-        if Setup.disable_token_queue_f:
-            error_msg("Using 'on_indentation' event handler, while the token queue is disabled.\n" + \
-                      "Now, no tokens can be sent in this event handler. Maybe, the command\n" + \
-                      "line flag '--no-token-queue' should be omitted.", DontExitF=True)
-        return True
-
-    elif word == "on_failure" or word == "<<FAIL>>":
-        # Event: No pattern matched for current position.
-        # NOTE: See 'on_end_of_stream' comments.
-        new_mode.on_failure = code_fragment.parse(fh, "%s::on_failure event handler" % new_mode.name)
-        return True
-
-    elif word == "on_end_of_stream" or word == "<<EOF>>": 
-        # Event: End of data stream / end of file
-        # NOTE: The regular expression parser relies on <<EOF>> and <<FAIL>>. So those
-        #       patterns are entered here, even if later versions of quex might dismiss
-        #       those rule deefinitions in favor of consistent event handlers.
+    continue_f = True
+    if word == "on_end_of_stream":
         # NOTE: The 'ContinueF' is turned of in this case, because when a termination
         #       token is sent, no other token shall follow. Thus, we enforce the
-        #       return from the analyzer.
-        new_mode.on_end_of_stream = code_fragment.parse(fh, 
-                                                        "%s::on_end_of_stream event handler" % new_mode.name,
-                                                        ContinueF=False)
-        return True
+        #       return from the analyzer. Do not allow CONTINUE.
+        continue_f = False
 
-    elif len(word) >= 3 and word[:3] == "on_":    
-        allowed_list = ["on_end_of_stream", "on_entry", "on_exit", "on_failure", "on_indentation", "on_match",] 
-        comment = "Unknown event handler '%s'. \n" % word + \
-                  "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
-                  "use double quotes to bracket patterns that start with 'on_'."
+    if word == "on_indentation" and Setup.token_policy not in ["queue", "users_queue"]:
+        error_msg("Using 'on_indentation' event handler, while the token queue is disabled.\n" + \
+                  "Use '--token-policy queue' or '--token-policy users_queue', so then tokens can\n" + \
+                  "be sent from inside this event handler.", fh, DontExitF=True) 
 
-        verify_word_in_list(NameStr, allowed_list, comment, fh)
+    new_mode.events[word] = code_fragment.parse(fh, "%s::%s event handler" % (new_mode.name, word),
+                                                ContinueF=continue_f)
 
-    # word was not an event specification 
-    return False
+    return True
 
