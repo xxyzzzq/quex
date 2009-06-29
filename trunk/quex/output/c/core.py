@@ -30,7 +30,7 @@ def do(Modes, setup):
     #    support must be provided.
     indentation_support_f = False
     for mode in Modes.values():
-        if mode.on_indentation.line_n != -1:
+        if mode.has_indentation_based_event():
         indentation_support_f = True
             break
 

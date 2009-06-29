@@ -234,7 +234,7 @@ def validate(setup, command_line, argv):
                   "to be used mutually exclusively.")
 
     # token transmission policy
-    token_policy_list = ["queue", "mini_queue", "users_token", "users_queue", "users_mini_queue"]
+    token_policy_list = ["queue", "users_token", "users_queue"]
     if setup.token_policy not in token_policy_list:
         error_msg("Token policy '%s' not supported. Use one of the following:\n" % setup.token_policy + \
                   repr(token_policy_list)[1:-1])
