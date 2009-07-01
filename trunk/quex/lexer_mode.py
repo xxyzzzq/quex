@@ -43,7 +43,7 @@ mode_description_db = {}
 #            key  = mode name
 #            item = Mode object
 #-----------------------------------------------------------------------------------------
-mode_description_db = {}
+mode_db = {}
 
 class OptionInfo:
     """This type is used only in context of a dictionary, the key
@@ -89,12 +89,8 @@ class ModeDescription:
         self.options["skip-nesting-range"] = []
 
         self.events = {}
-        self.events["on_entry"]         = CodeFragment()
-        self.events["on_exit"]          = CodeFragment()
-        self.events["on_match"]         = CodeFragment()
-        self.events["on_failure"]       = CodeFragment()
-        self.events["on_end_of_stream"] = CodeFragment()
-        self.events["on_indentation"]   = CodeFragment()
+        for name in event_handler_db.keys():
+            self.events[name] = CodeFragment()
 
         # A flag indicating wether the mode has gone trough
         # consistency check.
@@ -103,31 +99,6 @@ class ModeDescription:
 
         # Register ModeDescription at the mode database
         mode_description_db[Name] = self
-
-    def has_event_handler(self):
-        for fragment in self.events.values():
-            if fragment.get_code() != "": return True
-        return False
-
-    def has_pattern(self, PatternStr):
-        return self.__matches.has_key(PatternStr)
-
-    def get_match_object(self, PatternStr):
-        return self.__matches[PatternStr]
-
-    def has_matches(self):
-        assert self.inheritance_circularity_check_done_f == True, \
-               "called before consistency check!"
-
-        if self.__matches != {}: return True
-
-        for name in self.base_modes:
-           if mode_description_db[name].has_matches(): return True
-
-        return False
-
-    def own_matches(self):
-        return self.__matches
 
     def add_match(self, Pattern, Action, PatternStateMachine):
         if self.__matches.has_key(Pattern):
@@ -151,224 +122,6 @@ class ModeDescription:
 
         self.__deletion_db[Pattern] = [PatternStateMachine, FileName, LineN]
 
-    def on_entry_code_fragments(self, Depth=0):
-        """Collect all 'on_entry' event handlers from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        return self.__collect_fragments("on_entry", Depth)
-
-    def on_exit_code_fragments(self, Depth=0):
-        """Collect all 'on_exit' event handlers from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        return self.__collect_fragments("on_exit", Depth)
-
-    def on_indentation_code_fragments(self, Depth=0):
-        """Collect all 'on_indentation' event handlers from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        return self.__collect_fragments("on_indentation", Depth)
-
-    def on_match_code_fragments(self, Depth=0):
-        """Collect all 'on_match' event handlers from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        return self.__collect_fragments("on_match", Depth)
-
-    def on_end_of_stream_code_fragments(self, Depth=0):
-        """Collect all 'on_end_of_stream' event handlers from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        return self.__collect_fragments("on_end_of_stream", Depth)
-
-    def on_failure_code_fragments(self, Depth=0):
-        """Collect all 'on_failure' event handlers from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        return self.__collect_fragments("on_failure", Depth)
-
-    def __collect_fragments(self, FragmentName, Depth=0):
-        """Collect all event handlers with the given FragmentName from all base classes.
-           Returns list of 'CodeFragment'.
-        """
-        fragment = self.events[FragmentName]
-        if fragment == None or fragment.get_code() == "":
-            code_fragment_list = []
-        else:      
-            assert isinstance(fragment, CodeFragment)
-            code_fragment_list = [ fragment ]
-
-        for base_mode_name in self.base_modes:
-            # -- get 'on_match' handler from the base mode
-            base_mode     = mode_description_db[base_mode_name]
-            base_fragment_list = { 
-                    "on_entry":          base_mode.on_entry_code_fragments,
-                    "on_exit":           base_mode.on_exit_code_fragments,
-                    "on_indentation":    base_mode.on_indentation_code_fragments,
-                    "on_match":          base_mode.on_match_code_fragments,
-                    "on_end_of_stream":  base_mode.on_end_of_stream_code_fragments,
-                    "on_failure":        base_mode.on_failure_code_fragments,
-                    }[FragmentName](Depth+1)
-            code_fragment_list.extend(base_fragment_list)
-
-        # reverse the order, so that the lowest base class appears first
-        if Depth==0: code_fragment_list.reverse()
-
-        return code_fragment_list
-
-    def get_pattern_action_pairs(self, Depth=0):
-        if self.__pattern_action_pair_list == []:
-            self.__pattern_action_pair_list = self.__post_process(Depth)
-        return self.__pattern_action_pair_list
-
-    def __post_process(self, Depth=0):
-        """Collect patterns of all inherited modes. Patterns are like virtual functions
-           in C++ or other object oriented programming languages. Also, the patterns of the
-           uppest mode has the highest priority, i.e. comes first.
-        """
-        def __collect_patterns_from_base_modes():
-            result         = []
-            max_pattern_id = -1
-            for base_mode_name in self.base_modes:
-
-                base_pattern_action_pairs = mode_description_db[base_mode_name].get_pattern_action_pairs(Depth + 1)
-                result.extend(base_pattern_action_pairs)
-
-                for match in base_pattern_action_pairs:
-                    pattern_id = match.pattern_state_machine().get_id()
-                    if pattern_id > max_pattern_id: max_pattern_id = pattern_id
-
-            return result, max_pattern_id
-                
-        def __current_min_pattern_index():
-            return  min(map(lambda match: match.pattern_state_machine().get_id(),
-                            self.__matches.values()))
-
-        def __reset_pattern_indices(MinRequiredIndex, CurrentMinIndex):
-            """When a derived mode is defined before its base mode, then its pattern ids
-               (according to the time they were created) are lower than thos of the base
-               mode. This would imply that they have higher precedence, which is against
-               our matching rules. Here, pattern ids are adapted to be higher than a certain
-               minimum, and follow the same precedence sequence.
-            """
-            # Determine the offset for each pattern
-            offset = MinRequiredIndex - CurrentMinIndex
-
-            # Assign new pattern ids starting from MinPatternID
-            for match in self.__matches.values():
-                current_pattern_id = match.pattern_state_machine().get_id()
-                match.pattern_state_machine().core().set_id(current_pattern_id + offset)
-
-            # The reprioritizations must also be adapted
-            for info in self.__repriorization_db.values():
-                info[1] += offset
-                                             
-        def __validate_marks(DB, DoneDB, CommentStr):
-            ok_f = True
-            for pattern, info in DB.items():
-                if DoneDB.has_key(pattern): continue
-                ok_f = False
-                error_msg("Pattern '%s' was marked %s but does not\n" % (pattern, CommentStr) + \
-                          "exist in any base mode of mode '%s'." % self.name,
-                          info[1], info[2], DontExitF=True, WarningF=False)
-            return ok_f
-
-        def __is_sub_pattern(AllegedSubSM, MyDB):
-            for pattern, info in MyDB.items():
-                sm = info[0]
-                if subset_checker.do(sm, AllegedSubSM) == True: return pattern
-            return ""
-
-        inherited_list, inherited_max_pattern_index = __collect_patterns_from_base_modes()
-
-        # (*) Patterns of base modes have precedence over inherited modes, thus, if
-        #     one of our patterns has a lower id than one of the base mode patterns,
-        #     all of our pattern ids need to be adapted.
-        if len(self.__matches) != 0:
-            min_index = __current_min_pattern_index()
-            if min_index < inherited_max_pattern_index:
-                __reset_pattern_indices(inherited_max_pattern_index + 1, min_index)
-                
-        # (*) Add own patterns to the list of pattern action pairs (result)
-        result = []
-        own_state_machine_list = []
-        for match in self.__matches.values():
-            tmp = copy(match)
-            tmp.inheritance_level     = Depth
-            tmp.inheritance_mode_name = self.name
-            result.append(tmp)
-            own_state_machine_list.append(match.pattern_state_machine())
-
-        # (*) Loop over inherited patterns 
-        #     -- add
-        #     -- delete according to DELETION marks
-        #     -- reprioritize according to PRIORITY-MARK
-        #
-        repriorization_done_db = {}
-        deletion_done_db       = {}
-        for match in inherited_list:
-            pattern_state_machine = match.pattern_state_machine()
-
-            found_pattern = __is_sub_pattern(pattern_state_machine, self.__deletion_db)
-            if found_pattern != "":
-                # Deletion = not mentioning it in the list of resolved patterns
-                deletion_done_db[found_pattern] = True
-                continue
-
-            found_pattern = __is_sub_pattern(pattern_state_machine, self.__repriorization_db)
-            if found_pattern != "":
-                # Adapt the pattern index, this automatically adapts the match precedence
-                new_state_machine_id = self.__repriorization_db[found_pattern][-1]
-                tmp = deepcopy(match)
-                tmp.pattern_state_machine().core().set_id(new_state_machine_id)
-                tmp.inheritance_level     = Depth
-                tmp.inheritance_mode_name = self.name
-                result.append(tmp)
-                repriorization_done_db[found_pattern] = True
-                continue
-
-            result.append(match)
-
-        # (*) Ensure that all mentioned marks really had some effect.
-        if    not __validate_marks(self.__deletion_db, deletion_done_db, "for DELETION")  \
-           or not __validate_marks(self.__repriorization_db, repriorization_done_db, "with PRIORITY-MARK"):
-            error_msg("Process of lexical analyzer generation aborted due to inacceptable user input.")
-
-        return result
-
-    def inheritance_structure_string(self, Depth=0):
-        """NOTE: The consistency check ensures that all base modes are
-                 defined and inheritable and there is no circular inheritance !
-                 Therefore there is no need to check if the base mode
-                 has an entry in the mode database."""
-        assert self.consistency_check_done_f == True, \
-               "called before consistency check!"
-
-        if Depth != 0: str = "** " + ("   " * Depth) + self.name + "\n"
-        else:          str = "** <" + self.name + ">\n"
-        for base_mode_name in self.base_modes:
-            mode = mode_description_db[base_mode_name]
-            str += mode.inheritance_structure_string(Depth + 1)
-        return str
-
-    def get_base_modes(self):
-        """Get all base classes recursively.
-           NOTE: Circularity check needs to happen somewhere else
-           This function is part of the consistency check!
-        """
-        assert self.inheritance_circularity_check_done_f == True, \
-               "called before consistency check!"
-
-        base_mode_collection = copy(self.base_modes)
-        for base_mode in self.base_modes:
-            # -- append base_mode to the base modes of current mode
-            base_mode_collection_candidates = mode_description_db[base_mode].get_base_modes()
-            for candidate in base_mode_collection_candidates:
-                if candidate not in base_mode_collection:
-                    base_mode_collection.append(candidate)
-
-        return base_mode_collection
-
     def add_option(self, Option, Value):
         """ SANITY CHECK:
                 -- which options are concatinated to a list
@@ -386,23 +139,51 @@ class ModeDescription:
             assert Value in oi.domain
             self.options[Option] = Value
 
+    def get_pattern_action_pair(self, PatternStr):
+        return self.__matches[PatternStr]
+
+    def has_event_handler(self):
+        for fragment in self.events.values():
+            if fragment.get_code() != "": return True
+        return False
+
+    def has_pattern(self, PatternStr):
+        return self.__matches.has_key(PatternStr)
+
+    def has_own_matches(self):
+        print "##", self.__matches
+        print "##", len(self.__matches)
+        return len(self.__matches) != 0
+
+    def has_matches(self):
+        assert self.inheritance_circularity_check_done_f == True, \
+               "called before consistency check!"
+
+        if self.__matches != {}: return True
+
+        for name in self.base_modes:
+           if mode_description_db[name].has_matches(): return True
+
+        return False
+
     def consistency_check(self):
         """Checks for the following:
 
-        -- existence of mentioned base modes
-        -- circularity of inheritance
-        -- outruled patterns in mode (TODO)
+        NOT: existence of mentioned base modes
+             (checked in __determine_base_mode_sequence)
+        NOT: circular inheritance
+             (checked in __determine_base_mode_sequence)
+        NOT: outruled patterns
+             (checked in __collect_pattern_action_pairs)
         -- existence of enter and exit modes
-        -- checks that if X has an exit to Y,
-           then Y must have an entry to X
+        -- checks that if   X has an exit to Y,
+                       then Y must have an entry to X
 
         Any failure causes an immediate break up.
         """
 
         # (*) Base Modes
-        #
         #   -- ability to inherit
-        #
         #   NOTE: existence of modes is checked in ciruclarity test.
         #
         for base_mode_name in self.base_modes:
@@ -410,9 +191,6 @@ class ModeDescription:
             if mode_description_db[base_mode_name].options["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is **not inheritable**." % \
                           (self.name, base_mode_name), self.filename, self.line_n)
-
-        # -- require all bases modes
-        all_base_modes = self.get_base_modes()
 
         # (*) A mode that does not force to be inherited needs finally contain matches.
         #     A mode that contains only event handlers is not <inheritable: only>, but
@@ -426,98 +204,243 @@ class ModeDescription:
                       "<inheritable: only>.", \
                       self.filename, self.line_n)
 
-        # (*) Enter/Exit Transitions
-        for mode_name in self.options["exit"]:
-            # -- does other mode exist?
-            if mode_description_db.has_key(mode_name) == False:
-                error_msg("Mode '%s'\nhas  an exit to mode '%s'\nbut no such mode exists." % \
-                          (self.name, mode_name), self.filename, self.line_n)
-
-            # -- does other mode have an entry for this mode?
-            #    (does this or any of the base modes have an entry to the other mode?)
-            other_mode = mode_description_db[mode_name]
-            #    -- no restrictions => OK
-            if other_mode.options["entry"] == []: continue
-            #    -- restricted entry => check if this mode ore one of the base modes can enter
-            for base_mode in [self.name] + all_base_modes:
-                if base_mode in other_mode.options["entry"]: break
-            else:
-                error_msg("Mode '%s'\nhas an exit to mode '%s'," % (self.name, mode_name),
-                          self.filename, self.line_n, DontExitF=True, WarningF=False)
-                error_msg("but mode '%s'\nhas no entry for mode '%s'.\n" % (mode_name, self.name) + \
-                          "or any of its base modes.",
-                          other_mode.filename, other_mode.line_n)
-
-        for mode_name in self.options["entry"]:
-            # -- does other mode exist?
-            if mode_description_db.has_key(mode_name) == False:
-                error_msg("Mode '%s'\nhas an entry from mode '%s'\nbut no such mode exists." % \
-                          (self.name, mode_name),
-                          self.filename, self.line_n)
-
-            # -- does other mode have an exit for this mode?
-            #    (does this or any of the base modes have an exit to the other mode?)
-            other_mode = mode_description_db[mode_name]
-            #    -- no restrictions => OK
-            if other_mode.options["exit"] == []: continue
-            #    -- restricted exit => check if this mode ore one of the base modes can enter
-            for base_mode in [self.name] + all_base_modes:
-                if base_mode in other_mode.options["exit"]: break
-            else:
-                error_msg("Mode '%s'\nhas an entry for mode '%s'" % (self.name, mode_name),
-                          self.filename, self.line_n, DontExitF=True, WarningF=False)
-                error_msg("but mode '%s'\nhas no exit to mode '%s'\n" % (mode_name, self.name) + \
-                          "or any of its base modes.",
-                          other_mode.filename, other_mode.line_n)
-                
-        # (*) Check for outruled patterns inside the mode, i.e. patterns that can never match
-        match_list = self.get_pattern_action_pairs()
-        match_list.sort(lambda x, y: cmp(x.pattern_state_machine().get_id(),
-                                         y.pattern_state_machine().get_id()))
-        # A pattern with a lower precedence (i.e. higher pattern index) shall never 
-        # match only a subset of a pattern with a higher precedence.
-        L = len(match_list)
-        for i in range(L-1):
-            higher_precedence_pattern    = match_list[i].pattern
-            higher_precedence_pattern_sm = match_list[i].pattern_state_machine()
-            for k in range(i+1, L):
-                lower_precedence_pattern    = match_list[k].pattern
-                lower_precedence_pattern_sm = match_list[k].pattern_state_machine()
-                if subset_checker.do(higher_precedence_pattern_sm, lower_precedence_pattern_sm):
-                    print "##i",  match_list[i].pattern_state_machine().get_id()
-                    print "##k",  match_list[k].pattern_state_machine().get_id()
-                    error_msg("Pattern '%s' matches a superset of what is matched by" % 
-                              higher_precedence_pattern, 
-                              match_list[i].action().filename, 
-                              match_list[i].action().line_n,  
-                              DontExitF=True, WarningF=False) 
-                    error_msg("pattern '%s' while the former has precedence.\n" % \
-                              lower_precedence_pattern + "The latter can never match.\n" + \
-                              "You may switch the sequence of definition to avoid this error.",
-                              match_list[k].action().filename, 
-                              match_list[k].action().line_n)
-
-        self.consistency_check_done_f = True
+        # -- require all bases modes
+        all_base_modes = self.get_base_modes()
 
 
-class Mode(ModeDescription):
+class Mode:
     def __init__(self, Other):
         """Translate a ModeDescription into a real Mode. Here is the place were 
            all rules of inheritance mechanisms and pattern precedence are applied.
         """
         assert isinstance(Other, ModeDescription)
-        #for name, member in Other.__dict__.items():
-        #    self.__dict__[name] = member
-        self.base_mode_sequence = Other.get_base_modes()
+        self.__base_mode_sequence = []
+        self.__base_mode_sequence = self.__determine_base_mode_sequence(Other, [])
 
         # (1) Collect Event Handlers
-        for name in ["on_entry", "on_exit", "on_indentation", "on_match", "on_end_of_stream",  "on_failure"]:
-            self.__collect_event_handlers(name)
+        self.__event_handler_code_fragment_list = {}
+        self.__collect_event_handler()
+        
+        # (2) Collect Pattern/Action Pairs
+        self.__collect_pattern_action_pairs()
+
+    def set_code_fragment_list(self, EventName, CodeFragment):
+        assert CodeFragment.__class__.__name__ == "CodeFragment"
+        assert EventName in ["on_end_of_stream", "on_failure"]
+        assert self.__event_handler_code_fragment_list[EventName] == []
+        self.__event_handler_code_fragment_list[EventName] == [CodeFragment]
+
+    def has_base_mode(self):
+        return len(self.__base_mode_sequence) != 1
 
     def has_indentation_based_event(self):
         return self.events["on_indentation"].get_code() != ""
 
-    def __collect_event_handlers(self, Event):
+    def get_base_mode_sequence(self):
+        return self.__base_mode_sequence
+
+    def get_base_mode_name_list(self):
+        return map(lambda mode: mode.name, self.__base_mode_sequence)
+
+    def get_code_fragment_list(self, EventName):
+        return self.__event_handler_code_fragment_list[EventName]
+
+    def get_inheritance_structure_string(self, Depth=0):
+        """NOTE: The consistency check ensures that all base modes are
+                 defined and inheritable and there is no circular inheritance !
+                 Therefore there is no need to check if the base mode
+                 has an entry in the mode database."""
+        assert self.consistency_check_done_f == True, \
+               "called before consistency check!"
+
+        if Depth != 0: str = "** " + ("   " * Depth) + self.name + "\n"
+        else:          str = "** <" + self.name + ">\n"
+        for base_mode_name in self.base_modes:
+            mode = mode_description_db[base_mode_name]
+            str += mode.inheritance_structure_string(Depth + 1)
+        return str
+
+    def __determine_base_mode_sequence(self, ModeDescr, InheritancePath):
+        """Determine the sequence of base modes. The type of sequencing determines
+           also the pattern precedence. The 'deep first' scheme is chosen here. For
+           example a mode hierarchie of
+
+                                       A
+                                     /   \ 
+                                    B     C
+                                   / \   / \
+                                  D  E  F   G
+
+           results in a sequence: (A, B, D, E, C, F, G).reverse()
+
+           This means, that patterns and event handlers of 'E' have precedence over
+           'C' because they are the childs of a preceding base mode.
+
+           This function detects circular inheritance.
+        """
+        if ModeDescr.name in InheritancePath:
+            msg = "mode '%s'" % ModeDescr.name
+            InheritancePath.reverse()
+            for mode_name in InheritancePath:
+                msg += "   inherits mode '%s'\n" % mode_name
+
+            error_msg("circular inheritance detected:\n" + msg, mode.filename, mode.line_n)
+
+        result = [ ModeDescr ]
+
+        for name in ModeDescr.base_modes:
+            if mode_description_db.has_key(name) == False:
+                error_msg("mode '%s' is derived from mode a '%s'\n" % (ModeDescr.name, name) + \
+                          "but no such mode '%s' actually exists!" % name,
+                          ModeDescr.filename, ModeDescr.line_n)
+            mode_descr = mode_description_db[name]
+            result.extend(self.__determine_base_mode_sequence(mode_descr, 
+                                                              InheritancePath + [ModeDescr.name]))
+
+        # The base mode sequence shall be from bottom to top
+        if len(InheritancePath) == 0: result.reverse()
+        return result
+
+    def __collect_event_handler(self):
+        """Collect event handlers from base mode and the current mode.
+           Event handlers of the most 'base' mode come first, then the 
+           derived event handlers. 
+
+           See '__determine_base_mode_sequence(...) for details about the line-up.
+        """
+        for event_name in event_handler_db.keys():
+            self.__event_handler_code_fragment_list[event_name] = []
+
+        for mode_descr in self.__base_mode_sequence:
+            
+            for event_name in event_handler_db.keys():
+                fragment = mode_descr.events[event_name]
+                if fragment != None and fragment.get_code() != "":
+                    self.__event_handler_code_fragment_list[event_name].append(fragment)
+
+        return 
+
+    def __collect_pattern_action_pairs(self):
+        """Collect patterns of all inherited modes. Patterns are like virtual functions
+           in C++ or other object oriented programming languages. Also, the patterns of the
+           uppest mode has the highest priority, i.e. comes first.
+        """
+        def __ensure_pattern_indeces_follow_precedence(MatchList, RepriorizationDB, PrevMaxPatternIndex):
+            """When a derived mode is defined before its base mode, then its pattern ids
+               (according to the time they were created) are lower than thos of the base
+               mode. This would imply that they have higher precedence, which is against
+               our matching rules. Here, pattern ids are adapted to be higher than a certain
+               minimum, and follow the same precedence sequence.
+            """
+            # Patterns of a 'lower precedence mode' **must** have higher pattern ids
+            # that patterns of a 'higher precedence mode'. This is to ensure that 
+            # base mode patterns precede derived mode patterns.
+            min_pattern_index = min(map(lambda match: match.pattern_state_machine().get_id(),
+                                    MatchList))
+            if min_pattern_index > PrevMaxPatternIndex:
+                return MatchList, RepriorizationDB
+
+            match_list        = deepcopy(MatchList)
+            repriorization_db = deepcopy(RepriorizationDB)
+
+            # Determine the offset for each pattern
+            offset = PrevMaxPatternIndex + 1 - min_pattern_index
+
+            # Assign new pattern ids starting from MinPatternID
+            for match in self.__matches.values():
+                current_pattern_id = match.pattern_state_machine().get_id()
+                match.pattern_state_machine().core().set_id(current_pattern_id + offset)
+            
+            # The reprioritizations must also be adapted
+            for info in repriorization_db.values():
+                info[1] += offset
+            return match_list, repriorization_db 
+                                             
+        def __handle_deletion_and_repriorization(pattern_action_pair_list, match_list, 
+                                                 repriorization_db, deletion_db):
+
+            def __validate_marks(DB, DoneDB, CommentStr):
+                ok_f = True
+                for pattern, info in DB.items():
+                    if DoneDB.has_key(pattern): continue
+                    ok_f = False
+                    error_msg("Pattern '%s' was marked %s but does not\n" % (pattern, CommentStr) + \
+                              "exist in any base mode of mode '%s'." % self.name,
+                              info[1], info[2], DontExitF=True, WarningF=False)
+                return ok_f
+
+            def __is_sub_pattern(AllegedSubSM, MyDB):
+                if type(MyDB) == list:
+                    sm_list = map(lambda match: match.pattern_state_machine(), 
+                                  pattern_action_pair_list)
+                    for sm in sm_list:
+                        if subset_checker.do(sm, AllegedSubSM): return True
+                    return False
+                else:
+                    for pattern, info in MyDB.items():
+                        sm = info[0]
+                        if subset_checker.do(sm, AllegedSubSM): return pattern
+                    return ""
+
+            # DELETION / PRIORITY-MARK / Outruled Pattern Check
+            deletion_done_db       = {}
+            repriorization_done_db = {}
+            for match in match_list:
+                state_machine = match.pattern_state_machine()
+
+                found_pattern = __is_sub_pattern(state_machine, self.__deletion_db)
+                if found_pattern != "":
+                    # Deletion = not mentioning it in the list of resolved patterns
+                    deletion_done_db[found_pattern] = True
+                    continue
+
+                found_pattern = __is_sub_pattern(state_machine, self.__repriorization_db)
+                if found_pattern != "":
+                    # Adapt the pattern index, this automatically adapts the match precedence
+                    new_state_machine_id = repriorization_db[found_pattern][-1]
+                    match = deepcopy(match)
+                    match.pattern_state_machine().core().set_id(new_state_machine_id)
+                    match.inheritance_mode_name = self.name
+                    repriorization_done_db[found_pattern] = True
+
+                if __is_sub_pattern(state_machine, pattern_action_pair_list):
+                    error_msg("Pattern '%s' matches a superset of what is matched by" % 
+                              higher_precedence_pattern, 
+                              match_list[i].action().filename, match_list[i].action().line_n,  
+                              DontExitF=True, WarningF=False) 
+                    error_msg("pattern '%s' while the former has precedence.\n" % \
+                              lower_precedence_pattern + "The latter can never match.\n" + \
+                              "You may switch the sequence of definition to avoid this error.",
+                              match_list[k].action().filename, match_list[k].action().line_n)
+                else:
+                    pattern_action_pair_list.append(match)
+
+            # Ensure that all mentioned marks really had some effect.
+            if    not __validate_marks(self.__deletion_db, deletion_done_db, "for DELETION")  \
+               or not __validate_marks(self.__repriorization_db, repriorization_done_db, "with PRIORITY-MARK"):
+                error_msg("Abort.")
+            return
+
+        pattern_action_pair_list = []
+        prev_max_pattern_index   = -1
+        for mode_name in self.__base_mode_sequence:
+            mode_descr = mode_description_db[mode_name]
+
+            match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
+                                                                                       mode_descr.__repriorization_db,
+                                                                                       prev_max_pattern_index)
+            deletion_db                   = mode_descr.__deletion_db
+
+            __handle_deletion_and_repriorization(pattern_action_pair_list, match_list, 
+                                                 repriorization_db, deletion_db)
+
+            # Determine the max pattern index at this level of inheritance
+            prev_max_pattern_index = max([prev_max_pattern_index] + \
+                                         map(lambda match: match.pattern_state_machine().get_id(),
+                                         match_list))
+
+
+        return result
 
 #-----------------------------------------------------------------------------------------
 # mode option information/format: 
@@ -542,6 +465,18 @@ mode_option_info_db = {
    "skip_range":        OptionInfo("list"), # "multiple: RE-character-string RE-character-string
    "skip_nested_range": OptionInfo("list"), # "multiple: RE-character-string RE-character-string
 }
+#-----------------------------------------------------------------------------------------
+# event handler list: 
+#-----------------------------------------------------------------------------------------
+event_handler_db = {
+        "on_entry":         "Code executed on entry of a mode.",
+        "on_exit":          "Code executed on exit of a mode.", 
+        "on_indentation":   "Code executed on transition from whitespace to non-whitespace.",
+        "on_match":         "Code executed on each match.",
+        "on_end_of_stream": "Code executed on end of file/stream.",
+        "on_failure":       "Code executed in case that no pattern matches.",
+        }
+
 
 #-----------------------------------------------------------------------------------------
 # initial_mode: mode in which the lexcial analyser shall start
