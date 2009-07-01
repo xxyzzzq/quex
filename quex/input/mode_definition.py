@@ -36,7 +36,7 @@ def parse(fh):
         pass
 
     # (*) check for modes w/o pattern definitions
-    if not new_mode.has_event_handler() and new_mode.own_matches() == {}:
+    if not new_mode.has_event_handler() and not new_mode.has_own_matches():
         if new_mode.options["inheritable"] != "only":
             new_mode.options["inheritable"] = "only"
             error_msg("Mode without pattern and event handlers needs to be 'inheritable only'.\n" + \
@@ -169,7 +169,7 @@ def parse_mode_element(new_mode, fh):
         pattern, pattern_state_machine = regular_expression.parse(fh)
 
         if new_mode.has_pattern(pattern):
-            previous = new_mode.get_match_object(pattern)
+            previous = new_mode.get_pattern_action_pair(pattern)
             error_msg("Pattern has been defined twice.", fh, DontExitF=True)
             error_msg("First defined here.", 
                      previous.action().filename, previous.action().line_n)

@@ -5,83 +5,107 @@ import quex.lexer_mode     as     lexer_mode
 from   quex.core_engine.generator.action_info import CodeFragment
 
 
-def do(Modes):
-    """If consistency check fails due to a fatal error, then this functions
-    exits back to the system with error code -1.  Otherwise, in 'not so
-    perfect' cases there might be only a warning being printed to standard
-    output.
+def do(ModeDB):
+    """Consistency check of mode database
+
+       -- Are there applicable modes?
+       -- Start mode:
+          -- specified (more than one applicable mode req. explicit specification)?
+          -- is defined as mode?
+          -- start mode is not inheritable only?
+       -- Entry/Exit transitions are allows?
     """
-    if len(Modes) == 0:
+    if len(ModeDB) == 0:
         error_msg("No single mode defined - bailing out", Prefix="consistency check")
 
-    # -- is there a mode that is applicable?
-    for mode in Modes.values():
-        if mode.options["inheritable"] != "only": break
-    else:
+    mode_name_list            = map(lambda mode:        mode.name, ModeDB.values())
+    mode_name_list.sort()
+    applicable_mode_name_list = map(lambda mode:        mode.name, 
+                                    filter(lambda mode: mode.options["inheritable"] != "only",
+                                           ModeDB.values()))
+    applicable_mode_name_list.sort()
+
+    # (*) Is there a mode that is applicable?
+    #     That is: is there a more that is not only inheritable?
+    if len(applicable_mode_name_list) == 0:
         error_msg("There is no mode that can be applied---all existing modes are 'inheritable only'.\n" + \
-                "modes are = " + repr(map(lambda m: m.name, Modes.values()))[1:-1],
+                  "modes are = " + repr(mode_name_list)[1:-1],
                   Prefix="consistency check")
 
-    # -- is the initial mode defined
-    if lexer_mode.initial_mode.get_pure_code() == "":
-        # find first mode that can actually be applied
-        for mode in Modes.values():
-            if mode.options["inheritable"] != "only":
-                selected_mode = mode.name
-                break
-            
-        lexer_mode.initial_mode = CodeFragment(selected_mode)
-        if len(Modes.keys()) > 1:
-            error_msg("No initial mode defined via 'start' while more than one mode exists.\n" + \
-                      "Use for example 'start = %s;' in the quex source file to define an initial mode." % selected_mode)
-        else:
-            pass
+    # (*) Start mode specified?
+    #     More then one mode definition requires an explicit definition 'start = mode'.
+    start_mode = lexer_mode.initial_mode.get_pure_code()
+    if start_mode == "":
+        # Choose an applicable mode as start mode
+        start_mode              = applicable_mode_name_list[0]
+        lexer_mode.initial_mode = CodeFragment(start_mode)
+        if len(applicable_mode_name_list) > 1:
+            error_msg("No initial mode defined via 'start' while more than one applicable mode exists.\n" + \
+                      "Use for example 'start = %s;' in the quex source file to define an initial mode." \
+                      % start_mode)
+
+        # This Branch: start mode is applicable and present
+
+    else: 
+        FileName = lexer_mode.initial_mode.filename
+        LineN    = lexer_mode.initial_mode.lineN
+        # Start mode present and applicable?
+        verify_word_in_list(start_mode, mode_name_list,
+                            "Start mode '%s' is not defined." % start_mode,
+                            FileName, LineN)
+        verify_word_in_list(start_mode, applicable_mode_name_list,
+                            "Start mode '%s' is inheritable only and cannot be instantiated." % start_mode,
+                            FileName, LineN)
+
+    # (*) Entry/Exit Transitions
+    for this_mode in ModeDB.values():
+        for mode_name in this_mode.options["exit"]:
+
+            verify_word_in_list(mode_name, mode_name_list,
+                                "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
+                                (this_mode.name, mode_name),
+                                FileName, LineN)
 
 
-    # -- is the start mode applicable?
-    if Modes.has_key(lexer_mode.initial_mode.get_pure_code()) == False:
-        error_msg("Start mode '%s' has not been defined anywhere." % lexer_mode.initial_mode.get_pure_code(),
-                  lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
+            that_mode = mode_description_db[mode_name]
 
-    if Modes[lexer_mode.initial_mode.get_pure_code()].options["inheritable"] == "only":
-        error_msg("Start mode '%s' is inheritable only and cannot be instantiated." % lexer_mode.initial_mode.get_pure_code(),
-                  lexer_mode.initial_mode.filename, lexer_mode.initial_mode.line_n)
+            # Other mode allows all entries => don't worry.
+            if len(that_mode.options["entry"]) == 0: continue
 
-    # -- check for circular inheritance
-    check_circular_inheritance(Modes)
+            # Other mode restricts the entries from other modes
+            # => check if this mode or one of the base modes can enter
+            for base_mode in this_mode.get_base_mode_sequence():
+                if base_mode in that_mode.options["entry"]: break
+            else:
+                error_msg("Mode '%s'\nhas an exit to mode '%s'," % (this_mode.name, mode_name),
+                          this_mode.filename, this_mode.line_n, DontExitF=True, WarningF=False)
+                error_msg("but mode '%s'\nhas no entry for mode '%s'.\n" % (mode_name, this_mode.name) + \
+                          "or any of its base modes.",
+                          that_mode.filename, that_mode.line_n)
 
+        for mode_name in this_mode.options["entry"]:
+            # Does that mode exist?
+            verify_word_in_list(mode_name, mode_name_list,
+                                "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
+                                (this_mode.name, mode_name),
+                                FileName, LineN)
+
+            that_mode = mode_description_db[mode_name]
+            # Other mode allows all exits => don't worry.
+            if len(that_mode.options["exit"]) == 0: continue
+
+            # Other mode restricts the exits to other modes
+            # => check if this mode or one of the base modes can be reached
+            for base_mode in this_mode.get_base_mode_sequence():
+                if base_mode in that_mode.options["exit"]: break
+            else:
+                error_msg("Mode '%s'\nhas an entry for mode '%s'" % (this_mode.name, mode_name),
+                          this_mode.filename, this_mode.line_n, DontExitF=True, WarningF=False)
+                error_msg("but mode '%s'\nhas no exit to mode '%s'\n" % (mode_name, this_mode.name) + \
+                          "or any of its base modes.",
+                          that_mode.filename, that_mode.line_n)
+                
     # -- mode specific checks
-    for mode in Modes.values():
-        mode.consistency_check()
-
-def check_circular_inheritance(ModeDB):
     for mode in ModeDB.values():
-        __search_circular_inheritance(ModeDB, mode, [])
-        mode.inheritance_circularity_check_done_f = True
-
-def __search_circular_inheritance(ModeDB, mode, inheritance_path):
-    
-    def __report_error(mode, inheritance_path):
-        assert inheritance_path != []
-        msg = ""
-        previous = mode.name
-        inheritance_path.reverse()
-        for mode_name in inheritance_path:
-            msg += "mode '%s' is a base of mode '%s'.\n" % (previous, mode_name)
-            previous = mode_name
-
-        error_msg("circular inheritance detected:\n" + msg, mode.filename, mode.line_n)
-
-    for base_mode_name in mode.base_modes:
-        # -- does base mode exist?
-        if ModeDB.has_key(base_mode_name) == False:
-            error_msg("mode '%s' is derived from mode a '%s'\n" % (mode.name, base_mode_name) + \
-                      "but no such mode '%s' actually exists!" % base_mode_name,
-                      mode.filename, mode.line_n)
-
-        # -- did mode appear in the path of deriving modes
-        base_mode = ModeDB[base_mode_name]
-        if base_mode.name in inheritance_path: __report_error(base_mode, inheritance_path)
-
-        __search_circular_inheritance(ModeDB, base_mode, inheritance_path + [mode.name])
+        mode.consistency_check()
 

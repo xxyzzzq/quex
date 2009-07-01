@@ -90,21 +90,23 @@ def get_code_for_mode(Mode, ModeNameList):
     if not Mode.has_matches(): return "", ""
 
     # -- 'end of stream' action
-    if Mode.on_end_of_stream_code_fragments() == []:
+    if Mode.get_code_fragment_list("on_end_of_stream") == []:
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
-        Mode.events["on_end_of_stream"] = CodeFragment(txt)
+        Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
 
-    end_of_stream_action = action_code_formatter.do(Mode, Mode.on_end_of_stream_code_fragments(), 
+    end_of_stream_action = action_code_formatter.do(Mode, 
+                                                    Mode.get_code_fragment_list("on_end_of_stream"), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
     # -- 'default' action (nothing matched)
 
-    if Mode.on_failure_code_fragments() == []:
+    if Mode.get_code_fragment_list("on_failure") == []:
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
-        Mode.events["on_failure"] = CodeFragment(txt)
+        Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 
-    default_action = action_code_formatter.do(Mode, Mode.on_failure_code_fragments(), 
+    default_action = action_code_formatter.do(Mode, 
+                                              Mode.get_code_fragment_list("on_failure"), 
                                               "on_failure", None, Default_ActionF=True)
 
     # -- adapt pattern-action pair information so that it can be treated
@@ -134,28 +136,8 @@ def get_generator_input(Mode):
        -- (optional) for debug output that tells the line number and column number.
     """
     match_info_list = Mode.get_pattern_action_pairs()
-
-    # (*) sort the patterns:
-    #
-    #     -- The order of the patterns determine the sequence of the creation of the 
-    #        state machines for the patterns.
-    #     -- The sequence of the state machines determines the state machine ids. Patterns
-    #        that are created earlier have a 'smaller' state machine id than patterns 
-    #        that are created later. 
-    #     -- The state machine id stands for the 'privilege' of a pattern. A pattern
-    #        with a lower state machine id has a higher priviledge than a pattern with
-    #        a higher id. The state machine id is used for **sorting** during code
-    #        generation.
-    #
-    #   A mode potentially accumulates inherited patterns from base modes.
-    #   => At this place all patterns are sorted according to their inheritance 
-    #      level. Thus, a propper priviledge handling is guaranteed.
-    def pattern_precedence(A, B):
-        tmp = - cmp(A.inheritance_level, B.inheritance_level)
-        if tmp != 0: return tmp
-        else:        return cmp(A.pattern_index(), B.pattern_index())
-        
-    match_info_list.sort(pattern_precedence)
+    # Assume pattern-action pairs (matches) are sorted and their pattern state
+    # machine ids reflect the sequence of pattern precedence.
 
     inheritance_info_str     = ""
     pattern_action_pair_list = []
@@ -212,7 +194,9 @@ def __get_mode_db(Setup):
     #            pattern_db = analyse_patterns.do(pattern_file)    
     mode_description_db = quex_file_parser.do(Setup.input_mode_files)
 
-    lexer_mode.implement_mode_db(mode_description_db)
+    # (*) Translate each mode description int a 'real' mode
+    for mode_name, mode_descr in mode_description_db.items():
+        lexer_mode.mode_db[mode_name] = lexer_mode.Mode(mode_descr)
 
     # (*) perform consistency check 
     consistency_check.do(mode_db)

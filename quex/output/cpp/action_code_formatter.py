@@ -32,7 +32,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
     user_code           = ""
 
     # (*) Code to be performed on every match -- before the related action
-    for code_info in Mode.on_match_code_fragments():
+    for code_info in Mode.get_code_fragment_list("on_match"):
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers

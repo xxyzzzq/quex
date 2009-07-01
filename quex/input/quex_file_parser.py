@@ -41,7 +41,7 @@ def do(file_list):
         except RegularExpressionException, x:
             error_msg(x.message, fh)
         
-    return lexer_mode.mode_db
+    return lexer_mode.mode_description_db
 
 def __parse_domain_of_whitespace_separated_elements(fh, CodeFragmentName, ElementNames, MinElementN):   
     """Returns list of lists, where 
