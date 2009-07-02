@@ -199,7 +199,7 @@ def __get_mode_db(Setup):
         lexer_mode.mode_db[mode_name] = lexer_mode.Mode(mode_descr)
 
     # (*) perform consistency check 
-    consistency_check.do(mode_db)
+    consistency_check.do(lexer_mode.mode_db)
 
-    return mode_db
+    return lexer_mode.mode_db
 

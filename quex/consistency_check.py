@@ -57,15 +57,41 @@ def do(ModeDB):
                             "Start mode '%s' is inheritable only and cannot be instantiated." % start_mode,
                             FileName, LineN)
 
+    # (*) Modes that are inherited must allow to be inherited
+    for mode in ModeDB.values():
+        FileName = mode.filename
+        LineN    = mode.line_n
+        for base_mode_name in mode.get_base_mode_sequence()[:-1]:
+            # -- does mode exist?
+            verify_word_in_list(mode.name, mode_name_list,
+                                "Mode '%s' inherits mode '%s' which does not exist." % (mode.name, base_mode_name),
+                                FileName, LineN)
+            # -- is base mode inheritable?
+            if mode_description_db[base_mode_name].options["inheritable"] == "no":
+                error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
+                          (mode.name, base_mode_name), FileName, LineN)
+
+    # (*) A mode that is applicable needs finally contain matches!
+    for mode in ModeDB.values():
+        if mode.name in applicable_mode_name_list and mode.get_pattern_action_pair_list() == []:
+            error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
+                      "However, it contains no matches--only event handlers. Without pattern\n"     + \
+                      "matches it cannot act as a pattern detecting state machine, and thus\n"      + \
+                      "cannot be an independent lexical analyzer mode. Define the option\n"         + \
+                      "<inheritable: only>.", \
+                      mode.filename, mode.line_n)
+
+   
+
     # (*) Entry/Exit Transitions
     for this_mode in ModeDB.values():
+        FileName = this_mode.filename
+        LineN    = this_mode.line_n
         for mode_name in this_mode.options["exit"]:
 
             verify_word_in_list(mode_name, mode_name_list,
                                 "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
-                                (this_mode.name, mode_name),
-                                FileName, LineN)
-
+                                (this_mode.name, mode_name), FileName, LineN)
 
             that_mode = mode_description_db[mode_name]
 
@@ -78,7 +104,7 @@ def do(ModeDB):
                 if base_mode in that_mode.options["entry"]: break
             else:
                 error_msg("Mode '%s'\nhas an exit to mode '%s'," % (this_mode.name, mode_name),
-                          this_mode.filename, this_mode.line_n, DontExitF=True, WarningF=False)
+                          FileName, LineN, DontExitF=True, WarningF=False)
                 error_msg("but mode '%s'\nhas no entry for mode '%s'.\n" % (mode_name, this_mode.name) + \
                           "or any of its base modes.",
                           that_mode.filename, that_mode.line_n)
@@ -87,8 +113,7 @@ def do(ModeDB):
             # Does that mode exist?
             verify_word_in_list(mode_name, mode_name_list,
                                 "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
-                                (this_mode.name, mode_name),
-                                FileName, LineN)
+                                (this_mode.name, mode_name), FileName, LineN)
 
             that_mode = mode_description_db[mode_name]
             # Other mode allows all exits => don't worry.
@@ -100,12 +125,9 @@ def do(ModeDB):
                 if base_mode in that_mode.options["exit"]: break
             else:
                 error_msg("Mode '%s'\nhas an entry for mode '%s'" % (this_mode.name, mode_name),
-                          this_mode.filename, this_mode.line_n, DontExitF=True, WarningF=False)
+                          FileName, LineN, DontExitF=True, WarningF=False)
                 error_msg("but mode '%s'\nhas no exit to mode '%s'\n" % (mode_name, this_mode.name) + \
                           "or any of its base modes.",
                           that_mode.filename, that_mode.line_n)
                 
-    # -- mode specific checks
-    for mode in ModeDB.values():
-        mode.consistency_check()
 

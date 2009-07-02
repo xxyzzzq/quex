@@ -142,6 +142,15 @@ class ModeDescription:
     def get_pattern_action_pair(self, PatternStr):
         return self.__matches[PatternStr]
 
+    def get_match_list(self):
+        return self.__matches.values()
+
+    def get_repriorization_db(self):
+        return self.__repriorization_db
+
+    def get_deletion_db(self):
+        return self.__deletion_db
+
     def has_event_handler(self):
         for fragment in self.events.values():
             if fragment.get_code() != "": return True
@@ -151,8 +160,6 @@ class ModeDescription:
         return self.__matches.has_key(PatternStr)
 
     def has_own_matches(self):
-        print "##", self.__matches
-        print "##", len(self.__matches)
         return len(self.__matches) != 0
 
     def has_matches(self):
@@ -166,47 +173,6 @@ class ModeDescription:
 
         return False
 
-    def consistency_check(self):
-        """Checks for the following:
-
-        NOT: existence of mentioned base modes
-             (checked in __determine_base_mode_sequence)
-        NOT: circular inheritance
-             (checked in __determine_base_mode_sequence)
-        NOT: outruled patterns
-             (checked in __collect_pattern_action_pairs)
-        -- existence of enter and exit modes
-        -- checks that if   X has an exit to Y,
-                       then Y must have an entry to X
-
-        Any failure causes an immediate break up.
-        """
-
-        # (*) Base Modes
-        #   -- ability to inherit
-        #   NOTE: existence of modes is checked in ciruclarity test.
-        #
-        for base_mode_name in self.base_modes:
-            # -- is base mode inheritable?
-            if mode_description_db[base_mode_name].options["inheritable"] == "no":
-                error_msg("mode '%s' inherits mode '%s' which is **not inheritable**." % \
-                          (self.name, base_mode_name), self.filename, self.line_n)
-
-        # (*) A mode that does not force to be inherited needs finally contain matches.
-        #     A mode that contains only event handlers is not <inheritable: only>, but
-        #     somehow, it needs some matches in the base classes, otherwise it cannot
-        #     act as a pattern state machine.
-        if self.options["inheritable"] != "only" and self.has_matches() == False:
-            error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
-                      "However, it contains no matches--only event handlers. Without pattern\n"     + \
-                      "matches it cannot act as a pattern detecting state machine, and thus\n"      + \
-                      "cannot be an independent lexical analyzer mode. Define the option\n"         + \
-                      "<inheritable: only>.", \
-                      self.filename, self.line_n)
-
-        # -- require all bases modes
-        all_base_modes = self.get_base_modes()
-
 
 class Mode:
     def __init__(self, Other):
@@ -214,6 +180,11 @@ class Mode:
            all rules of inheritance mechanisms and pattern precedence are applied.
         """
         assert isinstance(Other, ModeDescription)
+        self.name     = Other.name
+        self.filename = Other.filename
+        self.line_n   = Other.line_n
+        self.options  = Other.options
+
         self.__base_mode_sequence = []
         self.__base_mode_sequence = self.__determine_base_mode_sequence(Other, [])
 
@@ -222,7 +193,7 @@ class Mode:
         self.__collect_event_handler()
         
         # (2) Collect Pattern/Action Pairs
-        self.__collect_pattern_action_pairs()
+        self.__pattern_action_pair_list = self.__collect_pattern_action_pairs()
 
     def set_code_fragment_list(self, EventName, CodeFragment):
         assert CodeFragment.__class__.__name__ == "CodeFragment"
@@ -234,7 +205,7 @@ class Mode:
         return len(self.__base_mode_sequence) != 1
 
     def has_indentation_based_event(self):
-        return self.events["on_indentation"].get_code() != ""
+        return len(self.__event_handler_code_fragment_list["on_indentation"]) == 0
 
     def get_base_mode_sequence(self):
         return self.__base_mode_sequence
@@ -244,6 +215,9 @@ class Mode:
 
     def get_code_fragment_list(self, EventName):
         return self.__event_handler_code_fragment_list[EventName]
+
+    def get_pattern_action_pair_list(self):
+        return self.__pattern_action_pair_list
 
     def get_inheritance_structure_string(self, Depth=0):
         """NOTE: The consistency check ensures that all base modes are
@@ -347,7 +321,7 @@ class Mode:
             offset = PrevMaxPatternIndex + 1 - min_pattern_index
 
             # Assign new pattern ids starting from MinPatternID
-            for match in self.__matches.values():
+            for match in MatchList:
                 current_pattern_id = match.pattern_state_machine().get_id()
                 match.pattern_state_machine().core().set_id(current_pattern_id + offset)
             
@@ -356,7 +330,7 @@ class Mode:
                 info[1] += offset
             return match_list, repriorization_db 
                                              
-        def __handle_deletion_and_repriorization(pattern_action_pair_list, match_list, 
+        def __handle_deletion_and_repriorization(pattern_action_pair_list, 
                                                  repriorization_db, deletion_db):
 
             def __validate_marks(DB, DoneDB, CommentStr):
@@ -370,31 +344,24 @@ class Mode:
                 return ok_f
 
             def __is_sub_pattern(AllegedSubSM, MyDB):
-                if type(MyDB) == list:
-                    sm_list = map(lambda match: match.pattern_state_machine(), 
-                                  pattern_action_pair_list)
-                    for sm in sm_list:
-                        if subset_checker.do(sm, AllegedSubSM): return True
-                    return False
-                else:
-                    for pattern, info in MyDB.items():
-                        sm = info[0]
-                        if subset_checker.do(sm, AllegedSubSM): return pattern
-                    return ""
+                for pattern, info in MyDB.items():
+                    sm = info[0]
+                    if subset_checker.do(sm, AllegedSubSM): return pattern
+                return ""
 
-            # DELETION / PRIORITY-MARK / Outruled Pattern Check
+            # DELETION / PRIORITY-MARK 
             deletion_done_db       = {}
             repriorization_done_db = {}
-            for match in match_list:
+            for match in pattern_action_pair_list:
                 state_machine = match.pattern_state_machine()
 
-                found_pattern = __is_sub_pattern(state_machine, self.__deletion_db)
+                found_pattern = __is_sub_pattern(state_machine, deletion_db)
                 if found_pattern != "":
                     # Deletion = not mentioning it in the list of resolved patterns
                     deletion_done_db[found_pattern] = True
                     continue
 
-                found_pattern = __is_sub_pattern(state_machine, self.__repriorization_db)
+                found_pattern = __is_sub_pattern(state_machine, repriorization_db)
                 if found_pattern != "":
                     # Adapt the pattern index, this automatically adapts the match precedence
                     new_state_machine_id = repriorization_db[found_pattern][-1]
@@ -403,36 +370,45 @@ class Mode:
                     match.inheritance_mode_name = self.name
                     repriorization_done_db[found_pattern] = True
 
-                if __is_sub_pattern(state_machine, pattern_action_pair_list):
-                    error_msg("Pattern '%s' matches a superset of what is matched by" % 
-                              higher_precedence_pattern, 
-                              match_list[i].action().filename, match_list[i].action().line_n,  
-                              DontExitF=True, WarningF=False) 
-                    error_msg("pattern '%s' while the former has precedence.\n" % \
-                              lower_precedence_pattern + "The latter can never match.\n" + \
-                              "You may switch the sequence of definition to avoid this error.",
-                              match_list[k].action().filename, match_list[k].action().line_n)
-                else:
-                    pattern_action_pair_list.append(match)
-
             # Ensure that all mentioned marks really had some effect.
-            if    not __validate_marks(self.__deletion_db, deletion_done_db, "for DELETION")  \
-               or not __validate_marks(self.__repriorization_db, repriorization_done_db, "with PRIORITY-MARK"):
+            if    not __validate_marks(deletion_db, deletion_done_db, "for DELETION")  \
+               or not __validate_marks(repriorization_db, repriorization_done_db, "with PRIORITY-MARK"):
                 error_msg("Abort.")
             return
 
-        pattern_action_pair_list = []
-        prev_max_pattern_index   = -1
-        for mode_name in self.__base_mode_sequence:
-            mode_descr = mode_description_db[mode_name]
+        def __add_new_pattern_action_pair(pattern_action_pair_list, PatternActionPair):
+            state_machine = PatternActionPair.pattern_state_machine()
+            pattern       = PatternActionPair.pattern
+
+            for earlier_match in pattern_action_pair_list:
+                if earlier_match.pattern_state_machine().get_id() > state_machine.get_id(): continue
+                if subset_checker.do(earlier_match.pattern_state_machine(), state_machine) == False: continue
+                error_msg("Pattern '%s' matches a superset of what is matched by" % 
+                          earlier_match.pattern, 
+                          earlier_match.action().filename, earlier_match.action().line_n,  
+                          DontExitF=True, WarningF=False) 
+                error_msg("pattern '%s' while the former has precedence.\n" % \
+                          pattern + "The latter can never match.\n" + \
+                          "You may switch the sequence of definition to avoid this error.",
+                          match.action().filename, match.action().line_n)
+                # Here we already quit by error_msg(...).
+            else:
+                pattern_action_pair_list.append(PatternActionPair)
+
+        result                 = []
+        prev_max_pattern_index = -1
+        for mode_descr in self.__base_mode_sequence:
 
             match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
-                                                                                       mode_descr.__repriorization_db,
+                                                                                       mode_descr.get_repriorization_db(),
                                                                                        prev_max_pattern_index)
-            deletion_db                   = mode_descr.__deletion_db
+            # Delete/Repriorize patterns from more basic modes
+            __handle_deletion_and_repriorization(result, 
+                                                 repriorization_db, mode_descr.get_deletion_db())
 
-            __handle_deletion_and_repriorization(pattern_action_pair_list, match_list, 
-                                                 repriorization_db, deletion_db)
+            # Add the new pattern action pairs
+            for pattern_action_pair in match_list:
+                __add_new_pattern_action_pair(result, pattern_action_pair)
 
             # Determine the max pattern index at this level of inheritance
             prev_max_pattern_index = max([prev_max_pattern_index] + \
