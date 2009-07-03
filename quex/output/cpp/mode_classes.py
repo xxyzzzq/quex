@@ -57,26 +57,23 @@ def  get_implementation_of_mode_functions(mode, Modes):
        'quex::lexer' is the lexical analysis class.
     """
     # (*) on enter 
-    code_fragments = mode.get_code_fragment_list("on_entry")
     on_entry_str  = "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     on_entry_str += "__quex_assert(me->%s.has_entry_from(FromMode));\n" % mode.name
     on_entry_str += "#endif\n"
-    for code_info in code_fragments:
+    for code_info in mode.get_code_fragment_list("on_entry"):
         on_entry_str += code_info.get_code()
         if on_entry_str[-1] == "\n": on_entry_str = on_entry_str[:-1]
 
     # (*) on exit
-    code_fragments = mode.get_code_fragment_list("on_exit")
     on_exit_str  = "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     on_exit_str += "__quex_assert(me->%s.has_exit_to(ToMode));\n" % mode.name
     on_exit_str += "#endif\n"
-    for code_info in code_fragments:
+    for code_info in mode.get_code_fragment_list("on_exit"):
         on_exit_str += code_info.get_code()
 
     # (*) on indentation
-    code_fragments = mode.get_code_fragment_list("on_indentation")
     on_indentation_str = "__quex_assert(Indentation >= 0);" 
-    for code_info in code_fragments:
+    for code_info in mode.get_code_fragment_list("on_indentation"):
         on_indentation_str += code_info.get_code()
         
     # (*) has base mode

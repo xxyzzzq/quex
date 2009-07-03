@@ -161,11 +161,10 @@ def parse_mode_element(new_mode, fh):
         if word == "}": return False
 
         # -- check for 'on_entry', 'on_exit', ...
-        result = check_for_event_specification(word, fh, new_mode)
-        if result == True: return True # all work has been done in check_for_event_specification()
+        if check_for_event_specification(word, fh, new_mode): return True
 
         fh.seek(position)
-        description = "start of mode element: regular expression"
+        description = "Start of mode element: regular expression"
         pattern, pattern_state_machine = regular_expression.parse(fh)
 
         if new_mode.has_pattern(pattern):
@@ -176,7 +175,7 @@ def parse_mode_element(new_mode, fh):
 
 
         position    = fh.tell()
-        description = "start of mode element: code fragment for '%s'" % pattern
+        description = "Start of mode element: code fragment for '%s'" % pattern
 
         parse_action_code(new_mode, fh, pattern, pattern_state_machine)
 
@@ -229,20 +228,16 @@ def parse_action_code(new_mode, fh, pattern, pattern_state_machine):
 
 def check_for_event_specification(word, fh, new_mode):
 
-    if len(word) < 3:     return False
-    if word[:3] != "on_": return False
+    # Allow '<<EOF>>' and '<<FAIL>>' out of respect for classical tools like 'lex'
+    if   word == "<<EOF>>":                  word = "on_end_of_stream"
+    elif word == "<<FAIL>>":                 word = "on_failure"
+    elif len(word) < 3 or word[:3] != "on_": return False
 
-    # We allow '<<EOF>>' and '<<FAIL>>' out of respect for classical tools like 'lex'
-    if   word == "<<EOF>>":   word = "on_end_of_stream"
-    elif word == "<<FAIL>>:": word = "on_failure"
-
-    allowed_list = ["on_end_of_stream", "on_entry", "on_exit", "on_failure", "on_indentation", "on_match",] 
-    
     comment = "Unknown event handler '%s'. \n" % word + \
               "Note, that any pattern starting with 'on_' is considered an event handler.\n" + \
               "use double quotes to bracket patterns that start with 'on_'."
 
-    verify_word_in_list(NameStr, allowed_list, comment, fh)
+    verify_word_in_list(word, lexer_mode.event_handler_db.keys(), comment, fh)
 
     continue_f = True
     if word == "on_end_of_stream":
