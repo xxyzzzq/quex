@@ -52,7 +52,7 @@ def write_engine_header(Modes):
     #    support must be provided.
     indentation_support_f = False
     for mode in Modes.values():
-        if mode.has_indentation_based_event():
+        if mode.has_code_fragment_list("on_indentation"):
             indentation_support_f = True
             break
 
@@ -92,8 +92,8 @@ def write_engine_header(Modes):
     entry_handler_active_f = False
     exit_handler_active_f = False
     for mode in Modes.values():
-        if mode.on_entry_code_fragments() != []: entry_handler_active_f = True
-        if mode.on_exit_code_fragments() != []:  exit_handler_active_f = True
+        if mode.get_code_fragment_list("on_entry") != []: entry_handler_active_f = True
+        if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
 
     txt = template_code_txt
     def set_switch(txt, SwitchF, Name):
@@ -243,13 +243,13 @@ def __get_mode_init_call(mode, LexerClassName):
     if mode.options["inheritable"] == "only": 
         analyser_function = "QuexMode_uncallable_analyser_function"
 
-    if mode.on_entry_code_fragments() == []:
+    if mode.get_code_fragment_list("on_entry") == []:
         on_entry = "QuexMode_on_entry_exit_null_function"
 
-    if mode.on_exit_code_fragments() == []:
+    if mode.get_code_fragment_list("on_exit") == []:
         on_exit = "QuexMode_on_entry_exit_null_function"
 
-    if mode.on_indentation_code_fragments() == []:
+    if mode.get_code_fragment_list("on_indentation") == []:
         on_indentation = "QuexMode_on_indentation_null_function"
 
     txt = blue_print(quex_mode_init_call_str,
@@ -284,17 +284,14 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
             txt += __mode_functions(prolog, "void", ["analyser_function"],
                                     "QuexAnalyser*")
     for mode in Modes:
-        if mode.on_indentation_code_fragments() != []:
+        if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
                                     LexerClassName + "*, const int")
 
     for mode in Modes:
-        if mode.on_entry_code_fragments() != []:
-            txt += __mode_functions(prolog, "void", ["on_entry"], 
-                                    LexerClassName + "*, const QuexMode*")
-
-        if mode.on_exit_code_fragments() != []:
-            txt += __mode_functions(prolog, "void", ["on_exit"], 
+        for event_name in ["on_exit", "on_entry"]:
+            if not mode.has_code_fragment_list(event_name): continue
+            txt += __mode_functions(prolog, "void", [event_name], 
                                     LexerClassName + "*, const QuexMode*")
 
     txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"

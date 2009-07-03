@@ -87,10 +87,10 @@ def do():
 def get_code_for_mode(Mode, ModeNameList):
 
     # -- some modes only define event handlers that are inherited
-    if not Mode.has_matches(): return "", ""
+    if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
 
     # -- 'end of stream' action
-    if Mode.get_code_fragment_list("on_end_of_stream") == []:
+    if not Mode.has_code_fragment_list("on_end_of_stream"):
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
         Mode.set_code_fragment_list("on_end_of_stream", CodeFragment(txt))
@@ -99,8 +99,7 @@ def get_code_for_mode(Mode, ModeNameList):
                                                     Mode.get_code_fragment_list("on_end_of_stream"), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
     # -- 'default' action (nothing matched)
-
-    if Mode.get_code_fragment_list("on_failure") == []:
+    if not Mode.has_code_fragment_list("on_failure"):
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
@@ -135,31 +134,34 @@ def get_generator_input(Mode):
        -- (optional) for a virtual function call 'on_action_entry()'.
        -- (optional) for debug output that tells the line number and column number.
     """
-    match_info_list = Mode.get_pattern_action_pairs()
+    assert isinstance(Mode, lexer_mode.Mode)
+    pattern_action_pair_list = Mode.get_pattern_action_pair_list()
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
 
     inheritance_info_str     = ""
-    pattern_action_pair_list = []
-    for pattern_info in match_info_list:
+    prepared_pattern_action_pair_list = []
+    for pattern_info in pattern_action_pair_list:
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine()
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
+        print "##1:", pattern_info.__class__.__name__
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
                                                    pattern_state_machine)
 
         action_info = PatternActionInfo(pattern_state_machine, prepared_action)
+        print "##2:", action_info.__class__.__name__
 
-        pattern_action_pair_list.append(action_info)
+        prepared_pattern_action_pair_list.append(action_info)
 
         inheritance_info_str += " %s %s %2i %05i\n" % (safe_pattern_str,
                                                        pattern_info.inheritance_mode_name,
-                                                       pattern_info.inheritance_level, 
+                                                       1, # pattern_info.inheritance_level, 
                                                        pattern_info.pattern_index())
     
-    return inheritance_info_str, pattern_action_pair_list
+    return inheritance_info_str, prepared_pattern_action_pair_list
 
 def __get_post_context_n(match_info_list):
     n = 0
@@ -174,7 +176,7 @@ def do_plot():
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
-        if not mode.has_matches(): continue
+        if len(mode.get_pattern_action_pair_list()) == 0: continue
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.

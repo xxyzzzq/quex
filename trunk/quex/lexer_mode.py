@@ -21,7 +21,7 @@ import sys
 import os
 
 from copy                import copy, deepcopy
-from quex.frs_py.file_in import error_msg
+from quex.frs_py.file_in import error_msg, verify_word_in_list
 from quex.core_engine.generator.action_info import *
 import quex.core_engine.state_machine.subset_checker as subset_checker
 
@@ -78,16 +78,13 @@ class ModeDescription:
         # in case that this variable is still [].
         self.__pattern_action_pair_list = []  
 
-        # (*) set the information about possible options
-        self.options = {}       # option settings
-        self.options["inheritable"]        = "yes"
-        self.options["exit"]               = []
-        self.options["entry"]              = []
-        self.options["restrict"]           = []
-        self.options["skip"]               = []
-        self.options["skip-range"]         = []
-        self.options["skip-nesting-range"] = []
+        # (*) Default Options
+        self.options = {}      
+        for name, descr in mode_option_info_db.items():
+            if descr.type == "list": self.options[name] = []
+            else:                    self.options[name] = "yes"
 
+        # (*) Default Event Handler: Empty
         self.events = {}
         for name in event_handler_db.keys():
             self.events[name] = CodeFragment()
@@ -132,9 +129,8 @@ class ModeDescription:
 
         oi = mode_option_info_db[Option]
         if oi.type == "list":
-            # append the value, assume in lists everything is allowed
-            if self.options.has_key(Option): self.options[Option].append(Value)
-            else:                            self.options[Option] = [ Value ]
+            # Append the value, assume in lists everything is allowed
+            self.options.setdefault(Option, []).append(Value)
         else:
             assert Value in oi.domain
             self.options[Option] = Value
@@ -163,9 +159,6 @@ class ModeDescription:
         return len(self.__matches) != 0
 
     def has_matches(self):
-        assert self.inheritance_circularity_check_done_f == True, \
-               "called before consistency check!"
-
         if self.__matches != {}: return True
 
         for name in self.base_modes:
@@ -195,17 +188,20 @@ class Mode:
         # (2) Collect Pattern/Action Pairs
         self.__pattern_action_pair_list = self.__collect_pattern_action_pairs()
 
+        # (3) Collection Options
+        self.__collect_options()
+
     def set_code_fragment_list(self, EventName, CodeFragment):
         assert CodeFragment.__class__.__name__ == "CodeFragment"
         assert EventName in ["on_end_of_stream", "on_failure"]
         assert self.__event_handler_code_fragment_list[EventName] == []
-        self.__event_handler_code_fragment_list[EventName] == [CodeFragment]
+        self.__event_handler_code_fragment_list[EventName] = [CodeFragment]
 
     def has_base_mode(self):
         return len(self.__base_mode_sequence) != 1
 
-    def has_indentation_based_event(self):
-        return len(self.__event_handler_code_fragment_list["on_indentation"]) == 0
+    def has_code_fragment_list(self, EventName):
+        return len(self.__event_handler_code_fragment_list[EventName]) != 0
 
     def get_base_mode_sequence(self):
         return self.__base_mode_sequence
@@ -214,6 +210,7 @@ class Mode:
         return map(lambda mode: mode.name, self.__base_mode_sequence)
 
     def get_code_fragment_list(self, EventName):
+        assert self.__event_handler_code_fragment_list.has_key(EventName)
         return self.__event_handler_code_fragment_list[EventName]
 
     def get_pattern_action_pair_list(self):
@@ -258,15 +255,16 @@ class Mode:
             for mode_name in InheritancePath:
                 msg += "   inherits mode '%s'\n" % mode_name
 
-            error_msg("circular inheritance detected:\n" + msg, mode.filename, mode.line_n)
+            error_msg("circular inheritance detected:\n" + msg, ModeDescr.filename, ModeDescr.line_n)
 
         result = [ ModeDescr ]
 
         for name in ModeDescr.base_modes:
-            if mode_description_db.has_key(name) == False:
-                error_msg("mode '%s' is derived from mode a '%s'\n" % (ModeDescr.name, name) + \
-                          "but no such mode '%s' actually exists!" % name,
-                          ModeDescr.filename, ModeDescr.line_n)
+            # -- does mode exist?
+            verify_word_in_list(name, mode_description_db.keys(),
+                                "Mode '%s' inherits mode '%s' which does not exist." % (ModeDescr.name, name),
+                                ModeDescr.filename, ModeDescr.line_n)
+            # -- grab the mode description
             mode_descr = mode_description_db[name]
             result.extend(self.__determine_base_mode_sequence(mode_descr, 
                                                               InheritancePath + [ModeDescr.name]))
@@ -310,7 +308,7 @@ class Mode:
             # that patterns of a 'higher precedence mode'. This is to ensure that 
             # base mode patterns precede derived mode patterns.
             min_pattern_index = min(map(lambda match: match.pattern_state_machine().get_id(),
-                                    MatchList))
+                                        MatchList))
             if min_pattern_index > PrevMaxPatternIndex:
                 return MatchList, RepriorizationDB
 
@@ -390,7 +388,7 @@ class Mode:
                 error_msg("pattern '%s' while the former has precedence.\n" % \
                           pattern + "The latter can never match.\n" + \
                           "You may switch the sequence of definition to avoid this error.",
-                          match.action().filename, match.action().line_n)
+                          PatternActionPair.action().filename, PatternActionPair.action().line_n)
                 # Here we already quit by error_msg(...).
             else:
                 pattern_action_pair_list.append(PatternActionPair)
@@ -398,6 +396,7 @@ class Mode:
         result                 = []
         prev_max_pattern_index = -1
         for mode_descr in self.__base_mode_sequence:
+            if not mode_descr.has_own_matches(): continue
 
             match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
                                                                                        mode_descr.get_repriorization_db(),
@@ -417,6 +416,12 @@ class Mode:
 
 
         return result
+
+    def __collect_options(self):
+        for mode in self.__base_mode_sequence[:-1]:
+            for name, option_descr in mode_option_info_db.items():
+                if option_descr.type != "list": continue
+                self.options.setdefault(name, []).extend(mode.options[name])
 
 #-----------------------------------------------------------------------------------------
 # mode option information/format: 

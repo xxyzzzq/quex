@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.67" date="Sat Jun 27 23:04:36 2009">
+<test-database execution-time-sec="0.69" date="Fri Jul  3 01:02:10 2009">
     <last-used-diff-display-program name=""/>
-    <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.00"> 
-        <application file-name="simple-queue.exe" info-request-time="1246136671L"/>
-        <make-procedure success="True" time_sec="4.359786"/>
+    <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.01"> 
+        <application file-name="simple-queue.exe" info-request-time="1246575724L"/>
+        <make-procedure success="True" time_sec="4.682090"/>
         <choice-list number="1">
-           <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
+           <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
     </test>
-    <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.00"> 
-        <application file-name="simple.exe" info-request-time="1246136675L"/>
-        <make-procedure success="True" time_sec="4.217263"/>
+    <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.01"> 
+        <application file-name="simple.exe" info-request-time="1246575729L"/>
+        <make-procedure success="True" time_sec="4.378733"/>
         <choice-list number="1">
-           <choice name="" result="OK" time_sec="0.00" crc="1973324921"/>
+           <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
     </test>
     <group name="Miscellaneous Sample Runs CHOICES">
-        <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.66"> 
+        <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.68"> 
             <application file-name="misc.sh" info-request-time="1243020114L"/>
             <choice-list number="4">
-               <choice name="empty" result="OK" time_sec="0.15" crc="-1191820474"/>
+               <choice name="empty" result="OK" time_sec="0.16" crc="-1191820474"/>
                <choice name="no-namespace" result="OK" time_sec="0.19" crc="-201766705"/>
                <choice name="double-colon" result="OK" time_sec="0.16" crc="-223322448"/>
                <choice name="token" result="OK" time_sec="0.16" crc="-1412753469"/>

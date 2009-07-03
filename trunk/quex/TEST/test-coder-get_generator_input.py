@@ -8,7 +8,7 @@ import quex.input.setup
 import quex.core                                as coder
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.generator.core          as generator
-from   quex.lexer_mode                          import ModeDescription 
+from   quex.lexer_mode                          import ModeDescription, Mode
 from   quex.core_engine.generator.action_info   import CodeFragment
 
 
@@ -23,11 +23,11 @@ pattern_action_pair_list = [
     ('[ \\t\\n]+', "WHITESPACE")
 ]
 
-mode = ModeDescription("TEST", "", 0)
+mode_descr = ModeDescription("TEST", "", 0)
 i = -1
 for pattern, action in pattern_action_pair_list:
     i += 1
-    mode.add_match(pattern, 
+    mode_descr.add_match(pattern, 
                    CodeFragment("std::cout << \"%s\" << std::endl;\n" % action), 
                    regex.do(pattern, {}, -1))
 
@@ -38,11 +38,12 @@ quex.input.setup.setup.end_of_stream_code            = 0x1A
 quex.input.setup.setup.no_dos_carriage_return_newline_f = True
 
 
+mode = Mode(mode_descr)
 inheritance_info, generator_input = coder.get_generator_input(mode)
 
 print "/*\n" + inheritance_info + "*/\n"
 
-for match_obj in mode.get_pattern_action_pairs():
+for match_obj in mode.get_pattern_action_pair_list():
     print match_obj
 
 for action_info in generator_input:

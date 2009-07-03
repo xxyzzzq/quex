@@ -1,6 +1,6 @@
 import sys
 
-from   quex.frs_py.file_in import error_msg
+from   quex.frs_py.file_in import error_msg, verify_word_in_list
 import quex.lexer_mode     as     lexer_mode
 from   quex.core_engine.generator.action_info import CodeFragment
 
@@ -48,7 +48,7 @@ def do(ModeDB):
 
     else: 
         FileName = lexer_mode.initial_mode.filename
-        LineN    = lexer_mode.initial_mode.lineN
+        LineN    = lexer_mode.initial_mode.line_n
         # Start mode present and applicable?
         verify_word_in_list(start_mode, mode_name_list,
                             "Start mode '%s' is not defined." % start_mode,
@@ -59,22 +59,15 @@ def do(ModeDB):
 
     # (*) Modes that are inherited must allow to be inherited
     for mode in ModeDB.values():
-        FileName = mode.filename
-        LineN    = mode.line_n
-        for base_mode_name in mode.get_base_mode_sequence()[:-1]:
-            # -- does mode exist?
-            verify_word_in_list(mode.name, mode_name_list,
-                                "Mode '%s' inherits mode '%s' which does not exist." % (mode.name, base_mode_name),
-                                FileName, LineN)
-            # -- is base mode inheritable?
-            if mode_description_db[base_mode_name].options["inheritable"] == "no":
+        for base_mode in mode.get_base_mode_sequence()[:-1]:
+            if base_mode.options["inheritable"] == "no":
                 error_msg("mode '%s' inherits mode '%s' which is not inheritable." % \
-                          (mode.name, base_mode_name), FileName, LineN)
+                          (mode.name, base_mode_name), mode.filename, mode.line_n)
 
-    # (*) A mode that is applicable needs finally contain matches!
+    # (*) A mode that is instantiable (to be implemented) needs finally contain matches!
     for mode in ModeDB.values():
         if mode.name in applicable_mode_name_list and mode.get_pattern_action_pair_list() == []:
-            error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % self.name + \
+            error_msg("Mode '%s' was defined without the option <inheritable: only>.\n" % mode.name + \
                       "However, it contains no matches--only event handlers. Without pattern\n"     + \
                       "matches it cannot act as a pattern detecting state machine, and thus\n"      + \
                       "cannot be an independent lexical analyzer mode. Define the option\n"         + \
@@ -93,7 +86,7 @@ def do(ModeDB):
                                 "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
                                 (this_mode.name, mode_name), FileName, LineN)
 
-            that_mode = mode_description_db[mode_name]
+            that_mode = lexer_mode.mode_description_db[mode_name]
 
             # Other mode allows all entries => don't worry.
             if len(that_mode.options["entry"]) == 0: continue
@@ -101,11 +94,11 @@ def do(ModeDB):
             # Other mode restricts the entries from other modes
             # => check if this mode or one of the base modes can enter
             for base_mode in this_mode.get_base_mode_sequence():
-                if base_mode in that_mode.options["entry"]: break
+                if base_mode.name in that_mode.options["entry"]: break
             else:
-                error_msg("Mode '%s'\nhas an exit to mode '%s'," % (this_mode.name, mode_name),
+                error_msg("Mode '%s' has an exit to mode '%s' but" % (this_mode.name, mode_name),
                           FileName, LineN, DontExitF=True, WarningF=False)
-                error_msg("but mode '%s'\nhas no entry for mode '%s'.\n" % (mode_name, this_mode.name) + \
+                error_msg("mode '%s' has no entry for mode '%s'\n" % (mode_name, this_mode.name) + \
                           "or any of its base modes.",
                           that_mode.filename, that_mode.line_n)
 
@@ -115,18 +108,18 @@ def do(ModeDB):
                                 "Mode '%s' allows entry from\nmode '%s' but no such mode exists." % \
                                 (this_mode.name, mode_name), FileName, LineN)
 
-            that_mode = mode_description_db[mode_name]
+            that_mode = lexer_mode.mode_description_db[mode_name]
             # Other mode allows all exits => don't worry.
             if len(that_mode.options["exit"]) == 0: continue
 
             # Other mode restricts the exits to other modes
             # => check if this mode or one of the base modes can be reached
             for base_mode in this_mode.get_base_mode_sequence():
-                if base_mode in that_mode.options["exit"]: break
+                if base_mode.name in that_mode.options["exit"]: break
             else:
-                error_msg("Mode '%s'\nhas an entry for mode '%s'" % (this_mode.name, mode_name),
+                error_msg("Mode '%s' has an entry for mode '%s' but" % (this_mode.name, mode_name),
                           FileName, LineN, DontExitF=True, WarningF=False)
-                error_msg("but mode '%s'\nhas no exit to mode '%s'\n" % (mode_name, this_mode.name) + \
+                error_msg("mode '%s' has no exit to mode '%s'\n" % (mode_name, this_mode.name) + \
                           "or any of its base modes.",
                           that_mode.filename, that_mode.line_n)
                 
