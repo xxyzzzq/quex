@@ -23,7 +23,8 @@ import os
 from copy                import copy, deepcopy
 from quex.frs_py.file_in import error_msg, verify_word_in_list
 from quex.core_engine.generator.action_info import *
-import quex.core_engine.state_machine.subset_checker as subset_checker
+import quex.core_engine.state_machine.subset_checker   as subset_checker
+import quex.core_engine.state_machine.identity_checker as identity_checker
 
 # ModeDescription/Mode Objects:
 #
@@ -186,6 +187,8 @@ class Mode:
         self.__collect_event_handler()
         
         # (2) Collect Pattern/Action Pairs
+        self.__history_repriorization = []
+        self.__history_deletion       = []
         self.__pattern_action_pair_list = self.__collect_pattern_action_pairs()
 
         # (3) Collection Options
@@ -324,8 +327,10 @@ class Mode:
                 match.pattern_state_machine().core().set_id(current_pattern_id + offset)
             
             # The reprioritizations must also be adapted
-            for info in repriorization_db.values():
-                info[1] += offset
+            #for key, info in repriorization_db.items():
+            #    print "##reprio:", key, info[-1], info[-1] + offset
+            for info in repriorization_db.items():
+                info[-1] += offset
             return match_list, repriorization_db 
                                              
         def __handle_deletion_and_repriorization(pattern_action_pair_list, 
@@ -341,10 +346,10 @@ class Mode:
                               info[1], info[2], DontExitF=True, WarningF=False)
                 return ok_f
 
-            def __is_sub_pattern(AllegedSubSM, MyDB):
+            def __is_in_patterns(AllegedIdenticalSM, MyDB):
                 for pattern, info in MyDB.items():
                     sm = info[0]
-                    if subset_checker.do(sm, AllegedSubSM): return pattern
+                    if identity_checker.do(AllegedIdenticalSM, sm): return pattern
                 return ""
 
             # DELETION / PRIORITY-MARK 
@@ -353,19 +358,22 @@ class Mode:
             for match in pattern_action_pair_list:
                 state_machine = match.pattern_state_machine()
 
-                found_pattern = __is_sub_pattern(state_machine, deletion_db)
+                found_pattern = __is_in_patterns(state_machine, deletion_db)
                 if found_pattern != "":
                     # Deletion = not mentioning it in the list of resolved patterns
+                    # Mark 'deletion applied'
                     deletion_done_db[found_pattern] = True
                     continue
 
-                found_pattern = __is_sub_pattern(state_machine, repriorization_db)
+                found_pattern = __is_in_patterns(state_machine, repriorization_db)
                 if found_pattern != "":
                     # Adapt the pattern index, this automatically adapts the match precedence
+                    old_state_machine_id = match.pattern_state_machine().get_id()
                     new_state_machine_id = repriorization_db[found_pattern][-1]
                     match = deepcopy(match)
                     match.pattern_state_machine().core().set_id(new_state_machine_id)
                     match.inheritance_mode_name = self.name
+                    # Mark 'repriorization applied'
                     repriorization_done_db[found_pattern] = True
 
             # Ensure that all mentioned marks really had some effect.
@@ -379,6 +387,8 @@ class Mode:
             pattern       = PatternActionPair.pattern
 
             for earlier_match in pattern_action_pair_list:
+                print "##e:", earlier_match.pattern_state_machine().get_id()
+                print "##n:", state_machine.get_id()
                 if earlier_match.pattern_state_machine().get_id() > state_machine.get_id(): continue
                 if subset_checker.do(earlier_match.pattern_state_machine(), state_machine) == False: continue
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 
@@ -395,24 +405,26 @@ class Mode:
 
         result                 = []
         prev_max_pattern_index = -1
+        # Iterate from the base to the top (include this mode's pattern)
         for mode_descr in self.__base_mode_sequence:
-            if not mode_descr.has_own_matches(): continue
 
-            match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
-                                                                                       mode_descr.get_repriorization_db(),
-                                                                                       prev_max_pattern_index)
+            if mode_descr.has_own_matches(): 
+                match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
+                                                                                           mode_descr.get_repriorization_db(),
+                                                                                           prev_max_pattern_index)
             # Delete/Repriorize patterns from more basic modes
             __handle_deletion_and_repriorization(result, 
                                                  repriorization_db, mode_descr.get_deletion_db())
 
-            # Add the new pattern action pairs
-            for pattern_action_pair in match_list:
-                __add_new_pattern_action_pair(result, pattern_action_pair)
+            if mode_descr.has_own_matches(): 
+                # Add the new pattern action pairs
+                for pattern_action_pair in match_list:
+                    __add_new_pattern_action_pair(result, pattern_action_pair)
 
-            # Determine the max pattern index at this level of inheritance
-            prev_max_pattern_index = max([prev_max_pattern_index] + \
-                                         map(lambda match: match.pattern_state_machine().get_id(),
-                                         match_list))
+                # Determine the max pattern index at this level of inheritance
+                prev_max_pattern_index = max([prev_max_pattern_index] + \
+                                             map(lambda match: match.pattern_state_machine().get_id(),
+                                             match_list))
 
 
         return result
