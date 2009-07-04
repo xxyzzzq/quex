@@ -1,5 +1,14 @@
-<test-database execution-time-sec="13.40" date="Fri Jul  3 01:08:37 2009">
+<test-database execution-time-sec="16.40" date="Fri Jul  3 22:34:40 2009">
     <last-used-diff-display-program name=""/>
+    <test title="Pattern Identity Determination" make-required="True" time-sum-sec="3.02"> 
+        <application file-name="test-identity_checker.py" info-request-time="1246653253L"/>
+        <choice-list number="4">
+           <choice name="True" result="OK" time_sec="1.66" crc="-390242573"/>
+           <choice name="False" result="OK" time_sec="0.72" crc="514005501"/>
+           <choice name="Pre-Post-Contexts-True" result="OK" time_sec="0.32" crc="-138569557"/>
+           <choice name="Pre-Post-Contexts-False" result="OK" time_sec="0.33" crc="38876760"/>
+        </choice-list>
+    </test>
     <group name="DFA">
         <test title="Get Trigger Map (intervals --&gt; target states)" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-StateInfo-trigger-map.py" info-request-time="1237805541L"/>
@@ -57,7 +66,7 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Pattern Subset Determination" make-required="True" time-sum-sec="3.99"> 
+        <test title="Pattern Subset Determination" make-required="True" time-sum-sec="4.00"> 
             <application file-name="test-subset_checker.py" info-request-time="1246016709L"/>
             <choice-list number="7">
                <choice name="Easy" result="OK" time_sec="0.28" crc="-1954154735"/>
