@@ -1,31 +1,28 @@
 class Checker:
     def __init__(self, SM0, SM1):
-        """Checks wether all patterns matched by the SM0 are also matched by the 
-           SM1. Basically it tries to answer the question:
-
-              ? Is the set of patterns matched by 'SM1' a subset of the ?
-              ? set of patterns matched by 'SM0'                              ?
+        """Checks wether the set of patterns matched by SM0 is identical to the
+           set of patterns matched by SM1.
 
            RETURNS: 'True'  if so,
                     'False' if not.
         """
-        self.sub   = SM1
+        self.sm1 = SM1
         self.sm0 = SM0
         self.visited_state_index_db = {}
 
     def do(self):
-        return self.__dive(self.sub.init_state_index, [self.sm0.init_state_index])
+        return self.__dive(self.sm1.init_state_index, [self.sm0.init_state_index])
 
     def __dive(self, SM1_StateIndex, SM0_StateIndexList):
-        """SM1_StateIndex:       refers to a state in the alleged subset state machine.
+        """SM1_StateIndex:     state index in SM1
 
            SM0_StateIndexList: list of states in the 'sm0 set' state machine that
-                                   was reached by the same trigger set as SM1_StateIndex.      
-                                   They are the set of states that can 'mimik' the current
-                                   state indexed by 'SM1_StateIndex'.
+                               was reached by the same trigger set as SM1_StateIndex.      
+                               They are the set of states that can 'mimik' the current
+                               state indexed by 'SM1_StateIndex'.
         """
         # (*) Determine the states behind the indices
-        sub_state        = self.sub.states[SM1_StateIndex]
+        sm1_state      = self.sm1.states[SM1_StateIndex]
         sm0_state_list = map(lambda index: self.sm0.states[index], SM0_StateIndexList)
         #     Bookkeeping
         self.visited_state_index_db[SM1_StateIndex] = True
@@ -36,25 +33,24 @@ class Checker:
         for index in SM0_StateIndexList:
             sm0_trigger_set_union_db[index] = self.sm0.states[index].transitions().get_trigger_set_union()
 
+        sm1_trigger_set_union = sm1_state.transitions().get_trigger_set_union()
+
         # (*) Here comes the condition:
         #
         #     For every trigger (event) in the 'sm1 state' that triggers to a follow-up state
         #     there must be pendant triggering from the mimiking 'sm0 states'.
         #
-        #     That is: All 'mimiking sm0 states' must trigger on the whole given trigger_set to 
-        #     a subsequent state of the same 'type' as the 'sm1 state'.
-        #
-        for target_index, trigger_set in sub_state.transitions().get_map().items():
-            target_state = self.sub.states[target_index]
+        #     That is: 
+        #     -- No 'mimiking sm0 state' is allowed to trigger on something beyond
+        #        the trigger_set present on sm1, and vice versa.
+        for index in SM0_StateIndexList:
+            if not sm0_trigger_set_union_db[index].is_equal(sm1_trigger_set_union): 
+                return False
 
-            # (*) Require that all mimiking states in the 'sm0' trigger to a valid
-            #     target state on all triggers in the trigger set. 
-            #     
-            #     This is true, if the union of all trigger sets of a mimiking 'sm0 state'
-            #     covers the trigger set. It's not true, if not. Thus, use set subtraction:
-            for index in SM0_StateIndexList:
-                if trigger_set.difference(sm0_trigger_set_union_db[index]).is_empty() == False:
-                    return False
+        #     -- All 'mimiking sm0 states' must trigger on the given trigger_set to 
+        #        a subsequent state of the same 'type' as the 'sm1 state'.
+        for target_index, trigger_set in sm1_state.transitions().get_map().items():
+            target_state = self.sm1.states[target_index]
 
             # (*) Collect the states in the 'sm0' that can be reached via the 'trigger_set'
             sm0_target_state_index_list = []
@@ -74,7 +70,7 @@ class Checker:
                 if self.__dive(target_index, sm0_target_state_index_list) == False: return False
 
         # If the condition held for all sub-pathes of all trigger_sets then we can reports
-        # that the currently investigated sub-path supports the claim that 'sub sm' is a
+        # that the currently investigated sub-path supports the claim that 'sm1 sm' is a
         # sub set state machine of 'sm0 sm'.
         return True
 
@@ -94,7 +90,6 @@ class Checker:
             elif    (sm0c.pseudo_ambiguous_post_context_id() == -1) \
                  != (sm1c.pseudo_ambiguous_post_context_id() == -1):                         return False
         return True
-
 
 def do(SM0, SM1):
     # Check whether SM0 and SM1 are identical, i.e they match exactly the same patterns 

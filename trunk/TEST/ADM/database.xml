@@ -1,4 +1,4 @@
-<test-database execution-time-sec="247.18" date="Fri Jul  3 03:14:35 2009">
+<test-database execution-time-sec="246.35" date="Fri Jul  3 08:37:35 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="3.77"> 
@@ -253,10 +253,10 @@
                <choice name="" result="OK" time_sec="0.57" crc="-1117047420"/>
             </choice-list>
         </test>
-        <test title="1889321 Quex does not handle actions including quote literal" make-required="True" time-sum-sec="0.39"> 
+        <test title="1889321 Quex does not handle actions including quote literal" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1889321.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time_sec="0.39" crc="77534250"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-396174589"/>
             </choice-list>
         </test>
         <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" make-required="True" time-sum-sec="0.19"> 
@@ -271,10 +271,10 @@
                <choice name="" result="OK" time_sec="6.06" crc="1197719310"/>
             </choice-list>
         </test>
-        <test title="1889702 0.19.4 forbids derived modes that only add event handlers" make-required="True" time-sum-sec="0.44"> 
+        <test title="1889702 0.19.4 forbids derived modes that only add event handlers" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1889702.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time_sec="0.44" crc="-1287948280"/>
+               <choice name="" result="OK" time_sec="0.00" crc="52687214"/>
             </choice-list>
         </test>
         <test title="2798423 0.39.4 token_type default __copy function does not compile" make-required="True" time-sum-sec="1.75"> 
