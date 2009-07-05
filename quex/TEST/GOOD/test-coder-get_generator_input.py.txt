@@ -1,8 +1,16 @@
+##e: 5
+##n: 11
 /*
- [_a-zA-Z]+ TEST  0 00005
- [ \t\n]+ TEST  0 00011
+
+MODE: TEST
+
+    PATTERN-ACTION PAIRS:
+      (  5) TEST: [_a-zA-Z]+
+      ( 11) TEST: [ \t\n]+
+
 */
 
+self.mode_name         = 'TEST'
 self.pattern           = '[_a-zA-Z]+'
 self.pattern_state_machine = 
 init-state = 0L
@@ -13,9 +21,9 @@ init-state = 0L
             == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
             <no epsilon>
       self.action            = 'std::cout << "IDENTIFIER" << std::endl;\n'
-self.inheritance_level = 0
 self.pattern_index     = 5L
 
+self.mode_name         = 'TEST'
 self.pattern           = '[ \\t\\n]+'
 self.pattern_state_machine = 
 init-state = 0L
@@ -26,9 +34,9 @@ init-state = 0L
             == ['\t', '\n'], ' ' ==> 00001
             <no epsilon>
       self.action            = 'std::cout << "WHITESPACE" << std::endl;\n'
-self.inheritance_level = 0
 self.pattern_index     = 11L
 
+self.mode_name         = ''
 self.pattern           = ''
 self.pattern_state_machine = 
 init-state = 0L
@@ -39,9 +47,9 @@ init-state = 0L
             == ['A', 'Z'], '_', ['a', 'z'] ==> 00001
             <no epsilon>
       self.action            = '{\nself.counter.__shift_end_values_to_start_values();\nself.counter.count_NoNewline(LexemeL);\nstd::cout << "IDENTIFIER" << std::endl;\n\n}'
-self.inheritance_level = None
 self.pattern_index     = 5L
 
+self.mode_name         = ''
 self.pattern           = ''
 self.pattern_state_machine = 
 init-state = 0L
@@ -52,6 +60,5 @@ init-state = 0L
             == ['\t', '\n'], ' ' ==> 00001
             <no epsilon>
       self.action            = '{\nself.counter.__shift_end_values_to_start_values();\nself.counter.count(Lexeme, LexemeEnd);\nstd::cout << "WHITESPACE" << std::endl;\n\n}'
-self.inheritance_level = None
 self.pattern_index     = 11L
 

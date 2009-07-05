@@ -55,14 +55,12 @@ def do():
     codec_converter_helper.do()
 
     # (*) implement the lexer mode-specific analyser functions
-    inheritance_info_str  = "Information about what pattern 'comes' from what mode in the inheritance tree.\n\n"
-    inheritance_info_str += "[1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index\n\n"
-    analyzer_code = ""
+    inheritance_info_str = ""
+    analyzer_code        = ""
     for mode in mode_list:        
         # accumulate inheritance information for comment
-        x, y = get_code_for_mode(mode, mode_name_list) 
-        analyzer_code        += x
-        inheritance_info_str += "(%s)\n" % mode.name + y + "\n\n"
+        analyzer_code        += get_code_for_mode(mode, mode_name_list) 
+        inheritance_info_str += mode.get_documentation()
         
     # find unused labels
     analyzer_code = generator.delete_unused_labels(analyzer_code)
@@ -71,8 +69,6 @@ def do():
     analyzer_code = generator.frame_this(analyzer_code)
 
     # Bring the info about the patterns first
-    inheritance_info_str = inheritance_info_str.replace("*/", "* /")
-    inheritance_info_str = inheritance_info_str.replace("/*", "/ *")
     analyzer_code = Setup.language_db["$ml-comment"](inheritance_info_str) + "\n" + analyzer_code
 
     # write code to a header file
@@ -110,7 +106,7 @@ def get_code_for_mode(Mode, ModeNameList):
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    inheritance_info_str, pattern_action_pair_list = get_generator_input(Mode)
+    pattern_action_pair_list = get_generator_input(Mode)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
                                  DefaultAction                  = PatternActionInfo(None, default_action), 
@@ -122,7 +118,7 @@ def get_code_for_mode(Mode, ModeNameList):
                                  QuexEngineHeaderDefinitionFile = Setup.output_file_stem,
                                  ModeNameList                   = ModeNameList)
 
-    return analyzer_code, inheritance_info_str
+    return analyzer_code
     
 def get_generator_input(Mode):
     """The module 'quex.core_engine.generator.core' produces the code for the 
@@ -139,7 +135,6 @@ def get_generator_input(Mode):
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
 
-    inheritance_info_str     = ""
     prepared_pattern_action_pair_list = []
     for pattern_info in pattern_action_pair_list:
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
@@ -147,21 +142,14 @@ def get_generator_input(Mode):
 
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
-        print "##1:", pattern_info.__class__.__name__
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
                                                    pattern_state_machine)
 
         action_info = PatternActionInfo(pattern_state_machine, prepared_action)
-        print "##2:", action_info.__class__.__name__
 
         prepared_pattern_action_pair_list.append(action_info)
-
-        inheritance_info_str += " %s %s %2i %05i\n" % (safe_pattern_str,
-                                                       pattern_info.inheritance_mode_name,
-                                                       1, # pattern_info.inheritance_level, 
-                                                       pattern_info.pattern_index())
     
-    return inheritance_info_str, prepared_pattern_action_pair_list
+    return prepared_pattern_action_pair_list
 
 def __get_post_context_n(match_info_list):
     n = 0
@@ -180,7 +168,7 @@ def do_plot():
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
-        dummy, pattern_action_pair_list = get_generator_input(mode)
+        pattern_action_pair_list = get_generator_input(mode)
 
         plotter = plot_generator.Generator(pattern_action_pair_list, 
                                            StateMachineName = mode.name,

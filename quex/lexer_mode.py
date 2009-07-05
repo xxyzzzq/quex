@@ -90,11 +90,6 @@ class ModeDescription:
         for name in event_handler_db.keys():
             self.events[name] = CodeFragment()
 
-        # A flag indicating wether the mode has gone trough
-        # consistency check.
-        self.consistency_check_done_f             = False
-        self.inheritance_circularity_check_done_f = False
-
         # Register ModeDescription at the mode database
         mode_description_db[Name] = self
 
@@ -104,7 +99,7 @@ class ModeDescription:
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
-        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern)
+        self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, ModeName=self.name)
 
     def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, FileName, LineN):
         if self.__matches.has_key(Pattern):
@@ -219,20 +214,47 @@ class Mode:
     def get_pattern_action_pair_list(self):
         return self.__pattern_action_pair_list
 
-    def get_inheritance_structure_string(self, Depth=0):
-        """NOTE: The consistency check ensures that all base modes are
-                 defined and inheritable and there is no circular inheritance !
-                 Therefore there is no need to check if the base mode
-                 has an entry in the mode database."""
-        assert self.consistency_check_done_f == True, \
-               "called before consistency check!"
+    def get_documentation(self):
+        L = max(map(lambda mode: len(mode.name), self.__base_mode_sequence))
+        txt  = "\nMODE: %s\n" % self.name
 
-        if Depth != 0: str = "** " + ("   " * Depth) + self.name + "\n"
-        else:          str = "** <" + self.name + ">\n"
-        for base_mode_name in self.base_modes:
-            mode = mode_description_db[base_mode_name]
-            str += mode.inheritance_structure_string(Depth + 1)
-        return str
+        txt += "\n"
+        if len(self.__base_mode_sequence) != 1:
+            txt += "    BASE MODE SEQUENCE:\n"
+            base_mode_name_list = map(lambda mode: mode.name, self.__base_mode_sequence[:-1])
+            base_mode_name_list.reverse()
+            for name in base_mode_name_list:
+                txt += "      %s\n" % name
+            txt += "\n"
+
+        if self.__history_deletion != []:
+            txt += "    DELETION ACTIONS:\n"
+            for entry in self.__history_deletion:
+                txt += "      %s:  %s%s  (from mode %s)\n" % \
+                       (entry[0], " " * (L - len(self.name)), entry[1], entry[2])
+            txt += "\n"
+
+        if self.__history_repriorization != []:
+            txt += "    PRIORITY-MARK ACTIONS:\n"
+            self.__history_repriorization.sort(lambda x, y: cmp(x[4], y[4]))
+            for entry in self.__history_repriorization:
+                txt += "      %s: %s%s  (from mode %s)  (%i) --> (%i)\n" % \
+                       (entry[0], " " * (L - len(self.name)), entry[1], entry[2], entry[3], entry[4])
+            txt += "\n"
+
+        if self.__pattern_action_pair_list != []:
+            txt += "    PATTERN-ACTION PAIRS:\n"
+            self.__pattern_action_pair_list.sort(lambda x, y:
+                            cmp(x.pattern_state_machine().get_id(),
+                                y.pattern_state_machine().get_id()))
+            for pattern_action_pair in self.__pattern_action_pair_list:
+                txt += "      (%3i) %s: %s%s\n" % \
+                       (pattern_action_pair.pattern_state_machine().get_id(),
+                        pattern_action_pair.mode_name, " " * (L - len(self.name)), 
+                        pattern_action_pair.pattern)
+            txt += "\n"
+
+        return txt
 
     def __determine_base_mode_sequence(self, ModeDescr, InheritancePath):
         """Determine the sequence of base modes. The type of sequencing determines
@@ -253,10 +275,10 @@ class Mode:
            This function detects circular inheritance.
         """
         if ModeDescr.name in InheritancePath:
-            msg = "mode '%s'" % ModeDescr.name
-            InheritancePath.reverse()
-            for mode_name in InheritancePath:
+            msg = "mode '%s'\n" % InheritancePath[0]
+            for mode_name in InheritancePath[InheritancePath.index(ModeDescr.name) + 1:]:
                 msg += "   inherits mode '%s'\n" % mode_name
+            msg += "   inherits mode '%s'" % ModeDescr.name
 
             error_msg("circular inheritance detected:\n" + msg, ModeDescr.filename, ModeDescr.line_n)
 
@@ -327,13 +349,13 @@ class Mode:
                 match.pattern_state_machine().core().set_id(current_pattern_id + offset)
             
             # The reprioritizations must also be adapted
-            #for key, info in repriorization_db.items():
-            #    print "##reprio:", key, info[-1], info[-1] + offset
+            ## for key, info in repriorization_db.items():
+            ##    print "##reprio:", key, info[-1], info[-1] + offset
             for info in repriorization_db.items():
                 info[-1] += offset
             return match_list, repriorization_db 
                                              
-        def __handle_deletion_and_repriorization(pattern_action_pair_list, 
+        def __handle_deletion_and_repriorization(CurrentModeName, pattern_action_pair_list, 
                                                  repriorization_db, deletion_db):
 
             def __validate_marks(DB, DoneDB, CommentStr):
@@ -355,26 +377,35 @@ class Mode:
             # DELETION / PRIORITY-MARK 
             deletion_done_db       = {}
             repriorization_done_db = {}
-            for match in pattern_action_pair_list:
+            i    = 0
+            size = len(pattern_action_pair_list)
+            while i < size:
+                match         = pattern_action_pair_list[i]
                 state_machine = match.pattern_state_machine()
 
                 found_pattern = __is_in_patterns(state_machine, deletion_db)
                 if found_pattern != "":
-                    # Deletion = not mentioning it in the list of resolved patterns
+                    # Delete pattern from the list of pattern action pairs
+                    del pattern_action_pair_list[i]
+                    size -= 1
                     # Mark 'deletion applied'
                     deletion_done_db[found_pattern] = True
+                    self.__history_deletion.append([CurrentModeName, match.pattern, match.mode_name])
                     continue
 
                 found_pattern = __is_in_patterns(state_machine, repriorization_db)
                 if found_pattern != "":
                     # Adapt the pattern index, this automatically adapts the match precedence
-                    old_state_machine_id = match.pattern_state_machine().get_id()
+                    old_state_machine_id = state_machine.get_id()
                     new_state_machine_id = repriorization_db[found_pattern][-1]
-                    match = deepcopy(match)
-                    match.pattern_state_machine().core().set_id(new_state_machine_id)
-                    match.inheritance_mode_name = self.name
+                    new_match = deepcopy(match)
+                    new_match.pattern_state_machine().core().set_id(new_state_machine_id)
+                    pattern_action_pair_list[i] = new_match
                     # Mark 'repriorization applied'
                     repriorization_done_db[found_pattern] = True
+                    self.__history_repriorization.append([CurrentModeName, match.pattern, match.mode_name,
+                                                          old_state_machine_id, new_state_machine_id]) 
+                i += 1
 
             # Ensure that all mentioned marks really had some effect.
             if    not __validate_marks(deletion_db, deletion_done_db, "for DELETION")  \
@@ -387,8 +418,6 @@ class Mode:
             pattern       = PatternActionPair.pattern
 
             for earlier_match in pattern_action_pair_list:
-                print "##e:", earlier_match.pattern_state_machine().get_id()
-                print "##n:", state_machine.get_id()
                 if earlier_match.pattern_state_machine().get_id() > state_machine.get_id(): continue
                 if subset_checker.do(earlier_match.pattern_state_machine(), state_machine) == False: continue
                 error_msg("Pattern '%s' matches a superset of what is matched by" % 
@@ -413,7 +442,7 @@ class Mode:
                                                                                            mode_descr.get_repriorization_db(),
                                                                                            prev_max_pattern_index)
             # Delete/Repriorize patterns from more basic modes
-            __handle_deletion_and_repriorization(result, 
+            __handle_deletion_and_repriorization(mode_descr.name, result, 
                                                  repriorization_db, mode_descr.get_deletion_db())
 
             if mode_descr.has_own_matches(): 
