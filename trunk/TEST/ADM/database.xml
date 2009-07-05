@@ -1,4 +1,4 @@
-<test-database execution-time-sec="246.35" date="Fri Jul  3 08:37:35 2009">
+<test-database execution-time-sec="245.26" date="Sun Jul  5 00:54:49 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="3.77"> 
@@ -19,10 +19,10 @@
                <choice name="" result="OK" time_sec="3.82" crc="892119929"/>
             </choice-list>
         </test>
-        <test title="2002474 Segmentation Fault while UTF-8 Decoding" make-required="True" time-sum-sec="0.19"> 
+        <test title="2002474 Segmentation Fault while UTF-8 Decoding" make-required="True" time-sum-sec="0.15"> 
             <application file-name="bug-2002474.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="NO GOOD FILE" time_sec="0.19" crc="-962432016"/>
+               <choice name="" result="NO GOOD FILE" time_sec="0.15" crc="-962432016"/>
             </choice-list>
         </test>
         <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" make-required="True" time-sum-sec="0.13"> 
@@ -54,10 +54,10 @@
                <choice name="newline-skipper-utf8" result="OK" time_sec="3.93" crc="1738530804"/>
             </choice-list>
         </test>
-        <test title="1948456 (feature) Inheritance Info" make-required="True" time-sum-sec="0.29"> 
+        <test title="1948456 (feature) Inheritance Info" make-required="True" time-sum-sec="0.00"> 
             <application file-name="feature-1948456.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time_sec="0.29" crc="239826523"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-1449445453"/>
             </choice-list>
         </test>
         <test title="1952747 TKN_TERMINATION" make-required="True" time-sum-sec="0.31"> 
@@ -165,10 +165,10 @@
                <choice name="" result="OK" time_sec="0.19" crc="-429266748"/>
             </choice-list>
         </test>
-        <test title="1936707 0.24.10 --plot flag doesnt seem to work" make-required="True" time-sum-sec="0.57"> 
+        <test title="1936707 0.24.10 --plot flag doesnt seem to work" make-required="True" time-sum-sec="0.63"> 
             <application file-name="bug-1936707.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time_sec="0.57" crc="-2094704639"/>
+               <choice name="" result="FAIL" time_sec="0.63" crc="-2094704639"/>
             </choice-list>
         </test>
         <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" make-required="True" time-sum-sec="18.00"> 
@@ -259,10 +259,10 @@
                <choice name="" result="OK" time_sec="0.00" crc="-396174589"/>
             </choice-list>
         </test>
-        <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" make-required="True" time-sum-sec="0.19"> 
+        <test title="1894130 0.20.6 can list wrong mode as circuluar inheritance" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1894130.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time_sec="0.19" crc="-895622030"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-61416298"/>
             </choice-list>
         </test>
         <test title="1895500 assertion error running generated 0.20.8 lexer with Unicode" make-required="True" time-sum-sec="6.06"> 
@@ -344,10 +344,10 @@
                <choice name="" result="OK" time_sec="0.33" crc="781076954"/>
             </choice-list>
         </test>
-        <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.63"> 
+        <test title="1885304 Problems with files with DOS CR/LF line endings" make-required="True" time-sum-sec="0.00"> 
             <application file-name="bug-1885304.sh" info-request-time="1240136149L"/>
             <choice-list number="1">
-               <choice name="" result="FAIL" time_sec="0.63" crc="-2081809384"/>
+               <choice name="" result="OK" time_sec="0.00" crc="2101344544"/>
             </choice-list>
         </test>
         <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" make-required="True" time-sum-sec="0.26"> 

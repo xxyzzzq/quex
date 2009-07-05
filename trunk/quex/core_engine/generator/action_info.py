@@ -120,10 +120,8 @@ class PatternActionInfo:
         if type(Action) in [str, unicode]: self.__action = CodeFragment(Action)
         else:                              self.__action = Action
 
-        self.pattern               = Pattern
-        # depth of inheritance where the pattern occurs
-        self.inheritance_level     = IL
-        self.inheritance_mode_name = ModeName
+        self.pattern   = Pattern
+        self.mode_name = ModeName
 
     def pattern_state_machine(self):
         return self.__pattern_state_machine
@@ -136,13 +134,13 @@ class PatternActionInfo:
 
     def __repr__(self):         
         txt  = ""
+        txt += "self.mode_name         = " + repr(self.mode_name) + "\n"
         txt += "self.pattern           = " + repr(self.pattern) + "\n"
         txt += "self.pattern_state_machine = \n" + repr(self.pattern_state_machine()).replace("\n", "\n      ")
         txt += "self.action            = " + repr(self.action().get_code()) + "\n"
         if self.action().__class__ == UserCodeFragment:
             txt += "self.filename          = " + repr(self.action().filename) + "\n"
             txt += "self.line_n            = " + repr(self.action().line_n) + "\n"
-        txt += "self.inheritance_level = " + repr(self.inheritance_level) + "\n"
         txt += "self.pattern_index     = " + repr(self.pattern_state_machine().core().id()) + "\n"
         return txt
 

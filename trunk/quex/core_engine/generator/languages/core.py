@@ -130,7 +130,7 @@ db["C++"] = {
     "$!=":                lambda left, right: left + " != " + right,
     #
     "$comment":           lambda txt: "/* " + txt + " */",
-    "$ml-comment":        lambda txt: "    /* " + txt.replace("\n", "\n     * ") + "\n     */",
+    "$ml-comment":        lambda txt: "    /* " + txt.replace("/*", "SLASH_STAR").replace("*/", "STAR_SLASH").replace("\n", "\n     * ") + "\n     */",
     "$/*":     "//",
     "$*/":     "\n",
     "$*/\n":   "\n",    # make sure, that we do not introduce an extra '\n' in case that end of comment

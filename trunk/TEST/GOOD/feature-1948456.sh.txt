@@ -1,33 +1,63 @@
-    /* Information about what pattern 'comes' from what mode in the inheritance tree.
+    /* 
+     * MODE: FOUR
      * 
-     * [1] pattern, [2] dominating mode, [3] dominating inheritance level, [4] pattern index
+     *     BASE MODE SEQUENCE:
+     *       THREE
+     *       TWO
+     *       ONE
      * 
-     * (FOUR)
-     *  dfg ONE  3 00010
-     *  cde TWO  2 00007
-     *  bcd THREE  1 00004
-     *  abc FOUR  0 00001
-     * 
-     * 
-     * (THREE)
-     *  dfg ONE  2 00010
-     *  cde TWO  1 00007
-     *  abc THREE  0 00001
-     *  bcd THREE  0 00004
-     * 
-     * 
-     * (TWO)
-     *  dfg ONE  1 00010
-     *  abc TWO  0 00001
-     *  bcd TWO  0 00004
-     *  cde TWO  0 00007
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE:  abc
+     *       (  4) ONE:  bcd
+     *       (  7) ONE:  cde
+     *       ( 10) ONE:  dfg
+     *       ( 15) TWO:  abcd?
+     *       ( 20) TWO:  bcde?
+     *       ( 25) TWO:  cdef?
+     *       ( 36) THREE:  abcd?e?
+     *       ( 47) THREE:  bcde?f?
+     *       ( 64) FOUR:  abcd?e?f?
      * 
      * 
-     * (ONE)
-     *  abc ONE  0 00001
-     *  bcd ONE  0 00004
-     *  cde ONE  0 00007
-     *  dfg ONE  0 00010
+     * MODE: ONE
      * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE: abc
+     *       (  4) ONE: bcd
+     *       (  7) ONE: cde
+     *       ( 10) ONE: dfg
+     * 
+     * 
+     * MODE: THREE
+     * 
+     *     BASE MODE SEQUENCE:
+     *       TWO
+     *       ONE
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE: abc
+     *       (  4) ONE: bcd
+     *       (  7) ONE: cde
+     *       ( 10) ONE: dfg
+     *       ( 15) TWO: abcd?
+     *       ( 20) TWO: bcde?
+     *       ( 25) TWO: cdef?
+     *       ( 36) THREE: abcd?e?
+     *       ( 47) THREE: bcde?f?
+     * 
+     * 
+     * MODE: TWO
+     * 
+     *     BASE MODE SEQUENCE:
+     *       ONE
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE: abc
+     *       (  4) ONE: bcd
+     *       (  7) ONE: cde
+     *       ( 10) ONE: dfg
+     *       ( 15) TWO: abcd?
+     *       ( 20) TWO: bcde?
+     *       ( 25) TWO: cdef?
      * 
      * 

@@ -19,17 +19,14 @@ token {
 mode BASE :
 <inheritable: only>  
 {    
-    <<EOF>> {
-        self.send(QUEX_TKN_TERMINATION);
-        RETURN;
-    }
-    "."                => QUEX_TKN_PERIOD;
-    ","                => QUEX_TKN_PERIOD;
-    "Fischer's"        => QUEX_TKN_FISCHERS;
-    [abd-fh-z][a-z]*   => QUEX_TKN_FISCHES(Lexeme);
-    "Fritz"            => QUEX_TKN_FRITZ;
-    [A-MO-RT-Z][a-z]*  => QUEX_TKN_FISCH(Lexeme);
-    "Nothing"          => QUEX_TKN_NOTHING;
+    <<EOF>>     => QUEX_TKN_TERMINATION(LexemeNull);
+    "."         => QUEX_TKN_PERIOD;
+    ","         => QUEX_TKN_PERIOD;
+    "Fischer's" => QUEX_TKN_FISCHERS;
+    [a-z]+      => QUEX_TKN_FISCHES(Lexeme);
+    "Fritz"     => QUEX_TKN_FRITZ;
+    "Nothing"   => QUEX_TKN_NOTHING;
+    [A-Z][a-z]+ => QUEX_TKN_FISCH(Lexeme);
 
     // Test, that the skippers follow the same rule as every other pattern:
     // longer match precedes. Earlier match precedes.
@@ -42,15 +39,24 @@ mode DERIVED : BASE
 <skip_range: "/*" "*/">
 <skip_range: "//" "\n">
 {
-    "Nothing"          DELETION;
+    /* NOTE: Added optional '(777)?' to avoid that a higher precedence
+     *       matches a superset of what is matched by the actual pattern. 
+     *       Higher precedence pattern matching a superset of a lower
+     *       precedence pattern causes an error.                           */
+    "Nothing"           DELETION;
 
-    "grabs"            => QUEX_TKN_GRABS;
-    "Swordfish"        => QUEX_TKN_SWORDFISH;
-    [abd-fh-z][a-z]*   PRIORITY-MARK;
-    "hunts"            => QUEX_TKN_FOOLS_AROUND;
-    "Trouts"           => QUEX_TKN_TROUTS;
-    [A-MO-RT-Z][a-z]*  PRIORITY-MARK;
-    "catches"          => QUEX_TKN_FOOLS_AROUND;
-    "Sharks"           => QUEX_TKN_SOMETHING_IMPOSSIBLE;
+    "grabs"             => QUEX_TKN_GRABS;
+    "Swordfish"         => QUEX_TKN_SWORDFISH;
+
+    [a-z]+              PRIORITY-MARK;
+
+    "hunts"(777)?       => QUEX_TKN_FOOLS_AROUND;
+    "Trouts"            => QUEX_TKN_TROUTS;
+
+    [A-Z][a-z]+         PRIORITY-MARK;
+
+    "catches"(777)?     => QUEX_TKN_FOOLS_AROUND;
+    "Sharks"(777)?      => QUEX_TKN_SOMETHING_IMPOSSIBLE;
 }
+
 
