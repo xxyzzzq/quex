@@ -437,6 +437,7 @@ class Mode:
         # Iterate from the base to the top (include this mode's pattern)
         for mode_descr in self.__base_mode_sequence:
 
+            repriorization_db = {}
             if mode_descr.has_own_matches(): 
                 match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
                                                                                            mode_descr.get_repriorization_db(),

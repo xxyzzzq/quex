@@ -129,6 +129,9 @@ class PatternActionInfo:
     def action(self):
         return self.__action
 
+    def set_action(self, Action):
+        self.__action = Action
+
     def pattern_index(self):
         return self.pattern_state_machine().get_id()
 
