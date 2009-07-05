@@ -135,7 +135,8 @@ def get_generator_input(Mode):
     # Assume pattern-action pairs (matches) are sorted and their pattern state
     # machine ids reflect the sequence of pattern precedence.
 
-    prepared_pattern_action_pair_list = []
+    ## prepared_pattern_action_pair_list = []
+
     for pattern_info in pattern_action_pair_list:
         safe_pattern_str      = pattern_info.pattern.replace("\"", "\\\"")
         pattern_state_machine = pattern_info.pattern_state_machine()
@@ -145,11 +146,11 @@ def get_generator_input(Mode):
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
                                                    pattern_state_machine)
 
-        action_info = PatternActionInfo(pattern_state_machine, prepared_action)
+        pattern_info.set_action(prepared_action)
 
-        prepared_pattern_action_pair_list.append(action_info)
+        ## prepared_pattern_action_pair_list.append(action_info)
     
-    return prepared_pattern_action_pair_list
+    return pattern_action_pair_list
 
 def __get_post_context_n(match_info_list):
     n = 0
