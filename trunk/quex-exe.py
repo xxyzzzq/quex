@@ -63,14 +63,16 @@ except KeyboardInterrupt:
     print
     error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
-#except Exception:
-#    error_msg("Unknown exception occured -- please, report a bug under\n" + \
-#              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+except Exception:
+    error_msg("Unknown exception occured -- please, report a bug under\n" + \
+              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
 
 
 if __name__ == "__main__":
     try:
+        core._exception_checker()
+
         # (*) Call only for query? ___________________________________________________________
         if query_parser.do(sys.argv):   # if quex has been called for UCS property
             sys.exit(0)                 # query, then no further processing is performed
@@ -86,15 +88,15 @@ if __name__ == "__main__":
         if Setup.plot_graphic_format == "": core.do()       # 'normal' code generation
         else:                               core.do_plot()  # plot transition graphs
 
-    ##except AssertionError:
-    ##    error_msg("Assertion error -- please report a bug under\n" + \
-    ##              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    except AssertionError:
+        error_msg("Assertion error -- please report a bug under\n" + \
+                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
     except KeyboardInterrupt: 
         print
         error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
-    #except Exception:
-    #    error_msg("Unknown exception occured -- please, report a bug under\n" + \
-    #              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+    except Exception:
+        error_msg("Unknown exception occured -- please, report a bug under\n" + \
+                  " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
         
