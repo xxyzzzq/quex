@@ -358,9 +358,8 @@ def write_safely_and_close(FileName, txt):
     if os.linesep != "\n": txt = txt.replace("\n", os.linesep)
     # NOTE: According to bug 2813381, maybe due to an error in python,
     #       there appeared two "\r" instead of one "\r\r".
-    if "\r" in os.linesep:
-        while txt.find("\r\r") != -1:
-            txt = txt.replace("\r\r", "\r")
+    while txt.find("\r\r") != -1:
+        txt = txt.replace("\r\r", "\r")
     fh.write(txt)
     fh.close()
 

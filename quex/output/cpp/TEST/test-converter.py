@@ -15,7 +15,7 @@ def test(Msg, TrafoInfo):
     for record in TrafoInfo:
         print "    [%06X,%06X) --> %06X" % (record[0], record[1], record[2])
     print
-    for record in codec_converter_helper.utf8_conversion_table_get(TrafoInfo):
+    for record in codec_converter_helper.ConverterWriterUTF8().get_conversion_table(TrafoInfo):
         print "    " + repr(record)
 
 if "1" in sys.argv:
