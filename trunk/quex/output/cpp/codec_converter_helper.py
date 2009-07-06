@@ -10,6 +10,35 @@ from quex.input.setup_parser            import __prepare_file_name
 
 LanguageDB = Setup.language_db
 
+def do():
+    if Setup.engine_character_encoding == "": return
+
+    assert Setup.engine_character_encoding_transformation_info != None
+
+    txt = write(Setup.engine_character_encoding_transformation_info, 
+                Setup.engine_character_encoding)
+
+    file_name = __prepare_file_name("-converter-%s" % Setup.engine_character_encoding)
+    write_safely_and_close(file_name, txt) 
+
+def write(UnicodeTrafoInfo, CodecName):
+    """
+    PURPOSE: Writes converters for conversion towards UTF8/UTF16/UCS2/UCS4.
+    """
+    function_body    = ConverterWriterUTF8().do(UnicodeTrafoInfo)
+    codec_name       = make_safe_identifier(CodecName)
+
+    # Provide only the constant which are necessary
+
+    return blue_print(utf8_converter_function_txt, 
+                      [["$$CODEC$$",     CodecName],
+                       ["$$CONST$$",     utf8_byte_constants_get(ConverterWriterUTF8().get_conversion_table(UnicodeTrafoInfo))],
+                       ["$$BODY_UTF8$$", function_body],
+                       ["$$BODY_UTF16$$", ""],
+                       ["$$BODY_UCS2$$",  ""],
+                       ["$$BODY_UCS4$$",  ""]])
+
+
 utf8_converter_function_txt = \
 """
 /* -*- C++ -*- vim: set syntax=cpp:
@@ -62,7 +91,7 @@ $$CONST$$
 #   define QUEX_BYTE_3  ((uint8_t)((unicode & 0xFF000000) >> 24))
 #endif
 
-$$BODY$$
+$$BODY_UTF8$$
     __quex_assert(p - output < (ptrdiff_t)7);
     __quex_assert(p > output);
     return p;
@@ -73,11 +102,29 @@ $$BODY$$
 #   undef QUEX_BYTE_3 
 }
 
+QUEX_INLINE uint16_t*
+Quex_$$CODEC$$_to_utf16(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+{
+$$BODY_UTF16$$
+}
+
+QUEX_INLINE uint16_t*
+Quex_$$CODEC$$_to_ucs2(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+{
+$$BODY_UCS2$$
+}
+
+QUEX_INLINE uint32_t*
+Quex_$$CODEC$$_to_ucs4(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint32_t *Drain, size_t DrainSize)
+{
+$$BODY_UCS4$$
+}
+
 QUEX_INLINE uint8_t*
 Quex_$$CODEC$$_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
 {
     QUEX_TYPE_CHARACTER *source_iterator, *source_end;
-    uint8_t                *drain_iterator, *drain_end;
+    uint8_t             *drain_iterator, *drain_end;
 
     __quex_assert(Source != 0x0);
     __quex_assert(Drain != 0x0);
@@ -120,31 +167,169 @@ Quex_$$CODEC$$_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Sour
 
 """
 
-def do():
-    if Setup.engine_character_encoding == "": return
+class ConverterWriter:
+    def do(self, UnicodeTrafoInfo, ProvidedConversionInfoF=False):
+        """Creates code for a conversion to utf8 according to the conversion_table.
+        """
+        # The flag 'ProvidedConversionTableF' is only to be used for Unit Tests
+        if ProvidedConversionInfoF: conversion_table = UnicodeTrafoInfo
+        else:                       conversion_table = self.get_conversion_table(UnicodeTrafoInfo)
 
-    assert Setup.engine_character_encoding_transformation_info != None
+        # Make sure that the conversion table is sorted
+        conversion_table.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
 
-    txt = write(Setup.engine_character_encoding_transformation_info, 
-                Setup.engine_character_encoding)
+        # Implement a binary bracketing of conversion domains
+        def __bracket(conversion_list, CallerRangeIndex):
+            txt = ""
+            L = len(conversion_list)
+            if   L == 1:
+                txt += self.get_unicode_range_conversion(conversion_list[0])
+                # The caller does have to implement an 'encoder
+                if CallerRangeIndex != conversion_list[0].byte_format_range_index:
+                    txt += self.get_byte_formatter(conversion_list[0].byte_format_range_index)
+            else:
+                # Determine wether all sub-ranges belong to the same utf8-range
+                range_index = self.same_byte_format_range(conversion_list)
 
-    file_name = __prepare_file_name("-converter-%s" % Setup.engine_character_encoding)
-    write_safely_and_close(file_name, txt) 
+                # Bracket interval in the middle
+                mid_index = int(float(L)/2)
+                Middle    = "0x%06X" % conversion_list[mid_index].codec_interval_begin
+                txt += LanguageDB["$if <"](Middle) 
+                if range_index != -1: 
+                    txt += __bracket(conversion_list[:mid_index], range_index)
+                    txt += LanguageDB["$endif-else"] + "\n"   
+                    txt += __bracket(conversion_list[mid_index:], range_index)
+                    txt += LanguageDB["$end-else"]
+                    if CallerRangeIndex != range_index:
+                        txt += self.get_byte_formatter(range_index)
+                else:
+                    txt += __bracket(conversion_list[:mid_index], range_index)
+                    txt += LanguageDB["$endif-else"] + "\n"   
+                    txt += __bracket(conversion_list[mid_index:], range_index)
+                    txt += LanguageDB["$end-else"]
 
-def write(TrafoInfo, CodecName):
-    """
-    PURPOSE: Writes converters for conversion towards Unicode (wchar_t) and utf8.
-    """
-    conversion_table = utf8_conversion_table_get(TrafoInfo)
-    function_body    = utf8_converter_get(conversion_table)
-    codec_name       = make_safe_identifier(CodecName)
+            return "    " + txt[:-1].replace("\n", "\n    ") + "\n"
 
-    # Provide only the constant which are necessary
+        range_index = self.same_byte_format_range(conversion_table)
+        txt = __bracket(conversion_table, range_index)
+        if range_index != -1: 
+            formatter_txt = self.get_byte_formatter(range_index)
+            txt += "    " + formatter_txt[:-1].replace("\n", "\n    ") + "\n"
+        return txt
 
-    return blue_print(utf8_converter_function_txt, 
-                      [["$$CODEC$$", CodecName],
-                       ["$$CONST$$", utf8_byte_constants_get(conversion_table)],
-                       ["$$BODY$$",  function_body]])
+    def get_unicode_range_conversion(self, Info):
+        assert isinstance(Info, UTF8_ConversionInfo)
+
+        # Conversion to Unicode
+        return "unicode = 0x%06X + (input - 0x%06X);\n" % \
+               (Info.codec_interval_begin_unicode, Info.codec_interval_begin)
+
+
+class ConverterWriterUTF8(ConverterWriter):
+    def same_byte_format_range(self, ConvInfoList):
+        """RETURNS: >= 0   the common byte format range index.
+                    == -1  not all infos belong to the same utf8 range.
+        """
+        range_i = ConvInfoList[0].byte_format_range_index
+        for info in ConvInfoList[1:]:
+            if info.byte_format_range_index != range_i: return -1
+        return ConvInfoList[0].byte_format_range_index
+
+    def get_byte_formatter(self, RangeIndex):
+        # Byte Split
+        return {
+                0: 
+                "*p = QUEX_BYTE_0; ++p;\n",
+                1:
+                "*(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
+
+                2:
+                "*(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
+
+                3:
+                "*(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);\n" + \
+                "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n", 
+
+                4:
+                "*(p++) = LEN5 | QUEX_BYTE_3 & 0x03;\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
+                "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
+
+                5:
+                "*(p++) = LEN6 | ((QUEX_BYTE_3 & 0x40) >> 6);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_3 & 0x3f);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_1 >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
+                "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
+
+        }[RangeIndex] 
+
+    def get_conversion_table(self, UnicodeTrafoInfo):
+        """UTF8 covers the following regions with the corresponding numbers of bytes:
+        
+             0x00000000 - 0x0000007F: 1 byte  - 0xxxxxxx
+             0x00000080 - 0x000007FF: 2 bytes - 110xxxxx 10xxxxxx
+             0x00000800 - 0x0000FFFF: 3 bytes - 1110xxxx 10xxxxxx 10xxxxxx
+             0x00010000 - 0x001FFFFF: 4 bytes - 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+             0x00200000 - 0x03FFFFFF: 5 bytes ... 
+             0x04000000 - 0x7FFFFFFF: 
+
+           (1) Identify what regions in the trafo-info belong to what utf8-range.
+           (2) Map those regions to target encoding regions.
+           (3) For each region compute the conversion.
+        """
+        trafo_info  = copy(UnicodeTrafoInfo)
+        utf8_border = [ 0x0, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, sys.maxint] 
+        L = len(utf8_border)
+
+        # Sort transform info database according to target range
+        info_list = []
+        trafo_info.sort(lambda a, b: cmp(a[2], b[2]))
+        for source_interval_begin, source_interval_end, target_interval_begin in trafo_info:
+
+            # How does the target interval has to be split according to utf8-ranges?
+            i = 0
+            while source_interval_begin >= utf8_border[i]: 
+                i += 1
+
+            i -= 1
+            ## print "##", i, source_interval_begin, utf8_border[i]
+            # 'i' now stands on the first utf8_range that touches the source interval
+            info = UTF8_ConversionInfo(i, source_interval_begin, target_interval_begin)
+
+            # NOTE: size of target interval = size of source interval
+            remaining_size = source_interval_end - source_interval_begin
+
+            ## print "## %i, %x, %x" % (i, source_interval_begin, source_interval_end)
+            while i != L - 1 and remaining_size != 0:
+                remaining_utf8_range_size = utf8_border[i+1] - source_interval_begin
+                info.codec_interval_size  = min(remaining_utf8_range_size, remaining_size)
+                ## print i, "%X: %x, %x" % (utf8_border[i+1], remaining_utf8_range_size, remaining_size)
+                info_list.append(info)
+
+                source_interval_begin  = utf8_border[i+1] 
+                target_interval_begin += info.codec_interval_size
+                remaining_size        -= info.codec_interval_size
+                i += 1
+                info = UTF8_ConversionInfo(i, source_interval_begin, target_interval_begin)
+
+            ## print "##", remaining_size
+            if remaining_size != 0:
+                info.codec_interval_size = remaining_size
+                info_list.append(info)
+
+        info_list.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
+
+        return info_list
+
 
 class UTF8_ConversionInfo:
     """A given interval in the codec corresponds to a certain UTF-8 Range.
@@ -163,14 +348,14 @@ class UTF8_ConversionInfo:
        The codec interval always lies inside a single utf8 range.
     """
     def __init__(self, RangeIndex, CI_Begin_in_Unicode, CI_Begin, CI_Size=-1):
-        self.utf8_range_index             = RangeIndex
+        self.byte_format_range_index      = RangeIndex
         self.codec_interval_begin         = CI_Begin
         self.codec_interval_size          = CI_Size
         self.codec_interval_begin_unicode = CI_Begin_in_Unicode
 
     def __repr__(self):
         return "[%i] at %08X: Codec Interval [%X,%X)" % \
-               (self.utf8_range_index,
+               (self.byte_format_range_index,
                 self.codec_interval_begin_unicode,
                 self.codec_interval_begin,
                 self.codec_interval_begin + self.codec_interval_size)
@@ -178,8 +363,8 @@ class UTF8_ConversionInfo:
 def utf8_byte_constants_get(ConvTable):
     unique_range_index_list = []
     for info in ConvTable:
-        if info.utf8_range_index not in unique_range_index_list:
-            unique_range_index_list.append(info.utf8_range_index)
+        if info.byte_format_range_index not in unique_range_index_list:
+            unique_range_index_list.append(info.byte_format_range_index)
     unique_range_index_list.sort()
 
     db = { 2: 0xc0, 3: 0xe0, 4: 0xf0, 5: 0xf8, 6: 0xfc }
@@ -191,160 +376,3 @@ def utf8_byte_constants_get(ConvTable):
             txt += "    const int LEN%i = 0x%03X;\n" % (index + 1, db[index + 1])
     return txt
 
-def utf8_conversion_table_get(TrafoInfo):
-    """UTF8 covers the following regions with the corresponding numbers of bytes:
-    
-         0x00000000 - 0x0000007F: 1 byte  - 0xxxxxxx
-         0x00000080 - 0x000007FF: 2 bytes - 110xxxxx 10xxxxxx
-         0x00000800 - 0x0000FFFF: 3 bytes - 1110xxxx 10xxxxxx 10xxxxxx
-         0x00010000 - 0x001FFFFF: 4 bytes - 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-         0x00200000 - 0x03FFFFFF: 5 bytes ... 
-         0x04000000 - 0x7FFFFFFF: 
-
-       (1) Identify what regions in the trafo-info belong to what utf8-range.
-       (2) Map those regions to target encoding regions.
-       (3) For each region compute the conversion.
-    """
-    trafo_info  = copy(TrafoInfo)
-    utf8_border = [ 0x0, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, sys.maxint] 
-    L = len(utf8_border)
-
-    # Sort transform info database according to target range
-    info_list = []
-    trafo_info.sort(lambda a, b: cmp(a[2], b[2]))
-    for source_interval_begin, source_interval_end, target_interval_begin in trafo_info:
-
-        # How does the target interval has to be split according to utf8-ranges?
-        i = 0
-        while source_interval_begin >= utf8_border[i]: 
-            i += 1
-
-        i -= 1
-        ## print "##", i, source_interval_begin, utf8_border[i]
-        # 'i' now stands on the first utf8_range that touches the source interval
-        info = UTF8_ConversionInfo(i, source_interval_begin, target_interval_begin)
-
-        # NOTE: size of target interval = size of source interval
-        remaining_size = source_interval_end - source_interval_begin
-
-        ## print "## %i, %x, %x" % (i, source_interval_begin, source_interval_end)
-        while i != L - 1 and remaining_size != 0:
-            remaining_utf8_range_size = utf8_border[i+1] - source_interval_begin
-            info.codec_interval_size  = min(remaining_utf8_range_size, remaining_size)
-            ## print i, "%X: %x, %x" % (utf8_border[i+1], remaining_utf8_range_size, remaining_size)
-            info_list.append(info)
-
-            source_interval_begin  = utf8_border[i+1] 
-            target_interval_begin += info.codec_interval_size
-            remaining_size        -= info.codec_interval_size
-            i += 1
-            info = UTF8_ConversionInfo(i, source_interval_begin, target_interval_begin)
-
-        ## print "##", remaining_size
-        if remaining_size != 0:
-            info.codec_interval_size = remaining_size
-            info_list.append(info)
-
-    info_list.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
-    return info_list
-
-def unicode_range_conversion_get(Info):
-    assert isinstance(Info, UTF8_ConversionInfo)
-
-    # Conversion to Unicode
-    return "unicode = 0x%06X + (input - 0x%06X);\n" % \
-           (Info.codec_interval_begin_unicode, Info.codec_interval_begin)
-
-def utf8_byte_formatter_get(RangeIndex):
-    # Byte Split
-    txt = {
-            0: 
-            "*p = QUEX_BYTE_0; ++p;\n",
-            1:
-            "*(p++) = LEN2 | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x07) << 2);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-            2:
-            "*(p++) = LEN3 | ((QUEX_BYTE_1 & 0xf0) >> 4);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-            3:
-            "*(p++) = LEN4 | ((QUEX_BYTE_2 & 0x1f) >> 2);\n" + \
-            "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n", 
-
-            4:
-            "*(p++) = LEN5 | QUEX_BYTE_3 & 0x03;\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
-            "*(p++) = NEXT | ((QUEX_BYTE_1 & 0xf0) >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-            5:
-            "*(p++) = LEN6 | ((QUEX_BYTE_3 & 0x40) >> 6);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_3 & 0x3f);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_2 >> 2);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_1 >> 4) | ((QUEX_BYTE_2 & 0x03) << 4);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 >> 6) | ((QUEX_BYTE_1 & 0x0f) << 2);\n" + \
-            "*(p++) = NEXT | (QUEX_BYTE_0 & 0x3f);\n",
-
-    }[RangeIndex] 
-
-    return txt  
-
-def utf8_converter_get(ConversionTable):
-    """Creates code for a conversion to utf8 according to the ConversionTable.
-       The conversion table has been created by function utf8_conversion_table_get().
-    """
-    # Make sure that the conversion table is sorted
-    ConversionTable.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
-
-    def __same_utf8_range(ConvInfoList):
-        """RETURNS: >= 0   the commond utf8 range index.
-                    == -1  not all infos belong to the same utf8 range.
-        """
-        range_i = ConvInfoList[0].utf8_range_index
-        for info in ConvInfoList[1:]:
-            if info.utf8_range_index != range_i: return -1
-        return ConvInfoList[0].utf8_range_index
-
-    # Implement a binary bracketing of conversion domains
-    def __bracket(conversion_list, CallerRangeIndex):
-        txt = ""
-        L = len(conversion_list)
-        if   L == 1:
-            txt += unicode_range_conversion_get(conversion_list[0])
-            # The caller does have to implement an 'encoder
-            if CallerRangeIndex != conversion_list[0].utf8_range_index:
-                txt += utf8_byte_formatter_get(conversion_list[0].utf8_range_index)
-        else:
-            # Determine wether all sub-ranges belong to the same utf8-range
-            range_index = __same_utf8_range(conversion_list)
-
-            # Bracket interval in the middle
-            mid_index = int(float(L)/2)
-            Middle    = "0x%06X" % conversion_list[mid_index].codec_interval_begin
-            txt += LanguageDB["$if <"](Middle) 
-            if range_index != -1: 
-                txt += __bracket(conversion_list[:mid_index], range_index)
-                txt += LanguageDB["$endif-else"] + "\n"   
-                txt += __bracket(conversion_list[mid_index:], range_index)
-                txt += LanguageDB["$end-else"]
-                if CallerRangeIndex != range_index:
-                    txt += utf8_byte_formatter_get(range_index)
-            else:
-                txt += __bracket(conversion_list[:mid_index], range_index)
-                txt += LanguageDB["$endif-else"] + "\n"   
-                txt += __bracket(conversion_list[mid_index:], range_index)
-                txt += LanguageDB["$end-else"]
-
-        return "    " + txt[:-1].replace("\n", "\n    ") + "\n"
-
-    range_index = __same_utf8_range(ConversionTable)
-    txt = __bracket(ConversionTable, range_index)
-    if range_index != -1: 
-        formatter_txt = utf8_byte_formatter_get(range_index)
-        txt += "    " + formatter_txt[:-1].replace("\n", "\n    ") + "\n"
-    return txt
