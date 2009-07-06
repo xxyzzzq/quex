@@ -1,0 +1,75 @@
+.. _sec-engine-codec:
+
+Analyzer Engine Codec
+=====================
+
+Apapting the internal codec of the generated lexical analyzer engine happens by
+means of the command line flag ``--codec``. When a codec is specified the
+internal engine will no longer run on unicode, but rather on the specified
+codec. Consider the example of a lexical analyzer definition for some greek
+text to be encoded in ISO-8859-7:
+
+.. code-block:: cpp
+
+    define {
+        CAPITAL   [ΆΈΉΊΌΎ-Ϋ]   
+        LOWERCASE [ά-ώ]
+        NUMBER    [0-9][0-9.,]+
+    }
+
+    mode X :
+    <skip: [ \t\n]>
+    {
+        {CAPITAL}{LOWERCASE}+  => QUEX_TKN_WORD(Lexeme);
+        {NUMBER}               => QUEX_TKN_NUMBER(Lexeme);
+        km2|"%"|{LOWERCASE}+   => QUEX_TKN_UNIT(Lexeme);
+    }
+
+The resulting state machine in Unicode is shown in 
+Figure :ref:`Unicode Engine <fig-codec-unicode>`. This engine could 
+either fed by converted file content using a converting buffer filler. 
+Alternatively, it can be converted so that it directly parses ISO8859-7
+encoded characters. Specifying on the command line::
+
+   > quex (...) --codec iso8859_7 (...)
+
+does the job. 
+
+.. _fig-codec-unicode:
+
+.. figure:: ../figures/state-machine-codec-unicode.*
+   
+   Sample lexical analyzer with an internal engine codec 'Unicode'.
+
+The result is a converted state machine as shown in figure
+:ref:`ISO8859-7 Eninge <fig-codec-iso8859-7>`. that the state machine
+basically remains the same, only the transition rules have been adapted.
+
+.. _fig-codec-iso8859-7:
+
+.. figure:: ../figures/state-machine-codec-iso8859-7.*
+
+   Sample lexical analyzer with an internal engine codec 'ISO8859-7' (greek).
+
+It is worth mentioning that the command line arguments ``--codec-info`` providing
+information about the list of codecs and ``--codec-for-language`` are usefule
+for making decisions about what codec to choose. 
+
+Converter Functions
+===================
+
+When the command line option ``--codec`` is used, quex automatically generates
+a set of converters that may be used to convert strings of the given codec to
+unicode characters. The converters are located in a header file named::
+
+   MyEngine-MyCodec
+  
+where ``MyEngine`` is the engine name as passed via command line option ``-o``
+and ``MyCodec`` is the name of the codec as passed via command line option
+``--codec``. The provided functions are the following:
+
+.. cfunction:: uint8_t* 
+               Quex_$$CODEC$$_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
+
+.. cfunction:: std::string
+               Quex_$$CODEC$$_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)

@@ -1,0 +1,298 @@
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = "xy"+
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = (xy)+
+post condition pattern  = (xy)*z
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      == 'z' ==> 00002
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00000
+      <no epsilon>
+00002(A, S) <~ 
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      == 'z' ==> 00002
+      <no epsilon>
+00001() <~ 
+      <no epsilon>
+00002(A, S) <~ 
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = w(xy)*
+post condition pattern  = (xy)+
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = w(xy)+
+post condition pattern  = (xy)*z
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      == 'z' ==> 00002
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00000
+      <no epsilon>
+00002(A, S) <~ 
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'x' ==> 00002
+      == 'z' ==> 00001
+      <no epsilon>
+00001(A, S) <~ 
+      <no epsilon>
+00002() <~ 
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = w(xy)*
+post condition pattern  = (xy)+z
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002() <~ 
+      == 'x' ==> 00001
+      == 'z' ==> 00003
+      <no epsilon>
+00003(A, S) <~ 
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002() <~ 
+      == 'z' ==> 00003
+      <no epsilon>
+00003(A, S) <~ 
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = ("ab"|"xy")+
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'a' ==> 00003
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      == 'a' ==> 00003
+      == 'x' ==> 00001
+      <no epsilon>
+00003() <~ 
+      == 'b' ==> 00002
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'a' ==> 00001
+      == 'x' ==> 00003
+      <no epsilon>
+00001() <~ 
+      == 'b' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      == 'a' ==> 00001
+      <no epsilon>
+00003() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = ("abc")|((x[a-z])+z)
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'a' ==> 00004
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == ['a', 'z'] ==> 00002
+      <no epsilon>
+00002() <~ 
+      == 'x' ==> 00001
+      == 'z' ==> 00003
+      <no epsilon>
+00003(A, S) <~ 
+      <no epsilon>
+00004() <~ 
+      == 'b' ==> 00005
+      <no epsilon>
+00005() <~ 
+      == 'c' ==> 00003
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'a' ==> 00004
+      == 'x' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == ['a', 'z'] ==> 00002
+      <no epsilon>
+00002() <~ 
+      == 'z' ==> 00003
+      <no epsilon>
+00003(A, S) <~ 
+      <no epsilon>
+00004() <~ 
+      == 'b' ==> 00005
+      <no epsilon>
+00005() <~ 
+      == 'c' ==> 00003
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = "xy"+
+post condition pattern  = ("abc")|(([a-z]y)+z)
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'a' ==> 00001
+      == ['b', 'z'] ==> 00003
+      <no epsilon>
+00001() <~ 
+      == 'b' ==> 00005
+      == 'y' ==> 00002
+      <no epsilon>
+00002() <~ 
+      == ['a', 'y'] ==> 00003
+      == 'z' ==> 00004
+      <no epsilon>
+00003() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00004(A, S) <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00005() <~ 
+      == 'c' ==> 00006
+      <no epsilon>
+00006(A, S) <~ 
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'a' ==> 00001
+      == ['b', 'z'] ==> 00003
+      <no epsilon>
+00001() <~ 
+      == 'b' ==> 00005
+      == 'y' ==> 00002
+      <no epsilon>
+00002() <~ 
+      == ['a', 'w'], 'y' ==> 00003
+      == 'z' ==> 00004
+      <no epsilon>
+00003() <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00004(A, S) <~ 
+      == 'y' ==> 00002
+      <no epsilon>
+00005() <~ 
+      == 'c' ==> 00006
+      <no epsilon>
+00006(A, S) <~ 
+      <no epsilon>
+
+---------------------------------------------------------
+core pattern            = (hey)+
+post condition pattern  = (he[y]?)+
+post condition sm =  init-state = 0L
+00000() <~ 
+      == 'h' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'e' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      == 'h' ==> 00001
+      == 'y' ==> 00003
+      <no epsilon>
+00003(A, S) <~ 
+      == 'h' ==> 00001
+      <no epsilon>
+
+philosophical cut (in post condition) = 
+init-state = 0L
+00000() <~ 
+      == 'h' ==> 00001
+      <no epsilon>
+00001() <~ 
+      == 'e' ==> 00002
+      <no epsilon>
+00002(A, S) <~ 
+      == 'h' ==> 00001
+      == 'y' ==> 00003
+      <no epsilon>
+00003(A, S) <~ 
+      <no epsilon>
+
