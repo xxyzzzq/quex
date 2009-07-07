@@ -39,9 +39,12 @@ def write(UnicodeTrafoInfo, CodecName):
     """
     codec_name = make_safe_identifier(CodecName)
     utf8_prolog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
+    print "##utf16ct:"
+    for info in ConverterWriterUTF16().get_conversion_table(UnicodeTrafoInfo):
+        print "##", info
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
+    print "##END"
     dummy,        ucs4_function_body  = ConverterWriterUCS4().do(UnicodeTrafoInfo)
-    dummy,        ucs2_function_body  = ConverterWriterUCS2().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
 
@@ -49,9 +52,8 @@ def write(UnicodeTrafoInfo, CodecName):
                       [["$$CODEC$$",     CodecName],
                        ["$$PROLOG_UTF8$$", utf8_prolog],
                        ["$$BODY_UTF8$$",   utf8_function_body],
-                       ["$$BODY_UTF16$$", ""],
-                       ["$$BODY_UCS2$$",  ""],
-                       ["$$BODY_UCS4$$",  ucs4_function_body]])
+                       ["$$BODY_UTF16$$",  utf16_function_body],
+                       ["$$BODY_UCS4$$",   ucs4_function_body]])
 
 template_txt = \
 """
@@ -117,22 +119,27 @@ $$BODY_UTF8$$
 #   undef QUEX_BYTE_3 
 }
 
-QUEX_INLINE uint16_t*
-Quex_$$CODEC$$_to_utf16(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+QUEX_INLINE uint32_t
+/* DrainEnd pointer is not returned, since the increment is always '1' */
+Quex_$$CODEC$$_to_ucs4(QUEX_TYPE_CHARACTER input)
 {
-$$BODY_UTF16$$
-}
-
-QUEX_INLINE uint16_t*
-Quex_$$CODEC$$_to_ucs2(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
-{
-$$BODY_UCS2$$
-}
-
-QUEX_INLINE uint32_t*
-Quex_$$CODEC$$_to_ucs4(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint32_t *Drain, size_t DrainSize)
-{
+    uint32_t  unicode = 0L;
 $$BODY_UCS4$$
+}
+
+QUEX_INLINE uint16_t*
+Quex_$$CODEC$$_to_utf16(QUEX_TYPE_CHARACTER input, uint16_t* p)
+{
+    uint32_t unicode = Quex_$$CODEC$$_to_ucs4(input);
+$$BODY_UTF16$$
+    return p;
+}
+
+QUEX_INLINE uint16_t
+/* DrainEnd pointer is not returned, since the increment is always '1' */
+Quex_$$CODEC$$_to_ucs2(QUEX_TYPE_CHARACTER input)
+{
+    return (uint16_t)Quex_$$CODEC$$_to_ucs4(input);
 }
 
 QUEX_INLINE uint8_t*
@@ -156,6 +163,70 @@ Quex_$$CODEC$$_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, ui
     return drain_iterator;
 }
 
+QUEX_INLINE uint16_t*
+Quex_$$CODEC$$_to_utf16_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+{
+    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
+    uint16_t            *drain_iterator, *drain_end;
+
+    __quex_assert(Source != 0x0);
+    __quex_assert(Drain != 0x0);
+
+    drain_iterator = Drain;
+    drain_end      = Drain  + DrainSize;
+    source_end     = Source + SourceSize;
+
+    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        if( drain_end - drain_iterator < (ptrdiff_t)2 ) break;
+        drain_iterator = Quex_$$CODEC$$_to_utf16(*source_iterator, drain_iterator);
+    }
+
+    return drain_iterator;
+}
+
+QUEX_INLINE uint16_t*
+Quex_$$CODEC$$_to_ucs2_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint16_t *Drain, size_t DrainSize)
+{
+    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
+    uint16_t            *drain_iterator, *drain_end;
+
+    __quex_assert(Source != 0x0);
+    __quex_assert(Drain != 0x0);
+
+    drain_iterator = Drain;
+    drain_end      = Drain  + DrainSize;
+    source_end     = Source + SourceSize;
+
+    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        if( drain_end == drain_iterator ) break;
+        *drain_iterator++ = Quex_$$CODEC$$_to_ucs2(*source_iterator);
+    }
+
+    return drain_iterator;
+}
+
+QUEX_INLINE uint32_t*
+Quex_$$CODEC$$_to_ucs4_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint32_t *Drain, size_t DrainSize)
+{
+    QUEX_TYPE_CHARACTER *source_iterator, *source_end;
+    uint32_t            *drain_iterator, *drain_end;
+
+    __quex_assert(Source != 0x0);
+    __quex_assert(Drain != 0x0);
+
+    drain_iterator = Drain;
+    drain_end      = Drain  + DrainSize;
+    source_end     = Source + SourceSize;
+
+    for(source_iterator = Source; source_iterator < source_end; ++source_iterator) {
+        if( drain_end == drain_iterator ) break;
+        *drain_iterator++ = Quex_$$CODEC$$_to_ucs4(*source_iterator);
+    }
+
+    return drain_iterator;
+}
+
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 QUEX_INLINE std::string
 Quex_$$CODEC$$_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
@@ -170,6 +241,49 @@ Quex_$$CODEC$$_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Sour
         drain_end = Quex_$$CODEC$$_to_utf8(*source_iterator, (uint8_t*)drain);
         *drain_end = (uint8_t)0;
         result += (char*)drain;
+    }
+    return result;
+}
+
+QUEX_INLINE std::basic_string<uint16_t>
+Quex_$$CODEC$$_to_utf16_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+{
+    QUEX_TYPE_CHARACTER*         source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    QUEX_TYPE_CHARACTER*         source_end      = source_iterator + Source.length();
+    uint16_t                     drain[8];
+    uint16_t*                    drain_end = 0;
+    std::basic_string<uint16_t>  result;
+
+    for(; source_iterator != source_end; ++source_iterator) {
+        drain_end = Quex_$$CODEC$$_to_utf16(*source_iterator, (uint16_t*)drain);
+        *drain_end = (uint16_t)0;
+        result += (uint16_t*)drain;
+    }
+    return result;
+}
+
+QUEX_INLINE std::basic_string<uint16_t>
+Quex_$$CODEC$$_to_ucs2_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+{
+    QUEX_TYPE_CHARACTER*         source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    QUEX_TYPE_CHARACTER*         source_end      = source_iterator + Source.length();
+    std::basic_string<uint16_t>  result;
+
+    for(; source_iterator != source_end; ++source_iterator) {
+        result += Quex_$$CODEC$$_to_ucs2(*source_iterator);
+    }
+    return result;
+}
+
+QUEX_INLINE std::basic_string<uint32_t>
+Quex_$$CODEC$$_to_ucs4_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source)
+{
+    QUEX_TYPE_CHARACTER*         source_iterator = (QUEX_TYPE_CHARACTER*)Source.c_str();
+    QUEX_TYPE_CHARACTER*         source_end      = source_iterator + Source.length();
+    std::basic_string<uint32_t>  result;
+
+    for(; source_iterator != source_end; ++source_iterator) {
+        result += Quex_$$CODEC$$_to_ucs4(*source_iterator);
     }
     return result;
 }
@@ -228,8 +342,10 @@ class ConverterWriter:
 
         range_index = self.same_byte_format_range(conversion_table)
         txt = __bracket(conversion_table, range_index)
+        print "##txt:", txt, range_index
         if range_index != -1: 
             formatter_txt = self.get_byte_formatter(range_index)
+            print "##fmt:", formatter_txt
             txt += "    " + formatter_txt[:-1].replace("\n", "\n    ") + "\n"
 
         return self.get_prolog(conversion_table), txt
@@ -379,16 +495,17 @@ class ConverterWriterUTF8(ConverterWriter):
         """
         return [ 0x0, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, sys.maxint] 
 
-class ConverterWriterUCS16(ConverterWriter):
+class ConverterWriterUTF16(ConverterWriter):
     def get_prolog(self, ConvTable):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
         return { 0: "*p++ = unicode;\n",
-                 1: "offset_10bit_high = (uint16_t)((unicode - 0x10000) >> 10);\n"  + \
-                    "offset_10bit_low  = (uint16_t)((unicode - 0x10000) & 0x3FF);\n" + \
+                 1: "const uint16_t Offset_10bit_high = (uint16_t)((unicode - 0x10000) >> 10);\n"  + \
+                    "const uint16_t Offset_10bit_low  = (uint16_t)((unicode - 0x10000) & 0x3FF);\n" + \
                     "*p++ = 0xD800 | offset_10bit_high;\n"
-                    "*p++ = 0xDC00 | offset_10bit_low;\n"
+                    "*p++ = 0xDC00 | offset_10bit_low;\n",
+                    }[RangeIndex]
 
     def get_byte_format_range_border_list(self):
         """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
@@ -399,24 +516,12 @@ class ConverterWriterUCS4(ConverterWriter):
         return ""
 
     def get_byte_formatter(self, RangeIndex):
-        return "*p++ = unicode;\n"
+        return "return unicode;\n"
 
     def get_byte_format_range_border_list(self):
         """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
         return [ 0x0, sys.maxint] 
 
-class ConverterWriterUCS4(ConverterWriter):
-    def get_prolog(self, ConvTable):
-        return ""
-
-    def get_byte_formatter(self, RangeIndex):
-        return "*p++ = (uint16_t)unicode;\n"
-
-    def get_byte_format_range_border_list(self):
-        """UCS2 covers the 0x0000-0xFFFF of range of unicode. But we want to be
-           fast and live with the fact that beyond that nonsense is going to be output.
-        """
-        return [ 0x0, sys.maxint] 
 
 
 class ConversionInfo:

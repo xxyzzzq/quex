@@ -27,7 +27,7 @@ def test(CodecName):
     os.system(compile_str)
 
     os.system("./converter-tester")
-    os.remove("./converter-tester.h")
+    #os.remove("./converter-tester.h")
     os.remove("./converter-tester")
 
 test(sys.argv[1])
