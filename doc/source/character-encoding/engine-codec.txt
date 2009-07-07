@@ -68,6 +68,8 @@ where ``MyEngine`` is the engine name as passed via command line option ``-o``
 and ``MyCodec`` is the name of the codec as passed via command line option
 ``--codec``. The provided functions are the following:
 
+QUEX_INLINE uint8_t*
+Quex_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER input, uint8_t* output)
 .. cfunction:: uint8_t* 
                Quex_$$CODEC$$_to_utf8_string(QUEX_TYPE_CHARACTER* Source, size_t SourceSize, uint8_t *Drain, size_t DrainSize)
 
