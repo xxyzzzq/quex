@@ -14,11 +14,12 @@ def test(Msg, ConversionInfoList):
     print 
     conversion_info = []
     for x in ConversionInfoList:
-        info = codec_converter_helper.UTF8_ConversionInfo(x[0], x[1], x[2], x[3])
+        info = codec_converter_helper.ConversionInfo(x[0], x[1], x[2], x[3])
         print "    " + repr(info)
         conversion_info.append(info)
     print
-    print codec_converter_helper.ConverterWriterUTF8().do(conversion_info, ProvidedConversionInfoF=True)
+    dummy, txt = codec_converter_helper.ConverterWriterUTF8().do(conversion_info, ProvidedConversionInfoF=True)
+    print txt
 
 
 if "1" in sys.argv:

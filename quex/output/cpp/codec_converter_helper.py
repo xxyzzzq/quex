@@ -24,27 +24,42 @@ def do():
 def write(UnicodeTrafoInfo, CodecName):
     """
     PURPOSE: Writes converters for conversion towards UTF8/UTF16/UCS2/UCS4.
+
+    UnicodeTrafoInfo:
+
+       Provides the information about the relation of character codes in a particular 
+       coding to unicode character codes. It is provided in the following form:
+
+       # Codec Values                 Unicode Values
+       [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
+         (Source1_Begin, Source1_End, TargetInterval1_Begin),
+         (Source2_Begin, Source2_End, TargetInterval2_Begin), 
+         ... 
+       ]
     """
-    function_body    = ConverterWriterUTF8().do(UnicodeTrafoInfo)
-    codec_name       = make_safe_identifier(CodecName)
+    codec_name = make_safe_identifier(CodecName)
+    utf8_prolog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
+    utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
+    dummy,        ucs4_function_body  = ConverterWriterUCS4().do(UnicodeTrafoInfo)
+    dummy,        ucs2_function_body  = ConverterWriterUCS2().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
 
-    return blue_print(utf8_converter_function_txt, 
+    return blue_print(template_txt, 
                       [["$$CODEC$$",     CodecName],
-                       ["$$CONST$$",     utf8_byte_constants_get(ConverterWriterUTF8().get_conversion_table(UnicodeTrafoInfo))],
-                       ["$$BODY_UTF8$$", function_body],
+                       ["$$PROLOG_UTF8$$", utf8_prolog],
+                       ["$$BODY_UTF8$$",   utf8_function_body],
                        ["$$BODY_UTF16$$", ""],
                        ["$$BODY_UCS2$$",  ""],
-                       ["$$BODY_UCS4$$",  ""]])
+                       ["$$BODY_UCS4$$",  ucs4_function_body]])
 
-
-utf8_converter_function_txt = \
+template_txt = \
 """
 /* -*- C++ -*- vim: set syntax=cpp:
  * 
- * ACKNOWLEDGEMENT: Parts of the following have been derived from segments of the
- *                  utf8 conversion library of Alexey Vatchenko <av@bsdua.org>.    
+ * ACKNOWLEDGEMENT: Parts of the following utf8 conversion have been derived from 
+ *                  segments of the utf8 conversion library of Alexey Vatchenko 
+ *                  <av@bsdua.org>.    
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
 
@@ -62,7 +77,7 @@ namespace quex {
 QUEX_INLINE uint8_t*
 Quex_$$CODEC$$_to_utf8(QUEX_TYPE_CHARACTER input, uint8_t* output)
 {
-$$CONST$$
+$$PROLOG_UTF8$$
     uint32_t   unicode  = 0xFFFF;
     uint8_t*   p        = output;
 
@@ -168,6 +183,7 @@ Quex_$$CODEC$$_to_utf8_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Sour
 """
 
 class ConverterWriter:
+
     def do(self, UnicodeTrafoInfo, ProvidedConversionInfoF=False):
         """Creates code for a conversion to utf8 according to the conversion_table.
         """
@@ -215,25 +231,102 @@ class ConverterWriter:
         if range_index != -1: 
             formatter_txt = self.get_byte_formatter(range_index)
             txt += "    " + formatter_txt[:-1].replace("\n", "\n    ") + "\n"
-        return txt
+
+        return self.get_prolog(conversion_table), txt
 
     def get_unicode_range_conversion(self, Info):
-        assert isinstance(Info, UTF8_ConversionInfo)
+        assert isinstance(Info, ConversionInfo)
 
         # Conversion to Unicode
         return "unicode = 0x%06X + (input - 0x%06X);\n" % \
                (Info.codec_interval_begin_unicode, Info.codec_interval_begin)
 
-
-class ConverterWriterUTF8(ConverterWriter):
     def same_byte_format_range(self, ConvInfoList):
         """RETURNS: >= 0   the common byte format range index.
-                    == -1  not all infos belong to the same utf8 range.
+                    == -1  not all infos belong to the same byte format range.
         """
         range_i = ConvInfoList[0].byte_format_range_index
         for info in ConvInfoList[1:]:
             if info.byte_format_range_index != range_i: return -1
         return ConvInfoList[0].byte_format_range_index
+
+    def get_conversion_table(self, UnicodeTrafoInfo):
+        """The UnicodeTrafoInfo tells what ranges in the codec are mapped to what ranges
+           in unicode. The codec (e.g. UTF8/UTF16) has ranges of different byte
+           formatting. 
+
+           This function identifies ranges in the codec that:
+
+              (1) map linearly to unicode
+              (2) belong to the same byte format range.
+
+           The result is a list of objects that identify those ranges in the codec
+           and their relation to unicode. See definition of class ConversionInfo
+           for a detailed description and a nice picture.
+        """
+        trafo_info  = copy(UnicodeTrafoInfo)
+        border_list = self.get_byte_format_range_border_list()
+        L = len(border_list)
+
+        # Sort transform info database according to target range
+        info_list = []
+        trafo_info.sort(lambda a, b: cmp(a[2], b[2]))
+
+        # Unicode Transformation Info -- A list of the following:
+        for source_interval_begin, source_interval_end, target_interval_begin in trafo_info:
+
+            # How does the target interval has to be split according to utf8-ranges?
+            i = 0
+            while source_interval_begin >= border_list[i]: 
+                i += 1
+
+            i -= 1
+            ## print "##", i, source_interval_begin, border_list[i]
+            # 'i' now stands on the first utf8_range that touches the source interval
+            info = ConversionInfo(i, source_interval_begin, target_interval_begin)
+
+            # NOTE: size of target interval = size of source interval
+            remaining_size = source_interval_end - source_interval_begin
+
+            ## print "## %i, %x, %x" % (i, source_interval_begin, source_interval_end)
+            while i != L - 1 and remaining_size != 0:
+                remaining_utf8_range_size = border_list[i+1] - source_interval_begin
+                info.codec_interval_size  = min(remaining_utf8_range_size, remaining_size)
+                ## print i, "%X: %x, %x" % (border_list[i+1], remaining_utf8_range_size, remaining_size)
+                info_list.append(info)
+
+                source_interval_begin  = border_list[i+1] 
+                target_interval_begin += info.codec_interval_size
+                remaining_size        -= info.codec_interval_size
+                i += 1
+                info = ConversionInfo(i, source_interval_begin, target_interval_begin)
+
+            ## print "##", remaining_size
+            if remaining_size != 0:
+                info.codec_interval_size = remaining_size
+                info_list.append(info)
+
+        info_list.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
+
+        return info_list
+
+class ConverterWriterUTF8(ConverterWriter):
+    def get_prolog(self, ConvTable):
+        # Define Constants which are required as 'Byte Heads' for UTF8 Strings
+        unique_range_index_list = []
+        for info in ConvTable:
+            if info.byte_format_range_index not in unique_range_index_list:
+                unique_range_index_list.append(info.byte_format_range_index)
+        unique_range_index_list.sort()
+
+        db = { 2: 0xc0, 3: 0xe0, 4: 0xf0, 5: 0xf8, 6: 0xfc }
+        txt = ""
+        if unique_range_index_list[-1] != 0:
+            txt += "    const int NEXT = 0x80;\n"
+        for index in unique_range_index_list:
+            if index > 0:
+                txt += "    const int LEN%i = 0x%03X;\n" % (index + 1, db[index + 1])
+        return txt
 
     def get_byte_formatter(self, RangeIndex):
         # Byte Split
@@ -272,7 +365,7 @@ class ConverterWriterUTF8(ConverterWriter):
 
         }[RangeIndex] 
 
-    def get_conversion_table(self, UnicodeTrafoInfo):
+    def get_byte_format_range_border_list(self):
         """UTF8 covers the following regions with the corresponding numbers of bytes:
         
              0x00000000 - 0x0000007F: 1 byte  - 0xxxxxxx
@@ -282,68 +375,85 @@ class ConverterWriterUTF8(ConverterWriter):
              0x00200000 - 0x03FFFFFF: 5 bytes ... 
              0x04000000 - 0x7FFFFFFF: 
 
-           (1) Identify what regions in the trafo-info belong to what utf8-range.
-           (2) Map those regions to target encoding regions.
-           (3) For each region compute the conversion.
+            The range borders are, therefore, as mentioned in the return value.
         """
-        trafo_info  = copy(UnicodeTrafoInfo)
-        utf8_border = [ 0x0, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, sys.maxint] 
-        L = len(utf8_border)
+        return [ 0x0, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, sys.maxint] 
 
-        # Sort transform info database according to target range
-        info_list = []
-        trafo_info.sort(lambda a, b: cmp(a[2], b[2]))
-        for source_interval_begin, source_interval_end, target_interval_begin in trafo_info:
+class ConverterWriterUCS16(ConverterWriter):
+    def get_prolog(self, ConvTable):
+        return ""
 
-            # How does the target interval has to be split according to utf8-ranges?
-            i = 0
-            while source_interval_begin >= utf8_border[i]: 
-                i += 1
+    def get_byte_formatter(self, RangeIndex):
+        return { 0: "*p++ = unicode;\n",
+                 1: "offset_10bit_high = (uint16_t)((unicode - 0x10000) >> 10);\n"  + \
+                    "offset_10bit_low  = (uint16_t)((unicode - 0x10000) & 0x3FF);\n" + \
+                    "*p++ = 0xD800 | offset_10bit_high;\n"
+                    "*p++ = 0xDC00 | offset_10bit_low;\n"
 
-            i -= 1
-            ## print "##", i, source_interval_begin, utf8_border[i]
-            # 'i' now stands on the first utf8_range that touches the source interval
-            info = UTF8_ConversionInfo(i, source_interval_begin, target_interval_begin)
+    def get_byte_format_range_border_list(self):
+        """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
+        return [ 0x0, 0x10000, sys.maxint] 
 
-            # NOTE: size of target interval = size of source interval
-            remaining_size = source_interval_end - source_interval_begin
+class ConverterWriterUCS4(ConverterWriter):
+    def get_prolog(self, ConvTable):
+        return ""
 
-            ## print "## %i, %x, %x" % (i, source_interval_begin, source_interval_end)
-            while i != L - 1 and remaining_size != 0:
-                remaining_utf8_range_size = utf8_border[i+1] - source_interval_begin
-                info.codec_interval_size  = min(remaining_utf8_range_size, remaining_size)
-                ## print i, "%X: %x, %x" % (utf8_border[i+1], remaining_utf8_range_size, remaining_size)
-                info_list.append(info)
+    def get_byte_formatter(self, RangeIndex):
+        return "*p++ = unicode;\n"
 
-                source_interval_begin  = utf8_border[i+1] 
-                target_interval_begin += info.codec_interval_size
-                remaining_size        -= info.codec_interval_size
-                i += 1
-                info = UTF8_ConversionInfo(i, source_interval_begin, target_interval_begin)
+    def get_byte_format_range_border_list(self):
+        """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
+        return [ 0x0, sys.maxint] 
 
-            ## print "##", remaining_size
-            if remaining_size != 0:
-                info.codec_interval_size = remaining_size
-                info_list.append(info)
+class ConverterWriterUCS4(ConverterWriter):
+    def get_prolog(self, ConvTable):
+        return ""
 
-        info_list.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
+    def get_byte_formatter(self, RangeIndex):
+        return "*p++ = (uint16_t)unicode;\n"
 
-        return info_list
+    def get_byte_format_range_border_list(self):
+        """UCS2 covers the 0x0000-0xFFFF of range of unicode. But we want to be
+           fast and live with the fact that beyond that nonsense is going to be output.
+        """
+        return [ 0x0, sys.maxint] 
 
 
-class UTF8_ConversionInfo:
-    """A given interval in the codec corresponds to a certain UTF-8 Range.
-         -- The interval is determined by: Begin, Size.
-         -- The UTF-8 range is determined by its index.
-         -- The offset from the start of the utf8 range is also specified.
-            It corresponds to the start of the codec interval. 
+class ConversionInfo:
+    """A given interval in the codec corresponds to a certain byte formatting
+       range in the target encoding, where all bytes are formatted the same 
+       way.
+         
+         -- The codec interval is determined by:      
+              .codec_interval_begin
+              .codec_interval_size
+         
+         -- The byte formatting range is determined by its index.
+              .byte_format_range_index
 
-       Example:
-              range index:   3                                        4
-                             |                  |-- CI_Size-->|       |
-                          ...[++++++++++++++++++|xxxxxxxxxxxxx|++++++][
-                             |---RangeOffset--->|
-                             0x10000
+         -- In order to know where to start, the unicode offset that corresponds 
+            to the codec interval must be specified:
+              .codec_interval_begin_unicode
+
+       Figure:
+
+              Source Codec
+                              ci_begin       
+                              |
+              ................[xxxxxxxxxxxxxxx]................
+                              |--- ci_size -->|
+
+
+              belongs to
+
+
+              Unicode    |<----          byte formatting range         ---->|
+                                                                             
+                         |                           |--- ci_size-->|       |
+              ...........[+++++++++++++++++++++++++++|xxxxxxxxxxxxxx|++++++][
+                                                     |
+                                                     ci_begin_unicode
+                                                      
 
        The codec interval always lies inside a single utf8 range.
     """
@@ -359,20 +469,4 @@ class UTF8_ConversionInfo:
                 self.codec_interval_begin_unicode,
                 self.codec_interval_begin,
                 self.codec_interval_begin + self.codec_interval_size)
-
-def utf8_byte_constants_get(ConvTable):
-    unique_range_index_list = []
-    for info in ConvTable:
-        if info.byte_format_range_index not in unique_range_index_list:
-            unique_range_index_list.append(info.byte_format_range_index)
-    unique_range_index_list.sort()
-
-    db = { 2: 0xc0, 3: 0xe0, 4: 0xf0, 5: 0xf8, 6: 0xfc }
-    txt = ""
-    if unique_range_index_list[-1] != 0:
-        txt += "    const int NEXT = 0x80;\n"
-    for index in unique_range_index_list:
-        if index > 0:
-            txt += "    const int LEN%i = 0x%03X;\n" % (index + 1, db[index + 1])
-    return txt
 

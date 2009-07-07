@@ -110,6 +110,7 @@ def get_codec_transformation_info(Codec, FH=-1, LineN=None):
     """Provides the information about the relation of character codes in a particular 
        coding to unicode character codes. It is provided in the following form:
 
+       # Codec Values                 Unicode Values
        [ (Source0_Begin, Source0_End, TargetInterval0_Begin), 
          (Source1_Begin, Source1_End, TargetInterval1_Begin),
          (Source2_Begin, Source2_End, TargetInterval2_Begin), 
