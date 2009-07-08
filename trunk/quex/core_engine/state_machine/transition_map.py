@@ -14,6 +14,10 @@ class TransitionMap:
         self.__db = {}               # [target index] --> [trigger set that triggers to target]
         self.__epsilon_target_index_list = []
 
+    def clear(self):
+        self.__db = {}
+        self.__epsilon_target_index_list = []
+
     def is_empty(self):
         return len(self.__db) == 0 and len(self.__epsilon_target_index_list) == 0
 
@@ -197,7 +201,7 @@ class TransitionMap:
         # NOTE: This function only deals with non-epsilon triggers. Empty
         #       ranges in 'history' are dealt with in '.get_trigger_map()'. 
         for target_idx, trigger_set in self.__db.items():
-            interval_list = trigger_set.get_intervals(PromiseNotToChangeAnythingF=True)
+            interval_list = trigger_set.get_intervals(PromiseToTreatWellF=True)
             for interval in interval_list: 
                 # add information about start and end of current interval
                 history.append(history_item(interval.begin, INTERVAL_BEGIN, target_idx))
@@ -311,6 +315,56 @@ class TransitionMap:
         if self.__db.has_key(TargetIdx): return self.__db[TargetIdx]
         else:                            return NumberSet()
 
+    def get_string(self, FillStr, StateIndexMap):
+        # print out transitionts
+        sorted_transitions = self.get_map().items()
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
+
+        msg = ""
+        # normal state transitions
+        for target_state_index, trigger_set in sorted_transitions:
+            trigger_str = trigger_set.get_utf8_string()
+            if StateIndexMap == None: target_str = "%05i" % target_state_index
+            else:                     target_str = "%05i" % StateIndexMap[target_state_index]
+                
+            msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
+
+        # epsilon transitions
+        if self.__epsilon_target_index_list != []:
+            txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
+            msg += "%s ==<epsilon>==> " % FillStr 
+            for txt in txt_list:
+                msg += txt + ", "
+            if len(txt_list) != 0: msg = msg[:-2]
+        else:
+            msg += "%s <no epsilon>" % FillStr
+
+        msg += "\n"
+
+        return msg
+
+    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
+        assert Option in ["hex", "utf8"]
+        sorted_transitions = self.get_map().items()
+        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
+
+        msg = ""
+        # normal state transitions
+        for target_state_index, trigger_set in sorted_transitions:
+            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
+            else:                trigger_str = trigger_set.get_string(Option)
+            if StateIndexMap == None: target_str  = "%i" % target_state_index
+            else:                     target_str  = "%i" % StateIndexMap[target_state_index]
+            msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
+
+        # epsilon transitions
+        for ti in self.__epsilon_target_index_list:
+            if StateIndexMap == None: target_str = "%i" % int(ti) 
+            else:                     target_str = "%i" % int(StateIndexMap[ti]) 
+            msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
+
+        return msg
+
     def replace_target_index(self, Before, After):
         """Replaces given target index 'Before' with the index 'After'. 
            This means, that a transition targetting to 'Before' will then transit
@@ -389,54 +443,4 @@ class TransitionMap:
         assert type(CharCode) == int
         if self.get_resulting_target_state_index(CharCode) == None: return False
         else:                                                       return True
-
-    def get_string(self, FillStr, StateIndexMap):
-        # print out transitionts
-        sorted_transitions = self.get_map().items()
-        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
-
-        msg = ""
-        # normal state transitions
-        for target_state_index, trigger_set in sorted_transitions:
-            trigger_str = trigger_set.get_utf8_string()
-            if StateIndexMap == None: target_str = "%05i" % target_state_index
-            else:                     target_str = "%05i" % StateIndexMap[target_state_index]
-                
-            msg += "%s == %s ==> %s\n" % (FillStr, trigger_str, target_str)
-
-        # epsilon transitions
-        if self.__epsilon_target_index_list != []:
-            txt_list = map(lambda ti: "%05i" % StateIndexMap[ti], self.__epsilon_target_index_list)
-            msg += "%s ==<epsilon>==> " % FillStr 
-            for txt in txt_list:
-                msg += txt + ", "
-            if len(txt_list) != 0: msg = msg[:-2]
-        else:
-            msg += "%s <no epsilon>" % FillStr
-
-        msg += "\n"
-
-        return msg
-
-    def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option="utf8"):
-        assert Option in ["hex", "utf8"]
-        sorted_transitions = self.get_map().items()
-        sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
-
-        msg = ""
-        # normal state transitions
-        for target_state_index, trigger_set in sorted_transitions:
-            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
-            else:                trigger_str = trigger_set.get_string(Option)
-            if StateIndexMap == None: target_str  = "%i" % target_state_index
-            else:                     target_str  = "%i" % StateIndexMap[target_state_index]
-            msg += "%i -> %s [label =\"%s\"];\n" % (OwnStateIdx, target_str, trigger_str.replace("\"", ""))
-
-        # epsilon transitions
-        for ti in self.__epsilon_target_index_list:
-            if StateIndexMap == None: target_str = "%i" % int(ti) 
-            else:                     target_str = "%i" % int(StateIndexMap[ti]) 
-            msg += "%i -> %s [label =\"<epsilon>\"];\n" % (OwnStateIdx, target_str)
-
-        return msg
 

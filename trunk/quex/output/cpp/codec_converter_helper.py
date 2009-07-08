@@ -305,6 +305,10 @@ class ConverterWriter:
         if ProvidedConversionInfoF: conversion_table = UnicodeTrafoInfo
         else:                       conversion_table = self.get_conversion_table(UnicodeTrafoInfo)
 
+        # If the converter writer does not do a unicode conversion (even not for range 0),
+        # then forget about the bracketing that was done earlier.
+        __rely_on_ucs4_conversion_f = (self.get_unicode_range_conversion(conversion_table[0]) == "")
+
         # Make sure that the conversion table is sorted
         conversion_table.sort(lambda a, b: cmp(a.codec_interval_begin, b.codec_interval_begin))
 
@@ -326,10 +330,13 @@ class ConverterWriter:
                 Middle    = "0x%06X" % conversion_list[mid_index].codec_interval_begin
                 txt += LanguageDB["$if <"](Middle) 
                 if range_index != -1: 
-                    txt += __bracket(conversion_list[:mid_index], range_index)
-                    txt += LanguageDB["$endif-else"] + "\n"   
-                    txt += __bracket(conversion_list[mid_index:], range_index)
-                    txt += LanguageDB["$end-else"]
+                    # If there is no 'unicode coversion' and all ranges belong to the 
+                    # same byte formatting, then there is no need to bracket further:
+                    if not __rely_on_ucs4_conversion_f:
+                        txt += __bracket(conversion_list[:mid_index], range_index)
+                        txt += LanguageDB["$endif-else"] + "\n"   
+                        txt += __bracket(conversion_list[mid_index:], range_index)
+                        txt += LanguageDB["$end-else"]
                     if CallerRangeIndex != range_index:
                         txt += self.get_byte_formatter(range_index)
                 else:
@@ -341,12 +348,14 @@ class ConverterWriter:
             return "    " + txt[:-1].replace("\n", "\n    ") + "\n"
 
         range_index = self.same_byte_format_range(conversion_table)
-        txt = __bracket(conversion_table, range_index)
-        print "##txt:", txt, range_index
+        txt         = __bracket(conversion_table, range_index)
         if range_index != -1: 
-            formatter_txt = self.get_byte_formatter(range_index)
-            print "##fmt:", formatter_txt
-            txt += "    " + formatter_txt[:-1].replace("\n", "\n    ") + "\n"
+            # All codec ranges belong to the same byte format range.
+            formatter_txt = "    " + self.get_byte_formatter(range_index)
+            if __rely_on_ucs4_conversion_f:
+                txt = formatter_txt
+            else:
+                txt += formatter_txt[:-1].replace("\n", "\n    ") + "\n"
 
         return self.get_prolog(conversion_table), txt
 
@@ -510,6 +519,10 @@ class ConverterWriterUTF16(ConverterWriter):
     def get_byte_format_range_border_list(self):
         """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
         return [ 0x0, 0x10000, sys.maxint] 
+    
+    def get_unicode_range_conversion(self, Info):
+        # Take the unicode value via the UCS4 converter
+        return ""
 
 class ConverterWriterUCS4(ConverterWriter):
     def get_prolog(self, ConvTable):
@@ -521,8 +534,6 @@ class ConverterWriterUCS4(ConverterWriter):
     def get_byte_format_range_border_list(self):
         """UCS4 covers the whole range of unicode (extend 0x10FFFF to sys.maxint to be nice)."""
         return [ 0x0, sys.maxint] 
-
-
 
 class ConversionInfo:
     """A given interval in the codec corresponds to a certain byte formatting

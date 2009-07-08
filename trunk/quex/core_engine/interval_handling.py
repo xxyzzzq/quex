@@ -450,9 +450,9 @@ class NumberSet:
         """This value gives some information about the 'complexity' of the number set."""
         return len(self.__intervals)
 
-    def get_intervals(self, PromiseNotToChangeAnythingF=False):
-        if PromiseNotToChangeAnythingF: return self.__intervals
-        else:                           return deepcopy(self.__intervals)
+    def get_intervals(self, PromiseToTreatWellF=False):
+        if PromiseToTreatWellF: return self.__intervals
+        else:                   return deepcopy(self.__intervals)
 
     def unite_with(self, Other):
         Other_type = Other.__class__
