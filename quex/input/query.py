@@ -215,7 +215,7 @@ def __get_property(Name_or_Alias):
 def __print_set_in_intervals(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]
 
-    interval_list = CharSet.get_intervals(PromiseNotToChangeAnythingF=True)
+    interval_list = CharSet.get_intervals(PromiseToTreatWellF=True)
 
     txt = ""
     line_size = 0
@@ -235,7 +235,7 @@ def __print_set_in_intervals(CharSet, Display, ScreenWidth):
 def __print_set_single_characters(CharSet, Display, ScreenWidth):
     assert Display in ["hex", "utf8"]
 
-    interval_list = CharSet.get_intervals(PromiseNotToChangeAnythingF=True)
+    interval_list = CharSet.get_intervals(PromiseToTreatWellF=True)
     if Display == "hex":
         CharactersPerLine = 8
         ColumnWidth       = 6
