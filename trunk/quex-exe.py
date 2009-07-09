@@ -55,17 +55,17 @@ try:
     import quex.core               as core
 
 
-except AssertionError:
-    error_msg("Assertion error -- please report a bug under\n" + \
-              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+#except AssertionError:
+#    error_msg("Assertion error -- please report a bug under\n" + \
+#              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
 
 except KeyboardInterrupt: 
     print
     error_msg("#\n# Keyboard interrupt -- exiting while processing unfinished.\n#")
 
-except Exception:
-    error_msg("Unknown exception occured -- please, report a bug under\n" + \
-              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
+#except Exception:
+#    error_msg("Unknown exception occured -- please, report a bug under\n" + \
+#              " https://sourceforge.net/tracker/?group_id=168259&atid=846112")
     
 
 
