@@ -20,7 +20,7 @@ echo "cleaning ..."
 make clean   >& /dev/null
 echo "make $arg1 $3 ##"
 make  $arg1 $3 >& tmp.txt
-cat tmp.txt | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
+cat tmp.txt | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ || /[Ee][Rr][Rr][Oo][Rr]/ '
 rm tmp.txt
 echo "executing ..."
 if [[ -z $application ]]; then

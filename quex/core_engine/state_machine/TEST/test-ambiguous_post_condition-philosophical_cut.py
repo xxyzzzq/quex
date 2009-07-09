@@ -51,6 +51,7 @@ test('"xy"+', '("ab"|"xy")+')
 test('"xy"+', '("abc")|((x[a-z])+z)')
 test('"xy"+', '("abc")|(([a-z]y)+z)')
 test('(hey)+', '(he[y]?)+')
+test('(.)+a', '(.)+')
 
 
 
