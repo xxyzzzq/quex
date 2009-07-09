@@ -86,3 +86,11 @@ ambiguity (fw), (bw)    = True ,  False
 core pattern            = "xyz"hello
 post condition pattern  = (("xyz")+hello)+
 ambiguity (fw), (bw)    = False ,  True
+---------------------------------------------------------
+core pattern            = (.)+a
+post condition pattern  = (.)+
+ambiguity (fw), (bw)    = True ,  True
+---------------------------------------------------------
+core pattern            = (.)+
+post condition pattern  = (.)+a
+ambiguity (fw), (bw)    = True ,  True

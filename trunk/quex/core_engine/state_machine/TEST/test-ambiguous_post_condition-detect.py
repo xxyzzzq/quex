@@ -51,5 +51,6 @@ test('"xyz"+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
 test('("abc"+|"xyz")+', '("abc")|(("x"|"X")[a-z]{1}("z"|"Z"))')
 test('("xyz")+hello', '"xyz"hello')
 test('(("xyz")+hello)+', '"xyz"hello')
+test("(.)+a", "(.)+")
 
 

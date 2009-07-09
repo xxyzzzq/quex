@@ -97,7 +97,7 @@ def detect_backward(CoreStateMachine, PostConditionStateMachine):
 
     return detect_forward(my_post_context_sm, my_core_sm)
 
-def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
+def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state, VisitList=[]):
     """This function goes along all path of SM0 that lead to an 
        acceptance state AND at the same time are valid inside SM1.
        The search starts at the states sm0_state and sm1_state.
@@ -131,9 +131,14 @@ def __dive_to_detect_iteration(SM0, sm0_state, SM1, sm1_state):
                 return True
             
             # If the state is not immediately an acceptance state, then
-            # search in the subsequent pathes of the SM0.
+            # search in the subsequent pathes of the SM0. If the same pair
+            # of SM0 state and SM1 state has been considered before, we're done.
+            consideration_pair = (sm0_target_state_index, sm1_target_state_index)
+            if consideration_pair in VisitList:
+                continue
             sm1_target_state = SM1.states[sm1_target_state_index]
-            if __dive_to_detect_iteration(SM0, sm0_target_state, SM1, sm1_target_state):
+            if __dive_to_detect_iteration(SM0, sm0_target_state, SM1, sm1_target_state, 
+                                          VisitList + [consideration_pair]):
                 return True
 
     # None of the investigated paths in SM0 and SM1 leads to an
