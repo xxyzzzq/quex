@@ -198,6 +198,7 @@ def do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, S
     # point in storing the last acceptance. It is overridden anyway at the 
     # entry of the next state. If one single state is non-acceptance then we
     # need to store the acceptance (return True).
+    return True
     for state_index in reachable_state_list:
         if SM.states[state_index].is_acceptance() == False: return True
     return False

@@ -1,6 +1,7 @@
 import quex.core_engine.generator.acceptance_info as acceptance_info
 from   quex.input.setup import setup as Setup
 
+LanguageDB = Setup.language_db
 
 def __goto_distinct_terminal(Origin):
     assert Origin.is_acceptance()
@@ -109,6 +110,9 @@ def do_dead_end_router(State, StateIdx, BackwardLexingF):
     txt = acceptance_info.get_acceptance_detector(State.origins().get_list(), 
                                                   __goto_distinct_terminal)
             
+    #  Pre-conditions might not have their pre-condition fulfilled.
+    txt += LanguageDB["$goto-last_acceptance"] + "\n"
+
     # -- double check for consistency
     assert txt != "", "Acceptance state without acceptance origins!"        
 

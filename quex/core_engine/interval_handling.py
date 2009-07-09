@@ -177,6 +177,7 @@ class Interval:
         # else:                                    return "'" + chr(Code) + "'"
 
     def get_string(self, Option="", Delimiter=", "):
+        assert self.end >= self.begin
         if Option == "hex":    __repr = lambda x: "%04X" % x
         elif Option == "utf8": __repr = lambda x: self.__utf8_char(x)
         else:                  __repr = repr
