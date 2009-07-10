@@ -1,6 +1,7 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=icpc ##
+simple.qx:24:warning: Post context requires philosophical cut (handle with care).
 executing ...
 ###############################################################################
 ## NOTE: In order to disable this message, you can do two things. Either, 

@@ -2,6 +2,7 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS  COMPILER=/opt/sunstudio/sunstudioceres/bin/sunCC ##
+simple.qx:24:warning: Post context requires philosophical cut (handle with care).
 sunCC: Warning: Option -fPIC passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -ggdb passed to ld, if ld is invoked, ignored otherwise
 sunCC: Warning: Option -Wno-deprecated passed to ld, if ld is invoked, ignored otherwise

@@ -4,4 +4,4 @@ IN:
 
 OUT:
 
-a string:1:error: missing ';'
+string:1:error: missing ';'

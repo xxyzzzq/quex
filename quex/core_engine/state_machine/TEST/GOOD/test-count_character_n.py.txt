@@ -59,13 +59,13 @@ char-n =  3
 expr.  = "123"/"ABC"|"XYZ"
 char-n =  3
 expr.  = "123"/"ABC"|"X"*
-command line: Post context accepts anything---replaced by no post context.
+string:1:warning: Post context accepts anything---replaced by no post context.
 char-n =  3
 expr.  = "123"/"ABC"|"X"?
-command line: Post context accepts anything---replaced by no post context.
+string:1:warning: Post context accepts anything---replaced by no post context.
 char-n =  3
 expr.  = "123"/"ABC"|""
-command line: Post context accepts anything---replaced by no post context.
+string:1:warning: Post context accepts anything---replaced by no post context.
 char-n =  3
 expr.  = "123"/"XYZ"+
 char-n =  3

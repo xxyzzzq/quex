@@ -128,6 +128,17 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
        DOS_CarriageReturnNewlineF   = False, 
        AllowNothingIsFineF          = False): 
 
+    def __ensure_whitespace_follows(InitialPos, stream):
+        tmp = stream.read(1)
+        if tmp == "" or tmp.isspace(): 
+            stream.seek(-1, 1)
+            return True
+        end_position = stream.tell() - 1
+        stream.seek(InitialPos)
+        pattern_str = stream.read(end_position - InitialPos)
+        error_msg("Pattern definition '%s' not followed by whitespace.\n" % pattern_str + \
+                  "Found subsequent character '%s'." % tmp, 
+                  stream)
 
     if type(UTF8_String_or_Stream) == str: stream = StringIO.StringIO(UTF8_String_or_Stream)
     else:                                  stream = UTF8_String_or_Stream    
@@ -137,8 +148,8 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
     initial_position = stream.tell()
 
     # -- check for the begin of line condition (BOL)
-    if stream.read(1) == '^': begin_of_line_f = True
-    else:                     stream.seek(-1, 1); begin_of_line_f = False
+    if check(stream, '^'): begin_of_line_f = True
+    else:                  begin_of_line_f = False
     
     # -- MAIN: transform the pattern into a state machine
     sm = snap_conditional_expression(stream, PatternDict)
@@ -148,18 +159,9 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
     
     # -- check for end of line condition (EOL) 
     # -- check for terminating whitespace
-    next_char = stream.read(1)
-    if   next_char == '$': 
+    if   check(stream, '$'): 
         end_of_line_f = True
-    elif next_char.isspace() == False:
-        end_position = stream.tell() - 1
-        stream.seek(initial_position)
-        pattern_str = stream.read(end_position - initial_position)
-        error_msg("Pattern definition '%s' not followed by whitespace.\n" + \
-                  "Found subsequent character '%s'." % \
-                  (pattern_str, next_char), stream)
-    else:                     
-        stream.seek(-1, 1)
+    elif __ensure_whitespace_follows(initial_position, stream):
         end_of_line_f = False
 
     # -- set begin of line/end of line conditions
@@ -186,10 +188,9 @@ def snap_conditional_expression(stream, PatternDict):
     if pattern_0 == None: return __debug_exit(None, stream)
     
     # -- '/'
-    if stream.read(1) != '/': 
+    if not check(stream, '/'): 
         # (1) expression without pre and post condition
-        stream.seek(-1, 1)
-        # pattern_0 is already beautified by 'snap_expression()'
+        #     pattern_0 is already beautified by 'snap_expression()'
         result = __construct(pattern_0, fh=stream)
         return __debug_exit(result, stream)
         
@@ -198,9 +199,8 @@ def snap_conditional_expression(stream, PatternDict):
     if pattern_1 == None: return __debug_exit(pattern_0, stream)
     
     # -- '/'
-    if stream.read(1) != '/': 
+    if not check(stream, '/'): 
         # (2) expression with only a post condition
-        stream.seek(-1, 1)
         #     NOTE: setup_post_context() marks state origins!
         result = __construct(pattern_0, post_context=pattern_1, fh=stream)
         return __debug_exit(result, stream)
@@ -228,8 +228,7 @@ def snap_expression(stream, PatternDict):
         return __debug_exit(None, stream)
 
     # -- optional '|'
-    if stream.read(1) != '|': 
-        stream.seek(-1, 1)
+    if not check(stream, '|'): 
         return __debug_exit(result, stream)
     
     position_1 = stream.tell()
@@ -298,8 +297,7 @@ def snap_primary(stream, PatternDict):
     elif x == "(": 
         __start_position = stream.tell()
         result = snap_expression(stream, PatternDict)
-        if stream.read(1) != ")": 
-            stream.seek(-1, 1)
+        if not check(stream, ")"): 
             raise RegularExpressionException("missing closing ')' after expression. found '%s'" % stream.read())
 
         if result == None:
@@ -419,8 +417,7 @@ def snap_replacement(stream, PatternDict):
         raise RegularExpressionException("Pattern replacement expression misses identifier after '{'.")
     skip_whitespace(stream)
 
-    letter = stream.read(1)
-    if letter != "}":
+    if not check(stream, "}"):
         raise RegularExpressionException("Pattern replacement expression misses closing '}' after '%s'." \
                                          % pattern_name)
 
