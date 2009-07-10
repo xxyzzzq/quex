@@ -1,6 +1,6 @@
 ===============================================================================
 ENTER: TEST
-DATE:  Thu Jul  9 21:14:54 2009
+DATE:  Fri Jul 10 02:12:48 2009
 TITLE: Regression Tests on Fixed Bugs
 
 -------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ TITLE: Regression Tests on Fixed Bugs
  -- sphericalcow:
 
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh .......................................[FAIL]
+        bug-1885304.sh .........................................[OK]
     1885846 Empty RE in define section
         bug-1885846.sh .........................................[OK]
     1885855 P{ ...} syntax does not work outside of [
@@ -189,10 +189,15 @@ TITLE: Regression Tests on Fixed Bugs
                        1 .......................................[OK]
                        2 .......................................[OK]
                        3 .......................................[OK]
+    2819023 0.41.2 Valid pattern definition fails
+        bug-2819023.sh .........................................[OK]
     2819043 0.41.2 Infinite recursion error
         bug-2819043.sh .........................................[OK]
     2819045 0.41.2 Some internal assertion fails on...
-        bug-2819045.sh ...............................[NO GOOD FILE]
+        bug-2819045.sh 0 .......................................[OK]
+                       1 .......................................[OK]
+                       2 .......................................[OK]
+                       3 .......................................[OK]
 
  -- yaroslav_xp:
 
@@ -203,17 +208,16 @@ TITLE: Regression Tests on Fixed Bugs
     2163753 0.32.1 Incorrect on_failure behavior
         bug-2163753.sh .........................................[OK]
 -------------------------------------------------------------------------------
- _____     _ _                  _ 
-|  ___|_ _(_) |_   _ _ __ ___  | |
-| |_ / _` | | | | | | '__/ _ \ | |
-|  _| (_| | | | |_| | | |  __/ |_|
-|_|  \__,_|_|_|\__,_|_|  \___| (_)
-                                  
+  ___  _ _   _  __                        _     _ 
+ / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+ \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+                                                  
 
-Error: bug-1885304.sh 
 ===============================================================================
 ENTER: demo/TEST
-DATE:  Thu Jul  9 21:22:09 2009
+DATE:  Fri Jul 10 02:20:14 2009
 TITLE: Demo-Applications
 
 -------------------------------------------------------------------------------
@@ -332,12 +336,12 @@ TITLE: Demo-Applications
 
 ===============================================================================
 ENTER: quex/TEST
-DATE:  Thu Jul  9 22:00:30 2009
+DATE:  Fri Jul 10 02:20:15 2009
 TITLE: Miscellaneous Basic Tests
 
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
-        test-exceptions-in-place.sh ............................[OK]
+        test-exceptions-in-place.sh ..........................[FAIL]
  -- Prepare Pattern Information for Code Generation
         test-coder-get_generator_input.py ......................[OK]
 
@@ -346,16 +350,17 @@ TITLE: Miscellaneous Basic Tests
     __parse_token_id_file
         test-token_id_file-find_ids.py .........................[OK]
 -------------------------------------------------------------------------------
-  ___  _ _   _  __                        _     _ 
- / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
-| | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
-| |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
- \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
-                                                  
+ _____     _ _                  _ 
+|  ___|_ _(_) |_   _ _ __ ___  | |
+| |_ / _` | | | | | | '__/ _ \ | |
+|  _| (_| | | | |_| | | |  __/ |_|
+|_|  \__,_|_|_|\__,_|_|  \___| (_)
+                                  
 
+Error: test-exceptions-in-place.sh 
 ===============================================================================
 ENTER: quex/TEST/did-you-mean/TEST
-DATE:  Thu Jul  9 21:22:38 2009
+DATE:  Fri Jul 10 02:20:45 2009
 TITLE: Check Applications of 'Did you mean'.
 
 -------------------------------------------------------------------------------
@@ -375,7 +380,7 @@ TITLE: Check Applications of 'Did you mean'.
 
 ===============================================================================
 ENTER: quex/TEST/event-handling/TEST
-DATE:  Thu Jul  9 21:22:47 2009
+DATE:  Fri Jul 10 02:20:54 2009
 TITLE: Event Handlers
 
 -------------------------------------------------------------------------------
@@ -402,7 +407,7 @@ TITLE: Event Handlers
 
 ===============================================================================
 ENTER: quex/TEST/include-stack/TEST
-DATE:  Thu Jul  9 21:23:01 2009
+DATE:  Fri Jul 10 02:21:09 2009
 TITLE: Include Stack Handling
 
 -------------------------------------------------------------------------------
@@ -443,7 +448,7 @@ TITLE: Include Stack Handling
 
 ===============================================================================
 ENTER: quex/TEST/match-precedence/TEST
-DATE:  Thu Jul  9 21:23:05 2009
+DATE:  Fri Jul 10 02:21:13 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -466,7 +471,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/TEST/token-class/TEST
-DATE:  Thu Jul  9 21:23:15 2009
+DATE:  Fri Jul 10 02:21:23 2009
 TITLE: Customized Token Class
 
 -------------------------------------------------------------------------------
@@ -492,7 +497,7 @@ TITLE: Customized Token Class
 
 ===============================================================================
 ENTER: quex/TEST/token-policies/TEST
-DATE:  Thu Jul  9 21:23:36 2009
+DATE:  Fri Jul 10 02:21:47 2009
 TITLE: Tests related to token queues
 
 -------------------------------------------------------------------------------
@@ -531,7 +536,7 @@ TITLE: Tests related to token queues
 
 ===============================================================================
 ENTER: quex/code_base/TEST
-DATE:  Thu Jul  9 21:23:38 2009
+DATE:  Fri Jul 10 02:21:49 2009
 TITLE: <no file 'ADM/title.txt'>
 -------------------------------------------------------------------------------
 
@@ -557,7 +562,7 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 ENTER: quex/code_base/buffer/TEST
-DATE:  Thu Jul  9 21:23:49 2009
+DATE:  Fri Jul 10 02:22:00 2009
 TITLE: Basic Buffer Functions
 
 -------------------------------------------------------------------------------
@@ -621,7 +626,7 @@ TITLE: Basic Buffer Functions
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/iconv/TEST
-DATE:  Thu Jul  9 21:24:00 2009
+DATE:  Fri Jul 10 02:22:12 2009
 TITLE: Input Buffers Based on the IConv - Library
 
 -------------------------------------------------------------------------------
@@ -697,7 +702,7 @@ TITLE: Input Buffers Based on the IConv - Library
 
 ===============================================================================
 ENTER: quex/code_base/buffer/converter/icu/TEST
-DATE:  Thu Jul  9 21:24:14 2009
+DATE:  Fri Jul 10 02:22:26 2009
 TITLE: Testing the ICU Converter Adaption
 
 -------------------------------------------------------------------------------
@@ -773,7 +778,7 @@ TITLE: Testing the ICU Converter Adaption
 
 ===============================================================================
 ENTER: quex/code_base/buffer/plain/TEST
-DATE:  Thu Jul  9 21:24:39 2009
+DATE:  Fri Jul 10 02:22:52 2009
 TITLE: Plain Buffer Filler (without conversion)
 
 
@@ -870,7 +875,7 @@ TITLE: Plain Buffer Filler (without conversion)
 
 ===============================================================================
 ENTER: quex/code_base/template/TEST
-DATE:  Thu Jul  9 21:24:51 2009
+DATE:  Fri Jul 10 02:23:05 2009
 TITLE: Lexical Analyzer Class Template
 
 -------------------------------------------------------------------------------
@@ -939,7 +944,7 @@ TITLE: Lexical Analyzer Class Template
 
 ===============================================================================
 ENTER: quex/core_engine/TEST
-DATE:  Thu Jul  9 21:25:12 2009
+DATE:  Fri Jul 10 02:23:26 2009
 TITLE: Core Functionalities
 
 -------------------------------------------------------------------------------
@@ -985,7 +990,7 @@ TITLE: Core Functionalities
 
 ===============================================================================
 ENTER: quex/core_engine/generator/TEST
-DATE:  Thu Jul  9 21:29:05 2009
+DATE:  Fri Jul 10 02:27:30 2009
 TITLE: Code Generation for Lexical Analyzer
 
 
@@ -1165,7 +1170,7 @@ TITLE: Code Generation for Lexical Analyzer
 
 ===============================================================================
 ENTER: quex/core_engine/regular_expression/TEST
-DATE:  Thu Jul  9 21:29:14 2009
+DATE:  Fri Jul 10 02:27:39 2009
 TITLE: Regular Expression Parsing
 
 -------------------------------------------------------------------------------
@@ -1228,7 +1233,7 @@ TITLE: Regular Expression Parsing
 
 ===============================================================================
 ENTER: quex/core_engine/state_machine/TEST
-DATE:  Thu Jul  9 21:29:33 2009
+DATE:  Fri Jul 10 02:27:59 2009
 TITLE: State Machine Operations
 
 -------------------------------------------------------------------------------
@@ -1353,7 +1358,7 @@ Error: test-utf8_number_set_split.py 1
 Error: test-utf8_number_set_split.py 2
 ===============================================================================
 ENTER: quex/frs_py/TEST
-DATE:  Thu Jul  9 21:29:34 2009
+DATE:  Fri Jul 10 02:28:00 2009
 TITLE: Frank-Rene Schaefers Little Python Library
 
 -------------------------------------------------------------------------------
@@ -1381,7 +1386,7 @@ TITLE: Frank-Rene Schaefers Little Python Library
 
 ===============================================================================
 ENTER: quex/input/TEST
-DATE:  Thu Jul  9 21:30:12 2009
+DATE:  Fri Jul 10 02:36:35 2009
 TITLE: Character Set Queries
 
 -------------------------------------------------------------------------------
@@ -1450,7 +1455,7 @@ TITLE: Character Set Queries
 
 ===============================================================================
 ENTER: quex/output/cpp/TEST
-DATE:  Thu Jul  9 21:30:16 2009
+DATE:  Fri Jul 10 02:28:43 2009
 TITLE: Basic Code Writing Functionality
 
 -------------------------------------------------------------------------------
@@ -1482,8 +1487,9 @@ TITLE: Basic Code Writing Functionality
 
 ===============================================================================
 ENTER: quex/output/graphviz/TEST
-DATE:  Thu Jul  9 21:30:18 2009
-TITLE: <no file 'ADM/title.txt'>
+DATE:  Fri Jul 10 02:28:45 2009
+TITLE: Testing Statemachine Plots
+
 -------------------------------------------------------------------------------
  -- Check supported formats.
         get_supported_formats.py ...............................[OK]
@@ -1506,9 +1512,9 @@ TITLE: <no file 'ADM/title.txt'>
 
 ===============================================================================
 SUMMARY:
-TEST ..................................................................[FAIL]
+TEST ....................................................................[OK]
 demo/TEST ...............................................................[OK]
-quex/TEST ...............................................................[OK]
+quex/TEST .............................................................[FAIL]
 quex/TEST/did-you-mean/TEST .............................................[OK]
 quex/TEST/event-handling/TEST ...........................................[OK]
 quex/TEST/include-stack/TEST ............................................[OK]

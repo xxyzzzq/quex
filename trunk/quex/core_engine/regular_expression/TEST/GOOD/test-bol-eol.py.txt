@@ -97,7 +97,7 @@ pre-condition inverted = init-state = 0L
 
 begin of line =  False
 ___________________________________________________________________________
-expression    = "^[a-z]?/[a-z]//"
+expression    = "^[a-z]?/[a-z]/"
 state machine
 init-state = 0L
 00000() <~ 

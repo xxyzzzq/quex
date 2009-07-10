@@ -15,12 +15,12 @@ Pattern0 = [abd-fh-z][a-z]*
 Pattern1 = [abd-fh-z][a-y]*
 claim =  False
 ---------------------------
-Pattern0 = 12(A(B?)C|DEF))+
+Pattern0 = 12(A(B?)C|DEF)+
 Pattern1 = 12(DE(F?)|A(B?)C)+
 claim =  False
 
 Pattern0 = 12(DE(F?)|A(B?)C)+
-Pattern1 = 12(A(B?)C|DEF))+
+Pattern1 = 12(A(B?)C|DEF)+
 claim =  False
 ---------------------------
 Pattern0 = "123"+

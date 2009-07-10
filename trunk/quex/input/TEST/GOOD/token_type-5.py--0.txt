@@ -4,4 +4,4 @@ IN:
 
 OUT:
 
-a string:1:error: Missing '=' for token_type name specification.
+string:1:error: Missing '=' for token_type name specification.

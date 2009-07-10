@@ -456,7 +456,8 @@ def error_msg(ErrMsg, fh=-1, LineN=None, DontExitF=False, Prefix="", WarningF=Tr
         else:
             if fh != None:
                 line_n   = get_current_line_info_number(fh)
-                Filename = fh.name
+                if fh.__class__.__name__ == "StringIO": Filename = "string"
+                else:                                   Filename = fh.name
             else:
                 line_n = -1
                 Filename = ""

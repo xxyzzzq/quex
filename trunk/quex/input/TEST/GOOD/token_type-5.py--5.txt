@@ -4,4 +4,4 @@ IN:
 
 OUT:
 
-a string:1:error: Missing identifier in token type name.
+string:1:error: Missing identifier in token type name.

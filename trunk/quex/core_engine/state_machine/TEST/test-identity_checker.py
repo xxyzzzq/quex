@@ -38,7 +38,7 @@ if "True" in sys.argv:
 elif "False" in sys.argv:
     test('[A-MP-RT-Z][a-z]*',  '[A-MO-RT-Z][a-z]*')
     test('[abd-fh-z][a-y]*',   '[abd-fh-z][a-z]*')
-    test('12(A(B?)C|DEF))+',   '12(DE(F?)|A(B?)C)+')
+    test('12(A(B?)C|DEF)+',    '12(DE(F?)|A(B?)C)+')
     test('"123"+',  '"123"')
     test('"123"*X', '"123"X')
     test('12((A?|D|E))+34',    '12((A?|E)(A|D))+34')

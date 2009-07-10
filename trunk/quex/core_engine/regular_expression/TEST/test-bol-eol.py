@@ -13,7 +13,8 @@ if "--hwut-info" in sys.argv:
 
 def test(TestString):
     test_core("^" + TestString + "$")
-    test_core("^" + TestString + "/")
+    if TestString[-1] != "/": test_core("^" + TestString + "/")
+    else:                     test_core("^" + TestString)
 
 def test_core(TestString):
     print "___________________________________________________________________________"
