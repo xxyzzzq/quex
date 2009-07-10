@@ -162,38 +162,34 @@ def parse_pattern_name_definitions(fh):
        only have one regular expression.
     """
     # NOTE: Catching of EOF happens in caller: parse_section(...)
-
-    def __closing_bracket(fh):
-        position = fh.tell()
-        dummy = fh.read(1)
-        if dummy == "}": return True
-        fh.seek(position)
-        return False
-
     #
     dummy, i = read_until_letter(fh, ["{"], Verbose=True)
 
     while 1 + 1 == 2:
         skip_whitespace(fh)
 
-        if __closing_bracket(fh): 
+        if check(fh, "}"): 
             return
         
         # -- get the name of the pattern
         skip_whitespace(fh)
         pattern_name = read_identifier(fh)
         if pattern_name == "":
-            raise RegularExpressionException("Missing identifier for pattern definition.")
+            error_msg("Missing identifier for pattern definition.", fh)
 
         skip_whitespace(fh)
 
-        if __closing_bracket(fh): 
-            raise RegularExpressionException("Missing regular expression for pattern definition '%s'." % \
-                                             pattern_name)
+        if check(fh, "}"): 
+            error_msg("Missing regular expression for pattern definition '%s'." % \
+                      pattern_name, fh)
 
         # -- parse regular expression, build state machine
         regular_expression_obj, state_machine = \
                 regular_expression.parse(fh, AllowNothingIsFineF=True) 
+
+        if state_machine.core().has_pre_or_post_context():
+            error_msg("Pattern definition with pre- and/or post-context.\n" + \
+                      "This pattern cannot be used in replacements.", fh, DontExitF=True)
         
         lexer_mode.shorthand_db[pattern_name] = \
                 lexer_mode.PatternShorthand(pattern_name, state_machine, 

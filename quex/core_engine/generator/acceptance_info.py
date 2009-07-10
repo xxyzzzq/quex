@@ -37,6 +37,10 @@ def forward_lexing(State, StateIdx, SMD, ForceF=False):
     contains_acceptance_f = False
     for origin in OriginList: 
         if origin.is_end_of_post_contexted_core_pattern():
+            # According to 'setup_post_context.py' (currently line 121) no acceptance
+            # state can store the input position. This has been made impossible!
+            # (Post-conditions via backward search, i.e. pseudo ambigous post conditions,
+            #  are a different ball-game).
             assert origin.is_acceptance() == False
             # store current input position, to be restored when post condition really matches
             post_context_index = SMD.get_post_context_index(origin.state_machine_id)

@@ -143,6 +143,13 @@ class StateMachineCoreInfo:
         else:
             return -1L
 
+    def has_pre_or_post_context(self):
+        return    self.__pre_context_single_character_list \
+               or self.__pre_context_single_character_list != [] \
+               or self.__pre_context_sm != None \
+               or self.__post_context_id != -1L \
+               or self.__post_context_backward_input_position_detector_sm != None
+
     def set_id(self, Value):                                  
         assert type(Value) == long
         self.__id = Value
