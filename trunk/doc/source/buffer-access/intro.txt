@@ -163,7 +163,7 @@ required for the analyzis process.
     int
     main(int argc, char** argv)
     {
-        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);    // No args to constructor --> raw memory 
+        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
         quex::Token           token;           // Two tokens required, one for look-ahead
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
@@ -242,7 +242,7 @@ input frames:
     {        
         using namespace std;
 
-        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);    // No args to constructor --> raw memory 
+        quex::tiny_lexer      qlex((QUEX_TYPE_CHARACTER*)0x0, 0);  
         quex::Token           token;           // Two tokens required, one for look-ahead
         QUEX_TYPE_CHARACTER*  rx_buffer = 0x0; // A pointer to the receive buffer that
         MemoryChunk           chunk;
@@ -315,7 +315,7 @@ The following code fragment shows all required variables and their initializatio
     int
     main(int argc, char**) {
     
-        quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0);   // No args to constructor --> raw memory 
+        quex::tiny_lexer  qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
@@ -457,7 +457,7 @@ shown below.
     {        
         using namespace std;
 
-        quex::tiny_lexer   qlex((QUEX_TYPE_CHARACTER*)0x0, 0);  // No args to constructor --> raw memory 
+        quex::tiny_lexer   qlex((QUEX_TYPE_CHARACTER*)0x0, 0); 
         quex::Token    token_bank[2];     // Two tokens required, one for look-ahead
         quex::Token*   prev_token;        // Use pointers to swap quickly.
         quex::Token*   current_token;     // 

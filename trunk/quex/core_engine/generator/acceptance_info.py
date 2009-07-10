@@ -194,11 +194,13 @@ def do_subsequent_states_require_storage_of_last_acceptance_position(StateIdx, S
     assert State.is_acceptance()
     reachable_state_list = State.transitions().get_target_state_index_list()
 
+    # Ignore the subsequent 'optimization' until the matter is analyzed perfectly
+    # safe and sound.
+    return True
     # If all directly following states are acceptance states then there is no
     # point in storing the last acceptance. It is overridden anyway at the 
     # entry of the next state. If one single state is non-acceptance then we
     # need to store the acceptance (return True).
-    return True
     for state_index in reachable_state_list:
         if SM.states[state_index].is_acceptance() == False: return True
     return False
