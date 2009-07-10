@@ -1,0 +1,11 @@
+command line: The directory x/y/z was specified for output, but is not writeable.
+.
+./x
+./x/y
+./x/y/z
+./simple.qx
+./a
+./a/b
+./a/b/d
+./a/b/c
+./a/b/c/d

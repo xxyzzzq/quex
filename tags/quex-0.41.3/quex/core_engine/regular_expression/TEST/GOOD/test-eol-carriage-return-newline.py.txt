@@ -1,0 +1,99 @@
+___________________________________________________________________________
+expression    = "^[a-z]+$"
+state machine
+init-state = 0L
+00000() <~ 
+      == ['a', 'z'] ==> 00001
+      <no epsilon>
+00001(S, P5) <~ 
+      == '\r' ==> 00002
+      == ['a', 'z'] ==> 00001
+      <no epsilon>
+00002() <~ 
+      == '\n' ==> 00003
+      <no epsilon>
+00003(A, P5, bol) <~ 
+      <no epsilon>
+
+begin of line =  True
+___________________________________________________________________________
+expression    = "^[a-z]*$"
+state machine
+init-state = 0L
+00000(S, P14) <~ 
+      == '\r' ==> 00001
+      == ['a', 'z'] ==> 00000
+      <no epsilon>
+00001() <~ 
+      == '\n' ==> 00002
+      <no epsilon>
+00002(A, P14, bol) <~ 
+      <no epsilon>
+
+begin of line =  True
+___________________________________________________________________________
+expression    = "^[a-z]?$"
+state machine
+init-state = 0L
+00000(S, P21) <~ 
+      == '\r' ==> 00002
+      == ['a', 'z'] ==> 00001
+      <no epsilon>
+00001(S, P21) <~ 
+      == '\r' ==> 00002
+      <no epsilon>
+00002() <~ 
+      == '\n' ==> 00003
+      <no epsilon>
+00003(A, P21, bol) <~ 
+      <no epsilon>
+
+begin of line =  True
+___________________________________________________________________________
+expression    = "^[a-z]?/[a-z]/$"
+state machine
+init-state = 0L
+00000() <~ 
+      == ['a', 'z'] ==> 00001
+      <no epsilon>
+00001(S, P38) <~ 
+      == '\r' ==> 00002
+      <no epsilon>
+00002() <~ 
+      == '\n' ==> 00003
+      <no epsilon>
+00003(A, P38, pre=36) <~ 
+      <no epsilon>
+pre-condition inverted = init-state = 0L
+00000() <~ 
+      == '\n' ==> 00001
+      == ['a', 'z'] ==> 00002
+      <no epsilon>
+00001(A) <~ 
+      <no epsilon>
+00002() <~ 
+      == '\n' ==> 00001
+      <no epsilon>
+
+begin of line =  False
+___________________________________________________________________________
+expression    = "^[a-b]/[c-z]$"
+state machine
+init-state = 0L
+00000() <~ 
+      == ['a', 'b'] ==> 00001
+      <no epsilon>
+00001(S, P46) <~ 
+      == ['c', 'z'] ==> 00002
+      <no epsilon>
+00002() <~ 
+      == '\n' ==> 00003
+      == '\r' ==> 00004
+      <no epsilon>
+00003(A, P46, bol) <~ 
+      <no epsilon>
+00004() <~ 
+      == '\n' ==> 00003
+      <no epsilon>
+
+begin of line =  True
