@@ -1,0 +1,41 @@
+#include<fstream>    
+#include<iostream> 
+
+// (*) include lexical analyser header
+#include "ISO8859_7_Lexer"
+#include "ISO8859_7_Lexer-converter-iso8859_7"
+
+using namespace std;
+
+int 
+main(int argc, char** argv) 
+{        
+    using namespace quex;
+
+    Token            token;
+    Token::__string  tmp;
+    ISO8859_7_Lexer  qlex("example-iso8859-7.txt");
+    
+
+    // (*) loop until the 'termination' token arrives
+    do {
+        // (*) get next token from the token stream
+        qlex.receive(&token);
+
+        // (*) print out token information
+        cout << token.type_id_name() << "\t ";
+        cout << Quex_iso8859_7_to_utf8_string(token.text());
+#       if 0
+        cout << "\t\t plain bytes: ";
+        for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
+            printf("%02X.", (int)*iterator);
+        }
+#       endif
+        cout << endl;
+
+
+        // (*) check against 'termination'
+    } while( token.type_id() != TKN_TERMINATION );
+
+    return 0;
+}

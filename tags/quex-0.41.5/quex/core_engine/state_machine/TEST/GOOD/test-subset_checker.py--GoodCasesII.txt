@@ -1,0 +1,56 @@
+---------------------------
+super = abc("123"+)xyz
+sub   = abc123123123123xyz
+claim =  True
+
+super = abc123123123123xyz
+sub   = abc("123"+)xyz
+claim =  False
+---------------------------
+super = abc("123"?)xyz
+sub   = abcxyz
+claim =  True
+
+super = abcxyz
+sub   = abc("123"?)xyz
+claim =  False
+---------------------------
+super = abc("123"*)xyz
+sub   = abcxyz
+claim =  True
+
+super = abcxyz
+sub   = abc("123"*)xyz
+claim =  False
+---------------------------
+super = abc("123"|"ABC")?xyz
+sub   = abcxyz
+claim =  True
+
+super = abcxyz
+sub   = abc("123"|"ABC")?xyz
+claim =  False
+---------------------------
+super = abc("123"|"ABC")?xyz
+sub   = abcABCxyz
+claim =  True
+
+super = abcABCxyz
+sub   = abc("123"|"ABC")?xyz
+claim =  False
+---------------------------
+super = abc("123"|"ABC")*xyz
+sub   = abcxyz
+claim =  True
+
+super = abcxyz
+sub   = abc("123"|"ABC")*xyz
+claim =  False
+---------------------------
+super = abc("123"|"ABC")*xyz
+sub   = abcABC123xyz
+claim =  True
+
+super = abcABC123xyz
+sub   = abc("123"|"ABC")*xyz
+claim =  False

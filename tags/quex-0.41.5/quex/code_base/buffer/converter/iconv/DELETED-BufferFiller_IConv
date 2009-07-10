@@ -1,0 +1,22 @@
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer  */
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV__
+#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV__
+
+#include <quex/code_base/buffer/converter/BufferFiller_Converter>
+
+#include <quex/code_base/temporary_macros_on>
+#if ! defined (__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+
+    QUEX_INLINE bool 
+    __QuexBufferFiller_Converter_IConv_has_coding_dynamic_character_width(const char* Coding);
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+}
+#endif
+#include <quex/code_base/temporary_macros_off>
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICONV__ */
+
