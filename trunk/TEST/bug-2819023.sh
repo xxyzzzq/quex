@@ -1,14 +1,13 @@
 #! /usr/bin/env bash
-bug=2819045
+bug=2819023
 if [[ $1 == "--hwut-info" ]]; then
-    echo "wryun: $bug 0.41.2 Some internal assertion fails on..."
-    echo "CHOICES: 0, 1, 2, 3;"
+    echo "wryun: $bug 0.41.2 Valid pattern definition fails"
     exit
 fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error-$1.qx -o Simple
+quex -i nonsense.qx -o Simple
 
 # cleansening
 rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism
