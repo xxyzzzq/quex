@@ -57,7 +57,7 @@ import quex.core_engine.state_machine.transformation          as transformation
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 
 
-def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF):
+def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
     """This function is to be used by the outer shell to the user. It ensures that 
        the state machine which is returned is conform to some assumptions.
 
@@ -74,18 +74,17 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF):
     # (*) 'Nothing is fine' is not a pattern that we can accept. See the discussion
     #     in the module "quex.core_engine.generator.core.py"
     if sm.get_init_state().core().is_acceptance() and AllowNothingIsFineF == False: 
-        raise RegularExpressionException(
-                "Pattern results in a 'nothing is acceptable' state machine.\n" + \
-                "This means, that no step forward in the input still sets the analyzer\n" + \
-                "into an acceptance state. Thus, as soon as no other input matches\n" + \
-                "the analyzer ends up in an infinite loop.")
+        error_msg("Pattern results in a 'nothing is acceptable' state machine.\n" + \
+                  "This means, that no step forward in the input still sets the analyzer\n" + \
+                  "into an acceptance state. Thus, as soon as no other input matches\n" + \
+                  "the analyzer ends up in an infinite loop.", fh)
 
     # (*) double check for orphan states
     orphan_state_list = sm.get_orphaned_state_index_list()
     if orphan_state_list != []:
         error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                  "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
+                  "Orphan state(s) = " + repr(orphan_state_list) + "\n", 
                   fh, DontExitF=True)
 
     # (*) It is essential that state machines defined as patterns do not 
@@ -93,6 +92,16 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF):
     if sm.has_origins():
         error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
                   "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
+
+    # (*) Acceptance states shall not store the input position when they are 'normally'
+    #     post-conditioned. Post-conditioning via the backward search is a different 
+    #     ball-game.
+    for state in sm.states.values():
+        if     state.core().is_end_of_post_contexted_core_pattern() \
+           and state.core().is_acceptance():
+            error_msg("Pattern with post-context: An irregularity occurred.\n" + \
+                      "(end of normal post-contexted core pattern is an acceptance state)\n" 
+                      "Please, log a defect at the projects website quex.sourceforge.net.", fh)
         
     return sm
 
@@ -137,9 +146,21 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
         stream.seek(initial_position)
         return None
     
-    # -- check for end of line condition (EOL)
-    if stream.read(1) == '$': end_of_line_f = True
-    else:                     stream.seek(-1, 1); end_of_line_f = False
+    # -- check for end of line condition (EOL) 
+    # -- check for terminating whitespace
+    next_char = stream.read(1)
+    if   next_char == '$': 
+        end_of_line_f = True
+    elif next_char.isspace() == False:
+        end_position = stream.tell() - 1
+        stream.seek(initial_position)
+        pattern_str = stream.read(end_position - initial_position)
+        error_msg("Pattern definition '%s' not followed by whitespace.\n" + \
+                  "Found subsequent character '%s'." % \
+                  (pattern_str, next_char), stream)
+    else:                     
+        stream.seek(-1, 1)
+        end_of_line_f = False
 
     # -- set begin of line/end of line conditions
     if begin_of_line_f or end_of_line_f: 
@@ -147,7 +168,7 @@ def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
                                         DOS_CarriageReturnNewlineF)
         sm = __beautify(sm)
 
-    return __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF)
+    return __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, stream)
 
 def snap_conditional_expression(stream, PatternDict):
     """conditional expression: expression
@@ -169,7 +190,7 @@ def snap_conditional_expression(stream, PatternDict):
         # (1) expression without pre and post condition
         stream.seek(-1, 1)
         # pattern_0 is already beautified by 'snap_expression()'
-        result = __construct(pattern_0)
+        result = __construct(pattern_0, fh=stream)
         return __debug_exit(result, stream)
         
     # -- expression
@@ -181,7 +202,7 @@ def snap_conditional_expression(stream, PatternDict):
         # (2) expression with only a post condition
         stream.seek(-1, 1)
         #     NOTE: setup_post_context() marks state origins!
-        result = __construct(pattern_0, post_context=pattern_1)
+        result = __construct(pattern_0, post_context=pattern_1, fh=stream)
         return __debug_exit(result, stream)
 
     # -- expression
@@ -189,11 +210,11 @@ def snap_conditional_expression(stream, PatternDict):
     if pattern_2 == None: 
         # (3) expression with only a pre condition
         #     NOTE: setup_pre_context() marks the state origins!
-        result = __construct(pattern_1, pre_context=pattern_0)
+        result = __construct(pattern_1, pre_context=pattern_0, fh=stream)
         return __debug_exit(result, stream)
 
     # (4) expression with post and pre-condition
-    result = __construct(pattern_1, pre_context=pattern_0, post_context=pattern_2)
+    result = __construct(pattern_1, pre_context=pattern_0, post_context=pattern_2, fh=stream)
     return __debug_exit(result, stream)
 
 def snap_expression(stream, PatternDict):
@@ -413,6 +434,12 @@ def snap_replacement(stream, PatternDict):
     # contain pattern replacements might get confused and can
     # not find all optimizations.
     assert state_machine.has_origins() == False
+
+    # A state machine, that contains pre- or post- conditions cannot be part
+    # of a replacement. The addition of new post-contexts would mess up the pattern.
+    if state_machine.core().has_pre_or_post_context():
+        error_msg("Pre- or post- conditioned pattern was used in replacement.\n" + \
+                  "Quex's regular expression grammar does not allow this.", stream)
         
     return state_machine
 
@@ -503,14 +530,13 @@ def __beautify(the_state_machine):
 
     return result
 
-def __construct(core_sm, pre_context=None, post_context=None):
-
+def __construct(core_sm, pre_context=None, post_context=None, fh=-1):
     if   pre_context == None and post_context == None:
         result = core_sm
         # -- can't get more beautiful ...
     
     elif pre_context == None and post_context != None:
-        result = setup_post_context.do(core_sm, post_context)
+        result = setup_post_context.do(core_sm, post_context, fh=fh)
         result = __beautify(result)
 
     elif pre_context != None and post_context == None:
@@ -521,7 +547,7 @@ def __construct(core_sm, pre_context=None, post_context=None):
         # NOTE: pre-condition needs to be setup **after** post condition, because
         #       post condition deletes all origins!
         #       (is this still so? 07y7m6d fschaef)
-        result = setup_post_context.do(core_sm, post_context)
+        result = setup_post_context.do(core_sm, post_context, fh=fh)
         result = setup_pre_context.do(result, pre_context)
         result = __beautify(result)
 
