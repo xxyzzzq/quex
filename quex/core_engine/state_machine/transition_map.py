@@ -13,6 +13,9 @@ class TransitionMap:
     def __init__(self):
         self.__db = {}               # [target index] --> [trigger set that triggers to target]
         self.__epsilon_target_index_list = []
+        ## OPTIMIZATION OPTION: Store the trigger map in a 'cache' variable. This, however,
+        ## requires that all possible changes to the database need to annulate the cache value.
+        ## self.__DEBUG_trigger_map = None
 
     def clear(self):
         self.__db = {}
@@ -228,6 +231,7 @@ class TransitionMap:
 
            A drop out on 'interval_i' is represented by 'target_i' == None.
         """
+        ## OPT: if self.__DEBUG_trigger_map != None: return self.__DEBUG_trigger_map
         # At this point only DFAs shall be considered. Thus there cannot be any epsilon
         # target transitions.
         assert self.__epsilon_target_index_list == [], \
@@ -305,6 +309,7 @@ class TransitionMap:
             assert entry[0].end != None, \
                    "remaining open intervals in trigger map construction"
 
+        ## OPT: self.__DEBUG_trigger_map = trigger_map
         return trigger_map
 
     def get_trigger_set_to_target(self, TargetIdx):

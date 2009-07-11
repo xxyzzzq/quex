@@ -24,6 +24,9 @@ SETUP= \
 
 .PHONY: clean
 
+# The following might be overwritten by the caller of make:
+EXTRA_COMPILER_FLAG=#
+
 ifndef QUEX_PATH
     $(error The environment variable QUEX_PATH is not defined!)
 endif
@@ -49,7 +52,7 @@ OBJECT_FILES_LC = $(OBJECT_FILES:.o=-lc.o) # object file w line and column count
 #     e.g. "make COMPILER=icpc" will use intel's c++ compiler)
 PROFILE_ACTIVATE = -fprofile-arcs -fprofile-values
 PROFILE_USE      = -fbranch-probabilities
-CC = $(COMPILER) $(OPTIMIZATION) -Wno-deprecated -Wall \
+CC = $(COMPILER) $(EXTRA_COMPILER_FLAG) $(OPTIMIZATION) -Wno-deprecated -Wall \
 	 -I./ -I$(QUEX_PATH)  \
 	 $(SETUP) \
      -D__QUEX_CORE_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED \

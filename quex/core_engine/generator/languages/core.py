@@ -28,7 +28,7 @@ __label_db = \
     "$terminal-direct":       lambda TerminalIdx: "TERMINAL_%s_DIRECT" % __nice(TerminalIdx),
     "$terminal-general":      lambda NoThing:     "TERMINAL_GENERAL_BACKWARD",
     "$terminal-EOF":          lambda NoThing:     "TERMINAL_END_OF_STREAM",
-    "$terminal-DEFAULT":      lambda NoThing:     "TERMINAL_DEFAULT",
+    "$terminal-FAILURE":      lambda NoThing:     "TERMINAL_FAILURE",
     "$entry":                 lambda StateIdx:    "STATE_%s"          % __nice(StateIdx),
     "$drop-out":              lambda StateIdx:    "STATE_%s_DROP_OUT" % __nice(StateIdx),
     "$drop-out-direct":       lambda StateIdx:    "STATE_%s_DROP_OUT_DIRECT" % __nice(StateIdx),

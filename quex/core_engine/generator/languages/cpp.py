@@ -208,8 +208,8 @@ $$END_OF_STREAM_ACTION$$
       * tokens can be filled after the termination token.                    */
      return;          
 
-$$TERMINAL_DEFAULT-DEF$$
-$$DEFAULT_ACTION$$
+$$TERMINAL_FAILURE-DEF$$
+$$FAILURE_ACTION$$
      $$GOTO_START_PREPARATION$$
 
 #undef Lexeme
@@ -223,7 +223,7 @@ __TERMINAL_ROUTER: {
         /*  else               => execute defaul action*/
         switch( last_acceptance ) {
 $$JUMPS_TO_ACCEPTANCE_STATE$$
-            default: $$TERMINAL_DEFAULT-GOTO$$; /* nothing matched */
+            default: $$TERMINAL_FAILURE-GOTO$$; /* nothing matched */
         }
     }
 #endif /* __QUEX_OPTION_USE_COMPUTED_GOTOS */
@@ -351,7 +351,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
 
     return txt
 
-def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction, 
+def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction, 
                       SupportBeginOfLineF, PreConditionIDList, LanguageDB):
     """NOTE: During backward-lexing, for a pre-condition, there is not need for terminal
              states, since only the flag 'pre-condition fulfilled is raised.
@@ -381,11 +381,11 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
         txt += "    " + LanguageDB["$assignment"]("pre_context_%s_fulfilled_f" % __nice(pre_context_sm_id), 0)
     delete_pre_context_flags_str = txt
 
-    #  -- execute default pattern action 
+    #  -- execute 'on_failure' pattern action 
     #  -- goto initial state    
     end_of_stream_code_action_str = __adorn_action_code(EndOfStreamAction, SMD, SupportBeginOfLineF,
                                                         IndentationOffset=16)
-    # -- DEFAULT ACTION: Under 'normal' circumstances the default action is simply to be executed
+    # -- FAILURE ACTION: Under 'normal' circumstances the on_failure action is simply to be executed
     #                    since the 'get_forward()' incremented the 'current' pointer.
     #                    HOWEVER, when end of file has been reached the 'current' pointer has to
     #                    be reset so that the initial state can drop out on the buffer limit code
@@ -393,16 +393,16 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
     # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
-    default_action_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
-    default_action_str += LanguageDB["$if EOF"] + "\n"
-    default_action_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
-    default_action_str += LanguageDB["$endif"] + "\n"
-    default_action_str += LanguageDB["$else"] + "\n"
-    default_action_str += "    " + LanguageDB["$comment"]("Step over nomatching character") + "\n"
-    default_action_str += "    " + LanguageDB["$input/increment"] + "\n"
-    default_action_str += LanguageDB["$endif"] + "\n"
-    default_action_str += __adorn_action_code(DefaultAction, SMD, SupportBeginOfLineF,
-                                              IndentationOffset=16)
+    on_failure_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
+    on_failure_str += LanguageDB["$if EOF"] + "\n"
+    on_failure_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
+    on_failure_str += LanguageDB["$endif"] + "\n"
+    on_failure_str += LanguageDB["$else"] + "\n"
+    on_failure_str += "    " + LanguageDB["$comment"]("Step over nomatching character") + "\n"
+    on_failure_str += "    " + LanguageDB["$input/increment"] + "\n"
+    on_failure_str += LanguageDB["$endif"] + "\n"
+    on_failure_str += __adorn_action_code(OnFailureAction, SMD, SupportBeginOfLineF,
+                                          IndentationOffset=16)
 
     # -- routing to states via switch statement
     #    (note, the gcc computed goto is implement, too)
@@ -426,12 +426,12 @@ def __terminal_states(SMD, action_db, DefaultAction, EndOfStreamAction,
     txt = blue_print(__terminal_state_str, 
                      [["$$JUMPS_TO_ACCEPTANCE_STATE$$",    jumps_to_acceptance_states_str],   
                       ["$$SPECIFIC_TERMINAL_STATES$$",     specific_terminal_states_str],
-                      ["$$DEFAULT_ACTION$$",               default_action_str],
+                      ["$$FAILURE_ACTION$$",               on_failure_str],
                       ["$$END_OF_STREAM_ACTION$$",         end_of_stream_code_action_str],
                       ["$$TERMINAL_END_OF_STREAM-DEF$$",   LanguageDB["$label-def"]("$terminal-EOF")],
-                      ["$$TERMINAL_DEFAULT-DEF$$",         LanguageDB["$label-def"]("$terminal-DEFAULT")],
+                      ["$$TERMINAL_FAILURE-DEF$$",         LanguageDB["$label-def"]("$terminal-FAILURE")],
                       ["$$TERMINAL_GENERAL-DEF$$",         LanguageDB["$label-def"]("$terminal-general", False)],
-                      ["$$TERMINAL_DEFAULT-GOTO$$",        LanguageDB["$goto"]("$terminal-DEFAULT")],
+                      ["$$TERMINAL_FAILURE-GOTO$$",        LanguageDB["$goto"]("$terminal-FAILURE")],
                       ["$$STATE_MACHINE_NAME$$",           SMD.name()],
                       ["$$GOTO_START_PREPARATION$$",       LanguageDB["$goto"]("$re-start")],
                       ])

@@ -137,21 +137,58 @@ def split_interval_according_to_utf8_byte_sequence_length(X):
     return db
     
 def split_interval_into_equivalence_byte_ranges(L, X):
-    """ X   Unicode interval where all utf8 byte sequences have 
-            the same length.
-    
-        L   Sequence Length of all utf8 byte sequences in X.
     """
-    #    1 byte  - 0xxxxxxx
-    #    2 bytes - 110xxxxx 10xxxxxx
-    #    3 bytes - 1110xxxx 10xxxxxx 10xxxxxx
-    #    4 bytes - 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-    #    5 bytes ... 
-    def begin_of_byte_range(ByteIndex, SequenceLength):
+       DEFINITION: 'Equivalence Byte Sequence Range'
+    
+        is a contigous interval specified by [begin, end) where all values
+        in between begin and end have the following property:
+
+           The utf8 sequence of each value has the following shape:
+ 
+             [byte 0][byte 1] ... [byte p   ] ...
+
+             same --------------->|different| ...
+
+           Further, the union of [byte q], where p < q < L, spans
+           the whole byte range.
+    
+        ARGUMENTS: 
+    
+            X   Unicode interval where all utf8 byte sequences have 
+                the same length.
+        
+            L   The actual length all utf8 byte sequences for values in X.
+
+        ALGORITHM: 
+
+        -- the result is stored in a list, the list of intervals where
+           each interval falls into an equivalence byte range. 
+           
+            
+
+    """
+    # A byte in a utf8 sequence can only have a certain range depending
+    # on its position. UTF8 sequences look like the following dependent
+    # on their length:
+    #
+    #       Length:   Byte Masks for each byte
+    #
+    #       1 byte    0xxxxxxx
+    #       2 bytes   110xxxxx 10xxxxxx
+    #       3 bytes   1110xxxx 10xxxxxx 10xxxxxx
+    #       4 bytes   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+    #       5 bytes   ...
+    #
+    # where 'free' bits are indicated by 'x'. 
+    # Min. value of a byte = where all 'x' are zero.
+    # Max. value of a byte = where all 'x' are 1.
+    # 
+    def min_byte_value(ByteIndex, SequenceLength):
         if ByteIndex == 0:
             return { 0: 0x00, 1: 0xC0, 2: 0xE0, 3: 0xF0 }[SequenceLength]
         return 0x80
-    def end_of_byte_range(ByteIndex, SequenceLength):
+
+    def max_byte_value(ByteIndex, SequenceLength):
         if ByteIndex == 0:
             return { 0: 0x7F, 1: 0xDF, 2: 0xEF, 3: 0xF7 }[SequenceLength]
         return 0xBF
@@ -169,8 +206,8 @@ def split_interval_into_equivalence_byte_ranges(L, X):
         if i == L - 1: return -1
 
         for k in range(i):
-            if front_sequence[k] != front_of_byte_range(k, L): break
-            if back_sequence[k]  != back_of_byte_range(k, L): break
+            if front_sequence[k] != min_byte_value(k, L): break
+            if back_sequence[k]  != max_byte_value(k, L): break
         else:
             return -1
 
@@ -179,7 +216,7 @@ def split_interval_into_equivalence_byte_ranges(L, X):
         border_sequence = front_sequence[:i]
         border_sequence.append(front_sequence[i] + 1) 
         for k in range(i+1, L):
-            border_sequence.append(begin_of_byte_range(k, L))
+            border_sequence.append(min_byte_value(k, L))
         return utf8_to_unicode(border_sequence)
 
     result = []

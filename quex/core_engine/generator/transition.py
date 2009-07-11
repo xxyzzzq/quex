@@ -14,7 +14,6 @@ def __goto_distinct_terminal(Origin):
     txt += LanguageDB["$goto"]("$terminal-direct", Origin.state_machine_id)
     return txt
 
-
 def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
     """
         TargetStateIdx: != None: Index of the state to which 'goto' has to go.
@@ -88,8 +87,6 @@ def do(CurrentStateIdx, TriggerInterval, TargetStateIdx, DSM):
         else:
             assert False, "Impossible lexing mode: '%s'" % DSM.mode()
     
-    
-
 def do_dead_end_router(State, StateIdx, BackwardLexingF):
     # DeadEndType == -1:
     #    States, that do not contain any acceptance transit to the 'General Terminal'

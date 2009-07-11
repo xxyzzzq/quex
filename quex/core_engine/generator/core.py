@@ -11,7 +11,7 @@ class Generator(GeneratorBase):
 
     def __init__(self, PatternActionPair_List, 
                  StateMachineName, AnalyserStateClassName, Language, 
-                 DefaultAction, EndOfStreamAction, 
+                 OnFailureAction, EndOfStreamAction, 
                  ModeNameList, 
                  PrintStateMachineF, StandAloneAnalyserF):
 
@@ -20,7 +20,7 @@ class Generator(GeneratorBase):
         self.programming_language       = Language
         self.language_db                = Setup.language_db
         self.end_of_stream_action       = EndOfStreamAction
-        self.default_action             = DefaultAction
+        self.on_failure_action          = OnFailureAction
         self.mode_name_list             = ModeNameList
         self.print_state_machine_f      = PrintStateMachineF
         self.stand_alone_analyzer_f     = StandAloneAnalyserF
@@ -50,7 +50,7 @@ class Generator(GeneratorBase):
         #  -- terminal states: execution of pattern actions  
         txt += LanguageDB["$terminal-code"](decorated_state_machine,
                                             self.action_db, 
-                                            self.default_action, 
+                                            self.on_failure_action, 
                                             self.end_of_stream_action, 
                                             self.begin_of_line_condition_f, 
                                             self.pre_context_sm_id_list,
@@ -126,7 +126,7 @@ class Generator(GeneratorBase):
 
         return languages.replace_keywords(txt, LanguageDB, NoIndentF=True)
 
-def do(PatternActionPair_List, DefaultAction, 
+def do(PatternActionPair_List, OnFailureAction, 
        EndOfStreamAction, Language="C++", StateMachineName="",
        PrintStateMachineF=False,
        AnalyserStateClassName="analyser_state",
@@ -154,7 +154,7 @@ def do(PatternActionPair_List, DefaultAction,
     """
     return Generator(PatternActionPair_List, 
                      StateMachineName, AnalyserStateClassName, Language, 
-                     DefaultAction, EndOfStreamAction, ModeNameList, 
+                     OnFailureAction, EndOfStreamAction, ModeNameList, 
                      PrintStateMachineF, StandAloneAnalyserF).do()
     
 def frame_this(Code):

@@ -41,6 +41,12 @@ Pattern-Action Pairs
      pattern in ``A`` is executed. This is a direct consequence of the previous
      rule.
 
+   .. note:: 
+
+      As a general rule, it can be imagined that if ``B`` is derived from ``A``
+      it is as if the pattern-action pairs of ``A`` are pasted in front of ``B``'s 
+      pattern-action pairs itself.
+
    Alternatively, pattern-actions of ``B`` could have been executed after the 
    pattern-actions of ``A`` in case of interference. However, the decision
    of a brutal outruling was done because the high probability of creating 
@@ -75,13 +81,15 @@ event handlers of the base mode *preceed* event handlers of the derived mode.
 
 .. image:: ../../figures/mode-inheritance.*
    :align: center
-   :alt:   Inheritance between modes.
+   :alt:   Mode inheritance.
+
+.. toctree::
+
+   multiple-inheritance.txt
+   pattern-action-precedence.txt
 
 .. rubric:: Footnotes
 
 .. [#f1] An exception is ``on_indentation``. However, this event handler is best placed
          in a common base mode, so that all modes use the same indentation mechanism.
 
-.. toctree::
-
-   pattern-action-precedence.txt
