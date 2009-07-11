@@ -27,9 +27,8 @@ def parse_table(Filename):
 
     record_set = []
     for line in fh.readlines():
-        line = line.strip()
-        line = comment_deleter_re.sub("", line)
-        if line.isspace() or line == "": continue
+        if line.find("#") != -1: line = line[:line.find("#")]
+        if line == "" or line.isspace(): continue
         # append content to record set
         record_set.append(map(lambda x: x.strip(), line.split(";")))
 
@@ -63,21 +62,6 @@ def convert_column_to_interval(table, CodeColumnIdx):
 
         row[CodeColumnIdx] = Interval(begin, end)
 
-def __enter_number_set(db, Key, Value):
-    ValueType = Value.__class__.__name__
-    assert ValueType in ["Interval", "int"]
-
-    if ValueType == "int": Value = Interval(Value)
-
-    if db.has_key(Key): db[Key].quick_append_interval(Value, SortF=False)
-    else:               db[Key] = NumberSet(Value)
-
-def __enter_string(db, Key, Value):
-    db[Key] = Value
-
-def __enter_number(db, Key, Value):
-    db[Key] = Value
-
 def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumnIdx):
     """Produces a dictionary that maps from 'keys' to NumberSets. The 
        number sets represent the code points for which the key (property)
@@ -90,20 +74,27 @@ def convert_table_to_associative_map(table, ValueColumnIdx, ValueType, KeyColumn
 
        self.db = database to contain the associative map.
     """
-    try:
-        enter = { "NumberSet": __enter_number_set,
-                  "number":    __enter_number,
-                  "string":    __enter_string
-                }[ValueType]
-    except:
-        raise BaseException("ValueType = '%s' unknown.\n" % ValueType)
 
-    db = {}
-    for record in table:
-        key   = record[KeyColumnIdx].strip()
-        key   = key.replace(" ", "_")
-        value = record[ValueColumnIdx]
-        enter(db, key, value)
+    if ValueType == "NumberSet":
+        db = {}
+        for record in table:
+            key   = record[KeyColumnIdx].strip()
+            key   = key.replace(" ", "_")
+            value = record[ValueColumnIdx]
+
+            if type(value) == int: value = Interval(value)
+
+            db.setdefault(key, NumberSet()).quick_append_interval(value, SortF=False)
+
+    elif ValueType == "number" or ValueType == "string":
+        db = {}
+        for record in table:
+            key   = record[KeyColumnIdx].strip()
+            key   = key.replace(" ", "_")
+            value = record[ValueColumnIdx]
+            db[key] = value
+    else:
+        raise BaseException("ValueType = '%s' unknown.\n" % ValueType)
 
     # if the content was a number set, it might be simplified, try it.
     if ValueType == "NumberSet":
@@ -452,24 +443,11 @@ class PropertyInfoDB:
         self.db["CE"].code_point_db = number_set
 
     def load_UnicodeData(self):
-        table = parse_table("UnicodeData.txt")
-        CodePointIdx       = 0
-        NumericValueIdx    = 6
-        NameIdx            = 1
-        NameUC1Idx         = 10
-        ISO_CommentIdx     = 11
-        GeneralCategoryIdx = 2
-        BidiClassIdx       = 4
-        convert_column_to_number(table, CodePointIdx)
-
-        names_db            = convert_table_to_associative_map(table, CodePointIdx, "number", NameIdx)
-        names_uc1_db        = convert_table_to_associative_map(table, CodePointIdx, "number", NameUC1Idx)
-        numeric_value_db    = convert_table_to_associative_map(table, CodePointIdx, "NumberSet", NumericValueIdx)
-        iso_comment_db      = convert_table_to_associative_map(table, CodePointIdx, "string", ISO_CommentIdx)
+        fh = open_data_base_file("UnicodeData.txt")
 
         # some rows contain aliases, so they need to get converted into values
-        general_category_property = self.db["gc"]
-        bidi_class_property       = self.db["bc"]
+        property_general_category = self.db["gc"]
+        property_bidi_class       = self.db["bc"]
 
         def convert(Property, ValueAlias):
             """Convert specified ValueAlias to Value of the given property."""
@@ -477,19 +455,43 @@ class PropertyInfoDB:
                 return Property.alias_to_name_map[ValueAlias]
             return ValueAlias
 
-        for row in table:
-            row[GeneralCategoryIdx] = convert(general_category_property, row[GeneralCategoryIdx])
-            row[BidiClassIdx]       = convert(bidi_class_property, row[BidiClassIdx])
-                
-        general_category_db = convert_table_to_associative_map(table, CodePointIdx, "NumberSet", GeneralCategoryIdx)
-        bidi_class_db       = convert_table_to_associative_map(table, CodePointIdx, "NumberSet", BidiClassIdx) 
+        names_db            = {}
+        general_category_db = {}
+        bidi_class_db       = {}
+        numeric_value_db    = {}
+        names_uc1_db        = {}
+        iso_comment_db      = {}
+
+        for line in fh.readlines():
+            if line.find("#") != -1: line = line[:line.find("#")]
+            if line == "" or line.isspace(): continue
+
+            x = line.split(";")
+
+            code_point       = int("0x" + x[0].strip(), 16)    # CodePointIdx       = 0
+            name             = x[1].strip().replace(" ", "_")  # NameIdx            = 1
+            general_category = x[2].strip().replace(" ", "_")  # GeneralCategoryIdx = 2
+            general_category = convert(property_general_category, general_category)
+            bidi_class       = x[4].strip().replace(" ", "_")  # BidiClassIdx       = 4
+            bidi_class       = convert(property_bidi_class, bidi_class)
+            numeric_value    = x[6].strip()                    # NumericValueIdx    = 6
+            uc1_name         = x[10].strip().replace(" ", "_") # NameUC1Idx         = 10
+            iso_comment      = x[11].strip().replace(" ", "_") # ISO_CommentIdx     = 11
+
+            names_db[name]                                                            = code_point
+            general_category_db.setdefault(general_category, NumberSet()).quick_append_value(code_point)
+            bidi_class_db.setdefault      (bidi_class,       NumberSet()).quick_append_value(code_point)
+            numeric_value_db.setdefault   (numeric_value,    NumberSet()).quick_append_value(code_point)
+            names_uc1_db[uc1_name]                                                    = code_point
+            iso_comment_db[iso_comment]                                               = str(code_point)
 
         self.db["na"].code_point_db  = names_db             # Name
-        self.db["na1"].code_point_db = names_uc1_db         # Name Unicode 1
-        self.db["nv"].code_point_db  = numeric_value_db     # Numeric Value
         self.db["gc"].code_point_db  = general_category_db  # General Category
         self.db["bc"].code_point_db  = bidi_class_db        # BidiClass
+        self.db["nv"].code_point_db  = numeric_value_db     # Numeric Value
+        self.db["na1"].code_point_db = names_uc1_db         # Name Unicode 1
         self.db["isc"].code_point_db = iso_comment_db       # ISO_Comment
+
 
     def get_property_descriptions(self):
         item_list = self.db.items()

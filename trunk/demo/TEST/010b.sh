@@ -6,7 +6,9 @@ if [[ $1 == "--hwut-info" ]]; then
     exit
 fi
 cd $QUEX_PATH/demo/010
-make clean >& /dev/null
+if [[ $1 == "copy" ]]; then
+   touch simple.qx
+fi
 make  $1-ez.exe >& tmp.txt
 cat tmp.txt | awk ' ! /g\+\+/' | awk '/[Ww][Aa][Rr][Nn][Ii][Nn][Gg]/ { print; } /[Ee][Rr][Rr][Oo][Rr]/ { print; }'
 ./$1-ez.exe 

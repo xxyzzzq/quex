@@ -152,7 +152,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
-    default_action = "analysis_terminated_f = true; return;"
+    on_failure_action = "analysis_terminated_f = true; return;"
 
     # -- produce some visible output about the setup
     print "(*) Lexical Analyser Patterns:"
@@ -176,8 +176,8 @@ def create_state_machine_function(PatternActionPairList, PatternDictionary,
 
     txt += generator.do(PatternActionPairList, 
                         StateMachineName       = "UnitTest",
-                        DefaultAction          = PatternActionInfo(None, default_action), 
-                        EndOfStreamAction      = PatternActionInfo(None, default_action), 
+                        OnFailureAction        = PatternActionInfo(None, on_failure_action), 
+                        EndOfStreamAction      = PatternActionInfo(None, on_failure_action), 
                         PrintStateMachineF     = True,
                         AnalyserStateClassName = sm_name,
                         StandAloneAnalyserF    = True)

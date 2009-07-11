@@ -6,7 +6,7 @@ else
     rm -f tmp.dat
     cd ..
     make clean >& /dev/null; 
-    make lexer OPTIMIZATION=' ' >& /dev/null
+    make lexer OPTIMIZATION=' ' EXTRA_COMPILER_FLAG='-DQUEX_QUICK_BENCHMARK_VERSION' >& /dev/null
     cd benchmark
     ../lexer linux-2.6.22.17-kernel-dir.c > $output
     make clean >& /dev/null; 

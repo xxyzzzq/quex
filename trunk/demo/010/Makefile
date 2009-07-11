@@ -61,6 +61,7 @@ clean:
 	rm -f tiny_lexer*
 	rm -f $(SOURCES)
 	rm -f $(FILES)
+	rm -f *.exe
 	rm -f *.o
 	rm -f copy fill point
 	rm -f *.bak

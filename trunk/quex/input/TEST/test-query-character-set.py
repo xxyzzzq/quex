@@ -15,11 +15,14 @@ if "--hwut-info" in sys.argv:
 def test(simulated_argv):
     print "----------------------------------------------------------------------"
     print "ARGS: ", simulated_argv
+    
     try:    query.do(simulated_argv)
     except: pass
+
     print
     try:    query.do(simulated_argv + ["--numeric"])
     except: pass
+
     print
     try:    query.do(simulated_argv + ["--numeric" , "--intervals"])
     except: pass

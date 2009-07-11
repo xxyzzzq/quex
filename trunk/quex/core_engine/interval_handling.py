@@ -18,8 +18,18 @@ from copy import copy, deepcopy
 
 from   quex.frs_py.file_in                       import error_msg
 import quex.core_engine.generator.languages.core as languages
-import quex.core_engine.utf8                     as utf8
 import sys
+import codecs
+
+utf8_char_db = {
+    -sys.maxint:   "-oo",
+    sys.maxint:    "oo",            
+    ord(' '):      "' '",
+    ord('\n'):     "'\\n'",
+    ord('\t'):     "'\\t'",
+    ord('\r'):     "'\\r'",
+}
+utf8_c = codecs.getencoder("utf-8")
 
 class Interval:
     """Representing an interval with a minimum and a maximum border. Implements
@@ -163,15 +173,12 @@ class Interval:
         return self.get_string(Option="")
 
     def __utf8_char(self, Code):
-        if   Code == - sys.maxint:   return "-oo"
-        elif Code == sys.maxint:     return "oo"            
-        elif Code == ord(' '):       return "' '"
-        elif Code == ord('\n'):      return "'\\n'"
-        elif Code == ord('\t'):      return "'\\t'"
-        elif Code == ord('\r'):      return "'\\r'"
-        elif Code < ord(' '):        return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
+        global utf8_char_db
+        
+        if utf8_char_db.has_key(Code): return utf8_char_db[Code]
+        elif Code < ord(' '):          return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
         else:
-            char_str = utf8.map_unicode_to_utf8(Code)
+            char_str = utf8_c(unichr(Code))[0]
             return "'" + char_str + "'"
         # elif Code < ord('0') or Code > ord('z'): return "\\" + repr(Code)
         # else:                                    return "'" + chr(Code) + "'"
@@ -256,6 +263,11 @@ class NumberSet:
         assert Other.__class__.__name__ == "Interval"
 
         self.__intervals.append(Other)
+
+    def quick_append_value(self, Value):
+        x = self.__intervals
+        if len(x) != 0  and x[-1].end == Value: x[-1].end = Value + 1
+        else:                                   x.append(Interval(Value))
 
     def add_interval(self, NewInterval):
         """Adds an interval and ensures that no overlap with existing

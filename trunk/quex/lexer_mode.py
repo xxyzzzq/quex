@@ -175,7 +175,7 @@ class Mode:
         self.options  = Other.options
 
         self.__base_mode_sequence = []
-        self.__base_mode_sequence = self.__determine_base_mode_sequence(Other, [])
+        self.__determine_base_mode_sequence(Other, [])
 
         # (1) Collect Event Handlers
         self.__event_handler_code_fragment_list = {}
@@ -282,21 +282,23 @@ class Mode:
 
             error_msg("circular inheritance detected:\n" + msg, ModeDescr.filename, ModeDescr.line_n)
 
-        result = [ ModeDescr ]
-
-        for name in ModeDescr.base_modes:
+        base_mode_name_list_reversed = deepcopy(ModeDescr.base_modes)
+        #base_mode_name_list_reversed.reverse()
+        for name in base_mode_name_list_reversed:
             # -- does mode exist?
             verify_word_in_list(name, mode_description_db.keys(),
                                 "Mode '%s' inherits mode '%s' which does not exist." % (ModeDescr.name, name),
                                 ModeDescr.filename, ModeDescr.line_n)
+
+            if name in map(lambda m: m.name, self.__base_mode_sequence): continue
+
             # -- grab the mode description
             mode_descr = mode_description_db[name]
-            result.extend(self.__determine_base_mode_sequence(mode_descr, 
-                                                              InheritancePath + [ModeDescr.name]))
+            self.__determine_base_mode_sequence(mode_descr, InheritancePath + [ModeDescr.name])
 
-        # The base mode sequence shall be from bottom to top
-        if len(InheritancePath) == 0: result.reverse()
-        return result
+        self.__base_mode_sequence.append(ModeDescr)
+
+        return self.__base_mode_sequence
 
     def __collect_event_handler(self):
         """Collect event handlers from base mode and the current mode.
@@ -342,9 +344,10 @@ class Mode:
 
             # Determine the offset for each pattern
             offset = PrevMaxPatternIndex + 1 - min_pattern_index
+            assert offset >= 1
 
             # Assign new pattern ids starting from MinPatternID
-            for match in MatchList:
+            for match in match_list:
                 current_pattern_id = match.pattern_state_machine().get_id()
                 match.pattern_state_machine().core().set_id(current_pattern_id + offset)
             
@@ -353,6 +356,7 @@ class Mode:
             ##    print "##reprio:", key, info[-1], info[-1] + offset
             for info in repriorization_db.items():
                 info[-1] += offset
+
             return match_list, repriorization_db 
                                              
         def __handle_deletion_and_repriorization(CurrentModeName, pattern_action_pair_list, 
@@ -438,15 +442,18 @@ class Mode:
         for mode_descr in self.__base_mode_sequence:
 
             repriorization_db = {}
-            if mode_descr.has_own_matches(): 
-                match_list, repriorization_db = __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
-                                                                                           mode_descr.get_repriorization_db(),
-                                                                                           prev_max_pattern_index)
+            consider_pattern_action_pairs_f = mode_descr.has_own_matches()
+            if consider_pattern_action_pairs_f:
+                match_list, repriorization_db = \
+                        __ensure_pattern_indeces_follow_precedence(mode_descr.get_match_list(),
+                                                                   mode_descr.get_repriorization_db(),
+                                                                   prev_max_pattern_index)
+
             # Delete/Repriorize patterns from more basic modes
             __handle_deletion_and_repriorization(mode_descr.name, result, 
                                                  repriorization_db, mode_descr.get_deletion_db())
 
-            if mode_descr.has_own_matches(): 
+            if consider_pattern_action_pairs_f:
                 # Add the new pattern action pairs
                 for pattern_action_pair in match_list:
                     __add_new_pattern_action_pair(result, pattern_action_pair)

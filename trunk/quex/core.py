@@ -94,13 +94,13 @@ def get_code_for_mode(Mode, ModeNameList):
     end_of_stream_action = action_code_formatter.do(Mode, 
                                                     Mode.get_code_fragment_list("on_end_of_stream"), 
                                                     "on_end_of_stream", None, EOF_ActionF=True)
-    # -- 'default' action (nothing matched)
+    # -- 'on failure' action (nothing matched)
     if not Mode.has_code_fragment_list("on_failure"):
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
         txt += "return;\n"
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 
-    default_action = action_code_formatter.do(Mode, 
+    on_failure_action = action_code_formatter.do(Mode, 
                                               Mode.get_code_fragment_list("on_failure"), 
                                               "on_failure", None, Default_ActionF=True)
 
@@ -109,7 +109,7 @@ def get_code_for_mode(Mode, ModeNameList):
     pattern_action_pair_list = get_generator_input(Mode)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
-                                 DefaultAction                  = PatternActionInfo(None, default_action), 
+                                 OnFailureAction                = PatternActionInfo(None, on_failure_action), 
                                  EndOfStreamAction              = PatternActionInfo(None, end_of_stream_action),
                                  PrintStateMachineF             = True,
                                  StateMachineName               = Mode.name,
