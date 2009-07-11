@@ -1,4 +1,4 @@
-<test-database execution-time-sec="16.84" date="Sat Jul 11 00:38:02 2009">
+<test-database execution-time-sec="16.84" date="Sat Jul 11 14:10:17 2009">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Identity Determination" make-required="True" time-sum-sec="3.09"> 
         <application file-name="test-identity_checker.py" info-request-time="1247183133L"/>
@@ -63,6 +63,15 @@
                <choice name="1" result="FAIL" time_sec="0.08" crc="-57452216"/>
                <choice name="2" result="FAIL" time_sec="0.07" crc="-1825077266"/>
                <choice name="Overlap1" result="NO GOOD FILE" time_sec="0.08" crc="822375082"/>
+            </choice-list>
+        </test>
+        <test title="UTF8" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1247314175L"/>
+            <choice-list number="4">
+               <choice name="1" result="OK" time_sec="0.00" crc="-1982649752"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-445401151"/>
+               <choice name="Overlap1" result="OK" time_sec="0.00" crc="-1563387038"/>
+               <choice name="Overlap2" result="OK" time_sec="0.00" crc="1206343695"/>
             </choice-list>
         </test>
     </group>
@@ -154,6 +163,12 @@
                <choice name="" result="OK" time_sec="0.10" crc="111483634"/>
             </choice-list>
         </test>
+        <test title="Paralell" make-required="True" time-sum-sec="0.12"> 
+            <application file-name="test-parallelize.py" info-request-time="1237805541L"/>
+            <choice-list number="1">
+               <choice name="" result="OK" time_sec="0.12" crc="-1321345312"/>
+            </choice-list>
+        </test>
         <test title="Repetitions Kleene closure 0 or arbitrary repetitions" make-required="True" time-sum-sec="0.09"> 
             <application file-name="test-repeat-pure.py" info-request-time="1237805540L"/>
             <choice-list number="1">
@@ -164,12 +179,6 @@
             <application file-name="test-repeat.py" info-request-time="1237805540L"/>
             <choice-list number="1">
                <choice name="" result="OK" time_sec="0.18" crc="-901142520"/>
-            </choice-list>
-        </test>
-        <test title="Paralell" make-required="True" time-sum-sec="0.12"> 
-            <application file-name="test-parallelize.py" info-request-time="1237805541L"/>
-            <choice-list number="1">
-               <choice name="" result="OK" time_sec="0.12" crc="-1321345312"/>
             </choice-list>
         </test>
         <test title="Append Post Condition" make-required="True" time-sum-sec="0.11"> 
