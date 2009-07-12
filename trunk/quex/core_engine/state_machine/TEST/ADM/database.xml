@@ -1,4 +1,4 @@
-<test-database execution-time-sec="16.84" date="Sat Jul 11 14:10:17 2009">
+<test-database execution-time-sec="16.69" date="Sun Jul 12 16:05:01 2009">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Identity Determination" make-required="True" time-sum-sec="3.09"> 
         <application file-name="test-identity_checker.py" info-request-time="1247183133L"/>
@@ -57,12 +57,13 @@
         </test>
     </group>
     <group name="NumberSet Split">
-        <test title="UTF8" make-required="True" time-sum-sec="0.23"> 
-            <application file-name="test-utf8_number_set_split.py" info-request-time="1247051179L"/>
-            <choice-list number="3">
-               <choice name="1" result="FAIL" time_sec="0.08" crc="-57452216"/>
-               <choice name="2" result="FAIL" time_sec="0.07" crc="-1825077266"/>
-               <choice name="Overlap1" result="NO GOOD FILE" time_sec="0.08" crc="822375082"/>
+        <test title="UTF8" make-required="True" time-sum-sec="0.08"> 
+            <application file-name="test-utf8_number_set_split.py" info-request-time="1247401006L"/>
+            <choice-list number="4">
+               <choice name="1" result="OK" time_sec="0.08" crc="1765966415"/>
+               <choice name="2" result="OK" time_sec="0.00" crc="-709131510"/>
+               <choice name="3" result="OK" time_sec="0.00" crc="-1773482225"/>
+               <choice name="4" result="OK" time_sec="0.00" crc="607312234"/>
             </choice-list>
         </test>
         <test title="UTF8" make-required="True" time-sum-sec="0.00"> 
