@@ -8,7 +8,7 @@ import quex.core_engine.state_machine.transformation as trafo
 
 if "--hwut-info" in sys.argv:
     print "NumberSet Split: UTF8"
-    print "CHOICES: 1, 2, 3, 4;"
+    print "CHOICES: 1, 2, 3, 4, 4b;"
     sys.exit(0)
 
 def pretty_sequence(Value):
@@ -66,6 +66,14 @@ elif "4" in sys.argv:
     begin = 0x10000
     end   = 0x110000
 
+elif "4b" in sys.argv:
+    test(0x40200, 0x40600)
+    test(0x4019E, 0x40591)
+    test(0x40121, 0x40171)
+    test(0x40121, 0x41300)
+    test(0x40121, 0xA1300)
+    sys.exit()
+    
 test(begin,      begin + 1)
 test(begin,      begin + 2)
 test(begin + 1,  begin + 2)
