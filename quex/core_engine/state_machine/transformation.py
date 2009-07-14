@@ -1,6 +1,8 @@
+# (C) 2009 Frank-Rene Schaefer
 import os
 import sys
 import codecs
+from copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
 import quex.input.codec_db as codec_db
@@ -83,7 +85,7 @@ def unicode_to_utf8(UnicodeValue):
     return map(ord, utf8c(unichr(UnicodeValue))[0])
 
 def utf8_to_unicode(ByteSequence):
-    return ord(utf8d(reduce(lambda x, y: x + y, map(chr, border_sequence))))
+    return ord(utf8d(reduce(lambda x, y: x + y, map(chr, ByteSequence)))[0])
 
 def translate_unicode_interval_into_utf8_trigger_sequence(X):
     front_list = unicode_to_utf8(X.begin)
@@ -111,34 +113,33 @@ def do_utf8_number_set_split(NSet):
             result.setdefault(n, []).extend(eq_interval_list)
 
     return result
-
         
 def split_interval_according_to_utf8_byte_sequence_length(X):
     """Split Unicode interval into intervals where all values
        have the same utf8-byte sequence length.
     """
-    assert X.end <= 0x10FFFF  # Interval must lie in unicode range
+    assert X.end <= 0x110000  # Interval must lie in unicode range
 
-    utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x0010FFFF] 
+    utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
     db = {}
-    new_interval = X
-    while new_interval != None:
-        interval = new_interval
-        L0 = len(unicode_to_utf8(interval.begin))   # Length of the first unicode in utf8
-        L1 = len(unicode_to_utf8(interval.end - 1)) # Length of the last unicode in utf8
-        if L0 != L1: 
-            next_border  = utf8_border[L0]
-            new_interval = Interval(next_border, interval.end)
-            interval.end = next_border
-        else:
-            new_interval = None
+    current_begin = X.begin
+    LastL = len(unicode_to_utf8(X.end - 1))  # Length of utf8 sequence corresponding
+    #                                        # the last value inside the interval.
+    while 1 + 1 == 2:
+        L = len(unicode_to_utf8(current_begin))   # Length of the first unicode in utf8
         # Store the interval together with the required byte sequence length (as key)
-        db[L0] = interval
+        current_end = utf8_border[L-1]
+        if L == LastL: 
+            db[L] = Interval(current_begin, X.end)
+            break
+        db[L] = Interval(current_begin, current_end)
+        current_begin = current_end
+
     return db
     
-def split_interval_into_equivalence_byte_ranges(L, X):
+def split_interval_into_contigous_byte_sequence_range(X, L):
     """
-       DEFINITION: 'Equivalence Byte Sequence Range'
+       DEFINITION: 'Contigous Byte Sequence Range'
     
         is a contigous interval specified by [begin, end) where all values
         in between begin and end have the following property:
@@ -150,7 +151,10 @@ def split_interval_into_equivalence_byte_ranges(L, X):
              same --------------->|different| ...
 
            Further, the union of [byte q], where p < q < L, spans
-           the whole byte range.
+           the whole byte range. The idea behind it is that such an
+           interval can be translated into a state sequence
+
+           (1)--[byte0]-->(2)--[byte1]-->(3)--[byte's k]-->(4)--[Range]-->(5)--[Range]--
     
         ARGUMENTS: 
     
@@ -161,8 +165,14 @@ def split_interval_into_equivalence_byte_ranges(L, X):
 
         ALGORITHM: 
 
-        -- the result is stored in a list, the list of intervals where
-           each interval falls into an equivalence byte range. 
+        -- The result is stored in a list, the list of intervals where
+           each interval falls into an contigous byte range. 
+
+        -- The 'interval' is investigated if it fullfills the above
+           criteria. If not the value is returned, so that the interval
+           can be split into:
+
+             (1) 
            
             
 
@@ -183,51 +193,138 @@ def split_interval_into_equivalence_byte_ranges(L, X):
     # Min. value of a byte = where all 'x' are zero.
     # Max. value of a byte = where all 'x' are 1.
     # 
-    def min_byte_value(ByteIndex, SequenceLength):
+    def min_byte_value(ByteIndex):
         if ByteIndex == 0:
-            return { 0: 0x00, 1: 0xC0, 2: 0xE0, 3: 0xF0 }[SequenceLength]
+            return { 0: 0x00, 1: 0xC0, 2: 0xE0, 3: 0xF0 }[L]
         return 0x80
 
-    def max_byte_value(ByteIndex, SequenceLength):
+    def max_byte_value(ByteIndex):
         if ByteIndex == 0:
-            return { 0: 0x7F, 1: 0xDF, 2: 0xEF, 3: 0xF7 }[SequenceLength]
+            return { 0: 0x7F, 1: 0xDF, 2: 0xEF, 3: 0xF7 }[L]
         return 0xBF
        
-    def check_split(X):
-        if X.size() == 1: return -1
-
-        front_sequence = unicode_to_utf8(interval.begin)
-        back_sequence  = unicode_to_utf8(interval.end - 1)
+    def find_first_diff_byte(front_sequence, back_sequence):
         # Find the first byte that is different in the front and back sequence 
-        for i in range(L):
-            if begin_sequence[i] != end_sequence[i]: break
+        for i in range(L-1):
+            if front_sequence[i] != back_sequence[i]: return i
+        # At least the last byte must be different. That's why it **must** be the
+        # one different if no previous byte was it.
+        return L - 1
 
-        # If the remaining bytes all span the whole range, than no split is necessary.
-        if i == L - 1: return -1
+    assert X.size() != 0
 
-        for k in range(i):
-            if front_sequence[k] != min_byte_value(k, L): break
-            if back_sequence[k]  != max_byte_value(k, L): break
-        else:
-            return -1
+    if X.size() == 1: return [ X ]
+    # If the utf8 sequence consist of one byte, then the range cannot be split.
+    if L == 1: return [ X ]
 
-        # Return the border unicode that results in an equivalence 
-        # interval together with 'begin'.
-        border_sequence = front_sequence[:i]
-        border_sequence.append(front_sequence[i] + 1) 
-        for k in range(i+1, L):
-            border_sequence.append(min_byte_value(k, L))
-        return utf8_to_unicode(border_sequence)
-
+    front_sequence = unicode_to_utf8(X.begin)
+    back_sequence  = unicode_to_utf8(X.end - 1)
+    p      = find_first_diff_byte(front_sequence, back_sequence)
     result = []
-    interval = X
-    while interval != None:
-        border_value = split_if_necessary(interval)
-        if border_value == -1: 
-            result.append(interval)
-            break
-        else:
-            result.append(Interval(interval.begin, border_value + 1))
-            interval.begin = border_value
+    current_begin = X.begin
+    byte_sequence = copy(front_sequence)
+    byte_indeces  = range(p + 1, L)
+    byte_indeces.reverse()
+    for q in byte_indeces:
+        # There **must** be at least one overrun, even for 'q=p+1', since 'p+1' 
+        # indexes the first byte after the first byte that was different. If 'p' 
+        # indexed that last byte this block is never entered.
+        byte_sequence[q] = max_byte_value(q)
+        current_end      = utf8_to_unicode(byte_sequence) + 1
+        result.append(Interval(current_begin, current_end))
+        current_begin    = current_end
 
+    if front_sequence[p] + 1 != back_sequence[p]:
+        if p == L - 1: byte_sequence[p] = back_sequence[p]
+        else:          byte_sequence[p] = back_sequence[p] - 1 
+        current_end      = utf8_to_unicode(byte_sequence) + 1
+        ## print "##begin: ", ["%02X" % x for x in unicode_to_utf8(current_begin)]
+        ## print "##end-1: ", ["%02X" % x for x in unicode_to_utf8(current_end - 1)]
+        result.append(Interval(current_begin, current_end))
+        current_begin    = current_end
+
+    byte_sequence[p] = back_sequence[p]
+    for q in range(p + 1, L):
+        if back_sequence[q] == min_byte_value(q):
+            byte_sequence[q] = back_sequence[q]
+        else:
+            if q == L - 1: byte_sequence[q] = back_sequence[q] 
+            else:          byte_sequence[q] = back_sequence[q] - 1
+            current_end      = utf8_to_unicode(byte_sequence) + 1
+            result.append(Interval(current_begin, current_end))
+            if current_begin == X.end: break
+            current_begin    = current_end
+            byte_sequence[q] = back_sequence[q]
+
+
+    if current_begin != X.end:
+        result.append(Interval(current_begin, X.end))
+
+    return result
+
+def get_trigger_sequence_for_contigous_byte_range_interval(X):
+    front_sequence = unicode_to_utf8(X.begin)
+    back_sequence  = unicode_to_utf8(X.end - 1)
+    # If the interval is contigous it must produce equal length utf8 sequences
+    L = len(front_sequence)
+    assert L == len(back_sequence)
+
+    # Let me play with 'list comprehensions' just one time
+    result = [ Interval(front_sequence[i], back_sequence[i] + 1) for i in range(L) ]
+
+
+# For byte n > 1, the max byte range is always 0x80-0xBF (including 0xBF)
+FullRange = Interval(0x80, 0xC0)
+def plug_state_sequence_for_trigger_set_sequence(StartNodeIdx, EndNodeIdx, XList, L, DIdx):
+    """Create a state machine sequence for trigger set list of the same length.
+
+       L      Length of the trigger set list.
+       DIdx   Index of first byte that differs, i.e. byte[i] == byte[k] for i, k < DIdx.
+       XList  The trigger set list.
+
+                                    .          .              .
+                       [A,         B,         C,         80-BF  ] 
+
+              [Start]--(A)-->[1]--(B)-->[2]--(C)-->[3]--(80-BF)-->[End]
+    """
+    global FullRange
+    assert L < 5
+
+    s_idx = StartNodeStateIdx
+    # For the common bytes it is not essential what list is considered, take list no. 0.
+    for trigger_set in XList[0][:DIdx]:
+        s_idx = sm.add_transition(s_idx, trigger_set)
+    # Store the last state where all bytes are the same
+    sDIdx = s_idx
+
+    rindeces  = range(, L)
+    rindeces.reverse()
+    # Indeces of the states that run on 'full range' (frs=full range state)
+    frs_idx = [ state_machine.index.get(), state_machine.index.get(), state_machine.index.get() ]
+
+    for trigger_set_seq in XList:
+        # How many bytes at the end trigger on 'Min->Max'
+        sbw_idx = EndNodeStateIndex
+        i = L - 1
+        while i > DIdx and i != 0:
+            if trigger_set_seq[i] != FullRange: break
+            last_idx = frs_idx[i-1]
+            sm.add_transition(last_idx, trigger_set_seq[i], sbw_idx)
+            sbw_idx = last_idx
+            i -= 1
+
+        sbw_idx = last_idx
+        while i > DIdx:
+            # Maybe, it has already a transition on trigger_set .. (TO DO)
+            last_idx = state_machine.index.get()
+            sm.add_transition(last_idx, trigger_set_seq[i], sbw_idx)
+            sbw_idx = last_idx
+            i -= 1
+
+        sm.add_transition(sDIdx, trigger_set_seq[i], last_idx)
+        continue
+        
+
+
+       
 
