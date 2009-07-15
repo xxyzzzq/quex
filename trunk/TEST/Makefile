@@ -14,7 +14,7 @@ FLAGS  = #-lefence
 all: $(TEST_FILES) 
 
 hwut-info:
-	@echo $(TEST_FILES) ::SCRIPTS::
+	@echo $(TEST_FILES) 
 
 %.exe: %.cpp  $(QUEX_CORE)
 	g++ -Wall $(INCLUDE_DIRS) $(DEBUGF) $(OPTF) $< -o $@
