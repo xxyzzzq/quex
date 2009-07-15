@@ -1,17 +1,17 @@
-<test-database execution-time-sec="25.57" date="Sat Jul 11 00:21:31 2009">
+<test-database execution-time-sec="25.40" date="Tue Jul 14 23:18:29 2009">
     <last-used-diff-display-program name=""/>
-    <test title="UCS Character Code Names" make-required="True" time-sum-sec="25.41"> 
+    <test title="UCS Character Code Names" make-required="True" time-sum-sec="25.23"> 
         <application file-name="ucs-character-name.sh" info-request-time="1243469530L"/>
         <choice-list number="3">
-           <choice name="1" result="OK" time_sec="8.46" crc="-890159197"/>
-           <choice name="2" result="OK" time_sec="8.44" crc="-1256102413"/>
-           <choice name="3" result="OK" time_sec="8.52" crc="-194350071"/>
+           <choice name="1" result="OK" time_sec="8.40" crc="-890159197"/>
+           <choice name="2" result="OK" time_sec="8.36" crc="-1256102413"/>
+           <choice name="3" result="OK" time_sec="8.47" crc="-194350071"/>
         </choice-list>
     </test>
-    <test title="Explicit Token Type Member Assignment" make-required="True" time-sum-sec="0.16"> 
+    <test title="Explicit Token Type Member Assignment" make-required="True" time-sum-sec="0.17"> 
         <application file-name="token_type-member-name.sh" info-request-time="1244194797L"/>
         <choice-list number="1">
-           <choice name="" result="OK" time_sec="0.16" crc="-1420722318"/>
+           <choice name="" result="OK" time_sec="0.17" crc="-1420722318"/>
         </choice-list>
     </test>
 </test-database>

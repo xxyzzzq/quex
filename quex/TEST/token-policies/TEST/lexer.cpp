@@ -21,15 +21,15 @@ main(int argc, char** argv)
 {
     if( argc > 1 && strcmp(argv[1], "--hwut-info") == 0 ) {
 #       if   defined( QUEX_OPTION_TOKEN_POLICY_QUEUE )
-        printf("Token Policy Queue: " NAME);
+        printf("Token Policy Queue: " NAME ";\n");
         printf("CHOICES: receive-1, receive-2;\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN )
-        printf("Token Policy UsersToken: " NAME);
+        printf("Token Policy UsersToken: " NAME ";\n");
         printf("CHOICES: receive-1, receive-2;\n");
         printf("SAME;\n");
 #       elif defined( QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE )
-        printf("Token Policy UsersQueue: " NAME);
+        printf("Token Policy UsersQueue: " NAME ";\n");
 #       endif
         return 0;
     }

@@ -1,4 +1,4 @@
-<history date="Sat Jul 11 00:21:04 2009" element-n="361">
+<history date="Tue Jul 14 22:44:00 2009" element-n="373">
     <day year="2008" month="02" day="09">
         <history-init time="17:40:17"/>
     </day>
@@ -799,5 +799,19 @@
     <day year="2009" month="07" day="10">
         <crc-error time="00:00:19" application="006.sh" choice="NDEBUG" database-crc="639003946" real-crc="1767280044"/>
         <test-runs-today n="17" ok-n="15" fail-n="2" else-n="0" last-run="oll korrekt" last-time="22:21:04"/>
+    </day>
+    <day year="2009" month="07" day="14">
+        <crc-error time="20:43:55" application="000.sh" choice="DEBUG" database-crc="-424163482" real-crc="-1134124828"/>
+        <crc-error time="20:43:56" application="001.sh" choice="NDEBUG" database-crc="-2092421156" real-crc="1917681230"/>
+        <crc-error time="20:43:56" application="001.sh" choice="DEBUG" database-crc="-2092421156" real-crc="1226158072"/>
+        <crc-error time="20:43:56" application="002.sh" choice="NDEBUG" database-crc="-1787106835" real-crc="1239095203"/>
+        <crc-error time="20:43:56" application="002.sh" choice="DEBUG" database-crc="-1787106835" real-crc="-1026858287"/>
+        <crc-error time="20:43:57" application="003.sh" choice="BPC=2" database-crc="1262344118" real-crc="-1016263970"/>
+        <crc-error time="20:43:57" application="003.sh" choice="BPC=2_NDEBUG" database-crc="1262344118" real-crc="1996950269"/>
+        <crc-error time="20:43:57" application="003.sh" choice="BPC=4" database-crc="1262344118" real-crc="-1016263970"/>
+        <crc-error time="20:43:57" application="003.sh" choice="BPC=4_NDEBUG" database-crc="1262344118" real-crc="-367666624"/>
+        <crc-error time="20:43:57" application="003.sh" choice="BPC=wchar_t" database-crc="1262344118" real-crc="-1016263970"/>
+        <crc-error time="20:43:59" application="006.sh" choice="DEBUG" database-crc="1767280044" real-crc="1451297366"/>
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:44:00"/>
     </day>
 </history>
