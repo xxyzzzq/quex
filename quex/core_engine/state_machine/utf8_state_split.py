@@ -252,7 +252,6 @@ def get_trigger_sequence_for_contigous_byte_range_interval(X, L):
     # Let me play with 'list comprehensions' just one time
     return [ Interval(front_sequence[i], back_sequence[i] + 1) for i in range(L) ]
 
-
 # For byte n > 1, the max byte range is always 0x80-0xBF (including 0xBF)
 FullRange = Interval(0x80, 0xC0)
 def plug_state_sequence_for_trigger_set_sequence(sm, StartStateIdx, EndStateIdx, XList, L, DIdx):
