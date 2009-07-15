@@ -710,7 +710,7 @@ class StateMachine:
         digraph state_machine_%i {
 	       rankdir=LR;
 	       size="8,5"
-	       node [shape = doublecircle]; $$ACCEPTANCE_STATES$$;
+	       node [shape = doublecircle]; $$ACCEPTANCE_STATES$$
            node [shape = circle];
            $$TRANSITIONS$$
         }
@@ -725,8 +725,8 @@ class StateMachine:
                 acceptance_state_str += "%i; " % int(printed_state_i)
             transition_str += state.get_graphviz_string(printed_state_i, index_map, Option)
 
-        if acceptance_state_str != "": acceptance_state_str = acceptance_state_str[:-2]
-        return blue_print(frame_txt, [["$$ACCEPTANCE_STATES$$", acceptance_state_str],
+        if acceptance_state_str != "": acceptance_state_str = acceptance_state_str[:-2] + ";"
+        return blue_print(frame_txt, [["$$ACCEPTANCE_STATES$$", acceptance_state_str ],
                                       ["$$TRANSITIONS$$",       transition_str]])
         
     def assert_consistency(self):

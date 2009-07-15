@@ -3,11 +3,11 @@ import sys
 import os
 sys.path.insert(0, os.environ["QUEX_PATH"])
 
-from   quex.core_engine.interval_handling            import NumberSet, Interval
-import quex.core_engine.state_machine.transformation as trafo
+from   quex.core_engine.interval_handling              import NumberSet, Interval
+import quex.core_engine.state_machine.utf8_state_split as trafo
 
 if "--hwut-info" in sys.argv:
-    print "NumberSet Split: UTF8"
+    print "UTF8 State Split: Contigous Byte Sequence Ranges"
     print "CHOICES: 1, 2, 3, 4, 4b;"
     sys.exit(0)
 
