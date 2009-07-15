@@ -102,7 +102,7 @@ def do_dead_end_router(State, StateIdx, BackwardLexingF):
     assert State.is_acceptance()
 
     if State.origins().contains_any_pre_context_dependency() == False: 
-        return ""
+        return LanguageDB["$goto-last_acceptance"] + "\n"
 
     txt = acceptance_info.get_acceptance_detector(State.origins().get_list(), 
                                                   __goto_distinct_terminal)

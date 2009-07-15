@@ -79,9 +79,6 @@ Result:
       [00C0, 07BF] 
          .front --> C3.80.
          .back  --> DE.BF.
-      [07C0, 07FC] 
+      [07C0, 07FE] 
          .front --> DF.80.
-         .back  --> DF.BC.
-      [07FD, 07FE] 
-         .front --> DF.BD.
          .back  --> DF.BE.
