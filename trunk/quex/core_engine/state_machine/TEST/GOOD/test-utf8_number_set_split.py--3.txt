@@ -67,8 +67,11 @@ Result:
       [1000, EFFF] 
          .front --> E1.80.80.
          .back  --> EE.BF.BF.
-      [F000, FFFF] 
+      [F000, FFBF] 
          .front --> EF.80.80.
+         .back  --> EF.BE.BF.
+      [FFC0, FFFF] 
+         .front --> EF.BF.80.
          .back  --> EF.BF.BF.
 -------------------------
 Interval:     [0801, FFFE]
