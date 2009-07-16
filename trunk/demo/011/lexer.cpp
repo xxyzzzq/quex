@@ -1,5 +1,4 @@
-#include<fstream>    
-#include<iostream> 
+#include<cstdio> 
 
 // (*) include lexical analyser header
 #include "ISO8859_7_Lexer"
@@ -23,16 +22,14 @@ main(int argc, char** argv)
         qlex.receive(&token);
 
         // (*) print out token information
-        cout << token.type_id_name() << "\t ";
-        cout << Quex_iso8859_7_to_utf8_string(token.text());
+        printf("%s\t", (char*)token.type_id_name().c_str());
+        printf("%s\n",   (char*)Quex_iso8859_7_to_utf8_string(token.text()).c_str());
 #       if 0
         cout << "\t\t plain bytes: ";
         for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
             printf("%02X.", (int)*iterator);
         }
 #       endif
-        cout << endl;
-
 
         // (*) check against 'termination'
     } while( token.type_id() != TKN_TERMINATION );

@@ -26,7 +26,7 @@ APPLICATION      = lexer
 COMPILER = g++
 CC = $(COMPILER) -c -fPIC -ggdb -Wno-deprecated -Wall  \
 	 -I./ -I$(QUEX_PATH) $(NDEBUG_F)   \
-     -DQUEX_OPTION_ASSERTS	
+     -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED 
 
 
 LD = $(COMPILER)
