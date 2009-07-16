@@ -27,15 +27,8 @@ def do(sm):
        x1, x2, and x3 can trigger. Note, that the UTF8 sequence ends
        at the same state '2' as the previous single trigger 'X'.
     """
-    def create_states(sm, N):
-        index_list = []
-        for i in range(N):
-            sm.states[state_index] = state_machine.State(StateMachineID = sm.get_id(),
-                                                         StateID        = state_index)
-            index_list.append(state_index)
-        return index_list
-
-    for original_start_state_index, state in sm.states.items():
+    done_list = []
+    for state_index, state in sm.states.items():
         # Get the 'transition_list', i.e. a list of pairs (TargetState, NumberSet)
         # which indicates what target state is reached via what number set.
         transition_list = state.transitions().get_map().items()
@@ -43,23 +36,29 @@ def do(sm):
         # transitions to intermediate states.
         state.transitions().clear()
         # Loop over all transitions
-        for original_target_state_index, number_set in transition_list:
+        for target_state_index, number_set in transition_list:
             # We take the intervals with 'PromiseToTreatWellF' even though they
             # are changed. This is because the intervals would be lost anyway
             # after the state split, so we use the same memory and do not 
             # cause a time consuming memory copy and constructor calls.
-            interval_list = number_set.get_intervals(PromiseToTreatWellF=True)
-            db = do_utf8_number_set_split(interval_list)
-            # Connect 
-            for interval in db.values():
-                trigger_set_sequence = translate_unicode_interval_into_utf8_trigger_sequence(interval)
+            create_intermediate_states(sm, state_index, target_state_index, number_set)
 
-                state_index = original_start_state_index
-                for trigger_set in trigger_set_sequence[:-1]:
-                    state_index = sm.add_transition(state_index, trigger_set)
 
-                # The last trigger set triggers to the original target state
-                sm.add_transition(state_index, trigger_set_sequence[-1], original_target_state_index)
+def create_intermediate_states(sm, state_index, target_state_index, number_set):
+    for interval in number_set.get_intervals(PromiseToTreatWellF=True):
+        # Split interval into sub intervals where the utf8-sequence has
+        # the same number of bytes
+        db = split_interval_according_to_utf8_byte_sequence_length(interval)
+        for length, interval in db.items():
+            e_list = split_interval_into_contigous_byte_sequence_range(interval, length)
+            trigger_set_sequence_db = \
+               map(lambda x: 
+                   get_trigger_sequence_for_contigous_byte_range_interval(x, length),
+                   e_list)
+
+            plug_state_sequence_for_trigger_set_sequence(sm, state_index, target_state_index,
+                    trigger_set_sequence_db, length, #TODO: First differing byte
+
 
 utf8c = codecs.getencoder("utf-8")
 utf8d = codecs.getdecoder("utf-8")
