@@ -9,11 +9,18 @@ greek-lexer:
 	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-Wall \
-		-I$(QUEX_PATH) \
+		-I$(QUEX_PATH) -I. \
 		lexer.cpp \
 		ISO8859_7_Lexer.cpp \
 		ISO8859_7_Lexer-core-engine.cpp \
 		-o lexer
+
+%.E: %.cpp
+	g++ -E -D__QUEX_TEST_OPTION_ISO8859_7 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-Wall \
+		-I$(QUEX_PATH) -I. \
+		$< -o $@
 
 clean:
 	rm -f lexer

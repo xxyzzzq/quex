@@ -40,7 +40,8 @@ else
 endif
 
 CC = $(COMPILER) -c -I./ -I$(QUEX_PATH) $(NDEBUG_F) \
-       -DQUEX_OPTION_ACTIVATE_ASSERTS # -no-deprecated -Wall -fPIC
+       -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+       -no-deprecated -Wall
 
 LD = $(COMPILER) $(LIBICONV)
 
