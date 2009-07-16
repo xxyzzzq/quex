@@ -1,4 +1,4 @@
-<history date="Tue Jul 14 23:47:07 2009" element-n="405">
+<history date="Wed Jul 15 14:57:22 2009" element-n="417">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -841,5 +841,19 @@
     </day>
     <day year="2009" month="07" day="14">
         <test-runs-today n="7" ok-n="0" fail-n="4" else-n="3" last-run="failure" last-time="21:47:06"/>
+    </day>
+    <day year="2009" month="07" day="15">
+        <crc-error time="12:54:28" application="bug-2209142.sh" choice="error" database-crc="-1161141958" real-crc="1446065790"/>
+        <crc-error time="12:54:33" application="bug-2209142.sh" choice="good" database-crc="-1960676627" real-crc="-1309674102"/>
+        <crc-error time="12:54:54" application="bug-2277660.sh" choice="" database-crc="-2010250218" real-crc="-144384570"/>
+        <crc-error time="12:55:19" application="bug-2257908.sh" choice="" database-crc="776137798" real-crc="1803228892"/>
+        <crc-error time="12:55:33" application="bug-1889321.sh" choice="" database-crc="-1229420355" real-crc="-396174589"/>
+        <crc-error time="12:55:53" application="bug-1895500.sh" choice="" database-crc="1893955623" real-crc="1197719310"/>
+        <crc-error time="12:56:02" application="bug-2095970-ntq.sh" choice="Normal" database-crc="283518767" real-crc="1751048447"/>
+        <crc-error time="12:56:22" application="bug-2095970-ntq.sh" choice="NoModeDetection_ErrorCase" database-crc="1142660451" real-crc="1466795843"/>
+        <crc-error time="12:56:26" application="bug-2095970.sh" choice="Normal" database-crc="283518767" real-crc="1751048447"/>
+        <crc-error time="12:56:36" application="bug-2095970.sh" choice="NoModeDetection" database-crc="2110564504" real-crc="-92411746"/>
+        <crc-error time="12:56:46" application="bug-2095970.sh" choice="NoModeDetection_ErrorCase" database-crc="1142660451" real-crc="1466795843"/>
+        <test-runs-today n="1" ok-n="0" fail-n="0" else-n="1" last-run="no verdict" last-time="12:57:22"/>
     </day>
 </history>

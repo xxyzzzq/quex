@@ -39,11 +39,11 @@ def write(UnicodeTrafoInfo, CodecName):
     """
     codec_name = make_safe_identifier(CodecName)
     utf8_prolog,  utf8_function_body  = ConverterWriterUTF8().do(UnicodeTrafoInfo)
-    print "##utf16ct:"
-    for info in ConverterWriterUTF16().get_conversion_table(UnicodeTrafoInfo):
-        print "##", info
+    # print "##utf16ct:"
+    # for info in ConverterWriterUTF16().get_conversion_table(UnicodeTrafoInfo):
+    #    print "##", info
     utf16_prolog, utf16_function_body = ConverterWriterUTF16().do(UnicodeTrafoInfo)
-    print "##END"
+    # print "##END"
     dummy,        ucs4_function_body  = ConverterWriterUCS4().do(UnicodeTrafoInfo)
 
     # Provide only the constant which are necessary
