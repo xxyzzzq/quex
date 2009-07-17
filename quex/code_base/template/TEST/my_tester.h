@@ -12,7 +12,7 @@ typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION;
 #   define  __quex_assert(X)   /*no assert*/
 #endif
 
-#include <iostream>
+#include <cstdio>
 
 struct my_tester;
 #define CLASS my_tester
@@ -35,7 +35,7 @@ inline void
 mini_mode::on_indentation(my_tester* x, int Indentation) 
 {
     indentation[x->counter->_line_number_at_end-1] = Indentation;
-    std::cout << "indentation = " << Indentation << std::endl;
+    printf("indentation = %i\n", Indentation);
 }
 
 #include <../CounterWithIndentation.i>

@@ -3,7 +3,17 @@
 #ifndef __INCLUDE_GUARD__QUEX__COUNTER__
 #define __INCLUDE_GUARD__QUEX__COUNTER__
 
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#include <cstddef> 
+#else
+#include <stddef.h>
+#endif
+
+
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
+#endif
 
     struct Counter {
         Counter();
@@ -79,6 +89,9 @@ namespace quex {
                                                          QUEX_TYPE_CHARACTER* End,
                                                          const bool       LicenseToCountF);
     };
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
 }
+#endif
 
 #endif // __INCLUDE_GUARD__QUEX__COUNTER__
