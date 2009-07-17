@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.74" date="Wed Jul 15 15:43:51 2009">
+<test-database execution-time-sec="0.73" date="Thu Jul 16 22:58:14 2009">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.01"> 
         <application file-name="simple-queue.exe" info-request-time="1247606349L"/>
@@ -11,10 +11,10 @@
         <application file-name="misc.sh" info-request-time="1243020114L"/>
         <make-procedure success="True" time_sec="0.000000"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.18" crc="-1191820474"/>
-           <choice name="no-namespace" result="OK" time_sec="0.21" crc="-201766705"/>
-           <choice name="double-colon" result="OK" time_sec="0.17" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.16" crc="-1412753469"/>
+           <choice name="empty" result="OK" time_sec="0.17" crc="-1191820474"/>
+           <choice name="no-namespace" result="OK" time_sec="0.20" crc="-201766705"/>
+           <choice name="double-colon" result="OK" time_sec="0.18" crc="-223322448"/>
+           <choice name="token" result="OK" time_sec="0.18" crc="-1412753469"/>
         </choice-list>
     </test>
     <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.01"> 

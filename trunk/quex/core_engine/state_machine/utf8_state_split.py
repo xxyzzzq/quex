@@ -1,4 +1,75 @@
 # (C) 2009 Frank-Rene Schaefer
+"""
+ABSTRACT:
+
+    The UTF8-State-Split is a procedure introcuded by Frank-Rene Schaefer that
+    allows to transform a state machine that triggers on unicode characters
+    into a state machine that triggers on the correspondent UTF8 Byte
+    Sequences.
+
+PRINCIPLE:
+
+    An elementary trigger in quex state machine is a unicode interval. That
+    means, that if a character appears that falls into the interval a state
+    transition is triggered. Each of those intervals needs now to be translated
+    into interval sequences of the correspondent utf8 byte sequences. A unicode
+    transition from state A to state B:
+
+         [ A ]-->(x0, x1)-->[ B ]
+
+    is translated into a chain of utf8-byte sequence transitions that might
+    look like this
+
+         [ A ]-->(b0)-->[ 1 ]-->(c0,c1)-->[ B ] 
+             \                             /
+              `->(d1)-->[ 2 ]---(e0,e1)---' 
+
+    That means that intermediate states may be introduced to reflect the
+    different byte sequences that represent the original interval.
+
+IDEAS:
+    
+    In a simple approach one would translate each element of a interval into an
+    utf8-byte sequence and generate state transitions between A and B.  Such an
+    approach, however, produces a huge computational overhead and charges the
+    later Hopcroft Minimization with a huge state machine.
+
+    To avoid such an overflow, the Hopcroft Minimzation can be prepared on the
+    basis of transition intervals. 
+    
+    (A) Backwards: In somewhat greater intervals, the following might occur:
+
+
+                 .-->(d1)-->[ 1 ]---(A3,BF)---. 
+                /                              \
+               /  ,->(d1)-->[ 2 ]---(80,BF)--.  \
+              /  /                            \  \
+             [ A ]-->(b0)-->[ 3 ]-->(80,BF)-->[ B ] 
+                 \                             /
+                  `->(d1)-->[ 4 ]---(80,81)---' 
+
+        That means, that for states 2 and 3 the last transition is on [80, BF]
+        to state B. Thus, the intermediate states 2 and 3 are equivalent. Both
+        can be replaced by a single state. 
+
+    (B) Forwards: The first couple of bytes in the correspondent utf8 sequences
+        might be the same. Then, no branch is required until the first differing
+        byte.
+
+PROCESS:
+
+    (1) The original interval is split into sub-intervals that have the same 
+        length of utf8-byte sequences.
+
+    (2) Each sub-interval is split into further sub-intervals where as 
+        many trailing [80,BF] ranges are combined.
+
+    (3) The interval sequences are plugged in between the state A and B
+        of the state machine.
+"""
+   
+
+
 import os
 import sys
 import codecs
@@ -57,7 +128,7 @@ def create_intermediate_states(sm, state_index, target_state_index, number_set):
                    e_list)
 
             plug_state_sequence_for_trigger_set_sequence(sm, state_index, target_state_index,
-                    trigger_set_sequence_db, length, #TODO: First differing byte
+                    trigger_set_sequence_db, length) #TODO: First differing byte
 
 
 utf8c = codecs.getencoder("utf-8")
@@ -68,7 +139,7 @@ def unicode_to_utf8(UnicodeValue):
 def utf8_to_unicode(ByteSequence):
     return ord(utf8d(reduce(lambda x, y: x + y, map(chr, ByteSequence)))[0])
 
-def translate_unicode_interval_into_utf8_trigger_sequence(X):
+def unicode_interval_to_utf8_intervals(X):
     front_list = unicode_to_utf8(X.begin)
     back_list  = unicode_to_utf8(X.end - 1)
     return map(lambda front, back: Interval(front, back + 1), front_list, back_list)
@@ -233,7 +304,6 @@ def split_interval_into_contigous_byte_sequence_range(X, L):
             if current_begin == X.end: break
             current_begin    = current_end
             byte_sequence[q] = back_sequence[q]
-
 
     if current_begin != X.end:
         result.append(Interval(current_begin, X.end))
