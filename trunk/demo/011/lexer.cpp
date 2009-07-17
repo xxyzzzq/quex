@@ -1,38 +1,44 @@
-#include<cstdio> 
+#include"lexer"
+namespace quex {
+        QuexMode  lexer::X;
+#define self  (*me)
 
-// (*) include lexical analyser header
-#include "ISO8859_7_Lexer"
-#include "ISO8859_7_Lexer-converter-iso8859_7"
+    void
+    lexer_X_on_entry(lexer* me, const QuexMode* FromMode) {
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+__quex_assert(me->X.has_entry_from(FromMode));
+#endif
 
-using namespace std;
+    }
 
-int 
-main(int argc, char** argv) 
-{        
-    using namespace quex;
+    void
+    lexer_X_on_exit(lexer* me, const QuexMode* ToMode)  {
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+__quex_assert(me->X.has_exit_to(ToMode));
+#endif
 
-    Token            token;
-    Token::__string  tmp;
-    ISO8859_7_Lexer  qlex("example-iso8859-7.txt");
-    
+    }
 
-    // (*) loop until the 'termination' token arrives
-    do {
-        // (*) get next token from the token stream
-        qlex.receive(&token);
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
+    void
+    lexer_X_on_indentation(lexer* me, const int Indentation) {
+__quex_assert(Indentation >= 0);
+    }
+#endif
 
-        // (*) print out token information
-        printf("%s\t", (char*)token.type_id_name().c_str());
-        printf("%s\n",   (char*)Quex_iso8859_7_to_utf8_string(token.text()).c_str());
-#       if 0
-        cout << "\t\t plain bytes: ";
-        for(QUEX_TYPE_CHARACTER* iterator = (uint8_t*)tmp.c_str(); *iterator ; ++iterator) {
-            printf("%02X.", (int)*iterator);
-        }
-#       endif
-
-        // (*) check against 'termination'
-    } while( token.type_id() != TKN_TERMINATION );
-
-    return 0;
-}
+#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
+    bool
+    lexer_X_has_base(const QuexMode* Mode) {
+    return false;
+    }
+    bool
+    lexer_X_has_entry_from(const QuexMode* Mode) {
+    return true; // default
+    }
+    bool
+    lexer_X_has_exit_to(const QuexMode* Mode) {
+    return true; // default
+    }
+#endif    
+#undef self
+} // END: namespace quex
