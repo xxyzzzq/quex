@@ -154,9 +154,6 @@ def split_interval_into_contigous_byte_sequence_range(X, L):
            can be split into:
 
              (1) 
-           
-            
-
     """
     # A byte in a utf8 sequence can only have a certain range depending
     # on its position. UTF8 sequences look like the following dependent

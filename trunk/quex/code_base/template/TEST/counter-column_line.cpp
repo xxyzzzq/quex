@@ -1,12 +1,11 @@
 #include <my_tester.h>
 #include <cstring>
-#include <iostream>
-#include <string>
+#include <cstdio>
 
 using namespace std;
 using namespace quex;
 
-string total_string;
+char total_string[65536];
 
 int    indentation[64];
 
@@ -16,16 +15,16 @@ void test(const char* TestString, Counter& x)
     x._column_number_at_begin = x._column_number_at_end;
     x.count((QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
 
-    cout << "__________________________" << endl;
-    // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
-    cout << "  lexeme: '";
+    printf("__________________________\n");
+    printf("  lexeme: '");
     for(char* p = (char*)TestString; *p ; ++p) 
-       if( *p == '\n' ) cout << "\\n";
-       else             cout << *p;
-    cout << "'" << endl;
-    cout << "  after:  " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
+       if( *p == '\n' ) printf("\\n");
+       else             printf("%c", *p);
+    printf("'\n");
+    printf("  after:  %i, %i\n", 
+           (int)x._line_number_at_end, (int)x._column_number_at_end);
 
-    total_string += TestString;
+    strcat(total_string, TestString);
 }
 
 int
@@ -34,11 +33,9 @@ main(int  argc, char** argv)
     Counter   x;
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
-        cout << "Count Line and Column: Without Indentation Count\n";
+        printf("Count Line and Column: Without Indentation Count\n");
         return 0;
     }
-
-    // x.__buffer->__the_end = (QUEX_TYPE_CHARACTER*)0xFFFFFFFFL;
 
     test("12345", x);
     test("\n", x);
@@ -52,19 +49,17 @@ main(int  argc, char** argv)
     test("12345\n\n\n12345\n", x);
     test("happy end", x);
 
-    cout << "\n";
-    cout << "Total String:\n";
-    cout << "001: ";
+    printf("\n");
+    printf("Total String:\n");
+    printf("001: ");
     int line_n = 1;
-    char tmp[6];
-    for(size_t i = 0; i < total_string.length() ; ++i) {
+    for(size_t i = 0; i < strlen(total_string) ; ++i) {
         if( total_string[i] == '\n' ) {
             ++line_n;
-            sprintf(tmp, "%03i: ", line_n);
-            cout << endl << tmp;
+            printf("\n%i: ", (int)line_n); 
         } else {
-            cout << total_string[i];
+            printf("%c", (char)total_string[i]);
         }
     }
-    cout << endl;
+    printf("\n");
 }
