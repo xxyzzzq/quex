@@ -8,7 +8,7 @@ import quex.core_engine.state_machine.utf8_state_split as trafo
 
 if "--hwut-info" in sys.argv:
     print "UTF8 State Split: Contigous Byte Sequence Ranges"
-    print "CHOICES: 1, 2, 3, 4, 4b;"
+    print "CHOICES: 1, 2, 3, 4, 4b, misc;"
     sys.exit(0)
 
 def pretty_sequence(Value):
@@ -27,7 +27,7 @@ def test(Begin, End):
 
     L = len(trafo.unicode_to_utf8(X.begin))
     assert L == len(trafo.unicode_to_utf8(X.end - 1))
-    result = trafo.split_interval_into_contigous_byte_sequence_range(X, L)
+    result, p = trafo.split_interval_into_contigous_byte_sequence_range(X, L)
     print "Result:"
     previous_end = X.begin
     for interval in result:
@@ -72,6 +72,11 @@ elif "4b" in sys.argv:
     test(0x40121, 0x40171)
     test(0x40121, 0x41300)
     test(0x40121, 0xA1300)
+    sys.exit()
+
+elif "misc" in sys.argv:
+    pass
+    test(0x800, 0x810)
     sys.exit()
     
 test(begin,      begin + 1)

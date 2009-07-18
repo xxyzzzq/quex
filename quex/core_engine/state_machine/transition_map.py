@@ -320,7 +320,7 @@ class TransitionMap:
         if self.__db.has_key(TargetIdx): return self.__db[TargetIdx]
         else:                            return NumberSet()
 
-    def get_string(self, FillStr, StateIndexMap):
+    def get_string(self, FillStr, StateIndexMap, Option="utf8"):
         # print out transitionts
         sorted_transitions = self.get_map().items()
         sorted_transitions.sort(lambda a, b: cmp(a[1].minimum(), b[1].minimum()))
@@ -328,7 +328,8 @@ class TransitionMap:
         msg = ""
         # normal state transitions
         for target_state_index, trigger_set in sorted_transitions:
-            trigger_str = trigger_set.get_utf8_string()
+            if Option == "utf8": trigger_str = trigger_set.get_utf8_string()
+            else:                trigger_str = trigger_set.get_string(Option)
             if StateIndexMap == None: target_str = "%05i" % target_state_index
             else:                     target_str = "%05i" % StateIndexMap[target_state_index]
                 

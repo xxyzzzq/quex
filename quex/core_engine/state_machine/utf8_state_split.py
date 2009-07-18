@@ -67,18 +67,17 @@ PROCESS:
     (3) The interval sequences are plugged in between the state A and B
         of the state machine.
 """
-   
-
-
 import os
 import sys
 import codecs
 from copy import copy
 sys.path.append(os.environ["QUEX_PATH"])
 
-from   quex.core_engine.interval_handling  import Interval
-import quex.core_engine.state_machine      as     state_machine
-from   quex.core_engine.state_machine.core import State
+from   quex.core_engine.interval_handling        import Interval
+import quex.core_engine.state_machine            as     state_machine
+from   quex.core_engine.state_machine.core       import State
+import quex.core_engine.state_machine.nfa_to_dfa as     nfa_to_dfa
+import quex.core_engine.state_machine.hopcroft_minimization as hopcroft_minimization
 
 def do(sm):
     """The UTF8 encoding causes a single unicode character code being translated
@@ -99,7 +98,8 @@ def do(sm):
        at the same state '2' as the previous single trigger 'X'.
     """
     done_list = []
-    for state_index, state in sm.states.items():
+    state_list = sm.states.items()
+    for state_index, state in state_list:
         # Get the 'transition_list', i.e. a list of pairs (TargetState, NumberSet)
         # which indicates what target state is reached via what number set.
         transition_list = state.transitions().get_map().items()
@@ -112,25 +112,37 @@ def do(sm):
             # are changed. This is because the intervals would be lost anyway
             # after the state split, so we use the same memory and do not 
             # cause a time consuming memory copy and constructor calls.
-            create_intermediate_states(sm, state_index, target_state_index, number_set)
+            for interval in number_set.get_intervals(PromiseToTreatWellF=True):
+                create_intermediate_states(sm, state_index, target_state_index, interval)
+
+    return hopcroft_minimization.do(nfa_to_dfa.do(sm), CreateNewStateMachineF=False)
+
+def do_set(NSet):
+    """Unicode values > 0x7F are translated into byte sequences, thus, only number
+       sets below that value can be transformed into number sets. They, actually
+       remain the same.
+    """
+    for interval in NSet.get_intervals(PromiseToTreatWellF=True):
+        if interval.end > 0x80: return None
+    return NSet
 
 
-def create_intermediate_states(sm, state_index, target_state_index, number_set):
-    for interval in number_set.get_intervals(PromiseToTreatWellF=True):
-        # Split interval into sub intervals where the utf8-sequence has
-        # the same number of bytes
-        db = split_interval_according_to_utf8_byte_sequence_length(interval)
-        for length, interval in db.items():
-            e_list = split_interval_into_contigous_byte_sequence_range(interval, length)
-            trigger_set_sequence_db = \
-               map(lambda x: 
-                   get_trigger_sequence_for_contigous_byte_range_interval(x, length),
-                   e_list)
+def create_intermediate_states(sm, state_index, target_state_index, X):
+    db = split_interval_according_to_utf8_byte_sequence_length(X)
+    # Split interval into sub intervals where the utf8-sequence has
+    # the same number of bytes
+    for seq_length, interval in db.items():
+        e_list, first_diff_byte_idx = split_interval_into_contigous_byte_sequence_range(interval, seq_length)
+        trigger_set_sequence_db = \
+           map(lambda x: get_trigger_sequence_for_contigous_byte_range_interval(x, seq_length),
+               e_list)
 
-            plug_state_sequence_for_trigger_set_sequence(sm, state_index, target_state_index,
-                    trigger_set_sequence_db, length) #TODO: First differing byte
+        plug_state_sequence_for_trigger_set_sequence(sm, state_index, target_state_index,
+                                                     trigger_set_sequence_db, seq_length, 
+                                                     first_diff_byte_idx) 
 
 
+utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
 utf8c = codecs.getencoder("utf-8")
 utf8d = codecs.getdecoder("utf-8")
 def unicode_to_utf8(UnicodeValue):
@@ -143,36 +155,16 @@ def unicode_interval_to_utf8_intervals(X):
     front_list = unicode_to_utf8(X.begin)
     back_list  = unicode_to_utf8(X.end - 1)
     return map(lambda front, back: Interval(front, back + 1), front_list, back_list)
-
-def do_utf8_number_set_split(NSet):
-    """Identify intervals that belong to the same UTF8 byte formatting range
-       That means, that identify sub-ranges where only the last formatted
-       byte changes. These ranges can be replaced by a sequence:
-
-
-            [ 1 ]---(x0)--->[ S0 ]---(x1)--->[ S1 ]---{X2}--->[ 2 ]
-
-       Where {X2} is the set of changing bytes that belong to the range.
-    """
-    assert not NSet.is_empty()
-
-    interval_list = NSet.get_intervals() 
-    result        = {}
-    for interval in interval_list:
-        i_db = split_interval_according_to_utf8_byte_sequence_length(interval)
-        for n, sub_interval in i_db.items():
-            eq_interval_list = split_interval_into_equivalence_byte_ranges(sub_interval)
-            result.setdefault(n, []).extend(eq_interval_list)
-
-    return result
         
 def split_interval_according_to_utf8_byte_sequence_length(X):
     """Split Unicode interval into intervals where all values
        have the same utf8-byte sequence length.
     """
+    global utf8_border
+    if X.begin == -sys.maxint: X.begin = 0
+    if X.end   == sys.maxint:  X.end   = 0x110000
     assert X.end <= 0x110000  # Interval must lie in unicode range
 
-    utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
     db = {}
     current_begin = X.begin
     LastL = len(unicode_to_utf8(X.end - 1))  # Length of utf8 sequence corresponding
@@ -190,41 +182,50 @@ def split_interval_according_to_utf8_byte_sequence_length(X):
     return db
     
 def split_interval_into_contigous_byte_sequence_range(X, L):
-    """
-       DEFINITION: 'Contigous Byte Sequence Range'
-    
-        is a contigous interval specified by [begin, end) where all values
-        in between begin and end have the following property:
+    """Use the fact that utf8 byte sequences of increasing unicode values relate
+       to increasing byte sequence values. Consider the unicode interval [0x12345,
+       0x17653]. 
+       
+                    Unicode   UTF8-byte sequence
 
-           The utf8 sequence of each value has the following shape:
- 
-             [byte 0][byte 1] ... [byte p   ] ...
+                    012345    F0.92.8D.85
+                              ...
+                    01237F    F0.92.8D.BF
+                    012380    F0.92.8E.80
+                              ...
+                    012FFF    F0.92.BF.BF
+                    013000    F0.93.80.80
+                              ...
+                    016FFF    F0.96.BF.BF
+                    017000    F0.97.80.80
+                              ...
+                    01763F    F0.97.98.BF
+                    017640    F0.97.99.80
+                              ...
+                    017653    F0.97.99.93
 
-             same --------------->|different| ...
+       
+       The utf8 sequences of the values in the sub-interval [0x12345, 0x1237F]
+       only differ with respect to the last byte, but they all trigger to the
+       'original targte state', so they can be combined into a trigger sequence
 
-           Further, the union of [byte q], where p < q < L, spans
-           the whole byte range. The idea behind it is that such an
-           interval can be translated into a state sequence
+                 [F0, 92, 8D, [85,BF]]
 
-           (1)--[byte0]-->(2)--[byte1]-->(3)--[byte's k]-->(4)--[Range]-->(5)--[Range]--
-    
-        ARGUMENTS: 
-    
-            X   Unicode interval where all utf8 byte sequences have 
-                the same length.
-        
-            L   The actual length all utf8 byte sequences for values in X.
+       Analogously, the values in [0x12FFF, 0x13000] differ only with respect
+       to the last two bytes. But, all trigger with 2x [80, BF] to the original
+       target state. So, they can be combined to the original target state, thus
+       they can be combined to
 
-        ALGORITHM: 
+                 [F0, 92, [80,BF], [80,BF]]
 
-        -- The result is stored in a list, the list of intervals where
-           each interval falls into an contigous byte range. 
+       A contigous interval is an interval where such combinations are valid.
+       This function splits a given interval into such intervals.
 
-        -- The 'interval' is investigated if it fullfills the above
-           criteria. If not the value is returned, so that the interval
-           can be split into:
+       REQUIRES: The byte sequence in the given interval **must** have all the same 
+                 length L.
 
-             (1) 
+       RETURNS: List of 'contigous' intervals and the index of the first byte
+                where all sequences differ.
     """
     # A byte in a utf8 sequence can only have a certain range depending
     # on its position. UTF8 sequences look like the following dependent
@@ -262,9 +263,9 @@ def split_interval_into_contigous_byte_sequence_range(X, L):
 
     assert X.size() != 0
 
-    if X.size() == 1: return [ X ]
+    if X.size() == 1: return [ X ], 0
     # If the utf8 sequence consist of one byte, then the range cannot be split.
-    if L == 1: return [ X ]
+    if L == 1: return [ X ], 0
 
     front_sequence = unicode_to_utf8(X.begin)
     back_sequence  = unicode_to_utf8(X.end - 1)
@@ -308,7 +309,7 @@ def split_interval_into_contigous_byte_sequence_range(X, L):
     if current_begin != X.end:
         result.append(Interval(current_begin, X.end))
 
-    return result
+    return result, p
 
 def get_trigger_sequence_for_contigous_byte_range_interval(X, L):
     front_sequence = unicode_to_utf8(X.begin)

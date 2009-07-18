@@ -22,7 +22,6 @@ utf8-lexer:
 		 -o UTF8Lex 
 	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
-	    -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
 		-Wall \
 		-I$(QUEX_PATH) -I. \
 		utf8-lexer.cpp \
@@ -30,6 +29,8 @@ utf8-lexer:
 		UTF8Lex-core-engine.cpp \
 		-o $@
 
+	    # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+			
 %.E: %.cpp
 	g++ -E -D__QUEX_TEST_OPTION_ISO8859_7 \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
@@ -38,9 +39,7 @@ utf8-lexer:
 		$< -o $@
 
 clean:
-	rm -f lexer
-	rm -f ISO8859_7_Lexer
-	rm -f ISO8859_7_Lexer-core-engine.cpp      
-	rm -f ISO8859_7_Lexer-token_ids
-	rm -f ISO8859_7_Lexer-converter-iso8859_7  
-	rm -f ISO8859_7_Lexer.cpp
+	rm -f greek-lexer
+	rm -f ISO8859_7_Lexer*
+	rm -f utf8-lexer
+	rm -f UTF8Lex

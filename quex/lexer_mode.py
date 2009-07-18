@@ -25,6 +25,7 @@ from quex.frs_py.file_in import error_msg, verify_word_in_list
 from quex.core_engine.generator.action_info import *
 import quex.core_engine.state_machine.subset_checker   as subset_checker
 import quex.core_engine.state_machine.identity_checker as identity_checker
+import quex.core_engine.state_machine.transformation as transformation
 
 # ModeDescription/Mode Objects:
 #
@@ -99,6 +100,7 @@ class ModeDescription:
                       "Only the last definition is considered.", 
                       Action.filename, Action.line_n, DontExitF=True)
 
+        transformation.do(PatternStateMachine)
         self.__matches[Pattern] = PatternActionInfo(PatternStateMachine, Action, Pattern, ModeName=self.name)
 
     def add_match_priority(self, Pattern, PatternStateMachine, PatternIdx, FileName, LineN):
@@ -106,6 +108,7 @@ class ModeDescription:
             error_msg("Pattern '%s' appeared twice in mode definition.\n" % Pattern + \
                       "Only this priority mark is considered.", FileName, LineN)
 
+        transformation.do(PatternStateMachine)
         self.__repriorization_db[Pattern] = [PatternStateMachine, FileName, LineN, PatternIdx]
 
     def add_match_deletion(self, Pattern, PatternStateMachine, FileName, LineN):
@@ -113,6 +116,7 @@ class ModeDescription:
             error_msg("Deletion of '%s' which appeared before in same mode.\n" % Pattern + \
                       "Deletion of pattern.", FileName, LineN)
 
+        transformation.do(PatternStateMachine)
         self.__deletion_db[Pattern] = [PatternStateMachine, FileName, LineN]
 
     def add_option(self, Option, Value):
@@ -126,7 +130,10 @@ class ModeDescription:
         oi = mode_option_info_db[Option]
         if oi.type == "list":
             # Append the value, assume in lists everything is allowed
-            self.options.setdefault(Option, []).append(Value)
+            if Option in ["skip", "skip_range", "skip_nested_range"]:
+                self.options.setdefault(Option, []).append(transformation.do(Value))
+            else:
+                self.options.setdefault(Option, []).append(Value)
         else:
             assert Value in oi.domain
             self.options[Option] = Value

@@ -93,7 +93,7 @@ class State:
     def __repr__(self):
         return self.get_string()
 
-    def get_string(self, StateIndexMap=None):
+    def get_string(self, StateIndexMap=None, Option="utf8"):
         # if information about origins of the state is present, then print
         msg = self.origins().get_string()
         fill_str = ""
@@ -102,7 +102,7 @@ class State:
         msg = self.core().get_string(StateMachineAndStateInfoF=False) + msg
 
         # print out transitionts
-        msg += self.transitions().get_string(fill_str, StateIndexMap)
+        msg += self.transitions().get_string(fill_str, StateIndexMap, Option)
         return msg
 
     def get_graphviz_string(self, OwnStateIdx, StateIndexMap, Option):
@@ -681,7 +681,7 @@ class StateMachine:
 
         return index_map, inverse_index_map, index_sequence
 
-    def get_string(self, NormalizeF=False):
+    def get_string(self, NormalizeF=False, Option="utf8"):
 
         # (*) normalize the state indices
         index_map, inverse_index_map, index_sequence = self.__get_state_index_normalization(NormalizeF)
@@ -691,7 +691,7 @@ class StateMachine:
         for state_i in index_sequence:
             printed_state_i = index_map[state_i]
             state           = self.states[state_i]
-            msg += "%05i" % printed_state_i + state.get_string(index_map)
+            msg += "%05i" % printed_state_i + state.get_string(index_map, Option)
             
         if self.__core.pre_context_sm() != None:
             msg += "pre-condition inverted = "

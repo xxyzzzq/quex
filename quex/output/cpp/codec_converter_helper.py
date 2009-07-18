@@ -12,6 +12,7 @@ LanguageDB = Setup.language_db
 
 def do():
     if Setup.engine_character_encoding == "": return
+    if Setup.engine_character_encoding_transformation_info == "utf8-state-split": return
 
     assert Setup.engine_character_encoding_transformation_info != None
 
