@@ -52,7 +52,6 @@ import quex.core_engine.state_machine.setup_pre_context       as setup_pre_conte
 import quex.core_engine.state_machine.setup_border_conditions as setup_border_conditions
 import quex.core_engine.state_machine.nfa_to_dfa              as nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization   as hopcroft
-import quex.core_engine.state_machine.transformation          as transformation
 
 
 CONTROL_CHARACTERS = [ "+", "*", "\"", "/", "(", ")", "{", "}", "|", "[", "]", "$"] 

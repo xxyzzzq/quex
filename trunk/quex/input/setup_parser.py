@@ -244,10 +244,13 @@ def validate(setup, command_line, argv):
     # Internal engine character encoding
     if setup.engine_character_encoding != "":
         verify_word_in_list(setup.engine_character_encoding,
-                            codec_db.get_supported_codec_list(),
+                            codec_db.get_supported_codec_list() + ["utf8"],
                             "Codec '%s' is not supported." % setup.engine_character_encoding)
-        setup.engine_character_encoding_transformation_info = \
-              codec_db.get_codec_transformation_info(setup.engine_character_encoding)
+        if setup.engine_character_encoding == "utf8":
+            setup.engine_character_encoding_transformation_info = "utf8-state-split"
+        else:
+            setup.engine_character_encoding_transformation_info = \
+                  codec_db.get_codec_transformation_info(setup.engine_character_encoding)
                 
 
 def __check_file_name(setup, Candidate, Name):

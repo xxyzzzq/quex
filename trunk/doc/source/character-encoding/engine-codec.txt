@@ -128,3 +128,20 @@ library strings can be converted using the following function set.
 
     QUEX_INLINE std::basic_string<uint32_t>
     Quex_MyCodec_to_ucs4_string(const std::basic_string<QUEX_TYPE_CHARACTER>& Source);
+
+
+The UTF8 Codec
+==============
+
+The UTF8 Codec is different from all previously mentioned codecs in the sense that
+it encodes unicode characters in byte sequences of differing lengths. That means that
+the translation of a lexical analyzer to this codec cannot rely on an adaption of
+transition maps, but instead, must reconstruct a new state machine that triggers
+on the byte sequences. 
+
+Figure :ref:`UTF8 State Machine <fig-utf8-codec-state-machine>` shows the state
+machine that results from a utf8 state split transformation of the state machine 
+displayed in figure :ref:``.  Where the codec
+adaptions happend on transition level, the main structure of the state machine
+remained in place. Now however, the state machine undergoes a complete
+metamorphosis.

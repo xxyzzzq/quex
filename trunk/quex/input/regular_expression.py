@@ -109,12 +109,8 @@ def __post_process(fh, StartPosition, object, ReturnRE_StringF):
     if object == None:
         error_msg("No valid regular expression detected, found '%s'." % regular_expression, fh)
 
-    # (*) [Optional] convert state machine / number set to a codec different from unicode
-    trafo_info = Setup.engine_character_encoding_transformation_info 
-    if trafo_info != None:
-        if isinstance(object, StateMachine): transformation.do(object, trafo_info, fh)
-        else:                                transformation.do_set(object, trafo_info, fh)
-
+    # NOT: Do not transform here, since transformation might happen twice when patterns
+    #      are defined and when they are replaced.
     if ReturnRE_StringF: return regular_expression, object
     else:                return object
 

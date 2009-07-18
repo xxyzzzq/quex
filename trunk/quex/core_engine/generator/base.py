@@ -74,7 +74,7 @@ class GeneratorBase:
     def __create_core_state_machine(self):
         # (1) transform all given patterns into a single state machine
         #     (the index of the patterns remain as 'origins' inside the states)
-        return self.__get_combined_state_machine(self.state_machine_list)
+        return get_combined_state_machine(self.state_machine_list)
 
     def __create_pre_context_state_machine(self):
         if self.pre_context_sm_list == []: return None
@@ -83,8 +83,8 @@ class GeneratorBase:
         for pre_sm in self.pre_context_sm_list:
             self.action_db[pre_sm.get_id()] = PatternActionInfo(pre_sm, "")
 
-        return self.__get_combined_state_machine(self.pre_context_sm_list, 
-                                                 FilterDominatedOriginsF=False)
+        return get_combined_state_machine(self.pre_context_sm_list, 
+                                          FilterDominatedOriginsF=False)
 
     def __create_backward_input_position_detectors(self):
         # -- find state machines that contain a state flagged with 
@@ -100,74 +100,74 @@ class GeneratorBase:
 
         return papc_sm_list 
 
-    def __get_combined_state_machine(self, StateMachine_List, FilterDominatedOriginsF=True):
-        """Creates a DFA state machine that incorporates the paralell
-           process of all pattern passed as state machines in 
-           the StateMachine_List. Each origins of each state machine
-           are kept in the final state, if it is not dominated.
+def get_combined_state_machine(StateMachine_List, FilterDominatedOriginsF=True):
+    """Creates a DFA state machine that incorporates the paralell
+       process of all pattern passed as state machines in 
+       the StateMachine_List. Each origins of each state machine
+       are kept in the final state, if it is not dominated.
 
-           Performs: -- parallelization
-                     -- translation from NFA to DFA
-                     -- Frank Schaefers Adapted Hopcroft optimization.
+       Performs: -- parallelization
+                 -- translation from NFA to DFA
+                 -- Frank Schaefers Adapted Hopcroft optimization.
 
-           Again: The state machine ids of the original state machines
-                  are traced through the whole process.
-                  
-           FilterDominatedOriginsF, if set to False, can disable the filtering
-                  of dominated origins. This is important for pre-conditions, because,
-                  all successful patterns need to be reported!            
-                          
-        """   
-        def __check(Place, sm):
-            __check_on_orphan_states(Place, sm)
-            __check_on_init_state_not_acceptance(Place, sm)
+       Again: The state machine ids of the original state machines
+              are traced through the whole process.
+              
+       FilterDominatedOriginsF, if set to False, can disable the filtering
+              of dominated origins. This is important for pre-conditions, because,
+              all successful patterns need to be reported!            
+                      
+    """   
+    def __check(Place, sm):
+        __check_on_orphan_states(Place, sm)
+        __check_on_init_state_not_acceptance(Place, sm)
 
-        def __check_on_orphan_states(Place, sm):
-            orphan_state_list = sm.get_orphaned_state_index_list()
-            if orphan_state_list == []: return
+    def __check_on_orphan_states(Place, sm):
+        orphan_state_list = sm.get_orphaned_state_index_list()
+        if orphan_state_list == []: return
+        error_msg("After '%s'" % Place + "\n" + \
+                  "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
+                  "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
+                  "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
+                  fh, DontExitF=True)
+
+    def __check_on_init_state_not_acceptance(Place, sm):
+        init_state = sm.get_init_state()
+        if init_state.core().is_acceptance():
             error_msg("After '%s'" % Place + "\n" + \
-                      "Orphaned state(s) detected in regular expression (optimization lack).\n" + \
-                      "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                      "Orphan state(s) = " + repr(orphan_state_list)                       + "\n", 
-                      fh, DontExitF=True)
+                      "The initial state is 'acceptance'. This should never appear.\n" + \
+                      "Please, log a defect at the projects website quex.sourceforge.net.\n")
 
-        def __check_on_init_state_not_acceptance(Place, sm):
-            init_state = sm.get_init_state()
-            if init_state.core().is_acceptance():
-                error_msg("After '%s'" % Place + "\n" + \
-                          "The initial state is 'acceptance'. This should never appear.\n" + \
-                          "Please, log a defect at the projects website quex.sourceforge.net.\n")
+        if filter(lambda origin: origin.is_acceptance(), init_state.origins().get_list()) != []:
+            error_msg("After '%s'" % Place + "\n" + \
+                      "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
+                      "Please, log a defect at the projects website quex.sourceforge.net.\n")
 
-            if filter(lambda origin: origin.is_acceptance(), init_state.origins().get_list()) != []:
-                error_msg("After '%s'" % Place + "\n" + \
-                          "Initial state contains an origin that is 'acceptance'. This should never appear.\n" + \
-                          "Please, log a defect at the projects website quex.sourceforge.net.\n")
+    # (1) mark at each state machine the machine and states as 'original'.
+    #      
+    #     This is necessary to trace in the combined state machine the
+    #     pattern that actually matched. Note, that a state machine in
+    #     the StateMachine_List represents one possible pattern that can
+    #     match the current input.   
+    #
+    map(lambda x: x.mark_state_origins(), StateMachine_List)
+    
+    # (2) setup all patterns in paralell 
+    sm = parallelize.do(StateMachine_List)
+    __check("Parallelization", sm)
 
-        # (1) mark at each state machine the machine and states as 'original'.
-        #      
-        #     This is necessary to trace in the combined state machine the
-        #     pattern that actually matched. Note, that a state machine in
-        #     the StateMachine_List represents one possible pattern that can
-        #     match the current input.   
-        #
-        map(lambda x: x.mark_state_origins(), StateMachine_List)
-        
-        # (2) setup all patterns in paralell 
-        sm = parallelize.do(StateMachine_List)
-        __check("Parallelization", sm)
+    # (3) convert the state machine to an DFA (paralellization created an NFA)
+    sm = nfa_to_dfa.do(sm)
+    __check("NFA to DFA", sm)
 
-        # (3) convert the state machine to an DFA (paralellization created an NFA)
-        sm = nfa_to_dfa.do(sm)
-        __check("NFA to DFA", sm)
+    # (4) determine for each state in the DFA what is the dominating original state
+    if FilterDominatedOriginsF: sm.filter_dominated_origins()
+    __check("Filter Dominated Origins", sm)
 
-        # (4) determine for each state in the DFA what is the dominating original state
-        if FilterDominatedOriginsF: sm.filter_dominated_origins()
-        __check("Filter Dominated Origins", sm)
+    # (5) perform hopcroft optimization
+    #     Note, that hopcroft optimization does consider the original acceptance 
+    #     states when deciding if two state sets are equivalent.   
+    sm = hopcroft.do(sm)
+    __check("Hopcroft Minimization", sm)
 
-        # (5) perform hopcroft optimization
-        #     Note, that hopcroft optimization does consider the original acceptance 
-        #     states when deciding if two state sets are equivalent.   
-        sm = hopcroft.do(sm)
-        __check("Hopcroft Minimization", sm)
-
-        return sm
+    return sm
