@@ -82,4 +82,6 @@ discussion:
   By means of the command line flag ``--codec`` the engine's internal
   character encoding can be specified.
 
-
+The next section focusses on the adaption of the internal analyzer engine to a
+particular codec. The following sections discuss the alternative usage of
+converters such as ICU and IConv to fill the analyzer buffer.

@@ -6,7 +6,6 @@ from   quex.exception                      import RegularExpressionException
 from   quex.core_engine.interval_handling  import NumberSet 
 from   quex.core_engine.state_machine.core import StateMachine 
 import quex.lexer_mode                          as lexer_mode
-import quex.core_engine.state_machine.transformation as transformation
 import quex.core_engine.regular_expression.core as regex
 import quex.core_engine.regular_expression.character_set_expression as charset_expression
 import quex.core_engine.regular_expression.snap_character_string    as snap_character_string
