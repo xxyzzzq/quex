@@ -126,7 +126,6 @@ def do_set(NSet):
         if interval.end > 0x80: return None
     return NSet
 
-
 def create_intermediate_states(sm, state_index, target_state_index, X):
     db = split_interval_according_to_utf8_byte_sequence_length(X)
     # Split interval into sub intervals where the utf8-sequence has
@@ -140,7 +139,6 @@ def create_intermediate_states(sm, state_index, target_state_index, X):
         plug_state_sequence_for_trigger_set_sequence(sm, state_index, target_state_index,
                                                      trigger_set_sequence_db, seq_length, 
                                                      first_diff_byte_idx) 
-
 
 utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000] 
 utf8c = codecs.getencoder("utf-8")
