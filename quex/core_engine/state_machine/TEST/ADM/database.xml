@@ -1,4 +1,4 @@
-<test-database execution-time-sec="21.40" date="Sun Jul 19 03:17:04 2009">
+<test-database execution-time-sec="21.40" date="Sun Jul 19 15:32:17 2009">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Identity Determination" make-required="True" time-sum-sec="3.10"> 
         <application file-name="test-identity_checker.py" info-request-time="1247657682L"/>
@@ -215,11 +215,11 @@
                <choice name="" result="OK" time_sec="0.10" crc="372081665"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" make-required="True" time-sum-sec="0.10"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1247657682L"/>
+        <test title="NFA to DFA (subset construction)" make-required="True" time-sum-sec="0.11"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1247657682L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="658399412"/>
+               <choice name="" result="OK" time_sec="0.11" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="Cloning" make-required="True" time-sum-sec="0.13"> 
@@ -229,11 +229,11 @@
                <choice name="" result="OK" time_sec="0.13" crc="-973496326"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" make-required="True" time-sum-sec="0.11"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1247657682L"/>
+        <test title="Hopcroft optimization (minimize state set)" make-required="True" time-sum-sec="0.10"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1247657682L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.11" crc="-1604145748"/>
+               <choice name="" result="OK" time_sec="0.10" crc="658399412"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" make-required="True" time-sum-sec="0.27"> 
@@ -250,6 +250,15 @@
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.14" crc="-2015069755"/>
+            </choice-list>
+        </test>
+    </group>
+    <group name="UTF16 State Split">
+        <test title="Larger Number Sets" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="test-utf16_number_set_split.py" info-request-time="1248010282L"/>
+            <make-procedure success="True" time_sec="0.000000"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="-1448565273"/>
             </choice-list>
         </test>
     </group>
