@@ -1,40 +1,5 @@
-<test-database execution-time-sec="273.69" date="Sun Jul 19 00:11:07 2009">
+<test-database execution-time-sec="272.89" date="Sun Jul 19 00:39:13 2009">
     <last-used-diff-display-program name=""/>
-    <test title="" make-required="True" time-sum-sec="0.16"> 
-        <application file-name="test-priority.py" info-request-time="1247689992L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="NO GOOD FILE" time_sec="0.16" crc="1863068166"/>
-        </choice-list>
-    </test>
-    <test title="" make-required="True" time-sum-sec="0.17"> 
-        <application file-name="test-simple-4.py" info-request-time="1247689992L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.17" crc="None"/>
-        </choice-list>
-    </test>
-    <test title="" make-required="True" time-sum-sec="0.13"> 
-        <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1247689992L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.13" crc="None"/>
-        </choice-list>
-    </test>
-    <test title="" make-required="True" time-sum-sec="0.13"> 
-        <application file-name="test-pseudo_ambiguous_post_conditions-3.py" info-request-time="1247689992L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="NO GOOD FILE" time_sec="0.13" crc="814369033"/>
-        </choice-list>
-    </test>
-    <test title="" make-required="True" time-sum-sec="0.18"> 
-        <application file-name="generator_test.py" info-request-time="1247689992L"/>
-        <make-procedure success="True" time_sec="0.000000"/>
-        <choice-list number="1" same_result="False">
-           <choice name="" result="NO GOOD FILE" time_sec="0.18" crc="0"/>
-        </choice-list>
-    </test>
     <group name="Buffer Reload">
         <test title="Backwards" make-required="True" time-sum-sec="4.96"> 
             <application file-name="test-backward_loading.py" info-request-time="1247689992L"/>
@@ -46,7 +11,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.47" crc="-1584767564"/>
             </choice-list>
         </test>
-        <test title="No Backward Reload -- Precondition at Border" make-required="True" time-sum-sec="6.60"> 
+        <test title="No Backward Reload -- Precondition at Border" make-required="True" time-sum-sec="6.59"> 
             <application file-name="test-no-backward-reloading.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="5" same_result="True">
@@ -57,7 +22,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.96" crc="-887225006"/>
             </choice-list>
         </test>
-        <test title="Forward Position Adaption" make-required="True" time-sum-sec="7.99"> 
+        <test title="Forward Position Adaption" make-required="True" time-sum-sec="7.98"> 
             <application file-name="test-position_adaption.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="5" same_result="True">
@@ -122,7 +87,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.37" crc="-1069020887"/>
             </choice-list>
         </test>
-        <test title="Part 3" make-required="True" time-sum-sec="4.69"> 
+        <test title="Part 3" make-required="True" time-sum-sec="4.68"> 
             <application file-name="test-post-conditions-3.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -166,7 +131,7 @@
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" make-required="True" time-sum-sec="6.65"> 
+        <test title="Simple" make-required="True" time-sum-sec="6.66"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -178,7 +143,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" make-required="True" time-sum-sec="5.61"> 
+        <test title="Part II" make-required="True" time-sum-sec="5.60"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -188,9 +153,19 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.89" crc="1614045300"/>
             </choice-list>
         </test>
+        <test title="Part I" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1247956746L"/>
+            <make-procedure success="True" time_sec="0.000000"/>
+            <choice-list number="4" same_result="True">
+               <choice name="ANSI-C-PlainMemory" result="NONE" time_sec="0.00" crc="None"/>
+               <choice name="ANSI-C" result="NONE" time_sec="0.00" crc="None"/>
+               <choice name="Cpp" result="NONE" time_sec="0.00" crc="None"/>
+               <choice name="Cpp_StrangeStream" result="NONE" time_sec="0.00" crc="None"/>
+            </choice-list>
+        </test>
     </group>
     <group name="Simple">
-        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" make-required="True" time-sum-sec="5.70"> 
+        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" make-required="True" time-sum-sec="5.69"> 
             <application file-name="test-simple-5.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -210,7 +185,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.64" crc="-771053764"/>
             </choice-list>
         </test>
-        <test title="Special Case '.' (drop out on valid target state)" make-required="True" time-sum-sec="4.60"> 
+        <test title="Special Case '.' (drop out on valid target state)" make-required="True" time-sum-sec="4.59"> 
             <application file-name="test-simple-3.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -230,7 +205,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="2.06" crc="-1565444249"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" make-required="True" time-sum-sec="7.93"> 
+        <test title="Maximum Length Match" make-required="True" time-sum-sec="7.94"> 
             <application file-name="test-simple-2.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -275,7 +250,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="4.36" crc="600307805"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" make-required="True" time-sum-sec="24.41"> 
+        <test title="Varrying Buffer Size" make-required="True" time-sum-sec="24.40"> 
             <application file-name="test-skip-trigger-set-2.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="6" same_result="True">
@@ -299,17 +274,7 @@
                <choice name="DL=4" result="OK" time_sec="3.76" crc="2098906281"/>
             </choice-list>
         </test>
-        <test title="Varrying DelimiterLength, BufferSize = DelimiterLength + 2" make-required="True" time-sum-sec="15.99"> 
-            <application file-name="test-skip-simple-3.py" info-request-time="1247689992L"/>
-            <make-procedure success="True" time_sec="0.000000"/>
-            <choice-list number="4" same_result="True">
-               <choice name="1" result="OK" time_sec="3.99" crc="1625391776"/>
-               <choice name="2" result="OK" time_sec="3.82" crc="1625391776"/>
-               <choice name="3" result="OK" time_sec="4.15" crc="1625391776"/>
-               <choice name="4" result="OK" time_sec="4.04" crc="1625391776"/>
-            </choice-list>
-        </test>
-        <test title="DelimiterLength=2, Large Buffer" make-required="True" time-sum-sec="12.15"> 
+        <test title="DelimiterLength=2, Large Buffer" make-required="True" time-sum-sec="12.16"> 
             <application file-name="test-skip-simple.py" info-request-time="1247689992L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="4" same_result="True">
@@ -327,6 +292,16 @@
                <choice name="3" result="OK" time_sec="4.26" crc="890859637"/>
                <choice name="4" result="OK" time_sec="3.97" crc="890859637"/>
                <choice name="5" result="OK" time_sec="3.84" crc="890859637"/>
+            </choice-list>
+        </test>
+        <test title="Varrying DelimiterLength, BufferSize = DelimiterLength + 2" make-required="True" time-sum-sec="16.00"> 
+            <application file-name="test-skip-simple-3.py" info-request-time="1247689992L"/>
+            <make-procedure success="True" time_sec="0.000000"/>
+            <choice-list number="4" same_result="True">
+               <choice name="1" result="OK" time_sec="3.99" crc="1625391776"/>
+               <choice name="2" result="OK" time_sec="3.82" crc="1625391776"/>
+               <choice name="3" result="OK" time_sec="4.15" crc="1625391776"/>
+               <choice name="4" result="OK" time_sec="4.04" crc="1625391776"/>
             </choice-list>
         </test>
     </group>

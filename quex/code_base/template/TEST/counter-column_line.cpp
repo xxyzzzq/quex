@@ -56,7 +56,7 @@ main(int  argc, char** argv)
     for(size_t i = 0; i < strlen(total_string) ; ++i) {
         if( total_string[i] == '\n' ) {
             ++line_n;
-            printf("\n%i: ", (int)line_n); 
+            printf("\n%03i: ", (int)line_n); 
         } else {
             printf("%c", (char)total_string[i]);
         }

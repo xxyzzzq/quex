@@ -85,8 +85,9 @@ feature of quex:
 
 .. data:: demo/006
 
-          contains an example that treats *pseudo ambiguous post contexts* which are
-          difficult to deal with by means of traditional lexical analyser generators.
+          contains an example that treats *pseudo ambiguous post contexts* (or,
+          'dangerous trailing contexts) which are difficult to deal with by
+          means of traditional lexical analyser generators.
 
 .. data:: demo/007
 
@@ -108,7 +109,8 @@ feature of quex:
 .. data:: demo/011
 
           provides an example of how to adapt the character encoding of the
-          lexical analyzer engine without using converters.
+          lexical analyzer engine without using converters. Example codecs are 
+          iso8859-7 and utf8.
 
 
 The author of this document suggests that the user looks at these

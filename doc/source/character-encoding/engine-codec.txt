@@ -55,8 +55,8 @@ It is worth mentioning that the command line arguments ``--codec-info`` providin
 information about the list of codecs and ``--codec-for-language`` are usefule
 for making decisions about what codec to choose. 
 
-Converter Functions
-===================
+Helper Functions
+################
 
 When the command line option ``--codec`` is used, quex automatically generates
 a set of converters that may be used to convert strings of the given codec to
@@ -131,7 +131,7 @@ library strings can be converted using the following function set.
 
 
 The UTF8 Codec
-==============
+##############
 
 The UTF8 Codec is different from all previously mentioned codecs in the sense that
 it encodes unicode characters in byte sequences of differing lengths. That means that
@@ -140,8 +140,32 @@ transition maps, but instead, must reconstruct a new state machine that triggers
 on the byte sequences. 
 
 Figure :ref:`UTF8 State Machine <fig-utf8-codec-state-machine>` shows the state
-machine that results from a utf8 state split transformation of the state machine 
-displayed in figure :ref:``.  Where the codec
+machine that results from a utf8 state split transformation of the state
+machine displayed in figure :ref:`fig-codec-unicode`.  Where the codec
 adaptions happend on transition level, the main structure of the state machine
-remained in place. Now however, the state machine undergoes a complete
+remained in place.  Now however, the state machine undergoes a complete
 metamorphosis.
+
+
+.. _fig-utf8-codec-state-machine:
+
+.. figure:: ../figures/utf8-codec-state-machine.*
+   
+   Sample lexical analyzer with an internal engine codec 'UTF8'.
+
+.. note:: 
+
+   The skipper tag ``<skip: ...>`` cannot be used cautiously with the utf8 codec.
+   Only those ranges can be skipped that lie undeneath the unicode value 0x7F. This is so
+   since any higher value requires a multi-value sequence and the skipper is 
+   optimized for single trigger values. 
+   
+   Skipping traditional whitespace, i.e. ``[ \t\n]`` is still no problem. Skipping 
+   unicode whitespace ``[:\P{White_Space}:]`` is a problem since the unicode
+   property is carried by characters beyond 0x7F.  In general, ranges above 0x7F
+   need to be skipped by means of the 'null pattern action pair'.::
+
+        ...
+        {MyIgnoredRange}   { /* Do nothing */ }
+        ...
+
