@@ -97,7 +97,6 @@ def do(sm):
        x1, x2, and x3 can trigger. Note, that the UTF8 sequence ends
        at the same state '2' as the previous single trigger 'X'.
     """
-    done_list = []
     state_list = sm.states.items()
     for state_index, state in state_list:
         # Get the 'transition_list', i.e. a list of pairs (TargetState, NumberSet)

@@ -39,7 +39,9 @@ class X:
                 for word in utf16_seq:
                     s_idx = result.states[s_idx].transitions().get_resulting_target_state_index(word)
 
-                assert s_idx != None
+                assert s_idx != None, \
+                       "No acceptance for %X in [%X,%X] --> %s" % \
+                       (i, interval.begin, interval.end - 1, repr(map(lambda x: "%04X." % x, utf16_seq)))
 
                 # All acceptance flags must belong to the original state machine
                 for origin in result.states[s_idx].origins().get_list():
@@ -71,18 +73,19 @@ def check_negative(SM, ImpossibleIntervals):
     print " (OK)"
 
 sets = map(lambda name: X(name),
-           ["Arabic", "Armenian", "Balinese", "Bengali", "Bopomofo", "Braille",
-            "Buginese", "Buhid", "Canadian_Aboriginal", "Cherokee",
-            "Common", "Coptic", "Cuneiform", "Cypriot", "Cyrillic",
-            "Deseret", "Devanagari", "Ethiopic", "Georgian", "Glagolitic",
+           [
+            # "Arabic", "Armenian", "Balinese", "Bengali", "Bopomofo", "Braille",
+            # "Buginese", "Buhid", "Canadian_Aboriginal", "Cherokee",
+            # "Common", "Coptic", "Cuneiform", "Cypriot", "Cyrillic",
+            #"Deseret", "Devanagari", "Ethiopic", "Georgian", "Glagolitic",
             "Gothic", "Greek", "Gujarati", "Gurmukhi", "Han", "Hangul",
-            "Hanunoo", "Hebrew", "Hiragana", "Inherited", "Kannada",
-            "Katakana", "Kharoshthi", "Khmer", "Lao", "Latin", "Limbu",
-            "Linear_B", "Malayalam", "Mongolian", "Myanmar", "New_Tai_Lue",
-            "Nko", "Ogham", "Old_Italic", "Old_Persian", "Oriya", "Osmanya",
-            "Phags_Pa", "Phoenician", "Runic", "Shavian", "Sinhala",
-            "Syloti_Nagri", "Syriac", "Tagalog", "Tagbanwa", "Tai_Le",
-            "Tamil", "Telugu", "Thaana", "Thai", "Tibetan", "Tifinagh",
+            #"Hanunoo", "Hebrew", "Hiragana", "Inherited", "Kannada",
+            #"Katakana", "Kharoshthi", "Khmer", "Lao", "Latin", "Limbu",
+            #"Linear_B", "Malayalam", "Mongolian", "Myanmar", "New_Tai_Lue",
+            #"Nko", "Ogham", "Old_Italic", "Old_Persian", "Oriya", "Osmanya",
+            #"Phags_Pa", "Phoenician", "Runic", "Shavian", "Sinhala",
+            #"Syloti_Nagri", "Syriac", "Tagalog", "Tagbanwa", "Tai_Le",
+            #"Tamil", "Telugu", "Thaana", "Thai", "Tibetan", "Tifinagh",
             "Ugaritic", "Yi", ])
 
 orig = get_combined_state_machine(map(lambda x: x.sm, sets))
