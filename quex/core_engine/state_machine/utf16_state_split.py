@@ -6,24 +6,27 @@ ABSTRACT:
     !! "uf8_state_split.py". Please, read the documentation thera about  !!
     !! the details of the basic idea.                                    !!
 
-    Due to the fact that utf16 conversion has only two possible byte
-    sequence lengths, 2 and 4 bytes, the state split process is 
-    significantly easier than the utf8 stae split.
+    Due to the fact that utf16 conversion has only two possible byte sequence
+    lengths, 2 and 4 bytes, the state split process is significantly easier
+    than the utf8 stae split.
 
-    The principle idea remains: A single transition from state A to
-    state B is translated (sometimes) into an intermediate state
-    transition to reflect that the unicode point is represent by
-    a value sequence.
+    The principle idea remains: A single transition from state A to state B is
+    translated (sometimes) into an intermediate state transition to reflect
+    that the unicode point is represent by a value sequence.
 
     The special case utf16 again is easier, since, for any unicode point <=
     0xFFFF the representation value remains exactly the same, thus those
     intervals do not have to be adapted at all!
     
-    Further, it does not make sense to identify 'contigous' intervals 
-    where the last value runs repeatedly from min to max, since the 
-    intervals are of size 0x10000 which is pretty large and the probability
-    that a range runs over multiple such ranges is low (even if so, it
-    could be at max. 17 such intervals since unicode values end at 0x110000).
+    Further, the identification of 'contigous' intervals where the last value
+    runs repeatedly from min to max is restricted to the consideration of a
+    single word. UTF16 character codes can contain at max two values (a
+    'surrogate pair') coded in two 'words' (1 word = 2 bytes). The overun
+    happens every 2*10 code points.  Since such intervals are pretty large and
+    the probability that a range runs over multiple such ranges is low, it does
+    not make sense to try to combine them. The later Hopcroft Minimization will
+    not be overwhelmed by a little extra work.
+
 """
 import os
 import sys
@@ -69,7 +72,8 @@ def do(sm):
             for interval in interval_list:
                 create_intermediate_states(sm, state_index, target_state_index, interval)
 
-    return hopcroft_minimization.do(nfa_to_dfa.do(sm), CreateNewStateMachineF=False)
+    result = hopcroft_minimization.do(nfa_to_dfa.do(sm), CreateNewStateMachineF=False)
+    return result
 
 def do_set(NSet):
     """Unicode values > 0xFFFF are translated into byte sequences, thus, only number
@@ -83,19 +87,24 @@ def do_set(NSet):
 def create_intermediate_states(sm, StartStateIdx, EndStateIdx, X):
     # Split the interval into a range below and above 0xFFFF. This corresponds
     # unicode values that are represented in utf16 via 2 and 4 bytes (1 and 2 words).
-    interval_1word, interval_2words = split_interval_according_to_sequence_length(X)
+    interval_1word, intervals_2word = get_contigous_intervals(X)
 
     if interval_1word != None:
         sm.add_transition(StartStateIdx, interval_1word, EndStateIdx)
 
-    if interval_2words != None:
-        # Introduce intermediate state
-        trigger_seq = get_trigger_sequence_for_interval(interval_2words)
-        s_idx = sm.add_transition(StartStateIdx, trigger_seq[0])
-        sm.add_transition(s_idx, trigger_seq[1], EndStateIdx)
+    if intervals_2word != None:
+        for interval in intervals_2word:
+            # Introduce intermediate state
+            trigger_seq = get_trigger_sequence_for_interval(interval)
+            s_idx = sm.add_transition(StartStateIdx, trigger_seq[0])
+            sm.add_transition(s_idx, trigger_seq[1], EndStateIdx)
 
 utf16c = codecs.getencoder("utf-16be")
+
 def unicode_to_utf16(UnicodeValue):
+    """Do not do this by hand in order to have a 'reference' to double check
+       wether otherwise hand coded values are correct.
+    """
     byte_seq = map(ord, utf16c(unichr(UnicodeValue))[0])
     if UnicodeValue >= 0x10000:
         word_seq = [ (byte_seq[0] << 8) + byte_seq[1], (byte_seq[2] << 8) + byte_seq[3] ]
@@ -104,17 +113,30 @@ def unicode_to_utf16(UnicodeValue):
 
     return word_seq
 
-def split_interval_according_to_sequence_length(X):
+def utf16_to_unicode(WordSeq):
+    if len(WordSeq) == 1: return WordSeq[0]
+
+    x0 = WordSeq[0] - 0xD800
+    x1 = WordSeq[1] - 0xDC00
+
+    return (x0 << 10) + x1 + 0x10000
+
+def get_contigous_intervals(X):
     """Split Unicode interval into intervals where all values
        have the same utf16-byte sequence length. This is fairly 
        simple in comparison with utf8-byte sequence length: There
        are only two lengths: 2 bytes and 2 x 2 bytes.
 
-       RETURNS:  [List0, List1]  
+       RETURNS:  [X0, List1]  
 
-                 with List0 being the sub-interval where all values are 2
-                 byte utf16 encoded, and List1 being the sub-interval where 
-                 all values are 4 byte utf16 encoded.
+                 X0   = the sub-interval where all values are 1 word (2 byte)
+                        utf16 encoded. 
+                         
+                        None => No such interval
+                
+                List1 = list of contigous sub-intervals where coded as 2 words.
+
+                        None => No such intervals
     """
     global ForbiddenRange
     if X.begin == -sys.maxint: X.begin = 0
@@ -122,9 +144,37 @@ def split_interval_according_to_sequence_length(X):
     assert X.end <= 0x110000                 # Interval must lie in unicode range
     assert not X.check_touch(ForbiddenRange) # The 'forbidden range' is not to be covered.
 
-    if X.end < 0x10000:      return [X, None]
-    elif X.begin >= 0x10000: return [None, X]
-    else:                    return [Interval(X.begin, 0x10000), Interval(0x10000, X.end)]
+    if X.end < 0x10000:      return [X, []]
+    elif X.begin >= 0x10000: return [None, split_contigous_intervals_for_surrogates(X.begin, X.end)]
+    else:                    return [Interval(X.begin, 0x10000), split_contigous_intervals_for_surrogates(0x10000, X.end)]
+
+def split_contigous_intervals_for_surrogates(Begin, End):
+    """Splits the interval X into sub interval so that no interval runs over a 'surrogate'
+       border of the last word. For that, it is simply checked if the End falls into the
+       same 'surrogate' domain of 'front' (start value of front = Begin). If it does not
+       an interval [front, end_of_domain) is split up and front is set to end of domain.
+       This procedure repeats until front and End lie in the same domain.
+    """
+    assert Begin >= 0x10000
+    assert End   <= 0x110000
+
+    front_seq = unicode_to_utf16(Begin)
+    back_seq  = unicode_to_utf16(End - 1)
+
+    result = []
+    front  = Begin
+    while front_seq[0] != back_seq[0]:
+        end_of_domain = utf16_to_unicode([front_seq[0], 0xDFFF]) + 1
+        result.append(Interval(front, end_of_domain))
+        if end_of_domain >= End: break
+        front_seq[0] = front_seq[0] + 1
+        front_seq[1] = 0
+        front        = end_of_domain
+
+    if front < End:
+        result.append(Interval(front, End))
+
+    return result
     
 def get_trigger_sequence_for_interval(X):
     # The interval either lies entirely >= 0x10000 or entirely < 0x10000

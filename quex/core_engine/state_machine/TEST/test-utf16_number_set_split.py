@@ -51,7 +51,7 @@ class X:
         print " (OK=%i)" % self.id
 
 def check_negative(SM, ImpossibleIntervals):
-    """Non of the given unicode values shall reach an acceptance state.
+    """None of the given unicode values shall reach an acceptance state.
     """
     print "Inverse Union Check:",
     for interval in ImpossibleIntervals:
@@ -74,18 +74,18 @@ def check_negative(SM, ImpossibleIntervals):
 
 sets = map(lambda name: X(name),
            [
-            # "Arabic", "Armenian", "Balinese", "Bengali", "Bopomofo", "Braille",
-            # "Buginese", "Buhid", "Canadian_Aboriginal", "Cherokee",
-            # "Common", "Coptic", "Cuneiform", "Cypriot", "Cyrillic",
-            #"Deseret", "Devanagari", "Ethiopic", "Georgian", "Glagolitic",
+            "Arabic", "Armenian", "Balinese", "Bengali", "Bopomofo", "Braille",
+            "Buginese", "Buhid", "Canadian_Aboriginal", "Cherokee",
+            "Common", "Coptic", "Cuneiform", "Cypriot", "Cyrillic",
+            "Deseret", "Devanagari", "Ethiopic", "Georgian", "Glagolitic",
             "Gothic", "Greek", "Gujarati", "Gurmukhi", "Han", "Hangul",
-            #"Hanunoo", "Hebrew", "Hiragana", "Inherited", "Kannada",
-            #"Katakana", "Kharoshthi", "Khmer", "Lao", "Latin", "Limbu",
-            #"Linear_B", "Malayalam", "Mongolian", "Myanmar", "New_Tai_Lue",
-            #"Nko", "Ogham", "Old_Italic", "Old_Persian", "Oriya", "Osmanya",
-            #"Phags_Pa", "Phoenician", "Runic", "Shavian", "Sinhala",
-            #"Syloti_Nagri", "Syriac", "Tagalog", "Tagbanwa", "Tai_Le",
-            #"Tamil", "Telugu", "Thaana", "Thai", "Tibetan", "Tifinagh",
+            "Hanunoo", "Hebrew", "Hiragana", "Inherited", "Kannada",
+            "Katakana", "Kharoshthi", "Khmer", "Lao", "Latin", "Limbu",
+            "Linear_B", "Malayalam", "Mongolian", "Myanmar", "New_Tai_Lue",
+            "Nko", "Ogham", "Old_Italic", "Old_Persian", "Oriya", "Osmanya",
+            "Phags_Pa", "Phoenician", "Runic", "Shavian", "Sinhala",
+            "Syloti_Nagri", "Syriac", "Tagalog", "Tagbanwa", "Tai_Le",
+            "Tamil", "Telugu", "Thaana", "Thai", "Tibetan", "Tifinagh",
             "Ugaritic", "Yi", ])
 
 orig = get_combined_state_machine(map(lambda x: x.sm, sets))
