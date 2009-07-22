@@ -35,6 +35,11 @@ namespace quex {
         /* Index of the character where the next read will start */
         size_t             _character_index;
 #       endif
+        /* Under certain circumstances, the incoming character stream might have
+         * a different byte order than the byte order of the system/analyzer engine.
+         * This is for example the case, if 'big endian' network streams are to be 
+         * processed by 'little endian' intel machines (i386 an derivates).         */
+        bool               _invert_byte_order_f;
     } TEMPLATIFIER_END(QuexBufferFiller_Plain);
 
     TEMPLATE_IN(InputHandleT)  TEMPLATED(QuexBufferFiller_Plain)*
