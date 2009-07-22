@@ -75,7 +75,6 @@ elif "4b" in sys.argv:
     sys.exit()
 
 elif "misc" in sys.argv:
-    pass
     test(0x800, 0x810)
     sys.exit()
     

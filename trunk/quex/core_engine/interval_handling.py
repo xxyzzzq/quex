@@ -9,7 +9,7 @@
 #
 # DATE: May 26, 2006
 #
-# (C) 2006 Frank-Rene Schaefer
+# (C) 2006-2009 Frank-Rene Schaefer
 #
 # ABSOLUTELY NO WARRANTY
 ################################################################################
@@ -421,8 +421,12 @@ class NumberSet:
         """True  => if Number in NumberSet
            False => else
         """
+        # Assume that intervals are sorted!
         for interval in self.__intervals:
-            if interval.contains(Number): return True
+            if   Number >= interval.end:  continue      # Not yet there ...
+            elif Number < interval.begin: return False  # We missed it: Number > last interval, Number < curr. interval
+            return True                                 # Got it: Number >= interval.begin, Number < interval.end
+        # Number > last interval
         return False
 
     def minimum(self):
