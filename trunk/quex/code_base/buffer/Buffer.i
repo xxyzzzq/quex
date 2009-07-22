@@ -62,6 +62,11 @@ namespace quex {
             buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
             break;
 
+        case QUEX_PLAIN_INVERSE_BYTE_ORDER: 
+            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
+            ((QuexBufferFiller_Plain*)buffer_filler)->_invert_byte_order_f = true;
+            break;
+
         case QUEX_CONVERTER: 
             if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
                 QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_CONVERTER' while " \
