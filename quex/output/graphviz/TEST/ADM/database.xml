@@ -1,32 +1,32 @@
-<test-database execution-time-sec="1.83" date="Sun Jul 19 03:17:04 2009">
+<test-database execution-time-sec="1.90" date="Tue Jul 21 13:14:31 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Check supported formats." make-required="True" time-sum-sec="0.16"> 
+    <test title="Check supported formats." make-required="True" time-sum-sec="0.17"> 
         <application file-name="get_supported_formats.py" info-request-time="1237805535L"/>
         <make-procedure success="True" time_sec="0.000000"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.16" crc="-266270399"/>
+           <choice name="" result="OK" time_sec="0.17" crc="-266270399"/>
         </choice-list>
     </test>
     <group name="Plot">
-        <test title="Core state machine." make-required="True" time-sum-sec="0.39"> 
+        <test title="Core state machine." make-required="True" time-sum-sec="0.43"> 
             <application file-name="plot-core.py" info-request-time="1237805535L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.39" crc="1776201160"/>
+               <choice name="" result="OK" time_sec="0.43" crc="1776201160"/>
             </choice-list>
         </test>
-        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.74"> 
+        <test title="Backward Detector (for pseudo-ambiguous post context)." make-required="True" time-sum-sec="0.77"> 
             <application file-name="plot-papc.py" info-request-time="1237805535L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.74" crc="-1399668897"/>
+               <choice name="" result="OK" time_sec="0.77" crc="-1399668897"/>
             </choice-list>
         </test>
-        <test title="Pre-Context." make-required="True" time-sum-sec="0.54"> 
+        <test title="Pre-Context." make-required="True" time-sum-sec="0.53"> 
             <application file-name="plot-pre-context.py" info-request-time="1237805535L"/>
             <make-procedure success="True" time_sec="0.000000"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.54" crc="914585331"/>
+               <choice name="" result="OK" time_sec="0.53" crc="914585331"/>
             </choice-list>
         </test>
     </group>

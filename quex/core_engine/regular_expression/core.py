@@ -40,6 +40,8 @@ from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_exit, \
                                                           __debug_print
 
+from   quex.input.setup                                       import setup as Setup
+from   quex.core_engine.state_machine.utf16_state_split       import ForbiddenRange
 import quex.core_engine.utf8                                  as utf8
 import quex.core_engine.regular_expression.character_set_expression   as character_set_expression
 import quex.core_engine.regular_expression.snap_backslashed_character as snap_backslashed_character
@@ -68,7 +70,7 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
         __delete_BLC_except_at_end_of_post_context(sm, BufferLimitCode)
 
     # (*) Delete transitions that make practically no sense
-    __delete_transitions_on_code_points_below_zero(sm)
+    __delete_transitions_on_forbidden_code_points(sm, fh)
 
     # (*) 'Nothing is fine' is not a pattern that we can accept. See the discussion
     #     in the module "quex.core_engine.generator.core.py"
@@ -113,15 +115,29 @@ def __delete_BLC_except_at_end_of_post_context(sm, BLC):
             if trigger_set.contains(BLC):
                 trigger_set.cut_interval(Interval(BLC, BLC+1))
 
-def __delete_transitions_on_code_points_below_zero(sm):
+def __delete_transitions_on_forbidden_code_points(sm, fh):
     """Unicode does define all code points >= 0. Thus there can be no code points
        below zero as it might result from some number set operations.
     """
+    BelowZero = Interval(-sys.maxint, 0)
     for state in sm.states.values():
         for target_state_index, trigger_set in state.transitions().get_map().items():
+
             if trigger_set.minimum() < 0:
                 # NOTE: '0' is the end, meaning that it has is not part of the interval to be cut.
-                trigger_set.cut_interval(Interval(-sys.maxint, 0))
+                trigger_set.cut_interval(BelowZero)
+
+            if Settup.engine_character_encoding in ["utf16-le", "utf16-be"]:
+                # Delete the forbidden interval: D800-DFFF
+                if trigger_set.has_intersection(ForbiddenRange):
+                    error_msg("Pattern contains characters in unicode range 0xD800-0xDFFF.\n"
+                              "This range is not covered by UTF16. Cutting Interval.", fh, DontExitF=True)
+                    trigger_set.cut_interval(ForbiddenRange)
+
+            # If the operation resulted in cutting the path to the target state, then delete it.
+            if trigger_set.is_empty():
+                state.transitions().delete_transitions_to_target(target_state_index)
+
 
 def do(UTF8_String_or_Stream, PatternDict, BufferLimitCode,
        DOS_CarriageReturnNewlineF   = False, 

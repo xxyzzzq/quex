@@ -40,7 +40,7 @@ from   quex.core_engine.state_machine.core       import State
 import quex.core_engine.state_machine.nfa_to_dfa as     nfa_to_dfa
 import quex.core_engine.state_machine.hopcroft_minimization as hopcroft_minimization
 
-ForbiddenRange = Interval(0xD800, 0xDC00)
+ForbiddenRange = Interval(0xD800, 0xE000)
 
 def do(sm):
     state_list = sm.states.items()
@@ -71,7 +71,7 @@ def do(sm):
             # Now, intermediate states may be added
             for interval in interval_list:
                 create_intermediate_states(sm, state_index, target_state_index, interval)
-
+    
     result = hopcroft_minimization.do(nfa_to_dfa.do(sm), CreateNewStateMachineF=False)
     return result
 
@@ -141,10 +141,10 @@ def get_contigous_intervals(X):
     global ForbiddenRange
     if X.begin == -sys.maxint: X.begin = 0
     if X.end   == sys.maxint:  X.end   = 0x110000
-    assert X.end <= 0x110000                 # Interval must lie in unicode range
-    assert not X.check_touch(ForbiddenRange) # The 'forbidden range' is not to be covered.
+    assert X.end <= 0x110000                   # Interval must lie in unicode range
+    assert not X.check_overlap(ForbiddenRange) # The 'forbidden range' is not to be covered.
 
-    if X.end < 0x10000:      return [X, []]
+    if X.end <= 0x10000:     return [X, None]
     elif X.begin >= 0x10000: return [None, split_contigous_intervals_for_surrogates(X.begin, X.end)]
     else:                    return [Interval(X.begin, 0x10000), split_contigous_intervals_for_surrogates(0x10000, X.end)]
 
@@ -161,18 +161,25 @@ def split_contigous_intervals_for_surrogates(Begin, End):
     front_seq = unicode_to_utf16(Begin)
     back_seq  = unicode_to_utf16(End - 1)
 
-    result = []
-    front  = Begin
-    while front_seq[0] != back_seq[0]:
-        end_of_domain = utf16_to_unicode([front_seq[0], 0xDFFF]) + 1
-        result.append(Interval(front, end_of_domain))
-        if end_of_domain >= End: break
-        front_seq[0] = front_seq[0] + 1
-        front_seq[1] = 0
-        front        = end_of_domain
+    if front_seq[0] == back_seq[0]:
+        return [Interval(Begin, End)]
 
-    if front < End:
-        result.append(Interval(front, End))
+    # Separate into three domains:
+    #
+    # (1) interval from Begin until second surrogate hits border 0xE000
+    # (2) interval where the first surrogate inreases while second 
+    #     surrogate iterates over [0xDC00, 0xDFFF]
+    # (3) interval from begin of last surrogate border to End
+    result = []
+    end    = utf16_to_unicode([front_seq[0], 0xDFFF]) + 1
+    # The following **must** hold according to entry condition about front and back sequence
+    assert End > end
+    result.append(Interval(Begin, end))
+    if front_seq[0] + 1 != back_seq[0]: 
+        mid_end = utf16_to_unicode([back_seq[0] - 1, 0xDFFF]) + 1
+        result.append(Interval(end, mid_end)) 
+        end = mid_end
+    result.append(Interval(end, End)) 
 
     return result
     
