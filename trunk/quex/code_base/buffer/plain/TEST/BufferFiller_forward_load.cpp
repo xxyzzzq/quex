@@ -17,7 +17,7 @@ main(int argc, char** argv)
     FILE*                         fh = prepare_input();
     QuexBuffer                    buffer;
 
-    QuexBuffer_construct(&buffer, fh, QUEX_PLAIN, 0x0, /* BufferMemorySize */ 8, 0);
+    QuexBuffer_construct(&buffer, fh, 0x0, /* BufferMemorySize */ 8, 0);
 
     do {
         printf("------------------------------------------------------------\n");

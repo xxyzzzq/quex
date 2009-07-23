@@ -35,6 +35,10 @@ namespace quex {
                                                                           const size_t         N);
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego);
 
+    QUEX_INLINE void
+    __BufferFiller_Plain_invert_byte_order(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+                                           QUEX_TYPE_CHARACTER* BufferMemoryEnd);
+
     TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Plain)*
     QuexBufferFiller_Plain_new(InputHandleT*    input_handle)
     {

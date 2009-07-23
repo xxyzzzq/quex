@@ -127,7 +127,7 @@ def __delete_transitions_on_forbidden_code_points(sm, fh):
                 # NOTE: '0' is the end, meaning that it has is not part of the interval to be cut.
                 trigger_set.cut_interval(BelowZero)
 
-            if Settup.engine_character_encoding in ["utf16-le", "utf16-be"]:
+            if Setup.engine_character_encoding in ["utf16-le", "utf16-be"]:
                 # Delete the forbidden interval: D800-DFFF
                 if trigger_set.has_intersection(ForbiddenRange):
                     error_msg("Pattern contains characters in unicode range 0xD800-0xDFFF.\n"
