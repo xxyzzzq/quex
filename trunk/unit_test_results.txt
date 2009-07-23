@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Sat Jul 18 23:57:07 2009
+Wed Jul 22 22:27:07 2009
 TEST
 -------------------------------------------------------------------------------
 
@@ -79,13 +79,13 @@ TEST
  -- nobody:
 
     2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)
-        bug-2395200.sh error-lexer .............................[OK]
-                       lexer ...................................[OK]
+        bug-2395200.sh error-lexer ...........................[FAIL]
+                       lexer .................................[FAIL]
 
  -- sphericalcow:
 
     1885304 Problems with files with DOS CR/LF line endings
-        bug-1885304.sh .........................................[OK]
+        bug-1885304.sh .......................................[FAIL]
     1885846 Empty RE in define section
         bug-1885846.sh .........................................[OK]
     1885855 P{ ...} syntax does not work outside of [
@@ -107,7 +107,7 @@ TEST
     1889877 '*' or '+' without prececing expression crashes 0.19.4
         bug-1889877.sh .........................................[OK]
     1889892 x, X or followed by a non-hex digit crashes 0.19.4
-        bug-1889892.sh .........................................[OK]
+        bug-1889892.sh .......................................[FAIL]
     1890828 0.19.9 crashes trying to call error handler in several cases
         bug-1890828.sh .........................................[OK]
     1890876 {} handled oddly in define blocks in 0.19.9
@@ -129,7 +129,7 @@ TEST
     1894185 Unbalanced quote and double quote in header/init/body blocks in 0.20.6
         bug-1894185.sh .........................................[OK]
     1894578 header block not added to -core-engine.cpp file in 0.20.6
-        bug-1894578.sh .........................................[OK]
+        bug-1894578.sh .......................................[FAIL]
     1895066 0.20.8 #line directive after header contents missing
         bug-1895066.sh .........................................[OK]
     1895500 assertion error running generated 0.20.8 lexer with Unicode
@@ -207,15 +207,19 @@ TEST
     2163753 0.32.1 Incorrect on_failure behavior
         bug-2163753.sh .........................................[OK]
 
-     ___  _ _   _  __                        _     ___ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  |__ \
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __|   / /
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_   |_| 
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__|  (_) 
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: bug-2395200.sh error-lexer
+Error: bug-2395200.sh lexer
+Error: bug-1885304.sh 
+Error: bug-1889892.sh 
+Error: bug-1894578.sh 
 ===============================================================================
 Demo-Applications
-Sun Jul 19 00:02:58 2009
+Wed Jul 22 22:32:21 2009
 demo/TEST
 -------------------------------------------------------------------------------
  -- 
@@ -311,15 +315,15 @@ demo/TEST
  -- demo/010:
 
     Direct Buffer Access & Character Set Conversion
-        010c.sh copy-conversion ................................[OK]
-                copy-conversion-direct .........................[OK]
-                fill-conversion-direct .........................[OK]
+        010c.sh copy-conversion ..............................[FAIL]
+                copy-conversion-direct .......................[FAIL]
+                fill-conversion-direct .......................[FAIL]
     Direct Buffer Access (Arbitrary Chunked)
-        010.sh copy ............................................[OK]
-               fill ............................................[OK]
+        010.sh copy ..........................................[FAIL]
+               fill ..........................................[FAIL]
     Direct Buffer Access (Syntactically Chunked)
-        010b.sh copy ...........................................[OK]
-                fill ...........................................[OK]
+        010b.sh copy .........................................[FAIL]
+                fill .........................................[FAIL]
 
  -- demo/011:
 
@@ -327,15 +331,21 @@ demo/TEST
         011.sh iso8859-7 .......................................[OK]
                utf8 ............................................[OK]
 
-     ___  _ _   _  __                        _     ___ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  |__ \
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __|   / /
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_   |_| 
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__|  (_) 
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: 010c.sh copy-conversion
+Error: 010c.sh copy-conversion-direct
+Error: 010c.sh fill-conversion-direct
+Error: 010.sh copy
+Error: 010.sh fill
+Error: 010b.sh copy
+Error: 010b.sh fill
 ===============================================================================
 Miscellaneous Basic Tests
-Sun Jul 19 00:02:59 2009
+Wed Jul 22 22:32:22 2009
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
@@ -356,7 +366,7 @@ quex/TEST
 Error: test-exceptions-in-place.sh 
 ===============================================================================
 Check Applications of 'Did you mean'.
-Sun Jul 19 00:03:27 2009
+Wed Jul 22 22:32:48 2009
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
@@ -374,7 +384,7 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Sun Jul 19 00:03:37 2009
+Wed Jul 22 22:32:59 2009
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -399,7 +409,7 @@ quex/TEST/event-handling/TEST
 
 ===============================================================================
 Include Stack Handling
-Sun Jul 19 00:03:55 2009
+Wed Jul 22 22:33:13 2009
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -438,7 +448,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Sun Jul 19 00:04:07 2009
+Wed Jul 22 22:33:22 2009
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -462,7 +472,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 Customized Token Class
-Sun Jul 19 00:04:18 2009
+Wed Jul 22 22:33:32 2009
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -483,7 +493,7 @@ quex/TEST/token-class/TEST
 
 ===============================================================================
 Tests related to token queues
-Sun Jul 19 00:04:43 2009
+Wed Jul 22 22:33:56 2009
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -520,7 +530,7 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Sun Jul 19 00:04:45 2009
+Wed Jul 22 22:33:58 2009
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -545,7 +555,7 @@ quex/code_base/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Sun Jul 19 00:04:58 2009
+Wed Jul 22 22:34:08 2009
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -607,7 +617,7 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Sun Jul 19 00:05:12 2009
+Wed Jul 22 22:34:20 2009
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -681,7 +691,7 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Sun Jul 19 00:05:27 2009
+Wed Jul 22 22:34:34 2009
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -755,7 +765,7 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Sun Jul 19 00:05:56 2009
+Wed Jul 22 22:34:59 2009
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -849,7 +859,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Sun Jul 19 00:29:19 2009
+Wed Jul 22 22:35:11 2009
 quex/code_base/template/TEST
 -------------------------------------------------------------------------------
 
@@ -916,13 +926,9 @@ quex/code_base/template/TEST
 
 ===============================================================================
 Core Functionalities
-Sun Jul 19 00:06:32 2009
+Wed Jul 22 22:35:31 2009
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
- -- 
-        filter_dominated_origins_test.py .............[NO GOOD FILE]
- -- 
-        test_NumberSet_base.py .......................[NO GOOD FILE]
 
  -- NumberSet:
 
@@ -956,15 +962,15 @@ quex/core_engine/TEST
     Map UTF8 String To Unicode Values
         test-utf8-UCS-to-UTF8.py ...............................[OK]
 
-     ___  _ _   _  __                        _     ___ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  |__ \
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __|   / /
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_   |_| 
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__|  (_) 
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Sun Jul 19 00:39:13 2009
+Wed Jul 22 22:52:28 2009
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1053,10 +1059,10 @@ quex/core_engine/generator/TEST
  -- Pseudo Ambgiguous Post Condition:
 
     Part I
-        test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory [NONE]
-                                                 ANSI-C ......[NONE]
-                                                 Cpp .........[NONE]
-                                                 Cpp_StrangeStream [NONE]
+        test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory [OK]
+                                                 ANSI-C ........[OK]
+                                                 Cpp ...........[OK]
+                                                 Cpp_StrangeStream [OK]
     Part II
         test-pseudo_ambiguous_post_conditions-2.py ANSI-C-PlainMemory [OK]
                                                    ANSI-C ......[OK]
@@ -1138,18 +1144,15 @@ quex/core_engine/generator/TEST
                               DL=3 .............................[OK]
                               DL=4 .............................[OK]
 
-    _____     _ _                  _ 
-   |  ___|_ _(_) |_   _ _ __ ___  | |
-   | |_ / _` | | | | | | '__/ _ \ | |
-   |  _| (_| | | | |_| | | |  __/ |_|
-   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
-Error: test-pseudo_ambiguous_post_conditions.py ANSI-C-PlainMemory
-Error: test-pseudo_ambiguous_post_conditions.py ANSI-C
-Error: test-pseudo_ambiguous_post_conditions.py Cpp
-Error: test-pseudo_ambiguous_post_conditions.py Cpp_StrangeStream
+     ___  _ _   _  __                        _     _ 
+    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
+   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __| | |
+   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_  |_|
+    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__| (_)
+
 ===============================================================================
 Regular Expression Parsing
-Sun Jul 19 00:11:14 2009
+Wed Jul 22 22:37:59 2009
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1210,11 +1213,9 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Sun Jul 19 00:11:39 2009
+Wed Jul 22 22:38:46 2009
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
- -- 
-        test-utf8_state_split-do-2.py ................[NO GOOD FILE]
  -- Pattern Identity Determination
         test-identity_checker.py True ..........................[OK]
                                  False .........................[OK]
@@ -1318,6 +1319,18 @@ quex/core_engine/state_machine/TEST
     Has Trigger
         test-StateInfo-has_trigger.py ..........................[OK]
 
+ -- UTF16 State Split:
+
+    Contigous Word Sequence Ranges
+        test-utf16_interval_split.py 1 .........................[OK]
+                                     2 ...............[NO GOOD FILE]
+                                     3 ...............[NO GOOD FILE]
+                                     4 ...............[NO GOOD FILE]
+                                     4b ..............[NO GOOD FILE]
+                                     misc ............[NO GOOD FILE]
+    Larger Number Sets
+        test-utf16_number_set_split.py .......................[FAIL]
+
  -- UTF8 State Split:
 
     Contigous Byte Sequence Ranges
@@ -1334,6 +1347,8 @@ quex/core_engine/state_machine/TEST
                                                 Overlap2 .......[OK]
     Larger Number Sets
         test-utf8_state_split-do.py ............................[OK]
+    Larger Number Sets
+        test-utf8_state_split-do-2.py ..........................[OK]
     Plug Intermediate States
         test-utf8_state_split.py 1.1 ...........................[OK]
                                  1.2 ...........................[OK]
@@ -1348,15 +1363,15 @@ quex/core_engine/state_machine/TEST
                                  3.2 ...........................[OK]
                                  3.3 ...........................[OK]
 
-     ___  _ _   _  __                        _     ___ 
-    / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  |__ \
-   | | | | | | | ' // _ \| '__| '__/ _ \/ __| __|   / /
-   | |_| | | | | . \ (_) | |  | | |  __/ (__| |_   |_| 
-    \___/|_|_| |_|\_\___/|_|  |_|  \___|\___|\__|  (_) 
-
+    _____     _ _                  _ 
+   |  ___|_ _(_) |_   _ _ __ ___  | |
+   | |_ / _` | | | | | | '__/ _ \ | |
+   |  _| (_| | | | |_| | | |  __/ |_|
+   |_|  \__,_|_|_|\__,_|_|  \___| (_) 
+Error: test-utf16_number_set_split.py 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Sun Jul 19 00:11:39 2009
+Wed Jul 22 22:38:47 2009
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1382,7 +1397,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Sun Jul 19 00:12:08 2009
+Wed Jul 22 22:39:14 2009
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1449,7 +1464,7 @@ quex/input/TEST
 
 ===============================================================================
 Basic Code Writing Functionality
-Sun Jul 19 00:12:13 2009
+Wed Jul 22 22:39:17 2009
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1479,7 +1494,7 @@ quex/output/cpp/TEST
 
 ===============================================================================
 Testing Statemachine Plots
-Sun Jul 19 00:12:15 2009
+Wed Jul 22 22:39:19 2009
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
@@ -1503,11 +1518,11 @@ quex/output/graphviz/TEST
 The following tests have no entry in their 'GOOD/' directory:
 
   quex/core_engine/state_machine/TEST:
-    test-utf8_state_split-do-2.py 
-
-  quex/core_engine/TEST:
-    filter_dominated_origins_test.py 
-    test_NumberSet_base.py 
+    test-utf16_interval_split.py 2
+                                 3
+                                 4
+                                 4b
+                                 misc
 
   demo/TEST:
     core.sh 
@@ -1521,8 +1536,8 @@ SUMMARY:
 
  Verdict: Fails: Directory:
 
-  [OK]??         TEST
-  [OK]??         demo/TEST
+[FAIL]??      5  TEST
+[FAIL]??      7  demo/TEST
   [FAIL]      1  quex/TEST
   [OK]           quex/TEST/did-you-mean/TEST
   [OK]           quex/TEST/event-handling/TEST
@@ -1536,21 +1551,19 @@ SUMMARY:
   [OK]           quex/code_base/buffer/converter/icu/TEST
   [OK]           quex/code_base/buffer/plain/TEST
   [OK]           quex/code_base/template/TEST
-  [OK]??         quex/core_engine/TEST
-  [FAIL]      4  quex/core_engine/generator/TEST
+  [OK]           quex/core_engine/TEST
+  [OK]           quex/core_engine/generator/TEST
   [OK]           quex/core_engine/regular_expression/TEST
-  [OK]??         quex/core_engine/state_machine/TEST
+[FAIL]??      1  quex/core_engine/state_machine/TEST
   [OK]           quex/frs_py/TEST
   [OK]           quex/input/TEST
   [OK]           quex/output/cpp/TEST
   [OK]           quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
-  [FAIL]      5 Failures
--------------------------------------------------------------------------------
-     _____     _ _          ____             
-    |  ___|_ _(_) |___     | ___|      __  __
-    | |_ / _` | | / __|    |___ \      \ \/ /
-    |  _| (_| | | \__ \     ___) |      >  < 
-    |_|  \__,_|_|_|___/    |____/      /_/\_\
-                    
+     _____     _ _          _  _  _            
+    |  ___|_ _(_) |___     / || || |     __  __
+    | |_ / _` | | / __|    | || || |_    \ \/ /
+    |  _| (_| | | \__ \    | ||__   _     >  < 
+    |_|  \__,_|_|_|___/    |_|   |_|     /_/\_\
+                      
 ===============================================================================
