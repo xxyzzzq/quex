@@ -15,21 +15,26 @@ and to apply the appropriate interaction scheme.
    files provided by some type of file system.
 
    **Interaction**: The generator needs to be instantiated with one of the
-   following constructors:
+   following constructors for the converter or plain mode of usage:
 
    .. code-block:: cpp
 
-        CLASS(const std::string&        Filename,       const char* InputCodingName = 0x0, 
-              QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
-        CLASS(std::istream*             p_input_stream, const char* InputCodingName = 0x0, 
-              QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
-        CLASS(std::wistream*            p_input_stream, const char* InputCodingName = 0x0, 
-              QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
-        CLASS(std::FILE*                input_fh,       const char* InputCodingName = 0x0, 
-              QuexBufferFillerTypeEnum  ICT=QUEX_AUTO);
+        CLASS(const std::string&  Filename,       const char* InputCodingName = 0x0); 
+        CLASS(std::istream*       p_input_stream, const char* InputCodingName = 0x0);
+        CLASS(std::wistream*      p_input_stream, const char* InputCodingName = 0x0); 
+        CLASS(std::FILE*          input_fh,       const char* InputCodingName = 0x0); 
 
-    All features of unicode conversion are available. Tokens are received with the 
-    functions:
+    When the generated engine is adapted to a specific (non-unicode, non-ASCII) codec,
+    the the following constructors are to be used:
+
+   .. code-block:: cpp
+
+        CLASS(const std::string&   Filename,       bool  InvertByteOrderF = false);
+        CLASS(std::istream*        p_input_stream, bool  InvertByteOrderF = false);
+        CLASS(std::wistream*       p_input_stream, bool  InvertByteOrderF = false);
+        CLASS(std::FILE*           input_fh,       bool  InvertByteOrderF = false);
+
+    Tokens are received with the functions:
 
     .. code-block:: cpp
 

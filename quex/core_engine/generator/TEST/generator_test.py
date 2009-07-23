@@ -375,8 +375,7 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, fh,
-                               QUEX_PLAIN, 0x0,
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, fh, 0x0,
                                $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
@@ -404,8 +403,7 @@ test_program_db = {
         /**/
         istringstream  istr("$$TEST_STRING$$");
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr,
-                               QUEX_PLAIN, 0x0,
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr, 0x0,
                                $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
@@ -432,8 +430,7 @@ test_program_db = {
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream,
-                               QUEX_PLAIN, 0x0,
+        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream, 0x0,
                                $$BUFFER_SIZE$$, /* No translation, no translation buffer */0x0);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");

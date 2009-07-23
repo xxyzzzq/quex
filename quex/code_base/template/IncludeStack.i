@@ -8,17 +8,15 @@ namespace quex {
     template <class InputHandleT> inline void    
     CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
                         const QuexMode&          mode, 
-                        QuexBufferFillerTypeEnum BFT /* = QUEX_AUTO */,
                         const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
-        include_push<InputHandleT>(InputName, mode.id(), BFT, IANA_CodingName);
+        include_push<InputHandleT>(InputName, mode.id(), IANA_CodingName);
     }
 
     template <class InputHandleT> inline void    
     CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
                         const int                MODE_ID /* = -1 */, 
-                        QuexBufferFillerTypeEnum BFT /* QUEX_AUTO */,
                         const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
@@ -39,7 +37,7 @@ namespace quex {
 
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        this->__init(input_handle, BFT, IANA_CodingName, 0x0, 0);
+        this->__init(input_handle, IANA_CodingName, 0x0, 0);
 
         /* Keep track of 'who's your daddy?'                              */
         m->parent = this->_parent_memento;

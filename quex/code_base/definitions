@@ -187,17 +187,6 @@ namespace quex {
 #   define __QUEX_FREE_MEMORY(OBJECT)  (delete[] OBJECT)
 #endif
 
-
-    typedef enum { 
-        QUEX_AUTO,
-        QUEX_PLAIN,      /* Filling buffer with plain file content.                        */
-        QUEX_PLAIN_INVERSE_BYTE_ORDER, /* Inverse the byte order after filling.            */
-        QUEX_CONVERTER,  /* Filling buffer with converted file content (e.g. UTF8 -> UCS4) */
-        /*                * NOTE: Inverters can invert the byte order on their own.        */
-        QUEX_MEMORY      /* Running quex on pure memory, without any buffer filling.       */
-
-    } QuexBufferFillerTypeEnum;
-
     struct  __QuexAnalyser_tag;
     typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);
 

@@ -24,63 +24,34 @@ namespace quex {
                                             QUEX_TYPE_CHARACTER* memory, size_t Size);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBuffer_construct(QuexBuffer*  me, InputHandleT*  input_handle,
-                         QuexBufferFillerTypeEnum  FillerType, const char*  CharacterEncodingName, 
-                         const size_t  BufferMemorySize,
-                         const size_t  TranslationBufferMemorySize)
+    QuexBuffer_construct(QuexBuffer*    me, 
+                         InputHandleT*  input_handle,
+                         const char*    CharacterEncodingName, 
+                         const size_t   BufferMemorySize,
+                         const size_t   TranslationBufferMemorySize)
     {
         /* Constructs a buffer object with a filler, i.e. something that reads data from a
          * stream, maybe converts it, and fille the buffer memory.                          */
-        QuexBufferFiller*         buffer_filler = 0x0;
-        QuexBufferFillerTypeEnum  filler_type = FillerType;
 
         __quex_assert( input_handle != 0x0 );
 
-        if( filler_type == QUEX_AUTO ) {
-            if( CharacterEncodingName == 0x0 ) {
-                filler_type = QUEX_PLAIN;
-            } else {
-                filler_type = QUEX_CONVERTER;
-#           if  ! defined(QUEX_OPTION_ENABLE_ICONV) && ! defined(QUEX_OPTION_ENABLE_ICU)
-                QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_AUTO' while neither 'QUEX_OPTION_ENABLE_ICONV'\n" \
-                                "nor 'QUEX_OPTION_ENABLE_ICU' is specified.\n");
-#           endif
-            }
-        }
-        __quex_assert(filler_type != QUEX_AUTO);
+        if( CharacterEncodingName == 0x0 ) {
 
-        switch( filler_type ) {
-        default:
-            __quex_assert(false);
-            break;
-
-        case QUEX_MEMORY:
-            QUEX_ERROR_EXIT("Constructor function cannot handle BufferFiller of type QUEX_MEMORY,\n"
-                            "Please, use QuexBuffer_construct_for_direct_memory_access(...).\n");
-
-        case QUEX_PLAIN: 
-            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
-            break;
-
-        case QUEX_PLAIN_INVERSE_BYTE_ORDER: 
-            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
-            ((QuexBufferFiller_Plain*)buffer_filler)->_invert_byte_order_f = true;
-            break;
-
-        case QUEX_CONVERTER: 
+            me->filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
+       
+        } else {
+       
             if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
-                QUEX_ERROR_EXIT("Use of buffer filler type 'QUEX_CONVERTER' while " \
+                QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
                                 "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
                                 "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
             }
 
-            buffer_filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
+            me->filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
                                   QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
                                   CharacterEncodingName, /* Internal Coding: Default */0x0,
                                   TranslationBufferMemorySize);
-            break;
         }
-        me->filler = buffer_filler;
 
         QuexBufferMemory_init(&(me->_memory), 
                               MemoryManager_BufferMemory_allocate(BufferMemorySize), 
@@ -110,9 +81,6 @@ namespace quex {
         /* Constructs a buffer for running only on memory, no 'filler' is involved.     */
         QUEX_TYPE_CHARACTER*   memory = Memory;
 
-        /* Working directly on memory disables any filler activity.                     */
-        me->filler = 0x0;
-
         /* If the memory is not preset, then then content must be zero. It is expected
          * to be loaded later on.                                                       */
         __quex_assert(MemorySize > 2);
@@ -120,7 +88,10 @@ namespace quex {
         if( Memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(MemorySize);
 
         if( CharacterEncodingName == 0x0 ) {
+            
+            /* Working directly on memory disables any filler activity.                 */
             me->filler = 0x0;
+
         } else {
 
             if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {

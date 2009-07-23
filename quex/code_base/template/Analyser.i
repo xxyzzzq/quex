@@ -16,7 +16,6 @@ namespace quex {
     QuexAnalyser_construct(QuexAnalyser* me,
                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
-                           QuexBufferFillerTypeEnum     BufferFillerType,
                            const char*                  CharacterEncodingName, 
                            const size_t                 BufferMemorySize,
                            const size_t                 TranslationBufferMemorySize)
@@ -35,7 +34,7 @@ namespace quex {
 #       endif
         QuexBuffer_construct(&me->buffer, 
                              input_handle,
-                             BufferFillerType, CharacterEncodingName,
+                             CharacterEncodingName,
                              BufferMemorySize,
                              TranslationBufferMemorySize);
 
