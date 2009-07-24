@@ -547,9 +547,6 @@ $$CLASS_BODY_EXTENSION$$
                                            QUEX_TYPE_CHARACTER*      BufferMemory,    
                                            size_t                    BufferMemorySize);
 
-
-        QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
-                                                                const char* CharacterEncodingName);
     };
 
     template <class InputHandleT> inline void
@@ -624,27 +621,27 @@ $$CONSTRUCTOR_EXTENSTION$$
 
         counter.init();
 
+#       ifdef QUEX_OPTION_ASSERTS
         if( input_handle != 0x0 ) {
             /* Anything other than direct memory access, uses the 'normal' constructor.     */
             __quex_assert(BufferMemory == 0x0);
             __quex_assert(BufferMemorySize == 0x0);
-
-            QuexAnalyser_construct((QuexAnalyser*)this,
-                                   __current_mode_p->analyser_function,
-                                   input_handle,
-                                   CharacterEncodingName, 
-                                   QUEX_SETTING_BUFFER_SIZE,
-                                   QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
         } else {
             /* Directly working on specific memory. */
-            __quex_assert(BufferMemory != 0x0);
+            /* This does not mean, that the memory comes from the user. It cannot be 
+             * required: BufferMemory != 0x0                                          */
             __quex_assert(BufferMemorySize > 2);
-            QuexAnalyser_construct_for_direct_memory_access((QuexAnalyser*)this,
-                                                            __current_mode_p->analyser_function,
-                                                            BufferMemory,
-                                                            BufferMemorySize,
-                                                            CharacterEncodingName,
-                                                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        }
+#       endif
+
+        QuexAnalyser_construct((QuexAnalyser*)this,
+                               __current_mode_p->analyser_function,
+                               input_handle,
+                               BufferMemory, QUEX_SETTING_BUFFER_SIZE,
+                               CharacterEncodingName, 
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+
+        if( input_handle == 0x0 ) {
             /* TWO CASES:
              * (1) The user provides a buffer memory: --> assume it is filled to the end.
              * (2) The user does not provide memory:  --> the memory IS empty.             */

@@ -44,8 +44,9 @@ namespace quex {
     QuexAnalyser_construct(QuexAnalyser* me,
                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
-                           const char*                  CharacterEncodingName, 
+                           QUEX_TYPE_CHARACTER*         InputMemory,
                            const size_t                 BufferMemorySize,
+                           const char*                  CharacterEncodingName, 
                            const size_t                 TranslationBufferMemorySize);
 
     QUEX_INLINE void

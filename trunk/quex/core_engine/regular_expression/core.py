@@ -63,14 +63,48 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
        the state machine which is returned is conform to some assumptions.
 
        BLC == -1: means that there is no buffer limit code.
+
+
+       NOTE: The sequence of actions is important!
     """
+    # (*) double check for orphan states
+    #
+    #     THIS TEST HAS TO COME FIRST!
+    #
+    #     THE FOLLOWING PROCEDURES MIGHT CAUSE ORPHANED STATES, BUT THOSE
+    #     ARE THEN DELETED UNDER WARNING.
+    orphan_state_list = sm.get_orphaned_state_index_list()
+    if orphan_state_list != []:
+        print "##", sm.get_string(Option="hex")
+        error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
+                  "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
+                  "Orphan state(s) = " + repr(orphan_state_list), 
+                  fh, DontExitF=True)
 
     # (*) The buffer limit code has to appear absolutely nowhere!
     if BufferLimitCode != -1:
         __delete_BLC_except_at_end_of_post_context(sm, BufferLimitCode)
 
     # (*) Delete transitions that make practically no sense
+    #     !! Let the orphaned state check happen before this, because states
+    #     !! may become orphan in the frame of the following procedure.
     __delete_transitions_on_forbidden_code_points(sm, fh)
+
+    # (*) The transition deletion might have caused orphaned states which 
+    #     may now be deleted with a warning.
+    new_orhpan_state_list = sm.get_orphaned_state_index_list()
+    if new_orhpan_state_list != []:
+        error_msg("Pattern contained solely forbidden characters in a state transition.\n"
+                  "The resulting target state is deleted since no other state triggered to it.", 
+                  fh, DontExitF=True)
+        for state_index in new_orhpan_state_list:
+            del sm.states[state_index]
+
+    # (*) It is essential that state machines defined as patterns do not 
+    #     have origins.
+    if sm.has_origins():
+        error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
+                  "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
 
     # (*) 'Nothing is fine' is not a pattern that we can accept. See the discussion
     #     in the module "quex.core_engine.generator.core.py"
@@ -80,44 +114,47 @@ def __clean_and_validate(sm, BufferLimitCode, AllowNothingIsFineF, fh):
                   "into an acceptance state. Thus, as soon as no other input matches\n" + \
                   "the analyzer ends up in an infinite loop.", fh)
 
-    # (*) double check for orphan states
-    orphan_state_list = sm.get_orphaned_state_index_list()
-    if orphan_state_list != []:
-        error_msg("Orphaned state(s) detected in regular expression (optimization lack).\n" + \
-                  "Please, log a defect at the projects website quex.sourceforge.net.\n"    + \
-                  "Orphan state(s) = " + repr(orphan_state_list) + "\n", 
-                  fh, DontExitF=True)
-
-    # (*) It is essential that state machines defined as patterns do not 
-    #     have origins.
-    if sm.has_origins():
-        error_msg("Regular expression parsing resulted in state machine with origins.\n" + \
-                  "Please, log a defect at the projects website quex.sourceforge.net.\n", fh)
-
     # (*) Acceptance states shall not store the input position when they are 'normally'
     #     post-conditioned. Post-conditioning via the backward search is a different 
     #     ball-game.
+    acceptance_f = False
     for state in sm.states.values():
+        if state.core().is_acceptance(): acceptance_f = True
         if     state.core().is_end_of_post_contexted_core_pattern() \
            and state.core().is_acceptance():
             error_msg("Pattern with post-context: An irregularity occurred.\n" + \
                       "(end of normal post-contexted core pattern is an acceptance state)\n" 
                       "Please, log a defect at the projects website quex.sourceforge.net.", fh)
+
+    if acceptance_f == False:
+        error_msg("Pattern has no acceptance state an can never match.\n" + \
+                  "Aborting generation process.", fh)
         
     return sm
 
 def __delete_BLC_except_at_end_of_post_context(sm, BLC):
     """The buffer limit code is something that **needs** to cause a drop out.
        In the drop out handling, the buffer is reloaded.
+
+       NOTE: This operation might result in orphaned states that have to 
+             be deleted.
     """
     for state in sm.states.values():
         for target_state_index, trigger_set in state.transitions().get_map().items():
+
             if trigger_set.contains(BLC):
                 trigger_set.cut_interval(Interval(BLC, BLC+1))
+
+            # If the operation resulted in cutting the path to the target state, then delete it.
+            if trigger_set.is_empty():
+                state.transitions().delete_transitions_to_target(target_state_index)
 
 def __delete_transitions_on_forbidden_code_points(sm, fh):
     """Unicode does define all code points >= 0. Thus there can be no code points
        below zero as it might result from some number set operations.
+
+       NOTE: This operation might result in orphaned states that have to 
+             be deleted.
     """
     BelowZero = Interval(-sys.maxint, 0)
     for state in sm.states.values():

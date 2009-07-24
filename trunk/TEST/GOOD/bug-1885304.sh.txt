@@ -293,17 +293,33 @@ namespace quex {
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
-        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t BufferMemorySize,
-              const char* CharacterEncodingName = 0x0);
-        CLASS(const std::string&        Filename,       const char* CharacterEncodingName = 0x0, 
-        CLASS(std::istream*             p_input_stream, const char* CharacterEncodingName = 0x0, 
-        CLASS(std::wistream*            p_input_stream, const char* CharacterEncodingName = 0x0, 
+#   if defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
+        /* Implementation: "constructor-engine-codec-adaption.i" */
+        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
+              bool                 InvertByteOrderF = false);
+        CLASS(const std::string&   Filename,       bool  InvertByteOrderF = false);
+        CLASS(std::istream*        p_input_stream, bool  InvertByteOrderF = false);
+        CLASS(std::wistream*       p_input_stream, bool  InvertByteOrderF = false);
+        CLASS(std::FILE*           input_fh,       bool  InvertByteOrderF = false);
 #       if defined(__QUEX_OPTION_UNIT_TEST)
         template <class UnderlyingStreamT>
         CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-              const char*                              CharacterEncodingName = 0x0, 
+              bool                                     InvertByteOrderF = false);
 #       endif
-        CLASS(std::FILE*                input_fh,       const char* CharacterEncodingName = 0x0, 
+#    else
+        /* Implementation: "constructor.i" */
+        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
+              const char*          CharacterEncodingName = 0x0);
+        CLASS(const std::string&   Filename,       const char* CharacterEncodingName = 0x0);
+        CLASS(std::istream*        p_input_stream, const char* CharacterEncodingName = 0x0);
+        CLASS(std::wistream*       p_input_stream, const char* CharacterEncodingName = 0x0);
+        CLASS(std::FILE*           input_fh,       const char* CharacterEncodingName = 0x0);
+#       if defined(__QUEX_OPTION_UNIT_TEST)
+        template <class UnderlyingStreamT>
+        CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+              const char*                              CharacterEncodingName = 0x0); 
+#       endif
+#    endif
 
         virtual ~CLASS();
 
@@ -514,25 +530,19 @@ namespace quex {
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleT> 
         void                        __constructor_core(InputHandleT*, 
-                                                       QuexBufferFillerTypeEnum, 
                                                        const char* CharacterEncodingName,
                                                        QUEX_TYPE_CHARACTER*  BufferMemory          = 0x0,
                                                        size_t                BufferMemorySize      = 0);
         template <class InputHandleT> 
         void                        __init(InputHandleT*  input_handle, 
-                                           QuexBufferFillerTypeEnum  BFT, 
                                            const char*               CharacterEncodingName,
                                            QUEX_TYPE_CHARACTER*      BufferMemory,    
                                            size_t                    BufferMemorySize);
 
-
-        QuexBufferFillerTypeEnum    __constructor_filler_assert(QuexBufferFillerTypeEnum BFT, 
-                                                                const char* CharacterEncodingName);
     };
 
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
-                              QuexBufferFillerTypeEnum  BFT, 
                               const char*               CharacterEncodingName,
                               QUEX_TYPE_CHARACTER*      BufferMemory,    
                               size_t                    BufferMemorySize)
@@ -599,7 +609,7 @@ namespace quex {
         _mode_stack.end        = _mode_stack.begin;
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-        __init(input_handle, BFT, CharacterEncodingName, BufferMemory, BufferMemorySize);
+        __init(input_handle, CharacterEncodingName, BufferMemory, BufferMemorySize);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -610,7 +620,6 @@ namespace quex {
 
     template <class InputHandleT> inline void
     CLASS::__init(InputHandleT*             input_handle, 
-                  QuexBufferFillerTypeEnum  BFT, 
                   const char*               CharacterEncodingName,
                   QUEX_TYPE_CHARACTER*      BufferMemory,         
                   size_t                    BufferMemorySize)
@@ -620,26 +629,27 @@ namespace quex {
 
         counter.init();
 
-        if( BFT != QUEX_MEMORY ) {
+#       ifdef QUEX_OPTION_ASSERTS
+        if( input_handle != 0x0 ) {
             /* Anything other than direct memory access, uses the 'normal' constructor.     */
             __quex_assert(BufferMemory == 0x0);
             __quex_assert(BufferMemorySize == 0x0);
-
-            QuexAnalyser_construct((QuexAnalyser*)this,
-                                   __current_mode_p->analyser_function,
-                                   input_handle,
-                                   BFT, CharacterEncodingName, 
-                                   QUEX_SETTING_BUFFER_SIZE,
-                                   QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
         } else {
             /* Directly working on specific memory. */
+            /* This does not mean, that the memory comes from the user. It cannot be 
+             * required: BufferMemory != 0x0                                          */
             __quex_assert(BufferMemorySize > 2);
-            QuexAnalyser_construct_for_direct_memory_access((QuexAnalyser*)this,
-                                                            __current_mode_p->analyser_function,
-                                                            BufferMemory,
-                                                            BufferMemorySize,
-                                                            CharacterEncodingName,
-                                                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        }
+#       endif
+
+        QuexAnalyser_construct((QuexAnalyser*)this,
+                               __current_mode_p->analyser_function,
+                               input_handle,
+                               BufferMemory, QUEX_SETTING_BUFFER_SIZE,
+                               CharacterEncodingName, 
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+
+        if( input_handle == 0x0 ) {
             /* TWO CASES:
              * (1) The user provides a buffer memory: --> assume it is filled to the end.
              * (2) The user does not provide memory:  --> the memory IS empty.             */
@@ -706,7 +716,11 @@ namespace quex {
 #include <quex/code_base/temporary_macros_off>
 
 
-#include <quex/code_base/template/constructor.i>
+#if ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
+#   include <quex/code_base/template/constructor.i>
+#else
+#   include <quex/code_base/template/constructor-engine-codec-adaption.i>
+#endif
 #include <quex/code_base/template/Counter.i>
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   include <quex/code_base/template/CounterWithIndentation.i>

@@ -15,4 +15,6 @@ echo "(3)"
 quex -i error-2.qx 
 echo "(4)"
 quex -i error-3.qx 
+echo "(5)"
+quex -i error-4.qx 
 cd $tmp
