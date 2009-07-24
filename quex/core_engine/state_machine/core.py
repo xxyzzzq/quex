@@ -252,14 +252,19 @@ class StateMachine:
            by any other state. This indicates most likely a lack off efficiency 
            or an error in the algorithms.
         """
-        work_list = self.states.keys()
-        try:    del work_list[work_list.index(self.init_state_index)]
-        except: assert False, "Init state index is not contained in list of state indices."
-
+        unique = {}
         for state in self.states.values():
             target_state_index_list = state.transitions().get_target_state_index_list()
-            work_list = filter(lambda i: i not in target_state_index_list, work_list)
-        return work_list
+            for state_index in target_state_index_list:
+                if not unique.has_key(state_index): unique[state_index] = True
+
+        result = []
+        for state_index in self.states.keys():
+            # The init state is never considered to be an 'orphan'
+            if state_index == self.init_state_index: continue
+            if not unique.has_key(state_index): result.append(state_index)
+
+        return result
 
     def get_epsilon_closure_of_state_set(self, StateIdxList):
         """Returns the epsilon closure of a set of states, i.e. the union

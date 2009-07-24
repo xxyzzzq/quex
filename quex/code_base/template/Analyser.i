@@ -16,8 +16,9 @@ namespace quex {
     QuexAnalyser_construct(QuexAnalyser* me,
                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
-                           const char*                  CharacterEncodingName, 
+                           QUEX_TYPE_CHARACTER*         InputMemory,
                            const size_t                 BufferMemorySize,
+                           const char*                  CharacterEncodingName, 
                            const size_t                 TranslationBufferMemorySize)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
@@ -32,11 +33,9 @@ namespace quex {
          * if a member variable is not initialized before it is used.             */
         __QUEX_STD_memset((uint8_t*)&me->buffer, 0xFF, sizeof(me->buffer));
 #       endif
-        QuexBuffer_construct(&me->buffer, 
-                             input_handle,
-                             CharacterEncodingName,
-                             BufferMemorySize,
-                             TranslationBufferMemorySize);
+
+        QuexBuffer_construct(&me->buffer, input_handle, InputMemory, BufferMemorySize,
+                             CharacterEncodingName, TranslationBufferMemorySize);
 
         me->current_analyser_function = AnalyserFunction;
 
@@ -45,23 +44,6 @@ namespace quex {
         __quex_assert(me->buffer._input_p == me->buffer._memory._front + 1);
     }
 
-    QUEX_INLINE void
-    QuexAnalyser_construct_for_direct_memory_access(QuexAnalyser* me,
-                                                    QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                                                    QUEX_TYPE_CHARACTER*         Memory,
-                                                    const size_t                 MemorySize,
-                                                    const char*                  CharacterEncodingName,
-                                                    const size_t                 TranslationBufferMemorySize)
-    {
-        QuexBuffer_construct_for_direct_memory_access(&me->buffer, Memory, MemorySize, 
-                                                      CharacterEncodingName,
-                                                      TranslationBufferMemorySize);
-        me->current_analyser_function = AnalyserFunction;
-
-        /* Double check that everything is setup propperly. */
-        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
-        __quex_assert(me->buffer._input_p == me->buffer._memory._front + 1);
-    }
 
     QUEX_INLINE void
     QuexAnalyser_destruct(QuexAnalyser* me)

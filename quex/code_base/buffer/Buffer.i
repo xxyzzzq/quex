@@ -24,102 +24,75 @@ namespace quex {
                                             QUEX_TYPE_CHARACTER* memory, size_t Size);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexBuffer_construct(QuexBuffer*    me, 
-                         InputHandleT*  input_handle,
-                         const char*    CharacterEncodingName, 
-                         const size_t   BufferMemorySize,
-                         const size_t   TranslationBufferMemorySize)
+    QuexBuffer_construct(QuexBuffer*           me, 
+                         InputHandleT*         input_handle,
+                         QUEX_TYPE_CHARACTER*  InputMemory,
+                         const size_t          MemorySize,
+                         const char*           CharacterEncodingName, 
+                         const size_t          TranslationBufferMemorySize)
+        /* The input can either come from MEMORY or from a STREAM. 
+         *
+         * input_handle == 0x0 => input via memory
+         *              != 0x0 => input via stream (spec. by input_handle)
+         *
+         * InputMemory != 0x0  => run directly on specified memory.
+         *             == 0x0  => get memory from memory manager.           */ 
     {
-        /* Constructs a buffer object with a filler, i.e. something that reads data from a
-         * stream, maybe converts it, and fille the buffer memory.                          */
+        QUEX_TYPE_CHARACTER* memory = InputMemory;
+        __quex_assert(MemorySize > 2);
+#       ifdef QUEX_OPTION_ASSERTS
+        if( input_handle != 0x0 ) __quex_assert(InputMemory == 0x0 );
+        if( InputMemory  != 0x0 ) { 
+            __quex_assert(input_handle == 0x0 );
+            /* If the input memory is provided, the content **must** be propperly set up. */
+            QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, InputMemory + MemorySize - 1);
+        }
+#       endif
 
-        __quex_assert( input_handle != 0x0 );
+        if( memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(MemorySize);
 
-        if( CharacterEncodingName == 0x0 ) {
+        QuexBufferMemory_init(&(me->_memory), memory, MemorySize);      
 
-            me->filler = (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
-       
-        } else {
-       
+        if( CharacterEncodingName != 0x0 ) {
+
             if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
                 QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
                                 "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
                                 "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
             }
 
+            /* The specification of a CharacterEncodingName means that a converter is
+             * to be used. This can also happen if the engine is to work on plain memory.
+             * In the latter case the input_handle = 0x0 is passed to the 'new' allocator
+             * without the slightest harm.                                                 */
             me->filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
                                   QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
                                   CharacterEncodingName, /* Internal Coding: Default */0x0,
                                   TranslationBufferMemorySize);
-        }
-
-        QuexBufferMemory_init(&(me->_memory), 
-                              MemoryManager_BufferMemory_allocate(BufferMemorySize), 
-                              BufferMemorySize);      
-
-        QuexBuffer_init(me, /* OnlyResetF */ false);
-
-        me->_memory_has_external_owner_f = false;
-        
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-    }
-
-    QUEX_INLINE void
-    QuexBuffer_construct_for_direct_memory_access(QuexBuffer*           me, 
-                                                  QUEX_TYPE_CHARACTER*  Memory,
-                                                  const size_t          MemorySize,
-                                                  const char*           CharacterEncodingName,
-                                                  const size_t          TranslationBufferMemorySize)
-    /* NOTE: This function sets the content or fill level of the buffer to zero.
-     *       To change this, the function 
-     *
-     *             QuexBuffer_end_of_file_set(...);
-     *
-     *       must be called.                                                            */
-    {
-        /* Constructs a buffer for running only on memory, no 'filler' is involved.     */
-        QUEX_TYPE_CHARACTER*   memory = Memory;
-
-        /* If the memory is not preset, then then content must be zero. It is expected
-         * to be loaded later on.                                                       */
-        __quex_assert(MemorySize > 2);
-
-        if( Memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(MemorySize);
-
-        if( CharacterEncodingName == 0x0 ) {
-            
-            /* Working directly on memory disables any filler activity.                 */
-            me->filler = 0x0;
-
+       
         } else {
-
-            if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
-                QUEX_ERROR_EXIT("Direct memory access constructor:\n" \
-                                "Use of buffer filler type 'QUEX_CONVERTER' while " \
-                                "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
-                                "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
-            }
-
-            me->filler = (QuexBufferFiller*)QuexBufferFiller_Converter_new(/* input handle = */(void*)0x0, 
-                                       QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
-                                       CharacterEncodingName, /* Internal Coding: Default */0x0,
-                                       TranslationBufferMemorySize);
+            /* If no converter is required, it has to be considered whether the buffer needs
+             * filling or not. If the input source is not memory, then the 'plain' buffer
+             * filling is applied. If the input source is memory, no filler is required.   */
+            me->filler = (input_handle == 0x0) ? 0x0 : (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
         }
 
-        QuexBufferMemory_init(&(me->_memory), memory, MemorySize);      
-
-        /* Assume by default, that the memory is filled up to the limit. If this is not
-         * the case, the value must be adapted.                                         */
-        QuexBuffer_end_of_file_set(me, me->_memory._back);
-
+        if( InputMemory != 0x0 ) {
+            me->_memory_has_external_owner_f = true;
+            /* Assume by default, that the memory is filled up to the limit. If this is not
+             * the case, the value must be adapted.                                         */
+            QuexBuffer_end_of_file_set(me, me->_memory._back);
+        } else {
+            me->_memory_has_external_owner_f = false;
+            QuexBuffer_end_of_file_unset(me);
+        }
+        
         QuexBuffer_init(me, /* OnlyResetF */ false);
-
-        me->_memory_has_external_owner_f = (Memory != 0x0);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
+
 
     QUEX_INLINE void
     QuexBuffer_destruct(QuexBuffer* me)
@@ -481,7 +454,7 @@ namespace quex {
 
     QUEX_INLINE void 
     QuexBufferMemory_init(QuexBufferMemory* me, 
-                           QUEX_TYPE_CHARACTER* memory, size_t Size) 
+                          QUEX_TYPE_CHARACTER* memory, size_t Size) 
     {
         /* The buffer memory can be initially be set to '0x0' if no buffer filler
          * is specified. Then the user has to call this function on his own in order

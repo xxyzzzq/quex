@@ -29,7 +29,7 @@ main(int argc, char** argv)
 
     /* Filler = 0x0, otherwise, buffer would start loading content */
     buffer.filler = 0x0;
-    QuexBuffer_construct_for_direct_memory_access(&buffer, 0x0, memory_size, 0x0, 0);
+    QuexBuffer_construct(&buffer, (void*)0x0, 0x0, memory_size, 0x0, 0);
     QuexBuffer_end_of_file_unset(&buffer);
 
     printf("## NOTE: This is only about copying, not about pointer adaptions!\n");

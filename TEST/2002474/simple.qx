@@ -1,4 +1,3 @@
-start = ONE_AND_ONLY;
 
 define {
   P_TOK       [A-Za-z0-9]+
@@ -12,10 +11,11 @@ token {
 mode ONE_AND_ONLY
 {
   // Order is relevant
-  on_end_of_stream => QUEX_TKN_TERMINATION;
+  on_end_of_stream => TKN_TERMINATION(LexemeNull);
   on_failure     { std::cerr << "unknown character: " << *Lexeme << std::endl; }
-  [ \t\r\n]+  { }
+  [ \t\r\n]+     { }
 
-  {P_TOK}        => QUEX_TKN_TOK(Lexeme);
-  .              => QUEX_TKN_NONE(Lexeme);
+  {P_TOK}        => TKN_TOK((wchar_t*)Lexeme);
+  .              => TKN_NONE((wchar_t*)Lexeme);
 }
+

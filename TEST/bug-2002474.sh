@@ -7,8 +7,11 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
-quex -i error.qx -o Simple
+make 
+make wiki.txt
+./a.out > tmp.txt
+tail --lines=20 tmp.txt
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simplism a.out
+make clean
 cd $tmp

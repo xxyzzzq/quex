@@ -49,8 +49,13 @@ CLASS::CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin,
     self(*((__QUEX_SETTING_DERIVED_CLASS_NAME*)this)),
     __file_handle_allocated_by_constructor(0x0)
 {
-    CLASS::__constructor_core<FILE>(0x0, CharacterEncodingName, 
-                                    0x0, QUEX_SETTING_BUFFER_SIZE);
+    size_t  memory_size = BufferMemoryBegin != 0 ? BufferMemorySize 
+                          :                        QUEX_SETTING_BUFFER_SIZE;
+
+   __quex_assert(memory_size > 2);
+   CLASS::__constructor_core((void*)0x0, CharacterEncodingName,
+                             BufferMemoryBegin, memory_size);
+
 }
 
 inline
