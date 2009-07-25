@@ -49,7 +49,7 @@ def do(the_state_machines):
     for clone in clone_list:
         for start_state_index, states in clone.states.items():        
             # DOUBT: is deepcopy necessary at this place?
-            # ANSWER: it does not harm, because no new state indices are creates
+            # ANSWER: it does not harm, because no new state indices are created
             result.states[start_state_index] = deepcopy(states)
 
     # (*) add additional **init** and **end** state
