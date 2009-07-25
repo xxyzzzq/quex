@@ -52,7 +52,6 @@ namespace quex {
         ~Token() { }
 
         // (*) convert data to string
-        const __string   type_string() const;
         operator         const std::string() const;
         __string         xml(const int Depth) const;
 
