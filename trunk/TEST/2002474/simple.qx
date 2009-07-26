@@ -15,7 +15,7 @@ mode ONE_AND_ONLY
   on_failure     { std::cerr << "unknown character: " << *Lexeme << std::endl; }
   [ \t\r\n]+     { }
 
-  {P_TOK}        => TKN_TOK((wchar_t*)Lexeme);
-  .              => TKN_NONE((wchar_t*)Lexeme);
+  {P_TOK}        => TKN_TOK(Lexeme);
+  .              => TKN_NONE(Lexeme);
 }
 

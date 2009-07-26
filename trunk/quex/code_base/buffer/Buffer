@@ -4,6 +4,16 @@
 
 #include<quex/code_base/definitions>
 
+#ifndef          QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+#   if   defined (QUEX_OPTION_ENABLE_ICONV)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_IConv_new()
+#   elif defined (QUEX_OPTION_ENABLE_ICONV)
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_ICU_new()
+#   else
+#        define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  0x0
+#   endif
+#endif
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #    if defined(QUEX_OPTION_ASSERTS)
 #       include<quex/code_base/buffer/MemoryPositionMimiker>
@@ -72,7 +82,7 @@ namespace quex {
 #       endif
 
         /*     -- character index in the stream that corresponds to the character
-         *        at the first character (see above: _front[1]) */
+         *        at the first character (see above: _front[1])                               */
         size_t    _content_character_index_begin;
         /*     -- character index in the stream that corresponds to the character
          *        after the last character in the buffer. This is necessary, because,
@@ -82,6 +92,10 @@ namespace quex {
         size_t    _content_character_index_end;
         
         struct    __QuexBufferFiller_tag*  filler;
+
+        /*     -- byte order (i.e little- vs. big-endian) reversion: enable disable the 
+         *        reversion of byte order.                                                    */
+        bool      _byte_order_reversion_active_f;
     } QuexBuffer;
 
     TEMPLATE_IN(InputHandleT) void
@@ -124,6 +138,9 @@ namespace quex {
     QUEX_INLINE void  QuexBuffer_end_of_file_unset(QuexBuffer*);
     QUEX_INLINE bool  QuexBuffer_is_end_of_file(QuexBuffer*);
     QUEX_INLINE bool  QuexBuffer_is_begin_of_file(QuexBuffer*);
+
+    QUEX_INLINE void
+    __Buffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
 
     QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory* me, 
                                             QUEX_TYPE_CHARACTER* memory, size_t Size);

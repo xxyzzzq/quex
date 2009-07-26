@@ -28,6 +28,12 @@ namespace quex {
                                                                    const size_t BackwardDistance);
     QUEX_INLINE void    __QuexBufferFiller_on_overflow(QuexBuffer*, bool ForwardF);
 
+    QUEX_INLINE void
+    __BufferFiller_invert_byte_order(QUEX_TYPE_CHARACTER*  BufferMemoryBegin, 
+                                     QUEX_TYPE_CHARACTER*  BufferMemoryEnd);
+
+    QUEX_INLINE size_t       
+    __BufferFiller_read_characters(QuexBuffer*, QUEX_TYPE_CHARACTER*, const size_t);
 
     QUEX_INLINE void       
     QuexBufferFiller_destroy(QuexBufferFiller* me)
@@ -70,7 +76,8 @@ namespace quex {
         __quex_assert(buffer->_input_p                       == ContentFront);   
         __quex_assert(buffer->_lexeme_start_p                == ContentFront);
 
-        const size_t  LoadedN = me->read_characters(me, ContentFront, ContentSize);
+        const size_t  LoadedN = __BufferFiller_read_characters(buffer, ContentFront, ContentSize);
+
         buffer->_content_character_index_end = (size_t)(me->tell_character_index(buffer->filler));
 
         if( me->tell_character_index(me) != LoadedN ) 
@@ -162,7 +169,7 @@ namespace quex {
         buffer->_content_character_index_begin = buffer->_content_character_index_end - FallBackN;
 
         QUEX_TYPE_CHARACTER* new_content_begin = ContentFront + FallBackN;
-        const size_t         LoadedN           = me->read_characters(me, new_content_begin, DesiredLoadN);
+        const size_t         LoadedN           =  __BufferFiller_read_characters(buffer, new_content_begin, DesiredLoadN);
         
         /*___________________________________________________________________________________*/
         /* (3) Adapt the pointers in the buffer*/
@@ -366,13 +373,12 @@ namespace quex {
          * (3) Load content*/
         buffer->_content_character_index_begin = NewContentCharacterIndexBegin;
         __QuexBufferFiller_backward_copy_backup_region(buffer, BackwardDistance);
-
-        const size_t LoadedN = /* avoid unused variable in case '__quex_assert()' is deactivated*/
+        
         /* -- If file content < buffer size, then the start position of the stream to which  
          *    the buffer refers is always 0 and no backward loading will ever happen.  
          * -- If the file content >= buffer size, then backward loading must always fill  
          *    the buffer. */
-        me->read_characters(me, ContentFront, BackwardDistance);
+        const size_t LoadedN = __BufferFiller_read_characters(buffer, ContentFront, BackwardDistance);
         __quex_assert(LoadedN == (size_t)BackwardDistance);
 
         /*________________________________________________________________________________
@@ -572,6 +578,18 @@ namespace quex {
             me->read_characters(me, (QUEX_TYPE_CHARACTER*)chunk, remaining_character_n);
        
         __quex_assert(me->tell_character_index(me) <= TargetIndex);
+    }
+
+    QUEX_INLINE size_t       
+    __BufferFiller_read_characters(QuexBuffer*           buffer, 
+                                   QUEX_TYPE_CHARACTER*  memory, const size_t MemorySize)
+    {
+        const size_t  LoadedN = buffer->filler->read_characters(buffer->filler, memory, MemorySize);
+
+        if( buffer->_byte_order_reversion_active_f ) {
+            __Buffer_reverse_byte_order(memory, memory + LoadedN);
+        }
+        return LoadedN;
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

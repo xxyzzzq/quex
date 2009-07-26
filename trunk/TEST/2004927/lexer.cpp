@@ -10,10 +10,15 @@ using namespace std;
 main(int argc, char** argv) 
 {        
     // (*) create token
-    quex::Token        Token;
+    quex::Token        token;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
-    quex::Simple  qlex(argc == 1 ? "example.dat" : argv[1], "UTF-8");
+#   if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
+    quex::Simple  qlex(argv[1], "UTF-8");
+#   else
+    quex::Simple  qlex(argv[1]);
+#   endif
+
 
     // (*) print the version 
     // cout << qlex->version() << endl << endl;
@@ -25,17 +30,25 @@ main(int argc, char** argv)
     // (*) loop until the 'termination' token arrives
     do {
         // (*) get next token from the token stream
-        qlex.receive(&Token);
+        qlex.receive(&token);
 
         // (*) print out token information
         //     -- name of the token
-        if( Token.type_id() != QUEX_TKN_TERMINATION ) { cout << string(Token) << endl; } 
-        else                                          { cout << Token.type_id_name() << endl; }
+        if( token.type_id() != TKN_TERMINATION ) { 
+#           if defined (QUEX_OPTION_ENABLE_ICU) || defined (QUEX_OPTION_ENABLE_ICONV)
+            cout << token << endl;
+#           else
+            cout << (const char*)(token.type_id_name().c_str()) << " '" << (const char*)(token.text().c_str()) << "' " << endl;
+#           endif
+        } 
+        else { 
+            cout << token.type_id_name() << endl;
+        }
 
         ++number_of_tokens;
 
         // (*) check against 'termination'
-    } while( Token.type_id() != QUEX_TKN_TERMINATION );
+    } while( token.type_id() != TKN_TERMINATION );
 
     cout << "| [END] number of token = " << number_of_tokens << "\n";
     cout << "`------------------------------------------------------------------------------------\n";

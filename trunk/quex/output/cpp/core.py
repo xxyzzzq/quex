@@ -126,8 +126,10 @@ def write_engine_header(Modes):
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
 
     # Buffer filler converter (0x0 means: no buffer filler converter)
-    converter_new_str = "(QuexConverter*)0x0"
-    if Setup.converter_user_new_func != "": converter_new_str = Setup.converter_user_new_func + "()"
+    converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
+    if Setup.converter_user_new_func != "": converter_new_str += Setup.converter_user_new_func + "()"
+    else:                                   converter_new_str += "(QuexConverter*)0x0"
+    
 
     token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
 
@@ -137,7 +139,7 @@ def write_engine_header(Modes):
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
-                ["$$CONVERTER_NEW$$",                converter_new_str],
+                ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
                 ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
                 ["$$INCLUDE_GUARD_EXTENSION$$",      include_guard_extension],
                 ["$$INITIAL_LEXER_MODE_ID$$",        "LEX_ID_" + lexer_mode.initial_mode.get_pure_code()],

@@ -203,12 +203,8 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 /* The call the the 'new' function for the converter, i.e. the function that
  * allocates the converter and initializes it. If it is 0x0, this means that
  * the converter pointer is set to 0x0.                                      */
-#if   defined (QUEX_OPTION_ENABLE_ICONV)
-#     define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_IConv_new()
-#elif defined (QUEX_OPTION_ENABLE_ICU)
-#     define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  QuexConverter_ICU_new()
-#else 
-#     define  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  $$CONVERTER_NEW$$
+#ifndef QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
+$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
 #endif
 
 // Begin of line pre-condition requires an extra flag in the buffer
@@ -357,6 +353,10 @@ $$MEMENTO_EXTENSIONS$$
         void                  buffer_conversion_fill_region_finish(const size_t  ByteN);
         QUEX_TYPE_CHARACTER*  buffer_lexeme_start_pointer_get();
         void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
+
+        // -- activate/deactivate byte order reversion (big-/little-endian)
+        void     byte_order_reversion_enable();
+        void     byte_order_reversion_disable();
 
         // -- token stream: read next token
         void  get_token() 
@@ -654,6 +654,18 @@ $$CONSTRUCTOR_EXTENSTION$$
             __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
     }   
+
+    inline void     
+    CLASS::byte_order_reversion_enable()
+    {
+        buffer._byte_order_reversion_active_f = true;
+    }
+
+    inline void     
+    CLASS::byte_order_reversion_disable()
+    {
+        buffer._byte_order_reversion_active_f = false;
+    }
 
     inline const char* 
     CLASS::version() const

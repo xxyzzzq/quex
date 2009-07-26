@@ -1,20 +1,51 @@
 X = Simple
+LIB_CONV  = `icu-config --ldflags`
 
-all: $(X).cpp 
+lex_iconv: 
+	@echo "Call to quex"
+	@quex -i simple.qx -o $(X) -b wchar_t --iconv  --token-prefix TKN_
 	@echo "Compiling"
-	@g++ -I./ -I$(QUEX_PATH) \
+	g++ -I./ -I$(QUEX_PATH) \
 		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
+		-Wall                         \
 		lexer.cpp                     \
 		-ggdb \
-	   	# -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
-		#-lefence
-		# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
+	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-o $@
 
-
-$(X).cpp: simple.qx
+lex_icu: 
 	@echo "Call to quex"
-	@quex -i $< -o $(X) -b wchar_t --iconv 
+	@quex -i simple.qx -o $(X) -b wchar_t --icu  --token-prefix TKN_
+	@echo "Compiling"
+	g++ -I./ -I$(QUEX_PATH) \
+		$(LIB_CONV) \
+		$(X)-core-engine.cpp          \
+		$(X).cpp                      \
+		-Wall                         \
+		lexer.cpp                     \
+		-ggdb \
+	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-o $@
+
+lex_codec: 
+	@echo "Call to quex"
+	@quex -i simple.qx -o $(X) --codec utf8  --token-prefix TKN_
+	@echo "Compiling"
+	g++ -I./ -I$(QUEX_PATH) \
+		$(X)-core-engine.cpp          \
+		$(X).cpp                      \
+		-Wall                         \
+		lexer.cpp                     \
+		-ggdb \
+	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
+		-DQUEX_SETTING_ICONV_TRANSLATION_BUFFER_SIZE=64 \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-o $@
 
 
 clean:
@@ -23,3 +54,4 @@ clean:
 	rm -rf $(X).cpp
 	rm -rf $(X)
 	rm -rf a.out
+	rm -rf lex_iconv lex_icu lex_codec
