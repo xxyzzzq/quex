@@ -304,33 +304,27 @@ $$MEMENTO_EXTENSIONS$$
         /* DISABLED */ CLASS(const CLASS&);
 
     public:
-#   if defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
-        /* Implementation: "constructor-engine-codec-adaption.i" */
         CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-              bool                 InvertByteOrderF = false);
-        CLASS(const std::string&   Filename,       bool  InvertByteOrderF = false);
-        CLASS(std::istream*        p_input_stream, bool  InvertByteOrderF = false);
-        CLASS(std::wistream*       p_input_stream, bool  InvertByteOrderF = false);
-        CLASS(std::FILE*           input_fh,       bool  InvertByteOrderF = false);
+              const char*          CharacterEncodingName = 0x0,
+              bool                 ByteOrderReversionF   = false);
+        CLASS(const std::string&   Filename,       
+              const char*          CharacterEncodingName = 0x0,
+              bool                 ByteOrderReversionF   = false);
+        CLASS(std::istream*        p_input_stream, 
+              const char*          CharacterEncodingName = 0x0,
+              bool                 ByteOrderReversionF   = false);
+        CLASS(std::wistream*       p_input_stream, 
+              const char*          CharacterEncodingName = 0x0,
+              bool                 ByteOrderReversionF   = false);
+        CLASS(std::FILE*           input_fh,       
+              const char*          CharacterEncodingName = 0x0,
+              bool                 ByteOrderReversionF   = false);
 #       if defined(__QUEX_OPTION_UNIT_TEST)
         template <class UnderlyingStreamT>
         CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-              bool                                     InvertByteOrderF = false);
+              const char*                              CharacterEncodingName = 0x0,
+              bool                                     ByteOrderReversionF   = false);
 #       endif
-#    else
-        /* Implementation: "constructor.i" */
-        CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
-              const char*          CharacterEncodingName = 0x0);
-        CLASS(const std::string&   Filename,       const char* CharacterEncodingName = 0x0);
-        CLASS(std::istream*        p_input_stream, const char* CharacterEncodingName = 0x0);
-        CLASS(std::wistream*       p_input_stream, const char* CharacterEncodingName = 0x0);
-        CLASS(std::FILE*           input_fh,       const char* CharacterEncodingName = 0x0);
-#       if defined(__QUEX_OPTION_UNIT_TEST)
-        template <class UnderlyingStreamT>
-        CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-              const char*                              CharacterEncodingName = 0x0); 
-#       endif
-#    endif
 
         virtual ~CLASS();
 
@@ -355,6 +349,7 @@ $$MEMENTO_EXTENSIONS$$
         void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
         // -- activate/deactivate byte order reversion (big-/little-endian)
+        bool     byte_order_reversion();
         void     byte_order_reversion_enable();
         void     byte_order_reversion_disable();
 
@@ -538,9 +533,10 @@ $$CLASS_BODY_EXTENSION$$
         // (*) Common core of all constructors ___________________________________________
         template <class InputHandleT> 
         void                        __constructor_core(InputHandleT*, 
-                                                       const char* CharacterEncodingName,
-                                                       QUEX_TYPE_CHARACTER*  BufferMemory          = 0x0,
-                                                       size_t                BufferMemorySize      = 0);
+                                                       const char*           CharacterEncodingName,
+                                                       bool                  ByteOrderReversionF,
+                                                       QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
+                                                       size_t                BufferMemorySize = 0);
         template <class InputHandleT> 
         void                        __init(InputHandleT*  input_handle, 
                                            const char*               CharacterEncodingName,
@@ -552,6 +548,7 @@ $$CLASS_BODY_EXTENSION$$
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
                               const char*               CharacterEncodingName,
+                              bool                      ByteOrderReversionF,
                               QUEX_TYPE_CHARACTER*      BufferMemory,    
                               size_t                    BufferMemorySize)
     {
@@ -602,6 +599,10 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
         __init(input_handle, CharacterEncodingName, BufferMemory, BufferMemorySize);
+
+        /* Assume that by default byte order reversion is disabled! */
+        if( ByteOrderReversionF ) byte_order_reversion_enable();
+        else                      __quex_assert(byte_order_reversion() == false);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -655,17 +656,17 @@ $$CONSTRUCTOR_EXTENSTION$$
         }
     }   
 
+    inline bool
+    CLASS::byte_order_reversion()
+    { return buffer._byte_order_reversion_active_f; }
+
     inline void     
     CLASS::byte_order_reversion_enable()
-    {
-        buffer._byte_order_reversion_active_f = true;
-    }
+    { buffer._byte_order_reversion_active_f = true; }
 
     inline void     
     CLASS::byte_order_reversion_disable()
-    {
-        buffer._byte_order_reversion_active_f = false;
-    }
+    { buffer._byte_order_reversion_active_f = false; }
 
     inline const char* 
     CLASS::version() const

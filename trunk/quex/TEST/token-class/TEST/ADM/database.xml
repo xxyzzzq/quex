@@ -1,24 +1,24 @@
-<test-database execution-time-sec="0.69" date="Sun Jul 26 03:27:37 2009">
+<test-database execution-time-sec="0.73" date="Sun Jul 26 09:10:05 2009">
     <last-used-diff-display-program name=""/>
     <test title="With token policy 'users_token'." make-required="True" time-sum-sec="0.01"> 
-        <application file-name="simple-queue.exe" info-request-time="1248571651L"/>
-        <make-procedure success="True" time_sec="4.517095"/>
+        <application file-name="simple-queue.exe" info-request-time="1248590772L"/>
+        <make-procedure success="True" time_sec="6.059649"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
     </test>
-    <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.68"> 
+    <test title="Miscellaneous Sample Runs" make-required="True" time-sum-sec="0.72"> 
         <application file-name="misc.sh" info-request-time="1243020114L"/>
         <choice-list number="4" same_result="False">
-           <choice name="empty" result="OK" time_sec="0.15" crc="-1191820474"/>
+           <choice name="empty" result="OK" time_sec="0.16" crc="-1191820474"/>
            <choice name="no-namespace" result="OK" time_sec="0.21" crc="-201766705"/>
            <choice name="double-colon" result="OK" time_sec="0.16" crc="-223322448"/>
-           <choice name="token" result="OK" time_sec="0.16" crc="-1412753469"/>
+           <choice name="token" result="OK" time_sec="0.19" crc="-1412753469"/>
         </choice-list>
     </test>
     <test title="With token policy 'queue'." make-required="True" time-sum-sec="0.01"> 
-        <application file-name="simple.exe" info-request-time="1248571656L"/>
-        <make-procedure success="True" time_sec="4.265410"/>
+        <application file-name="simple.exe" info-request-time="1248590779L"/>
+        <make-procedure success="True" time_sec="6.491055"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.01" crc="1973324921"/>
         </choice-list>
