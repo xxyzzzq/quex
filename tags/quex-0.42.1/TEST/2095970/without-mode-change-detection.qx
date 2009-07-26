@@ -1,0 +1,34 @@
+// This file implements a lexer that does not rely on implicit mode change
+// detection. Rather, it ensures **itself**, that the lexer returns on mode change.
+token {
+   STRING_LITERAL
+   EVENT_MODE_CHANGE
+}
+
+start = MODULE;
+
+mode MODULE {
+    <<EOF>> => QUEX_TKN_TERMINATION;
+    "\"" { 
+        self << STRING; 
+        self.send(QUEX_TKN_EVENT_MODE_CHANGE); 
+        return; 
+    }
+}
+
+mode STRING {
+    on_entry { self.accumulator.clear(); }
+    on_exit {
+       self.accumulator.flush(QUEX_TKN_STRING_LITERAL);
+       // the \" pattern will catch the token id and return it to the user.
+    }
+    <<EOF>> => QUEX_TKN_TERMINATION;
+    "\"" { 
+        self << MODULE; 
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
+        self.send(QUEX_TKN_EVENT_MODE_CHANGE); 
+#       endif
+        return;                          
+    }
+    .    { self.accumulator.add(Lexeme); CONTINUE; }
+}
