@@ -11,20 +11,17 @@ main(int argc, char** argv)
         printf("Tell and Seek: wiostream;\n");
         return 0;
     }
-
     std::wstringstream    sh;
-    assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
+    QuexBuffer            buffer;
+    size_t                SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 
+                                            19, 4, 6, 20, 11, 0, 
+                                            23, 18, 12, 21, 17, 27, 16, 26, 
+                                            14, 24, 10, 13, 1, 22, 999 };
+
+    __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
     sh << L"Fest gemauert in der Erden";
-
-    QuexBuffer                             buffer;
-    size_t    SeekIndices[] = { 5, 9, 3, 8, 2, 15, 25, 7, 19, 4, 6, 20, 11, 0, 
-                                23, 18, 12, 21, 17, 27, 16, 26, 14, 24, 10, 13, 1, 22, 999 };
-
-    QuexBufferFiller_Plain<wstringstream>* filler = QuexBufferFiller_Plain_new(&sh);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      
-    QuexBuffer_init(&buffer, /* OnlyResetF */false);
+    QuexBuffer_construct(&buffer, &sh, 0x0, 5, 0x0, 0);
 
     test_seek_and_tell(&buffer, SeekIndices);
 }

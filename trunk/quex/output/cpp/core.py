@@ -128,7 +128,7 @@ def write_engine_header(Modes):
     # Buffer filler converter (0x0 means: no buffer filler converter)
     converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
     if Setup.converter_user_new_func != "": converter_new_str += Setup.converter_user_new_func + "()"
-    else:                                   converter_new_str += "(QuexConverter*)0x0"
+    else:                                   converter_new_str = "/* " + converter_new_str + " */"
     
 
     token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
