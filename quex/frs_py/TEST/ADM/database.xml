@@ -1,16 +1,16 @@
-<test-database execution-time-sec="0.26" date="Sun Jul 26 03:33:31 2009">
+<test-database execution-time-sec="0.24" date="Sun Jul 26 09:14:31 2009">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.07"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.06"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1237805542L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.06" crc="-957083127"/>
             </choice-list>
         </test>
-        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.08"> 
+        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1237805542L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.08" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.07" crc="1489533151"/>
             </choice-list>
         </test>
         <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.06"> 
