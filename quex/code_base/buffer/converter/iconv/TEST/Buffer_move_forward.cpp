@@ -29,11 +29,7 @@ main(int argc, char** argv)
     std::FILE*                   fh = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_new(fh, QuexConverter_IConv_new(), "UTF8", target_charset, RawMemorySize);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      
-    QuexBuffer_init(&buffer, /* OnlyResetF */false);
+    QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
