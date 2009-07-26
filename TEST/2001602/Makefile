@@ -6,9 +6,10 @@ lex_iconv:
 	@echo "Call to quex"
 	@quex -i simple.qx -o $(X) -b 2 --iconv 
 	@echo "Compiling"
-	@g++ -I./ -I$(QUEX_PATH) \
+	g++ -I./ -I$(QUEX_PATH) \
 		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
+		-Wall                         \
 		lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
@@ -25,10 +26,11 @@ lex_icu:
 	@echo "Call to quex"
 	@quex -i simple.qx -o $(X) -b 2 --icu 
 	@echo "Compiling"
-	@g++ -I./ -I$(QUEX_PATH) \
+	g++ -I./ -I$(QUEX_PATH) \
 		$(LIB_CONV) \
 		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
+		-Wall                         \
 		lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \
@@ -40,9 +42,10 @@ lex_codec:
 	@echo "Call to quex"
 	@quex -i simple.qx -o $(X) --codec utf8 
 	@echo "Compiling"
-	@g++ -I./ -I$(QUEX_PATH) \
+	g++ -I./ -I$(QUEX_PATH) \
 		$(X)-core-engine.cpp          \
 		$(X).cpp                      \
+		-Wall                         \
 		lexer.cpp                     \
 		-ggdb \
 	   	-DQUEX_SETTING_BUFFER_SIZE=64 \

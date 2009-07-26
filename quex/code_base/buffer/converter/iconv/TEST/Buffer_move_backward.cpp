@@ -29,6 +29,8 @@ main(int argc, char** argv)
     assert( fh != 0x0 );
 
     QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize);
+    assert((void*)((QuexBufferFiller_Converter<FILE>*)buffer.filler)->converter->convert 
+           == (void*)QuexConverter_IConv_convert);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
     while( 1 + 1 == 2 ) {

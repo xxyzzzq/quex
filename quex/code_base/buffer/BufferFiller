@@ -36,17 +36,18 @@ namespace quex {
          *          sets the _input_p to a particular position.                                      */
         void     (*seek_character_index)(struct __QuexBufferFiller_tag*, const size_t Index);
 
-        /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)*/
+        /* -- 'Read' reads N characters from a stream into a buffer (independent of their size)      */
         size_t   (*read_characters)(struct __QuexBufferFiller_tag*,
                                     QUEX_TYPE_CHARACTER* memory, const size_t N);
 
         /* -- 'Overflow' is user defined handler for the case that the distance from lexeme start  
-         *    to lexeme end exceeds the buffer size.  */
+         *    to lexeme end exceeds the buffer size.                                                 */
         bool     (*_on_overflow)(QuexBuffer*, bool ForwardF);
 
         /* -- 'Destructor' -- There are derived 'classes' from this one. The user only stores a 
-         *    pointer to QuexBufferFiller, and requires a way to destruct the whole object. */ 
+         *    pointer to QuexBufferFiller, and requires a way to destruct the whole object.          */ 
         void     (*_destroy)(struct __QuexBufferFiller_tag*);
+
     } QuexBufferFiller;
 
     QUEX_INLINE void 

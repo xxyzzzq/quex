@@ -35,9 +35,6 @@ namespace quex {
                                                                           const size_t         N);
     TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destroy(QuexBufferFiller* alter_ego);
 
-    QUEX_INLINE void
-    __BufferFiller_Plain_invert_byte_order(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                           QUEX_TYPE_CHARACTER* BufferMemoryEnd);
 
     TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Plain)*
     QuexBufferFiller_Plain_new(InputHandleT*    input_handle)
@@ -59,7 +56,6 @@ namespace quex {
 #       endif
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
 
-        me->_invert_byte_order_f = false;
         return me;
     }
 
@@ -151,51 +147,12 @@ namespace quex {
             QUEX_ERROR_EXIT("Error: End of file cuts in the middle a multi-byte character.");
         const size_t   CharacterN = ByteN / sizeof(QUEX_TYPE_CHARACTER); 
 
-        if( me->_invert_byte_order_f ) {
-            __BufferFiller_Plain_invert_byte_order(buffer_memory, buffer_memory + CharacterN);
-        }
-
 #       ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION
         me->_character_index += CharacterN;
 #       endif
 
         me->_last_stream_position = QUEX_INPUT_POLICY_TELL(me->ih, InputHandleT);
         return CharacterN;
-    }
-
-    QUEX_INLINE void
-    __BufferFiller_Plain_invert_byte_order(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
-                                           QUEX_TYPE_CHARACTER* BufferMemoryEnd)
-    {
-        QUEX_TYPE_CHARACTER*  iterator = 0x0;
-        uint8_t               tmp = 0x00;
-        /* Inversion of Byte Order makes only sense when the character type
-         * actually has more than one byte.                                 */
-        __quex_assert(sizeof(QUEX_TYPE_CHARACTER) >= 2);
-
-
-        switch( sizeof(QUEX_TYPE_CHARACTER) ) { 
-        default: 
-            __quex_assert(false);
-
-        case 4: 
-            for(iterator=BufferMemoryBegin; iterator != BufferMemoryEnd ; ++iterator) {
-                tmp                         = *(((uint8_t*)iterator) + 0);
-                *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 3);
-                *(((uint8_t*)iterator) + 3) = tmp;
-                tmp                         = *(((uint8_t*)iterator) + 1);
-                *(((uint8_t*)iterator) + 1) = *(((uint8_t*)iterator) + 2);
-                *(((uint8_t*)iterator) + 2) = tmp;
-            }
-            break;
-        case 2: 
-            for(iterator=BufferMemoryBegin; iterator != BufferMemoryEnd ; ++iterator) {
-                tmp                         = *(((uint8_t*)iterator) + 0);
-                *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 1);
-                *(((uint8_t*)iterator) + 1) = tmp;
-            }
-            break;
-        }
     }
 
 #   undef TEMPLATED_CLASS

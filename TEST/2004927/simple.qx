@@ -14,10 +14,10 @@ THING
 mode ONE_AND_ONLY
 {
 // Order is relevant
-<<EOF>> => QUEX_TKN_TERMINATION;
+<<EOF>> => TKN_TERMINATION;
 
 [ \t\r\n]+ { }
-{P_THING} => QUEX_TKN_THING(Lexeme);
-{P_EXPRESSION} => QUEX_TKN_EXPRESSION(Lexeme); // quex loops
-. => QUEX_TKN_NONE(Lexeme);
+{P_THING}      => TKN_THING(Lexeme);
+{P_EXPRESSION} => TKN_EXPRESSION(Lexeme); // quex loops
+.              => TKN_NONE(Lexeme);
 }

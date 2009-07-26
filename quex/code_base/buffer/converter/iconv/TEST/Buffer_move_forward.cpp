@@ -17,19 +17,12 @@ main(int argc, char** argv)
     QuexBuffer      buffer;
     const int       RawMemorySize = 6;
     const size_t    StepSize      = atoi(argv[1]);
-    char*           target_charset = (char*)"UCS-4LE";
-
-    /*
-    const uint16_t  test = 0x4711;
-    if( ((uint8_t*)test)[0] == 47 && ((uint8_t*)test)[1] == 1 ) {
-         target_charset = (char*)"UCS-4BE";
-    }
-    */
-
-    std::FILE*                   fh = fopen("test.txt", "r");
+    std::FILE*      fh            = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
     QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize);
+    assert((void*)((QuexBufferFiller_Converter<FILE>*)buffer.filler)->converter->convert 
+           == (void*)QuexConverter_IConv_convert);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */

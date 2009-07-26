@@ -1,11 +1,6 @@
-Call to quex
-Compiling
-#-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
-		#-lefence
-# -D__QUEX_OPTION_UNIT_TEST_INPUT_STRATEGY_ICONV 
 cp       wiki.txt.bz2 backup.tmp
 bzip2 -d wiki.txt.bz2
-cp       backup.tmp wiki.txt.bz2
+mv       backup.tmp wiki.txt.bz2
 TOK 'e' 
 TOK 'due' 
 TOK 'emissari' 
@@ -26,9 +21,3 @@ NONE '.'
 <TERMINATION> '' 
 | [END] number of token = 212356
 `------------------------------------------------------------------------------------
-rm -rf Simple-core-engine.cpp
-rm -rf Simple-token_ids
-rm -rf Simple.cpp
-rm -rf Simple
-rm -rf a.out
-rm -rf wiki.txt

@@ -11,10 +11,6 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#ifndef    QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
-#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  0x0
-#endif
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex { 
 #endif
@@ -87,6 +83,9 @@ namespace quex {
             QuexBuffer_end_of_file_unset(me);
         }
         
+        /* Set byte order before 'init' so that the initial load can be done propperly */
+        me->_byte_order_reversion_active_f = false;
+
         QuexBuffer_init(me, /* OnlyResetF */ false);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -537,6 +536,39 @@ namespace quex {
     QUEX_INLINE size_t          
     QuexBufferMemory_size(QuexBufferMemory* me)
     { return me->_back - me->_front + 1; }
+
+    QUEX_INLINE void
+    __Buffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
+    {
+        uint8_t              tmp = 0xFF;
+        QUEX_TYPE_CHARACTER* iterator = 0x0;
+
+        switch( sizeof(QUEX_TYPE_CHARACTER) ) {
+        default:
+            __quex_assert(false);
+            break;
+        case 1:
+            /* Nothing to be done */
+            break;
+        case 2:
+            for(iterator=Begin; iterator != End; ++iterator) {
+                tmp = *(((uint8_t*)iterator) + 0);
+                *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 1);
+                *(((uint8_t*)iterator) + 1) = tmp;
+            }
+            break;
+        case 4:
+            for(iterator=Begin; iterator != End; ++iterator) {
+                tmp = *(((uint8_t*)iterator) + 0);
+                *(((uint8_t*)iterator) + 0) = *(((uint8_t*)iterator) + 3);
+                *(((uint8_t*)iterator) + 3) = tmp;
+                tmp = *(((uint8_t*)iterator) + 1);
+                *(((uint8_t*)iterator) + 1) = *(((uint8_t*)iterator) + 2);
+                *(((uint8_t*)iterator) + 2) = tmp;
+            }
+            break;
+        }
+    }
 
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
