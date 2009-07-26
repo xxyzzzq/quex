@@ -14,14 +14,11 @@ main(int argc, char** argv)
                sizeof(QUEX_TYPE_CHARACTER));
         return 0;
     }
-    FILE*                         fh = prepare_input_error();
-    QuexBuffer                    buffer;
-    QuexBufferFiller_Plain<FILE>* filler = QuexBufferFiller_Plain_new(fh);
+    FILE*       fh = prepare_input_error();
+    QuexBuffer  buffer;
 
-    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
+    QuexBuffer_construct(&buffer, fh, 0x0, 8, 0x0, 0);
 
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(8), 8);      
-    QuexBuffer_init(&buffer, /* OnlyResetF */false);
     
     do {
         printf("------------------------------------------------------------\n");
