@@ -28,12 +28,7 @@ main(int argc, char** argv)
     std::FILE*      fh = fopen("test.txt", "r");
     assert( fh != 0x0 );
 
-    QuexBufferFiller_Converter<FILE>* filler = \
-        QuexBufferFiller_Converter_new(fh, QuexConverter_IConv_new(), "UTF8", 0x0, RawMemorySize);
-    buffer.filler = (quex::__QuexBufferFiller_tag*)filler;
-
-    QuexBufferMemory_init(&(buffer._memory), MemoryManager_BufferMemory_allocate(5), 5);      
-    QuexBuffer_init(&buffer, /* OnlyResetF */false);
+    QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
     while( 1 + 1 == 2 ) {
