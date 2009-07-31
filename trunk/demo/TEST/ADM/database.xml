@@ -1,4 +1,4 @@
-<test-database execution-time-sec="309.91" date="Thu Jul 30 13:59:54 2009">
+<test-database execution-time-sec="309.89" date="Thu Jul 30 21:58:26 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="27.74"> 
@@ -62,7 +62,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="6.55" crc="1262344118"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="34.13"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="34.14"> 
             <application file-name="003-icu.sh" info-request-time="1247664742L"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="7.03" crc="-2052519256"/>
@@ -120,7 +120,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="9.40"> 
+        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="9.39"> 
             <application file-name="009.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="4.86" crc="13704092"/>
@@ -129,21 +129,21 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="26.05"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="26.06"> 
             <application file-name="010b.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="20.51" crc="665696517"/>
                <choice name="fill" result="OK" time_sec="5.55" crc="665696517"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="26.95"> 
+        <test title="Direct Buffer Access (Arbitrary Chunked)" make-required="True" time-sum-sec="26.94"> 
             <application file-name="010.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="21.07" crc="715182431"/>
                <choice name="fill" result="OK" time_sec="5.87" crc="715182431"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="39.45"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="39.44"> 
             <application file-name="010c.sh" info-request-time="1247664742L"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="22.95" crc="-139797804"/>
