@@ -1,6 +1,6 @@
 ===============================================================================
 Regression Tests on Fixed Bugs
-Tue Jul 28 22:11:25 2009
+Fri Jul 31 00:25:25 2009
 TEST
 -------------------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ TEST
     2599228 0.36.1 QUEX_CORE variable not adapted to installed version
         bug-2599228.sh Developper ..............................[OK]
                        Else ....................................[OK]
+                       FilesExist ..............................[OK]
     2619679 QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY redefined
         bug-2619679.sh .........................................[OK]
 
@@ -221,7 +222,7 @@ TEST
 
 ===============================================================================
 Demo-Applications
-Tue Jul 28 22:16:49 2009
+Fri Jul 31 00:31:07 2009
 demo/TEST
 -------------------------------------------------------------------------------
 
@@ -339,7 +340,7 @@ demo/TEST
 
 ===============================================================================
 Miscellaneous Basic Tests
-Tue Jul 28 22:16:50 2009
+Fri Jul 31 00:31:09 2009
 quex/TEST
 -------------------------------------------------------------------------------
  -- Double Check that Exception Handlers are in place
@@ -360,15 +361,13 @@ quex/TEST
 
 ===============================================================================
 Check Applications of 'Did you mean'.
-Tue Jul 28 22:17:15 2009
+Fri Jul 31 00:31:19 2009
 quex/TEST/did-you-mean/TEST
 -------------------------------------------------------------------------------
  -- Explicit Token Type Member Assignment
         token_type-member-name.sh ..............................[OK]
  -- UCS Character Code Names
         ucs-character-name.sh 1 ................................[OK]
-                              2 ................................[OK]
-                              3 ................................[OK]
 
      ___  _ _   _  __                        _     _ 
     / _ \| | | | |/ /___  _ __ _ __ ___  ___| |_  | |
@@ -378,7 +377,7 @@ quex/TEST/did-you-mean/TEST
 
 ===============================================================================
 Event Handlers
-Tue Jul 28 22:17:16 2009
+Fri Jul 31 00:31:19 2009
 quex/TEST/event-handling/TEST
 -------------------------------------------------------------------------------
 
@@ -403,7 +402,7 @@ quex/TEST/event-handling/TEST
 
 ===============================================================================
 Include Stack Handling
-Tue Jul 28 22:17:16 2009
+Fri Jul 31 00:31:20 2009
 quex/TEST/include-stack/TEST
 -------------------------------------------------------------------------------
 
@@ -442,7 +441,7 @@ quex/TEST/include-stack/TEST
 
 ===============================================================================
 Match Precedence in Mode Inheritance Structures
-Tue Jul 28 22:17:26 2009
+Fri Jul 31 00:31:31 2009
 quex/TEST/match-precedence/TEST
 -------------------------------------------------------------------------------
  -- PRIORITY-MARK or DELETION on not existing pattern.
@@ -466,7 +465,7 @@ quex/TEST/match-precedence/TEST
 
 ===============================================================================
 Customized Token Class
-Tue Jul 28 22:17:27 2009
+Fri Jul 31 00:31:33 2009
 quex/TEST/token-class/TEST
 -------------------------------------------------------------------------------
  -- Miscellaneous Sample Runs
@@ -487,7 +486,7 @@ quex/TEST/token-class/TEST
 
 ===============================================================================
 Tests related to token queues
-Tue Jul 28 22:17:28 2009
+Fri Jul 31 00:31:33 2009
 quex/TEST/token-policies/TEST
 -------------------------------------------------------------------------------
 
@@ -524,7 +523,7 @@ quex/TEST/token-policies/TEST
 
 ===============================================================================
 <no file 'ADM/title.txt'>
-Tue Jul 28 22:17:28 2009
+Fri Jul 31 00:31:34 2009
 quex/code_base/TEST
 -------------------------------------------------------------------------------
 
@@ -549,7 +548,7 @@ quex/code_base/TEST
 
 ===============================================================================
 Lexical Analyzer Class Template
-Tue Jul 28 22:17:30 2009
+Fri Jul 31 00:31:35 2009
 quex/code_base/analyzer/TEST
 -------------------------------------------------------------------------------
 
@@ -616,7 +615,7 @@ quex/code_base/analyzer/TEST
 
 ===============================================================================
 Basic Buffer Functions
-Tue Jul 28 22:17:31 2009
+Fri Jul 31 00:31:37 2009
 quex/code_base/buffer/TEST
 -------------------------------------------------------------------------------
 
@@ -678,7 +677,7 @@ quex/code_base/buffer/TEST
 
 ===============================================================================
 Input Buffers Based on the IConv - Library
-Tue Jul 28 22:17:33 2009
+Fri Jul 31 00:31:39 2009
 quex/code_base/buffer/converter/iconv/TEST
 -------------------------------------------------------------------------------
 
@@ -752,7 +751,7 @@ quex/code_base/buffer/converter/iconv/TEST
 
 ===============================================================================
 Testing the ICU Converter Adaption
-Tue Jul 28 22:17:35 2009
+Fri Jul 31 00:31:40 2009
 quex/code_base/buffer/converter/icu/TEST
 -------------------------------------------------------------------------------
 
@@ -826,7 +825,7 @@ quex/code_base/buffer/converter/icu/TEST
 
 ===============================================================================
 Plain Buffer Filler (without conversion)
-Tue Jul 28 22:17:38 2009
+Fri Jul 31 00:31:44 2009
 quex/code_base/buffer/plain/TEST
 -------------------------------------------------------------------------------
 
@@ -920,7 +919,7 @@ quex/code_base/buffer/plain/TEST
 
 ===============================================================================
 Core Functionalities
-Tue Jul 28 22:17:58 2009
+Fri Jul 31 00:32:03 2009
 quex/core_engine/TEST
 -------------------------------------------------------------------------------
 
@@ -964,7 +963,7 @@ quex/core_engine/TEST
 
 ===============================================================================
 Code Generation for Lexical Analyzer
-Tue Jul 28 22:21:18 2009
+Fri Jul 31 00:35:27 2009
 quex/core_engine/generator/TEST
 -------------------------------------------------------------------------------
 
@@ -1146,7 +1145,7 @@ quex/core_engine/generator/TEST
 
 ===============================================================================
 Regular Expression Parsing
-Tue Jul 28 22:21:24 2009
+Fri Jul 31 00:35:33 2009
 quex/core_engine/regular_expression/TEST
 -------------------------------------------------------------------------------
  -- State Machine Pattern Matching
@@ -1207,7 +1206,7 @@ quex/core_engine/regular_expression/TEST
 
 ===============================================================================
 State Machine Operations
-Tue Jul 28 22:21:59 2009
+Fri Jul 31 00:36:08 2009
 quex/core_engine/state_machine/TEST
 -------------------------------------------------------------------------------
  -- Pattern Identity Determination
@@ -1364,7 +1363,7 @@ quex/core_engine/state_machine/TEST
 
 ===============================================================================
 Frank-Rene Schaefers Little Python Library
-Tue Jul 28 22:21:59 2009
+Fri Jul 31 00:36:08 2009
 quex/frs_py/TEST
 -------------------------------------------------------------------------------
 
@@ -1390,7 +1389,7 @@ quex/frs_py/TEST
 
 ===============================================================================
 Character Set Queries
-Tue Jul 28 22:22:27 2009
+Fri Jul 31 00:36:35 2009
 quex/input/TEST
 -------------------------------------------------------------------------------
 
@@ -1457,7 +1456,7 @@ quex/input/TEST
 
 ===============================================================================
 Basic Code Writing Functionality
-Tue Jul 28 22:22:30 2009
+Fri Jul 31 00:36:38 2009
 quex/output/cpp/TEST
 -------------------------------------------------------------------------------
  -- Token Class Template
@@ -1487,7 +1486,7 @@ quex/output/cpp/TEST
 
 ===============================================================================
 Testing Statemachine Plots
-Tue Jul 28 22:22:32 2009
+Fri Jul 31 00:36:40 2009
 quex/output/graphviz/TEST
 -------------------------------------------------------------------------------
  -- Check supported formats.
