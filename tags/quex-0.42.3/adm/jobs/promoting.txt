@@ -1,0 +1,21 @@
+Promoting Quex
+--------------
+
+Quex is a lexical analyzer generator that is produces directly coded engines.
+Those engines are much faster than flex generated engines, and even faster than
+hand written analyzers. Indeed, one of the goals of the quex project is to
+provide a tool to provide ultra fast lexical analysis-which is still the
+bottleneck of many compilers. 
+
+Since the guys around the quex project are busy with their own developments
+they have little time to promote the project in common-place media. Anyone who
+would like to write an article in Linux journal or other OpenSource magazines
+will be strongly supported.
+
+Any motivated individual is welcome to contribute. For first contact, please
+also consider the audio conference (Quex Cafee http://quex.sourceforge.net/QuexCafe.html).
+
+Best Regards
+
+Frank-Rene Schaefer
+(Project Administrator of Quex)

@@ -1,0 +1,30 @@
+#include <quex/code_base/buffer/TEST/Buffer_test_common.i>
+#include<quex/code_base/buffer/converter/BufferFiller_Converter.i>
+#include<quex/code_base/buffer/converter/icu/Converter_ICU.i>
+
+using namespace std;
+using namespace quex;
+
+int
+main(int argc, char** argv)
+{
+    if( cl_has(argc, argv, "--hwut-info") ) {
+        printf("Move by Offset: Forward (BPC=%i);\n", sizeof(QUEX_TYPE_CHARACTER));
+        printf("CHOICES:  1, 2, 3, 4, 5;\n");
+        return 0;
+    }
+
+    QuexBuffer      buffer;
+    const int       RawMemorySize = 6;
+    const size_t    StepSize      = atoi(argv[1]);
+    std::FILE*      fh            = fopen("test.txt", "r");
+    assert( fh != 0x0 );
+
+    QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize);
+    assert((void*)((QuexBufferFiller_Converter<FILE>*)buffer.filler)->converter->convert 
+           == (void*)QuexConverter_ICU_convert);
+
+    test_move_forward(&buffer, StepSize); 
+    fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
+}
+

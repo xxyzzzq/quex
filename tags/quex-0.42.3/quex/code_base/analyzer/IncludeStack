@@ -1,0 +1,46 @@
+// -*- C++ -*- vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__TEMPLATE__INCLUDE_STACK
+#define __INCLUDE_GUARD__QUEX__TEMPLATE__INCLUDE_STACK
+
+#include <quex/code_base/analyzer/Analyser>
+#include <quex/code_base/analyzer/QuexMode>
+
+namespace quex { 
+
+    class IncludeStack { 
+    public:
+        IncludeStack(CLASS* the_lexer);
+
+        class memento {
+        public:
+            QuexAnalyser analyser_core;
+            CounterType  counter;
+            QuexMode*    current_mode_p;
+
+            void   map_to_lexical_analyzer(CLASS*);
+            void   map_from_lexical_analyzer(CLASS*);
+        };
+
+        template <class InputHandle> 
+        void   push(InputHandle*             new_input_handle_p, 
+                    const QuexMode&          mode, 
+                    QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
+                    const char*              IANA_CodingName = 0x0);
+        
+        template <class InputHandle> 
+        void   push(InputHandle*            new_input_handle_p, 
+                    const int                MODE_ID         = -1, 
+                    QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
+                    const char*              IANA_CodingName = 0x0);
+        bool   pop();
+
+    private:
+        CLASS*   _the_lexer;
+
+        template <class InputHandle> 
+        void   __push(InputHandle*, void (*StartModeAnalyzerFunction)(QuexAnalyser*), 
+                      const char* IANA_Coding);
+    };
+}
+
+#endif // __INCLUDE_GUARD__QUEX__TEMPLATE__INCLUDE_STACK
