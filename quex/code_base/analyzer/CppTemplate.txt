@@ -256,18 +256,18 @@ $$USER_DEFINED_HEADER$$
 #include<quex/code_base/buffer/BufferFiller>
 
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/template/QuexMode>
-#include <quex/code_base/template/Analyser>
+#include <quex/code_base/analyzer/QuexMode>
+#include <quex/code_base/analyzer/Analyser>
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
-#   include <quex/code_base/template/Accumulator>
+#   include <quex/code_base/analyzer/Accumulator>
 #endif
 #if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-#   include <quex/code_base/TokenQueue>
+#   include <quex/code_base/token/TokenQueue>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
-#   include <quex/code_base/template/PostCategorizer>
+#   include <quex/code_base/analyzer/PostCategorizer>
 #endif
-#include <quex/code_base/template/Counter>
+#include <quex/code_base/analyzer/Counter>
 namespace quex { 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
     typedef CounterWithIndentation CounterType;
@@ -727,27 +727,27 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #define __QUEX_SETTING_INITIAL_LEXER_MODE_ID $$INITIAL_LEXER_MODE_ID$$
 
 #if ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
-#   include <quex/code_base/template/constructor.i>
+#   include <quex/code_base/analyzer/constructor.i>
 #else
-#   include <quex/code_base/template/constructor-engine-codec-adaption.i>
+#   include <quex/code_base/analyzer/constructor-engine-codec-adaption.i>
 #endif
-#include <quex/code_base/template/Counter.i>
+#include <quex/code_base/analyzer/Counter.i>
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   include <quex/code_base/template/CounterWithIndentation.i>
+#   include <quex/code_base/analyzer/CounterWithIndentation.i>
 #endif
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
-#    include <quex/code_base/template/Accumulator.i>
+#    include <quex/code_base/analyzer/Accumulator.i>
 #endif
 
-#include <quex/code_base/template/token_sending.i>
-#include <quex/code_base/template/token_receiving.i>
+#include <quex/code_base/analyzer/token_sending.i>
+#include <quex/code_base/analyzer/token_receiving.i>
 
-#include <quex/code_base/template/mode_handling.i>
+#include <quex/code_base/analyzer/mode_handling.i>
 #ifdef  QUEX_OPTION_INCLUDE_STACK
-#   include <quex/code_base/template/IncludeStack.i>
+#   include <quex/code_base/analyzer/IncludeStack.i>
 #endif
-#include <quex/code_base/template/misc.i>
-#include <quex/code_base/template/buffer_access.i>
+#include <quex/code_base/analyzer/misc.i>
+#include <quex/code_base/analyzer/buffer_access.i>
 
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
@@ -757,7 +757,7 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #   undef CLASS_MEMENTO
 #endif
 
-#include <quex/code_base/template/Analyser.i>
+#include <quex/code_base/analyzer/Analyser.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/MemoryManager.i>
 

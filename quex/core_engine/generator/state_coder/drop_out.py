@@ -1,5 +1,5 @@
 from   quex.input.setup import setup as Setup
-import quex.core_engine.generator.acceptance_info  as acceptance_info
+import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
 LanguageDB = Setup.language_db
 
 def do(state, StateIdx, SMD, InitStateF):

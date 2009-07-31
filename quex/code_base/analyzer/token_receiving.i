@@ -2,7 +2,7 @@
 #ifndef __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
 #define __INCLUDE_GUARD__QUEX__TOKEN_RECEIVING_VIA_QUEUE_I__
 
-#include <quex/code_base/template/TokenPolicy>
+#include <quex/code_base/token/TokenPolicy>
 
 namespace quex { 
 

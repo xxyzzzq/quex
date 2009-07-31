@@ -271,7 +271,12 @@ def __check_file_name(setup, Candidate, Name):
         if value == "" or value[0] == "-":              return
         if os.access(value, os.F_OK):                   return
         if os.access(QUEX_PATH + "/" + value, os.F_OK): return
-        # error_msg("File %s (%s)\ncannot be found." % (value, Name))
+        if     os.access(os.path.dirname(value), os.F_OK) == False \
+           and os.access(QUEX_PATH + "/" + os.path.dirname(value), os.F_OK) == False:
+            error_msg("File '%s' is supposed to be located in directory '%s' or\n" % \
+                      (os.path.basename(value), os.path.dirname(value)) + \
+                      "'%s'. No such directories exist." % \
+                      (QUEX_PATH + "/" + os.path.dirname(value)))
         error_msg_file_not_found(value, Name)
 
 def __check_identifier(setup, Candidate, Name):

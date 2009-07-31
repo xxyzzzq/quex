@@ -1,6 +1,6 @@
 import sys
-import quex.core_engine.generator.transition as transition
-from   quex.input.setup import setup as Setup
+import quex.core_engine.generator.state_coder.transition as transition
+from   quex.input.setup                                  import setup as Setup
 LanguageDB = Setup.language_db
 
 __DEBUG_CHECK_ACTIVE_F = False # Use this flag to double check that intervals are adjacent

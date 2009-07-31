@@ -47,7 +47,7 @@ def _do(Descr):
 def get_basic_template(Descr):
     
     TemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
-                    + "/template/TokenTemplate").replace("//","/")
+                    + "/token/CppTemplate.txt").replace("//","/")
 
     template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     

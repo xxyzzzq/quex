@@ -13,7 +13,7 @@ from quex.lexer_mode             import PatternShorthand
 from   quex.core_engine.generator.languages.core import db
 from   quex.core_engine.generator.action_info    import PatternActionInfo, CodeFragment
 import quex.core_engine.generator.core          as generator
-import quex.core_engine.generator.skip_code     as skip_code
+import quex.core_engine.generator.state_coder.skipper_core     as skipper
 import quex.core_engine.regular_expression.core as regex
 
 SHOW_TRANSITIONS_STR  = "" # "-D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS "  
@@ -193,8 +193,8 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#   include <quex/code_base/StrangeStream_unit_tests>\n"
     txt += "#endif\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
-    txt += "#include <quex/code_base/template/Analyser>\n"
-    txt += "#include <quex/code_base/template/Analyser.i>\n"
+    txt += "#include <quex/code_base/analyzer/Analyser>\n"
+    txt += "#include <quex/code_base/analyzer/Analyser.i>\n"
     txt += "\n"
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
     txt += "\n"
@@ -271,7 +271,7 @@ def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferS
     end_str  = '    printf("end\\n");'
     end_str += '    analysis_terminated_f = true; return;\n'
 
-    skipper_code = skip_code.get_character_set_skipper(TriggerSet, db["C++"])
+    skipper_code = skipper.get_character_set_skipper(TriggerSet, db["C++"])
 
     marker_char_list = []
     for interval in TriggerSet.get_intervals():
@@ -287,7 +287,7 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     end_str  = '    printf("end\\n");'
     end_str += '    analysis_terminated_f = true; return;\n'
 
-    skipper_code = skip_code.get_range_skipper(EndSequence, db["C++"], end_str)
+    skipper_code = skipper.get_range_skipper(EndSequence, db["C++"], end_str)
 
     return __get_skipper_code_framework(Language, TestStr, skipper_code,
                                         QuexBufferSize, CommentTestStrF, ShowPositionF, end_str,
@@ -319,8 +319,8 @@ $$TEST_CASE$$
 #   include <quex/code_base/StrangeStream_unit_tests>
 #endif
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/template/Analyser>
-#include <quex/code_base/template/Analyser.i>
+#include <quex/code_base/analyzer/Analyser>
+#include <quex/code_base/analyzer/Analyser.i>
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     using namespace quex;
 #endif
@@ -336,7 +336,7 @@ static void  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
 test_program_db = { 
     "ANSI-C-PlainMemory": """
     #include <stdlib.h>
-    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/analyzer/Analyser.i>
 
     int main(int argc, char** argv)
     {
@@ -358,7 +358,7 @@ test_program_db = {
 
     "ANSI-C": """
     #include <stdio.h>
-    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/analyzer/Analyser.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)
@@ -390,7 +390,7 @@ test_program_db = {
     "Cpp": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/analyzer/Analyser.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)
@@ -416,7 +416,7 @@ test_program_db = {
     "Cpp_StrangeStream": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/template/Analyser.i>
+    #include <quex/code_base/analyzer/Analyser.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)

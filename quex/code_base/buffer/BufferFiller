@@ -46,7 +46,7 @@ namespace quex {
 
         /* -- 'Destructor' -- There are derived 'classes' from this one. The user only stores a 
          *    pointer to QuexBufferFiller, and requires a way to destruct the whole object.          */ 
-        void     (*_destroy)(struct __QuexBufferFiller_tag*);
+        void     (*destruct)(struct __QuexBufferFiller_tag*);
 
     } QuexBufferFiller;
 
@@ -56,8 +56,8 @@ namespace quex {
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
                                                                       QUEX_TYPE_CHARACTER*, const size_t),
-                                      void         (*destroy)(QuexBufferFiller*));
-    QUEX_INLINE void    QuexBufferFiller_destroy(QuexBufferFiller*); 
+                                      void         (*destruct)(QuexBufferFiller*));
+    QUEX_INLINE void    QuexBufferFiller_destruct(QuexBufferFiller*); 
 
     QUEX_INLINE void    QuexBufferFiller_initial_load(QuexBuffer*);
     QUEX_INLINE size_t  QuexBufferFiller_load_forward(QuexBuffer*);

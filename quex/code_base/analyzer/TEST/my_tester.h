@@ -16,7 +16,7 @@ typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION;
 
 struct my_tester;
 #define CLASS my_tester
-#include <quex/code_base/template/Counter>
+#include <quex/code_base/analyzer/Counter>
 
 
 struct mini_mode {

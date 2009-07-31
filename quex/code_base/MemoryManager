@@ -12,7 +12,7 @@
 #   include <quex/code_base/buffer/converter/iconv/Converter_IConv>
 #endif
 #ifdef QUEX_OPTION_POST_CATEGORIZER
-#include <quex/code_base/template/PostCategorizer>
+#include <quex/code_base/analyzer/PostCategorizer>
 #endif
 
 #include <quex/code_base/temporary_macros_on>

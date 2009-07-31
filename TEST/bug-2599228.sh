@@ -2,7 +2,7 @@
 bug=2599228
 if [[ $1 == "--hwut-info" ]]; then
     echo "attardi: $bug 0.36.1 QUEX_CORE variable not adapted to installed version"
-    echo "CHOICES: Developper, Else"
+    echo "CHOICES: Developper, Else, FilesExist;"
     exit
 fi
 
@@ -16,8 +16,23 @@ tmp=`pwd`
 cd $bug/ 
 export ALWAYS_CORRECT_QUEX_PATH=$QUEX_PATH
 if [[ $1 == "Else" ]]; then
-   export QUEX_PATH=$1
+    export QUEX_PATH=$1
+    make all
+elif [[ $1 == "Developper" ]]; then
+    make all
+else
+    echo
+    echo This test checks wether all files in QUEX_CORE exist
+    echo
+
+    make all > files.txt
+    for file in `cat files.txt`; do 
+        if ! test -a $file; then
+            echo "[FAIL] $file does not exist"
+        else
+            echo "  [OK] $file exists"
+        fi 
+    done
 fi
-make all
 
 cd $tmp

@@ -1,10 +1,10 @@
 import quex.core_engine.generator.languages.core   as languages
 from   quex.core_engine.generator.languages.core   import __nice
-import quex.core_engine.generator.transition_block as transition_block
-import quex.core_engine.generator.transition       as transition
-import quex.core_engine.generator.acceptance_info  as acceptance_info
-import quex.core_engine.generator.drop_out         as drop_out
-from   quex.input.setup                            import setup as Setup
+import quex.core_engine.generator.state_coder.transition_block as transition_block
+import quex.core_engine.generator.state_coder.transition       as transition
+import quex.core_engine.generator.state_coder.acceptance_info  as acceptance_info
+import quex.core_engine.generator.state_coder.drop_out         as drop_out
+from   quex.input.setup                                        import setup as Setup
 from copy import deepcopy
 
 LanguageDB = Setup.language_db

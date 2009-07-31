@@ -15,13 +15,27 @@
 #if ! defined (__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
+    TEMPLATE_IN(InputHandleT) void
+    QuexBufferFiller_Converter_construct(TEMPLATED(QuexBufferFiller_Converter)* me, 
+                                         InputHandleT*     input_handle,
+                                         QuexConverter*    converter,
+                                         const char*       FromCoding,
+                                         const char*       ToCoding,
+                                         size_t            RawBufferSize);
+    TEMPLATE_IN(InputHandleT) void  
+    QuexBufferFiller_Converter_init(TEMPLATED(QuexBufferFiller_Converter)* me, 
+                                    InputHandleT*     input_handle,
+                                    QuexConverter*    converter,
+                                    const char*       FromCoding,
+                                    const char*       ToCoding,
+                                    size_t            RawBufferSize);
     TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_tell_character_index(QuexBufferFiller* alter_ego);
     TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_seek_character_index(QuexBufferFiller* alter_ego, 
                                                                                      const size_t      CharacterIndex); 
     TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_read_characters(QuexBufferFiller*    alter_ego,
                                                                                 QUEX_TYPE_CHARACTER* start_of_buffer, 
                                                                                 const size_t         N);
-    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_destroy(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_destruct(QuexBufferFiller* alter_ego);
 
 
     TEMPLATE_IN(InputHandleT)    TEMPLATED(QuexBufferFiller_Converter)*
@@ -35,12 +49,37 @@ namespace quex {
         TEMPLATED(QuexBufferFiller_Converter)*  me = TEMPLATED(MemoryManager_BufferFiller_Converter_allocate)();
         __quex_assert(me != 0x0);
 
+        QuexBufferFiller_Converter_construct(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
+
+        return me;
+
+    }
+
+    TEMPLATE_IN(InputHandleT) void
+    QuexBufferFiller_Converter_construct(TEMPLATED(QuexBufferFiller_Converter)* me, 
+                                         InputHandleT*     input_handle,
+                                         QuexConverter*    converter,
+                                         const char*       FromCoding,
+                                         const char*       ToCoding,
+                                         size_t            RawBufferSize)
+    {
         __QuexBufferFiller_init_functions(&me->base,
                                           TEMPLATED(QuexBufferFiller_Converter_tell_character_index),
                                           TEMPLATED(QuexBufferFiller_Converter_seek_character_index), 
                                           TEMPLATED(QuexBufferFiller_Converter_read_characters),
-                                          TEMPLATED(QuexBufferFiller_Converter_destroy));
+                                          TEMPLATED(QuexBufferFiller_Converter_destruct));
 
+        QuexBufferFiller_Converter_init(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
+    }
+
+    TEMPLATE_IN(InputHandleT) void  
+    QuexBufferFiller_Converter_init(TEMPLATED(QuexBufferFiller_Converter)* me, 
+                                    InputHandleT*     input_handle,
+                                    QuexConverter*    converter,
+                                    const char*       FromCoding,
+                                    const char*       ToCoding,
+                                    size_t            RawBufferSize)
+    {
         me->ih = input_handle;
 
         /* Initialize the conversion operations                                             */
@@ -61,9 +100,21 @@ namespace quex {
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
-
-        return me;
     }
+
+    TEMPLATE_IN(InputHandleT) void   
+    QuexBufferFiller_Converter_destruct(QuexBufferFiller* alter_ego)
+    { 
+        TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
+        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+
+        me->converter->delete_self(me->converter);
+
+        MemoryManager_BufferFiller_RawBuffer_free(me->raw_buffer.begin); 
+
+        MemoryManager_BufferFiller_Converter_free(me);
+    }
+
 
     TEMPLATE_IN(InputHandleT) size_t 
     QuexBufferFiller_Converter_read_characters(QuexBufferFiller*      alter_ego,
@@ -255,20 +306,6 @@ namespace quex {
         }
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
     }
-
-    TEMPLATE_IN(InputHandleT) void   
-    QuexBufferFiller_Converter_destroy(QuexBufferFiller* alter_ego)
-    { 
-        TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
-        QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
-
-        me->converter->delete_self(me->converter);
-
-        MemoryManager_BufferFiller_RawBuffer_free(me->raw_buffer.begin); 
-
-        MemoryManager_BufferFiller_Converter_free(me);
-    }
-
 
     TEMPLATE_IN(InputHandleT) size_t 
     __QuexBufferFiller_Converter_fill_raw_buffer(TEMPLATED(QuexBufferFiller_Converter)*  me) 
