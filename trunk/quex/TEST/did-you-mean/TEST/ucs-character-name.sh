@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 if [[ $1 == "--hwut-info" ]]; then
     echo "UCS Character Code Names;"
-    echo "CHOICES: 1, 2, 3;"
+    echo "CHOICES: 1;"
     exit
 fi
 
