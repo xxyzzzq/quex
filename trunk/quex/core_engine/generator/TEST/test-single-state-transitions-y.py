@@ -23,9 +23,9 @@ Setup.language_db = languages.db["Python"]
 from quex.core_engine.interval_handling import NumberSet, Interval
 from quex.core_engine.state_machine.core import State, StateMachine
 
-import quex.core_engine.generator.languages.core as languages
-import quex.core_engine.generator.transition_block    as transition_block
-from   quex.core_engine.generator.state_machine_decorator import StateMachineDecorator
+import quex.core_engine.generator.languages.core               as languages
+import quex.core_engine.generator.state_coder.transition_block as transition_block
+from   quex.core_engine.generator.state_machine_decorator      import StateMachineDecorator
 
 if "--hwut-info" in sys.argv:
     print "Single State: Extensive Transition Code Generation II"

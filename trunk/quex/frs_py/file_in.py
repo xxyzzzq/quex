@@ -585,7 +585,10 @@ def error_msg_file_not_found(FileName, Comment="", FH=-1, LineN=None):
     else:               suffix = "in directory\n'%s'." % directory
     comment = ""
     if Comment != "": comment = "(%s) " % Comment
-    files_in_directory = os.listdir(directory)
+    try:
+        files_in_directory = os.listdir(directory)
+    except:
+        error_msg("File '%s' (%s) not found." % (FileName, comment), FH, LineN)
     verify_word_in_list(FileName, files_in_directory, 
                         "File '%s' %snot found%s" % (FileName, comment, suffix), FH, LineN)
     

@@ -27,7 +27,7 @@ SETUP_INFO = {
     #                                                                              # be included in generated file.
     "input_lexer_class_friends":      [["--friend-class"],                   LIST],
     "input_mode_files":               [["-i", "--mode-files"],               LIST],
-    "token_class_file":               [["--token-class-file"],               "quex/code_base/Token"],
+    "token_class_file":               [["--token-class-file"],               "quex/code_base/token/Token"],
     "token_type_disable_stringless_check_f": [["--token-type-no-stringless-check", "--ttnsc"], FLAG],
     "input_token_counter_offset":     [["--token-offset"],                   "10000"],
     "token_id_termination":           [["--token-id-termination"],           "0"],

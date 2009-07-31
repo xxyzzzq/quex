@@ -3,7 +3,7 @@
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_MODE__
 
 #include<quex/code_base/definitions>
-#include<quex/code_base/template/Analyser>
+#include<quex/code_base/analyzer/Analyser>
 
 #include<quex/code_base/temporary_macros_on>
 

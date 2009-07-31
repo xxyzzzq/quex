@@ -25,7 +25,7 @@ namespace quex {
      *                     memory. In this case, the user needs to call the following function
      *                     by hand in order to setup the memory:
      *
-     *                     QuexBufferMemory_init(analyse->buffer._memory, (uint8_t*)MyMemoryP, MyMemorySize); 
+     *                     QuexBufferMemory_construct(analyse->buffer._memory, (uint8_t*)MyMemoryP, MyMemorySize); 
      */
     {
 #       ifdef QUEX_OPTION_ASSERTS

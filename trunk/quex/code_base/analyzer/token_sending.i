@@ -2,7 +2,7 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_SENDING_H__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_SENDING_H__
 
-#include <quex/code_base/template/TokenPolicy>
+#include <quex/code_base/token/TokenPolicy>
 
 namespace quex { 
 

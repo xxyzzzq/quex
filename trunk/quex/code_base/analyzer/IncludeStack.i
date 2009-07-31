@@ -2,7 +2,7 @@
 #ifndef __INCLUDE_GUARD__QUEX__INCLUDE_STACK_I__
 #define __INCLUDE_GUARD__QUEX__INCLUDE_STACK_I__
 
-#include <quex/code_base/template/Analyser>
+#include <quex/code_base/analyzer/Analyser>
 namespace quex { 
 
     template <class InputHandleT> inline void    

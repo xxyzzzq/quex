@@ -1,9 +1,9 @@
 // -*- C++ -*-   vim: set syntax=cpp:
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
-#include <quex/code_base/template/count_common>
+#include <quex/code_base/analyzer/count_common>
 
-#include <quex/code_base/template/Counter>
+#include <quex/code_base/analyzer/Counter>
 
 namespace quex { 
 // NOTE: Quex is pretty intelligent in choosing the right function

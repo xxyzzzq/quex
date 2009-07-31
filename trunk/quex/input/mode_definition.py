@@ -4,12 +4,12 @@ from   quex.exception               import RegularExpressionException
 import quex.lexer_mode                as lexer_mode
 import quex.input.regular_expression  as regular_expression
 import quex.input.code_fragment       as code_fragment
-from   quex.core_engine.generator.action_info import CodeFragment
-from   quex.core_engine.generator.skip_code import create_skip_code, create_skip_range_code
-import quex.core_engine.state_machine.index as index
-from   quex.core_engine.state_machine.core  import StateMachine
+from   quex.core_engine.generator.action_info                    import CodeFragment
+from   quex.core_engine.generator.state_coder.skipper_core       import create_skip_code, create_skip_range_code
+import quex.core_engine.state_machine.index                      as index
+from   quex.core_engine.state_machine.core                       import StateMachine
 import quex.core_engine.regular_expression.snap_character_string as snap_character_string
-from   quex.input.setup    import setup as Setup
+from   quex.input.setup                                          import setup as Setup
 
 def parse(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)

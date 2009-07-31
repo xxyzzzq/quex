@@ -4,7 +4,7 @@
 #ifdef  QUEX_OPTION_POST_CATEGORIZER
 
 #include <quex/code_base/MemoryManager>
-#include <quex/code_base/template/PostCategorizer>
+#include <quex/code_base/analyzer/PostCategorizer>
 
 namespace quex {
 

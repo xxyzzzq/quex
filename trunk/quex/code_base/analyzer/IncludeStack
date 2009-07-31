@@ -2,8 +2,8 @@
 #ifndef __INCLUDE_GUARD__QUEX__TEMPLATE__INCLUDE_STACK
 #define __INCLUDE_GUARD__QUEX__TEMPLATE__INCLUDE_STACK
 
-#include <quex/code_base/template/Analyser>
-#include <quex/code_base/template/QuexMode>
+#include <quex/code_base/analyzer/Analyser>
+#include <quex/code_base/analyzer/QuexMode>
 
 namespace quex { 
 

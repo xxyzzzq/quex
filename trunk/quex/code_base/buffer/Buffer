@@ -47,6 +47,9 @@ namespace quex {
          *       it is necessary to have an '_end_of_file_p' that is 0x0 if end of file
          *       is not inside the buffer.                                            */
         QUEX_TYPE_CHARACTER*  _end_of_file_p; 
+
+        /* Store whether the memory has an external owner */
+        bool                  _external_owner_f;
     } QuexBufferMemory;
 
     QUEX_INLINE void    QuexBufferMemory_setup(QuexBufferMemory*, 
@@ -63,7 +66,6 @@ namespace quex {
     
     typedef struct { 
         QuexBufferMemory      _memory;
-        bool                  _memory_has_external_owner_f;
 
         /* (*) Iterator positions for lexical analysis */
         QUEX_TYPE_CHARACTER*  _input_p;
@@ -141,11 +143,6 @@ namespace quex {
 
     QUEX_INLINE void
     __Buffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
-
-    QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory* me, 
-                                            QUEX_TYPE_CHARACTER* memory, size_t Size);
-
-
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

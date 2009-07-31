@@ -15,9 +15,12 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me, bool OnlyResetF); 
-    QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*    me, 
-                                            QUEX_TYPE_CHARACTER* memory, size_t Size);
+    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me); 
+    QUEX_INLINE void  QuexBufferMemory_construct(QuexBufferMemory*    me, 
+                                                 QUEX_TYPE_CHARACTER* memory, size_t Size);
+    QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*     me, 
+                                            QUEX_TYPE_CHARACTER*  InputMemory, size_t  MemorySize);
+    QUEX_INLINE void  QuexBufferMemory_destruct(QuexBufferMemory* me);
 
     TEMPLATE_IN(InputHandleT) void
     QuexBuffer_construct(QuexBuffer*           me, 
@@ -32,22 +35,21 @@ namespace quex {
          *              != 0x0 => input via stream (spec. by input_handle)
          *
          * InputMemory != 0x0  => run directly on specified memory.
-         *             == 0x0  => get memory from memory manager.           */ 
+         *             == 0x0  => get memory from memory manager.                              */ 
     {
-        QUEX_TYPE_CHARACTER* memory = InputMemory;
         __quex_assert(MemorySize > 2);
 #       ifdef QUEX_OPTION_ASSERTS
         if( input_handle != 0x0 ) __quex_assert(InputMemory == 0x0 );
         if( InputMemory  != 0x0 ) { 
             __quex_assert(input_handle == 0x0 );
-            /* If the input memory is provided, the content **must** be propperly set up. */
+            /* If the input memory is provided, the content **must** be propperly set up.      */
             QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(InputMemory + 1, InputMemory + MemorySize - 1);
         }
 #       endif
 
-        if( memory == 0x0 ) memory = MemoryManager_BufferMemory_allocate(MemorySize);
-
-        QuexBufferMemory_init(&(me->_memory), memory, MemorySize);      
+        /* No allocation of the base 'me->_memory' since it is a plain member of 'QuexBuffer'.
+         * InputMemory == 0x0 => interact with memory manager to get memory.                   */
+        QuexBufferMemory_construct(&(me->_memory), InputMemory, MemorySize);      
 
         if( CharacterEncodingName != 0x0 ) {
 
@@ -73,37 +75,52 @@ namespace quex {
             me->filler = (input_handle == 0x0) ? 0x0 : (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
         }
 
-        if( InputMemory != 0x0 ) {
-            me->_memory_has_external_owner_f = true;
-            /* Assume by default, that the memory is filled up to the limit. If this is not
-             * the case, the value must be adapted.                                         */
-            QuexBuffer_end_of_file_set(me, me->_memory._back);
-        } else {
-            me->_memory_has_external_owner_f = false;
-            QuexBuffer_end_of_file_unset(me);
-        }
-        
         /* Set byte order before 'init' so that the initial load can be done propperly */
         me->_byte_order_reversion_active_f = false;
 
-        QuexBuffer_init(me, /* OnlyResetF */ false);
+        QuexBuffer_init(me);
+
+        if( me->filler != 0x0 ) {
+            /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
+             * assumes, that the user fills/has filled it with whatever his little heart desired.         */
+            QuexBufferFiller_initial_load(me);
+        }
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
+    QUEX_INLINE void
+    QuexBuffer_init(QuexBuffer*  me)
+    {
+        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
+        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
+        /* NOTE: The terminating zero is stored in the first character **after** the  
+         *       lexeme (matching character sequence). The begin of line pre-condition  
+         *       is concerned with the last character in the lexeme, which is the one  
+         *       before the 'char_covered_by_terminating_zero'.                          */
+        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
+        me->_content_character_index_end   = 0;
+#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
+#       endif
+
+        me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above)             */
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+    }
 
     QUEX_INLINE void
     QuexBuffer_destruct(QuexBuffer* me)
     {
-        if( me->filler != 0x0 ) me->filler->_destroy(me->filler); 
+        if( me->filler != 0x0 ) me->filler->destruct(me->filler); 
 
-        if( me->_memory_has_external_owner_f == false ) 
-            MemoryManager_BufferMemory_free(me->_memory._front);
+        QuexBufferMemory_destruct(&me->_memory);
     }
 
     QUEX_INLINE void
-    QuexBuffer_init(QuexBuffer*  me, bool ResetF)
+    QuexBuffer_reset(QuexBuffer* me)
     {
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
@@ -118,33 +135,20 @@ namespace quex {
 #       endif
 
         if( me->filler != 0x0 ) {
-            if( ResetF ) {
-                /* We only have to reset the input stream, if we are not at position zero */
-                if( me->_content_character_index_begin != 0 ) {
-                    __quex_assert(me->filler != 0x0);
-                    me->filler->seek_character_index(me->filler, 0);
-                    me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above) */
-                    QuexBufferFiller_initial_load(me);      /* _content_character_index_begin == 0 in assert  */
-                } else {
-                    /* In the reset case, the end of file pointer has to remain, if no reload happens.        */
-                }
+            /* We only have to reset the input stream, if we are not at position zero */
+            if( me->_content_character_index_begin != 0 ) {
+                __quex_assert(me->filler != 0x0);
+                me->filler->seek_character_index(me->filler, 0);
+                me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above) */
+                QuexBufferFiller_initial_load(me);      /* _content_character_index_begin == 0 in assert  */
             } else {
-                /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
-                 * assumes, that the user fills/has filled it with whatever his little heart desired.         */
-                me->_content_character_index_begin = 0;     /* Cannot be (re-)initialized earlier, see above. */
-                QuexBufferFiller_initial_load(me);
+                /* In the reset case, the end of file pointer has to remain, if no reload happens.        */
             }
         }
         me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above)             */
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
-    }
-
-    QUEX_INLINE void
-    QuexBuffer_reset(QuexBuffer* me)
-    {
-        QuexBuffer_init(me, /* ResetF */ true);
     }
 
     QUEX_INLINE void
@@ -451,37 +455,6 @@ namespace quex {
             QuexBuffer_move_backward(me, CurrentCharacterIndex - CharacterIndex);
     }
 
-    QUEX_INLINE void 
-    QuexBufferMemory_init(QuexBufferMemory* me, 
-                          QUEX_TYPE_CHARACTER* memory, size_t Size) 
-    {
-        /* The buffer memory can be initially be set to '0x0' if no buffer filler
-         * is specified. Then the user has to call this function on his own in order
-         * to specify the memory on which to rumble. */
-        __quex_assert((Size != 0) || (memory == 0x0)); 
-
-        if( Size == 0 ) { 
-            me->_front = me->_back = 0;
-            return;
-        }
-        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
-         * one character to be read in forward direction. */
-        __quex_assert(Size > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
-        me->_front    = memory;
-        me->_back     = memory + (Size - 1);
-        /* NOTE: We cannot set the memory all to zero at this point in time. It may be that the
-         *       memory is already filled with content (e.g. by an external owner). The following
-         *       code has deliberately be disabled:
-         *           #ifdef QUEX_OPTION_ASSERTS
-         *           __QUEX_STD_memset(me->_front, 0, Size);
-         *           #endif 
-         *       When the buffer uses a buffer filler, then it is a different ball game. Please,
-         *       consider QuexBuffer_init().
-         */
-        *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
-        *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
-    }
-
     QUEX_INLINE void          
     QuexBuffer_move_away_passed_content(QuexBuffer* me)
     /* PURPOSE: Moves buffer content that has been passed by out of the buffer.
@@ -568,6 +541,65 @@ namespace quex {
             }
             break;
         }
+    }
+
+    QUEX_INLINE void 
+    QuexBufferMemory_construct(QuexBufferMemory* me, 
+                               QUEX_TYPE_CHARACTER* InputMemory, size_t Size) 
+    {
+        if( InputMemory == 0x0 ) { 
+            /* The actual 'memory chunk' is an 'owned member resource' accessed by pointer.
+             * Thus, it is allocated in the constructor.                                    */
+            me->_front = MemoryManager_BufferMemory_allocate(Size);
+            QuexBufferMemory_init(me, /* InputMemory */ 0x0, Size); 
+        } else { 
+            /* The provided memory is externally owned. */
+            QuexBufferMemory_init(me, InputMemory, Size); 
+        }
+
+    }
+
+    QUEX_INLINE void 
+    QuexBufferMemory_init(QuexBufferMemory*     me, 
+                          QUEX_TYPE_CHARACTER*  InputMemory, size_t  MemorySize) 
+    {
+        /* Min(Size) = 2 characters for buffer limit code (front and back) + at least
+         * one character to be read in forward direction. */
+        __quex_assert(MemorySize > QUEX_SETTING_BUFFER_MIN_FALLBACK_N + 2);
+
+        if( InputMemory != 0x0 ) {
+            /* Assume by default, that the memory is filled up to the limit. If this is not
+             * the case, the value must be adapted.                                         */
+            me->_front            = InputMemory;
+            me->_external_owner_f = true;
+            me->_back             = me->_front + (MemorySize - 1);
+            me->_end_of_file_p    = me->_back;
+        } 
+        else {
+            /* If the memory is not coming from outside, then it is the task of the con-
+             * structor to allocate 'owned' members. It must be assumed that the _front 
+             * pointer has been set.                                                        */
+#           ifdef QUEX_OPTION_ASSERTS
+            __QUEX_STD_memset(me->_front + 1, 0xFF, MemorySize - 2);
+#           endif 
+            me->_external_owner_f = false;
+            me->_end_of_file_p    = 0x0;
+            me->_back             = me->_front + (MemorySize - 1);
+        }
+
+        *(me->_front) = QUEX_SETTING_BUFFER_LIMIT_CODE;
+        *(me->_back)  = QUEX_SETTING_BUFFER_LIMIT_CODE;
+    }
+
+    QUEX_INLINE void 
+    QuexBufferMemory_destruct(QuexBufferMemory* me) 
+    {
+        if( me->_external_owner_f == false && me->_front != (QUEX_TYPE_CHARACTER*)0x0 ) {
+            MemoryManager_BufferMemory_free(me->_front);
+            me->_external_owner_f = false;
+        }
+
+        me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
     }
 
 

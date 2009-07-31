@@ -24,7 +24,7 @@ def do(Modes):
 def write_engine_header(Modes):
 
     QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
-                                   + "/template/AnalyzerTemplate").replace("//","/")
+                                   + "/analyzer/CppTemplate.txt").replace("//","/")
     CoreEngineDefinitionsHeader = (Setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
     QuexClassHeaderFileOutput   = Setup.output_file_stem
     LexerClassName              = Setup.output_engine_name

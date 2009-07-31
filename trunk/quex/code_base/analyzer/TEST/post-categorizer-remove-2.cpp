@@ -4,7 +4,7 @@
 #define QUEX_TYPE_CHARACTER char
 #define QUEX_TYPE_TOKEN_ID  int
 #define QUEX_OPTION_POST_CATEGORIZER
-#include <quex/code_base/template/PostCategorizer.i>
+#include <quex/code_base/analyzer/PostCategorizer.i>
 
 using namespace quex;
 void post_categorizer_setup(QuexPostCategorizer* me, int Seed);

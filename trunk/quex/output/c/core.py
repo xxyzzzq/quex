@@ -13,7 +13,7 @@ import quex.output.c.mode_classes as mode_classes
 def do(Modes, setup):
 
     QuexClassHeaderFileTemplate = (setup.QUEX_TEMPLATE_DB_DIR 
-                               + "/template/lexical_analyzer_class-C").replace("//","/")
+                               + "/analyzer/lexical_analyzer_class-C").replace("//","/")
     CoreEngineDefinitionsHeader = (setup.QUEX_TEMPLATE_DB_DIR + "/core_engine/").replace("//","/")
     if setup.plain_memory_f: CoreEngineDefinitionsHeader += "definitions-quex-buffer.h"
     else:                    CoreEngineDefinitionsHeader += "definitions-plain-memory.h"

@@ -3,8 +3,6 @@ from quex.frs_py.file_in import is_identifier_start, \
                                 open_file_or_die, \
                                 write_safely_and_close
 
-import quex.core_engine.generator.skip_code as skip_code
-
 class CodeFragment:
     def __init__(self, Code="", RequireTerminatingZeroF=False):
         self.__code = Code
