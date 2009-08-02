@@ -1,25 +1,25 @@
-<test-database execution-time-sec="11.05" date="Sat Aug  1 12:45:34 2009">
+<test-database execution-time-sec="12.14" date="Sun Aug  2 12:10:29 2009">
     <last-used-diff-display-program name=""/>
-    <test title="PRIORITY-MARK or DELETION on not existing pattern." make-required="True" time-sum-sec="1.42"> 
+    <test title="PRIORITY-MARK or DELETION on not existing pattern." make-required="True" time-sum-sec="1.90"> 
         <application file-name="unvalid-marks.sh" info-request-time="1246135307L"/>
         <choice-list number="4" same_result="False">
-           <choice name="PRIORITY-good" result="OK" time_sec="0.36" crc="1735324169"/>
-           <choice name="PRIORITY-fail" result="OK" time_sec="0.20" crc="-1755387854"/>
-           <choice name="DELETION-good" result="OK" time_sec="0.56" crc="851887329"/>
-           <choice name="DELETION-fail" result="OK" time_sec="0.31" crc="-1866089342"/>
+           <choice name="PRIORITY-good" result="OK" time_sec="1.00" crc="1735324169"/>
+           <choice name="PRIORITY-fail" result="OK" time_sec="0.24" crc="-1755387854"/>
+           <choice name="DELETION-good" result="OK" time_sec="0.40" crc="851887329"/>
+           <choice name="DELETION-fail" result="OK" time_sec="0.26" crc="-1866089342"/>
         </choice-list>
     </test>
     <group name="Precedence">
-        <test title="Larger Inheritance Tree" make-required="True" time-sum-sec="5.76"> 
+        <test title="Larger Inheritance Tree" make-required="True" time-sum-sec="6.11"> 
             <application file-name="large-tree.sh" info-request-time="1247207770L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="5.76" crc="-1542010050"/>
+               <choice name="" result="OK" time_sec="6.11" crc="-1542010050"/>
             </choice-list>
         </test>
-        <test title="Derived before Base" make-required="True" time-sum-sec="3.86"> 
+        <test title="Derived before Base" make-required="True" time-sum-sec="4.13"> 
             <application file-name="derived-before-base.sh" info-request-time="1246574932L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.86" crc="-944360231"/>
+               <choice name="" result="OK" time_sec="4.13" crc="-944360231"/>
             </choice-list>
         </test>
     </group>

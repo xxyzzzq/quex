@@ -58,14 +58,6 @@ namespace quex {
     QUEX_INLINE void  MemoryManager_TokenArray_free(QUEX_TYPE_TOKEN* memory, size_t Size);
 #   endif
 
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    QUEX_INLINE  CLASS_MEMENTO_TAG*
-    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)();
-
-    QUEX_INLINE void
-    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _free)(CLASS_MEMENTO_TAG* memory);
-#   endif
-
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
     QUEX_INLINE  QuexPostCategorizerNode*  MemoryManager_PostCategorizerNode_allocate(size_t RemainderSize);
     QUEX_INLINE  void                      MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode*);

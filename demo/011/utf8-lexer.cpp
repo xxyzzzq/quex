@@ -10,7 +10,7 @@ main(int argc, char** argv)
 {        
     using namespace quex;
 
-    Token            token;
+    Token    token;
     UTF8Lex  qlex("example-utf8.txt");
     
 

@@ -1,4 +1,6 @@
 // -*- C++ -*-   vim: set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__COUNTER_I__
+#define __INCLUDE_GUARD__QUEX__COUNTER_I__
 // NOTE: Quex is pretty intelligent in choosing the right function
 //       to count line and column numbers. If, for example, a pattern
 //       does not contain newlines, then it simply adds the LexemeLength
@@ -193,3 +195,4 @@ Counter::__shift_end_values_to_start_values()
 }
 
 }
+#endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */

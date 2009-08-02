@@ -229,6 +229,7 @@ $$QUEX_MODE_ID_DEFINITIONS$$
 #   define CLASS_MEMENTO_TAG  struct $$LEXER_CLASS_NAME$$Memento_tag
 #   define CLASS_MEMENTO      $$LEXER_CLASS_NAME$$Memento
 #endif
+#define CLASS_ACCUMULATOR     $$LEXER_CLASS_NAME$$Accumulator
 
 $$TOKEN_CLASS_DECLARATION$$
 
@@ -257,6 +258,7 @@ $$USER_DEFINED_HEADER$$
 #include<quex/code_base/buffer/BufferFiller>
 
 #include <quex/code_base/MemoryManager>
+#include <quex/code_base/MemoryManager_analyzer_specific>
 #include <quex/code_base/analyzer/QuexMode>
 #include <quex/code_base/analyzer/Analyser>
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
@@ -494,7 +496,7 @@ $$MODE_OBJECT_MEMBERS$$
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
     public:
         // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
-        Accumulator        accumulator;
+        CLASS_ACCUMULATOR        accumulator;
 #       endif
     private:
         CounterType        counter;
@@ -752,6 +754,8 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #include <quex/code_base/analyzer/misc.i>
 #include <quex/code_base/analyzer/buffer_access.i>
 
+#include <quex/code_base/MemoryManager_analyzer_specific.i>
+
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
@@ -760,7 +764,9 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #undef CLASS
 #ifdef    QUEX_OPTION_INCLUDE_STACK
 #   undef CLASS_MEMENTO
+#   undef CLASS_MEMENTO_TAG
 #endif
+#undef CLASS_ACCUMULATOR        
 
 #include <quex/code_base/analyzer/Analyser.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
