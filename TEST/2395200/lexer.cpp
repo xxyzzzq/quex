@@ -10,17 +10,17 @@ int
 main(int argc, char** argv) 
 {        
     // we want to have error outputs in stdout, so that the unit test could see it.
-    quex::Token                    Token;
+    quex::Token                    token;
     ifstream                       istr("example.txt");
     quex::StrangeStream<ifstream>  strange_stream(&istr);
     quex::Simple                   qlex(&strange_stream);
 
     cout << "## An Assert-Abortion might be an intended element of the experiment.\n";
     do {
-        qlex.receive(&Token);
-        if( Token.type_id() != QUEX_TKN_TERMINATION ) { cout << string(Token) << endl; } 
-        else                                          { cout << Token.type_id_name() << endl; }
-    } while( Token.type_id() != QUEX_TKN_TERMINATION );
+        qlex.receive(&token);
+        if( token.type_id() != QUEX_TKN_TERMINATION ) { cout << string(token) << endl; } 
+        else                                          { cout << token.type_id_name() << endl; }
+    } while( token.type_id() != QUEX_TKN_TERMINATION );
 
     return 0;
 }
