@@ -1,0 +1,11 @@
+
+mode MY_MODE 
+: <skip: [ \n\t]>
+{ 
+    Max                      => MAX_TKN_ME________(Lexeme);
+    Moritz                   => MAX_TKN_MY_BROTHER(Lexeme);
+    Säge|Tücke|Brücke|Lücke  => MAX_TKN_SUBJECT___(Lexeme);
+    [a-zäöüA-Z]+             => MAX_TKN_UKNOWN____(Lexeme);
+    [,.!]                    => MAX_TKN_MARK______(Lexeme);
+    Sägen                    => MAX_TKN_VERB______(Lexeme);
+}
