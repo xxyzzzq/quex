@@ -103,3 +103,7 @@ the suffix enables something, the option with the suffix disables the 'something
    line counting is disabled the corresponding stamping is also disabled,
    anyway.
 
+.. cmacro::  QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED
+
+   Disables a warning message that is printed when multiple lexical analyzers 
+   are included in a single source file and all of them use the same token type.

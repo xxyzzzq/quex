@@ -1,6 +1,13 @@
-// -*- C++ -*- vim:set syntax=cpp:
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_SENDING_H__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_SENDING_H__
+/* -*- C++ -*-   vim: set syntax=cpp:
+ *
+ * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
+ *                      LEXICAL ANALYZERS
+ *
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_SENDING
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_TOKEN_SENDING            */
+#ifndef CLASS
+#   error "This file requires the macro 'CLASS' to be defined."
+#endif
 
 #include <quex/code_base/token/TokenPolicy>
 
@@ -86,4 +93,3 @@ namespace quex {
 
 }
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_SENDING_H__ */

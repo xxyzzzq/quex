@@ -1,4 +1,7 @@
 // -*- C++ -*- vim:set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__BUFFER_ACCESS_I
+#define __INCLUDE_GUARD__QUEX__BUFFER_ACCESS_I
+
 namespace quex { 
 
     inline size_t
@@ -259,3 +262,5 @@ namespace quex {
     { buffer._input_p = Adr; }
 
 }
+
+#endif /* __INCLUDE_GUARD__QUEX__BUFFER_ACCESS_I */

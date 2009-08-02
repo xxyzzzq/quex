@@ -9,7 +9,8 @@ from quex.GetPot import GetPot
 from quex.frs_py.file_in  import open_file_or_die, \
                                  write_safely_and_close, \
                                  delete_comment, \
-                                 extract_identifiers_with_specific_prefix
+                                 extract_identifiers_with_specific_prefix, \
+                                 get_include_guard_extension
 import quex.lexer_mode             as lexer_mode
 from   quex.frs_py.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
@@ -44,8 +45,8 @@ file_str = \
 // DATE: $$DATE$$
 //
 /////////////////////////////////////////////////////////////////////////////////////////
-#ifndef __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_$$DATE_IG$$__
-#define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_$$DATE_IG$$__
+#ifndef __INCLUDE_GUARD__QUEX__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
+#define __INCLUDE_GUARD__QUEX__AUTO_TOKEN_IDS_$$INCLUDE_GUARD_EXT$$__
 
 #include<cstdio> // for: 'std::sprintf'
 
@@ -63,6 +64,15 @@ $$CONTENT$$
 func_str = \
 """
 $$NAMESPACE_OPEN$$
+
+#ifdef __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
+#   ifndef QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED
+#      warning "The member function 'map_id_to_name(...)' has been defined for a different lexical analyzer before. This may result in incorrect token id names. This should only occur when multiple analyzers are accessed in one single source file."
+#      warning "Define the macro QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED to disable this warning."
+#   endif
+#else
+#   define __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
+
     inline const char*
     QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
     {
@@ -83,6 +93,7 @@ $$TOKEN_NAMES$$
 $$TOKEN_ID_CASES$$
        }
     }
+#endif
 $$NAMESPACE_CLOSE$$
 """
 
@@ -161,15 +172,12 @@ def do(global_setup):
     if lexer_mode.token_type_definition != None: 
         name_space = lexer_mode.token_type_definition.name_space
     
-    t = time.localtime()
-    date_str = "%iy%im%id_%ih%02im%02is" % (t[0], t[1], t[2], t[3], t[4], t[5])
-
     file_str = file_str.replace("$$CONTENT$$", func_str)
     content = blue_print(file_str,
                          [["$$TOKEN_ID_DEFINITIONS$$",        token_id_txt],
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(global_setup)],
-                          ["$$DATE_IG$$",                     date_str],
+                          ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(global_setup.output_file_stem)],
                           ["$$NAMESPACE_OPEN$$",              LanguageDB["$namespace-open"](name_space)],
                           ["$$NAMESPACE_CLOSE$$",             LanguageDB["$namespace-close"](name_space)],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],

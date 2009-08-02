@@ -1,6 +1,6 @@
 Essential: no
 Architecture: i386
-Description: Quex lexical analyser
+Description: Quex Lexical Analyser Generator
 Provides: quex
 Package: quex
 Section: misc
@@ -9,9 +9,16 @@ Maintainer: Frank-Rene Schaefer
 Priority: optional
 Version: ##QUEX_VERSION-##PACKAGE_VERSION
 Installed-Size: 22989
-Description: A Mode Oriented Directly Coded Lexical Analyser Generator
+Description: A Fast Universal Lexical Analyser Generator
              
              Quex is a lexical analyzer generator that produces
-             a directly coded lexical analyzer engine.
+             a directly coded lexical analyzer engine. Special 
+             features are:
+
+             -- sophisticated buffer handling.
+             -- analyzer modes that can be inherited.
+             -- 'event' handlers for modes.
+             -- Unicode support as well as a large variety of 
+                character encodings.
              
              http://quex.org/
