@@ -1,0 +1,12 @@
+quex -i error-3.qx -o Simple
+error-3.qx:5:warning: Token id 'QUEX_TKN_WORD' defined implicitly.
+error-3.qx:6:warning: Token id 'QUEX_TKN_QUOTE_S_PRE_COND' defined implicitly.
+error-3.qx:7:warning: Token id 'QUEX_TKN_OTHER' defined implicitly.
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+----------------------------------
+'silly's
+----------------------------------
+OTHER ''' 
+WORD 'silly' 
+QUOTE_S_PRE_COND ''s' 
+<TERMINATION> '' 
