@@ -33,6 +33,7 @@ else
             echo "  [OK] $file exists"
         fi 
     done
+    rm -rf files.txt
 fi
 
 cd $tmp
