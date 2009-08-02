@@ -186,7 +186,7 @@ latex_logo = "figures/logo.png"
 
 # Additional stuff for the LaTeX preamble.
 latex_preamble = """
- \usepackage{ucs}
+%% \usepackage{ucs}
 """
 
 # Documents to append as an appendix to all manuals.

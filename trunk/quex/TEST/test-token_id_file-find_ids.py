@@ -4,8 +4,8 @@ import os
 
 sys.path.append(os.environ["QUEX_PATH"])
 
-from quex.token_id_maker import parse_token_id_file
-from quex.lexer_mode     import token_id_db
+from quex.output.cpp.token_id_maker import parse_token_id_file
+from quex.lexer_mode                import token_id_db
 
 
 if "--hwut-info" in sys.argv:

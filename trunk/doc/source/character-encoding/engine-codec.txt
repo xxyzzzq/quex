@@ -227,3 +227,17 @@ with the following member functions.
    void     byte_order_reversion_enable();
    void     byte_order_reversion_disable();
 
+
+Summary
+#######
+
+The command line flag ``--codec`` allows to specify the internal coding of the
+generated lexical analyzer. This enables lexical analyzers that run fast on
+codecs different from Unicode or ASCII. However, there are two drawbacks. First
+of all not all possible codecs are supported[#f1]_. Second, once an engine has
+been created for a particular codec, the codec is fixed and the engine can only
+run on this codec. Thus subsequent sections focuss on the 'converter approach'
+where the internal engine remains running on Unicode, but the buffer filler
+performs the conversion. It is not run time efficient as the internal engine
+codec, but more flexible, in case that the generated analyzer has to deal with
+a wide range of codecs.
