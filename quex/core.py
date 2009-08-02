@@ -5,11 +5,11 @@ import sys
 from   quex.frs_py.file_in import error_msg, write_safely_and_close
 
 from   quex.input.setup import setup as Setup
-import quex.token_id_maker                      as token_id_maker
+import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.lexer_mode                          as lexer_mode
 from   quex.core_engine.generator.action_info   import UserCodeFragment_straighten_open_line_pragmas, \
                                                        CodeFragment
-from quex.token_id_maker                        import TokenInfo
+from   quex.output.cpp.token_id_maker           import TokenInfo
 
 import quex.core_engine.generator.core          as     generator
 from   quex.core_engine.generator.action_info   import PatternActionInfo

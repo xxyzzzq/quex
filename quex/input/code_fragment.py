@@ -1,9 +1,9 @@
 from   quex.frs_py.file_in import *
 import quex.lexer_mode     as     lexer_mode
-from   quex.token_id_maker import TokenInfo
-from   quex.input.setup    import setup as Setup
-from   quex.input.ucs_db_parser  import ucs_property_db
-from   quex.core_engine.utf8 import __read_one_utf8_code_from_stream
+from   quex.output.cpp.token_id_maker         import TokenInfo
+from   quex.input.setup                       import setup as Setup
+from   quex.input.ucs_db_parser               import ucs_property_db
+from   quex.core_engine.utf8                  import __read_one_utf8_code_from_stream
 from   quex.core_engine.generator.action_info import *
 
 LanguageDB = Setup.language_db

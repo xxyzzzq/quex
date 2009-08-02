@@ -220,10 +220,11 @@ namespace quex {
     class  $$LEXER_CLASS_NAME$$;
     struct $$LEXER_CLASS_NAME$$Memento_tag;
 
-$$LEX_ID_DEFINITIONS$$
+$$QUEX_MODE_ID_DEFINITIONS$$
+
 }    
 
-#define CLASS             $$LEXER_CLASS_NAME$$
+#define    CLASS              $$LEXER_CLASS_NAME$$
 #ifdef QUEX_OPTION_INCLUDE_STACK
 #   define CLASS_MEMENTO_TAG  struct $$LEXER_CLASS_NAME$$Memento_tag
 #   define CLASS_MEMENTO      $$LEXER_CLASS_NAME$$Memento
@@ -302,7 +303,6 @@ $$MEMENTO_EXTENSIONS$$
         protected QuexAnalyser {
 
         /* DISABLED */ CLASS(const CLASS&);
-
     public:
         CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, size_t  BufferMemorySize,
               const char*          CharacterEncodingName = 0x0,
@@ -722,6 +722,9 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 
 #include <quex/code_base/temporary_macros_off>
 
+#define __QUEX_SETTING_TOKEN_ID_TERMINATION    ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
+#define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED  ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
+
 #define __QUEX_SETTING_DERIVED_CLASS_NAME    $$LEXER_DERIVED_CLASS_NAME$$
 #define __QUEX_SETTING_MAX_MODE_CLASS_N      $$MAX_MODE_CLASS_N$$
 #define __QUEX_SETTING_INITIAL_LEXER_MODE_ID $$INITIAL_LEXER_MODE_ID$$
@@ -752,6 +755,8 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
+#undef __QUEX_SETTING_TOKEN_ID_TERMINATION
+#undef __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
 #undef CLASS
 #ifdef    QUEX_OPTION_INCLUDE_STACK
 #   undef CLASS_MEMENTO

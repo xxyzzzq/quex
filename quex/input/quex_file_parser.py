@@ -15,9 +15,9 @@
 #
 ################################################################################
 #
-from   quex.frs_py.file_in          import *
-from   quex.token_id_maker          import TokenInfo
-from   quex.exception               import RegularExpressionException
+from   quex.frs_py.file_in              import *
+from   quex.output.cpp.token_id_maker   import TokenInfo
+from   quex.exception                   import RegularExpressionException
 import quex.lexer_mode               as lexer_mode
 import quex.input.mode_definition    as mode_definition
 import quex.input.token_type         as token_type_definition

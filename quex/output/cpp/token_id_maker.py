@@ -4,12 +4,12 @@ import os
 import sys
 import re
 
-from GetPot import GetPot
+from quex.GetPot import GetPot
 
-from   quex.frs_py.file_in  import open_file_or_die, \
-                                   write_safely_and_close, \
-                                   delete_comment, \
-                                   extract_identifiers_with_specific_prefix
+from quex.frs_py.file_in  import open_file_or_die, \
+                                 write_safely_and_close, \
+                                 delete_comment, \
+                                 extract_identifiers_with_specific_prefix
 import quex.lexer_mode             as lexer_mode
 from   quex.frs_py.string_handling import blue_print
 from   quex.input.setup            import setup as Setup
@@ -48,14 +48,6 @@ file_str = \
 #define __INCLUDE_GUARD__QUEX__TOKEN_IDS__AUTO_$$DATE_IG$$__
 
 #include<cstdio> // for: 'std::sprintf'
-
-/* Definition of essential token identifiers that the analyser engine requires. */
-#if defined(__QUEX_TOKEN_ID_TERMINATION) || defined(__QUEX_TOKEN_ID_UNINITIALIZED)
-#    error \"Token identifiers for 'termination' and/or 'unilitialized' have been defined previously. This indicates that the inclusion sequence is incorrect. For example the file 'quex/code_base/definitions' shall **not** be included before this file.\"
-#endif
-/* Note, we can very well refer in macros to things that are defined below. */
-#define __QUEX_TOKEN_ID_TERMINATION    ($$TOKEN_PREFIX$$TERMINATION)
-#define __QUEX_TOKEN_ID_UNINITIALIZED  ($$TOKEN_PREFIX$$UNINITIALIZED)
 
 /* The token class definition file can only be included after the two token identifiers have
  * been defined. Otherwise, it would rely on default values. */
@@ -139,7 +131,6 @@ def do(global_setup):
         return " " * (L - len(Name))
 
     # -- define values for the token ids
-    # NO LONGER: token_id_txt  = "namespace quex {\n"  
     token_id_txt = ""
     if setup.input_foreign_token_id_file != "":
         token_id_txt += "#include\"%s\"\n" % setup.input_foreign_token_id_file
@@ -156,8 +147,6 @@ def do(global_setup):
             token_id_txt += "#define %s%s %s((QUEX_TYPE_TOKEN_ID)%i)\n" % (setup.token_prefix,
                                                                            token_name, space(token_name), 
                                                                            token_info.number)
-    # NO LONGER: token_id_txt += "} // namespace quex\n" 
-
     # -- define the function for token names
     switch_cases = ""
     token_names  = ""

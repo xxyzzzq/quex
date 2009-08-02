@@ -10,7 +10,7 @@ from   quex.frs_py.file_in         import open_file_or_die, error_msg, error_msg
 import quex.lexer_mode  as lexer_mode
 import quex.input.query as query
 import quex.input.codec_db as codec_db
-from   quex.token_id_maker import parse_token_id_file
+from   quex.output.cpp.token_id_maker import parse_token_id_file
 
 from   quex.input.setup import setup, SETUP_INFO, LIST, FLAG, DEPRECATED
 
