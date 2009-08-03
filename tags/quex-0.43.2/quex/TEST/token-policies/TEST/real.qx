@@ -1,0 +1,17 @@
+token {
+    ONE
+    TWO
+    THREE
+    FOUR
+    FIVE
+}
+
+start = REAL;
+
+mode REAL : { 
+    1 => QUEX_TKN_ONE; 
+    2 => QUEX_TKN_TWO; 
+    3 => QUEX_TKN_THREE; 
+    4 => QUEX_TKN_FOUR; 
+    5 => QUEX_TKN_FIVE; 
+}

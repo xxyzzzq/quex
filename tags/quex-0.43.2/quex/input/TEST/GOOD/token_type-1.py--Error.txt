@@ -1,0 +1,7 @@
+-----------------------------
+IN:
+    [{ id : uint8_t }]
+
+OUT:
+
+string:1:error: missing ';'
