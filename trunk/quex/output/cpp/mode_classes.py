@@ -16,12 +16,12 @@ def do(Modes):
 mode_function_implementation_str = \
 """
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry($$LEXER_CLASS_NAME$$* me, const QuexMode* FromMode) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry($$LEXER_CLASS_NAME$$* me, const CLASS_QUEX_MODE* FromMode) {
 $$ENTER-PROCEDURE$$
     }
 
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit($$LEXER_CLASS_NAME$$* me, const QuexMode* ToMode)  {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit($$LEXER_CLASS_NAME$$* me, const CLASS_QUEX_MODE* ToMode)  {
 $$EXIT-PROCEDURE$$
     }
 
@@ -34,15 +34,15 @@ $$INDENTATION-PROCEDURE$$
 
 #ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
     bool
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_has_base(const QuexMode* Mode) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_has_base(const CLASS_QUEX_MODE* Mode) {
 $$HAS_BASE_MODE$$
     }
     bool
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_has_entry_from(const QuexMode* Mode) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_has_entry_from(const CLASS_QUEX_MODE* Mode) {
 $$HAS_ENTRANCE_FROM$$
     }
     bool
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_has_exit_to(const QuexMode* Mode) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_has_exit_to(const CLASS_QUEX_MODE* Mode) {
 $$HAS_EXIT_TO$$
     }
 #endif    

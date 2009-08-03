@@ -1,32 +1,11 @@
-// -*- C++ -*- vim:set syntax=cpp:
-#ifndef __INCLUDE_GUARD__QUEX__BUFFER_ACCESS_I
-#define __INCLUDE_GUARD__QUEX__BUFFER_ACCESS_I
+/* -*- C++ -*- vim:set syntax=cpp:
+ * No include guards, the header might be included from multiple lexers.
+ *
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_BUFFER_ACCESS_I__
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_BUFFER_ACCESS_I__  */
+
 
 namespace quex { 
-
-    inline size_t
-    MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
-                         uint8_t* source_begin_p, uint8_t* source_end_p)
-        /* Inserts as many bytes as possible into the array from 'drain_begin_p'
-         * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
-         * ends at 'source_end_p'.
-         *
-         * RETURNS: Number of bytes that have been copied.                      */
-    {
-        /* Determine the insertion size. */
-        const size_t DrainSize = drain_end_p  - drain_begin_p;
-        size_t       size      = source_end_p - source_begin_p;
-        if( DrainSize < size ) size = DrainSize;
-
-        /* memcpy() might fail if the source and drain domain overlap! */
-#       ifdef QUEX_OPTION_ASSERTS 
-        if( drain_begin_p > source_begin_p ) __quex_assert(drain_begin_p >= source_begin_p + size);
-        else                                 __quex_assert(drain_begin_p <= source_begin_p - size);
-#       endif
-        __QUEX_STD_memcpy(drain_begin_p, source_begin_p, size);
-
-        return size;
-    }
 
 
     inline QUEX_TYPE_CHARACTER*
@@ -263,4 +242,3 @@ namespace quex {
 
 }
 
-#endif /* __INCLUDE_GUARD__QUEX__BUFFER_ACCESS_I */

@@ -63,6 +63,10 @@ namespace quex {
     QUEX_INLINE  void                      MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode*);
 #   endif
 
+    QUEX_INLINE size_t
+    MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
+                         uint8_t* source_begin_p, uint8_t* source_end_p);
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif

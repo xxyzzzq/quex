@@ -39,4 +39,4 @@ LETTER '4'
 FromMode: FOUR ToMode: THREE
 FromMode: THREE ToMode: TWO
 FromMode: TWO ToMode: ONE
-lexer: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/mode_handling.i:76: void quex::Simple::pop_mode(): Assertion `_mode_stack.end != _mode_stack.begin' failed.
+lexer: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/mode_handling.i:82: void quex::Simple::pop_mode(): Assertion `_mode_stack.end != _mode_stack.begin' failed.

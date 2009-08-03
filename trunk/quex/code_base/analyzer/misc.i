@@ -1,4 +1,9 @@
-// -*- C++ -*-   vim: set syntax=cpp:
+/* -*- C++ -*-   vim: set syntax=cpp:
+ *
+ * No include guards, the header might be included from multiple lexers.
+ *
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__       */
 
 namespace quex { 
     inline void    

@@ -124,7 +124,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     if not StandAloneEngineF: 
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
-            local_variable_list.append(["quex::QuexMode&", name + " " * (L- len(name)), 
+            local_variable_list.append(["quex::CLASS_QUEX_MODE&", name + " " * (L- len(name)), 
                                         "QUEX_LEXER_CLASS::" + name]) 
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
@@ -451,6 +451,7 @@ def __frame_of_all(Code, HeaderFile, LexerClassName):
            "namespace quex {\n"                             + \
            "#endif\n"                                       + \
            "#define QUEX_LEXER_CLASS %s\n" % LexerClassName + \
+           "#define CLASS_QUEX_MODE  %sQuexMode\n" % LexerClassName + \
            Code                                             + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "} // namespace quex\n"                          + \
