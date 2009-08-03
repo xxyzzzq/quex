@@ -1,4 +1,4 @@
-<test-database execution-time-sec="27.32" date="Sun Aug  2 12:18:19 2009">
+<test-database execution-time-sec="27.33" date="Sun Aug  2 22:09:13 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
         <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.82"> 
@@ -42,7 +42,7 @@
                <choice name="Twice-2" result="OK" time_sec="0.10" crc="1705118108"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" make-required="True" time-sum-sec="0.45"> 
+        <test title="Constructor, Copy, Destructor" make-required="True" time-sum-sec="0.46"> 
             <application file-name="token_type-4.py" info-request-time="1247657710L"/>
             <choice-list number="5" same_result="False">
                <choice name="Constructor" result="OK" time_sec="0.10" crc="107320378"/>
@@ -64,7 +64,7 @@
                <choice name="6" result="OK" time_sec="0.08" crc="1236312933"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" make-required="True" time-sum-sec="0.79"> 
+        <test title="Buildt-In Members" make-required="True" time-sum-sec="0.78"> 
             <application file-name="token_type-1.py" info-request-time="1247657710L"/>
             <choice-list number="8" same_result="False">
                <choice name="None" result="OK" time_sec="0.12" crc="1321924226"/>
@@ -77,7 +77,7 @@
                <choice name="Error-2" result="OK" time_sec="0.09" crc="-1695835805"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" make-required="True" time-sum-sec="0.54"> 
+        <test title="Distinct Members" make-required="True" time-sum-sec="0.56"> 
             <application file-name="token_type-2.py" info-request-time="1247657710L"/>
             <choice-list number="6" same_result="False">
                <choice name="None" result="OK" time_sec="0.11" crc="775994298"/>

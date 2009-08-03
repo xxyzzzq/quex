@@ -1,4 +1,4 @@
-<test-database execution-time-sec="377.55" date="Sun Aug  2 12:09:36 2009">
+<test-database execution-time-sec="377.55" date="Sun Aug  2 22:09:11 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="33.53"> 
@@ -43,7 +43,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="13.10"> 
+        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="13.09"> 
             <application file-name="002.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="6.30" crc="-1787106835"/>
@@ -52,7 +52,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="39.75"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="39.76"> 
             <application file-name="003.sh" info-request-time="1247664742L"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="7.92" crc="1262344118"/>
@@ -93,7 +93,7 @@
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="9.86"> 
+        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="9.85"> 
             <application file-name="006.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.84" crc="1767280044"/>
@@ -102,7 +102,7 @@
         </test>
     </group>
     <group name="demo/007">
-        <test title="Miscellaneous Features" make-required="True" time-sum-sec="11.67"> 
+        <test title="Miscellaneous Features" make-required="True" time-sum-sec="11.66"> 
             <application file-name="007.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="5.88" crc="-884239353"/>
@@ -143,7 +143,7 @@
                <choice name="fill" result="OK" time_sec="6.62" crc="715182431"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="47.21"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="47.22"> 
             <application file-name="010c.sh" info-request-time="1247664742L"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="27.82" crc="-139797804"/>
