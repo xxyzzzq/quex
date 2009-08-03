@@ -15,7 +15,7 @@ namespace quex {
         public:
             QuexAnalyser analyser_core;
             CounterType  counter;
-            QuexMode*    current_mode_p;
+            CLASS_QUEX_MODE*    current_mode_p;
 
             void   map_to_lexical_analyzer(CLASS*);
             void   map_from_lexical_analyzer(CLASS*);
@@ -23,7 +23,7 @@ namespace quex {
 
         template <class InputHandle> 
         void   push(InputHandle*             new_input_handle_p, 
-                    const QuexMode&          mode, 
+                    const CLASS_QUEX_MODE&          mode, 
                     QuexBufferFillerTypeEnum BFT             = QUEX_AUTO,
                     const char*              IANA_CodingName = 0x0);
         

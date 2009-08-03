@@ -1,13 +1,19 @@
-// -*- C++ -*- vim:set syntax=cpp:
-#ifndef __INCLUDE_GUARD__QUEX__INCLUDE_STACK_I__
-#define __INCLUDE_GUARD__QUEX__INCLUDE_STACK_I__
+/* -*- C++ -*- vim:set syntax=cpp:
+ *
+ * No include guards, the header might be included from multiple lexers.
+ *
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_INCLUDE_HANDLER__
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_INCLUDE_HANDLER__       */
+#ifndef CLASS
+#   error "Macro CLASS must be defined before inclusion of this file."
+#endif
 
 #include <quex/code_base/analyzer/Analyser>
 namespace quex { 
 
     template <class InputHandleT> inline void    
     CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
-                        const QuexMode&          mode, 
+                        const CLASS_QUEX_MODE&          mode, 
                         const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
@@ -63,4 +69,3 @@ namespace quex {
 
 } // namespace quex
 
-#endif // __INCLUDE_GUARD__QUEX__INCLUDE_STACK_I__

@@ -12,7 +12,8 @@ UKNOWN____	gar
 UKNOWN____	nicht
 UKNOWN____	träge
 MARK______	,
-UKNOWN____	Sägen
+Max: now happy!
+VERB______	Sägen
 UKNOWN____	heimlich
 UKNOWN____	mit
 UKNOWN____	der
@@ -40,7 +41,8 @@ UKNOWN____	gar
 UKNOWN____	nicht
 UKNOWN____	träge
 MARK______	,
-UKNOWN____	Sägen
+Max: now happy!
+VERB______	Sägen
 UKNOWN____	heimlich
 UKNOWN____	mit
 UKNOWN____	der
@@ -68,6 +70,7 @@ FILL_WORD_	gar
 NEGATION__	nicht
 UKNOWN____	träge
 MARK______	,
+Boeck: now angry!
 VERB______	Sägen
 ADVERB____	heimlich
 PREDICATE_	mit

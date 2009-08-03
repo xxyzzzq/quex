@@ -128,6 +128,30 @@ namespace quex {
 
 #   endif
 
+    QUEX_INLINE size_t
+    MemoryManager_insert(uint8_t* drain_begin_p,  uint8_t* drain_end_p,
+                         uint8_t* source_begin_p, uint8_t* source_end_p)
+        /* Inserts as many bytes as possible into the array from 'drain_begin_p'
+         * to 'drain_end_p'. The source of bytes starts at 'source_begin_p' and
+         * ends at 'source_end_p'.
+         *
+         * RETURNS: Number of bytes that have been copied.                      */
+    {
+        /* Determine the insertion size. */
+        const size_t DrainSize = drain_end_p  - drain_begin_p;
+        size_t       size      = source_end_p - source_begin_p;
+        if( DrainSize < size ) size = DrainSize;
+
+        /* memcpy() might fail if the source and drain domain overlap! */
+#       ifdef QUEX_OPTION_ASSERTS 
+        if( drain_begin_p > source_begin_p ) __quex_assert(drain_begin_p >= source_begin_p + size);
+        else                                 __quex_assert(drain_begin_p <= source_begin_p - size);
+#       endif
+        __QUEX_STD_memcpy(drain_begin_p, source_begin_p, size);
+
+        return size;
+    }
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif

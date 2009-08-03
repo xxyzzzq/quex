@@ -230,6 +230,7 @@ $$QUEX_MODE_ID_DEFINITIONS$$
 #   define CLASS_MEMENTO      $$LEXER_CLASS_NAME$$Memento
 #endif
 #define CLASS_ACCUMULATOR     $$LEXER_CLASS_NAME$$Accumulator
+#define CLASS_QUEX_MODE       $$LEXER_CLASS_NAME$$QuexMode
 
 $$TOKEN_CLASS_DECLARATION$$
 
@@ -295,7 +296,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
     typedef struct $$LEXER_CLASS_NAME$$Memento_tag {
         QuexAnalyser analyser_core;
         CounterType  counter;
-        QuexMode*    current_mode_p;
+        CLASS_QUEX_MODE*    current_mode_p;
         struct $$LEXER_CLASS_NAME$$Memento_tag*  parent;
 $$MEMENTO_EXTENSIONS$$
     } $$LEXER_CLASS_NAME$$Memento;
@@ -376,26 +377,26 @@ $$MEMENTO_EXTENSIONS$$
         // (*) Mode handling
         //
         //     -- modes: read access
-        QuexMode&     mode();
+        CLASS_QUEX_MODE&     mode();
         int           mode_id() const;
         const char*   mode_name() const;
         //
         //     -- modes: changing lexical analysis mode
         void        set_mode_brutally(const int       LexerMode);
-        void        set_mode_brutally(const QuexMode& Mode);
+        void        set_mode_brutally(const CLASS_QUEX_MODE& Mode);
         //
         void        operator<<(const int MODE_ID);               // not to be used in concatination
-        void        operator<<(/* NOT const*/ QuexMode& Mode);  // not to be used in concatination
+        void        operator<<(/* NOT const*/ CLASS_QUEX_MODE& Mode);  // not to be used in concatination
         //
         void        pop_mode();
         void        pop_drop_mode();
-        void        push_mode(QuexMode& new_mode);
+        void        push_mode(CLASS_QUEX_MODE& new_mode);
         //
-        void        enter_mode(/* NOT const*/ QuexMode& TargetMode);
+        void        enter_mode(/* NOT const*/ CLASS_QUEX_MODE& TargetMode);
         //
         //     -- map: mode id to mode and vice versa
-        QuexMode&   map_mode_id_to_mode(const int        ModeID);       
-        int         map_mode_to_mode_id(const QuexMode& Mode) const;
+        CLASS_QUEX_MODE&   map_mode_id_to_mode(const int        ModeID);       
+        int         map_mode_to_mode_id(const CLASS_QUEX_MODE& Mode) const;
 
         // (*) Token sending
         void        send(const QUEX_TYPE_TOKEN& That);
@@ -444,13 +445,13 @@ $$MEMENTO_EXTENSIONS$$
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
         //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
         //      to quex's start mode.)
-        QuexMode*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
+        CLASS_QUEX_MODE*  mode_db[$$MAX_MODE_CLASS_N$$+1];  
 
     public:
 $$MODE_OBJECT_MEMBERS$$
 
     private:
-        QuexMode*   __current_mode_p;
+        CLASS_QUEX_MODE*   __current_mode_p;
 
         // -- with the quex core engine(s) each mode has a dedicated analyser function.
         //    (with the flex core engine, modes were modelled as start conditions
@@ -461,9 +462,9 @@ $$MODE_OBJECT_MEMBERS$$
     private:
         // (*) mode stack allows for pushing and popping of lexical analysis modes
         struct {
-            QuexMode*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
-            QuexMode** end;
-            QuexMode** memory_end;
+            CLASS_QUEX_MODE*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            CLASS_QUEX_MODE** end;
+            CLASS_QUEX_MODE** memory_end;
         } _mode_stack;
 
         // NOTE: A pointer to an object of the token queue/object is used in order to make
@@ -522,7 +523,7 @@ $$CLASS_BODY_EXTENSION$$
 
     public:
         template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
-                                                        const QuexMode&          mode, 
+                                                        const CLASS_QUEX_MODE&          mode, 
                                                         const char*              IANA_CodingName = 0x0);
         template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                         const int                MODE_ID         = -1, 
@@ -767,6 +768,7 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #   undef CLASS_MEMENTO_TAG
 #endif
 #undef CLASS_ACCUMULATOR        
+#undef CLASS_QUEX_MODE    
 
 #include <quex/code_base/analyzer/Analyser.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
