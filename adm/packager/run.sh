@@ -132,18 +132,31 @@ function collect_packages()
        /tmp/quex-packages
 
     # -- create the batch file for sftp
-    scriptfile=/tmp/quex-packages/sftp-frs.sourceforge.net.sh
-    echo "cd uploads"         >  $scriptfile
-    echo "put quex-$1.tar.7z" >> $scriptfile
-    echo "put quex-$1.tar.gz" >> $scriptfile
-    echo "put quex-$1.zip   " >> $scriptfile
-    echo "put quex_$1-0_i386.deb  " >> $scriptfile
-    echo "put quex-$1-0.i386.rpm  " >> $scriptfile
-    echo "put quex-$1-windows-installer.exe " >> $scriptfile
-    echo "put quex-$1-linux-installer.bin   " >> $scriptfile
-    echo "put quex-$1-osx-installer.app.zip " >> $scriptfile
-    echo "put quex-$1-freebsd-installer.bin " >> $scriptfile
-    echo "put quex-$1-solaris-intel-installer.bin " >> $scriptfile
+    scriptfile=
+    cat > /tmp/quex-packages/sftp-frs.sourceforge.net.sh << EOF
+cd uploads
+put quex-$1.tar.7z                       /home/frs/project/q/qu/quex/Current
+put quex-$1.tar.gz                       /home/frs/project/q/qu/quex/Current
+put quex-$1.zip                          /home/frs/project/q/qu/quex/Current
+put quex_$1-0_i386.deb                   /home/frs/project/q/qu/quex/Current
+put quex-$1-0.i386.rpm                   /home/frs/project/q/qu/quex/Current
+put quex-$1-windows-installer.exe        /home/frs/project/q/qu/quex/Current
+put quex-$1-linux-installer.bin          /home/frs/project/q/qu/quex/Current
+put quex-$1-osx-installer.app.zip        /home/frs/project/q/qu/quex/Current
+put quex-$1-freebsd-installer.bin        /home/frs/project/q/qu/quex/Current
+put quex-$1-solaris-intel-installer.bin  /home/frs/project/q/qu/quex/Current
+cd /home/frs/project/q/qu/quex/Current
+rename quex-OLD.tar.7z                       ../HISTORY/OLD/quex-OLD.tar.7z
+rename quex-OLD.tar.gz                       ../HISTORY/OLD/quex-OLD.tar.gz
+rename quex-OLD.zip                          ../HISTORY/OLD/quex-OLD.zip   
+rename quex_OLD-0_i386.deb                   ../HISTORY/OLD/quex_OLD-0_i386.deb
+rename quex-OLD-0.i386.rpm                   ../HISTORY/OLD/quex-OLD-0.i386.rpm 
+rename quex-OLD-windows-installer.exe        ../HISTORY/OLD/quex-OLD-windows-installer.exe
+rename quex-OLD-linux-installer.bin          ../HISTORY/OLD/quex-OLD-linux-installer.bin 
+rename quex-OLD-osx-installer.app.zip        ../HISTORY/OLD/quex-OLD-osx-installer.app.zip
+rename quex-OLD-freebsd-installer.bin        ../HISTORY/OLD/quex-OLD-freebsd-installer.bin
+rename quex-OLD-solaris-intel-installer.bin  ../HISTORY/OLD/quex-OLD-solaris-intel-installer.bin 
+EOF
 }
 
 function repository_update() {

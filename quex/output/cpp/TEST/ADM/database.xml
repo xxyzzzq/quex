@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.14" date="Mon Aug  3 11:58:33 2009">
+<test-database execution-time-sec="3.14" date="Mon Aug  3 21:51:00 2009">
     <last-used-diff-display-program name=""/>
     <test title="Token Class Template" make-required="True" time-sum-sec="0.12"> 
         <application file-name="test-token_class.py" info-request-time="1247657736L"/>
@@ -15,7 +15,7 @@
                <choice name="3" result="OK" time_sec="0.11" crc="1569909165"/>
             </choice-list>
         </test>
-        <test title="Determine UTF-8 Range Map for Codec" make-required="True" time-sum-sec="2.31"> 
+        <test title="Determine UTF-8 Range Map for Codec" make-required="True" time-sum-sec="2.30"> 
             <application file-name="test-converter-C.py" info-request-time="1247657736L"/>
             <choice-list number="3" same_result="False">
                <choice name="cp737" result="OK" time_sec="0.77" crc="1246986017"/>

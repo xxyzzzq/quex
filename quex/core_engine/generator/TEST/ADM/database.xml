@@ -1,7 +1,7 @@
-<test-database execution-time-sec="197.29" date="Mon Aug  3 13:14:09 2009">
+<test-database execution-time-sec="197.27" date="Mon Aug  3 21:51:00 2009">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
-        <test title="Backwards" make-required="True" time-sum-sec="4.24"> 
+        <test title="Backwards" make-required="True" time-sum-sec="4.23"> 
             <application file-name="test-backward_loading.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.78" crc="-1584767564"/>
@@ -50,7 +50,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.26" crc="270103911"/>
             </choice-list>
         </test>
-        <test title="(special use case)" make-required="True" time-sum-sec="3.86"> 
+        <test title="(special use case)" make-required="True" time-sum-sec="3.87"> 
             <application file-name="test-continue-without-return-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.74" crc="-759134064"/>
@@ -70,7 +70,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.27" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" make-required="True" time-sum-sec="4.45"> 
+        <test title="Part 2" make-required="True" time-sum-sec="4.44"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.84" crc="-1069020887"/>
@@ -90,7 +90,7 @@
         </test>
     </group>
     <group name="Pre Conditions">
-        <test title="Part 2" make-required="True" time-sum-sec="4.44"> 
+        <test title="Part 2" make-required="True" time-sum-sec="4.43"> 
             <application file-name="test-pre-conditions-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.79" crc="-2081003305"/>
@@ -99,7 +99,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.38" crc="-2081003305"/>
             </choice-list>
         </test>
-        <test title="Multiple Identical Pre-Conditions" make-required="True" time-sum-sec="7.17"> 
+        <test title="Multiple Identical Pre-Conditions" make-required="True" time-sum-sec="7.16"> 
             <application file-name="test-pre-conditions-3.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.47" crc="-1449812084"/>
@@ -168,7 +168,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.36" crc="-771053764"/>
             </choice-list>
         </test>
-        <test title="Special Case '.' (drop out on valid target state)" make-required="True" time-sum-sec="3.86"> 
+        <test title="Special Case '.' (drop out on valid target state)" make-required="True" time-sum-sec="3.87"> 
             <application file-name="test-simple-3.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.73" crc="-1792493362"/>
@@ -177,7 +177,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.23" crc="-1792493362"/>
             </choice-list>
         </test>
-        <test title="Begin of Line (BOL), End of Line (EOL)" make-required="True" time-sum-sec="4.46"> 
+        <test title="Begin of Line (BOL), End of Line (EOL)" make-required="True" time-sum-sec="4.47"> 
             <application file-name="test-bol-eol.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.85" crc="-1565444249"/>
@@ -186,7 +186,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.39" crc="-1565444249"/>
             </choice-list>
         </test>
-        <test title="Maximum Length Match" make-required="True" time-sum-sec="7.41"> 
+        <test title="Maximum Length Match" make-required="True" time-sum-sec="7.40"> 
             <application file-name="test-simple-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.41" crc="-270685933"/>
@@ -248,7 +248,7 @@
                <choice name="DL=4" result="OK" time_sec="3.36" crc="2098906281"/>
             </choice-list>
         </test>
-        <test title="DelimiterLength=2, Large Buffer" make-required="True" time-sum-sec="10.20"> 
+        <test title="DelimiterLength=2, Large Buffer" make-required="True" time-sum-sec="10.19"> 
             <application file-name="test-skip-simple.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.73" crc="-1090631127"/>

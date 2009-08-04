@@ -1,4 +1,4 @@
-<test-database execution-time-sec="322.54" date="Mon Aug  3 11:51:17 2009">
+<test-database execution-time-sec="322.53" date="Mon Aug  3 21:50:58 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="27.56"> 
@@ -111,7 +111,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="9.48"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="9.47"> 
             <application file-name="008.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.51" crc="1304621319"/>
@@ -120,7 +120,7 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="10.33"> 
+        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="10.32"> 
             <application file-name="009.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="lexer" result="OK" time_sec="5.59" crc="13704092"/>

@@ -1,4 +1,4 @@
-<test-database execution-time-sec="26.46" date="Mon Aug  3 11:58:29 2009">
+<test-database execution-time-sec="26.45" date="Mon Aug  3 21:51:00 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
         <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.79"> 
@@ -52,7 +52,7 @@
                <choice name="Copy" result="OK" time_sec="0.09" crc="916604355"/>
             </choice-list>
         </test>
-        <test title="Class Name and Namespace" make-required="True" time-sum-sec="0.62"> 
+        <test title="Class Name and Namespace" make-required="True" time-sum-sec="0.63"> 
             <application file-name="token_type-5.py" info-request-time="1247657710L"/>
             <choice-list number="7" same_result="False">
                <choice name="0" result="OK" time_sec="0.09" crc="186552641"/>
@@ -77,7 +77,7 @@
                <choice name="Error-2" result="OK" time_sec="0.09" crc="-1695835805"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" make-required="True" time-sum-sec="0.61"> 
+        <test title="Distinct Members" make-required="True" time-sum-sec="0.60"> 
             <application file-name="token_type-2.py" info-request-time="1247657710L"/>
             <choice-list number="6" same_result="False">
                <choice name="None" result="OK" time_sec="0.09" crc="775994298"/>
