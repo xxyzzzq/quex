@@ -1,9 +1,8 @@
-<test-database execution-time-sec="0.09" date="Mon Aug  3 13:18:32 2009">
+<test-database execution-time-sec="0.09" date="Mon Aug  3 21:50:58 2009">
     <last-used-diff-display-program name=""/>
     <group name="Mode Transitions">
         <test title="transition-x.qx" make-required="True" time-sum-sec="0.03"> 
             <application file-name="transition-x.exe" info-request-time="1249298205L"/>
-            <make-procedure success="True" time_sec="4.340503"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="2085579180"/>
                <choice name="2" result="OK" time_sec="0.01" crc="-932257635"/>
@@ -13,7 +12,6 @@
         </test>
         <test title="transition.qx" make-required="True" time-sum-sec="0.06"> 
             <application file-name="transition.exe" info-request-time="1249298200L"/>
-            <make-procedure success="True" time_sec="4.458878"/>
             <choice-list number="4" same_result="False">
                <choice name="1" result="OK" time_sec="0.01" crc="2085579180"/>
                <choice name="2" result="OK" time_sec="0.04" crc="-932257635"/>
