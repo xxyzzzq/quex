@@ -207,7 +207,7 @@ Much of the syntax is directly based on POSIX extended regular expressions \cite
     either an ``R`` or an ``S``, i.e. ``R`` and ``S`` both match. This is usually 
     called an *alternative*.
 
-.. describe:: ${NAME} 
+.. describe:: {NAME} 
 
     the expansion of the defined pattern "NAME". Pattern names can
     be defined in *define* sections (see section <<sec-practical-patterns>>).
