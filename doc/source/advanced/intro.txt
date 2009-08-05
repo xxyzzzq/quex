@@ -18,4 +18,5 @@ the optimization of memory consumption and analysis speed.
    include-stack.txt
    indentation-blocks.txt
    derived-class.txt
+   multiple-lexical-analyzers.txt
    misc.txt

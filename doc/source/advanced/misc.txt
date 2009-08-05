@@ -8,6 +8,8 @@ accumulated until the on_exit handler was activated, i.e. the` STRING_READER`
 mode is left. Inside the handler, the string is flushed into a token with a
 specific id TKN_STRING. The accumulator provides the following functions:
 
+.. code-block:: cpp
+
   void   add(const char*);
   void   add(const char);
   void   flush(const token::id\_type TokenID);
