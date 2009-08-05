@@ -65,11 +65,7 @@ func_str = \
 """
 $$NAMESPACE_OPEN$$
 
-#ifndef __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
-#   ifndef QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED
-#      warning 
-#   endif
-#else
+#ifndef    __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
 #   define __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
 
     inline const char*
@@ -79,20 +75,7 @@ $$NAMESPACE_OPEN$$
        static const char  uninitialized_string[] = "<UNINITIALIZED>";
        static const char  termination_string[]   = "<TERMINATION>";
 $$TOKEN_NAMES$$       
-       static bool virginity_f = true;
 
-       if( virginity_f ) {
-           virginity_f = false;
-           __QUEX_STD_fprintf(stderr, 
-              "## The member function 'map_id_to_name(...)' has been defined for a\n"
-              "## different lexical analyzer before. This may result in incorrect token id\n"
-              "## names. This should only occur when multiple analyzers are accessed in one\n"
-              "## single source file.  Define the macro\n"
-              "##\n"
-              "##      QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED \n"
-              "##\n"
-              "## to disable this warning."\n");
-       }
        /* NOTE: This implementation works only for token id types that are 
         *       some type of integer or enum. In case an alien type is to
         *       used, this function needs to be redefined.                  */
