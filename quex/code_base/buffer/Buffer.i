@@ -80,12 +80,6 @@ namespace quex {
 
         QuexBuffer_init(me);
 
-        if( me->filler != 0x0 ) {
-            /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
-             * assumes, that the user fills/has filled it with whatever his little heart desired.         */
-            QuexBufferFiller_initial_load(me);
-        }
-
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
@@ -101,11 +95,17 @@ namespace quex {
          *       before the 'char_covered_by_terminating_zero'.                          */
         me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
         me->_content_character_index_end   = 0;
+        me->_content_character_index_begin = 0; 
+
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
 #       endif
 
-        me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above)             */
+        if( me->filler != 0x0 ) {
+            /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
+             * assumes, that the user fills/has filled it with whatever his little heart desired.         */
+            QuexBufferFiller_initial_load(me);
+        }
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
@@ -129,23 +129,17 @@ namespace quex {
          *       is concerned with the last character in the lexeme, which is the one  
          *       before the 'char_covered_by_terminating_zero'.                          */
         me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
-        me->_content_character_index_end   = 0;
 #       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
         me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
 #       endif
 
         if( me->filler != 0x0 ) {
             /* We only have to reset the input stream, if we are not at position zero */
-            if( me->_content_character_index_begin != 0 ) {
-                __quex_assert(me->filler != 0x0);
-                me->filler->seek_character_index(me->filler, 0);
-                me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above) */
-                QuexBufferFiller_initial_load(me);      /* _content_character_index_begin == 0 in assert  */
-            } else {
-                /* In the reset case, the end of file pointer has to remain, if no reload happens.        */
-            }
+            QuexBufferFiller_initial_load(me);   
+        } else {
+            me->_content_character_index_begin = 0; 
+            me->_content_character_index_end   = 0;
         }
-        me->_content_character_index_begin = 0; /* Cannot be (re-)initialized earlier, see above)             */
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
