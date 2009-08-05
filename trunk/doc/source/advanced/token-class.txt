@@ -1,3 +1,5 @@
+.. _sec-user-defined-token-classes:
+
 User defined Token Classes
 ==========================
 
