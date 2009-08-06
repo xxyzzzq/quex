@@ -72,3 +72,7 @@ ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)
 else
     QUEX_CORE =#
 endif
+
+echo:
+	@echo $(QUEX_CORE)
+
