@@ -314,7 +314,7 @@ code section:
 
 .. describe:: body
 
-   This allows to add member functions, friend declarations, etc. being added
+   This allows to add constructors, member functions, friend declarations, etc. being added
    the token class. The content of this section is pasted as-is into the
    class body. Example:
 
@@ -326,6 +326,12 @@ code section:
       private:
           friend  class MyParser;
       }
+
+.. note:: The token class generator does not support an automatic generation
+          of all possible constructors. If this was to be done in a sound and
+          safe manner the formal language to describe this would add significant
+          complexity. Instead, defining the constructors in the ``body`` section
+          is very ease and intuitive.
 
 The token class is written into a file that can be specified via
 
@@ -554,6 +560,20 @@ following constraints:
          .. code-block:: cpp
 
             #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE   MyToken
+       
+      .. describe:: QUEX_TYPE_STR_TOKEN_COMPLETE
+
+         A C-identifier than reprepresents the token class together with the 
+         namespace prefix, e.g.
+
+         .. code-block:: cpp
+
+            #define QUEX_TYPE_STR_TOKEN_COMPLETE   __my_namespace__lexer__MyToken
+
+         The exact form of the specified identifier is unimportant. What matters is
+         that it is unique. This definition becomes important only when multiple 
+         lexical analyzers are used with multiple token classes. It is still required
+         for a complete token class definition.
        
       It is essential to use macro functionality rather than a typedef, since
       later general definition files need to verify its definition. A good way

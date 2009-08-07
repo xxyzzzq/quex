@@ -577,7 +577,6 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "###############################################################################\n";
 #       endif
 #       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        QUEX_TYPE_TOKEN*    token_chunk = new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE]; 
         QuexTokenQueue_init(_token_queue, 
                             token_chunk,
                             token_chunk + QUEX_SETTING_TOKEN_QUEUE_SIZE);
@@ -598,9 +597,6 @@ $$CLASS_BODY_EXTENSION$$
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-        _mode_stack.end        = _mode_stack.begin;
-        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
-
         __init(input_handle, CharacterEncodingName, BufferMemory, BufferMemorySize);
 
         /* Assume that by default byte order reversion is disabled! */
@@ -620,6 +616,10 @@ $$CONSTRUCTOR_EXTENSTION$$
                   QUEX_TYPE_CHARACTER*      BufferMemory,         
                   size_t                    BufferMemorySize)
     {
+
+        _mode_stack.end        = _mode_stack.begin;
+        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
 
@@ -633,7 +633,7 @@ $$CONSTRUCTOR_EXTENSTION$$
         } else {
             /* Directly working on specific memory. */
             /* This does not mean, that the memory comes from the user. It cannot be 
-             * required: BufferMemory != 0x0                                          */
+             * required: BufferMemory != 0x0                                                */
             __quex_assert(BufferMemorySize > 2);
         }
 #       endif
@@ -658,6 +658,26 @@ $$CONSTRUCTOR_EXTENSTION$$
             __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
     }   
+
+    inline void
+    CLASS::_reset()
+    {
+        QuexAnalyser_reset((QuexAnalyser*)this);
+
+#   if   defined(QUEX_OPTION_LINE_NUMBER_COUNTING)          \
+           | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        \
+           | defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+        counter.init();
+#   endif
+
+        // empty the token queue
+#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+        QuexTokenQueue_reset(this->_token_queue);
+#   endif
+
+        set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+    }
+
 
     inline bool
     CLASS::byte_order_reversion()
