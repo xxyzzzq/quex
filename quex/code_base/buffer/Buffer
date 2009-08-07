@@ -70,6 +70,7 @@ namespace quex {
         /* (*) Iterator positions for lexical analysis */
         QUEX_TYPE_CHARACTER*  _input_p;
         QUEX_TYPE_CHARACTER*  _lexeme_start_p;
+
         /* (*) Information about characters that passed.
          *     This is required to temporarily store a terminating zero and to
          *     check for the 'begin of line' pre-condition.
@@ -90,14 +91,15 @@ namespace quex {
          *        after the last character in the buffer. This is necessary, because,
          *        some weird (but popular) implementations of istream do not correlate
          *        propperly between bytes transferred into a buffer and the increment 
-         *        of the stream position. */
+         *        of the stream position.                                                     */
         size_t    _content_character_index_end;
         
-        struct    __QuexBufferFiller_tag*  filler;
-
         /*     -- byte order (i.e little- vs. big-endian) reversion: enable disable the 
          *        reversion of byte order.                                                    */
         bool      _byte_order_reversion_active_f;
+
+        struct    __QuexBufferFiller_tag*  filler;
+
     } QuexBuffer;
 
     TEMPLATE_IN(InputHandleT) void

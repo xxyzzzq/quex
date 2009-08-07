@@ -87,28 +87,13 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_init(QuexBuffer*  me)
     {
-        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
-        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
-        /* NOTE: The terminating zero is stored in the first character **after** the  
-         *       lexeme (matching character sequence). The begin of line pre-condition  
-         *       is concerned with the last character in the lexeme, which is the one  
-         *       before the 'char_covered_by_terminating_zero'.                          */
-        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
+        /* By setting begin and end to zero, we indicate to the loader that
+         * this is the very first load procedure.                           */
         me->_content_character_index_end   = 0;
         me->_content_character_index_begin = 0; 
 
-#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
-#       endif
-
-        if( me->filler != 0x0 ) {
-            /* If a real buffer filler is specified, then fill the memory. Otherwise, one 
-             * assumes, that the user fills/has filled it with whatever his little heart desired.         */
-            QuexBufferFiller_initial_load(me);
-        }
-
-        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
-        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+        /* Init is a special kind of reset, where some things might not be reset. */
+        QuexBuffer_reset(me);
     }
 
     QUEX_INLINE void
@@ -121,6 +106,9 @@ namespace quex {
 
     QUEX_INLINE void
     QuexBuffer_reset(QuexBuffer* me)
+    /* NOTE:     me->_content_character_index_begin == 0 
+     *       and me->_content_character_index_end   == 0 
+     *       => buffer is filled the very first time.                                */
     {
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */

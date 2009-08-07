@@ -14,6 +14,7 @@
 
 #define QUEX_TYPE_TOKEN                    $$TOKEN_TYPE_WITH_NAMESPACE$$
 #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  $$TOKEN_TYPE$$
+#define QUEX_TYPE_STR_TOKEN_COMPLETE       $$TOKEN_TYPE_STR$$
 #define QUEX_TYPE_LINE_N                   $$LINE_N_TYPE$$
 #define QUEX_TYPE_COLUMN_N                 $$COLUMN_N_TYPE$$
 

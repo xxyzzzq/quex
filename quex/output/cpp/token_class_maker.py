@@ -1,4 +1,6 @@
-from   quex.frs_py.file_in                    import error_msg, write_safely_and_close, open_file_or_die
+from   quex.frs_py.file_in                    import error_msg, \
+                                                     write_safely_and_close, open_file_or_die, \
+                                                     make_safe_identifier
 from   quex.frs_py.string_handling            import blue_print
 import quex.lexer_mode                        as lexer_mode
 import quex.core_engine.generator.action_info as action_info
@@ -52,6 +54,7 @@ def get_basic_template(Descr):
     template_str = open_file_or_die(TemplateFile, Mode="rb").read()
     
     namespace_str = LanguageDB["$namespace-ref"](Descr.name_space) 
+    namespace_plain_str = make_safe_identifier(namespace_str)
 
     virtual_destructor_str = ""
     if Descr.open_for_derivation_f: virtual_destructor_str = "virtual "
@@ -61,6 +64,7 @@ def get_basic_template(Descr):
              ["$$TOKEN_ID_TYPE$$",             Descr.token_id_type.get_pure_code()],
              ["$$TOKEN_TYPE_WITH_NAMESPACE$$", namespace_str + Descr.class_name],
              ["$$TOKEN_TYPE$$",                Descr.class_name],
+             ["$$TOKEN_TYPE_STR$$",            namespace_plain_str + "__" + Descr.class_name],
              ["$$VIRTUAL_DESTRUCTOR$$",        virtual_destructor_str],
              ["$$LINE_N_TYPE$$",               Descr.line_number_type.get_pure_code()],
              ["$$COLUMN_N_TYPE$$",             Descr.column_number_type.get_pure_code()]])

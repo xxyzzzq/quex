@@ -13,7 +13,7 @@ namespace quex {
 
     template <class InputHandleT> inline void    
     CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
-                        const CLASS_QUEX_MODE&          mode, 
+                        const CLASS_QUEX_MODE&   mode, 
                         const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]

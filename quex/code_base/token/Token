@@ -13,6 +13,7 @@
 #endif
 #define QUEX_TYPE_TOKEN                    quex::Token
 #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
+#define QUEX_TYPE_STR_TOKEN_COMPLETE       __quex__Token
 
 // Depends on 'QUEX_TYPE_CHARACTER' being defined!
 

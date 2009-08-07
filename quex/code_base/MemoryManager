@@ -53,11 +53,6 @@ namespace quex {
     QUEX_INLINE void                MemoryManager_Converter_ICU_free(QuexConverter_ICU* memory);
 #   endif
 
-#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QUEX_INLINE bool  MemoryManager_TokenArray_allocate(QUEX_TYPE_TOKEN** memory, size_t RequiredSize);
-    QUEX_INLINE void  MemoryManager_TokenArray_free(QUEX_TYPE_TOKEN* memory, size_t Size);
-#   endif
-
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
     QUEX_INLINE  QuexPostCategorizerNode*  MemoryManager_PostCategorizerNode_allocate(size_t RemainderSize);
     QUEX_INLINE  void                      MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode*);
