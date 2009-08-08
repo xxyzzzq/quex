@@ -36,12 +36,12 @@ namespace quex {
     __BufferFiller_read_characters(QuexBuffer*, QUEX_TYPE_CHARACTER*, const size_t);
 
     QUEX_INLINE void       
-    QuexBufferFiller_destruct(QuexBufferFiller* me)
+    QuexBufferFiller_delete_self(QuexBufferFiller* me)
     { 
         /* if no dedicated deallocator is specified then free only the basic
-         * BufferFiller structure. */
-        if( me->destruct == 0x0 ) __QUEX_FREE_MEMORY(me);
-        else                      me->destruct(me);
+         * BufferFiller structure.                                           */
+        if( me->delete_self == 0x0 ) __QUEX_FREE_MEMORY(me);
+        else                         me->delete_self(me);
     }
 
     QUEX_INLINE void
@@ -50,7 +50,7 @@ namespace quex {
                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
                                       size_t       (*read_characters)(QuexBufferFiller*,
                                                                       QUEX_TYPE_CHARACTER*, const size_t),
-                                      void         (*destruct)(QuexBufferFiller*))
+                                      void         (*delete_self)(QuexBufferFiller*))
     {
         __quex_assert(me != 0x0);
         __quex_assert(tell_character_index != 0x0);
@@ -61,7 +61,7 @@ namespace quex {
         me->seek_character_index = seek_character_index;
         me->read_characters      = read_characters;
         me->_on_overflow         = 0x0;
-        me->destruct             = destruct;
+        me->delete_self          = delete_self;
     }
 
     QUEX_INLINE void

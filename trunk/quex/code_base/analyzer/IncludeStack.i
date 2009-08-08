@@ -25,10 +25,10 @@ namespace quex {
                         const int                MODE_ID /* = -1 */, 
                         const char*              IANA_CodingName /* = 0x0 */)
     {
-        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+        /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]             */
         __quex_assert(    MODE_ID == -1 
                       || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
-        // IANA_CodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support)
+        /* IANA_CodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support) */
 
         /* Store the lexical analyser's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
@@ -43,7 +43,13 @@ namespace quex {
 
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        this->__init(input_handle, IANA_CodingName, 0x0, 0);
+        QuexAnalyser_construct((QuexAnalyser*)this,
+                               __current_mode_p->analyser_function,
+                               input_handle,
+                               0x0, QUEX_SETTING_BUFFER_SIZE,
+                               IANA_CodingName, 
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+        __init();
 
         /* Keep track of 'who's your daddy?'                              */
         m->parent = this->_parent_memento;

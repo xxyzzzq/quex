@@ -32,12 +32,12 @@ namespace quex {
 
     } QuexTokenQueue;
 
-#   define QuexTokenQueue_init(me, Memory, MemoryEnd)                                          \
-          do {                                                                                 \
-             (me).begin                   = Memory;                                            \
-             (me).end                     = MemoryEnd;                                         \
-             (me).end_minus_safety_border = (me).end - QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER; \
-             QuexTokenQueue_reset(me);                                                         \
+#   define QuexTokenQueue_init(me, Memory, MemoryEnd, MemoryEndMSafetyBorder) \
+          do {                                                                \
+             (me).begin                   = Memory;                           \
+             (me).end                     = MemoryEnd;                        \
+             (me).end_minus_safety_border = MemoryEndMSafetyBorder;           \
+             QuexTokenQueue_reset(me);                                        \
           } while(0)
  
 #   define QuexTokenQueue_reset(me)                                \
@@ -46,6 +46,34 @@ namespace quex {
                (me).write_iterator = (QUEX_TYPE_TOKEN*)(me).begin; \
                (me).remaining_repetitions_of_last_token_n = 0;     \
            } while(0)
+
+    QUEX_INLINE void
+    QuexTokenQueue_construct(QuexTokenQueue* me, const size_t N)
+    {
+        if( N == 0 ) {
+            QuexTokenQueue_init(*me, 0x0, 0x0, 0x0); 
+        } else {
+            __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
+
+            QUEX_TYPE_TOKEN*  chunk     = QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(N);
+            QUEX_TYPE_TOKEN*  chunk_end = chunk + N;
+
+            /* Call placement new (plain constructor) for all tokens in chunk. */
+            for(QUEX_TYPE_TOKEN* iterator = chunk; iterator != chunk_end; ++iterator)
+                new ((void*)iterator) QUEX_TYPE_TOKEN;  
+            QuexTokenQueue_init(*me, chunk, chunk_end, chunk_end- QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
+        }
+    }
+
+    QUEX_INLINE void
+    QuexTokenQueue_destruct(QuexTokenQueue* me)
+    {
+        /* Call explicit destructors for all tokens in array */
+        for(QUEX_TYPE_TOKEN* iterator = me->begin; iterator != me->end; ++iterator)
+             iterator->QUEX_TYPE_TOKEN::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
+
+        QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->begin);
+    }
 
 #   define QuexTokenQueue_is_full(me)      ((me).write_iterator >= (me).end_minus_safety_border) 
 #   define QuexTokenQueue_is_empty(me)     ((me).read_iterator == (me).write_iterator)
@@ -145,14 +173,13 @@ namespace quex {
         if( me->size != 0 ) {
             
             /* Step 1: allocate plain chunk of memory.                              */
-            me->token_list = MemoryManager_TokenArray_allocate(me->size);
+            me->token_list = QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(me->size);
             if( me->token_list == 0x0 ) {
                 QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
             }
 
             /* Step 2: copy plain chunk of memory                                   */
-            memcpy(me->token_list, token_queue->read_iterator,
-                   sizeof(QUEX_TYPE_TOKEN) * me->size);
+            memcpy(me->token_list, token_queue->read_iterator, sizeof(QUEX_TYPE_TOKEN) * me->size);
 
             /* Step 3: Call cleaning placement new on objects which are subject to
              *         potential double deletion.                                   */
@@ -193,11 +220,12 @@ namespace quex {
                 iterator->~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();
             }
             /* Step 2: Plain copy of objects stored in the 'remainder store'             */
-            memcpy(token_queue->begin, me->token_list, 
-                   sizeof(QUEX_TYPE_TOKEN) * me->size);
+            memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN) * me->size);
 
-            /* Step 3: De-Allocate the remainder objects                                 */
-            MemoryManager_TokenArray_free(me->token_list);
+            /* Step 3: De-Allocate the remainder objects                                 
+             *         NO explicit destructor calls, since the referred objects are now
+             *         referred from inside the 'real' token queue.                      */
+            QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->token_list);
         }
         /* Reset the read and write iterators */
         token_queue->read_iterator  = token_queue->begin;

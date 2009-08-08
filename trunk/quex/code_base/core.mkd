@@ -73,6 +73,6 @@ else
     QUEX_CORE =#
 endif
 
-echo:
-	@echo $(QUEX_CORE)
+#echo:
+#	@echo $(QUEX_CORE)
 

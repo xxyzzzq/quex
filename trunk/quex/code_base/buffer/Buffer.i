@@ -99,7 +99,10 @@ namespace quex {
     QUEX_INLINE void
     QuexBuffer_destruct(QuexBuffer* me)
     {
-        if( me->filler != 0x0 ) me->filler->destruct(me->filler); 
+        if( me->filler != 0x0 ) { 
+            me->filler->delete_self(me->filler); 
+            me->filler = 0x0;
+        }
 
         QuexBufferMemory_destruct(&me->_memory);
     }

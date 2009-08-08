@@ -35,7 +35,7 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) size_t QuexBufferFiller_Converter_read_characters(QuexBufferFiller*    alter_ego,
                                                                                 QUEX_TYPE_CHARACTER* start_of_buffer, 
                                                                                 const size_t         N);
-    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_destruct(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   QuexBufferFiller_Converter_delete_self(QuexBufferFiller* alter_ego);
 
 
     TEMPLATE_IN(InputHandleT)    TEMPLATED(QuexBufferFiller_Converter)*
@@ -67,7 +67,7 @@ namespace quex {
                                           TEMPLATED(QuexBufferFiller_Converter_tell_character_index),
                                           TEMPLATED(QuexBufferFiller_Converter_seek_character_index), 
                                           TEMPLATED(QuexBufferFiller_Converter_read_characters),
-                                          TEMPLATED(QuexBufferFiller_Converter_destruct));
+                                          TEMPLATED(QuexBufferFiller_Converter_delete_self));
 
         QuexBufferFiller_Converter_init(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
     }
@@ -103,7 +103,7 @@ namespace quex {
     }
 
     TEMPLATE_IN(InputHandleT) void   
-    QuexBufferFiller_Converter_destruct(QuexBufferFiller* alter_ego)
+    QuexBufferFiller_Converter_delete_self(QuexBufferFiller* alter_ego)
     { 
         TEMPLATED(QuexBufferFiller_Converter)* me = (TEMPLATED(QuexBufferFiller_Converter)*)alter_ego;
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
