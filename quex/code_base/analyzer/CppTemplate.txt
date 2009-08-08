@@ -540,13 +540,16 @@ $$CLASS_BODY_EXTENSION$$
                                                        bool                  ByteOrderReversionF,
                                                        QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
                                                        size_t                BufferMemorySize = 0);
-        template <class InputHandleT> 
-        void                        __init(InputHandleT*  input_handle, 
-                                           const char*               CharacterEncodingName,
-                                           QUEX_TYPE_CHARACTER*      BufferMemory,    
-                                           size_t                    BufferMemorySize);
+        void                        __init();
 
     };
+
+#   define __QUEX_SETTING_TOKEN_ID_TERMINATION    ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
+#   define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED  ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
+
+#   define __QUEX_SETTING_DERIVED_CLASS_NAME    $$LEXER_DERIVED_CLASS_NAME$$
+#   define __QUEX_SETTING_MAX_MODE_CLASS_N      $$MAX_MODE_CLASS_N$$
+#   define __QUEX_SETTING_INITIAL_LEXER_MODE_ID $$INITIAL_LEXER_MODE_ID$$
 
     template <class InputHandleT> inline void
     CLASS::__constructor_core(InputHandleT*             input_handle, 
@@ -576,12 +579,13 @@ $$CLASS_BODY_EXTENSION$$
         std::cout << "##\n";
         std::cout << "###############################################################################\n";
 #       endif
+
+
 #       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        QuexTokenQueue_init(_token_queue, 
-                            token_chunk,
-                            token_chunk + QUEX_SETTING_TOKEN_QUEUE_SIZE);
+        /* explict call of placement new for all tokens in the chunk */
+        QuexTokenQueue_construct(&_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-        QuexTokenQueue_init(_token_queue, 0, 0);
+        QuexTokenQueue_construct(&_token_queue, 0);
 #       else
         token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #       endif
@@ -597,46 +601,18 @@ $$CLASS_BODY_EXTENSION$$
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-        __init(input_handle, CharacterEncodingName, BufferMemory, BufferMemorySize);
+        __init();
 
         /* Assume that by default byte order reversion is disabled! */
         if( ByteOrderReversionF ) byte_order_reversion_enable();
-        else                      __quex_assert(byte_order_reversion() == false);
+        else                      byte_order_reversion_disable();
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
 #       endif
 
-$$CONSTRUCTOR_EXTENSTION$$
-    }
-
-    template <class InputHandleT> inline void
-    CLASS::__init(InputHandleT*             input_handle, 
-                  const char*               CharacterEncodingName,
-                  QUEX_TYPE_CHARACTER*      BufferMemory,         
-                  size_t                    BufferMemorySize)
-    {
-
-        _mode_stack.end        = _mode_stack.begin;
-        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
-
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
-
-        counter.init();
-
-#       ifdef QUEX_OPTION_ASSERTS
-        if( input_handle != 0x0 ) {
-            /* Anything other than direct memory access, uses the 'normal' constructor.     */
-            __quex_assert(BufferMemory == 0x0);
-            __quex_assert(BufferMemorySize == 0x0);
-        } else {
-            /* Directly working on specific memory. */
-            /* This does not mean, that the memory comes from the user. It cannot be 
-             * required: BufferMemory != 0x0                                                */
-            __quex_assert(BufferMemorySize > 2);
-        }
-#       endif
 
         QuexAnalyser_construct((QuexAnalyser*)this,
                                __current_mode_p->analyser_function,
@@ -657,6 +633,17 @@ $$CONSTRUCTOR_EXTENSTION$$
              * the end of the content.                                                     */
             __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
+
+        _mode_stack.end        = _mode_stack.begin;
+        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+
+$$CONSTRUCTOR_EXTENSTION$$
+    }
+
+    inline void
+    CLASS::__init()
+    {
+        counter.init();
     }   
 
     inline void
@@ -745,12 +732,6 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 
 #include <quex/code_base/temporary_macros_off>
 
-#define __QUEX_SETTING_TOKEN_ID_TERMINATION    ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
-#define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED  ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
-
-#define __QUEX_SETTING_DERIVED_CLASS_NAME    $$LEXER_DERIVED_CLASS_NAME$$
-#define __QUEX_SETTING_MAX_MODE_CLASS_N      $$MAX_MODE_CLASS_N$$
-#define __QUEX_SETTING_INITIAL_LEXER_MODE_ID $$INITIAL_LEXER_MODE_ID$$
 
 #if ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
 #   include <quex/code_base/analyzer/constructor.i>

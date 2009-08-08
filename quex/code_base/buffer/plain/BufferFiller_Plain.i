@@ -38,7 +38,7 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) size_t __BufferFiller_Plain_read_characters(QuexBufferFiller*    alter_ego,
                                                                           QUEX_TYPE_CHARACTER* start_of_buffer, 
                                                                           const size_t         N);
-    TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_destruct(QuexBufferFiller* alter_ego);
+    TEMPLATE_IN(InputHandleT) void   __BufferFiller_Plain_delete_self(QuexBufferFiller* alter_ego);
 
 
     TEMPLATE_IN(InputHandleT) TEMPLATED(QuexBufferFiller_Plain)*
@@ -60,7 +60,7 @@ namespace quex {
                                           TEMPLATED(__BufferFiller_Plain_tell_character_index),
                                           TEMPLATED(__BufferFiller_Plain_seek_character_index), 
                                           TEMPLATED(__BufferFiller_Plain_read_characters),
-                                          TEMPLATED(__BufferFiller_Plain_destruct));
+                                          TEMPLATED(__BufferFiller_Plain_delete_self));
 
         QuexBufferFiller_Plain_init(me, input_handle);
     }
@@ -77,7 +77,7 @@ namespace quex {
     }
 
     TEMPLATE_IN(InputHandleT) void 
-    __BufferFiller_Plain_destruct(QuexBufferFiller* alter_ego) 
+    __BufferFiller_Plain_delete_self(QuexBufferFiller* alter_ego) 
     {
         TEMPLATED(QuexBufferFiller_Plain)* me = (TEMPLATED(QuexBufferFiller_Plain)*)alter_ego;
         MemoryManager_BufferFiller_Plain_free(me);
