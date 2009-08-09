@@ -74,11 +74,11 @@ namespace quex {
 
     TEMPLATE_IN(InputHandleT) void  
     QuexBufferFiller_Converter_init(TEMPLATED(QuexBufferFiller_Converter)* me, 
-                                    InputHandleT*     input_handle,
-                                    QuexConverter*    converter,
-                                    const char*       FromCoding,
-                                    const char*       ToCoding,
-                                    size_t            RawBufferSize)
+                                              InputHandleT*     input_handle,
+                                              QuexConverter*    converter,
+                                              const char*       FromCoding,
+                                              const char*       ToCoding,
+                                              size_t            RawBufferSize)
     {
         me->ih = input_handle;
 
@@ -100,6 +100,11 @@ namespace quex {
 
         /*QUEX_UNIT_TEST_ICONV_INPUT_STRATEGY_PRINT_CONSTRUCTOR(FromCoding, ToCoding, me->iconv_handle);*/
         QUEX_ASSERT_BUFFER_INFO(&me->raw_buffer);
+    }
+
+    TEMPLATE_IN(InputHandleT) void  
+    QuexBufferFiller_Converter_reset(TEMPLATED(QuexBufferFiller_Converter)* me, InputHandleT* input_handle)
+    {
     }
 
     TEMPLATE_IN(InputHandleT) void   

@@ -111,7 +111,7 @@ namespace quex {
     QuexBuffer_reset(QuexBuffer* me)
     /* NOTE:     me->_content_character_index_begin == 0 
      *       and me->_content_character_index_end   == 0 
-     *       => buffer is filled the very first time.                                */
+     *       => buffer is filled the very first time.                                    */
     {
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
         me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
@@ -125,7 +125,7 @@ namespace quex {
 #       endif
 
         if( me->filler != 0x0 ) {
-            /* We only have to reset the input stream, if we are not at position zero */
+            /* We only have to reset the input stream, if we are not at position zero    */
             QuexBufferFiller_initial_load(me);   
         } else {
             me->_content_character_index_begin = 0; 

@@ -49,7 +49,7 @@ namespace quex {
                                0x0, QUEX_SETTING_BUFFER_SIZE,
                                IANA_CodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
-        __init();
+        counter.init();
 
         /* Keep track of 'who's your daddy?'                              */
         m->parent = this->_parent_memento;

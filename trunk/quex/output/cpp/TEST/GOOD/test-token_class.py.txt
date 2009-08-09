@@ -14,6 +14,7 @@
 
 #define QUEX_TYPE_TOKEN                    ::europa::deutschland::baden_wuertemberg::ispringen::MeinToken
 #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  MeinToken
+#define QUEX_TYPE_STR_TOKEN_COMPLETE       __EUROPA__DEUTSCHLAND__BADEN_WUERTEMBERG__ISPRINGEN____MeinToken
 #define QUEX_TYPE_LINE_N                   size_t
 #define QUEX_TYPE_COLUMN_N                 size_t
 
