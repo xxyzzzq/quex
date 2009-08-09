@@ -1,0 +1,9 @@
+-----------------------------
+IN:
+    [{ id : std::string; }]
+
+OUT:
+
+a string:1:error: Numeric type required.
+a string:1:error: Example: <token_id: uint16_t>, Found: 'std::string'
+a string:1:error: 

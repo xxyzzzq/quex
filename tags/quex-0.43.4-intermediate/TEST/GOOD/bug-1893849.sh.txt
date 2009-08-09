@@ -1,0 +1,2 @@
+command line: Engine name must be a valid identifier ('-o', '--engine').
+command line: Received: 'Engin-e'

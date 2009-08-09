@@ -1,0 +1,25 @@
+header {
+#include <vector>
+#include <string>
+#include <iostream>
+}
+
+start = REAL;
+
+mode REAL : { 
+    1      => QUEX_TKN_N1a(Lexeme); 
+    mini_1 => QUEX_TKN_N1b(mini_x=11, mini_y=11); 
+    big_1  => QUEX_TKN_N1c(big_x=11, big_y=11);
+    /**/
+    2      => QUEX_TKN_N2a(Lexeme); 
+    mini_2 => QUEX_TKN_N2b(mini_x=12, mini_y=12); 
+    big_2  => QUEX_TKN_N1c(big_x=12, big_y=12);
+    /**/
+    3      => QUEX_TKN_N3a(Lexeme); 
+    mini_3 => QUEX_TKN_N3b(mini_x=13, mini_y=13); 
+    big_3  => QUEX_TKN_N1c(big_x=13, big_y=13);
+    /**/
+    who    => QUEX_TKN_WHO(who_is_that=4711);
+    /**/
+    [ \t\n] { }
+}

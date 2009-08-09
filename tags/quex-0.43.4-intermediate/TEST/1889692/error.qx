@@ -1,0 +1,6 @@
+define {
+NEW_LINE ""\n"
+}
+mode START {
+NEW_LINE {}
+}
