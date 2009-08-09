@@ -52,10 +52,13 @@ namespace quex {
                                                                       QUEX_TYPE_CHARACTER*, const size_t),
                                       void         (*delete_self)(QuexBufferFiller*))
     {
-        __quex_assert(me != 0x0);
-        __quex_assert(tell_character_index != 0x0);
-        __quex_assert(seek_character_index != 0x0);
-        __quex_assert(read_characters != 0x0);
+        {
+            __quex_assert(me != 0x0);
+            __quex_assert(tell_character_index != 0x0);
+            __quex_assert(seek_character_index != 0x0);
+            __quex_assert(read_characters != 0x0);
+        }
+
 
         me->tell_character_index = tell_character_index;
         me->seek_character_index = seek_character_index;
@@ -76,9 +79,10 @@ namespace quex {
         __quex_assert(buffer->_input_p                       == ContentFront);   
         __quex_assert(buffer->_lexeme_start_p                == ContentFront);
 
+
         /* end   != 0, means that the buffer is filled.
          * begin == 0, means that we are standing at the begin.
-         * => end != 0 and begin == 0, means that the initial content is loaded already. */
+         * => end != 0 and begin == 0, means that the initial content is loaded already.    */
         if( buffer->_content_character_index_begin == 0 ) {
             if ( buffer->_content_character_index_end != 0) return;
         } else {
@@ -92,9 +96,10 @@ namespace quex {
         if( me->tell_character_index(me) != LoadedN ) 
             QUEX_ERROR_EXIT(__QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM);
 
-        /* If end of file has been reached, then the 'end of file' pointer needs to be set*/
+        /* If end of file has been reached, then the 'end of file' pointer needs to be set. */
         if( LoadedN != ContentSize ) QuexBuffer_end_of_file_set(buffer, ContentFront + LoadedN);
         else                         QuexBuffer_end_of_file_unset(buffer);
+
 
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(buffer);
     } 

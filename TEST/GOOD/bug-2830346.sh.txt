@@ -1,7 +1,3 @@
-moritz-token_ids:43:8: warning: #warning "The member function 'map_id_to_name(...)' has been defined for a different lexical analyzer before. This may result in incorrect token id names. This should only occur when multiple analyzers are accessed in one single source file."
-moritz-token_ids:44:8: warning: #warning "Define the macro QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED to disable this warning."
-boeck-token_ids:43:8: warning: #warning "The member function 'map_id_to_name(...)' has been defined for a different lexical analyzer before. This may result in incorrect token id names. This should only occur when multiple analyzers are accessed in one single source file."
-boeck-token_ids:44:8: warning: #warning "Define the macro QUEX_OPTION_WARNING_MAP_TOKEN_ID_TO_NAME_DEFINED_DISABLED to disable this warning."
 ---------------------------------
  Max:
 ME________	Max
