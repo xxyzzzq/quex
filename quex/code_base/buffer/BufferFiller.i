@@ -35,6 +35,36 @@ namespace quex {
     QUEX_INLINE size_t       
     __BufferFiller_read_characters(QuexBuffer*, QUEX_TYPE_CHARACTER*, const size_t);
 
+    TEMPLATE_IN(InputHandleT) QuexBufferFiller*
+    QuexBufferFiller_new(InputHandleT*  input_handle, 
+                         const char*    CharacterEncodingName,
+                         const size_t   TranslationBufferMemorySize)
+    {
+        if( CharacterEncodingName != 0x0 ) {
+
+            if( QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW == 0x0 ) {
+                QUEX_ERROR_EXIT("Use of buffer filler type 'CharacterEncodingName' while " \
+                                "'QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW' has not\n" \
+                                "been defined (use --iconv, --icu, --converter-new to specify converter).\n");
+            }
+
+            /* The specification of a CharacterEncodingName means that a converter is
+             * to be used. This can also happen if the engine is to work on plain memory.
+             * In the latter case the input_handle = 0x0 is passed to the 'new' allocator
+             * without the slightest harm.                                                 */
+            return (QuexBufferFiller*)QuexBufferFiller_Converter_new(input_handle, 
+                                  QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW,
+                                  CharacterEncodingName, /* Internal Coding: Default */0x0,
+                                  TranslationBufferMemorySize);
+       
+        } else {
+            /* If no converter is required, it has to be considered whether the buffer needs
+             * filling or not. If the input source is not memory, then the 'plain' buffer
+             * filling is applied. If the input source is memory, no filler is required.   */
+            return (input_handle == 0x0) ? 0x0 : (QuexBufferFiller*)QuexBufferFiller_Plain_new(input_handle);
+        }
+    }
+
     QUEX_INLINE void       
     QuexBufferFiller_delete_self(QuexBufferFiller* me)
     { 
