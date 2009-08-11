@@ -1,0 +1,24 @@
+token {
+    ERROR
+    HALF
+    IDENTIFIER
+    MARK
+    ME
+    MINE
+    NUMBER
+    SOMETHING_IS
+}
+
+mode SIMPLE : 
+<skip: [ \t\n]> 
+{
+    on_failure           => QUEX_TKN_ERROR(Lexeme);
+    on_end_of_stream     => QUEX_TKN_TERMINATION(LexemeNull);
+    [0-9]+               => QUEX_TKN_NUMBER(Lexeme);
+    I[ ]+[a-z]+          => QUEX_TKN_ME(Lexeme);
+    [A-Z]?[a-z]+         => QUEX_TKN_IDENTIFIER(Lexeme);
+    "1/2"                => QUEX_TKN_HALF(Lexeme);
+    [,.]                 => QUEX_TKN_MARK(Lexeme);
+    [A-Z]?[a-z]+[ ]+"is" => QUEX_TKN_SOMETHING_IS(Lexeme);
+    "my"[ ]+[a-z]+       => QUEX_TKN_MINE(Lexeme);
+}
