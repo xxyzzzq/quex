@@ -224,8 +224,7 @@ with the following member functions.
 .. code-block:: cpp
 
    bool     byte_order_reversion();
-   void     byte_order_reversion_enable();
-   void     byte_order_reversion_disable();
+   void     byte_order_reversion_set(bool Value);
 
 
 Summary

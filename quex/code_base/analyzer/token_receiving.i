@@ -125,7 +125,8 @@ namespace quex {
     {
         __quex_assert(QueueMemoryBegin != 0x0);
         __quex_assert(QueueMemoryEnd > QueueMemoryBegin);
-        QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd);
+        QuexTokenQueue_init(_token_queue, QueueMemoryBegin, QueueMemoryEnd,
+                            QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
         do {
             QuexAnalyser::current_analyser_function(this);

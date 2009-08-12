@@ -62,7 +62,7 @@ namespace quex {
         /* Not included? return 'false' to indicate we're on the top level     */
         if( this->_parent_memento == 0x0 ) return false; 
 
-        /* (1) Free the related memory that is no longer used                  */
+        /* Free the related memory that is no longer used                      */
         QuexAnalyser_destruct((QuexAnalyser*)this);
 
         /* Restore the lexical analyser to the state it was before the include */
@@ -71,6 +71,19 @@ namespace quex {
 
         /* Return to including file succesful */
         return true;
+    }
+
+    inline void
+    CLASS::include_stack_delete() 
+    {
+        while( this->_parent_memento != 0x0 ) {
+            /* Free the related memory that is no longer used                      */
+            QuexAnalyser_destruct((QuexAnalyser*)this);
+
+            /* Restore the lexical analyser to the state it was before the include */
+            /* Here, the 'memento_unpack' section is executed                      */
+            memento_unpack(this->_parent_memento);
+        }
     }
 
 } // namespace quex

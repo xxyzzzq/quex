@@ -7,6 +7,8 @@
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/buffer/BufferFiller>
 
+#include <quex/code_base/temporary_macros_on>
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <stdexcept>
 namespace quex { 
@@ -58,6 +60,17 @@ namespace quex {
                                   TranslationBufferMemorySize);
        
         } else {
+#           if defined(__QUEX_OPTION_CONVERTER_ENABLED) 
+#           ifndef QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
+            __QUEX_STD_printf("Warning: No character encoding name specified, while this\n" \
+                              "Warning: analyzer was generated for use with a converter.\n" \
+                              "Warning: Please, consult the documentation about the constructor\n" \
+                              "Warning: or the reset function. If is is desired to do a plain\n" \
+                              "Warning: buffer filler with this setup, you might want to disable\n" \
+                              "Warning: this warning with the macro:\n" \
+                              "Warning:     QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED\n");
+#           endif
+#           endif
             /* If no converter is required, it has to be considered whether the buffer needs
              * filling or not. If the input source is not memory, then the 'plain' buffer
              * filling is applied. If the input source is memory, no filler is required.   */
@@ -75,19 +88,18 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    __QuexBufferFiller_init_functions(QuexBufferFiller* me,
-                                      size_t       (*tell_character_index)(QuexBufferFiller*),
-                                      void         (*seek_character_index)(QuexBufferFiller*, const size_t),
-                                      size_t       (*read_characters)(QuexBufferFiller*,
-                                                                      QUEX_TYPE_CHARACTER*, const size_t),
-                                      void         (*delete_self)(QuexBufferFiller*))
+    __QuexBufferFiller_setup_functions(QuexBufferFiller* me,
+                                       size_t       (*tell_character_index)(QuexBufferFiller*),
+                                       void         (*seek_character_index)(QuexBufferFiller*, const size_t),
+                                       size_t       (*read_characters)(QuexBufferFiller*,
+                                                                       QUEX_TYPE_CHARACTER*, const size_t),
+                                       void         (*delete_self)(QuexBufferFiller*))
     {
-        {
-            __quex_assert(me != 0x0);
-            __quex_assert(tell_character_index != 0x0);
-            __quex_assert(seek_character_index != 0x0);
-            __quex_assert(read_characters != 0x0);
-        }
+        __quex_assert(me != 0x0);
+        __quex_assert(tell_character_index != 0x0);
+        __quex_assert(seek_character_index != 0x0);
+        __quex_assert(read_characters != 0x0);
+        __quex_assert(delete_self != 0x0);
 
 
         me->tell_character_index = tell_character_index;
@@ -105,19 +117,17 @@ namespace quex {
         QuexBufferFiller*    me           = buffer->filler;
 
         /* Assume: Buffer initialization happens independently */
-        __quex_assert(buffer->_content_character_index_begin == 0);
-        __quex_assert(buffer->_input_p                       == ContentFront);   
-        __quex_assert(buffer->_lexeme_start_p                == ContentFront);
-
+        __quex_assert(buffer->_input_p        == ContentFront);   
+        __quex_assert(buffer->_lexeme_start_p == ContentFront);
 
         /* end   != 0, means that the buffer is filled.
          * begin == 0, means that we are standing at the begin.
          * => end != 0 and begin == 0, means that the initial content is loaded already.    */
-        if( buffer->_content_character_index_begin == 0 ) {
-            if ( buffer->_content_character_index_end != 0) return;
-        } else {
-            me->seek_character_index(me, 0);
-        }
+        // if( buffer->_content_character_index_begin == 0 ) {
+        //     if ( buffer->_content_character_index_end != 0) return;
+        //} else {
+        me->seek_character_index(me, 0);
+        //}
         const size_t  LoadedN = __BufferFiller_read_characters(buffer, ContentFront, ContentSize);
 
         buffer->_content_character_index_begin = 0; 
@@ -639,6 +649,8 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
+
+#include <quex/code_base/temporary_macros_off>
 
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>

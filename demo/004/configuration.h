@@ -37,7 +37,7 @@
 #   else
 #      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); register quex::Token token; // qlex.token = &token;
 #      define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(&token); token_id = token.type_id();
-#      define BENCHMARK_SETTING_RESET          qlex._reset();
+#      define BENCHMARK_SETTING_RESET          qlex.reset(fh);
 #   endif
 
 #   define BENCHMARK_SETTING_TERMINATE      qlex.token = 0x0;

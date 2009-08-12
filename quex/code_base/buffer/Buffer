@@ -146,6 +146,8 @@ namespace quex {
     QUEX_INLINE void
     __Buffer_reverse_byte_order(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
 
+    QUEX_INLINE void  QuexBuffer_print_this(QuexBuffer*);
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */
 #endif

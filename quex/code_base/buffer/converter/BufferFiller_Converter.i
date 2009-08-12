@@ -63,11 +63,11 @@ namespace quex {
                                          const char*       ToCoding,
                                          size_t            RawBufferSize)
     {
-        __QuexBufferFiller_init_functions(&me->base,
-                                          TEMPLATED(QuexBufferFiller_Converter_tell_character_index),
-                                          TEMPLATED(QuexBufferFiller_Converter_seek_character_index), 
-                                          TEMPLATED(QuexBufferFiller_Converter_read_characters),
-                                          TEMPLATED(QuexBufferFiller_Converter_delete_self));
+        __QuexBufferFiller_setup_functions(&me->base,
+                                           TEMPLATED(QuexBufferFiller_Converter_tell_character_index),
+                                           TEMPLATED(QuexBufferFiller_Converter_seek_character_index), 
+                                           TEMPLATED(QuexBufferFiller_Converter_read_characters),
+                                           TEMPLATED(QuexBufferFiller_Converter_delete_self));
 
         QuexBufferFiller_Converter_init(me, input_handle, converter, FromCoding, ToCoding, RawBufferSize);
     }

@@ -206,6 +206,14 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 #ifndef QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
 $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
 #endif
+/* Following switch is set, if a user defined converter is defined.          */
+$$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
+
+#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
+#   ifndef    __QUEX_OPTION_CONVERTER_ENABLED
+#      define __QUEX_OPTION_CONVERTER_ENABLED
+#   endif
+#endif
 
 // Begin of line pre-condition requires an extra flag in the buffer
 // structure. Only out-comment this in case of tough memory restrictions,
@@ -353,8 +361,7 @@ $$MEMENTO_EXTENSIONS$$
 
         // -- activate/deactivate byte order reversion (big-/little-endian)
         bool     byte_order_reversion();
-        void     byte_order_reversion_enable();
-        void     byte_order_reversion_disable();
+        void     byte_order_reversion_set(bool Value);
 
         // -- token stream: read next token
         void  get_token() 
@@ -438,8 +445,9 @@ $$MEMENTO_EXTENSIONS$$
         void    seek(const size_t);
 
     public:
-        // handle with extreme care:
-        void   _reset();
+        template <class InputHandleT> void
+        reset(InputHandleT*   input_handle, 
+              const char*     CharacterEncodingName = 0x0); 
 
         // (*) Mode database: allows to match from 'lex mode id' to a real mode object.
         //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
@@ -520,6 +528,7 @@ $$CLASS_BODY_EXTENSION$$
         template<class InputHandleT> $$LEXER_CLASS_NAME$$Memento*  
             memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
         void  memento_unpack(struct $$LEXER_CLASS_NAME$$Memento_tag*);
+        void  include_stack_delete();
 
     public:
         template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
@@ -529,8 +538,9 @@ $$CLASS_BODY_EXTENSION$$
                                                         const int                MODE_ID         = -1, 
                                                         const char*              IANA_CodingName = 0x0);
         bool                               include_pop();
-
 #   endif
+    public:
+        void  print_this();
 
     private:
         // (*) Common core of all constructors ___________________________________________
@@ -600,8 +610,7 @@ $$CLASS_BODY_EXTENSION$$
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
         /* Assume that by default byte order reversion is disabled! */
-        if( ByteOrderReversionF ) byte_order_reversion_enable();
-        else                      byte_order_reversion_disable();
+        byte_order_reversion_set(ByteOrderReversionF);
 
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
@@ -609,6 +618,10 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
         set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
+
+        _mode_stack.end        = _mode_stack.begin;
+        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+
 
         QuexAnalyser_construct((QuexAnalyser*)this,
                                __current_mode_p->analyser_function,
@@ -630,16 +643,24 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
             __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
 
-        _mode_stack.end        = _mode_stack.begin;
-        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
-
 $$CONSTRUCTOR_EXTENSTION$$
     }
 
-    inline void
-    CLASS::_reset()
+    template <class InputHandleT> inline void
+    CLASS::reset(InputHandleT*   input_handle, 
+                 const char*     CharacterEncodingName /* = 0x0 */) 
     {
-        QuexAnalyser_reset((QuexAnalyser*)this);
+        __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+        set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+
+        _mode_stack.end        = _mode_stack.begin;
+        _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+
+        QuexAnalyser_reset((QuexAnalyser*)this, 
+                           __current_mode_p->analyser_function,
+                           input_handle, 
+                           CharacterEncodingName, 
+                           QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
         counter.init();
 
@@ -647,7 +668,19 @@ $$CONSTRUCTOR_EXTENSTION$$
         QuexTokenQueue_reset(this->_token_queue);
 #       endif
 
-        set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        accumulator.clear();
+#       endif
+
+#       ifdef QUEX_OPTION_INCLUDE_STACK
+        include_stack_delete();
+#       endif
+
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        post_categorizer.clear();
+#       endif
+
+        byte_order_reversion_set(false);
     }
 
 
@@ -656,12 +689,8 @@ $$CONSTRUCTOR_EXTENSTION$$
     { return buffer._byte_order_reversion_active_f; }
 
     inline void     
-    CLASS::byte_order_reversion_enable()
-    { buffer._byte_order_reversion_active_f = true; }
-
-    inline void     
-    CLASS::byte_order_reversion_disable()
-    { buffer._byte_order_reversion_active_f = false; }
+    CLASS::byte_order_reversion_set(bool Value)
+    { buffer._byte_order_reversion_active_f = Value; }
 
     inline const char* 
     CLASS::version() const

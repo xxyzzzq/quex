@@ -17,7 +17,7 @@ namespace quex {
         QUEX_TYPE_CHARACTER          name_first_character;
         const QUEX_TYPE_CHARACTER*   name_remainder;
 
-        QUEX_TYPE_TOKEN_ID     token_id;
+        QUEX_TYPE_TOKEN_ID           token_id;
 
         struct QuexPostCategorizerNode_tag*   lesser;
         struct QuexPostCategorizerNode_tag*   greater;
@@ -29,6 +29,8 @@ namespace quex {
                                   const QUEX_TYPE_TOKEN_ID TokenID);
         void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
         QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
+
+        void                clear();
 
         QuexPostCategorizerNode*  root;
 

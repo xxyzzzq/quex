@@ -32,11 +32,11 @@ namespace quex {
 
     } QuexTokenQueue;
 
-#   define QuexTokenQueue_init(me, Memory, MemoryEnd, MemoryEndMSafetyBorder) \
+#   define QuexTokenQueue_init(me, Memory, MemoryEnd, SafetyBorder) \
           do {                                                                \
              (me).begin                   = Memory;                           \
              (me).end                     = MemoryEnd;                        \
-             (me).end_minus_safety_border = MemoryEndMSafetyBorder;           \
+             (me).end_minus_safety_border = MemoryEnd - SafetyBorder;         \
              QuexTokenQueue_reset(me);                                        \
           } while(0)
  
@@ -51,7 +51,7 @@ namespace quex {
     QuexTokenQueue_construct(QuexTokenQueue* me, const size_t N)
     {
         if( N == 0 ) {
-            QuexTokenQueue_init(*me, 0x0, 0x0, 0x0); 
+            QuexTokenQueue_init(*me, 0x0, 0x0, 0); 
         } else {
             __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
@@ -61,7 +61,7 @@ namespace quex {
             /* Call placement new (plain constructor) for all tokens in chunk. */
             for(QUEX_TYPE_TOKEN* iterator = chunk; iterator != chunk_end; ++iterator)
                 new ((void*)iterator) QUEX_TYPE_TOKEN;  
-            QuexTokenQueue_init(*me, chunk, chunk_end, chunk_end- QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
+            QuexTokenQueue_init(*me, chunk, chunk_end, QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER); 
         }
     }
 

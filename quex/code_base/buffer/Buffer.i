@@ -16,6 +16,7 @@ namespace quex {
 #endif
 
     QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me); 
+    QUEX_INLINE void  QuexBuffer_init_analyzis(QuexBuffer*  me);
     QUEX_INLINE void  QuexBufferMemory_construct(QuexBufferMemory*    me, 
                                                  QUEX_TYPE_CHARACTER* memory, size_t Size);
     QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*     me, 
@@ -53,9 +54,6 @@ namespace quex {
 
         me->filler = QuexBufferFiller_new(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 
-        /* Set byte order before 'init' so that the initial load can be done propperly */
-        me->_byte_order_reversion_active_f = false;
-
         QuexBuffer_init(me);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
@@ -70,8 +68,34 @@ namespace quex {
         me->_content_character_index_end   = 0;
         me->_content_character_index_begin = 0; 
 
+        QuexBuffer_init_analyzis(me);
+
+        if( me->filler != 0x0 ) {
+            /* We only have to reset the input stream, if we are not at position zero    */
+            QuexBufferFiller_initial_load(me);   
+        } 
+
+        QUEX_BUFFER_ASSERT_CONSISTENCY(me);
+        QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
+    }
+
+    QUEX_INLINE void
+    QuexBuffer_init_analyzis(QuexBuffer*  me)
+    {
+        /* Set byte order before 'init' so that the initial load can be done propperly */
+        me->_byte_order_reversion_active_f = false;
+
         /* Init is a special kind of reset, where some things might not be reset. */
-        QuexBuffer_reset(me);
+        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
+        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
+        /* NOTE: The terminating zero is stored in the first character **after** the  
+         *       lexeme (matching character sequence). The begin of line pre-condition  
+         *       is concerned with the last character in the lexeme, which is the one  
+         *       before the 'char_covered_by_terminating_zero'.                          */
+        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
+#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
+#       endif
     }
 
     QUEX_INLINE void
@@ -85,22 +109,31 @@ namespace quex {
         QuexBufferMemory_destruct(&me->_memory);
     }
 
-    QUEX_INLINE void
-    QuexBuffer_reset(QuexBuffer* me)
+    TEMPLATE_IN(InputHandleT) void
+    QuexBuffer_reset(QuexBuffer*    me, 
+                     InputHandleT*  input_handle, 
+                     const char*    CharacterEncodingName, 
+                     const size_t   TranslationBufferMemorySize)
     /* NOTE:     me->_content_character_index_begin == 0 
      *       and me->_content_character_index_end   == 0 
-     *       => buffer is filled the very first time.                                    */
+     *       => buffer is filled the very first time.                                    
+     * NOTE: The reset of the buffer filler happens by 'delete' and 'new'. This is
+     *       done in order to keep the template decoupled from the rest. Only the
+     *       'new' functions (allocator + constructor) know about the template. The
+     *       'delete_self' function pointer is set to a template that knows how to
+     *       deallocate the object.
+     */
     {
-        me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
-        me->_lexeme_start_p = me->_memory._front + 1;  /* Thus, set it on your own.      */
-        /* NOTE: The terminating zero is stored in the first character **after** the  
-         *       lexeme (matching character sequence). The begin of line pre-condition  
-         *       is concerned with the last character in the lexeme, which is the one  
-         *       before the 'char_covered_by_terminating_zero'.                          */
-        me->_character_at_lexeme_start     = '\0';  /* (0 means: no character covered)   */
-#       ifdef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-        me->_character_before_lexeme_start = '\n';  /* --> begin of line                 */
-#       endif
+        /* Setup the buffer filler for new analyzis */
+        if( me->filler != 0x0 ) { 
+            /* If the same input handle is used, as before, than the following command
+             * ensures, that we start at the same position.                            */
+            me->filler->seek_character_index(me->filler, 0);
+            me->filler->delete_self(me->filler);
+        }
+        me->filler = QuexBufferFiller_new(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+
+        QuexBuffer_init_analyzis(me);
 
         if( me->filler != 0x0 ) {
             /* We only have to reset the input stream, if we are not at position zero    */
@@ -565,6 +598,34 @@ namespace quex {
         me->_front = me->_back = (QUEX_TYPE_CHARACTER*)0x0;
     }
 
+    QUEX_INLINE void  
+    QuexBuffer_print_this(QuexBuffer* me)
+    {
+        QUEX_TYPE_CHARACTER*  Offset = me->_memory._front;
+
+        __QUEX_STD_printf("   Buffer:\n");
+        __QUEX_STD_printf("      Memory:\n");
+        __QUEX_STD_printf("      _front         =  0;\n");
+        __QUEX_STD_printf("      _back          = +0x%X;\n", (int)(me->_memory._back - Offset));
+        if( me->_memory._end_of_file_p != 0x0 ) 
+            __QUEX_STD_printf("      _end_of_file_p = +0x%X;\n", (int)(me->_memory._end_of_file_p - Offset));
+        else
+            __QUEX_STD_printf("      _end_of_file_p = <void>;\n");
+
+        /* Store whether the memory has an external owner */
+        __QUEX_STD_printf("      _external_owner_f = %s;\n", me->_memory._external_owner_f ? "true" : "false");
+
+        __QUEX_STD_printf("   _input_p        = +0x%X;\n", (int)(me->_input_p        - Offset));
+        __QUEX_STD_printf("   _lexeme_start_p = +0x%X;\n", (int)(me->_lexeme_start_p - Offset));
+
+        __QUEX_STD_printf("   _character_at_lexeme_start = %X;\n", (int)me->_character_at_lexeme_start);
+#       ifdef __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
+        __QUEX_STD_printf("   _character_before_lexeme_start = %X;\n", (int)me->_character_before_lexeme_start);
+#       endif
+        __QUEX_STD_printf("   _content_character_index_begin = %i;\n", (int)me->_content_character_index_begin);
+        __QUEX_STD_printf("   _content_character_index_end   = %i;\n", (int)me->_content_character_index_end);
+        __QUEX_STD_printf("   _byte_order_reversion_active_f = %s;\n", me->_byte_order_reversion_active_f ? "true" : "false");
+    }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } /* namespace quex */

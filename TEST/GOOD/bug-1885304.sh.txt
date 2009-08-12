@@ -567,10 +567,7 @@ namespace quex {
         std::cout << "###############################################################################\n";
 #       endif
 #       if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
-        QUEX_TYPE_TOKEN*    token_chunk = new QUEX_TYPE_TOKEN[QUEX_SETTING_TOKEN_QUEUE_SIZE]; 
-        QuexTokenQueue_init(_token_queue, 
-                            token_chunk,
-                            token_chunk + QUEX_SETTING_TOKEN_QUEUE_SIZE);
+        QuexTokenQueue_construct(_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
         QuexTokenQueue_init(_token_queue, 0, 0);
 #       else

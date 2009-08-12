@@ -103,3 +103,8 @@ the suffix enables something, the option with the suffix disables the 'something
    line counting is disabled the corresponding stamping is also disabled,
    anyway.
 
+.. cmacro:: QUEX_OPTION_WARNING_ON_PLAIN_FILLER_DISABLED
+
+   Disable the warning message that is printed if a analyzer is used without
+   a character encoding while it was created for a converter interface such
+   as IConv or ICU.

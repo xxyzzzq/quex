@@ -42,6 +42,8 @@ namespace quex {
                                                                 QUEX_TYPE_CHARACTER* End,
                                                                 const ptrdiff_t  LexemeLength,
                                                                 const bool       LicenseToIncrementLineCountF=false);
+
+        virtual void print_this();
     };
 
     struct CounterPseudo {
@@ -56,6 +58,8 @@ namespace quex {
         void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
                                 const int LineNIncrement) { }
         void  __shift_end_values_to_start_values() { }
+
+        virtual void print_this() { __QUEX_STD_printf("   Counter: <none>\n"); }
     };
 
     struct CounterWithIndentation 
@@ -88,6 +92,7 @@ namespace quex {
                                                          QUEX_TYPE_CHARACTER* Begin,
                                                          QUEX_TYPE_CHARACTER* End,
                                                          const bool       LicenseToCountF);
+        virtual void print_this();
     };
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
