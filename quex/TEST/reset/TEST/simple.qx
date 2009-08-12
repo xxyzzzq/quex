@@ -9,6 +9,8 @@ token {
     SOMETHING_IS
 }
 
+start = SIMPLE;
+
 mode SIMPLE : 
 <skip: [ \t\n]> 
 {
@@ -22,3 +24,5 @@ mode SIMPLE :
     [A-Z]?[a-z]+[ ]+"is" => QUEX_TKN_SOMETHING_IS(Lexeme);
     "my"[ ]+[a-z]+       => QUEX_TKN_MINE(Lexeme);
 }
+
+mode EXTRA { a => QUEX_TKN_MINE(Lexeme); }

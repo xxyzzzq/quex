@@ -1,4 +1,4 @@
-<history date="Tue Aug 11 14:00:12 2009" element-n="39">
+<history date="Wed Aug 12 15:13:47 2009" element-n="51">
     <day year="2009" month="08" day="10">
         <history-init time="00:26:39"/>
         <crc-error time="00:28:59" application="simple-lexer" choice="1" database-crc="-1773350601" real-crc="759753114"/>
@@ -40,6 +40,20 @@
         <crc-error time="11:29:04" application="iconv-lexer" choice="136" database-crc="-1455552522" real-crc="319410180"/>
         <crc-error time="11:29:04" application="iconv-lexer" choice="1000" database-crc="-87992928" real-crc="319410180"/>
         <crc-error time="11:53:36" application="iconv-lexer" choice="1" database-crc="393824895" real-crc="319410180"/>
-        <test-runs-today n="15" ok-n="3" fail-n="11" else-n="1" last-run="oll korrekt" last-time="12:00:12"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="1" database-crc="393824895" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="2" database-crc="468247794" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="3" database-crc="530087561" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="20" database-crc="-1087964923" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="30" database-crc="2029330731" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="50" database-crc="-2054227188" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="134" database-crc="-1579207936" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="135" database-crc="-1515214469" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="136" database-crc="-1455552522" real-crc="319410180"/>
+        <crc-error time="20:09:01" application="icu-lexer" choice="1000" database-crc="-87992928" real-crc="319410180"/>
+        <test-runs-today n="19" ok-n="6" fail-n="12" else-n="1" last-run="oll korrekt" last-time="20:10:21"/>
+    </day>
+    <day year="2009" month="08" day="12">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="13:12:35"/>
+        <crc-error time="13:13:47" application="lexer-x" choice="1" database-crc="1103710242" real-crc="-2023218322"/>
     </day>
 </history>

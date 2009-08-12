@@ -1,6 +1,6 @@
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
-FILES = lexer codec-lexer iconv-lexer icu-lexer
+FILES = lexer codec-lexer iconv-lexer icu-lexer lexer-x
 
 CC = g++ -I$(QUEX_PATH) \
 	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
@@ -30,6 +30,12 @@ icu-lexer: lexer.cpp
 lexer: lexer.cpp 
 	quex -i simple.qx -o Simple --token-policy users_token
 	$(CC) lexer.cpp Simple.cpp Simple-core-engine.cpp -o $@ \
+		 -DQUEX_SETTING_BUFFER_SIZE=14                      \
+		 -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=9           
+
+lexer-x: lexer-x.cpp
+	quex -i simple.qx -o Simple --token-policy users_token
+	$(CC) lexer-x.cpp Simple.cpp Simple-core-engine.cpp -o $@ \
 		 -DQUEX_SETTING_BUFFER_SIZE=14                      \
 		 -DQUEX_SETTING_TRANSLATION_BUFFER_SIZE=9           
 
