@@ -63,7 +63,6 @@ __QUEX_CORE = \
     ./analyzer/CounterWithIndentation.i \
     ./analyzer/Counter \
     ./analyzer/token_sending.i \
-    ./analyzer/IncludeStack \
     ./temporary_macros_off \
     ./StrangeStream_unit_tests)
 

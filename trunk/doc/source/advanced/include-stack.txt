@@ -496,6 +496,12 @@ the correspondent ``memento_unpack`` section:
        ...
    }
 
+.. note:: 
+
+   Do not be surprised if the ``memento_unpack`` handler is called upon
+   deletion of the lexical analyzer or upon reset. This is required in order to
+   give the user a chance to clean up his memory propperly.
+
 .. sec-include-stack-caveats:
 
 Caveats

@@ -56,11 +56,11 @@ namespace quex {
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)* me, InputHandleT*    input_handle)
     {
-        __QuexBufferFiller_init_functions(&me->base,
-                                          TEMPLATED(__BufferFiller_Plain_tell_character_index),
-                                          TEMPLATED(__BufferFiller_Plain_seek_character_index), 
-                                          TEMPLATED(__BufferFiller_Plain_read_characters),
-                                          TEMPLATED(__BufferFiller_Plain_delete_self));
+        __QuexBufferFiller_setup_functions(&me->base,
+                                           TEMPLATED(__BufferFiller_Plain_tell_character_index),
+                                           TEMPLATED(__BufferFiller_Plain_seek_character_index), 
+                                           TEMPLATED(__BufferFiller_Plain_read_characters),
+                                           TEMPLATED(__BufferFiller_Plain_delete_self));
 
         QuexBufferFiller_Plain_init(me, input_handle);
     }

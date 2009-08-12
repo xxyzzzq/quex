@@ -95,6 +95,17 @@ def write_engine_header(Modes):
         if mode.get_code_fragment_list("on_entry") != []: entry_handler_active_f = True
         if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
 
+    # Buffer filler converter (0x0 means: no buffer filler converter)
+    converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
+    if Setup.converter_user_new_func != "": 
+        converter_new_str += Setup.converter_user_new_func + "()"
+        user_defined_converter_f = True
+    else: 
+        converter_new_str = "/* " + converter_new_str + " */"
+        user_defined_converter_f = False
+
+    token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
+
     txt = template_code_txt
     def set_switch(txt, SwitchF, Name):
         if SwitchF: txt = txt.replace("$$SWITCH$$ %s" % Name, "#define    %s" % Name)
@@ -111,6 +122,7 @@ def write_engine_header(Modes):
     txt = set_switch(txt, not Setup.no_include_stack_support_f,    "QUEX_OPTION_INCLUDE_STACK")
     txt = set_switch(txt, Setup.converter_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
     txt = set_switch(txt, Setup.converter_icu_f,      "QUEX_OPTION_ENABLE_ICU")
+    txt = set_switch(txt, user_defined_converter_f , "__QUEX_OPTION_CONVERTER_ENABLED")
     txt = set_switch(txt, Setup.token_policy == "queue",       "QUEX_OPTION_TOKEN_POLICY_QUEUE")
     txt = set_switch(txt, Setup.token_policy == "users_token", "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN")
     txt = set_switch(txt, Setup.token_policy == "users_queue", "QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE")
@@ -124,14 +136,6 @@ def write_engine_header(Modes):
     txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
     txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
                                "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
-
-    # Buffer filler converter (0x0 means: no buffer filler converter)
-    converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
-    if Setup.converter_user_new_func != "": converter_new_str += Setup.converter_user_new_func + "()"
-    else:                                   converter_new_str = "/* " + converter_new_str + " */"
-    
-
-    token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
 
     txt = blue_print(txt,
             [

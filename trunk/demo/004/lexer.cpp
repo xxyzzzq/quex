@@ -126,7 +126,7 @@ benchmark(std::FILE* fh, const size_t FileSize, double* repetition_n)
     //           + (assignment, increment by one, comparision * 2, _reset(),
     //              clock(), comparision) * RepetitionN
     
-    cout << "//Benchmark (including overhead)\n";
+    cout << "// Benchmark (including overhead)\n";
     cout << "//    TokenN: " << (int)((token_n-1) / *repetition_n) << endl;
 
     return report(StartTime, *repetition_n, FileSize, /* CharacterSize = 1 */ 1);
@@ -140,7 +140,7 @@ overhead(std::FILE* fh,
     // analyzer function. This is to estimate the overhead implied by the test program.
     const clock_t StartTime = clock();
     double        repetition_n = 0.0;
-    int           checksum = 0;
+    uint32_t      checksum = 0;
     //
     BENCHMARK_SETTING_INIT
 
@@ -150,8 +150,8 @@ overhead(std::FILE* fh,
         
         size_t token_n = 0;
         do {
-            checksum = (token_n + checksum) % 0xFF;  // use argument RepetitionN instead of a 
-            //                                          // constant, so that it cannot be optimized away.
+            checksum = (token_n + checksum) % 0xFFFFFFFF;  // use argument RepetitionN instead of a 
+            //                                             // constant, so that it cannot be optimized away.
             token_n += 1;
         } while( token_n != SimulatedTokenN );
         // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n

@@ -51,10 +51,20 @@ namespace quex {
         QuexBuffer_destruct(&me->buffer);
     }
 
-    QUEX_INLINE void
-    QuexAnalyser_reset(QuexAnalyser* me)
+    TEMPLATE_IN(InputHandleT) void
+    QuexAnalyser_reset(QuexAnalyser*                me,
+                       QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                       InputHandleT*                input_handle, 
+                       const char*                  CharacterEncodingName, 
+                       const size_t                 TranslationBufferMemorySize)
     {
-        QuexBuffer_reset(&me->buffer);
+        me->current_analyser_function = AnalyserFunction;
+
+        QuexBuffer_reset(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
+
+        /* Double check that everything is setup propperly. */
+        QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
+        __quex_assert(me->buffer._input_p == me->buffer._memory._front + 1);
     }
 
     /* NOTE: 'reload_forward()' needs to be implemented for each mode, because

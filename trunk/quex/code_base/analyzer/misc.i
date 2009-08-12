@@ -31,4 +31,29 @@ namespace quex {
         QuexBuffer_seek(&this->buffer, CharacterIndex);
     }
 
+
+    inline void
+    CLASS::print_this()
+    {
+        __QUEX_STD_printf("   CurrentMode = %s;\n", __current_mode_p == 0x0 ? "0x0" : __current_mode_p->name);
+
+        QuexBuffer_print_this(&this->buffer);
+
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        accumulator.print_this();
+#       endif
+        counter.print_this();
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        post_categorizer.print_this();
+#       endif
+        __QUEX_STD_printf("   Mode Stack (%i/%i) = [", 
+                          (int)(_mode_stack.end        - _mode_stack.begin),
+                          (int)(_mode_stack.memory_end - _mode_stack.begin));
+        for(CLASS_QUEX_MODE** iterator=_mode_stack.end-1; iterator >= _mode_stack.begin; --iterator)
+            __QUEX_STD_printf("%s, ", (*iterator)->name);
+
+        __QUEX_STD_printf("]\n");
+        __QUEX_STD_printf("   ByteOrderInversion = %s;\n", byte_order_reversion() ? "true" : "false");
+    }
+
 } // namespace quex

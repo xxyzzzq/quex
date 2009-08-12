@@ -32,8 +32,10 @@ import quex.core_engine.regular_expression.auxiliary                 as aux
 from quex.core_engine.state_machine.core import StateMachine
 from quex.exception                      import RegularExpressionException
 from quex.frs_py.file_in                 import read_until_letter, \
+                                                read_identifier, \
                                                 read_until_non_letter, \
                                                 skip_whitespace, \
+                                                verify_word_in_list, \
                                                 check
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
@@ -121,19 +123,16 @@ def snap_property_set(stream):
 def snap_set_term(stream):
     __debug_entry("set_term", stream)    
 
+    operation_list     = [ "union", "intersection", "difference", "inverse"]
+    character_set_list = special_character_set_db.keys()
+
     skip_whitespace(stream)
     position = stream.tell()
 
     # if there is no following '(', then enter the 'snap_expression' block below
-    try:    
-        word = read_until_non_letter(stream)
-        stream.seek(-1, 1)  # putback the non-letter
-    except: 
-        word = "not a valid word"
+    word = read_identifier(stream)
 
-    word = word.strip()
-
-    if word in [ "union", "intersection", "difference", "inverse"]: 
+    if word in operation_list: 
         set_list = snap_set_list(stream, word)
         # if an error occurs during set_list parsing, an exception is thrown about syntax error
 
@@ -162,11 +161,13 @@ def snap_set_term(stream):
             for set in set_list[1:]:
                 result.subtract(set)
 
-    elif word in special_character_set_db.keys():
+    elif word in character_set_list:
         result = special_character_set_db[word]
 
+    elif word != "":
+        verify_word_in_list(word, character_set_list + operation_list, 
+                            "Unknown keyword '%s'." % word, stream)
     else:
-        # try to snap an expression out of it
         stream.seek(position)
         result = snap_set_expression(stream)
 

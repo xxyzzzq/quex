@@ -28,6 +28,12 @@ namespace quex {
         return found->token_id;
     }
 
+    inline void
+    QuexPostCategorizer::clear()
+    {
+        QuexPostCategorizer_clear(this, root);
+    }
+
     inline QuexPostCategorizerNode* 
     QuexPostCategorizerNode_new(QUEX_TYPE_CHARACTER         FirstCharacter,
                                 const QUEX_TYPE_CHARACTER*  Remainder,
@@ -204,6 +210,15 @@ namespace quex {
         __QUEX_STD_printf("\\\n");
 
         QuexPostCategorizer_print_tree(node->lesser, Depth + 1);
+    }
+
+    inline void
+    QuexPostCategorizer_clear(QuexPostCategorizer* me, QuexPostCategorizerNode* branch)
+    {
+        if( branch == 0x0 ) branch = me->root;
+        if( branch->lesser  != 0x0 ) QuexPostCategorizer_clear(me, branch->lesser);
+        if( branch->greater != 0x0 ) QuexPostCategorizer_clear(me, branch->greater);
+        MemoryManager_PostCategorizerNode_free(branch);
     }
 }
 #include <quex/code_base/MemoryManager.i>

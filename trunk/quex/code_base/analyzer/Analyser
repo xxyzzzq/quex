@@ -60,8 +60,12 @@ namespace quex {
     QUEX_INLINE void 
     QuexAnalyser_destruct(QuexAnalyser* me);
 
-    QUEX_INLINE void
-    QuexAnalyser_reset(QuexAnalyser* me);
+    TEMPLATE_IN(InputHandleT) void
+    QuexAnalyser_reset(QuexAnalyser*                me,
+                       QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                       InputHandleT*                input_handle, 
+                       const char*                  CharacterEncodingName, 
+                       const size_t                 TranslationBufferMemorySize);
 
     QUEX_INLINE bool 
     QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer);

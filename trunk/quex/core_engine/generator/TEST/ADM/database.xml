@@ -1,7 +1,7 @@
-<test-database execution-time-sec="198.16" date="Sat Aug  8 21:52:18 2009">
+<test-database execution-time-sec="198.17" date="Sun Aug  9 23:22:32 2009">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
-        <test title="Backwards" make-required="True" time-sum-sec="4.33"> 
+        <test title="Backwards" make-required="True" time-sum-sec="4.32"> 
             <application file-name="test-backward_loading.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.80" crc="-1584767564"/>
@@ -50,7 +50,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.35" crc="270103911"/>
             </choice-list>
         </test>
-        <test title="(special use case)" make-required="True" time-sum-sec="3.79"> 
+        <test title="(special use case)" make-required="True" time-sum-sec="3.80"> 
             <application file-name="test-continue-without-return-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.68" crc="-759134064"/>
@@ -61,7 +61,7 @@
         </test>
     </group>
     <group name="Post Conditions">
-        <test title="Part 1" make-required="True" time-sum-sec="4.06"> 
+        <test title="Part 1" make-required="True" time-sum-sec="4.05"> 
             <application file-name="test-post-conditions.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.77" crc="1338437579"/>
@@ -70,7 +70,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.30" crc="1338437579"/>
             </choice-list>
         </test>
-        <test title="Part 2" make-required="True" time-sum-sec="4.51"> 
+        <test title="Part 2" make-required="True" time-sum-sec="4.52"> 
             <application file-name="test-post-conditions-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.87" crc="-1069020887"/>
@@ -90,7 +90,7 @@
         </test>
     </group>
     <group name="Pre Conditions">
-        <test title="Part 2" make-required="True" time-sum-sec="4.52"> 
+        <test title="Part 2" make-required="True" time-sum-sec="4.53"> 
             <application file-name="test-pre-conditions-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.79" crc="-2081003305"/>
@@ -119,7 +119,7 @@
         </test>
     </group>
     <group name="Pre- and Post- Conditions">
-        <test title="Simple" make-required="True" time-sum-sec="5.16"> 
+        <test title="Simple" make-required="True" time-sum-sec="5.15"> 
             <application file-name="test-pre-post-condition.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.98" crc="-347610264"/>
@@ -139,7 +139,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.50" crc="1614045300"/>
             </choice-list>
         </test>
-        <test title="Part I" make-required="True" time-sum-sec="4.14"> 
+        <test title="Part I" make-required="True" time-sum-sec="4.15"> 
             <application file-name="test-pseudo_ambiguous_post_conditions.py" info-request-time="1247956746L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.73" crc="1455270"/>
@@ -159,7 +159,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.46" crc="-680455951"/>
             </choice-list>
         </test>
-        <test title="Tiny Expressions" make-required="True" time-sum-sec="4.48"> 
+        <test title="Tiny Expressions" make-required="True" time-sum-sec="4.47"> 
             <application file-name="test-simple.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.08" crc="-771053764"/>
@@ -226,7 +226,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="3.39" crc="600307805"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" make-required="True" time-sum-sec="20.70"> 
+        <test title="Varrying Buffer Size" make-required="True" time-sum-sec="20.72"> 
             <application file-name="test-skip-trigger-set-2.py" info-request-time="1247689992L"/>
             <choice-list number="6" same_result="True">
                <choice name="3" result="OK" time_sec="3.36" crc="656254767"/>
@@ -248,7 +248,7 @@
                <choice name="DL=4" result="OK" time_sec="3.42" crc="2098906281"/>
             </choice-list>
         </test>
-        <test title="DelimiterLength=2, Large Buffer" make-required="True" time-sum-sec="10.57"> 
+        <test title="DelimiterLength=2, Large Buffer" make-required="True" time-sum-sec="10.58"> 
             <application file-name="test-skip-simple.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.93" crc="-1090631127"/>
@@ -266,7 +266,7 @@
                <choice name="5" result="OK" time_sec="3.63" crc="890859637"/>
             </choice-list>
         </test>
-        <test title="Varrying DelimiterLength, BufferSize = DelimiterLength + 2" make-required="True" time-sum-sec="13.55"> 
+        <test title="Varrying DelimiterLength, BufferSize = DelimiterLength + 2" make-required="True" time-sum-sec="13.54"> 
             <application file-name="test-skip-simple-3.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="1" result="OK" time_sec="3.38" crc="1625391776"/>

@@ -57,4 +57,11 @@ namespace quex {
         _accumulated_text += ToBeAppended; 
     }
 
+    inline void  
+    CLASS_ACCUMULATOR::print_this()
+    {
+        __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)_accumulated_text.c_str());
+    }
+
+
 } // namespace quex
