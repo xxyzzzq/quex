@@ -1,0 +1,63 @@
+    /* 
+     * MODE: FOUR
+     * 
+     *     BASE MODE SEQUENCE:
+     *       THREE
+     *       TWO
+     *       ONE
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE:  abc
+     *       (  4) ONE:  bcd
+     *       (  7) ONE:  cde
+     *       ( 10) ONE:  dfg
+     *       ( 15) TWO:  abcd?
+     *       ( 20) TWO:  bcde?
+     *       ( 25) TWO:  cdef?
+     *       ( 36) THREE:  abcd?e?
+     *       ( 47) THREE:  bcde?f?
+     *       ( 64) FOUR:  abcd?e?f?
+     * 
+     * 
+     * MODE: ONE
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE: abc
+     *       (  4) ONE: bcd
+     *       (  7) ONE: cde
+     *       ( 10) ONE: dfg
+     * 
+     * 
+     * MODE: THREE
+     * 
+     *     BASE MODE SEQUENCE:
+     *       TWO
+     *       ONE
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE: abc
+     *       (  4) ONE: bcd
+     *       (  7) ONE: cde
+     *       ( 10) ONE: dfg
+     *       ( 15) TWO: abcd?
+     *       ( 20) TWO: bcde?
+     *       ( 25) TWO: cdef?
+     *       ( 36) THREE: abcd?e?
+     *       ( 47) THREE: bcde?f?
+     * 
+     * 
+     * MODE: TWO
+     * 
+     *     BASE MODE SEQUENCE:
+     *       ONE
+     * 
+     *     PATTERN-ACTION PAIRS:
+     *       (  1) ONE: abc
+     *       (  4) ONE: bcd
+     *       (  7) ONE: cde
+     *       ( 10) ONE: dfg
+     *       ( 15) TWO: abcd?
+     *       ( 20) TWO: bcde?
+     *       ( 25) TWO: cdef?
+     * 
+     * 

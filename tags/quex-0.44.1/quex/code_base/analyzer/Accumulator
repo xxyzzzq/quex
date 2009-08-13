@@ -1,0 +1,33 @@
+/* -*- C++ -*- vim:set syntax=cpp: 
+ *
+ * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
+ *                      LEXICAL ANALYZERS
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR            */
+
+namespace quex { 
+
+    // (*) pure text accumulation and flushing
+    struct CLASS_ACCUMULATOR {
+        CLASS_ACCUMULATOR() { _accumulated_text.reserve(1024); }
+
+        void  flush(const QUEX_TYPE_TOKEN_ID TokenID);
+        void  clear();
+        void  add(const QUEX_TYPE_CHARACTER*);
+        void  add(const QUEX_TYPE_CHARACTER);
+
+        void  print_this();
+
+    private:
+        friend class CLASS;
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+        int  _begin_line;
+#       endif
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        int  _begin_column;
+#       endif
+        std::basic_string<QUEX_TYPE_CHARACTER>  _accumulated_text;
+        CLASS*                                  _the_lexer;     
+    };
+
+}

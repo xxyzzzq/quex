@@ -1,0 +1,2 @@
+token_type-double-colon.qx:3:error: Missing whitespace after ':' after identifier 'std'.
+token_type-double-colon.qx:3:error: The notation has to be: variable-name ':' type ';'.
