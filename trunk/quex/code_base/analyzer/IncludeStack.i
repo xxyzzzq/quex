@@ -48,7 +48,8 @@ namespace quex {
                                input_handle,
                                0x0, QUEX_SETTING_BUFFER_SIZE,
                                IANA_CodingName, 
-                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
+                               buffer._byte_order_reversion_active_f);
         counter.init();
 
         /* Keep track of 'who's your daddy?'                              */
