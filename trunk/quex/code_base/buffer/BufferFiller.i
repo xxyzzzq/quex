@@ -123,11 +123,11 @@ namespace quex {
         /* end   != 0, means that the buffer is filled.
          * begin == 0, means that we are standing at the begin.
          * => end != 0 and begin == 0, means that the initial content is loaded already.    */
-        // if( buffer->_content_character_index_begin == 0 ) {
-        //     if ( buffer->_content_character_index_end != 0) return;
-        //} else {
+        /* if( buffer->_content_character_index_begin == 0 ) {
+         *     if ( buffer->_content_character_index_end != 0) return;
+         *} else {*/
         me->seek_character_index(me, 0);
-        //}
+        /*} */
         const size_t  LoadedN = __BufferFiller_read_characters(buffer, ContentFront, ContentSize);
 
         buffer->_content_character_index_begin = 0; 

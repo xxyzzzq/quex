@@ -110,8 +110,11 @@ namespace quex {
                          const char*            CharacterEncodingName, 
                          const size_t           TranslationBufferMemorySize);
 
-    QUEX_INLINE void
-    QuexBuffer_reset(QuexBuffer* me);
+    TEMPLATE_IN(InputHandleT) void
+    QuexBuffer_reset(QuexBuffer*    me, 
+                     InputHandleT*  input_handle, 
+                     const char*    CharacterEncodingName, 
+                     const size_t   TranslationBufferMemorySize);
 
     QUEX_INLINE void
     QuexBuffer_destruct(QuexBuffer* me);

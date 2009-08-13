@@ -59,7 +59,7 @@ namespace quex {
                                 const int LineNIncrement) { }
         void  __shift_end_values_to_start_values() { }
 
-        virtual void print_this() { __QUEX_STD_printf("   Counter: <none>\n"); }
+        virtual void print_this();
     };
 
     struct CounterWithIndentation 

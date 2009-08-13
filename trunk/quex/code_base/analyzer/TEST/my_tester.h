@@ -5,12 +5,6 @@
 typedef uint8_t  QUEX_TYPE_CHARACTER;
 typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION; 
 
-#ifdef QUEX_OPTION_ASSERTS
-#   include <cassert>
-#   define  __quex_assert(X)   assert(X)
-#else
-#   define  __quex_assert(X)   /*no assert*/
-#endif
 
 #include <cstdio>
 

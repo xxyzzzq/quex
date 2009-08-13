@@ -4,6 +4,7 @@
 #include <quex/code_base/analyzer/count_common>
 
 #include <quex/code_base/analyzer/Counter>
+#include <quex/code_base/definitions>
 
 namespace quex { 
     // NOTE: Quex is pretty intelligent in choosing the right function
@@ -298,8 +299,9 @@ namespace quex {
 #   endif
 
     }
+
     inline void 
-    Counter::print_this()
+    CounterWithIndentation::print_this()
     {
         Counter::print_this();
         __QUEX_STD_printf("   _indentation                 = %i;\n", (int)_indentation);
