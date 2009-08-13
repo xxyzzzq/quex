@@ -244,11 +244,19 @@ def validate(setup, command_line, argv):
     # Internal engine character encoding
     if setup.engine_character_encoding != "":
         verify_word_in_list(setup.engine_character_encoding,
-                            codec_db.get_supported_codec_list() + ["utf8", "utf16-be", "utf16-le"],
+                            codec_db.get_supported_codec_list() + ["utf8", "utf16"],
                             "Codec '%s' is not supported." % setup.engine_character_encoding)
-        if setup.engine_character_encoding in ["utf8", "utf16-be", "utf16-le"]:
+        if setup.engine_character_encoding in ["utf8", "utf16"]:
             setup.engine_character_encoding_transformation_info = \
                     setup.engine_character_encoding + "-state-split"
+           if setup.engine_character_encoding == "utf8":
+               if setup.bytes_per_ucs_code_point != 1:
+                   error_msg("Using codec 'utf8' while bytes per chacter is != 1.\n"
+                             "Consult command line argument --bytes-per-ucs-code-point.")
+           if setup.engine_character_encoding == "utf16":
+               if setup.bytes_per_ucs_code_point != 2:
+                   error_msg("Using codec 'utf16' while bytes per chacter is != 2.\n"
+                             "Consult command line argument --bytes-per-ucs-code-point.")
         else:
             setup.engine_character_encoding_transformation_info = \
                   codec_db.get_codec_transformation_info(setup.engine_character_encoding)

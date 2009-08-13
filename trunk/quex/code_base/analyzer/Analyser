@@ -47,7 +47,8 @@ namespace quex {
                            QUEX_TYPE_CHARACTER*         InputMemory,
                            const size_t                 BufferMemorySize,
                            const char*                  CharacterEncodingName, 
-                           const size_t                 TranslationBufferMemorySize);
+                           const size_t                 TranslationBufferMemorySize,
+                           bool                         ByteOrderReversionF);
 
     QUEX_INLINE void
     QuexAnalyser_construct_for_direct_memory_access(QuexAnalyser* me,
