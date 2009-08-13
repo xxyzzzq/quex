@@ -249,11 +249,11 @@ def validate(setup, command_line, argv):
         if setup.engine_character_encoding in ["utf8", "utf16"]:
             setup.engine_character_encoding_transformation_info = \
                     setup.engine_character_encoding + "-state-split"
-           if setup.engine_character_encoding == "utf8":
+            if setup.engine_character_encoding == "utf8":
                if setup.bytes_per_ucs_code_point != 1:
                    error_msg("Using codec 'utf8' while bytes per chacter is != 1.\n"
                              "Consult command line argument --bytes-per-ucs-code-point.")
-           if setup.engine_character_encoding == "utf16":
+            if setup.engine_character_encoding == "utf16":
                if setup.bytes_per_ucs_code_point != 2:
                    error_msg("Using codec 'utf16' while bytes per chacter is != 2.\n"
                              "Consult command line argument --bytes-per-ucs-code-point.")

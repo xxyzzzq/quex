@@ -346,7 +346,7 @@ test_program_db = {
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
         QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, (void*)0x0,
-                               TestString, MemorySize, 0x0, 0);
+                               TestString, MemorySize, 0x0, 0, false);
         QuexBuffer_end_of_file_set(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
@@ -376,7 +376,7 @@ test_program_db = {
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
         QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, fh, 0x0,
-                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0);
+                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
@@ -404,7 +404,7 @@ test_program_db = {
         istringstream  istr("$$TEST_STRING$$");
 
         QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr, 0x0,
-                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0);
+                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
@@ -431,7 +431,7 @@ test_program_db = {
         StrangeStream<istringstream>  strange_stream(&istr);
 
         QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream, 0x0,
-                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0);
+                               $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
