@@ -15,8 +15,8 @@
 namespace quex { 
 #endif
 
-    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me); 
-    QUEX_INLINE void  QuexBuffer_init_analyzis(QuexBuffer*  me);
+    QUEX_INLINE void  QuexBuffer_init(QuexBuffer*  me, bool ByteOrderReversionF); 
+    QUEX_INLINE void  QuexBuffer_init_analyzis(QuexBuffer*  me, bool ByteOrderReversionF);
     QUEX_INLINE void  QuexBufferMemory_construct(QuexBufferMemory*    me, 
                                                  QUEX_TYPE_CHARACTER* memory, size_t Size);
     QUEX_INLINE void  QuexBufferMemory_init(QuexBufferMemory*     me, 
@@ -29,7 +29,8 @@ namespace quex {
                          QUEX_TYPE_CHARACTER*  InputMemory,
                          const size_t          MemorySize,
                          const char*           CharacterEncodingName, 
-                         const size_t          TranslationBufferMemorySize)
+                         const size_t          TranslationBufferMemorySize,
+                         bool                  ByteOrderReversionF)
         /* The input can either come from MEMORY or from a STREAM. 
          *
          * input_handle == 0x0 => input via memory
@@ -54,21 +55,21 @@ namespace quex {
 
         me->filler = QuexBufferFiller_new(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 
-        QuexBuffer_init(me);
+        QuexBuffer_init(me, ByteOrderReversionF);
 
         QUEX_BUFFER_ASSERT_CONSISTENCY(me);
         QUEX_BUFFER_ASSERT_CONTENT_CONSISTENCY(me);
     }
 
     QUEX_INLINE void
-    QuexBuffer_init(QuexBuffer*  me)
+    QuexBuffer_init(QuexBuffer*  me, bool ByteOrderReversionF)
     {
         /* By setting begin and end to zero, we indicate to the loader that
          * this is the very first load procedure.                           */
         me->_content_character_index_end   = 0;
         me->_content_character_index_begin = 0; 
 
-        QuexBuffer_init_analyzis(me);
+        QuexBuffer_init_analyzis(me, ByteOrderReversionF);
 
         if( me->filler != 0x0 ) {
             /* We only have to reset the input stream, if we are not at position zero    */
@@ -80,10 +81,9 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QuexBuffer_init_analyzis(QuexBuffer*  me)
+    QuexBuffer_init_analyzis(QuexBuffer*  me, bool ByteOrderReversionF)
     {
-        /* Set byte order before 'init' so that the initial load can be done propperly */
-        me->_byte_order_reversion_active_f = false;
+        me->_byte_order_reversion_active_f = ByteOrderReversionF;
 
         /* Init is a special kind of reset, where some things might not be reset. */
         me->_input_p        = me->_memory._front + 1;  /* First State does not increment */
@@ -133,7 +133,7 @@ namespace quex {
         }
         me->filler = QuexBufferFiller_new(input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 
-        QuexBuffer_init_analyzis(me);
+        QuexBuffer_init_analyzis(me, me->_byte_order_reversion_active_f);
 
         if( me->filler != 0x0 ) {
             /* We only have to reset the input stream, if we are not at position zero    */

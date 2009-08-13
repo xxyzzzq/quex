@@ -20,7 +20,7 @@ utf8-lexer: utf8-lexer.cpp
 		 --codec utf8        \
 		 --token-prefix TKN_ \
 		 -o UTF8Lex 
-	g++ -ggdb -D__QUEX_TEST_OPTION_ISO8859_7           \
+	g++ -ggdb \
 		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
 		-Wall                   \
 		-I$(QUEX_PATH) -I.      \
@@ -29,7 +29,21 @@ utf8-lexer: utf8-lexer.cpp
 		UTF8Lex-core-engine.cpp \
 		-o $@
 
-	    # -D__QUEX_OPTION_DEBUG_STATE_TRANSITION_REPORTS \
+utf16-lexer: utf16-lexer.cpp 
+	quex -i             greeky.qx  \
+		 --codec        utf16     \
+		 --token-prefix TKN_      \
+		 -o             UTF16Lex  \
+	     -b             2
+	g++ -ggdb -D__QUEX_TEST_OPTION_UTF16BE             \
+		-DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED \
+		-Wall                   \
+		-I$(QUEX_PATH) -I.      \
+		$<                      \
+		UTF16Lex.cpp             \
+		UTF16Lex-core-engine.cpp \
+		-o $@
+
 			
 %.E: %.cpp
 	g++ -E -D__QUEX_TEST_OPTION_ISO8859_7 \

@@ -3,7 +3,8 @@ import os
 import sys
 import codecs
 from copy import copy
-import quex.core_engine.state_machine.utf8_state_split as utf8_state_split
+import quex.core_engine.state_machine.utf8_state_split  as utf8_state_split
+import quex.core_engine.state_machine.utf16_state_split as utf16_state_split
 from   quex.frs_py.file_in import error_msg
 from   quex.input.setup import setup as Setup
 
@@ -30,6 +31,12 @@ def do(X, TrafoInfo=None, FH=-1, LineN=None):
             if pre_sm != None:
                 X.core().set_pre_context_sm(utf8_state_split.do(pre_sm))
             return utf8_state_split.do(X)
+
+        elif TrafoInfo == "utf16-state-split":
+            pre_sm = X.core().pre_context_sm()
+            if pre_sm != None:
+                X.core().set_pre_context_sm(utf16_state_split.do(pre_sm))
+            return utf16_state_split.do(X)
         # Other transformations are not supported
         assert False
     

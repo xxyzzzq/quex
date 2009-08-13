@@ -19,4 +19,5 @@ the optimization of memory consumption and analysis speed.
    indentation-blocks.txt
    derived-class.txt
    multiple-lexical-analyzers.txt
+   reset.txt
    misc.txt

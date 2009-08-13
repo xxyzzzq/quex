@@ -609,9 +609,6 @@ $$CLASS_BODY_EXTENSION$$
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-        /* Assume that by default byte order reversion is disabled! */
-        byte_order_reversion_set(ByteOrderReversionF);
-
 #       ifdef  QUEX_OPTION_INCLUDE_STACK
         _parent_memento = 0x0;
 #       endif
@@ -628,7 +625,8 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
                                input_handle,
                                BufferMemory, QUEX_SETTING_BUFFER_SIZE,
                                CharacterEncodingName, 
-                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
+                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
+                               ByteOrderReversionF);
 
         if( input_handle == 0x0 ) {
             /* TWO CASES:

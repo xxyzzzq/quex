@@ -128,10 +128,6 @@ namespace quex {
         return drain_iterator;
     }
 
-    QUEX_INLINE void
-    Quex_lexeme_string_to_hex_byte_string(QUEX_TYPE_CHARACTER* LexemeStart, char* Drain, size_t DrainSize)
-    {
-    }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex

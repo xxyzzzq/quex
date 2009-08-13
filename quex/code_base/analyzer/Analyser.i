@@ -19,7 +19,8 @@ namespace quex {
                            QUEX_TYPE_CHARACTER*         InputMemory,
                            const size_t                 BufferMemorySize,
                            const char*                  CharacterEncodingName, 
-                           const size_t                 TranslationBufferMemorySize)
+                           const size_t                 TranslationBufferMemorySize,
+                           bool                         ByteOrderReversionF)
     /* input_handle == 0x0 means that there is no stream/file to read from. Instead, the 
      *                     user intends to perform the lexical analysis directly on plain
      *                     memory. In this case, the user needs to call the following function
@@ -35,7 +36,8 @@ namespace quex {
 #       endif
 
         QuexBuffer_construct(&me->buffer, input_handle, InputMemory, BufferMemorySize,
-                             CharacterEncodingName, TranslationBufferMemorySize);
+                             CharacterEncodingName, TranslationBufferMemorySize,
+                             ByteOrderReversionF);
 
         me->current_analyser_function = AnalyserFunction;
 
