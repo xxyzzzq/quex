@@ -15,6 +15,7 @@
 //       This has to happen outside these functions.
 #include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/count_common>
+#include <quex/code_base/definitions>
 
 namespace quex { 
 
@@ -209,5 +210,8 @@ namespace quex {
 #       endif
     }
 
+    inline void
+    CounterPseudo::print_this() 
+    { __QUEX_STD_printf("   Counter: <none>\n"); }
 }
 #endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */

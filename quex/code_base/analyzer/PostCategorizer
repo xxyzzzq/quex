@@ -53,6 +53,9 @@ namespace quex {
 
     inline void
     QuexPostCategorizer_remove(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+
+    inline void
+    QuexPostCategorizer_clear(QuexPostCategorizer* me, QuexPostCategorizerNode* branch);
 }
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */

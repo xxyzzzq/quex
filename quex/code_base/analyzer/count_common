@@ -1,4 +1,4 @@
-// -*- C++ -*- vim: set syntax=cpp:
+/* -*- C++ -*- vim: set syntax=cpp: */
 #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON
 #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_COUNT_COMMON
 
