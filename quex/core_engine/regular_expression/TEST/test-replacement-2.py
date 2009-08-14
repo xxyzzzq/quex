@@ -35,7 +35,9 @@ try:
     for key, regular_expression in pattern_dict.items():
         string_stream = StringIO(regular_expression)
 
-        adapted_dict[key] = PatternShorthand(key, snap_set_expression(string_stream, {}))
+        state_machine = core.do(string_stream, adapted_dict, 0, 0, -1)
+
+        adapted_dict[key] = PatternShorthand(key, state_machine)
 
 except RegularExpressionException, x:
     print "Dictionary Creation:\n" + repr(x)

@@ -1,4 +1,5 @@
-from quex.exception import RegularExpressionException
+from quex.frs_py.file_in                 import *
+from quex.exception                      import RegularExpressionException
 from quex.core_engine.state_machine.core import StateMachine
 
 __debug_recursion_depth  = -1
@@ -66,4 +67,53 @@ def __debug_entry(function_name, stream):
         txt = stream.read()
         stream.seek(pos)    
         __debug_print("##entry: %s, remainder = \"%s\"" % (function_name, txt))
+
+def snap_replacement(stream, PatternDict, StateMachineF=True):
+    """Snaps a predefined pattern from the input string and returns the resulting
+       state machine.
+    """ 
+    skip_whitespace(stream)
+    pattern_name = read_identifier(stream)  
+    if pattern_name == "":
+        raise RegularExpressionException("Pattern replacement expression misses identifier after '{'.")
+    skip_whitespace(stream)
+
+    if not check(stream, "}"):
+        raise RegularExpressionException("Pattern replacement expression misses closing '}' after '%s'." \
+                                         % pattern_name)
+
+    verify_word_in_list(pattern_name, PatternDict.keys(),
+                        "Specifier '%s' not found in any preceeding 'define { ... }' section." % pattern_name, 
+                        stream)
+
+    reference = PatternDict[pattern_name]
+
+    # The replacement may be a state machine or a number set
+    if StateMachineF:
+        state_machine = reference.state_machine
+
+        # It is essential that state machines defined as patterns do not 
+        # have origins. Otherwise, the optimization of patterns that
+        # contain pattern replacements might get confused and can
+        # not find all optimizations.
+        assert state_machine.has_origins() == False
+
+        # A state machine, that contains pre- or post- conditions cannot be part
+        # of a replacement. The addition of new post-contexts would mess up the pattern.
+        if state_machine.core().has_pre_or_post_context():
+            error_msg("Pre- or post- conditioned pattern was used in replacement.\n" + \
+                      "Quex's regular expression grammar does not allow this.", stream)
+            
+        return state_machine
+
+    else:
+        character_set = reference.get_character_set()
+        if character_set == None:
+            error_msg("Replacement in character set expression must be a character set.\n"
+                      "Specifier '%s' relates to a pattern state machine." % pattern_name, stream)
+
+        if character_set.is_empty():
+            error_msg("Referenced character set '%s' is empty.\nAborted." % pattern_name, fh)
+
+        return character_set
 

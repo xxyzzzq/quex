@@ -435,6 +435,8 @@ class Mode:
                           earlier_match.pattern, 
                           earlier_match.action().filename, earlier_match.action().line_n,  
                           DontExitF=True, WarningF=False) 
+                print "##1", state_machine
+                print "##2", earlier_match.pattern_state_machine()
                 error_msg("pattern '%s' while the former has precedence.\n" % \
                           pattern + "The latter can never match.\n" + \
                           "You may switch the sequence of definition to avoid this error.",
@@ -563,14 +565,22 @@ fragment_db = {
 
 class PatternShorthand:
     def __init__(self, Name="", StateMachine="", Filename="", LineN=-1, RE=""):
-        assert StateMachine.has_origins() == False
         assert StateMachine.__class__.__name__ == "StateMachine"
+        assert StateMachine.has_origins() == False
 
         self.name               = Name
         self.state_machine      = StateMachine
         self.filename           = Filename
         self.line_n             = LineN
         self.regular_expression = RE
+
+    def get_character_set(self):
+        if len(self.state_machine.states) != 2: return None
+        t = self.state_machine.states[self.state_machine.init_state_index].transitions()
+        db = t.get_map()
+        assert len(db) == 1
+        return db[db.keys()[0]]
+        
 
 #-----------------------------------------------------------------------------------------
 # shorthand_db: user defined names for regular expressions.

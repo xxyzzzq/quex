@@ -49,6 +49,10 @@ it is advisable to use ``\P{ID_Start}``, ``\P{ID_Continue}``,
    flag must be specified to enable the appropriate converter. See
    section :ref:`Character Encodings <sec-character-encodings>`.
 
+In the same way as patterns character sets can be defined in a ``define``
+section and replaced inside the ``[:`` ... ``:]`` brackets--provided
+that they are character sets and not complete state machines.
+
 The use of Unicode character set potentially implies the handling of many
 different properties and character sets. For convinience, quex provides
 *operations on character sets* to combine and filter different character sets
