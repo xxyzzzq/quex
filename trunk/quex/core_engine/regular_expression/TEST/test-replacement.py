@@ -9,7 +9,7 @@ from quex.exception import *
 from quex.lexer_mode import PatternShorthand
 
 if "--hwut-info" in sys.argv:
-    print "Basics: Pattern identifier replacement"
+    print "Replacement: Regular Expression State Machines"
     sys.exit(0)
 
 def test(TestString, PatternDict):
