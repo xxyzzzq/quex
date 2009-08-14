@@ -1,9 +1,9 @@
 makefile = Makefile
 cleaning ...
 make NDEBUG_F=-DQUEX_OPTION_ASSERTS   ##
-definitions.qx:49:warning: Token identifier 'QUEX_TKN_GREEK_IDENTIFIER' starts with token prefix 'QUEX_TKN_'.
-definitions.qx:49:warning: Token prefix is mounted automatically. This token id appears in the source
-definitions.qx:49:warning: code as 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER'.
+definitions.qx:56:warning: Token identifier 'QUEX_TKN_GREEK_IDENTIFIER' starts with token prefix 'QUEX_TKN_'.
+definitions.qx:56:warning: Token prefix is mounted automatically. This token id appears in the source
+definitions.qx:56:warning: code as 'QUEX_TKN_QUEX_TKN_GREEK_IDENTIFIER'.
 program.qx:19:warning: Token id 'QUEX_TKN_ARABIC_NUMBER' defined implicitly.
 program.qx:20:warning: Token id 'QUEX_TKN_DEVANGARI_NUMBER' defined implicitly.
 program.qx:21:warning: Token id 'QUEX_TKN_THAI_NUMBER' defined implicitly.

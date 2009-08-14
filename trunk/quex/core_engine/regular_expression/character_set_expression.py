@@ -4,6 +4,7 @@
 #                 [: set_term :]
 #                 traditional character set
 #                 \P '{' propperty string '}'
+#                 '{' identifier '}'
 #
 # set_term:
 #                 "alnum" 
@@ -39,7 +40,8 @@ from quex.frs_py.file_in                 import read_until_letter, \
                                                 check
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
-                                                          __debug_exit
+                                                          __debug_exit, \
+                                                          snap_replacement
 
 special_character_set_db = {
         # The closing ']' is to trigger the end of the traditional character set
@@ -57,8 +59,8 @@ special_character_set_db = {
         "xdigit": traditional_character_set.do_string("a-fA-F0-9]"),
 }
 
-def do(stream):
-    trigger_set = snap_set_expression(stream)
+def do(stream, PatternDict):
+    trigger_set = snap_set_expression(stream, PatternDict)
 
     if trigger_set == None: 
         raise RegularExpressionException("Regular Expression: character_set_expression called for something\n" + \
@@ -73,7 +75,7 @@ def do(stream):
 
     return __debug_exit(sm, stream)
 
-def snap_set_expression(stream):
+def snap_set_expression(stream, PatternDict):
     assert     stream.__class__.__name__ == "StringIO" \
             or stream.__class__.__name__ == "file"
 
@@ -84,7 +86,7 @@ def snap_set_expression(stream):
 
     x = stream.read(2)
     if   x == "[:":
-        result = snap_set_term(stream)
+        result = snap_set_term(stream, PatternDict)
         skip_whitespace(stream)
         x = stream.read(2)
         if x != ":]":
@@ -93,6 +95,11 @@ def snap_set_expression(stream):
     elif x[0] == "[":
         stream.seek(-1, 1)
         result = traditional_character_set.do(stream)   
+
+    elif x[0] == "{":
+        stream.seek(-1, 1)
+        result = snap_replacement(stream, PatternDict, StateMachineF=False)   
+
     else:
         result = None
 
@@ -120,7 +127,7 @@ def snap_property_set(stream):
         stream.seek(position)
         return None
 
-def snap_set_term(stream):
+def snap_set_term(stream, PatternDict):
     __debug_entry("set_term", stream)    
 
     operation_list     = [ "union", "intersection", "difference", "inverse"]
@@ -133,7 +140,7 @@ def snap_set_term(stream):
     word = read_identifier(stream)
 
     if word in operation_list: 
-        set_list = snap_set_list(stream, word)
+        set_list = snap_set_list(stream, word, PatternDict)
         # if an error occurs during set_list parsing, an exception is thrown about syntax error
 
         L      = len(set_list)
@@ -169,7 +176,7 @@ def snap_set_term(stream):
                             "Unknown keyword '%s'." % word, stream)
     else:
         stream.seek(position)
-        result = snap_set_expression(stream)
+        result = snap_set_expression(stream, PatternDict)
 
     return __debug_exit(result, stream)
 
@@ -180,7 +187,7 @@ def __snap_word(stream):
     stream.seek(-1,1)
     return the_word.strip()
 
-def snap_set_list(stream, set_operation_name):
+def snap_set_list(stream, set_operation_name, PatternDict):
     __debug_entry("set_list", stream)
 
     skip_whitespace(stream)
@@ -190,7 +197,7 @@ def snap_set_list(stream, set_operation_name):
     set_list = []
     while 1 + 1 == 2:
         skip_whitespace(stream)
-        result = snap_set_term(stream)
+        result = snap_set_term(stream, PatternDict)
         if result == None: 
             raise RegularExpressionException("Missing set expression list after '%s' operation." % set_operation_name)
         set_list.append(result)

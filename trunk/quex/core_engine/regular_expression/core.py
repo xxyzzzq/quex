@@ -38,7 +38,8 @@ from quex.core_engine.state_machine.core import StateMachine
 from quex.core_engine.regular_expression.auxiliary import __snap_until, \
                                                           __debug_entry, \
                                                           __debug_exit, \
-                                                          __debug_print
+                                                          __debug_print, \
+                                                          snap_replacement
 
 from   quex.input.setup                                       import setup as Setup
 from   quex.core_engine.state_machine.utf16_state_split       import ForbiddenRange
@@ -343,7 +344,7 @@ def snap_primary(stream, PatternDict):
     if   x == "\"": result = snap_character_string.do(stream)
     elif x == "[":  
         stream.seek(-1, 1); 
-        result = character_set_expression.do(stream)
+        result = character_set_expression.do(stream, PatternDict)
     elif x == "{":  result = snap_replacement(stream, PatternDict)
     elif x == ".":  result = create_ALL_BUT_NEWLINE_state_machine()
     elif x == "(": 
@@ -459,39 +460,6 @@ def snap_non_control_characters(stream):
         
     return __debug_exit(result, stream)
     
-def snap_replacement(stream, PatternDict):
-    """Snaps a predefined pattern from the input string and returns the resulting
-       state machine.
-    """ 
-    skip_whitespace(stream)
-    pattern_name = read_identifier(stream)  
-    if pattern_name == "":
-        raise RegularExpressionException("Pattern replacement expression misses identifier after '{'.")
-    skip_whitespace(stream)
-
-    if not check(stream, "}"):
-        raise RegularExpressionException("Pattern replacement expression misses closing '}' after '%s'." \
-                                         % pattern_name)
-
-    if PatternDict.has_key(pattern_name) == False:
-        raise RegularExpressionException("Pattern of name '%s' was not defined in any preceding 'define { }' section" \
-                                         % pattern_name)
-
-    state_machine = PatternDict[pattern_name].state_machine
-    # It is essential that state machines defined as patterns do not 
-    # have origins. Otherwise, the optimization of patterns that
-    # contain pattern replacements might get confused and can
-    # not find all optimizations.
-    assert state_machine.has_origins() == False
-
-    # A state machine, that contains pre- or post- conditions cannot be part
-    # of a replacement. The addition of new post-contexts would mess up the pattern.
-    if state_machine.core().has_pre_or_post_context():
-        error_msg("Pre- or post- conditioned pattern was used in replacement.\n" + \
-                  "Quex's regular expression grammar does not allow this.", stream)
-        
-    return state_machine
-
 def __snap_repetition_range(the_state_machine, stream):    
     """Snaps a string that represents a repetition range. The following 
        syntaxes are supported:

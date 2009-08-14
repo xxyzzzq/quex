@@ -183,18 +183,18 @@ def parse_pattern_name_definitions(fh):
             error_msg("Missing regular expression for pattern definition '%s'." % \
                       pattern_name, fh)
 
-        # -- parse regular expression, build state machine
-        regular_expression_obj, state_machine = \
+        # A regular expression state machine
+        regular_expression_str, state_machine = \
                 regular_expression.parse(fh, AllowNothingIsFineF=True) 
 
         if state_machine.core().has_pre_or_post_context():
             error_msg("Pattern definition with pre- and/or post-context.\n" + \
                       "This pattern cannot be used in replacements.", fh, DontExitF=True)
-        
+
         lexer_mode.shorthand_db[pattern_name] = \
                 lexer_mode.PatternShorthand(pattern_name, state_machine, 
                                             fh.name, get_current_line_info_number(fh),
-                                            regular_expression_obj)
+                                            regular_expression_str)
 
 def parse_initial_mode_definition(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)

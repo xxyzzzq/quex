@@ -60,7 +60,7 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
 
     try:
         # -- parse regular expression, build state machine
-        character_set = charset_expression.snap_set_expression(sh)
+        character_set = charset_expression.snap_set_expression(sh, lexer_mode.shorthand_db)
 
         if character_set == None:
             error_msg("No valid regular character set expression detected.", sh_ref)
@@ -77,7 +77,6 @@ def parse_character_set(Txt_or_File, PatternStringF=False):
         error_msg("End of character set expression reached while parsing.", sh_ref)
 
     return __post_process(sh, start_position, character_set, PatternStringF)
-
 
 def __prepare_text_or_file_stream(Txt_or_File):
     if Txt_or_File.__class__ in [file, StringIO]:
