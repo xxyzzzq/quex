@@ -1,0 +1,64 @@
+-------------------------
+Interval:     [0000]
+   .front --> 0000.
+   .back  --> 0000.
+
+Result:
+   Interval < 0x10000:     [0000]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [0000, 0001]
+   .front --> 0000.
+   .back  --> 0001.
+
+Result:
+   Interval < 0x10000:     [0000, 0001]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [0001]
+   .front --> 0001.
+   .back  --> 0001.
+
+Result:
+   Interval < 0x10000:     [0001]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [D7FF]
+   .front --> D7FF.
+   .back  --> D7FF.
+
+Result:
+   Interval < 0x10000:     [D7FF]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [D7FE, D7FF]
+   .front --> D7FE.
+   .back  --> D7FF.
+
+Result:
+   Interval < 0x10000:     [D7FE, D7FF]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [D7FE]
+   .front --> D7FE.
+   .back  --> D7FE.
+
+Result:
+   Interval < 0x10000:     [D7FE]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [0000, D7FF]
+   .front --> 0000.
+   .back  --> D7FF.
+
+Result:
+   Interval < 0x10000:     [0000, D7FF]
+   Intervals >= 0x10000:   None
+-------------------------
+Interval:     [0001, D7FE]
+   .front --> 0001.
+   .back  --> D7FE.
+
+Result:
+   Interval < 0x10000:     [0001, D7FE]
+   Intervals >= 0x10000:   None

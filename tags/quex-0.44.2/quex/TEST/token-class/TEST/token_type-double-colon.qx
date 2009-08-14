@@ -1,0 +1,5 @@
+token_type {
+    distinct {
+        std::string  text;
+    }
+}
