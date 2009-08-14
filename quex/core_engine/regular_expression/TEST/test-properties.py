@@ -19,7 +19,7 @@ def test(TestString, NumbersF=False, HexF=False):
     print "expression = \"" + TestString + "\""
     stream = StringIO.StringIO(TestString)
     try:
-        result = character_set_expression.snap_set_expression(stream)
+        result = character_set_expression.snap_set_expression(stream, {})
         if NumbersF == False:
             print "result     = " + result.get_utf8_string() 
         elif HexF:
