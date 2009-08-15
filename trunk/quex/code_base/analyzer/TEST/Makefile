@@ -24,9 +24,12 @@ CC = g++ \
      -DQUEX_OPTION_COLUMN_NUMBER_COUNTING \
      -D__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT 
 
-%.exe:   %.cpp $(QUEX_CORE)
+post-categorizer-%.exe:   post-categorizer-%.cpp $(QUEX_CORE)
 	$(CC) -I./. -I$(QUEX_PATH) $< post-categorizer-common.cpp -o $@ 
 	
+counter-%.exe:   counter-%.cpp $(QUEX_CORE)
+	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+
 clean: 
 	rm -f *.o
 	rm -f $(PROGRAMS)

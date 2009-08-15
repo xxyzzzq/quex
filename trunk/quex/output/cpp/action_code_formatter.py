@@ -112,7 +112,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "self.counter.__shift_end_values_to_start_values();\n"
+    txt = "Counter_shift_end_values_to_start_values(&self.counter);\n"
 
     if EOF_ActionF:
         return txt

@@ -32,19 +32,32 @@ namespace quex {
         size_t  _column_number_at_begin;  // column where current pattern starts
         size_t  _column_number_at_end;    // column after current pattern
 #       endif
-
-        // (*) helper functions
-        void  __shift_end_values_to_start_values();
-        void  __count_newline_n_backwards(QUEX_TYPE_CHARACTER* it,
-                                          QUEX_TYPE_CHARACTER* Begin);
-
-        QUEX_TYPE_CHARACTER* __count_chars_to_newline_backwards(QUEX_TYPE_CHARACTER* Begin,
-                                                                QUEX_TYPE_CHARACTER* End,
-                                                                const ptrdiff_t  LexemeLength,
-                                                                const bool       LicenseToIncrementLineCountF=false);
-
+        void    __shift_end_values_to_start_values();
         virtual void print_this();
     };
+
+    inline void  Counter_construct(Counter* me);
+    inline void  Counter_copy_construct(Counter* me, const Counter* That);
+    inline void  Counter_init(Counter* me);
+
+    inline void  Counter_shift_end_values_to_start_values(Counter* me);
+    inline void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
+    inline void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
+    inline void  Counter_count_FixNewlineN(Counter*             me,
+                                           QUEX_TYPE_CHARACTER* Lexeme,
+                                           QUEX_TYPE_CHARACTER* LexemeEnd,
+                                           const int            LineNIncrement);
+
+    inline QUEX_TYPE_CHARACTER*
+    __Counter_count_chars_to_newline_backwards(Counter* me, QUEX_TYPE_CHARACTER* Begin,
+                                             QUEX_TYPE_CHARACTER* End,
+                                             const ptrdiff_t      LexemeLength,
+                                             const bool           LicenseToIncrementLineCountF /*=false*/);
+    inline void
+    __Counter_count_newline_n_backwards(Counter*             me, 
+                                        QUEX_TYPE_CHARACTER* it,
+                                        QUEX_TYPE_CHARACTER* Begin);
+
 
     struct CounterPseudo {
         // PURPOSE: Act as a 'no operation object' in case that no line or column
