@@ -77,11 +77,17 @@ namespace quex {
 
     inline void
     Counter_construct(Counter* me)
-    { Counter_init(me); }
+    { 
+        me->init       = Counter_init;
+        me->print_this = Counter_print_this;
+        Counter_init(me); 
+    }
 
     inline void
     Counter_copy_construct(Counter* me, const Counter* That)
     {
+        me->init       = Counter_init;
+        me->print_this = Counter_print_this;
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         me->_line_number_at_begin = That->_line_number_at_begin;   // line where current pattern starts
         me->_line_number_at_end   = That->_line_number_at_end;     // line after current pattern
