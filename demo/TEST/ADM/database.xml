@@ -1,4 +1,4 @@
-<test-database execution-time-sec="316.96" date="Fri Aug 14 09:22:59 2009">
+<test-database execution-time-sec="317.15" date="Sat Aug 15 13:24:16 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="28.24"> 
@@ -12,7 +12,7 @@
                <choice name="006" result="OK" time_sec="4.17" crc="-1768354765"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" make-required="True" time-sum-sec="26.67"> 
+        <test title="Intel's icpc" make-required="True" time-sum-sec="26.68"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1247664742L"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="5.06" crc="489948922"/>
@@ -52,7 +52,7 @@
         </test>
     </group>
     <group name="demo/003">
-        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="32.93"> 
+        <test title="Unicode Based Lexical Analyzis (Using GNU's Lib IConv)" make-required="True" time-sum-sec="32.94"> 
             <application file-name="003.sh" info-request-time="1247664742L"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="6.67" crc="1800559765"/>
@@ -82,18 +82,18 @@
         </test>
     </group>
     <group name="demo/005">
-        <test title="Including Files" make-required="True" time-sum-sec="16.19"> 
+        <test title="Including Files" make-required="True" time-sum-sec="16.35"> 
             <application file-name="005.sh" info-request-time="1247664742L"/>
             <choice-list number="4" same_result="False">
-               <choice name="1" result="OK" time_sec="4.23" crc="-1813164220"/>
-               <choice name="1_NDEBUG" result="OK" time_sec="3.88" crc="58412327"/>
-               <choice name="2" result="OK" time_sec="4.19" crc="1613540412"/>
-               <choice name="2_NDEBUG" result="OK" time_sec="3.89" crc="-5224027"/>
+               <choice name="1" result="OK" time_sec="4.22" crc="-1813164220"/>
+               <choice name="1_NDEBUG" result="OK" time_sec="3.90" crc="58412327"/>
+               <choice name="2" result="OK" time_sec="4.32" crc="1613540412"/>
+               <choice name="2_NDEBUG" result="OK" time_sec="3.91" crc="-5224027"/>
             </choice-list>
         </test>
     </group>
     <group name="demo/006">
-        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="8.52"> 
+        <test title="Pseudo Ambiguous Post Conditions" make-required="True" time-sum-sec="8.53"> 
             <application file-name="006.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.06" crc="1767280044"/>
@@ -129,7 +129,7 @@
         </test>
     </group>
     <group name="demo/010">
-        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="26.53"> 
+        <test title="Direct Buffer Access (Syntactically Chunked)" make-required="True" time-sum-sec="26.52"> 
             <application file-name="010b.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
                <choice name="copy" result="OK" time_sec="20.90" crc="665696517"/>
@@ -143,7 +143,7 @@
                <choice name="fill" result="OK" time_sec="5.72" crc="715182431"/>
             </choice-list>
         </test>
-        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="39.85"> 
+        <test title="Direct Buffer Access &amp; Character Set Conversion" make-required="True" time-sum-sec="39.86"> 
             <application file-name="010c.sh" info-request-time="1247664742L"/>
             <choice-list number="3" same_result="True">
                <choice name="copy-conversion" result="OK" time_sec="23.22" crc="-139797804"/>

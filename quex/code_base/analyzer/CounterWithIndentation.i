@@ -8,14 +8,6 @@
 
 
 namespace quex { 
-    inline void
-    CounterWithIndentation_construct(CounterWithIndentation* me);
-
-    inline void
-    CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);
-
-    inline void
-    CounterWithIndentation_init(CounterWithIndentation* me);
     // NOTE: Quex is pretty intelligent in choosing the right function
     //       to count line and column numbers. If, for example, a pattern
     //       does not contain newlines, then it simply adds the LexemeLength
@@ -38,12 +30,59 @@ namespace quex {
     { CounterWithIndentation_copy_construct(this, &That); }
 
     inline void
-    CounterWithIndentation::init()
-    { CounterWithIndentation_init(this); }
+    CounterWithIndentation::on_end_of_file()
+    { CounterWithIndentation_on_end_of_file(this); }
+
+    inline void    
+    CounterWithIndentation::icount(QUEX_TYPE_CHARACTER* Lexeme,
+                                   QUEX_TYPE_CHARACTER* LexemeEnd)
+    { 
+        CounterWithIndentation_icount(this, Lexeme, LexemeEnd); 
+        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+    }
+
+    inline void    
+    CounterWithIndentation::icount_NoNewline(QUEX_TYPE_CHARACTER* Lexeme,
+                                             const int            LexemeL)
+    { 
+        CounterWithIndentation_icount_NoNewline(this, Lexeme, LexemeL); 
+        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+    }
+
+    inline void  
+    CounterWithIndentation::icount_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
+    {
+        CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(this, ColumnNIncrement);
+        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+    }
+
+    inline void  
+    CounterWithIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
+    {
+        CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(ColumnNIncrement);
+        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+    }
+
+    inline void
+    CounterWithIndentation::__count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,
+                                                    QUEX_TYPE_CHARACTER* Begin,
+                                                    QUEX_TYPE_CHARACTER* End, 
+                                                    const bool           LicenseToIncrementLineCountF)
+    {
+        CounterWithIndentation_count_indentation_aux(me, start_consideration_it, Begin, End, 
+                                                     LicenseToIncrementLineCountF);
+    }
+
+    inline void 
+    CounterWithIndentation::print_this()
+    { CounterWithIndentation_print_this(this); }
+
 
     inline void
     CounterWithIndentation_construct(CounterWithIndentation* me)
     {
+        me->init       = CounterWithIndentation_init;
+        me->print_this = CounterWithIndentation_print_this;
         me->_the_lexer = (CLASS*)0x0;
         CounterWithIndentation_init(me);
     }
@@ -51,6 +90,8 @@ namespace quex {
     inline void
     CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That)
     { 
+        me->init       = CounterWithIndentation_init;
+        me->print_this = CounterWithIndentation_print_this;
         me->_the_lexer                   = That->_the_lexer;
         me->_indentation                 = That->_indentation;
         me->_indentation_count_enabled_f = That->_indentation_count_enabled_f;
@@ -66,23 +107,23 @@ namespace quex {
     }
 
     inline void
-    CounterWithIndentation::on_end_of_file()
+    CounterWithIndentation_on_end_of_file(CounterWithIndentation* me)
     {
         // 'flush' remaining indentations
-        if( _indentation_event_enabled_f ) 
-            _the_lexer->mode().on_indentation(_the_lexer, _indentation);
+        if( me->_indentation_event_enabled_f ) 
+            me->_the_lexer->mode().on_indentation(me->_the_lexer, me->_indentation);
     }
 
     inline void    
-    CounterWithIndentation::icount(QUEX_TYPE_CHARACTER* Lexeme,
-                                   QUEX_TYPE_CHARACTER* LexemeEnd)
+    CounterWithIndentation_icount(CounterWithIndentation*   me,
+                                  QUEX_TYPE_CHARACTER*      Lexeme,
+                                  QUEX_TYPE_CHARACTER*      LexemeEnd)
     // Lexeme:    Pointer to first character of Lexeme.
     // LexemeEnd: Pointer to first character after Lexeme.
     //
     // PURPOSE:
     //   Adapts the column number and the line number according to the newlines
     //   and letters of the last line occuring in the lexeme.
-    //
     ////////////////////////////////////////////////////////////////////////////////
     {
         //  NOTE: Indentation counting is only active between newline and the
@@ -125,18 +166,16 @@ namespace quex {
 
         __quex_assert(Begin < LexemeEnd);   // LexemeLength >= 1: NEVER COMPROMISE THIS !
 
-
         // (1) Last character == newline ? _______________________________________________
-        //
         if( *Last == '\n' ) {
-            _indentation = 0;
-            _indentation_count_enabled_f = true;
+            me->_indentation = 0;
+            me->_indentation_count_enabled_f = true;
 #           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-            ++_line_number_at_end;
-            __Counter_count_newline_n_backwards((Counter*)this, it, Begin);
+            ++(me->_line_number_at_end);
+            __Counter_count_newline_n_backwards((Counter*)me, it, Begin);
 #           endif
 #           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end = 1;            // next lexeme starts at _column_number_at_end + 1
+            me->_column_number_at_end = 1;  // next lexeme starts at _column_number_at_end + 1
 #           endif
             return;
         }
@@ -156,23 +195,23 @@ namespace quex {
                 //          not need a check;
                 start_consideration_it = it;
                 ++start_consideration_it;  // point to first character after newline
-                _indentation = 0;
-                _indentation_count_enabled_f = true;
+                me->_indentation = 0;
+                me->_indentation_count_enabled_f = true;
 #               ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                _column_number_at_end = 1;
+                me->_column_number_at_end = 1;
 #               endif
                 break; 
             }	    
         }
         // (2.1) no newline in lexeme?
         if( start_consideration_it == 0x0 ) {
-            if( _indentation_count_enabled_f == false ) {
+            if( me->_indentation_count_enabled_f == false ) {
                 // count increment without consideration of indentations
                 // no newline => no line number increment
                 //               no column number overflow / restart at '1'
                 // no indentation enabled => no indentation increment
 #               ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-                _column_number_at_end += (size_t)(LexemeEnd - Begin);
+                me->_column_number_at_end += (size_t)(LexemeEnd - Begin);
 #               endif
                 return;
             }
@@ -187,22 +226,22 @@ namespace quex {
         //      count was active (see case above).
         //   -- or there was a newline in the pattern, so above it is set
         //      '_indentation_count_enabled_f = true'.
-        __quex_assert( _indentation_count_enabled_f == true );
+        __quex_assert( me->_indentation_count_enabled_f == true );
 
         // (3) Count _____________________________________________________________________
         //
         // -- whitespace from: start_consideration to first non-whitespace
         //    (indentation count is disabled if non-whitespace arrives)
-        __count_whitespace_to_first_non_whitespace(start_consideration_it, Begin, LexemeEnd, 
+        __CounterWithIndentation_count_whitespace_to_first_non_whitespace(me, start_consideration_it, Begin, LexemeEnd, 
                                                    /* LicenseToIncrementLineCountF = */ true);
 
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
 
     inline void    
-    CounterWithIndentation::icount_NoNewline(QUEX_TYPE_CHARACTER* Lexeme,
-                                             const int            LexemeL)
+    CounterWithIndentation_icount_NoNewline(CounterWithIndentation*  me,
+                                            QUEX_TYPE_CHARACTER*     Lexeme,
+                                            const int                LexemeL)
     // Lexeme:    Pointer to first character of Lexeme.
     // LexemeEnd: Pointer to first character after Lexeme.
     {
@@ -215,13 +254,13 @@ namespace quex {
         // (2) Find last newline in lexeme _______________________________________________
         //     [cannot be found]
         // (2.1) no newline in lexeme? [yes]
-        if( _indentation_count_enabled_f == false ) {
+        if( me->_indentation_count_enabled_f == false ) {
             // count increment without consideration of indentations
             // no newline => no line number increment
             //               no column number overflow / restart at '1'
             // no indentation enabled => no indentation increment
 #           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _column_number_at_end += (size_t)LexemeL;
+            me->_column_number_at_end += (size_t)LexemeL;
 #           endif
             return;
         }
@@ -229,14 +268,13 @@ namespace quex {
         // The flag '_indentation_count_enabled_f' tells us that before this
         // pattern there was only whitespace after newline. Let us add the
         // whitespace at the beginning of this pattern to the _indentation.
-        __count_whitespace_to_first_non_whitespace(Begin, Begin, Begin + LexemeL, 
+        __CounterWithIndentation_count_whitespace_to_first_non_whitespace(me, Begin, Begin, Begin + LexemeL, 
                                                    /* LicenseToIncrementLineCountF = */ false);
-
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
     inline void  
-    CounterWithIndentation::icount_NoNewline_NeverStartOnWhitespace(const int ColumnNIncrement) 
+    CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(CounterWithIndentation* me, 
+                                                                   const int ColumnNIncrement) 
         // This is the fastest way to count: simply add the constant integer that represents 
         // the constant length of the lexeme (for patterns with fixed length, e.g. keywords).
     {
@@ -244,30 +282,29 @@ namespace quex {
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
         _column_number_at_end += ColumnNIncrement;
 #       endif
-        if( _indentation_count_enabled_f ) {
-            _indentation_count_enabled_f = false; 
-            _the_lexer->mode().on_indentation(_the_lexer, _indentation);
+        if( me->_indentation_count_enabled_f ) {
+            me->_indentation_count_enabled_f = false; 
+            me->_the_lexer->mode().on_indentation(me->_the_lexer, me->_indentation);
         }
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
     inline void  
-    CounterWithIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
+    CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(CounterWithIndentation*  me, 
+                                                              const int                ColumnNIncrement) 
     {
         __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_end += ColumnNIncrement;
+        me->_column_number_at_end += ColumnNIncrement;
 #       endif
-        if( _indentation_count_enabled_f ) _indentation += ColumnNIncrement;
-
-        __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        if( me->_indentation_count_enabled_f ) me->_indentation += ColumnNIncrement;
     }
 
     inline void
-    CounterWithIndentation::__count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHARACTER* start_consideration_it, 
-                                                                       QUEX_TYPE_CHARACTER* Begin,
-                                                                       QUEX_TYPE_CHARACTER* End,
-                                                                       const bool           LicenseToIncrementLineCountF)
+    __CounterWithIndentation_count_whitespace_to_first_non_whitespace(CounterWithIndentation* me,
+                                                                      QUEX_TYPE_CHARACTER* start_consideration_it, 
+                                                                      QUEX_TYPE_CHARACTER* Begin,
+                                                                      QUEX_TYPE_CHARACTER* End,
+                                                                      const bool           LicenseToIncrementLineCountF)
     // NOTE: The 'license' flag shall enable the compiler to **delete** the line number counting
     //       from the following function or implement it unconditionally, since the decision
     //       is based on a constant (either true or false) -- once the function has been inlined.   
@@ -279,20 +316,20 @@ namespace quex {
         QUEX_TYPE_CHARACTER* it = start_consideration_it;
         do { 
             if( *it != ' ' ) { 
-                _indentation_count_enabled_f = false;
-                _indentation += (size_t)(it - start_consideration_it);
+                me->_indentation_count_enabled_f = false;
+                me->_indentation += (size_t)(it - start_consideration_it);
                 // Line and column number need to be counted before the indentation handler
                 // is called. this way it has to correct information.
-                __count_indentation_aux(start_consideration_it, Begin, End, LicenseToIncrementLineCountF);
+                me->__count_indentation_aux(start_consideration_it, Begin, End, LicenseToIncrementLineCountF);
                 // indentation event enabled:
                 //   yes -> call indentation event handler
                 //   no  -> enable event for the next time.
                 //          indentation events can only be disabled for one coming event.
-                if( _indentation_event_enabled_f ) 
-                    _the_lexer->mode().on_indentation(_the_lexer, _indentation);
+                if( me->_indentation_event_enabled_f ) 
+                    me->_the_lexer->mode().on_indentation(me->_the_lexer, me->_indentation);
                 else
                     // event was disabled this time, enable it for the next time.
-                    _indentation_event_enabled_f = true;
+                    me->_indentation_event_enabled_f = true;
 
                 return;
             }
@@ -300,34 +337,35 @@ namespace quex {
         } while ( it != End );
 
         // no non-whitespace until end of lexeme, thus only increment the indentation
-        _indentation += it - start_consideration_it;
-        __count_indentation_aux(start_consideration_it, Begin, End, LicenseToIncrementLineCountF);
+        me->_indentation += it - start_consideration_it;
+        me->__count_indentation_aux(start_consideration_it, Begin, End, LicenseToIncrementLineCountF);
     }
 
     inline void
-    CounterWithIndentation::__count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,
-                                                    QUEX_TYPE_CHARACTER* Begin,
-                                                    QUEX_TYPE_CHARACTER* End, 
-                                                    const bool           LicenseToIncrementLineCountF)
+    CounterWithIndentation_count_indentation_aux(CounterWithIndentation*  me,
+                                                 QUEX_TYPE_CHARACTER*     start_consideration_it,
+                                                 QUEX_TYPE_CHARACTER*     Begin,
+                                                 QUEX_TYPE_CHARACTER*     End, 
+                                                 const bool               LicenseToIncrementLineCountF)
     {
         // when inlined, this is a condition on a constant => deleted by compiler.
         if( LicenseToIncrementLineCountF ) {
 #          ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-           __Counter_count_newline_n_backwards((Counter*)this, start_consideration_it, Begin);
+           __Counter_count_newline_n_backwards((Counter*)me, start_consideration_it, Begin);
 #          endif	    
         }
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_end += End - start_consideration_it;
+        me->_column_number_at_end += End - start_consideration_it;
 #       endif
     }
 
     inline void 
-    CounterWithIndentation::print_this()
+    CounterWithIndentation_print_this(CounterWithIndentation* me)
     {
-        Counter::print_this();
-        __QUEX_STD_printf("   _indentation                 = %i;\n", (int)_indentation);
-        __QUEX_STD_printf("   _indentation_count_enabled_f = %s;\n", _indentation_count_enabled_f ? "true" : "false");
-        __QUEX_STD_printf("   _indentation_event_enabled_f = %s;\n", _indentation_event_enabled_f ? "true" : "false");
+        Counter_print_this((Counter*)me);
+        __QUEX_STD_printf("   _indentation                 = %i;\n", (int)me->_indentation);
+        __QUEX_STD_printf("   _indentation_count_enabled_f = %s;\n", me->_indentation_count_enabled_f ? "true" : "false");
+        __QUEX_STD_printf("   _indentation_event_enabled_f = %s;\n", me->_indentation_event_enabled_f ? "true" : "false");
     }
 
 } // namespace quex 
