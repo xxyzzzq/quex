@@ -22,7 +22,7 @@ main(int argc, char** argv)
                                    9, 7, 5, 19, 999 };
     assert( fh != 0x0 );
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize);
+    QuexBuffer_construct(&buffer, fh, 0x0, 5, "UTF8", RawMemorySize, false);
     assert((void*)((QuexBufferFiller_Converter<FILE>*)buffer.filler)->converter->convert 
            == (void*)QuexConverter_ICU_convert);
 

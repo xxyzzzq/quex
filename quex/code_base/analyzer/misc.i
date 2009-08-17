@@ -42,7 +42,7 @@ namespace quex {
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
         accumulator.print_this();
 #       endif
-        counter.print_this();
+        counter.print_this(&counter);
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         post_categorizer.print_this();
 #       endif

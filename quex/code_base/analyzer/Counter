@@ -16,6 +16,9 @@ namespace quex {
 #endif
 
     struct Counter {
+        void (*init)(Counter*);
+        void (*print_this)(Counter*);
+
         Counter();
         Counter(const Counter&);
 
@@ -31,10 +34,7 @@ namespace quex {
         size_t  _column_number_at_begin;  // column where current pattern starts
         size_t  _column_number_at_end;    // column after current pattern
 #       endif
-        void    __shift_end_values_to_start_values();
 
-        void (*init);
-        void (*print_this)();
     };
 
     inline void  Counter_construct(Counter* me);
@@ -61,12 +61,13 @@ namespace quex {
 
 
     struct CounterPseudo {
-        Counter    base;
+        void (*init)(Counter*);
+        void (*print_this)(Counter*);
 
         // PURPOSE: Act as a 'no operation object' in case that no line or column
         //          counting is required.
-        CounterPseudo() { }
-        CounterPseudo(const CounterPseudo&) { }
+        CounterPseudo();
+        CounterPseudo(const CounterPseudo&);
 
         void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End) { }
         void  count_NoNewline(const int CharacterN) { }
@@ -74,14 +75,12 @@ namespace quex {
                                 const int LineNIncrement) { }
         void  __shift_end_values_to_start_values() { }
     };
-
+ 
+#   if defined (__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+          
     struct CounterWithIndentation {
-        Counter   base;
 
-        CounterWithIndentation();
-        CounterWithIndentation(const CounterWithIndentation&);
         void  on_end_of_file();
-
         void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 
         void  icount(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER*  End);
@@ -94,17 +93,14 @@ namespace quex {
         //                                    // in the current line.
         bool    _indentation_count_enabled_f; // count whitespace for indentation?
         bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
-
-        // (*) Helper functions
-        void  __count_indentation_aux(QUEX_TYPE_CHARACTER* start_consideration_it,
-                                      QUEX_TYPE_CHARACTER* Begin,
-                                      QUEX_TYPE_CHARACTER* End, 
-                                      const bool       LicenseToCountF);
-
-        void  __count_whitespace_to_first_non_whitespace(QUEX_TYPE_CHARACTER*  start_consideration, 
-                                                         QUEX_TYPE_CHARACTER*  Begin,
-                                                         QUEX_TYPE_CHARACTER*  End,
-                                                         const bool            LicenseToCountF);
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        size_t  _line_number_at_begin;   // line where current pattern starts
+        size_t  _line_number_at_end;     // line after current pattern
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        size_t  _column_number_at_begin;  // column where current pattern starts
+        size_t  _column_number_at_end;    // column after current pattern
+#       endif
     };
 
     inline void
@@ -149,6 +145,7 @@ namespace quex {
                                                  QUEX_TYPE_CHARACTER*     Begin,
                                                  QUEX_TYPE_CHARACTER*     End, 
                                                  const bool               LicenseToIncrementLineCountF);
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }
 #endif

@@ -265,8 +265,8 @@ namespace quex {
 #endif
 
 /* Generating names on the fly while existing macros are to be used. */
-#define __QUEX_NAMER_LASS_PREFIXED(x) A ## x
-#define QUEX_NAMER_LASS_PREFIXED(x) __QUEX_NAMER_CLASS_PREFIXED(CLASS_, x)
+#define __QUEX_PREFIX(x) A ## x
+#define QUEX_PREFIX(PREFIX, x) __QUEX_PREFIX(PREFIX, x)
 
 #define __QUEX_NAMER(A, x, B) A ## x ## B
 #define QUEX_NAMER(A, x, B) __QUEX_NAMER(A, x, B)
