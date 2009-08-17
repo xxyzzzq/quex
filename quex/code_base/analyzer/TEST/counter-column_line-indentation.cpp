@@ -29,7 +29,8 @@ void
 test(const char* TestString, CounterWithIndentation& x)
 {
     x.__shift_end_values_to_start_values();
-    x.icount((QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    CounterWithIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, 
+                                  (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
 

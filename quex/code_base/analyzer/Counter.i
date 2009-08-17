@@ -47,20 +47,6 @@ namespace quex {
     }
 
 
-    inline void 
-    Counter_print_this(Counter* me)
-    {
-        __QUEX_STD_printf("   Counter:\n");
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
-        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
-        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
-#       endif
-    }
-
     inline void
     Counter_construct(Counter* me)
     { 

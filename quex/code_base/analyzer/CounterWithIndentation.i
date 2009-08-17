@@ -20,11 +20,6 @@ namespace quex {
     // NOTE: Those functions are not responsible for setting the begin to the
     //       last end, such as _line_number_at_begin = _line_number_at_end.
     //       This has to happen outside these functions.
-    inline 
-    CounterWithIndentation::CounterWithIndentation()
-        : _the_lexer((CLASS*)0x0)
-    { CounterWithIndentation_construct(this); }
-
     inline void
     CounterWithIndentation::on_end_of_file()
     { CounterWithIndentation_on_end_of_file(this); }
@@ -55,7 +50,7 @@ namespace quex {
     inline void  
     CounterWithIndentation::icount_NoNewline_ContainsOnlySpace(const int ColumnNIncrement) 
     {
-        CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(ColumnNIncrement);
+        CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(this, ColumnNIncrement);
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
@@ -248,7 +243,7 @@ namespace quex {
     {
         __quex_assert(ColumnNIncrement > 0);  // lexeme length >= 1
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        _column_number_at_end += ColumnNIncrement;
+        me->_column_number_at_end += ColumnNIncrement;
 #       endif
         if( me->_indentation_count_enabled_f ) {
             me->_indentation_count_enabled_f = false; 
@@ -288,7 +283,7 @@ namespace quex {
                 me->_indentation += (size_t)(it - start_consideration_it);
                 // Line and column number need to be counted before the indentation handler
                 // is called. this way it has to correct information.
-                CounterWithIndentation_count_indentation_aux(this, start_consideration_it, 
+                CounterWithIndentation_count_indentation_aux(me, start_consideration_it, 
                                                              Begin, End, LicenseToIncrementLineCountF);
                 // indentation event enabled:
                 //   yes -> call indentation event handler
@@ -307,7 +302,7 @@ namespace quex {
 
         // no non-whitespace until end of lexeme, thus only increment the indentation
         me->_indentation += it - start_consideration_it;
-        CounterWithIndentation_count_indentation_aux(this, start_consideration_it, 
+        CounterWithIndentation_count_indentation_aux(me, start_consideration_it, 
                                                      Begin, End, LicenseToIncrementLineCountF);
     }
 
@@ -332,7 +327,7 @@ namespace quex {
     inline void 
     CounterWithIndentation_print_this(CounterWithIndentation* me)
     {
-        Counter_print_this((Counter*)me);
+        Counter_print_this(me);
         __QUEX_STD_printf("   _indentation                 = %i;\n", (int)me->_indentation);
         __QUEX_STD_printf("   _indentation_count_enabled_f = %s;\n", me->_indentation_count_enabled_f ? "true" : "false");
         __QUEX_STD_printf("   _indentation_event_enabled_f = %s;\n", me->_indentation_event_enabled_f ? "true" : "false");
