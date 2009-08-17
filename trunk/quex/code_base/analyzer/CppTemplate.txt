@@ -280,16 +280,14 @@ $$USER_DEFINED_HEADER$$
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
 #include <quex/code_base/analyzer/Counter>
-namespace quex { 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-    typedef CounterWithIndentation CounterType;
+#   define QUEX_TYPE_COUNTER  CounterWithIndentation
 #elif    defined(QUEX_OPTION_LINE_NUMBER_COUNTING) \
-       | defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-    typedef Counter                CounterType;
+      || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
+#   define QUEX_TYPE_COUNTER  Counter
 #else
-    typedef CounterPseudo          CounterType;
+#   define QUEX_TYPE_COUNTER  CounterPseudo
 #endif
-}
 
 // START:
 $$LEXER_DERIVED_CLASS_DECL$$
@@ -303,7 +301,7 @@ $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct $$LEXER_CLASS_NAME$$Memento_tag {
         QuexAnalyser analyser_core;
-        CounterType  counter;
+        QUEX_TYPE_COUNTER   counter;
         CLASS_QUEX_MODE*    current_mode_p;
         struct $$LEXER_CLASS_NAME$$Memento_tag*  parent;
 $$MEMENTO_EXTENSIONS$$
@@ -508,7 +506,7 @@ $$MODE_OBJECT_MEMBERS$$
         CLASS_ACCUMULATOR        accumulator;
 #       endif
     private:
-        CounterType        counter;
+        QUEX_TYPE_COUNTER        counter;
     public:
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         PostCategorizer    post_categorizer;
@@ -601,6 +599,7 @@ $$CLASS_BODY_EXTENSION$$
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
         accumulator._the_lexer = this;
 #       endif
+        QUEX_PREFIX(QUEX_TYPE_COUNTER, _construct)(&counter);
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
         counter._the_lexer = this;
 #       endif
@@ -660,7 +659,7 @@ $$CONSTRUCTOR_EXTENSTION$$
                            CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
-        counter.init();
+        QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
 
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
         QuexTokenQueue_reset(this->_token_queue);

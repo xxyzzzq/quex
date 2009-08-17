@@ -23,16 +23,6 @@ namespace quex {
     Counter::Counter()
     { Counter_construct(this); }
 
-    inline
-    Counter::Counter(const Counter& That)
-    { Counter_copy_construct(this, &That); }
-
-    inline void    
-    Counter::__shift_end_values_to_start_values()
-    { 
-        Counter_shift_end_values_to_start_values(this); 
-    }
-
     inline void    
     Counter::count(QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd)
     { 
@@ -58,22 +48,18 @@ namespace quex {
 
 
     inline void 
-    Counter::print_this()
+    Counter_print_this(Counter* me)
     {
         __QUEX_STD_printf("   Counter:\n");
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)_line_number_at_begin);
-        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)_line_number_at_end);
+        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
+        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)_column_number_at_begin);
-        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)_column_number_at_end);
+        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
+        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
 #       endif
     }
-
-    inline void
-    CounterPseudo::print_this() 
-    { __QUEX_STD_printf("   Counter: <none>\n"); }
 
     inline void
     Counter_construct(Counter* me)
@@ -81,21 +67,6 @@ namespace quex {
         me->init       = Counter_init;
         me->print_this = Counter_print_this;
         Counter_init(me); 
-    }
-
-    inline void
-    Counter_copy_construct(Counter* me, const Counter* That)
-    {
-        me->init       = Counter_init;
-        me->print_this = Counter_print_this;
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        me->_line_number_at_begin = That->_line_number_at_begin;   // line where current pattern starts
-        me->_line_number_at_end   = That->_line_number_at_end;     // line after current pattern
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->_column_number_at_begin = That->_column_number_at_begin;  // column where current pattern starts
-        me->_column_number_at_end   = That->_column_number_at_end;    // column after current pattern
-#       endif
     }
 
     inline void
@@ -257,6 +228,28 @@ namespace quex {
 #       endif
     }
 #endif
+
+    inline void
+    CounterPseudo_init(Counter* me) 
+    { }
+
+    inline void
+    CounterPseudo_print_this(Counter* me) 
+    { __QUEX_STD_printf("   Counter: <none>\n"); }
+
+    inline
+    CounterPseudo::CounterPseudo() 
+    {
+       this->init       = CounterPseudo_init; 
+       this->print_this = CounterPseudo_print_this; 
+    }
+
+    inline
+    CounterPseudo::CounterPseudo(const CounterPseudo&) 
+    { 
+       this->init       = CounterPseudo_init; 
+       this->print_this = CounterPseudo_print_this; 
+    }
 
 }
 #endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */

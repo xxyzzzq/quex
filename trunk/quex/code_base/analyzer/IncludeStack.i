@@ -50,7 +50,8 @@ namespace quex {
                                IANA_CodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                buffer._byte_order_reversion_active_f);
-        counter.init();
+
+        QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
 
         /* Keep track of 'who's your daddy?'                              */
         m->parent = this->_parent_memento;
