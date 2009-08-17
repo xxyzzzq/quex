@@ -9,23 +9,11 @@
 #include <stddef.h>
 #endif
 
-
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
     struct Counter {
-        void (*init)(Counter*);
-        void (*print_this)(Counter*);
-
-        Counter();
-        Counter(const Counter&);
-
-        void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
-        void  count_NoNewline(const ptrdiff_t LexemeL);
-        void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
-                                const int LineNIncrement);
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         size_t  _line_number_at_begin;   // line where current pattern starts
         size_t  _line_number_at_end;     // line after current pattern
@@ -34,7 +22,6 @@ namespace quex {
         size_t  _column_number_at_begin;  // column where current pattern starts
         size_t  _column_number_at_end;    // column after current pattern
 #       endif
-
     };
 
     inline void  Counter_construct(Counter* me);
@@ -60,14 +47,24 @@ namespace quex {
                                         QUEX_TYPE_CHARACTER* Begin);
 
 
-    struct CounterPseudo {
-        void (*init)(Counter*);
-        void (*print_this)(Counter*);
+    inline void 
+    Counter_print_this(Counter* me)
+    {
+        __QUEX_STD_printf("   Counter:\n");
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
+        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
+        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
+#       endif
+    }
 
+    struct CounterPseudo {
         // PURPOSE: Act as a 'no operation object' in case that no line or column
         //          counting is required.
         CounterPseudo();
-        CounterPseudo(const CounterPseudo&);
 
         void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End) { }
         void  count_NoNewline(const int CharacterN) { }
@@ -76,8 +73,6 @@ namespace quex {
         void  __shift_end_values_to_start_values() { }
     };
  
-#   if defined (__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-          
     struct CounterWithIndentation {
 
         void  on_end_of_file();

@@ -29,7 +29,7 @@ void
 test(const char* TestString, CounterWithIndentation& x)
 {
     x.__shift_end_values_to_start_values();
-    x.icount((QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
+    CounterWithIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
 
@@ -37,7 +37,7 @@ void
 test_NoNewline(const char* TestString, CounterWithIndentation& x)
 {
     x.__shift_end_values_to_start_values();
-    x.icount_NoNewline((QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
+    CounterWithIndentation_icount_NoNewline(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
     print(x, TestString);
 }
 
@@ -48,7 +48,7 @@ test_NoNewline_NeverStartOnWhitespace(const char* TestString, CounterWithIndenta
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
     x.__shift_end_values_to_start_values();
-    x.icount_NoNewline_NeverStartOnWhitespace(strlen(TestString));
+    CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(&x, strlen(TestString));
     print(x, TestString);
 }
 
@@ -59,7 +59,7 @@ test_NoNewline_ContainsOnlySpace(const char* TestString, CounterWithIndentation&
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
     x.__shift_end_values_to_start_values();
-    x.icount_NoNewline_ContainsOnlySpace(strlen(TestString));
+    CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(&x, strlen(TestString));
     print(x, TestString);
 }
 
