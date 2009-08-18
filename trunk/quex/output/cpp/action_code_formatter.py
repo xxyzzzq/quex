@@ -69,7 +69,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "Counter_shift_end_values_to_start_values(&self.counter);\n"
+    txt = "Counter_shift_end_values_to_start_values(&self.counter.base);\n"
 
     if EOF_ActionF:
         txt += "#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT\n"
@@ -112,7 +112,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "Counter_shift_end_values_to_start_values(&self.counter);\n"
+    txt = "Counter_shift_end_values_to_start_values(&self.counter.base);\n"
 
     if EOF_ActionF:
         return txt

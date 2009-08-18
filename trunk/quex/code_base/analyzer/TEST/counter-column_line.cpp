@@ -11,8 +11,8 @@ int    indentation[64];
 
 void test(const char* TestString, Counter& x)
 {
-    x._line_number_at_begin   = x._line_number_at_end;
-    x._column_number_at_begin = x._column_number_at_end;
+    x.base._line_number_at_begin   = x.base._line_number_at_end;
+    x.base._column_number_at_begin = x.base._column_number_at_end;
     Counter_count(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
 
     printf("__________________________\n");
@@ -22,7 +22,7 @@ void test(const char* TestString, Counter& x)
        else             printf("%c", *p);
     printf("'\n");
     printf("  after:  %i, %i\n", 
-           (int)x._line_number_at_end, (int)x._column_number_at_end);
+           (int)x.base._line_number_at_end, (int)x.base._column_number_at_end);
 
     strcat(total_string, TestString);
 }
@@ -31,6 +31,7 @@ int
 main(int  argc, char** argv)
 {
     Counter   x;
+    Counter_construct(&x);
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Count Line and Column: Without Indentation Count\n");

@@ -14,13 +14,13 @@ void
 print(CounterWithIndentation& x, const char* TestString)
 {
     cout << "__________________________" << endl;
-    // cout << "  before: " << x.line_number_at_begin()    << ", " << x.column_number_at_begin() << endl;
+    // cout << "  before: " << x.base._line_number_at_begin << ", " << x.base._column_number_at_begin << endl;
     cout << "  lexeme: '";
     for(char* p = (char*)TestString; *p ; ++p) 
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    cout << "  after:  " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
+    cout << "  after:  " << x.base._line_number_at_end    << ", " << x.base._column_number_at_end << endl;
 
     total_string += TestString;
 }
@@ -28,7 +28,7 @@ print(CounterWithIndentation& x, const char* TestString)
 void 
 test(const char* TestString, CounterWithIndentation& x)
 {
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values(&x.base);
     CounterWithIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                                   (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
@@ -39,9 +39,11 @@ main(int  argc, char** argv)
 {
     my_tester                y;
     CounterWithIndentation   x;
+
+    CounterWithIndentation_construct(&x);
     x._the_lexer = &y;
-    y.counter = &x;
-    x._line_number_at_end = 1;
+    y.counter = (Counter*)&x;
+    x.base._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {
         cout << "Count Line and Column: With Indentation\n";

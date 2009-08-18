@@ -21,7 +21,7 @@ print(Counter& x, const char* TestString)
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    cout << "  after:  " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
+    cout << "  after:  " << x.base._line_number_at_end    << ", " << x.base._column_number_at_end << endl;
 
     total_string += TestString;
 }
@@ -29,7 +29,7 @@ print(Counter& x, const char* TestString)
 void 
 test(const char* TestString, Counter& x)
 {
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     Counter_count(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -37,7 +37,7 @@ test(const char* TestString, Counter& x)
 void 
 test_NoNewline(const char* TestString, Counter& x)
 {
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     Counter_count_NoNewline(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -48,7 +48,7 @@ test_FixedNewlineN(const char* TestString, Counter& x)
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     Counter_count_FixNewlineN(&x, (QUEX_TYPE_CHARACTER*)TestString, 
                               (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString), line_n);
     print(x, TestString);
@@ -59,6 +59,7 @@ int
 main(int  argc, char** argv)
 {
     Counter   x;
+    Counter_construct(&x);
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
         cout << "Count Line and Column: Without Indentation Count II\n";

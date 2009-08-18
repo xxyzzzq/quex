@@ -20,7 +20,7 @@ print(CounterWithIndentation& x, const char* TestString)
        if( *p == '\n' ) cout << "\\n";
        else             cout << *p;
     cout << "'" << endl;
-    cout << "  after:  " << x._line_number_at_end    << ", " << x._column_number_at_end << endl;
+    cout << "  after:  " << x.base._line_number_at_end    << ", " << x.base._column_number_at_end << endl;
 
     total_string += TestString;
 }
@@ -28,7 +28,7 @@ print(CounterWithIndentation& x, const char* TestString)
 void 
 test(const char* TestString, CounterWithIndentation& x)
 {
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterWithIndentation_icount(&x, (QUEX_TYPE_CHARACTER*)TestString, (QUEX_TYPE_CHARACTER*)TestString + strlen(TestString));
     print(x, TestString);
 }
@@ -36,7 +36,7 @@ test(const char* TestString, CounterWithIndentation& x)
 void 
 test_NoNewline(const char* TestString, CounterWithIndentation& x)
 {
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterWithIndentation_icount_NoNewline(&x, (QUEX_TYPE_CHARACTER*)TestString, strlen(TestString));
     print(x, TestString);
 }
@@ -47,7 +47,7 @@ test_NoNewline_NeverStartOnWhitespace(const char* TestString, CounterWithIndenta
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -58,7 +58,7 @@ test_NoNewline_ContainsOnlySpace(const char* TestString, CounterWithIndentation&
     int line_n = 0;
     for(const char* p=TestString; *p ; ++p) if( *p == '\n' ) ++line_n; 
 
-    x.__shift_end_values_to_start_values();
+    Counter_shift_end_values_to_start_values((__CounterBase*)&x);
     CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(&x, strlen(TestString));
     print(x, TestString);
 }
@@ -68,9 +68,11 @@ main(int  argc, char** argv)
 {
     my_tester                y;
     CounterWithIndentation   x;
+    CounterWithIndentation_construct(&x);
+
     x._the_lexer = &y;
-    y.counter = &x;
-    x._line_number_at_end = 1;
+    y.counter = (Counter*)&x;
+    x.base._line_number_at_end = 1;
         
     if( argc > 1 and string(argv[1]) == "--hwut-info" ) {
         cout << "Count Line and Column: With Indentation II\n";
