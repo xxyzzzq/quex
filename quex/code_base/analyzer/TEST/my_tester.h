@@ -28,7 +28,7 @@ struct my_tester {
 inline void 
 mini_mode::on_indentation(my_tester* x, int Indentation) 
 {
-    indentation[x->counter->_line_number_at_end-1] = Indentation;
+    indentation[x->counter->base._line_number_at_end-1] = Indentation;
     printf("indentation = %i\n", Indentation);
 }
 

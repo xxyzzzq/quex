@@ -419,13 +419,13 @@ $$MEMENTO_EXTENSIONS$$
 
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         int  line_number() const          { return line_number_at_begin(); }
-        int  line_number_at_begin() const { return counter._line_number_at_begin; }
-        int  line_number_at_end() const   { return counter._line_number_at_end; }
+        int  line_number_at_begin() const { return counter.base._line_number_at_begin; }
+        int  line_number_at_end() const   { return counter.base._line_number_at_end; }
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
         int  column_number() const          { return column_number_at_begin(); }
-        int  column_number_at_begin() const { return counter._column_number_at_begin; }
-        int  column_number_at_end() const   { return counter._column_number_at_end; }
+        int  column_number_at_begin() const { return counter.base._column_number_at_begin; }
+        int  column_number_at_end() const   { return counter.base._column_number_at_end; }
 #       endif
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
         int  indentation()                    { return counter._indentation; }

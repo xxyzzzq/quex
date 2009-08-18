@@ -8,12 +8,13 @@
 #else
 #include <stddef.h>
 #endif
+#include <quex/code_base/definitions>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
-    struct Counter {
+    typedef struct {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         size_t  _line_number_at_begin;   // line where current pattern starts
         size_t  _line_number_at_end;     // line after current pattern
@@ -22,13 +23,18 @@ namespace quex {
         size_t  _column_number_at_begin;  // column where current pattern starts
         size_t  _column_number_at_end;    // column after current pattern
 #       endif
-    };
+    } __CounterBase;
+
+    inline void  Counter_shift_end_values_to_start_values(__CounterBase* me);
+
+    typedef struct {
+        __CounterBase  base;
+    } Counter;
 
     inline void  Counter_construct(Counter* me);
     inline void  Counter_copy_construct(Counter* me, const Counter* That);
     inline void  Counter_init(Counter* me);
 
-    inline void  Counter_shift_end_values_to_start_values(Counter* me);
     inline void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
     inline void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
     inline void  Counter_count_FixNewlineN(Counter*             me,
@@ -47,33 +53,22 @@ namespace quex {
                                         QUEX_TYPE_CHARACTER* Begin);
 
 
-    inline void 
-    Counter_print_this(Counter* me)
-    {
-        __QUEX_STD_printf("   Counter:\n");
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
-        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
-        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
-#       endif
-    }
+    inline void  Counter_print_this(Counter* me);
 
-    struct CounterPseudo {
+    typedef struct {
+        __CounterBase   base;
+
         // PURPOSE: Act as a 'no operation object' in case that no line or column
         //          counting is required.
-        CounterPseudo();
-
         void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End) { }
         void  count_NoNewline(const int CharacterN) { }
         void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
                                 const int LineNIncrement) { }
         void  __shift_end_values_to_start_values() { }
-    };
+    } CounterPseudo;
  
-    struct CounterWithIndentation {
+    typedef struct {
+        __CounterBase   base;
 
         void  on_end_of_file();
         void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
@@ -88,15 +83,7 @@ namespace quex {
         //                                    // in the current line.
         bool    _indentation_count_enabled_f; // count whitespace for indentation?
         bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        size_t  _line_number_at_begin;   // line where current pattern starts
-        size_t  _line_number_at_end;     // line after current pattern
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        size_t  _column_number_at_begin;  // column where current pattern starts
-        size_t  _column_number_at_end;    // column after current pattern
-#       endif
-    };
+    } CounterWithIndentation;
 
     inline void
     CounterWithIndentation_construct(CounterWithIndentation* me);
