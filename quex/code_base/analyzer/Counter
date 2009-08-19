@@ -58,18 +58,6 @@ namespace quex {
     typedef struct {
         __CounterBase   base;
 
-        // PURPOSE: Act as a 'no operation object' in case that no line or column
-        //          counting is required.
-        void  count(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End) { }
-        void  count_NoNewline(const int CharacterN) { }
-        void  count_FixNewlineN(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End,
-                                const int LineNIncrement) { }
-        void  __shift_end_values_to_start_values() { }
-    } CounterPseudo;
- 
-    typedef struct {
-        __CounterBase   base;
-
         void  on_end_of_file();
         void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
 

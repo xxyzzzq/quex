@@ -17,7 +17,7 @@ main(int argc, char** argv)
     FILE*       fh = prepare_input_error();
     QuexBuffer  buffer;
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 8, 0x0, 0);
+    QuexBuffer_construct(&buffer, fh, 0x0, 8, 0x0, 0, false);
 
     
     do {

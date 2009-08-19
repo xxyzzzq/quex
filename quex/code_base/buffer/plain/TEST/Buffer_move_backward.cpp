@@ -16,7 +16,7 @@ main(int argc, char** argv)
     const size_t  StepSize = atoi(argv[1]);
     FILE*         fh       = prepare_input(); /* Festgemauert ... */
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 5, 0x0, 0);
+    QuexBuffer_construct(&buffer, fh, 0x0, 5, 0x0, 0, false);
 
     /* Read until the end of file is reached and set the _input_p to EOF */
     while( 1 + 1 == 2 ) {

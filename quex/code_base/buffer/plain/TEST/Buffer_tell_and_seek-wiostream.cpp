@@ -21,7 +21,7 @@ main(int argc, char** argv)
     __quex_assert(sizeof(QUEX_TYPE_CHARACTER) == sizeof(wchar_t));
 
     sh << L"Fest gemauert in der Erden";
-    QuexBuffer_construct(&buffer, &sh, 0x0, 5, 0x0, 0);
+    QuexBuffer_construct(&buffer, &sh, 0x0, 5, 0x0, 0, false);
 
     test_seek_and_tell(&buffer, SeekIndices);
 }
