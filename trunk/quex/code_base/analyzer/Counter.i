@@ -206,14 +206,5 @@ namespace quex {
 #       endif
     }
 #endif
-
-    inline void
-    CounterPseudo_init(Counter* me) 
-    { }
-
-    inline void
-    CounterPseudo_print_this(Counter* me) 
-    { __QUEX_STD_printf("   Counter: <none>\n"); }
-
 }
 #endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */

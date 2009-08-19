@@ -4,7 +4,7 @@ from   quex.core_engine.generator.action_info import *
 from   quex.input.setup                       import setup as Setup
 
 def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine, 
-       Default_ActionF=False, EOF_ActionF=False):
+       Default_ActionF=False, EOF_ActionF=False, IndentationSupportF=False):
     """-- If there are multiple handlers for a single event they are combined
     
        -- Adding debug information printer (if desired)
@@ -36,7 +36,7 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
         on_every_match_code += code_info.get_code()
 
     # (*) Code to count line and column numbers
-    if Mode.has_code_fragment_list("on_indentation"):
+    if IndentationSupportF:
         lc_count_code = __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF)
 
     else:
@@ -105,7 +105,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
         elif contains_only_spaces_f:
             func = "CounterWithIndentation_icount_NoNewline_ContainsOnlySpaces(&self.counter, %s);" % column_increment
         else:
-            func = "CounterWithIndentation_icount_NoNewline(&self.counter, Lexeme, LexemeEnd);"
+            func = "CounterWithIndentation_icount_NoNewline(&self.counter, Lexeme, LexemeL);"
 
     return txt + func + "\n"
 

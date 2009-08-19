@@ -15,13 +15,13 @@ from   quex.input.setup             import setup as Setup
 LanguageDB = Setup.language_db
 
 
-def do(Modes):
+def do(Modes, IndentationSupportF):
 
-    write_engine_header(Modes)
+    write_engine_header(Modes, IndentationSupportF)
 
     write_mode_class_implementation(Modes)
 
-def write_engine_header(Modes):
+def write_engine_header(Modes, IndentationSupportF):
 
     QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/analyzer/CppTemplate.txt").replace("//","/")
@@ -45,16 +45,6 @@ def write_engine_header(Modes):
     else:
         quex_coding_name_str = { 1: "ASCII", 2: "UCS-2BE", 4: "UCS-4BE", 
                                     "wchar_t": "WCHAR_T" }[Setup.bytes_per_ucs_code_point]
-
-
-    # -- determine whether the lexical analyser needs indentation counting
-    #    support. if one mode has an indentation handler, than indentation
-    #    support must be provided.
-    indentation_support_f = False
-    for mode in Modes.values():
-        if mode.has_code_fragment_list("on_indentation"):
-            indentation_support_f = True
-            break
 
     mode_id_definition_str = "" 
     # NOTE: First mode-id needs to be '1' for compatibility with flex generated engines
@@ -114,7 +104,7 @@ def write_engine_header(Modes):
     
     txt = set_switch(txt, entry_handler_active_f,  "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT")
     txt = set_switch(txt, exit_handler_active_f,   "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT")
-    txt = set_switch(txt, indentation_support_f,   "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
+    txt = set_switch(txt, IndentationSupportF,     "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
     txt = set_switch(txt, True,                    "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
     txt = set_switch(txt, Setup.byte_order == "little",                 "__QUEX_OPTION_LITTLE_ENDIAN")
     txt = set_switch(txt, Setup.byte_order == "big",                    "__QUEX_OPTION_BIG_ENDIAN")

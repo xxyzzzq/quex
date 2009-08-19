@@ -282,11 +282,8 @@ $$USER_DEFINED_HEADER$$
 #include <quex/code_base/analyzer/Counter>
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   define QUEX_TYPE_COUNTER  CounterWithIndentation
-#elif    defined(QUEX_OPTION_LINE_NUMBER_COUNTING) \
-      || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)
-#   define QUEX_TYPE_COUNTER  Counter
 #else
-#   define QUEX_TYPE_COUNTER  CounterPseudo
+#   define QUEX_TYPE_COUNTER  Counter
 #endif
 
 // START:

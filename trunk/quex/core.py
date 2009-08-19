@@ -5,17 +5,17 @@ import sys
 from   quex.frs_py.file_in import error_msg, write_safely_and_close
 
 from   quex.input.setup import setup as Setup
-import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.lexer_mode                          as lexer_mode
-from   quex.core_engine.generator.action_info   import UserCodeFragment_straighten_open_line_pragmas, \
-                                                       CodeFragment
-from   quex.output.cpp.token_id_maker           import TokenInfo
 
-import quex.core_engine.generator.core          as     generator
-from   quex.core_engine.generator.action_info   import PatternActionInfo
-import quex.input.quex_file_parser              as quex_file_parser
 import quex.consistency_check                   as consistency_check
+import quex.core_engine.generator.core          as     generator
+from   quex.core_engine.generator.action_info   import PatternActionInfo, \
+                                                       UserCodeFragment_straighten_open_line_pragmas, \
+                                                       CodeFragment
+import quex.input.quex_file_parser              as quex_file_parser
+from   quex.output.cpp.token_id_maker           import TokenInfo
 import quex.output.cpp.core                     as quex_class_out
+import quex.output.cpp.token_id_maker           as token_id_maker
 import quex.output.cpp.action_code_formatter    as action_code_formatter
 import quex.output.cpp.token_class_maker        as token_class_maker
 import quex.output.cpp.codec_converter_helper   as codec_converter_helper 
@@ -41,9 +41,9 @@ def do():
     mode_name_list = map(lambda mode: mode.name, mode_list)
 
     # (*) Implement the 'quex' core class from a template
-    #
     # -- do the coding of the class framework
-    quex_class_out.do(mode_db)
+    IndentationSupportF = __requires_indentation_count(mode_db)
+    quex_class_out.do(mode_db, IndentationSupportF)
 
     # (*) Generate the token ids
     token_id_maker.do(Setup) 
@@ -59,7 +59,7 @@ def do():
     analyzer_code        = ""
     for mode in mode_list:        
         # accumulate inheritance information for comment
-        analyzer_code        += get_code_for_mode(mode, mode_name_list) 
+        analyzer_code        += get_code_for_mode(mode, mode_name_list, IndentationSupportF) 
         inheritance_info_str += mode.get_documentation()
         
     # find unused labels
@@ -80,7 +80,7 @@ def do():
     if lexer_mode.token_type_definition != None:
         UserCodeFragment_straighten_open_line_pragmas(lexer_mode.get_token_class_file_name(Setup), "C")
 
-def get_code_for_mode(Mode, ModeNameList):
+def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
 
     # -- some modes only define event handlers that are inherited
     if len(Mode.get_pattern_action_pair_list()) == 0: return "", ""
@@ -93,7 +93,8 @@ def get_code_for_mode(Mode, ModeNameList):
 
     end_of_stream_action = action_code_formatter.do(Mode, 
                                                     Mode.get_code_fragment_list("on_end_of_stream"), 
-                                                    "on_end_of_stream", None, EOF_ActionF=True)
+                                                    "on_end_of_stream", None, EOF_ActionF=True, 
+                                                    IndentationSupportF=IndentationSupportF)
     # -- 'on failure' action (nothing matched)
     if not Mode.has_code_fragment_list("on_failure"):
         txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
@@ -102,11 +103,12 @@ def get_code_for_mode(Mode, ModeNameList):
 
     on_failure_action = action_code_formatter.do(Mode, 
                                               Mode.get_code_fragment_list("on_failure"), 
-                                              "on_failure", None, Default_ActionF=True)
+                                              "on_failure", None, Default_ActionF=True, 
+                                              IndentationSupportF=IndentationSupportF)
 
     # -- adapt pattern-action pair information so that it can be treated
     #    by the code generator.
-    pattern_action_pair_list = get_generator_input(Mode)
+    pattern_action_pair_list = get_generator_input(Mode, IndentationSupportF)
 
     analyzer_code = generator.do(pattern_action_pair_list, 
                                  OnFailureAction                = PatternActionInfo(None, on_failure_action), 
@@ -120,7 +122,7 @@ def get_code_for_mode(Mode, ModeNameList):
 
     return analyzer_code
     
-def get_generator_input(Mode):
+def get_generator_input(Mode, IndentationSupportF):
     """The module 'quex.core_engine.generator.core' produces the code for the 
        state machine. However, it requires a certain data format. This function
        adapts the mode information to this format. Additional code is added 
@@ -144,7 +146,8 @@ def get_generator_input(Mode):
         # Prepare the action code for the analyzer engine. For this purpose several things
         # are be added to the user's code.
         prepared_action = action_code_formatter.do(Mode, pattern_info.action(), safe_pattern_str,
-                                                   pattern_state_machine)
+                                                   pattern_state_machine,
+                                                   IndentationSupportF=IndentationSupportF)
 
         pattern_info.set_action(prepared_action)
 
@@ -193,6 +196,17 @@ def __get_mode_db(Setup):
     consistency_check.do(lexer_mode.mode_db)
 
     return lexer_mode.mode_db
+
+
+def __requires_indentation_count(ModeDB):
+    """Determine whether the lexical analyser needs indentation counting
+       support. if one mode has an indentation handler, than indentation
+       support must be provided.                                         
+    """
+    for mode in ModeDB.values():
+        if mode.has_code_fragment_list("on_indentation"):
+            return True
+    return False
 
 #########################################################################################
 # Allow to check wether the exception handlers are all in place

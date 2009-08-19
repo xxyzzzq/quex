@@ -15,7 +15,7 @@ main(int argc, char** argv)
     const size_t   StepSize = atoi(argv[1]);
     FILE*          fh       = prepare_input(); /* Festgemauert ... */
 
-    QuexBuffer_construct(&buffer, fh, 0x0, 5, 0x0, 0);
+    QuexBuffer_construct(&buffer, fh, 0x0, 5, 0x0, 0, false);
 
     test_move_forward(&buffer, StepSize); 
     fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
