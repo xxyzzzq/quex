@@ -165,6 +165,7 @@ def __get_post_context_n(match_info_list):
 def do_plot():
 
     mode_db = __get_mode_db(Setup)
+    IndentationSupportF = __requires_indentation_count(mode_db)
 
     for mode in mode_db.values():        
         # -- some modes only define event handlers that are inherited
@@ -172,7 +173,7 @@ def do_plot():
 
         # -- adapt pattern-action pair information so that it can be treated
         #    by the code generator.
-        pattern_action_pair_list = get_generator_input(mode)
+        pattern_action_pair_list = get_generator_input(mode, IndentationSupportF)
 
         plotter = plot_generator.Generator(pattern_action_pair_list, 
                                            StateMachineName = mode.name,
