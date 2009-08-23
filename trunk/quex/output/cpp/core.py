@@ -17,11 +17,78 @@ LanguageDB = Setup.language_db
 
 def do(Modes, IndentationSupportF):
 
-    write_engine_header(Modes, IndentationSupportF)
-
+    write_engine_header(Modes)
+    write_configuration_header(Modes, IndentationSupportF)
     write_mode_class_implementation(Modes)
 
-def write_engine_header(Modes, IndentationSupportF):
+def write_configuration_header(Modes, IndentationSupportF):
+    OutputConfigurationFile   = Setup.output_file_stem + "-configuration"
+    ConfigurationTemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
+                                   + "/analyzer/CppConfigurationTemplate.txt").replace("//","/")
+
+    fh  = open_file_or_die(ConfigurationTemplateFile)
+    txt = fh.read()
+
+    # -- check if exit/entry handlers have to be active
+    entry_handler_active_f = False
+    exit_handler_active_f = False
+    for mode in Modes.values():
+        if mode.get_code_fragment_list("on_entry") != []: entry_handler_active_f = True
+        if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
+
+    # Buffer filler converter (0x0 means: no buffer filler converter)
+    converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
+    if Setup.converter_user_new_func != "": 
+        converter_new_str += Setup.converter_user_new_func + "()"
+        user_defined_converter_f = True
+    else: 
+        converter_new_str = "/* " + converter_new_str + " */"
+        user_defined_converter_f = False
+
+    # -- determine character type according to number of bytes per ucs character code point
+    #    for the internal engine.
+    quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
+                                   "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
+
+    txt = __switch(txt, "QUEX_OPTION_COLUMN_NUMBER_COUNTING",        True)        
+    txt = __switch(txt, "QUEX_OPTION_DEBUG_MODE_TRANSITIONS",        Setup.output_debug_f)
+    txt = __switch(txt, "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES",    Setup.output_debug_f)
+    txt = __switch(txt, "QUEX_OPTION_DEBUG_TOKEN_SENDING",           Setup.output_debug_f)
+    txt = __switch(txt, "QUEX_OPTION_ENABLE_ICONV",                  Setup.converter_iconv_f)
+    txt = __switch(txt, "QUEX_OPTION_ENABLE_ICU",                    Setup.converter_icu_f)
+    txt = __switch(txt, "QUEX_OPTION_INCLUDE_STACK",                 not Setup.no_include_stack_support_f)
+    txt = __switch(txt, "QUEX_OPTION_LINE_NUMBER_COUNTING",          True)      
+    txt = __switch(txt, "QUEX_OPTION_POST_CATEGORIZER",              Setup.post_categorizer_f)
+    txt = __switch(txt, "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK", not Setup.no_mode_transition_check_f)
+    txt = __switch(txt, "QUEX_OPTION_STRING_ACCUMULATOR",            not Setup.disable_string_accumulator_f)
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_QUEUE",            Setup.token_policy == "queue")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE",      Setup.token_policy == "users_queue")
+    txt = __switch(txt, "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN",      Setup.token_policy == "users_token")
+    txt = __switch(txt, "__QUEX_OPTION_BIG_ENDIAN",                  Setup.byte_order == "big")
+    txt = __switch(txt, "__QUEX_OPTION_CONVERTER_ENABLED",           user_defined_converter_f )
+    txt = __switch(txt, "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT", IndentationSupportF)     
+    txt = __switch(txt, "__QUEX_OPTION_LITTLE_ENDIAN",               Setup.byte_order == "little")
+    txt = __switch(txt, "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT",    entry_handler_active_f)
+    txt = __switch(txt, "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT",     exit_handler_active_f)
+    txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION",  True)
+    txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
+
+    txt = blue_print(txt, 
+            [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
+             ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(Setup.output_file_stem)],
+             ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
+             ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
+             ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
+             ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
+
+    write_safely_and_close(OutputConfigurationFile, txt)
+
+def __switch(txt, Name, SwitchF):
+    if SwitchF: txt = txt.replace("$$SWITCH$$ %s" % Name, "#define    %s" % Name)
+    else:       txt = txt.replace("$$SWITCH$$ %s" % Name, "/* #define %s */" % Name)
+    return txt
+    
+def write_engine_header(Modes):
 
     QuexClassHeaderFileTemplate = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/analyzer/CppTemplate.txt").replace("//","/")
@@ -30,13 +97,6 @@ def write_engine_header(Modes, IndentationSupportF):
     LexerClassName              = Setup.output_engine_name
     VersionID                   = Setup.input_application_version_id
     QuexVersionID               = Setup.QUEX_VERSION
-
-    # -- determine character type according to number of bytes per ucs character code point
-    #    for the internal engine.
-    quex_character_type_str = { 1: "uint8_t ", 2: "uint16_t", 4: "uint32_t", 
-                                   "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
-    quex_lexeme_type_str    = { 1: "char    ", 2: "int16_t",  4: "int32_t",  
-                                   "wchar_t": "wchar_t" }[Setup.bytes_per_ucs_code_point]
 
     #    are bytes of integers Setup 'little endian' or 'big endian' ?
     if Setup.byte_order == "little":
@@ -48,12 +108,10 @@ def write_engine_header(Modes, IndentationSupportF):
 
     mode_id_definition_str = "" 
     # NOTE: First mode-id needs to be '1' for compatibility with flex generated engines
-    i = 0
+    i = -1
     for name in Modes.keys():
         i += 1
         mode_id_definition_str += "const int %s_QuexModeID_%s = %i;\n" % (LexerClassName, name, i)
-
-    include_guard_extension = get_include_guard_extension(Setup.output_file_stem)
 
     # -- instances of mode classes as members of the lexer
     mode_object_members_txt,     \
@@ -78,65 +136,18 @@ def write_engine_header(Modes, IndentationSupportF):
     template_code_txt = fh.read()
     fh.close()
 
-    # -- check if exit/entry handlers have to be active
-    entry_handler_active_f = False
-    exit_handler_active_f = False
-    for mode in Modes.values():
-        if mode.get_code_fragment_list("on_entry") != []: entry_handler_active_f = True
-        if mode.get_code_fragment_list("on_exit") != []:  exit_handler_active_f = True
-
-    # Buffer filler converter (0x0 means: no buffer filler converter)
-    converter_new_str = "#   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW " 
-    if Setup.converter_user_new_func != "": 
-        converter_new_str += Setup.converter_user_new_func + "()"
-        user_defined_converter_f = True
-    else: 
-        converter_new_str = "/* " + converter_new_str + " */"
-        user_defined_converter_f = False
 
     token_class_file_name =  lexer_mode.get_token_class_file_name(Setup)
 
     txt = template_code_txt
-    def set_switch(txt, SwitchF, Name):
-        if SwitchF: txt = txt.replace("$$SWITCH$$ %s" % Name, "#define    %s" % Name)
-        else:       txt = txt.replace("$$SWITCH$$ %s" % Name, "// #define %s" % Name)
-        return txt
-    
-    txt = set_switch(txt, entry_handler_active_f,  "__QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT")
-    txt = set_switch(txt, exit_handler_active_f,   "__QUEX_OPTION_ON_EXIT_HANDLER_PRESENT")
-    txt = set_switch(txt, IndentationSupportF,     "__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT")     
-    txt = set_switch(txt, True,                    "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION")
-    txt = set_switch(txt, Setup.byte_order == "little",                 "__QUEX_OPTION_LITTLE_ENDIAN")
-    txt = set_switch(txt, Setup.byte_order == "big",                    "__QUEX_OPTION_BIG_ENDIAN")
-    txt = set_switch(txt, Setup.byte_order_is_that_of_current_system_f, "__QUEX_OPTION_SYSTEM_ENDIAN")
-    txt = set_switch(txt, not Setup.no_include_stack_support_f,    "QUEX_OPTION_INCLUDE_STACK")
-    txt = set_switch(txt, Setup.converter_iconv_f,    "QUEX_OPTION_ENABLE_ICONV")
-    txt = set_switch(txt, Setup.converter_icu_f,      "QUEX_OPTION_ENABLE_ICU")
-    txt = set_switch(txt, user_defined_converter_f , "__QUEX_OPTION_CONVERTER_ENABLED")
-    txt = set_switch(txt, Setup.token_policy == "queue",       "QUEX_OPTION_TOKEN_POLICY_QUEUE")
-    txt = set_switch(txt, Setup.token_policy == "users_token", "QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN")
-    txt = set_switch(txt, Setup.token_policy == "users_queue", "QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE")
-    txt = set_switch(txt, not Setup.disable_string_accumulator_f, "QUEX_OPTION_STRING_ACCUMULATOR")
-    txt = set_switch(txt, Setup.post_categorizer_f,               "QUEX_OPTION_POST_CATEGORIZER")
-    ## txt = set_switch(txt, True,                    "QUEX_OPTION_VIRTUAL_FUNCTION_ON_ACTION_ENTRY")      
-    txt = set_switch(txt, True,                    "QUEX_OPTION_LINE_NUMBER_COUNTING")      
-    txt = set_switch(txt, True,                    "QUEX_OPTION_COLUMN_NUMBER_COUNTING")        
-    txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_TOKEN_SENDING")
-    txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_MODE_TRANSITIONS")
-    txt = set_switch(txt, Setup.output_debug_f,    "QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES")
-    txt = set_switch(txt, not Setup.no_mode_transition_check_f,           
-                               "QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK")
-
     txt = blue_print(txt,
             [
-                ["$$BUFFER_LIMIT_CODE$$",            "0x%X" % Setup.buffer_limit_code],
                 ["$$CONSTRUCTOR_EXTENSTION$$",                  lexer_mode.class_constructor_extension.get_code()],
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
-                ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str],
                 ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
-                ["$$INCLUDE_GUARD_EXTENSION$$",      include_guard_extension],
                 ["$$INITIAL_LEXER_MODE_ID$$",        LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
+                ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(Setup.output_file_stem)],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
                 ["$$LEXER_BUILD_VERSION$$",          VersionID],
                 ["$$LEXER_CLASS_FRIENDS$$",          friends_str],
@@ -146,7 +157,7 @@ def write_engine_header(Modes, IndentationSupportF):
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",     mode_id_definition_str],
                 ["$$MAX_MODE_CLASS_N$$",             repr(len(Modes))],
                 ["$$MODE_CLASS_FRIENDS$$",           friend_txt],
-                ["$$MODE_OBJECT_MEMBERS$$",              mode_object_members_txt],
+                ["$$MODE_OBJECTS$$",                 mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
                 ["$$MEMENTO_EXTENSIONS$$",               lexer_mode.memento_class_extension.get_code()],
                 ["$$MEMENTO_EXTENSIONS_PACK$$",          lexer_mode.memento_pack_extension.get_code()],
@@ -157,11 +168,7 @@ def write_engine_header(Modes, IndentationSupportF):
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
                 ["$$TOKEN_CLASS_DECLARATION$$",          write_token_class_declaration()],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
-                ["$$TOKEN_QUEUE_SIZE$$",                 repr(Setup.token_queue_size)],
                 ["$$TOKEN_PREFIX$$",                     Setup.input_token_id_prefix],
-                ["$$TOKEN_QUEUE_SAFETY_BORDER$$",        repr(Setup.token_queue_safety_border)],
-                ["$$QUEX_TYPE_CHARACTER$$",              quex_character_type_str],
-                ["$$QUEX_LEXEME_TYPE$$",                 quex_lexeme_type_str],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])
@@ -322,7 +329,7 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
     # constructor code
     txt = ""
     for mode in Modes:
-        txt += "        __quex_assert(%s_QuexModeID_%s %s<= %i);\n" % \
+        txt += "        __quex_assert(%s_QuexModeID_%s %s< %i);\n" % \
                (LexerClassName, mode.name, " " * (L-len(mode.name)), len(Modes))
 
     for mode in Modes:

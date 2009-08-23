@@ -5,7 +5,9 @@
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR            */
 
-namespace quex { 
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
 
     // (*) pure text accumulation and flushing
     struct CLASS_ACCUMULATOR {
@@ -30,4 +32,6 @@ namespace quex {
         CLASS*                                  _the_lexer;     
     };
 
-}
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif

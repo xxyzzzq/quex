@@ -39,7 +39,7 @@ quex.input.setup.setup.no_dos_carriage_return_newline_f = True
 
 
 mode = Mode(mode_descr)
-generator_input  = coder.get_generator_input(mode)
+generator_input  = coder.get_generator_input(mode, False)
 inheritance_info = mode.get_documentation()
 
 print "/*\n" + inheritance_info + "*/\n"

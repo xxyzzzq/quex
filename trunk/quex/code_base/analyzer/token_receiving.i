@@ -17,6 +17,8 @@ namespace quex {
 #      undef   QUEX_TOKEN_POLICY_NO_TOKEN
 #      define  QUEX_TOKEN_POLICY_NO_TOKEN()       (false)
 #   endif
+
+#   define self (*this)
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     inline void
@@ -137,5 +139,6 @@ namespace quex {
     }
 #   endif
 
+#   undef self
 }
 

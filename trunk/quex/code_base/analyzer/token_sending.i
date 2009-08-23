@@ -13,6 +13,8 @@
 
 namespace quex { 
 
+#   define self (*this)
+
     inline QUEX_TYPE_TOKEN*  
     CLASS::token_object()
     {
@@ -91,5 +93,6 @@ namespace quex {
 #       endif
     }
 
+#   undef self
 }
 

@@ -105,7 +105,7 @@ def unicode_to_utf16(UnicodeValue):
     """Do not do this by hand in order to have a 'reference' to double check
        wether otherwise hand coded values are correct.
     """
-    byte_seq = map(ord, utf16c(unichr(UnicodeValue))[0])
+    byte_seq = map(ord, utf16c(eval("u'\\U%08X'" % UnicodeValue))[0])
     if UnicodeValue >= 0x10000:
         word_seq = [ (byte_seq[0] << 8) + byte_seq[1], (byte_seq[2] << 8) + byte_seq[3] ]
     else:

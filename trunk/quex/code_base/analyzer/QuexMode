@@ -25,7 +25,9 @@
 namespace quex { 
 #endif
     
-    struct CLASS_QUEX_MODE {  
+#   define CLASS_QUEX_MODE_TAG QUEX_PREFIX(CLASS_QUEX_MODE, _tag)
+
+    typedef struct CLASS_QUEX_MODE_TAG {  
         int            id;
         const char*    name;
         QuexAnalyser*  the_lexer;
@@ -35,14 +37,16 @@ namespace quex {
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         void (*on_indentation)(CLASS*, const int Indentation);
 #       endif
-        void (*on_entry)(CLASS*, const CLASS_QUEX_MODE* FromMode);
-        void (*on_exit)(CLASS*, const CLASS_QUEX_MODE* ToMode);
+        void (*on_entry)(CLASS*, const struct CLASS_QUEX_MODE_TAG* FromMode);
+        void (*on_exit)(CLASS*, const struct CLASS_QUEX_MODE_TAG* ToMode);
 #       ifdef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK        
-        bool (*has_base)(const CLASS_QUEX_MODE* Mode);
-        bool (*has_entry_from)(const CLASS_QUEX_MODE* Mode);
-        bool (*has_exit_to)(const CLASS_QUEX_MODE* Mode);
+        bool (*has_base)(const struct CLASS_QUEX_MODE_TAG* Mode);
+        bool (*has_entry_from)(const struct CLASS_QUEX_MODE_TAG* Mode);
+        bool (*has_exit_to)(const struct CLASS_QUEX_MODE_TAG* Mode);
 #       endif
-    };
+    } CLASS_QUEX_MODE;
+
+#   undef CLASS_QUEX_MODE_TAG
     
 #   ifndef __QUEX_SETTING_QUEX_MODE_AUX_FUNCTIONS_DECLARED
 #   define __QUEX_SETTING_QUEX_MODE_AUX_FUNCTIONS_DECLARED

@@ -40,11 +40,12 @@ def __snap_until(stream, ClosingDelimiter, OpeningDelimiter=None):
 
 def __debug_print(msg, msg2="", msg3=""):
     global __debug_recursion_depth
+    if not __debug_output_enabled_f: return
     if type(msg2) != str: msg2 = repr(msg2)
     if type(msg3) != str: msg3 = repr(msg3)
     txt = "##" + "  " * __debug_recursion_depth + msg + " " + msg2 + " " + msg3
     txt = txt.replace("\n", "\n    " + "  " * __debug_recursion_depth)
-    if __debug_output_enabled_f: print txt
+    print txt
     
 def __debug_exit(result, stream):
     global __debug_recursion_depth

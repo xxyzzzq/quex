@@ -16,19 +16,15 @@
 #ifndef __INCLUDE_GUARD__QUEX__SIMPLE
 
 
-#include<istream>  // gets: istream and wistream
+#include<istream>  /* gets: istream and wistream */
 #include<quex/code_base/compatibility/inttypes.h>
-
 
 #include "Simple-configuration"
 
 namespace quex {
-    template <class QuexCharacterType> class QuexSimple;
     class  Simple;
     struct SimpleMemento_tag;
-
-const int Simple_QuexModeID_ONE_AND_ONLY = 1;
-
+const int Simple_QuexModeID_ONE_AND_ONLY = 0;
 
 }    
 
@@ -42,16 +38,6 @@ const int Simple_QuexModeID_ONE_AND_ONLY = 1;
 #   define QUEX_TYPE_COUNTER  Counter
 #endif
 
-namespace quex {
-    class Token;
-}
-
-
-// START: User defined header content. 
-
-
-// END:
-
 /* TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it won't
  *                    override the QUEX_TYPE_TOKEN_ID.                               */
 #include "Simple-token_ids"
@@ -64,18 +50,18 @@ namespace quex {
 #   error "Error: The macro QUEX_TYPE_TOKEN_ID has not been defined in the file quex/code_base/token/Token."
 #endif
 
-#include<quex/code_base/definitions>
+#include    <quex/code_base/definitions>
 
 #ifdef __QUEX_OPTION_UNIT_TEST
 #   include <quex/code_base/StrangeStream_unit_tests>
 #endif
-#include<quex/code_base/buffer/Buffer>
-#include<quex/code_base/buffer/BufferFiller>
+#include    <quex/code_base/buffer/Buffer>
+#include    <quex/code_base/buffer/BufferFiller>
 
-#include <quex/code_base/MemoryManager>
-#include <quex/code_base/MemoryManager_analyzer_specific>
-#include <quex/code_base/analyzer/QuexMode>
-#include <quex/code_base/analyzer/Analyser>
+#include    <quex/code_base/MemoryManager>
+#include    <quex/code_base/MemoryManager_analyzer_specific>
+#include    <quex/code_base/analyzer/QuexMode>
+#include    <quex/code_base/analyzer/Analyser>
 #ifdef QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
@@ -85,11 +71,17 @@ namespace quex {
 #ifdef QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
-#include <quex/code_base/analyzer/Counter>
+#include    <quex/code_base/analyzer/Counter>
 
-// START:
+/* START: User's derived class declaration (if there is one) __________________*/
 
-// END:
+/* END: _______________________________________________________________________*/
+
+/* START: User defined header content _________________________________________*/
+
+
+/* END: _______________________________________________________________________*/
+
 
 #include <quex/code_base/temporary_macros_on>
 namespace quex {
@@ -113,8 +105,83 @@ namespace quex {
     } SimpleMemento;
 #   endif
 
-    class CLASS :
-        protected QuexAnalyser {
+    struct CLASS_DATA : protected QuexAnalyser {
+
+        /*_________________________________________________________________________
+         *        __   __   ___  __  
+         *  |\/| /  \ |  \ |__  /__` 
+         *  |  | \__/ |__/ |___ .__/ 
+         *                                                                         */
+        /* Map: mode-id --> mode object                                            */
+        CLASS_QUEX_MODE*  mode_db[1];  
+
+        /* Each mode has a dedicated analyser function.  The function pointer
+         * to the currently active mode's function is located in the base class
+         * QuexAnalyzer                                                            */
+        CLASS_QUEX_MODE*  __current_mode_p;
+
+        struct {
+            CLASS_QUEX_MODE*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            CLASS_QUEX_MODE** end;
+            CLASS_QUEX_MODE** memory_end;
+        } _mode_stack;
+
+        /*_________________________________________________________________________
+         *  ___  __        ___       __  
+         *   |  /  \ |__/ |__  |\ | /__` 
+         *   |  \__/ |  \ |___ | \| .__/ 
+         *                                                                        
+         *  Allow public access, for user's special tricks.                        */
+#       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+        QuexTokenQueue     _token_queue;  
+#       else
+        QUEX_TYPE_TOKEN*   token;         
+#       endif
+
+        /*_________________________________________________________________________
+         *   __   __            ___  ___  __  
+         *  /  ` /  \ |  | |\ |  |  |__  |__) 
+         *  \__, \__/ \__/ | \|  |  |___ |  \ 
+         *                                                                         
+         *  Dependent on setup all counting might be set to 'null operations'.     */
+        QUEX_TYPE_COUNTER  counter;
+
+
+        /*_________________________________________________________________________
+         *       __   __                            ___  __   __  
+         *  /\  /  ` /  ` |  |  |\/| |  | |     /\   |  /  \ |__) 
+         * /~~\ \__, \__, \__/  |  | \__/ |___ /~~\  |  \__/ |  \ 
+         *                                                                         
+         *  Accumulate lexemes from multiple patterns.                             */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        CLASS_ACCUMULATOR  accumulator;
+#       endif
+
+
+        /*_________________________________________________________________________
+         *   __   __   __  ___     __       ___  ___  __   __   __    __  ___  __  
+         *  |__) /  \ /__`  |     /  `  /\   |  |__  / _` /  \ |__) |  / |__  |__) 
+         *  |    \__/ .__/  |     \__, /~~\  |  |___ \__> \__/ |  \ | /_ |___ |  \ 
+         *                                                                         
+         *  Fast and simple dictionary to post-classify lexemes.                   */
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        PostCategorizer          post_categorizer;
+#       endif
+
+        /*_________________________________________________________________________
+         *           __   __  
+         *   |\/| | /__` /  ` 
+         *   |  | | .__/ \__,                                                      */
+
+        /*  Temporary Filename ____________________________________________________
+         *  Sometimes we just want to tell the filename, handle owned by analyzer. */
+        FILE*    __file_handle_allocated_by_constructor;
+    };
+
+    class CLASS : public CLASS_DATA {
+
+
+        static CLASS_QUEX_MODE  ONE_AND_ONLY;
 
         /* DISABLED */ CLASS(const CLASS&);
     public:
@@ -183,6 +250,12 @@ namespace quex {
 #       elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
         QUEX_TYPE_TOKEN*     receive(QUEX_TYPE_TOKEN*  begin, QUEX_TYPE_TOKEN* end);
 #       endif
+        // NOTE: A pointer to an object of the token queue/object is used in order to make
+        //       memory management more flexible. The token queue/token object is heavily
+        //       used and it should be possible to put it somewhere in memory with other
+        //       heavily used data so that the cache can take advantage of data locality.
+        QUEX_TYPE_TOKEN*    token_object();
+
         //
         // (*) Mode handling
         //
@@ -251,71 +324,6 @@ namespace quex {
         reset(InputHandleT*   input_handle, 
               const char*     CharacterEncodingName = 0x0); 
 
-        // (*) Mode database: allows to match from 'lex mode id' to a real mode object.
-        //     LexModeID = 0 is not used, mode indices from 1 to ModeN 
-        //     (compatibility to lex/flex core: INITIAL == 0, but initial is bend immediately
-        //      to quex's start mode.)
-        CLASS_QUEX_MODE*  mode_db[1+1];  
-
-    public:
-        static CLASS_QUEX_MODE  ONE_AND_ONLY;
-
-
-    private:
-        CLASS_QUEX_MODE*   __current_mode_p;
-
-        // -- with the quex core engine(s) each mode has a dedicated analyser function.
-        //    (with the flex core engine, modes were modelled as start conditions
-        //     of a single engine)
-        //    The function pointer to the currently active mode's function is located in 
-        //    the base class QUEX_CORE_ANALYSER_STRUCT
-        //
-    private:
-        // (*) mode stack allows for pushing and popping of lexical analysis modes
-        struct {
-            CLASS_QUEX_MODE*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
-            CLASS_QUEX_MODE** end;
-            CLASS_QUEX_MODE** memory_end;
-        } _mode_stack;
-
-        // NOTE: A pointer to an object of the token queue/object is used in order to make
-        //       memory management more flexible. The token queue/token object is heavily
-        //       used and it should be possible to put it somewhere in memory with other
-        //       heavily used data so that the cache can take advantage of data locality.
-        QUEX_TYPE_TOKEN*    token_object();
-    public:
-#       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-        // (*) The Token Queue ___________________________________________________________
-        //     The token queue is **private**, because the user does not need direct
-        //      access. get_token(Token**) is enough to get access to the current token. 
-        QuexTokenQueue    _token_queue;  // must be public or protected (accessed with 'self')
-#       else
-        // (*) The Token _________________________________________________________________
-        //     get_token(Token**) does not make a whole lot of sense, since the token 
-        //     pointer always points to the same object. The object can be accessed
-        //     by this **public** pointer.
-        QUEX_TYPE_TOKEN*  token;         // must be public or protected (accessed with 'self')
-#       endif
-
-    public:
-        // (*) Who and what am I ? _______________________________________________________
-        Simple&   self;
-
-    private:
-        // (*) Sometimes we just want to tell the filename, ... for destructor to close ..
-        FILE*    __file_handle_allocated_by_constructor;
-
-#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    public:
-        // (*) Accumulator (accumulate lexemes from multiple patterns ____________________
-        CLASS_ACCUMULATOR        accumulator;
-#       endif
-    private:
-        QUEX_TYPE_COUNTER        counter;
-    public:
-#       ifdef QUEX_OPTION_POST_CATEGORIZER
-        PostCategorizer    post_categorizer;
-#       endif
 
         // (*) All Modes are Friends _____________________________________________________
         friend     void Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser*);
@@ -418,7 +426,7 @@ namespace quex {
 
         mode_db[0] = 0x0;
         // LexModeID = 0 is not used, mode indices from 1 to ModeN
-        __quex_assert(Simple_QuexModeID_ONE_AND_ONLY <= 1);
+        __quex_assert(Simple_QuexModeID_ONE_AND_ONLY < 1);
 
         ONE_AND_ONLY.id   = Simple_QuexModeID_ONE_AND_ONLY;
         ONE_AND_ONLY.name = "ONE_AND_ONLY";
@@ -468,7 +476,11 @@ namespace quex {
             __quex_assert(buffer._memory._end_of_file_p != 0x0);
         }
 
+        __file_handle_allocated_by_constructor = 0x0;
 
+#       define self  (*(Simple*)this)
+
+#       undef self
     }
 
     template <class InputHandleT> inline void
@@ -527,6 +539,7 @@ namespace quex {
     template<class InputHandleT> inline SimpleMemento*
     CLASS::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
+#       define self  (*(Simple*)this)
         SimpleMemento* memento = MemoryManager_SimpleMemento_allocate();
 
         /* Use placement 'new' for explicit call of constructor */
@@ -543,11 +556,13 @@ namespace quex {
 
 
         return memento;
+#       undef self
     }
 
     inline void
     CLASS::memento_unpack(SimpleMemento* memento)
     {
+#       define self  (*(Simple*)this)
         self._parent_memento    = memento->parent;
         *((QuexAnalyser*)this)  = memento->analyser_core;
         self.counter            = memento->counter;
@@ -562,6 +577,7 @@ namespace quex {
         /* Counterpart to placement new: Explicit destructor call */
         memento->~SimpleMemento();
         MemoryManager_SimpleMemento_free(memento);
+#       undef self
     }
 #   endif /* QUEX_OPTION_INCLUDE_STACK */
 
@@ -600,6 +616,7 @@ namespace quex {
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
 #undef __QUEX_SETTING_TOKEN_ID_TERMINATION
 #undef __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
+#undef CLASS_DATA
 #undef CLASS
 #ifdef    QUEX_OPTION_INCLUDE_STACK
 #   undef CLASS_MEMENTO
