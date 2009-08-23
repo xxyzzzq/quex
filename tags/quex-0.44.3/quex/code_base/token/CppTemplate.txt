@@ -1,0 +1,106 @@
+/* -*- C++ -*-   vim: set syntax=cpp: */
+#ifndef __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
+#define __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
+
+#include <quex/code_base/definitions>
+ 
+#ifdef QUEX_TYPE_TOKEN
+#   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
+#endif
+
+#ifndef    QUEX_TYPE_TOKEN_ID 
+#   define QUEX_TYPE_TOKEN_ID              $$TOKEN_ID_TYPE$$
+#endif
+
+#define QUEX_TYPE_TOKEN                    $$TOKEN_TYPE_WITH_NAMESPACE$$
+#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  $$TOKEN_TYPE$$
+#define QUEX_TYPE_STR_TOKEN_COMPLETE       $$TOKEN_TYPE_STR$$
+#define QUEX_TYPE_LINE_N                   $$LINE_N_TYPE$$
+#define QUEX_TYPE_COLUMN_N                 $$COLUMN_N_TYPE$$
+
+$$NAMESPACE_OPEN$$
+
+class $$TOKEN_TYPE$$ {
+public:
+    $$TOKEN_TYPE$$();
+    $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
+    void __copy(const $$TOKEN_CLASS$$& That);
+    /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
+     *                BETTER USE __copy(That)                                */
+    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) 
+    { __copy(That); return *this; }
+    $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
+
+$$DISTINCT_MEMBERS$$
+$$UNION_MEMBERS$$
+public:
+$$SETTERS_GETTERS$$
+    void set(const QUEX_TYPE_TOKEN_ID ID) { _id = ID; }
+$$QUICK_SETTERS$$
+
+    private:
+        QUEX_TYPE_TOKEN_ID    _id;
+    public:
+        QUEX_TYPE_TOKEN_ID    type_id() const      { return _id; }
+        static const char*    map_id_to_name(QUEX_TYPE_TOKEN_ID);
+        const std::string     type_id_name() const { return map_id_to_name(_id); }
+
+#   ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    private:
+        QUEX_TYPE_LINE_N  _line_n;
+    public:
+        QUEX_TYPE_LINE_N    line_number() const                           { return _line_n; }
+        void                set_line_number(const QUEX_TYPE_LINE_N Value) { _line_n = Value; }
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    private:
+        QUEX_TYPE_COLUMN_N  _column_n;
+    public:
+        QUEX_TYPE_COLUMN_N  column_number() const                             { return _column_n; }
+        void                set_column_number(const QUEX_TYPE_COLUMN_N Value) { _column_n = Value; }
+#       endif
+#   endif
+    public:
+$$BODY$$
+};
+
+inline
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$()
+{
+$$CONSTRUCTOR$$
+}
+
+inline
+$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+{
+    __copy(That);
+$$CONSTRUCTOR$$
+}
+
+inline
+$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
+{
+$$DESTRUCTOR$$
+}
+
+inline void
+$$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
+{
+$$COPY$$
+    /* If the user even misses to copy the token id, then there's
+     * something seriously wrong.                                 */
+    __quex_assert(this->_id == That._id);
+#ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#   ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
+    __quex_assert(_line_n == That._line_n);
+#   endif
+#   ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+    __quex_assert(_column_n == That._column_n);
+#   endif
+#endif
+}
+
+$$NAMESPACE_CLOSE$$
+
+#endif /* __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__ */

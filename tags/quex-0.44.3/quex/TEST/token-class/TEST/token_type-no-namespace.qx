@@ -1,0 +1,8 @@
+token_type {
+    name = QToken;
+    distinct {
+        text : std::string;
+    }
+}
+token { A }
+mode THE_A { a => QUEX_TKN_A; }
