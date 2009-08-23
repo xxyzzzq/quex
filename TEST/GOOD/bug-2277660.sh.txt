@@ -11,8 +11,16 @@
 ## 11 seconds
 ## 12 seconds
 ## 13 seconds
+## 14 seconds
+## 15 seconds
+## 16 seconds
+## 17 seconds
+## 18 seconds
+## 19 seconds
+## 20 seconds
 Oll Korrekt
 lexer
+lexer-configuration
 lexer-core-engine.cpp
 lexer.cpp
 lexer-token_ids

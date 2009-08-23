@@ -15,186 +15,12 @@
  * ABSOLUTELY NO WARRANTY                                                    */
 #ifndef __INCLUDE_GUARD__QUEX__SIMPLE
 
+
 #include<istream>  // gets: istream and wistream
 #include<quex/code_base/compatibility/inttypes.h>
 
-#ifndef    __QUEX_OPTION_LITTLE_ENDIAN
-#endif
-#ifndef    __QUEX_OPTION_BIG_ENDIAN
-#endif
-#ifndef    __QUEX_OPTION_SYSTEM_ENDIAN
-#endif
 
-#if defined(__QUEX_OPTION_BIG_ENDIAN) && defined(__QUEX_OPTION_LITTLE_ENDIAN)
-#   error "Cannot define little endian and big endian at the same time."
-#endif
-#if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN)
-#   error "Either little endian or big endian must be defined."
-#endif
-
-#ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
-#endif
-#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN_DISABLED
-#endif
-#ifndef QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE_DISABLED
-#endif
-#if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE)
-#   ifndef     QUEX_SETTING_TOKEN_QUEUE_SIZE
-#       define QUEX_SETTING_TOKEN_QUEUE_SIZE  ((size_t)64)
-#   endif
-#endif
-#if defined (QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-#   ifndef     QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER
-#       define QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER ((size_t)16)
-#   endif
-#endif
-
-// CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
-//                 a character. This is independent of the coding (ASCII, WinArabic, ...)
-//
-// Both character types are clearly related, because they are supposed to relate to the 
-// same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
-// belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
-// accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
-//
-// NOTE: If in parallel another engine is built with other bytes per character settings,
-//       then the engines will also include their own header with their own definition
-//       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
-//       Templatifying the lexer would be possible, but the author has in mind to bring out
-//       a 'pure C' version of the quex generated engine. Thus templating would make this 
-//       goal harder achievable.
-#ifndef QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER   uint8_t 
-#endif 
-
-// OPTIONS: ____________________________________________________________________
-//
-// Activate/Deactivate Options via comment/uncomment. Options without a 
-// double underline '__' at the beginning can be turned off in the created 
-// engine. Options that do start with '__' configure the machine for the
-// specified behavior. Such options are better not touched.
-//
-// -- Line Number / Column Number Counting:
-//    Turning counting off may result in engine speed-up.
-#ifndef    QUEX_OPTION_LINE_NUMBER_COUNTING            
-#endif
-#ifdef    QUEX_OPTION_LINE_NUMBER_COUNTING_DISABLED
-#   undef QUEX_OPTION_LINE_NUMBER_COUNTING
-#endif
-#ifndef    QUEX_OPTION_COLUMN_NUMBER_COUNTING          
-#endif
-#ifdef    QUEX_OPTION_COLUMN_NUMBER_COUNTING_DISABLED
-#   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-#endif
-
-// -- Mode Transitions:
-//    If the engine was created without the flag '--no-mode-transition-check'
-//    then code for mode transition control is inserted. It can be deactivated
-//    by commenting the following option out.
-#ifndef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-#endif
-#ifdef    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
-#   undef QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-#endif
-
-#ifndef    QUEX_SETTING_MODE_STACK_SIZE 
-#   define QUEX_SETTING_MODE_STACK_SIZE   (size_t)8
-#endif
-
-// -- Verbosity
-
-// -- Debugging: 
-//    If the engine was created with the '--debug' flag then it contains 
-//    debugging code. The effect of this code fragments can be turned off
-//    by commenting the following options out.
-#ifndef QUEX_OPTION_DEBUG_TOKEN_SENDING
-#endif
-#ifdef QUEX_OPTION_DEBUG_TOKEN_SENDING_DISABLED
-#   undef QUEX_OPTION_DEBUG_TOKEN_SENDING
-#endif
-#endif
-#ifndef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-#endif
-#ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS_DISABLED
-#   undef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
-#endif
-#ifndef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-#endif
-#ifdef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES_DISABLED
-#   undef QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
-#endif
-
-// -- Include Stack Support:
-//    Easy handling of include files/streams via 'push' and 'pop'
-//    Turn this off, if you do not use 'inclusion' in your files and
-//    you want to save some bytes.
-#ifndef  QUEX_OPTION_INCLUDE_STACK
-#endif
-#ifdef    QUEX_OPTION_INCLUDE_STACK_DISABLED
-#   undef QUEX_OPTION_INCLUDE_STACK
-#endif
-
-#ifndef    QUEX_SETTING_BUFFER_LIMIT_CODE
-#   define QUEX_SETTING_BUFFER_LIMIT_CODE     (0x0)
-#endif
-
-/* NOTE: A cast to 'size_t' would it make impossible to use the macro in 
- *       pre-processor comparisons.                                       */
-#ifndef     QUEX_SETTING_BUFFER_SIZE
-#    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
-#endif
-
-#ifndef  QUEX_OPTION_STRING_ACCUMULATOR
-#endif 
-
-//   If one mode requires indentation support, then the lexical analyser
-//   class must be setup for indentation counting. The following flag is
-//   defined or undefined by the lexical analyser generator quex.
-  
-//   Quex can determine whether certain handlers are not used at all.
-//   If so, computation time can be spared and quex comments the following
-//   options out.
-#ifdef    __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT_DISABLED
-#   undef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-#endif
-#ifdef    __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT_DISABLED
-#   undef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-#endif
-#ifdef    QUEX_OPTION_ENABLE_ICONV_DISABLED
-#   undef QUEX_OPTION_ENABLE_ICONV
-#endif
-#ifdef    QUEX_OPTION_ENABLE_ICU_DISABLED
-#   undef QUEX_OPTION_ENABLE_ICU
-#endif
-#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
-#    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
-#        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)65536)
-#    endif
-#else
-#    ifndef     QUEX_SETTING_TRANSLATION_BUFFER_SIZE
-#        define QUEX_SETTING_TRANSLATION_BUFFER_SIZE ((size_t)0)
-#    endif
-#endif
-/* The call the the 'new' function for the converter, i.e. the function that
- * allocates the converter and initializes it. If it is 0x0, this means that
- * the converter pointer is set to 0x0.                                      */
-#ifndef QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
-/* #   define QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW  */
-#endif
-/* Following switch is set, if a user defined converter is defined.          */
-
-#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
-#   ifndef    __QUEX_OPTION_CONVERTER_ENABLED
-#      define __QUEX_OPTION_CONVERTER_ENABLED
-#   endif
-#endif
-
-// Begin of line pre-condition requires an extra flag in the buffer
-// structure. Only out-comment this in case of tough memory restrictions,
-// if no begin of line pre-condition is required.
-#ifdef     __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION_DISABLED
-#   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
-#endif
+#include "Simple-configuration"
 
 namespace quex {
     template <class QuexCharacterType> class QuexSimple;
@@ -209,6 +35,11 @@ const int Simple_QuexModeID_ONE_AND_ONLY = 1;
 #ifdef QUEX_OPTION_INCLUDE_STACK
 #   define CLASS_MEMENTO_TAG  struct SimpleMemento_tag
 #   define CLASS_MEMENTO      SimpleMemento
+#endif
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   define QUEX_TYPE_COUNTER  CounterWithIndentation
+#else
+#   define QUEX_TYPE_COUNTER  Counter
 #endif
 
 namespace quex {
@@ -255,11 +86,6 @@ namespace quex {
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
 #include <quex/code_base/analyzer/Counter>
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   define QUEX_TYPE_COUNTER  CounterWithIndentation
-#else
-#   define QUEX_TYPE_COUNTER  Counter
-#endif
 
 // START:
 
@@ -408,7 +234,7 @@ namespace quex {
 #       endif
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
         int  indentation()                    { return counter._indentation; }
-        void disable_next_indentation_event() { counter.disable_next_indentation_event(); }
+        void disable_next_indentation_event() { counter._indentation_event_enabled_f = false; }
 #       endif
 
         //
