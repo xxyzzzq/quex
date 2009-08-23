@@ -1,4 +1,4 @@
-<test-database execution-time-sec="357.81" date="Sun Aug 23 07:43:53 2009">
+<test-database execution-time-sec="357.82" date="Sun Aug 23 08:18:35 2009">
     <last-used-diff-display-program name=""/>
     <group name="attardi">
         <test title="2002070 Output buffer overflow" make-required="True" time-sum-sec="3.89"> 
@@ -7,7 +7,7 @@
                <choice name="" result="OK" time_sec="3.89" crc="2086818318"/>
             </choice-list>
         </test>
-        <test title="2001602 RE matching UTF8 l quote uno" make-required="True" time-sum-sec="62.99"> 
+        <test title="2001602 RE matching UTF8 l quote uno" make-required="True" time-sum-sec="63.00"> 
             <application file-name="bug-2001602.sh" info-request-time="1248481193L"/>
             <choice-list number="3" same_result="True">
                <choice name="iconv" result="OK" time_sec="14.03" crc="60983025"/>
@@ -29,7 +29,7 @@
                <choice name="codec" result="OK" time_sec="5.04" crc="1937036231"/>
             </choice-list>
         </test>
-        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" make-required="True" time-sum-sec="0.23"> 
+        <test title="2599228 0.36.1 QUEX_CORE variable not adapted to installed version" make-required="True" time-sum-sec="0.22"> 
             <application file-name="bug-2599228.sh" info-request-time="1249206760L"/>
             <choice-list number="3" same_result="False">
                <choice name="Developper" result="OK" time_sec="0.08" crc="-1217549816"/>
@@ -131,7 +131,7 @@
                <choice name="" result="OK" time_sec="0.24" crc="776931317"/>
             </choice-list>
         </test>
-        <test title="2251359 (feature) Single-character token without name" make-required="True" time-sum-sec="2.85"> 
+        <test title="2251359 (feature) Single-character token without name" make-required="True" time-sum-sec="2.84"> 
             <application file-name="feature-2251359.sh" info-request-time="1247607743L"/>
             <choice-list number="7" same_result="False">
                <choice name="good" result="OK" time_sec="1.77" crc="349376386"/>
@@ -157,7 +157,13 @@
         </test>
     </group>
     <group name="nobody">
-        <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" make-required="True" time-sum-sec="8.57"> 
+        <test title="2841726 0.44.2 Unknown exception on unicode properties" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="bug-2841726.sh" info-request-time="1251008293L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.00" crc="1083178123"/>
+            </choice-list>
+        </test>
+        <test title="2395200 assert  in QuexBufferFiller_load_forward (The StrangeStream Issue)" make-required="True" time-sum-sec="8.56"> 
             <application file-name="bug-2395200.sh" info-request-time="1247607743L"/>
             <choice-list number="2" same_result="False">
                <choice name="error-lexer" result="OK" time_sec="4.30" crc="-86429098"/>
@@ -180,10 +186,10 @@
                <choice name="" result="OK" time_sec="0.16" crc="-429266748"/>
             </choice-list>
         </test>
-        <test title="1936707 0.24.10 --plot flag doesnt seem to work" make-required="True" time-sum-sec="1.15"> 
-            <application file-name="bug-1936707.sh" info-request-time="1247607743L"/>
+        <test title="1892809 0.20.4 \x, \X, \U accept too many digits" make-required="True" time-sum-sec="3.25"> 
+            <application file-name="bug-1892809.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.15" crc="-2094704639"/>
+               <choice name="" result="OK" time_sec="3.25" crc="-33376116"/>
             </choice-list>
         </test>
         <test title="2095970 0.31.3 Mode change w/o immediate return. w/o token queue" make-required="True" time-sum-sec="18.02"> 
@@ -206,6 +212,12 @@
             <application file-name="bug-1900391.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.44" crc="-1949253838"/>
+            </choice-list>
+        </test>
+        <test title="1892227 accepted as identifiers in def" make-required="True" time-sum-sec="0.15"> 
+            <application file-name="bug-1892227.sh" info-request-time="1247607743L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.15" crc="1038686624"/>
             </choice-list>
         </test>
         <test title="1893874 Missing colon in mode definition crashes 0.20.5" make-required="True" time-sum-sec="0.17"> 
@@ -242,18 +254,6 @@
             <application file-name="bug-1895066.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="FAIL" time_sec="0.21" crc="-96298993"/>
-            </choice-list>
-        </test>
-        <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.18"> 
-            <application file-name="bug-1908436.sh" info-request-time="1247607743L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.18" crc="-1144183572"/>
-            </choice-list>
-        </test>
-        <test title="1885846 Empty RE in define section" make-required="True" time-sum-sec="0.18"> 
-            <application file-name="bug-1885846.sh" info-request-time="1247607743L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.18" crc="2110266544"/>
             </choice-list>
         </test>
         <test title="1902175 invalid escape in character set expression crashes 0.21.12" make-required="True" time-sum-sec="0.18"> 
@@ -304,16 +304,26 @@
                <choice name="" result="OK" time_sec="1.78" crc="-179153926"/>
             </choice-list>
         </test>
+        <test title="1887163 Single state mode causes quex to crash" make-required="True" time-sum-sec="0.45"> 
+            <application file-name="bug-1887163.sh" info-request-time="1247607743L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.45" crc="-1023013568"/>
+            </choice-list>
+        </test>
         <test title="1889089 Single state mode causes quex to crash" make-required="True" time-sum-sec="0.18"> 
             <application file-name="bug-1889089.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.18" crc="107363452"/>
             </choice-list>
         </test>
-        <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" make-required="True" time-sum-sec="0.26"> 
-            <application file-name="bug-1905768.sh" info-request-time="1247607743L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.26" crc="2013131169"/>
+        <test title="2796383 0.39.3 does not handle token_type without distinct section" make-required="True" time-sum-sec="1.09"> 
+            <application file-name="bug-2796383.sh" info-request-time="1247607743L"/>
+            <choice-list number="5" same_result="False">
+               <choice name="case-1" result="OK" time_sec="0.28" crc="1283619583"/>
+               <choice name="case-2" result="OK" time_sec="0.20" crc="1167199747"/>
+               <choice name="case-3" result="OK" time_sec="0.20" crc="1167199747"/>
+               <choice name="case-4" result="OK" time_sec="0.21" crc="1167199747"/>
+               <choice name="case-5" result="OK" time_sec="0.20" crc="-829255956"/>
             </choice-list>
         </test>
         <test title="2799244 0.39.5 attempts to call unimplemented token set() function" make-required="True" time-sum-sec="4.57"> 
@@ -361,19 +371,14 @@
                <choice name="" result="FAIL" time_sec="0.73" crc="1851075846"/>
             </choice-list>
         </test>
-        <test title="2796383 0.39.3 does not handle token_type without distinct section" make-required="True" time-sum-sec="1.08"> 
-            <application file-name="bug-2796383.sh" info-request-time="1247607743L"/>
-            <choice-list number="5" same_result="False">
-               <choice name="case-1" result="OK" time_sec="0.28" crc="1283619583"/>
-               <choice name="case-2" result="OK" time_sec="0.20" crc="1167199747"/>
-               <choice name="case-3" result="OK" time_sec="0.20" crc="1167199747"/>
-               <choice name="case-4" result="OK" time_sec="0.21" crc="1167199747"/>
-               <choice name="case-5" result="OK" time_sec="0.20" crc="-829255956"/>
+        <test title="1905768 0.22.9 doesn't create analyzer function for event only modes" make-required="True" time-sum-sec="0.26"> 
+            <application file-name="bug-1905768.sh" info-request-time="1247607743L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.26" crc="2013131169"/>
             </choice-list>
         </test>
         <test title="1935701 - 0.24.7 buffer handling size mismatch" make-required="True" time-sum-sec="0.03"> 
             <application file-name="bug-1935701.exe" info-request-time="1250987642L"/>
-            <make-procedure success="True" time_sec="1.013997"/>
             <choice-list number="2" same_result="False">
                <choice name="FILE" result="OK" time_sec="0.02" crc="-953317363"/>
                <choice name="fstream" result="OK" time_sec="0.01" crc="-953317363"/>
@@ -385,10 +390,10 @@
                <choice name="" result="OK" time_sec="0.19" crc="-1800512920"/>
             </choice-list>
         </test>
-        <test title="1892809 0.20.4 \x, \X, \U accept too many digits" make-required="True" time-sum-sec="3.25"> 
-            <application file-name="bug-1892809.sh" info-request-time="1247607743L"/>
+        <test title="1936707 0.24.10 --plot flag doesnt seem to work" make-required="True" time-sum-sec="1.15"> 
+            <application file-name="bug-1936707.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.25" crc="-33376116"/>
+               <choice name="" result="OK" time_sec="1.15" crc="-2094704639"/>
             </choice-list>
         </test>
         <test title="1894578 header block not added to -core-engine.cpp file in 0.20.6" make-required="True" time-sum-sec="3.23"> 
@@ -397,10 +402,10 @@
                <choice name="" result="OK" time_sec="3.23" crc="1111665920"/>
             </choice-list>
         </test>
-        <test title="1892227 accepted as identifiers in def" make-required="True" time-sum-sec="0.15"> 
-            <application file-name="bug-1892227.sh" info-request-time="1247607743L"/>
+        <test title="1908436 0.23.6 rule precedence reversed for identical patterns" make-required="True" time-sum-sec="0.18"> 
+            <application file-name="bug-1908436.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.15" crc="1038686624"/>
+               <choice name="" result="OK" time_sec="0.18" crc="-1144183572"/>
             </choice-list>
         </test>
         <test title="1969629 0.25.4 token list with just TERMINATION treated empty" make-required="True" time-sum-sec="0.20"> 
@@ -415,13 +420,13 @@
                <choice name="" result="OK" time_sec="0.32" crc="-656582305"/>
             </choice-list>
         </test>
-        <test title="1887163 Single state mode causes quex to crash" make-required="True" time-sum-sec="0.45"> 
-            <application file-name="bug-1887163.sh" info-request-time="1247607743L"/>
+        <test title="1885846 Empty RE in define section" make-required="True" time-sum-sec="0.18"> 
+            <application file-name="bug-1885846.sh" info-request-time="1247607743L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.45" crc="-1023013568"/>
+               <choice name="" result="OK" time_sec="0.18" crc="2110266544"/>
             </choice-list>
         </test>
-        <test title="2095970 0.31.3 Mode change without immediate return" make-required="True" time-sum-sec="18.68"> 
+        <test title="2095970 0.31.3 Mode change without immediate return" make-required="True" time-sum-sec="18.67"> 
             <application file-name="bug-2095970.sh" info-request-time="1247607743L"/>
             <choice-list number="5" same_result="False">
                <choice name="Normal" result="OK" time_sec="3.85" crc="1751048447"/>
@@ -433,7 +438,7 @@
         </test>
     </group>
     <group name="wryun">
-        <test title="2819022 0.41.2 Pre-condition match causes issues" make-required="True" time-sum-sec="13.91"> 
+        <test title="2819022 0.41.2 Pre-condition match causes issues" make-required="True" time-sum-sec="13.92"> 
             <application file-name="bug-2819022.sh" info-request-time="1247607743L"/>
             <choice-list number="4" same_result="False">
                <choice name="0" result="OK" time_sec="3.56" crc="924833233"/>
