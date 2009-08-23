@@ -152,7 +152,7 @@ def get_supported_unicode_character_set(CodecAlias, FH=-1, LineN=None):
 def __get_transformation(encoder, CharCode):
     # Returns the encoding for the given character code, 
     # plus the number of bytes which it occupies.
-    input_str = unichr(CharCode)
+    input_str = eval("u'\\U%08X'" % CharCode)
     try:    
         result = encoder(input_str)[0]
     except: 

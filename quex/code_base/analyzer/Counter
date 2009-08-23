@@ -16,12 +16,12 @@ namespace quex {
 
     typedef struct {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        size_t  _line_number_at_begin;   // line where current pattern starts
-        size_t  _line_number_at_end;     // line after current pattern
+        size_t  _line_number_at_begin;    /* line where current pattern starts   */
+        size_t  _line_number_at_end;      /* line after current pattern          */
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        size_t  _column_number_at_begin;  // column where current pattern starts
-        size_t  _column_number_at_end;    // column after current pattern
+        size_t  _column_number_at_begin;  /* column where current pattern starts */
+        size_t  _column_number_at_end;    /* column after current pattern        */
 #       endif
     } __CounterBase;
 
@@ -58,19 +58,11 @@ namespace quex {
     typedef struct {
         __CounterBase   base;
 
-        void  on_end_of_file();
-        void  disable_next_indentation_event() { _indentation_event_enabled_f = false; }
-
-        void  icount(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER*  End);
-        void  icount_NoNewline(QUEX_TYPE_CHARACTER* Begin, const int CharacterN);
-        void  icount_NoNewline_NeverStartOnWhitespace(const int CharacterN);
-        void  icount_NoNewline_ContainsOnlySpace(const int CharacterN);
-
         CLASS*  _the_lexer;
-        int     _indentation;                 // number of columns to first non-whitespace
-        //                                    // in the current line.
-        bool    _indentation_count_enabled_f; // count whitespace for indentation?
-        bool    _indentation_event_enabled_f; // trigger when first non-whitespace occurs?
+        int     _indentation;                 /* number of columns to first non-whitespace  */
+        /*                                     * in the current line.                       */
+        bool    _indentation_count_enabled_f; /* count whitespace for indentation?          */
+        bool    _indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
     } CounterWithIndentation;
 
     inline void
@@ -120,4 +112,4 @@ namespace quex {
 }
 #endif
 
-#endif // __INCLUDE_GUARD__QUEX__COUNTER__
+#endif /* __INCLUDE_GUARD__QUEX__COUNTER__ */

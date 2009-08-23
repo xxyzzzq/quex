@@ -181,8 +181,8 @@ class Interval:
         if utf8_char_db.has_key(Code): return utf8_char_db[Code]
         elif Code < ord(' '):          return "\\" + repr(Code) #  from ' ' to '9' things are 'visible'
         else:
-            char_str = utf8_c(unichr(Code))[0]
-            return "'" + char_str + "'"
+            char_str = utf8_c(eval("u'\\U%08X'" % Code))[0]     # NOT 'unichr' for compatibility
+            return "'" + char_str + "'"                         #     with 'python narrow build'
         # elif Code < ord('0') or Code > ord('z'): return "\\" + repr(Code)
         # else:                                    return "'" + chr(Code) + "'"
 

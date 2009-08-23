@@ -3,17 +3,19 @@
 #define __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER
 #ifdef  QUEX_OPTION_POST_CATEGORIZER
 
-namespace quex { 
-    //________________________________________________________________________________
-    // Post Categorization of Lexemes:
-    //
-    // The implementation of the categorization tree is a little more efficient
-    // than the STL map, since we do not iterator over the content.
-    //________________________________________________________________________________
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+    /*________________________________________________________________________________
+     * Post Categorization of Lexemes:
+     *
+     * The implementation of the categorization tree is a little more efficient
+     * than the STL map, since we do not iterator over the content.
+     *________________________________________________________________________________*/
     typedef struct QuexPostCategorizerNode_tag {
         /* Store the first character separately from the remainder. This might
          * help to avoid loading 'remotely allocated' strings into the cache if
-         * they do not fit anyway (because of their first character).            */ 
+         * they do not fit anyway (because of their first character).                 */ 
         QUEX_TYPE_CHARACTER          name_first_character;
         const QUEX_TYPE_CHARACTER*   name_remainder;
 
@@ -56,7 +58,10 @@ namespace quex {
 
     inline void
     QuexPostCategorizer_clear(QuexPostCategorizer* me, QuexPostCategorizerNode* branch);
-}
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */
 #endif // __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER

@@ -1,30 +1,30 @@
-<test-database execution-time-sec="0.47" date="Tue Aug 18 22:36:05 2009">
+<test-database execution-time-sec="0.27" date="Sun Aug 23 12:38:54 2009">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
-        <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.14"> 
+        <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-extract_identifiers_with_specific_prefix.py" info-request-time="1237805542L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.14" crc="-957083127"/>
+               <choice name="" result="OK" time_sec="0.07" crc="-957083127"/>
             </choice-list>
         </test>
-        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.18"> 
+        <test title="Function read_until_closing_bracket(...)" make-required="True" time-sum-sec="0.09"> 
             <application file-name="test-read_until_closing_bracket.py" info-request-time="1237805542L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.18" crc="1489533151"/>
+               <choice name="" result="OK" time_sec="0.09" crc="1489533151"/>
             </choice-list>
         </test>
-        <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.10"> 
+        <test title="Function delete_comment(...)" make-required="True" time-sum-sec="0.07"> 
             <application file-name="test-delete_comment.py" info-request-time="1237805542L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="1761513741"/>
+               <choice name="" result="OK" time_sec="0.07" crc="1761513741"/>
             </choice-list>
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.06"> 
+        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.05"> 
             <application file-name="test-trim.py" info-request-time="1237805542L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.06" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.05" crc="-964243626"/>
             </choice-list>
         </test>
     </group>

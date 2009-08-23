@@ -143,7 +143,7 @@ utf8_border = [ 0x00000080, 0x00000800, 0x00010000, 0x00110000]
 utf8c = codecs.getencoder("utf-8")
 utf8d = codecs.getdecoder("utf-8")
 def unicode_to_utf8(UnicodeValue):
-    return map(ord, utf8c(unichr(UnicodeValue))[0])
+    return map(ord, utf8c(eval("u'\\U%08X'" % UnicodeValue))[0])
 
 def utf8_to_unicode(ByteSequence):
     return ord(utf8d(reduce(lambda x, y: x + y, map(chr, ByteSequence)))[0])
