@@ -1,4 +1,4 @@
-<test-database execution-time-sec="339.36" date="Sun Aug 23 22:52:47 2009">
+<test-database execution-time-sec="334.33" date="Sun Aug 23 23:24:48 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="30.39"> 
@@ -120,11 +120,11 @@
         </test>
     </group>
     <group name="demo/009">
-        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="9.89"> 
+        <test title="Strings of 'char' and 'wchar_t'" make-required="True" time-sum-sec="4.86"> 
             <application file-name="009.sh" info-request-time="1247664742L"/>
             <choice-list number="2" same_result="True">
-               <choice name="lexer" result="OK" time_sec="5.21" crc="13704092"/>
-               <choice name="wlexer" result="OK" time_sec="4.68" crc="13704092"/>
+               <choice name="lexer" result="OK" time_sec="0.18" crc="13704092"/>
+               <choice name="wlexer" result="OK" time_sec="4.69" crc="13704092"/>
             </choice-list>
         </test>
     </group>

@@ -35,8 +35,8 @@ A0 = NumberSet([Interval(10,20),    Interval(21,30),
 function = A0.condition_code("Python", "example_func")
 exec(function)
 
-fh = open("tmp2", "w")
-fh.write(A0.gnuplot_string(1) + "\n")
+# fh = open("tmp2", "w")
+# fh.write(A0.gnuplot_string(1) + "\n")
 
 for number in range(300):
     if example_func(number):  sys.stdout.write("%i 1.0\n\n" % number)

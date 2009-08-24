@@ -17,7 +17,7 @@ LEXER_NAME		= Calc_lexer# NOTE: a whitespace after this name creates chaos!
 LEXER_SOURCES	= $(LEXER_NAME)                     \
                   $(LEXER_NAME).cpp                 \
                   $(LEXER_NAME)-token_ids           \
-                  $(ENGINE_NAME)-configuration       \
+                  $(LEXER_NAME)-configuration       \
 		          $(LEXER_NAME)-core-engine.cpp
 
 TOKEN_FILE		= Calc_token-ids

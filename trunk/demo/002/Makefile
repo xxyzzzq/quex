@@ -85,7 +85,9 @@ $(ENGINE_SOURCES): $(MODE_FILES) $(QUEX_CORE)
 clean:	
 	touch $(MODE_FILES)
 	rm -f $(ENGINE_NAME) $(ENGINE_NAME).cpp \
-              $(ENGINE_NAME)-internal.h $(ENGINE_NAME)-token_ids
+          $(ENGINE_NAME)-internal.h \
+		  $(ENGINE_NAME)-token_ids \
+		  $(ENGINE_NAME)-configuration
 	rm -f $(GENERATED_MODE_FILES)
 	rm -f $(GENERATED_MODE_OBJS)
 	rm -f $(ENGINE_NAME).o
