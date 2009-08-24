@@ -56,6 +56,7 @@ lex_codec:
 clean:
 	rm -rf $(X)-core-engine.cpp
 	rm -rf $(X)-token_ids
+	rm -rf $(X)-configuration
 	rm -rf $(X).cpp
 	rm -rf $(X)
 	rm -rf a.out
