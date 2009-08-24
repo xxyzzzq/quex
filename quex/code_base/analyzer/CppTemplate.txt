@@ -178,6 +178,7 @@ $$MEMENTO_EXTENSIONS$$
     class CLASS : public CLASS_DATA {
 
 
+    public:
 $$MODE_OBJECTS$$
         /* DISABLED */ CLASS(const CLASS&);
     public:

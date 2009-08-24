@@ -1,4 +1,4 @@
-<test-database execution-time-sec="28.02" date="Sun Aug 23 22:09:20 2009">
+<test-database execution-time-sec="28.02" date="Sun Aug 23 22:52:49 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
         <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.88"> 
