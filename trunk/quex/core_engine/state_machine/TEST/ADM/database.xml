@@ -1,4 +1,4 @@
-<test-database execution-time-sec="39.78" date="Sun Aug 23 12:38:54 2009">
+<test-database execution-time-sec="39.78" date="Sun Aug 23 22:09:20 2009">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Identity Determination" make-required="True" time-sum-sec="3.14"> 
         <application file-name="test-identity_checker.py" info-request-time="1247657682L"/>
@@ -57,7 +57,7 @@
         </test>
     </group>
     <group name="Plot">
-        <test title="Get graphviz string of state machine." make-required="True" time-sum-sec="0.18"> 
+        <test title="Get graphviz string of state machine." make-required="True" time-sum-sec="0.19"> 
             <application file-name="test-StateMachine-get_graphviz_string.py" info-request-time="1247657682L"/>
             <choice-list number="2" same_result="False">
                <choice name="1" result="OK" time_sec="0.09" crc="173145892"/>
@@ -66,7 +66,7 @@
         </test>
     </group>
     <group name="Predetermined Character Count">
-        <test title="Pattern Subset Determination" make-required="True" time-sum-sec="3.85"> 
+        <test title="Pattern Subset Determination" make-required="True" time-sum-sec="3.86"> 
             <application file-name="test-subset_checker.py" info-request-time="1247657682L"/>
             <choice-list number="7" same_result="False">
                <choice name="Easy" result="OK" time_sec="0.25" crc="-1954154735"/>
@@ -188,10 +188,10 @@
                <choice name="" result="OK" time_sec="0.11" crc="372081665"/>
             </choice-list>
         </test>
-        <test title="NFA to DFA (subset construction)" make-required="True" time-sum-sec="0.10"> 
-            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1247657682L"/>
+        <test title="Hopcroft optimization (minimize state set)" make-required="True" time-sum-sec="0.10"> 
+            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1247657682L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="-1604145748"/>
+               <choice name="" result="OK" time_sec="0.10" crc="658399412"/>
             </choice-list>
         </test>
         <test title="Cloning" make-required="True" time-sum-sec="0.16"> 
@@ -200,10 +200,10 @@
                <choice name="" result="OK" time_sec="0.16" crc="-973496326"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" make-required="True" time-sum-sec="0.10"> 
-            <application file-name="test-StateMachine-trace-origin-hopcroft-optimization.py" info-request-time="1247657682L"/>
+        <test title="NFA to DFA (subset construction)" make-required="True" time-sum-sec="0.10"> 
+            <application file-name="test-StateMachine-trace-origin-create-DFA.py" info-request-time="1247657682L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="658399412"/>
+               <choice name="" result="OK" time_sec="0.10" crc="-1604145748"/>
             </choice-list>
         </test>
         <test title="NFA to DFA (subset construction) II" make-required="True" time-sum-sec="0.12"> 
@@ -240,7 +240,7 @@
         </test>
     </group>
     <group name="UTF8 State Split">
-        <test title="Contigous Byte Sequence Ranges" make-required="True" time-sum-sec="0.61"> 
+        <test title="Contigous Byte Sequence Ranges" make-required="True" time-sum-sec="0.60"> 
             <application file-name="test-utf8_number_set_split.py" info-request-time="1248177216L"/>
             <choice-list number="6" same_result="False">
                <choice name="1" result="OK" time_sec="0.08" crc="1765966415"/>
@@ -266,7 +266,7 @@
                <choice name="Overlap2" result="OK" time_sec="0.10" crc="1206343695"/>
             </choice-list>
         </test>
-        <test title="Plug Intermediate States" make-required="True" time-sum-sec="1.23"> 
+        <test title="Plug Intermediate States" make-required="True" time-sum-sec="1.24"> 
             <application file-name="test-utf8_state_split.py" info-request-time="1247657682L"/>
             <choice-list number="12" same_result="False">
                <choice name="1.1" result="OK" time_sec="0.12" crc="66719042"/>

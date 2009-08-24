@@ -1,4 +1,4 @@
-<test-database execution-time-sec="9820.72" date="Sun Aug 23 12:38:07 2009">
+<test-database execution-time-sec="9820.70" date="Sun Aug 23 22:09:20 2009">
     <last-used-diff-display-program name=""/>
     <group name="Buffer Reload">
         <test title="Backwards" make-required="True" time-sum-sec="5.64"> 
@@ -20,7 +20,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.51" crc="-887225006"/>
             </choice-list>
         </test>
-        <test title="Forward Position Adaption" make-required="True" time-sum-sec="7.36"> 
+        <test title="Forward Position Adaption" make-required="True" time-sum-sec="7.37"> 
             <application file-name="test-position_adaption.py" info-request-time="1247689992L"/>
             <choice-list number="5" same_result="True">
                <choice name="Cpp_ASSERTS" result="OK" time_sec="1.74" crc="1319922986"/>
@@ -41,7 +41,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="1.40" crc="-1324080938"/>
             </choice-list>
         </test>
-        <test title="Mode Changes" make-required="True" time-sum-sec="4.89"> 
+        <test title="Mode Changes" make-required="True" time-sum-sec="4.88"> 
             <application file-name="test-mode-changes.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.73" crc="270103911"/>
@@ -130,7 +130,7 @@
         </test>
     </group>
     <group name="Pseudo Ambgiguous Post Condition">
-        <test title="Part II" make-required="True" time-sum-sec="5.00"> 
+        <test title="Part II" make-required="True" time-sum-sec="4.99"> 
             <application file-name="test-pseudo_ambiguous_post_conditions-2.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.01" crc="1614045300"/>
@@ -150,7 +150,7 @@
         </test>
     </group>
     <group name="Simple">
-        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" make-required="True" time-sum-sec="4.84"> 
+        <test title="Keywords 'for', 'forest', 'forester', and 'formidable'" make-required="True" time-sum-sec="4.83"> 
             <application file-name="test-simple-5.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="0.87" crc="-680455951"/>
@@ -217,7 +217,7 @@
         </test>
     </group>
     <group name="Skip-Characters">
-        <test title="Large Buffer" make-required="True" time-sum-sec="11.06"> 
+        <test title="Large Buffer" make-required="True" time-sum-sec="11.07"> 
             <application file-name="test-skip-trigger-set.py" info-request-time="1247689992L"/>
             <choice-list number="4" same_result="True">
                <choice name="ANSI-C-PlainMemory" result="OK" time_sec="1.97" crc="600307805"/>
@@ -226,7 +226,7 @@
                <choice name="Cpp_StrangeStream" result="OK" time_sec="3.62" crc="600307805"/>
             </choice-list>
         </test>
-        <test title="Varrying Buffer Size" make-required="True" time-sum-sec="21.61"> 
+        <test title="Varrying Buffer Size" make-required="True" time-sum-sec="21.60"> 
             <application file-name="test-skip-trigger-set-2.py" info-request-time="1247689992L"/>
             <choice-list number="6" same_result="True">
                <choice name="3" result="OK" time_sec="3.49" crc="656254767"/>
