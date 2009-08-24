@@ -57,5 +57,7 @@ clean:
 	rm -f iso8859-7-lexer
 	rm -f UTF8Lex*
 	rm -f utf8-lexer
+	rm -f UTF16Lex*
+	rm -f utf16-lexer
 	rm -f *.E
 	rm -f *.svg
