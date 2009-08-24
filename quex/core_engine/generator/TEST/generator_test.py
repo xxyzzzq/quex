@@ -109,10 +109,11 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
         fh_out = open(filename_tmp + ".out", "r")
         print fh_out.read()
         os.remove("%s.exe" % filename_tmp)
+        os.remove("%s.out" % filename_tmp)
     except:
         print "<<compilation failed>>"
     print "## (4) cleaning up"
-    # os.remove(filename_tmp)
+    os.remove(filename_tmp)
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
     global plain_memory_based_test_program
