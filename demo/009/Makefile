@@ -53,6 +53,7 @@ $(WSOURCES): simple.qx $(QUEX_CORE)
 # (*) HELPERS __________________________________________________________________
 clean:	
 	touch simple.qx
+	rm -f wchar_t-example.txt # created by wlexer.cpp
 	rm -f $(SOURCES)
 	rm -f $(WSOURCES)
 	rm -f *.o
