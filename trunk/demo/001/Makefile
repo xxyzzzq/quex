@@ -18,6 +18,7 @@ ENGINE_NAME      = tiny_lexer# NOTE: a whitespace after this name creates chaos!
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
+                   $(ENGINE_NAME)-configuration       \
 		           $(ENGINE_NAME)-core-engine.cpp
 # -- OUTPUT
 APPLICATION      = lexer

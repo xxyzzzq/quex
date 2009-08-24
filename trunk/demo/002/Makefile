@@ -26,6 +26,7 @@ GENERATED_MODE_OBJS  = $(GENERATED_MODE_FILES:.cpp=.o)
 ENGINE_SOURCES   = $(ENGINE_NAME)                     \
                    $(ENGINE_NAME).cpp                 \
                    $(ENGINE_NAME)-token_ids           \
+                   $(ENGINE_NAME)-configuration       \
 		   $(GENERATED_MODE_FILES)
 #
 LIBRARY_OBJS     = $(ENGINE_NAME).o
