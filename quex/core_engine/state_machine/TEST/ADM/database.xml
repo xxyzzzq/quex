@@ -1,4 +1,4 @@
-<test-database execution-time-sec="37.57" date="Mon Aug 24 12:39:29 2009">
+<test-database execution-time-sec="37.57" date="Mon Aug 24 23:04:39 2009">
     <last-used-diff-display-program name=""/>
     <test title="Pattern Subset Determination" make-required="True" time-sum-sec="3.79"> 
         <application file-name="test-subset_checker.py" info-request-time="1247657682L"/>
@@ -12,7 +12,7 @@
            <choice name="Pre-Post-Conditions" result="OK" time_sec="0.36" crc="54741919"/>
         </choice-list>
     </test>
-    <test title="Pattern Identity Determination" make-required="True" time-sum-sec="2.86"> 
+    <test title="Pattern Identity Determination" make-required="True" time-sum-sec="2.85"> 
         <application file-name="test-identity_checker.py" info-request-time="1247657682L"/>
         <choice-list number="4" same_result="False">
            <choice name="True" result="OK" time_sec="1.56" crc="-390242573"/>
@@ -28,7 +28,7 @@
                <choice name="" result="OK" time_sec="0.09" crc="1185210859"/>
             </choice-list>
         </test>
-        <test title="Hopcroft optimization (minimize state set)" make-required="True" time-sum-sec="0.23"> 
+        <test title="Hopcroft optimization (minimize state set)" make-required="True" time-sum-sec="0.22"> 
             <application file-name="test-hopcroft-minimization.py" info-request-time="1247657682L"/>
             <choice-list number="2" same_result="False">
                <choice name="NEW" result="OK" time_sec="0.11" crc="-881446979"/>
@@ -37,6 +37,12 @@
         </test>
     </group>
     <group name="NFA">
+        <test title="Conversion to DFA (subset construction)" make-required="True" time-sum-sec="0.10"> 
+            <application file-name="test-nfa-to-dfa.py" info-request-time="1247657682L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.10" crc="1185955343"/>
+            </choice-list>
+        </test>
         <test title="Get elementary trigger sets (target index --&gt; trigger sets)" make-required="True" time-sum-sec="0.08"> 
             <application file-name="test-StateMachine-elementary_trigger_sets.py" info-request-time="1247657682L"/>
             <choice-list number="1" same_result="False">
@@ -47,12 +53,6 @@
             <application file-name="test-StateMachine-epsilon-closure.py" info-request-time="1247657682L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.09" crc="941657240"/>
-            </choice-list>
-        </test>
-        <test title="Conversion to DFA (subset construction)" make-required="True" time-sum-sec="0.10"> 
-            <application file-name="test-nfa-to-dfa.py" info-request-time="1247657682L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.10" crc="1185955343"/>
             </choice-list>
         </test>
         <test title="Get elementary trigger sets II" make-required="True" time-sum-sec="0.08"> 
@@ -150,16 +150,16 @@
                <choice name="" result="OK" time_sec="0.09" crc="1893595141"/>
             </choice-list>
         </test>
-        <test title="Paralell" make-required="True" time-sum-sec="0.12"> 
-            <application file-name="test-parallelize.py" info-request-time="1247657682L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.12" crc="-1321345312"/>
-            </choice-list>
-        </test>
         <test title="Repetition with min and max repetition numbers" make-required="True" time-sum-sec="0.11"> 
             <application file-name="test-repeat.py" info-request-time="1247657682L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.11" crc="-901142520"/>
+            </choice-list>
+        </test>
+        <test title="Paralell" make-required="True" time-sum-sec="0.12"> 
+            <application file-name="test-parallelize.py" info-request-time="1247657682L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.12" crc="-1321345312"/>
             </choice-list>
         </test>
         <test title="Append Post Condition" make-required="True" time-sum-sec="0.10"> 
@@ -251,6 +251,12 @@
                <choice name="misc" result="OK" time_sec="0.08" crc="1750163361"/>
             </choice-list>
         </test>
+        <test title="Larger Number Sets" make-required="True" time-sum-sec="2.48"> 
+            <application file-name="test-utf8_state_split-do.py" info-request-time="1250231473L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="2.48" crc="-1092922674"/>
+            </choice-list>
+        </test>
         <test title="Intervals" make-required="True" time-sum-sec="0.39"> 
             <application file-name="test-utf8_number_set_split-by-length.py" info-request-time="1247793019L"/>
             <choice-list number="4" same_result="False">
@@ -275,12 +281,6 @@
                <choice name="4.2" result="OK" time_sec="0.08" crc="866251508"/>
                <choice name="4.3" result="OK" time_sec="0.08" crc="979899608"/>
                <choice name="4.4" result="OK" time_sec="0.10" crc="2064024942"/>
-            </choice-list>
-        </test>
-        <test title="Larger Number Sets" make-required="True" time-sum-sec="2.48"> 
-            <application file-name="test-utf8_state_split-do.py" info-request-time="1250231473L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="2.48" crc="-1092922674"/>
             </choice-list>
         </test>
         <test title="Larger Number Sets" make-required="True" time-sum-sec="0.12"> 

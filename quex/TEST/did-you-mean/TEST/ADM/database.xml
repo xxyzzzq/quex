@@ -1,4 +1,4 @@
-<test-database execution-time-sec="8.59" date="Mon Aug 24 12:31:58 2009">
+<test-database execution-time-sec="8.59" date="Mon Aug 24 23:04:37 2009">
     <last-used-diff-display-program name=""/>
     <test title="UCS Character Code Names" make-required="True" time-sum-sec="8.42"> 
         <application file-name="ucs-character-name.sh" info-request-time="1248984822L"/>

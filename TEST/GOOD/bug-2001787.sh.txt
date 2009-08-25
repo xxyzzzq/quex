@@ -10,6 +10,7 @@ command line: turned on by default, since the lexical analysers can be described
 command line: want to disable the token queue, please, use '--no-token-queue', or '--ntq'.
 rm -rf Simple-core-engine.cpp
 rm -rf Simple-token_ids
+rm -rf Simple-configuration
 rm -rf Simple.cpp
 rm -rf Simple
 rm -rf a.out
