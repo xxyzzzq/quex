@@ -11,6 +11,7 @@ FAILED '\n'
 <TERMINATION>
 rm -rf Simple-core-engine.cpp
 rm -rf Simple-token_ids
+rm -rf Simple-configuration
 rm -rf Simple.cpp
 rm -rf Simple
 rm -rf a.out
