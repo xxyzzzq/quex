@@ -103,7 +103,6 @@ $$MEMENTO_EXTENSIONS$$
 #   endif
 
     struct CLASS_DATA : protected QuexAnalyser {
-
         /*_________________________________________________________________________
          *        __   __   ___  __  
          *  |\/| /  \ |  \ |__  /__` 
@@ -176,7 +175,6 @@ $$MEMENTO_EXTENSIONS$$
     };
 
     class CLASS : public CLASS_DATA {
-
 
     public:
 $$MODE_OBJECTS$$

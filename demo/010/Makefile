@@ -14,7 +14,7 @@ endif
 include $(QUEX_PATH)/quex/code_base/core.mkd
 
 # (*) SETUP ____________________________________________________________________
-SOURCES   = tiny_lexer.cpp tiny_lexer-core-engine.cpp tiny_lexer-configuration
+SOURCES   = tiny_lexer.cpp tiny_lexer-core-engine.cpp 
 OBJS      = $(SOURCES:.cpp=.o)      messaging-framework.o
 UTF8_OBJS = $(SOURCES:.cpp=-utf8.o) messaging-framework-utf8.o
 
@@ -59,6 +59,7 @@ clean:
 	touch simple.qx
 	rm -f tiny_lexer*
 	rm -f $(SOURCES)
+	rm -f tiny_lexer-configuration
 	rm -f $(FILES)
 	rm -f *.exe
 	rm -f *.o
