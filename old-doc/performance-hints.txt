@@ -1,5 +1,0 @@
-This file has not beed added to the main document:
-
--- when counting line numbers, it might be advantageous to extract
-   the \n from the whitespace pattern, since then it can be counted
-   in an isolated manner.
