@@ -101,13 +101,15 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
 
 
 double
-report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize)
+report(const char* Name, clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize)
 { 
     using namespace std;
 
     const clock_t EndTime    = clock();
     const double   TimeDiff   = (double)(EndTime - StartTime) / (double)CLOCKS_PER_SEC;
     const double   TimePerRun = TimeDiff / RepetitionN;
+
+    printf("// Benchmark Results '%s'\n", Name);
 
     cout << "//    Total Time:  " << TimeDiff          << " [sec]" << endl;
     cout << "//    Runs:        " << (long)RepetitionN << " [1]"   << endl;
@@ -122,37 +124,6 @@ report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterS
     cout << "//    Clock Cycles / Char: " << CCC         << endl;
 
     return TimePerRun;
-}
-
-size_t
-count_token_n(std::FILE* fh)
-{
-    BENCHMARK_SETTING_INIT
-
-    int token_id = TKN_TERMINATION;
-    int token_n = 0;
-
-    // (*) loop until the 'termination' token arrives
-    for(token_n=0; ; ++token_n) {
-        BENCHMARK_SETTING_GET_TOKEN_ID
-        if( token_id == TKN_TERMINATION ) break;
-    } 
-    cout << "// TokenN: " << token_n << " [1]"   << endl;
-    return token_n;
-}
-
-size_t
-get_file_size(const char* Filename, bool SilentF /*=false*/)
-{
-    using namespace std;
-    struct stat s;
-    stat(Filename, &s);
-    if( ! SilentF ) {
-        cout << "// FileSize: " << s.st_size << " [Byte] = "; 
-        cout << double(s.st_size) / double(1024.0) << " [kB] = ";
-        cout << double(s.st_size) / double(1024.0*1024.0) << " [MB]." << endl;
-    }
-    return s.st_size;
 }
 
 void
