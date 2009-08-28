@@ -18,30 +18,10 @@
            extern int    yylex();
            extern FILE*  yyin;
            extern void   yyrestart(FILE*);
-
-#   define BENCHMARK_SETTING_INIT           yyin = fh; yyrestart(yyin);
-#   define BENCHMARK_SETTING_GET_TOKEN_ID   token_id = yylex();
-#   define BENCHMARK_SETTING_RESET          fseek(yyin, 0, SEEK_SET); yyrestart(yyin);
-
-#   define BENCHMARK_SETTING_TERMINATE      /* */
-
 #else
 
 #   define BENCHMARK_SETTING_HEADER \
            using namespace quex;
-
-#   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
-#      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); register quex::Token token; qlex.token = &token;
-#      define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(); token_id = qlex.token->type_id();
-#      define BENCHMARK_SETTING_RESET          qlex._reset();
-#   else
-#      define BENCHMARK_SETTING_INIT           quex::c_lexer   qlex(fh); register quex::Token token; // qlex.token = &token;
-#      define BENCHMARK_SETTING_GET_TOKEN_ID   qlex.receive(&token); token_id = token.type_id();
-#      define BENCHMARK_SETTING_RESET          qlex.reset(fh);
-#   endif
-
-#   define BENCHMARK_SETTING_TERMINATE      qlex.token = 0x0;
-
 
 #endif
 
