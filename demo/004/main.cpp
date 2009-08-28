@@ -5,13 +5,11 @@
 
 static  FILE*           fh;
 static  quex::c_lexer*  qlex; 
-#ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
 static  quex::Token     token; 
-#endif
+
 int 
 main(int argc, char** argv) 
 {        
-    FILE*  fh = 0x0;
     {
         if( argc != 2 ) { return -1; }
 
@@ -31,30 +29,27 @@ main(int argc, char** argv)
 #endif
 
 #   if   defined(QUEX_QUICK_BENCHMARK_VERSION)
-    const clock_t  ExperimentTime =  1 * CLOCKS_PER_SEC;
+    const double  ExperimentTime = 1.0;   // [sec]
 #   elif defined(QUEX_BENCHMARK_SERIOUS)
-    const clock_t  ExperimentTime = 10 * CLOCKS_PER_SEC;
+    const double  ExperimentTime = 10.0;  // [sec]
 #   else
-    const clock_t  ExperimentTime = StartTime;
+    const double  ExperimentTime = 0.0;   // [sec]
 #   endif
 
     int           checksum = 0xFFFF;
     const size_t  TokenN   = count_token_n(func_get_token_id, &checksum); 
-    fseek(fh, 0, SEEK_SET);
     const size_t  FileSize = get_file_size(argv[1]);
     double        repetition_n = -1;
 
     /* OVERHEAD MEASUREMENT */
     func_reset();
     const double  RefTime = benchmark(func_empty, func_reset,
-                                      (clock_t)(((float)ExperimentTime) / 20.0), 
+                                      ExperimentTime / 20.0, 
                                       TokenN, 
                                       /* CheckSum */ -1, 
                                       &repetition_n);
 
     const clock_t RefTimePerRun = report("only overhead", RefTime, repetition_n, FileSize, /* CharacterSize = 1 */ 1);
-
-    fseek(fh, 0, SEEK_SET);
 
     /* REAL MEASUREMENT */
     const double  Time = benchmark(func_get_token_id, func_reset,
@@ -93,7 +88,6 @@ func_get_token_id()
 #   ifdef QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN
     qlex->receive(); 
 #   else
-    static quex::Token token; 
     qlex->receive(&token); 
 #   endif
     return token.type_id();

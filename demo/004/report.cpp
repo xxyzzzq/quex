@@ -5,14 +5,12 @@
 #include <unistd.h>
 #include <cstdio>
 #include <iostream>
-#include "configuration.h"
 
 #include "token-ids.h"
 #if defined(ANALYZER_GENERATOR_FLEX)
 #else
 #    include "c_lexer"
 #endif
-BENCHMARK_SETTING_HEADER
 using namespace std;
 
 #define QUOTE_THIS(NAME) #NAME
@@ -101,13 +99,11 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
 
 
 double
-report(const char* Name, clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize)
+report(const char* Name, double TimeDiff, double RepetitionN, size_t FileSize, size_t CharacterSize)
 { 
     using namespace std;
 
-    const clock_t EndTime    = clock();
-    const double   TimeDiff   = (double)(EndTime - StartTime) / (double)CLOCKS_PER_SEC;
-    const double   TimePerRun = TimeDiff / RepetitionN;
+    const double  TimePerRun = TimeDiff / RepetitionN;
 
     printf("// Benchmark Results '%s'\n", Name);
 
