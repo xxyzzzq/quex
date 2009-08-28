@@ -4,16 +4,16 @@
  *
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_INCLUDE_HANDLER__
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_INCLUDE_HANDLER__       */
-#ifndef CLASS
-#   error "Macro CLASS must be defined before inclusion of this file."
+#ifndef   QUEX_TYPE_ANALYZER
+#   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
 
 #include <quex/code_base/analyzer/Analyser>
 namespace quex { 
 
     template <class InputHandleT> inline void    
-    CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
-                        const CLASS_QUEX_MODE&   mode, 
+    QUEX_TYPE_ANALYZER::include_push(QUEX_TYPE_CHARACTER*     InputName,
+                        const QUEX_TYPE_MODE&   mode, 
                         const char*              IANA_CodingName /* = 0x0 */)
     {
         // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
@@ -21,7 +21,7 @@ namespace quex {
     }
 
     template <class InputHandleT> inline void    
-    CLASS::include_push(QUEX_TYPE_CHARACTER*     InputName,
+    QUEX_TYPE_ANALYZER::include_push(QUEX_TYPE_CHARACTER*     InputName,
                         const int                MODE_ID /* = -1 */, 
                         const char*              IANA_CodingName /* = 0x0 */)
     {
@@ -33,7 +33,7 @@ namespace quex {
         /* Store the lexical analyser's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*   input_handle = 0x0;
-        CLASS_MEMENTO*  m            = memento_pack(InputName, &input_handle);
+        QUEX_TYPE_MEMENTO*  m            = memento_pack(InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
@@ -54,12 +54,12 @@ namespace quex {
         QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
 
         /* Keep track of 'who's your daddy?'                              */
-        m->parent = this->_parent_memento;
+        m->base.parent = this->_parent_memento;
         this->_parent_memento = m;
     }   
 
     inline bool
-    CLASS::include_pop() 
+    QUEX_TYPE_ANALYZER::include_pop() 
     {
         /* Not included? return 'false' to indicate we're on the top level     */
         if( this->_parent_memento == 0x0 ) return false; 
@@ -76,7 +76,7 @@ namespace quex {
     }
 
     inline void
-    CLASS::include_stack_delete() 
+    QUEX_TYPE_ANALYZER::include_stack_delete() 
     {
         while( this->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */

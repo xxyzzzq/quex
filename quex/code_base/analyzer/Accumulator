@@ -5,13 +5,17 @@
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR            */
 
+#ifndef   QUEX_TYPE_ANALYZER
+#   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
+#endif
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
 
     // (*) pure text accumulation and flushing
-    struct CLASS_ACCUMULATOR {
-        CLASS_ACCUMULATOR() { _accumulated_text.reserve(1024); }
+    struct QUEX_TYPE_ACCUMULATOR {
+        QUEX_TYPE_ACCUMULATOR() { _accumulated_text.reserve(1024); }
 
         void  flush(const QUEX_TYPE_TOKEN_ID TokenID);
         void  clear();
@@ -21,7 +25,7 @@ namespace quex {
         void  print_this();
 
     private:
-        friend class CLASS;
+        friend class QUEX_TYPE_ANALYZER;
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         int  _begin_line;
 #       endif
@@ -29,7 +33,7 @@ namespace quex {
         int  _begin_column;
 #       endif
         std::basic_string<QUEX_TYPE_CHARACTER>  _accumulated_text;
-        CLASS*                                  _the_lexer;     
+        QUEX_TYPE_ANALYZER*                                  _the_lexer;     
     };
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)

@@ -423,8 +423,6 @@ namespace quex {
 #       endif
     }
 
-#undef CLASS
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }
 #endif

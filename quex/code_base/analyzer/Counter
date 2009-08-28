@@ -25,88 +25,116 @@ namespace quex {
 #       endif
     } __CounterBase;
 
-    inline void  Counter_shift_end_values_to_start_values(__CounterBase* me);
+#   ifdef __QUEX_OPTION_COUNTER
+    QUEX_INLINE void  Counter_shift_end_values_to_start_values(__CounterBase* me);
+#   else
+#      define Counter_shift_end_values_to_start_values(me)  /* empty */
+#   endif
 
     typedef struct {
         __CounterBase  base;
     } Counter;
 
-    inline void  Counter_construct(Counter* me);
-    inline void  Counter_copy_construct(Counter* me, const Counter* That);
-    inline void  Counter_init(Counter* me);
+#   ifdef __QUEX_OPTION_COUNTER
+    QUEX_INLINE void  Counter_construct(Counter* me);
+    QUEX_INLINE void  Counter_copy_construct(Counter* me, const Counter* That);
+    QUEX_INLINE void  Counter_init(Counter* me);
 
-    inline void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
-    inline void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
-    inline void  Counter_count_FixNewlineN(Counter*             me,
+    QUEX_INLINE void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
+    QUEX_INLINE void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
+    QUEX_INLINE void  Counter_count_FixNewlineN(Counter*             me,
                                            QUEX_TYPE_CHARACTER* Lexeme,
                                            QUEX_TYPE_CHARACTER* LexemeEnd,
                                            const int            LineNIncrement);
 
-    inline QUEX_TYPE_CHARACTER*
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
     __Counter_count_chars_to_newline_backwards(Counter* me, QUEX_TYPE_CHARACTER* Begin,
                                              QUEX_TYPE_CHARACTER* End,
                                              const ptrdiff_t      LexemeLength,
                                              const bool           LicenseToIncrementLineCountF /*=false*/);
-    inline void
+    QUEX_INLINE void
     __Counter_count_newline_n_backwards(Counter*             me, 
                                         QUEX_TYPE_CHARACTER* it,
                                         QUEX_TYPE_CHARACTER* Begin);
 
-
-    inline void  Counter_print_this(Counter* me);
+    QUEX_INLINE void  Counter_print_this(Counter* me);
+#   else
+#      define Counter_construct(me)                                                         /* empty */
+#      define Counter_copy_construct(me, That)                                              /* empty */
+#      define Counter_init(me)                                                              /* empty */
+#      define Counter_count(me, Lexeme, LexemeEnd)                                          /* empty */
+#      define Counter_count_NoNewline(me, LexemeLength)                                     /* empty */
+#      define Counter_count_FixNewlineN(me, Lexeme, LexemeEnd, LineNIncrement)              /* empty */
+#      define __Counter_count_chars_to_newline_backwards(me, Begin, End, LLength, LicenseF) /* empty */
+#      define __Counter_count_newline_n_backwards(me, it, Begin)                            /* empty */
+#      define Counter_print_this(me)                                                        /* empty */
+#   endif
 
     typedef struct {
         __CounterBase   base;
 
-        CLASS*  _the_lexer;
+        QUEX_TYPE_ANALYZER*  _the_lexer;
+
         int     _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
         bool    _indentation_count_enabled_f; /* count whitespace for indentation?          */
         bool    _indentation_event_enabled_f; /* trigger when first non-whitespace occurs?  */
     } CounterWithIndentation;
 
-    inline void
+#   ifdef __QUEX_OPTION_COUNTER
+    QUEX_INLINE void
     CounterWithIndentation_construct(CounterWithIndentation* me);
 
-    inline void
+    QUEX_INLINE void
     CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);
 
-    inline void
+    QUEX_INLINE void
     CounterWithIndentation_init(CounterWithIndentation* me);
 
-    inline void
+    QUEX_INLINE void
     CounterWithIndentation_on_end_of_file(CounterWithIndentation* me);
 
-    inline void    
+    QUEX_INLINE void    
     CounterWithIndentation_icount(CounterWithIndentation*  me,
                                   QUEX_TYPE_CHARACTER*     Lexeme,
                                   QUEX_TYPE_CHARACTER*     LexemeEnd);
 
-    inline void
+    QUEX_INLINE void
     __CounterWithIndentation_count_whitespace_to_first_non_whitespace(CounterWithIndentation* me,
                                                                       QUEX_TYPE_CHARACTER* start_consideration_it, 
                                                                       QUEX_TYPE_CHARACTER* Begin,
                                                                       QUEX_TYPE_CHARACTER* End,
                                                                       const bool           LicenseToIncrementLineCountF);
-
-    inline void    
+    QUEX_INLINE void    
     CounterWithIndentation_icount_NoNewline(CounterWithIndentation*  me,
                                             QUEX_TYPE_CHARACTER*     Lexeme,
                                             const int                LexemeL);
-    inline void  
+    QUEX_INLINE void  
     CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(CounterWithIndentation* me, 
                                                                    const int ColumnNIncrement); 
 
-    inline void  
+    QUEX_INLINE void  
     CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(CounterWithIndentation*  me, 
                                                               const int                ColumnNIncrement);
 
-    inline void
+    QUEX_INLINE void
     CounterWithIndentation_count_indentation_aux(CounterWithIndentation*  me,
                                                  QUEX_TYPE_CHARACTER*     start_consideration_it,
                                                  QUEX_TYPE_CHARACTER*     Begin,
                                                  QUEX_TYPE_CHARACTER*     End, 
                                                  const bool               LicenseToIncrementLineCountF);
+#   else
+#      define CounterWithIndentation_construct(me)                                                            /* empty */
+#      define CounterWithIndentation_copy_construct(me, That)                                                 /* empty */
+#      define CounterWithIndentation_init(me)                                                                 /* empty */
+#      define CounterWithIndentation_on_end_of_file(me)                                                       /* empty */
+#      define CounterWithIndentation_icount(me, Lexeme, LexemeEnd);                                           /* empty */
+#      define CounterWithIndentation_icount_NoNewline(me, Lexeme, LexemeL)                                    /* empty */
+#      define CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(me, ColumnNIncrement)            /* empty */
+#      define CounterWithIndentation_icount_NoNewline_ContainsOnlySpace(me, ColumnNIncrement)                 /* empty */
+#      define CounterWithIndentation_count_indentation_aux(me, it, Begin, End, LicenseF)                      /* empty */
+#      define __CounterWithIndentation_count_whitespace_to_first_non_whitespace(me, it, Begin, End, LicenseF) /* empty */
+#   endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }

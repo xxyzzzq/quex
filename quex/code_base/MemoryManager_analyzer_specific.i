@@ -6,11 +6,11 @@
 #ifndef QUEX_TYPE_TOKEN
 #   error "File requires definition of macro QUEX_TYPE_TOKEN"
 #endif
-#ifndef CLASS_MEMENTO
-#   error "File requires definition of macro CLASS_MEMENTO"
+#ifndef QUEX_TYPE_MEMENTO
+#   error "File requires definition of macro QUEX_TYPE_MEMENTO"
 #endif
-#ifndef CLASS_MEMENTO_TAG
-#   error "File requires definition of macro CLASS_MEMENTO_TAG"
+#ifndef QUEX_TYPE_MEMENTO_TAG
+#   error "File requires definition of macro QUEX_TYPE_MEMENTO_TAG"
 #endif
 
 namespace quex {
@@ -31,10 +31,10 @@ namespace quex {
 
 #   if defined (QUEX_OPTION_INCLUDE_STACK)
     /* NOTE: The macro 'QUEX_MACRO_STRING_CONCATINATE' is used to generate a function
-     *       name. For example, if the macro CLASS_MEMENTO is defined as 'LexerMemento',
+     *       name. For example, if the macro QUEX_TYPE_MEMENTO is defined as 'LexerMemento',
      *       then the macro call
      *
-     *           QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)
+     *           QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)
      *
      *       generates the function name:
      *
@@ -42,15 +42,15 @@ namespace quex {
      *
      *       Results of C-Preprocessing can always be viewed with 'gcc -E'.
      *                                                                                    */
-    QUEX_INLINE CLASS_MEMENTO*
-    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)()
+    QUEX_INLINE QUEX_TYPE_MEMENTO*
+    QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)()
     {
-        const size_t     MemorySize = sizeof(CLASS_MEMENTO);
-        return (CLASS_MEMENTO*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+        const size_t     MemorySize = sizeof(QUEX_TYPE_MEMENTO);
+        return (QUEX_TYPE_MEMENTO*)__QUEX_ALLOCATE_MEMORY(MemorySize);
     }
 
     QUEX_INLINE void
-    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _free)(CLASS_MEMENTO* memory)
+    QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(struct QUEX_TYPE_MEMENTO_TAG* memory)
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 #   endif
 }

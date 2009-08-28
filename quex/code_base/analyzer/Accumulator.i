@@ -10,7 +10,7 @@ namespace quex {
 #endif
 
     QUEX_INLINE void
-    CLASS_ACCUMULATOR::flush(const QUEX_TYPE_TOKEN_ID TokenID)
+    QUEX_TYPE_ACCUMULATOR::flush(const QUEX_TYPE_TOKEN_ID TokenID)
     {
         if( _accumulated_text.length() == 0 ) return;
 
@@ -20,14 +20,14 @@ namespace quex {
 
 
     QUEX_INLINE void
-    CLASS_ACCUMULATOR::clear()
+    QUEX_TYPE_ACCUMULATOR::clear()
     {
         if( _accumulated_text.length() == 0 ) return;
         _accumulated_text = std::basic_string<QUEX_TYPE_CHARACTER>();
     }
 
     QUEX_INLINE void 
-    CLASS_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER* ToBeAppended)
+    QUEX_TYPE_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER* ToBeAppended)
     { 
         if( _accumulated_text.length() == 0 ) {
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -42,7 +42,7 @@ namespace quex {
 
 
     QUEX_INLINE void 
-    CLASS_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER ToBeAppended)
+    QUEX_TYPE_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER ToBeAppended)
     { 
 
 #   if defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) || \
@@ -61,7 +61,7 @@ namespace quex {
     }
 
     QUEX_INLINE void  
-    CLASS_ACCUMULATOR::print_this()
+    QUEX_TYPE_ACCUMULATOR::print_this()
     {
         __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)_accumulated_text.c_str());
     }

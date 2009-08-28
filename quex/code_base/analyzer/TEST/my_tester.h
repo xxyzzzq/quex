@@ -9,7 +9,7 @@ typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION;
 #include <cstdio>
 
 struct my_tester;
-#define CLASS my_tester
+#define QUEX_TYPE_ANALYZER my_tester
 #include <quex/code_base/analyzer/Counter>
 
 

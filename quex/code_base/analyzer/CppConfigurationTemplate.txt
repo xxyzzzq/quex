@@ -29,7 +29,7 @@ $$SWITCH$$ __QUEX_OPTION_SYSTEM_ENDIAN
  *       Templatifying the lexer would be possible, but the author has in mind to bring out
  *       a 'pure C' version of the quex generated engine. Thus templating would make this 
  *       goal harder achievable.                                                            */
-#ifndef QUEX_TYPE_CHARACTER
+#ifndef    QUEX_TYPE_CHARACTER
 #   define QUEX_TYPE_CHARACTER   $$QUEX_TYPE_CHARACTER$$
 #endif 
 
@@ -180,14 +180,6 @@ $$SWITCH$$ QUEX_OPTION_ENABLE_ICU
 #ifndef QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW 
 $$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$
 #endif
-/* Following switch is set, if a user defined converter is defined.          */
-$$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
-
-#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
-#   ifndef    __QUEX_OPTION_CONVERTER_ENABLED
-#      define __QUEX_OPTION_CONVERTER_ENABLED
-#   endif
-#endif
 
 /* Begin of line pre-condition requires an extra flag in the buffer
  * structure. Only out-comment this in case of tough memory restrictions,
@@ -197,12 +189,37 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
+/* Derived shorthands */
+#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#   define  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#endif
+
+#if    defined(QUEX_OPTION_LINE_NUMBER_COUNTING)   \
+    || defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING)        
+#   define __QUEX_OPTION_LINE_COLUMN_COUNTER
+#   define __QUEX_OPTION_COUNTER
+#elif  defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define __QUEX_OPTION_COUNTER
+#endif
+
+/* Following switch is also set, if a user defined converter is defined.     */
+$$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
+#if defined(QUEX_OPTION_ENABLE_ICONV) || defined(QUEX_OPTION_ENABLE_ICU)
+#   ifndef    __QUEX_OPTION_CONVERTER_ENABLED
+#      define __QUEX_OPTION_CONVERTER_ENABLED
+#   endif
+#endif
+
 /* Validate */
 #if defined(__QUEX_OPTION_BIG_ENDIAN) && defined(__QUEX_OPTION_LITTLE_ENDIAN)
 #   error "Cannot define little endian and big endian at the same time."
 #endif
 #if ! defined(__QUEX_OPTION_BIG_ENDIAN) && ! defined(__QUEX_OPTION_LITTLE_ENDIAN)
 #   error "Either little endian or big endian must be defined."
+#endif
+
+#if defined(QUEX_OPTION_ASSERTS) && defined (QUEX_OPTION_ASSERTS_DISABLED)
+#    error "Ambiguous configuration options."
 #endif
 
 #endif /* __INCLUDE_GUARD__QUEX_CONFIGURATION_$$INCLUDE_GUARD_EXTENSION$$    */

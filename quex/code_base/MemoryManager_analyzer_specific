@@ -3,11 +3,11 @@
  */
 #include <quex/code_base/definitions>
 
-#ifndef CLASS_MEMENTO
-#   error "File requires definition of macro CLASS_MEMENTO"
+#ifndef QUEX_TYPE_MEMENTO
+#   error "File requires definition of macro QUEX_TYPE_MEMENTO"
 #endif
-#ifndef CLASS_MEMENTO_TAG
-#   error "File requires definition of macro CLASS_MEMENTO_TAG"
+#ifndef QUEX_TYPE_MEMENTO_TAG
+#   error "File requires definition of macro QUEX_TYPE_MEMENTO_TAG"
 #endif
 
 namespace quex {
@@ -20,11 +20,11 @@ namespace quex {
 #   endif
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
-    QUEX_INLINE  CLASS_MEMENTO_TAG*
-    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _allocate)();
+    QUEX_INLINE  QUEX_TYPE_MEMENTO_TAG*
+    QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();
 
     QUEX_INLINE void
-    QUEX_NAMER(MemoryManager_, CLASS_MEMENTO, _free)(CLASS_MEMENTO_TAG* memory);
+    QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(struct QUEX_TYPE_MEMENTO_TAG* memory);
 #   endif
 }
 

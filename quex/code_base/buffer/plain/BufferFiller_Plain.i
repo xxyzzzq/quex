@@ -21,11 +21,6 @@
 namespace quex {
 #endif
 
-#   ifndef __QUEX_SETTING_PLAIN_C
-#   define TEMPLATED(CLASS)   CLASS<InputHandleT>
-#   else
-#   define TEMPLATED(CLASS)   CLASS
-#   endif
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)*, InputHandleT*    input_handle);
 

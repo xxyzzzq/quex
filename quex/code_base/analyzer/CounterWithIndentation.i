@@ -32,7 +32,7 @@ namespace quex {
         memset((void*)me, 0xFF, sizeof(CounterWithIndentation));
 #       endif
 
-        me->_the_lexer = (CLASS*)0x0;
+        me->_the_lexer = (QUEX_TYPE_ANALYZER*)0x0;
         CounterWithIndentation_init(me);
     }
 
