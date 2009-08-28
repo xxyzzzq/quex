@@ -6,21 +6,21 @@
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MODE_HANDLING_I__  */
 
 namespace quex { 
-    inline CLASS_QUEX_MODE&
-    CLASS::mode() 
+    inline QUEX_TYPE_MODE&
+    QUEX_TYPE_ANALYZER::mode() 
     { return *__current_mode_p; }
 
     inline int
-    CLASS::mode_id() const
+    QUEX_TYPE_ANALYZER::mode_id() const
     { return __current_mode_p->id; }
 
     inline const char*
-    CLASS::mode_name() const
+    QUEX_TYPE_ANALYZER::mode_name() const
     { return __current_mode_p->name; }
 
 #   ifdef QUEX_OPTION_DEBUG_MODE_TRANSITIONS
     inline void
-    QUEX_DEBUG_PRINT_TRANSITION(CLASS* me, CLASS_QUEX_MODE* Source, CLASS_QUEX_MODE* Target)
+    QUEX_DEBUG_PRINT_TRANSITION(QUEX_TYPE_ANALYZER* me, QUEX_TYPE_MODE* Source, QUEX_TYPE_MODE* Target)
     {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         std::cout << "line = " << me->line_number_at_begin() << std::endl;
@@ -36,24 +36,24 @@ namespace quex {
 #   endif
 
     inline void
-    CLASS::set_mode_brutally(const int ModeID)
+    QUEX_TYPE_ANALYZER::set_mode_brutally(const int ModeID)
     { set_mode_brutally(*(mode_db[ModeID])); }
 
     inline void 
-    CLASS::set_mode_brutally(const CLASS_QUEX_MODE& Mode) 
+    QUEX_TYPE_ANALYZER::set_mode_brutally(const QUEX_TYPE_MODE& Mode) 
     { 
         /* To be optimized aways if its function body is empty (see above) */
-        QUEX_DEBUG_PRINT_TRANSITION(this, __current_mode_p, (CLASS_QUEX_MODE*)&Mode);  
+        QUEX_DEBUG_PRINT_TRANSITION(this, __current_mode_p, (QUEX_TYPE_MODE*)&Mode);  
 
-        __current_mode_p                        = (CLASS_QUEX_MODE*)&Mode;
+        __current_mode_p                        = (QUEX_TYPE_MODE*)&Mode;
         QuexAnalyser::current_analyser_function = Mode.analyser_function; 
     }
 
     inline void    
-    CLASS::enter_mode(/* NOT const*/ CLASS_QUEX_MODE& TargetMode) 
+    QUEX_TYPE_ANALYZER::enter_mode(/* NOT const*/ QUEX_TYPE_MODE& TargetMode) 
     {
 #   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-        /* NOT const */ CLASS_QUEX_MODE& SourceMode = mode();
+        /* NOT const */ QUEX_TYPE_MODE& SourceMode = mode();
 #   endif
 
 #   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
@@ -68,16 +68,16 @@ namespace quex {
     }
 
     inline void 
-    CLASS::operator<<(const int ModeID) 
+    QUEX_TYPE_ANALYZER::operator<<(const int ModeID) 
     { enter_mode(map_mode_id_to_mode(ModeID)); }
 
     inline void 
-    CLASS::operator<<(/* NOT const*/ CLASS_QUEX_MODE& Mode) 
+    QUEX_TYPE_ANALYZER::operator<<(/* NOT const*/ QUEX_TYPE_MODE& Mode) 
     { enter_mode(Mode); }
 
 
     inline void 
-    CLASS::pop_mode() 
+    QUEX_TYPE_ANALYZER::pop_mode() 
     { 
         __quex_assert(_mode_stack.end != _mode_stack.begin);
         --_mode_stack.end;
@@ -85,7 +85,7 @@ namespace quex {
     }
 
     inline void
-    CLASS::pop_drop_mode() 
+    QUEX_TYPE_ANALYZER::pop_drop_mode() 
     { 
         __quex_assert(_mode_stack.end != _mode_stack.begin);
         --_mode_stack.end;
@@ -93,7 +93,7 @@ namespace quex {
     }
         
     inline void       
-    CLASS::push_mode(CLASS_QUEX_MODE& new_mode) 
+    QUEX_TYPE_ANALYZER::push_mode(QUEX_TYPE_MODE& new_mode) 
     { 
 #   ifdef QUEX_OPTION_ASSERTS
         if( _mode_stack.end == _mode_stack.memory_end ) 
@@ -108,8 +108,8 @@ namespace quex {
     }
 
 
-    inline CLASS_QUEX_MODE&
-    CLASS::map_mode_id_to_mode(const int ModeID)
+    inline QUEX_TYPE_MODE&
+    QUEX_TYPE_ANALYZER::map_mode_id_to_mode(const int ModeID)
     { 
         __quex_assert(ModeID >= 0);
         __quex_assert(ModeID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1); // first mode is unused by quex
@@ -117,6 +117,6 @@ namespace quex {
     }
 
     inline int  
-    CLASS::map_mode_to_mode_id(const CLASS_QUEX_MODE& Mode) const
+    QUEX_TYPE_ANALYZER::map_mode_to_mode_id(const QUEX_TYPE_MODE& Mode) const
     { return Mode.id; }
 }

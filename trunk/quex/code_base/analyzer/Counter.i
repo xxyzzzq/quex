@@ -2,6 +2,8 @@
  * (C) Frank-Rene Schaefer                                                         */
 #ifndef __INCLUDE_GUARD__QUEX__COUNTER_I__
 #define __INCLUDE_GUARD__QUEX__COUNTER_I__
+
+#if     defined(__QUEX_OPTION_COUNTER)
 /* NOTE: Quex is pretty intelligent in choosing the right function
  *       to count line and column numbers. If, for example, a pattern
  *       does not contain newlines, then it simply adds the LexemeLength
@@ -22,7 +24,7 @@
 namespace quex {
 #endif
 
-    inline void
+    QUEX_INLINE void
     Counter_construct(Counter* me)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
@@ -32,7 +34,7 @@ namespace quex {
         Counter_init(me); 
     }
 
-    inline void
+    QUEX_INLINE void
     Counter_init(Counter* me)
     {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -45,7 +47,7 @@ namespace quex {
 #       endif
     }
 
-    inline void  
+    QUEX_INLINE void  
     Counter_count_FixNewlineN(Counter*             me,
                               QUEX_TYPE_CHARACTER* Lexeme,
                               QUEX_TYPE_CHARACTER* LexemeEnd,
@@ -66,7 +68,7 @@ namespace quex {
     }
 
 
-    inline void
+    QUEX_INLINE void
     __Counter_count_newline_n_backwards(Counter*             me, 
                                         QUEX_TYPE_CHARACTER* it,
                                         QUEX_TYPE_CHARACTER* Begin)
@@ -85,7 +87,7 @@ namespace quex {
 #       endif
     }
 
-    inline QUEX_TYPE_CHARACTER*
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
     __Counter_count_chars_to_newline_backwards(Counter* me, QUEX_TYPE_CHARACTER* Begin,
                                              QUEX_TYPE_CHARACTER* End,
                                              const ptrdiff_t      LexemeLength,
@@ -104,10 +106,6 @@ namespace quex {
      *       newline in the lexeme. Otherwise, it adds the fixed pattern length
      *       or the LexemeLength directly.                                      */
     {
-#if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
-        ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
-        return 0x0;
-#else
         __quex_assert(Begin < End);  /* LexemeLength >= 1 */
 
         /* loop from [End] to [Begin]:
@@ -124,27 +122,26 @@ namespace quex {
                  *    by the length of the string -1, since counting starts at zero
                  * -- base._column_number_at_begin =   base._column_number_at_end 
                  *                                   - LexemeLength (just take the old one) */
-#           ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#               ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
                 me->base._column_number_at_end += (size_t)LexemeLength;
-#           endif
+#               endif
                 return it;
             }
         }
-#   ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
+#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
         /* -- in case that newline occurs, the column index is equal to
          *    the number of letters from newline to end of string             */
         __quex_assert(End >= it);
         me->base._column_number_at_end = (size_t)(End - it);
-#   endif
-#   ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+#       endif
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
         if( LicenseToIncrementLineCountF ) ++(me->base._line_number_at_end);
-#   endif
-        return it;
-#endif
+#       endif
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
+        return it;
     }
 
-    inline void    
+    QUEX_INLINE void    
     Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
     /* PURPOSE:
      *   Adapts the column number and the line number according to the newlines
@@ -153,10 +150,6 @@ namespace quex {
      * NOTE: Providing LexemeLength may spare a subtraction (End - Lexeme) in case 
      *       there is no newline in the lexeme (see below).                        */
     {
-#   if ! defined(QUEX_OPTION_COLUMN_NUMBER_COUNTING) && \
-       ! defined(QUEX_OPTION_LINE_NUMBER_COUNTING)    
-        return;
-#   else
         QUEX_TYPE_CHARACTER* it = __Counter_count_chars_to_newline_backwards(me, Begin, End, End - Begin,
                                                                      /* LicenseToIncrementLineCountF = */ true);
 
@@ -165,11 +158,10 @@ namespace quex {
          * would have increased the base._line_number_at_end.                        */
         __Counter_count_newline_n_backwards(me, it, Begin);
 #       endif
-#   endif
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
-    inline void  
+    QUEX_INLINE void  
     Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength) 
     {
         __quex_assert( LexemeLength > 0 );
@@ -179,7 +171,7 @@ namespace quex {
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
-    inline void 
+    QUEX_INLINE void 
     Counter_print_this(Counter* me)
     {
         __QUEX_STD_printf("   Counter:\n");
@@ -193,11 +185,7 @@ namespace quex {
 #       endif
     }
 
-#if ! defined( QUEX_OPTION_LINE_NUMBER_COUNTING ) && \
-    ! defined( QUEX_OPTION_COLUMN_NUMBER_COUNTING )
-#   define Counter_shift_end_values_to_start_values(me) /* empty */
-#else
-    inline void             
+    QUEX_INLINE void             
     Counter_shift_end_values_to_start_values(__CounterBase* me) 
     {
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -207,8 +195,10 @@ namespace quex {
         me->_column_number_at_begin = me->_column_number_at_end;
 #       endif
     }
-#endif
+
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 }
 #endif
+
+#endif /* defined(__QUEX_OPTION_COUNTER)     */
 #endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */

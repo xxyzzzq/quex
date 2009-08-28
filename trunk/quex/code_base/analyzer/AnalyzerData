@@ -1,0 +1,136 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2005-2009 Frank-Rene Schaefer
+ *
+ * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
+ *                      LEXICAL ANALYZERS
+ * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_ANALYZER_DATA__
+ * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_ANALYZER_DATA__            */
+#ifndef   QUEX_TYPE_ANALYZER
+#   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
+#endif
+
+#ifndef   QUEX_TYPE_ANALYZER_DATA_TAG
+#   error "Macro QUEX_TYPE_ANALYZER_DATA_TAG must be defined before inclusion of this file."
+#endif
+
+#ifndef   QUEX_TYPE_MODE
+#   error "Macro QUEX_TYPE_MODE must be defined before inclusion of this file."
+#endif
+
+#ifndef   QUEX_TYPE_MODE_TAG
+#   error "Macro QUEX_TYPE_MODE_TAG must be defined before inclusion of this file."
+#endif
+
+#ifdef      __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+#   include <quex/code_base/token/TokenQueue>
+#endif
+
+#ifndef __QUEX_SETTING_PLAIN_C
+namespace quex {
+#endif
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    /* Forward declaration of the derived memento, which is used by the analyzer. */
+    struct  QUEX_TYPE_MEMENTO_TAG;
+#   endif
+
+
+#   ifdef __QUEX_SETTING_PLAIN_C
+    typedef struct QUEX_TYPE_ANALYZER_DATA_TAG {
+        QuexAnalyser    base;
+#   else
+    struct QUEX_TYPE_ANALYZER_DATA : protected QuexAnalyser {
+#   endif
+
+        /*_________________________________________________________________________
+         *        __   __   ___  __  
+         *  |\/| /  \ |  \ |__  /__` 
+         *  |  | \__/ |__/ |___ .__/ 
+         *                                                                         */
+        /* Map: mode-id --> mode object                                            */
+        QUEX_TYPE_MODE*  mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+
+        /* Each mode has a dedicated analyser function.  The function pointer
+         * to the currently active mode's function is located in the base class
+         * QuexAnalyzer                                                            */
+        QUEX_TYPE_MODE*  __current_mode_p;
+
+        struct {
+            QUEX_TYPE_MODE*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            QUEX_TYPE_MODE** end;
+            QUEX_TYPE_MODE** memory_end;
+        } _mode_stack;
+
+        /*_________________________________________________________________________
+         *  ___  __        ___       __  
+         *   |  /  \ |__/ |__  |\ | /__` 
+         *   |  \__/ |  \ |___ | \| .__/ 
+         *                                                                        
+         *  Allow public access, for user's special tricks.                        */
+#       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+        QuexTokenQueue     _token_queue;  
+#       else
+        QUEX_TYPE_TOKEN*   token;         
+#       endif
+
+        /*_________________________________________________________________________
+         *   __   __            ___  ___  __  
+         *  /  ` /  \ |  | |\ |  |  |__  |__) 
+         *  \__, \__/ \__/ | \|  |  |___ |  \ 
+         *                                                                         
+         *  Dependent on setup all counting might be set to 'null operations'.     */
+        QUEX_TYPE_COUNTER  counter;
+
+        /*_________________________________________________________________________
+         *       __   __                            ___  __   __  
+         *  /\  /  ` /  ` |  |  |\/| |  | |     /\   |  /  \ |__) 
+         * /~~\ \__, \__, \__/  |  | \__/ |___ /~~\  |  \__/ |  \ 
+         *                                                                         
+         *  Accumulate lexemes from multiple patterns.                             */
+#       ifdef QUEX_OPTION_STRING_ACCUMULATOR
+        QUEX_TYPE_ACCUMULATOR  accumulator;
+#       endif
+
+
+        /*_________________________________________________________________________
+         *   __   __   __  ___     __       ___  ___  __   __   __    __  ___  __  
+         *  |__) /  \ /__`  |     /  `  /\   |  |__  / _` /  \ |__) |  / |__  |__) 
+         *  |    \__/ .__/  |     \__, /~~\  |  |___ \__> \__/ |  \ | /_ |___ |  \ 
+         *                                                                         
+         *  Fast and simple dictionary to post-classify lexemes.                   */
+#       ifdef QUEX_OPTION_POST_CATEGORIZER
+        PostCategorizer        post_categorizer;
+#       endif
+
+        /*_________________________________________________________________________
+         *           __   __  
+         *   |\/| | /__` /  ` 
+         *   |  | | .__/ \__,                                                      */
+
+        /*  Temporary Filename ____________________________________________________
+         *  Sometimes we just want to tell the filename, handle owned by analyzer. */
+        FILE*    __file_handle_allocated_by_constructor;
+
+#       ifdef  QUEX_OPTION_INCLUDE_STACK
+        struct QUEX_TYPE_MEMENTO_TAG*  _parent_memento;
+#       endif
+
+#   ifdef __QUEX_SETTING_PLAIN_C
+    } QUEX_TYPE_ANALYZER_DATA;
+#   else
+    };
+#   endif
+
+#   ifdef QUEX_OPTION_INCLUDE_STACK
+    typedef struct {
+        QuexAnalyser                   analyser_core;
+        QUEX_TYPE_COUNTER              counter;
+        QUEX_TYPE_MODE*                current_mode_p;
+        struct QUEX_TYPE_MEMENTO_TAG*  parent;
+    } QUEX_TYPE_MEMENTO_BASE;
+#   endif
+
+#ifndef __QUEX_SETTING_PLAIN_C
+} // namespace quex
+#endif
+

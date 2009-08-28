@@ -9,7 +9,7 @@ namespace quex {
 
 
     inline QUEX_TYPE_CHARACTER*
-    CLASS::buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
+    QUEX_TYPE_ANALYZER::buffer_fill_region_append(QUEX_TYPE_CHARACTER* ContentBegin, 
                                      QUEX_TYPE_CHARACTER* ContentEnd)
     /* RETURNS: The position of the first character that could not be copied
      *          into the fill region, because it did not have enough space.
@@ -50,7 +50,7 @@ namespace quex {
     }
 
     inline uint8_t*
-    CLASS::buffer_fill_region_append_conversion(uint8_t* ContentBegin, uint8_t* ContentEnd)
+    QUEX_TYPE_ANALYZER::buffer_fill_region_append_conversion(uint8_t* ContentBegin, uint8_t* ContentEnd)
     /* Appends the content first into a 'raw' buffer and then converts it. This
      * is useful in cases where the 'break' may appear in between characters, or
      * where the statefulness of the converter cannot be controlled.              */
@@ -97,7 +97,7 @@ namespace quex {
     }
 
     inline uint8_t*
-    CLASS::buffer_fill_region_append_conversion_direct(uint8_t* ContentBegin, 
+    QUEX_TYPE_ANALYZER::buffer_fill_region_append_conversion_direct(uint8_t* ContentBegin, 
                                                        uint8_t* ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
      * analyzer buffer. Note, that this can only be used, if it is safe to assume
@@ -135,30 +135,30 @@ namespace quex {
     }
 
     inline void
-    CLASS::buffer_fill_region_prepare()
+    QUEX_TYPE_ANALYZER::buffer_fill_region_prepare()
     {
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);
     }
 
-    inline QUEX_TYPE_CHARACTER*  CLASS::buffer_fill_region_begin()
+    inline QUEX_TYPE_CHARACTER*  QUEX_TYPE_ANALYZER::buffer_fill_region_begin()
     { 
         return QuexBuffer_text_end(&buffer); 
     }
 
-    inline QUEX_TYPE_CHARACTER*  CLASS::buffer_fill_region_end()
+    inline QUEX_TYPE_CHARACTER*  QUEX_TYPE_ANALYZER::buffer_fill_region_end()
     { 
         return QuexBuffer_content_back(&buffer) + 1; 
     }
 
     inline size_t
-    CLASS::buffer_fill_region_size()
+    QUEX_TYPE_ANALYZER::buffer_fill_region_size()
     { 
         return buffer_fill_region_end() - buffer_fill_region_begin(); 
     }
 
     inline void
-    CLASS::buffer_fill_region_finish(const size_t CharacterN)
+    QUEX_TYPE_ANALYZER::buffer_fill_region_finish(const size_t CharacterN)
     {
         __quex_assert(buffer._memory._end_of_file_p + CharacterN <= buffer._memory._back);
 
@@ -177,7 +177,7 @@ namespace quex {
     }
 
     inline void
-    CLASS::buffer_conversion_fill_region_prepare() 
+    QUEX_TYPE_ANALYZER::buffer_conversion_fill_region_prepare() 
     {
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
 
@@ -186,13 +186,13 @@ namespace quex {
         QuexBufferFiller_Converter_move_away_passed_content(filler);
     }
 
-    inline uint8_t*  CLASS::buffer_conversion_fill_region_begin()
+    inline uint8_t*  QUEX_TYPE_ANALYZER::buffer_conversion_fill_region_begin()
     { 
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
         return filler->raw_buffer.end;
     }
     
-    inline uint8_t*  CLASS::buffer_conversion_fill_region_end()
+    inline uint8_t*  QUEX_TYPE_ANALYZER::buffer_conversion_fill_region_end()
     { 
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
 
@@ -200,13 +200,13 @@ namespace quex {
     }
     
     inline size_t
-    CLASS::buffer_conversion_fill_region_size()
+    QUEX_TYPE_ANALYZER::buffer_conversion_fill_region_size()
     { 
         return buffer_conversion_fill_region_end() - buffer_conversion_fill_region_begin(); 
     }
 
     inline void
-    CLASS::buffer_conversion_fill_region_finish(const size_t  ByteN)
+    QUEX_TYPE_ANALYZER::buffer_conversion_fill_region_finish(const size_t  ByteN)
     {
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
 
@@ -233,11 +233,11 @@ namespace quex {
     }
 
     inline QUEX_TYPE_CHARACTER*  
-    CLASS::buffer_lexeme_start_pointer_get() 
+    QUEX_TYPE_ANALYZER::buffer_lexeme_start_pointer_get() 
     { return buffer._lexeme_start_p; }
 
     inline void
-    CLASS::buffer_input_pointer_set(QUEX_TYPE_CHARACTER* Adr)
+    QUEX_TYPE_ANALYZER::buffer_input_pointer_set(QUEX_TYPE_CHARACTER* Adr)
     { buffer._input_p = Adr; }
 
 }

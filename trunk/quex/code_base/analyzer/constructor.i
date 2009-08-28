@@ -5,10 +5,15 @@
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_CONSTRUCTOR_I__       */
 #include <quex/code_base/buffer/Buffer.i>
 
+#ifdef __QUEX_SETTING_PLAIN_C
+#   define QUEX_CONSTRUCTOR(NAME)  QUEX_PREFIX(QUEX_TYPE_ANALYZER, NAME)
+#else
+#   define QUEX_CONSTRUCTOR(NAME)  QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER
+#endif
 namespace quex { 
 
     inline
-    CLASS::CLASS(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
+    QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(QUEX_TYPE_CHARACTER* BufferMemoryBegin, 
                  size_t               BufferMemorySize,
                  const char*          CharacterEncodingName /* = 0x0   */,
                  bool                 ByteOrderReversionF   /* = false */)
@@ -17,13 +22,13 @@ namespace quex {
                               :                        QUEX_SETTING_BUFFER_SIZE;
 
        __quex_assert(memory_size > 2);
-       CLASS::__constructor_core((void*)0x0, CharacterEncodingName, ByteOrderReversionF,
+       QUEX_TYPE_ANALYZER::__constructor_core((void*)0x0, CharacterEncodingName, ByteOrderReversionF,
                                  BufferMemoryBegin, memory_size);
 
     }
 
     inline
-    CLASS::CLASS(const std::string&  Filename, 
+    QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(const std::string&  Filename, 
                  const char*         CharacterEncodingName /* = 0x0   */,
                  bool                ByteOrderReversionF   /* = false */)
     {
@@ -40,7 +45,7 @@ namespace quex {
     }
 
     inline
-    CLASS::CLASS(std::istream*   p_input_stream, 
+    QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(std::istream*   p_input_stream, 
                  const char*     CharacterEncodingName /* = 0x0   */,
                  bool            ByteOrderReversionF   /* = false */)
     {
@@ -49,7 +54,7 @@ namespace quex {
     }
 
     inline
-    CLASS::CLASS(std::wistream*  p_input_stream, 
+    QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(std::wistream*  p_input_stream, 
                  const char*     CharacterEncodingName /* = 0x0   */,
                  bool            ByteOrderReversionF   /* = false */)
     {
@@ -59,7 +64,7 @@ namespace quex {
 
 #if defined(__QUEX_OPTION_UNIT_TEST)
     template<class UnderlyingStreamT> inline
-    CLASS::CLASS(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+    QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
                  const char*                              CharacterEncodingName /* = 0x0   */,
                  bool                                     ByteOrderReversionF   /* = false */)
     {
@@ -69,7 +74,7 @@ namespace quex {
 #endif
 
     inline
-    CLASS::CLASS(std::FILE*   fh, 
+    QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(std::FILE*   fh, 
                  const char*  CharacterEncodingName /* = 0x0   */,
                  bool         ByteOrderReversionF   /* = false */)
     {
@@ -81,12 +86,12 @@ namespace quex {
 
 
     inline
-    CLASS::~CLASS() 
+    QUEX_TYPE_ANALYZER::~QUEX_TYPE_ANALYZER() 
     {
         QuexAnalyser_destruct(this);
-#   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
+#       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
         QuexTokenQueue_destruct(&_token_queue);
-#   endif
+#       endif
         if( __file_handle_allocated_by_constructor != 0x0 ) {
             std::fclose(__file_handle_allocated_by_constructor); 
         }
