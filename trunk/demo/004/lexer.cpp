@@ -1,5 +1,7 @@
-
 #include "main.h"
+
+#define CHECKSUM_INIT_VALUE               (0x77)
+#define CHECKSUM_ACCUMULATE(CS, TokenID)  (((CS) + (TokenID)) % 0xFF)
 
 #ifndef QUEX_BENCHMARK_SERIOUS
 void __PRINT_END()
@@ -10,29 +12,35 @@ void __PRINT_END()
 
 double
 benchmark(GetTokenIDFuncP FuncP_get_token_id, ResetFuncP FuncP_reset, 
-          const clock_t MinExperimentTime,
+          const double MinExperimentTime_sec,
           size_t TokenN, int CheckSum, double* repetition_n)
 {
     register int   token_id     = TKN_TERMINATION;
+    
+    /* Reset before measurement */
+    FuncP_reset();
+
     //
     // -- repeat the experiment, so that it takes at least 20 seconds
-    const clock_t  StartTime    = clock();
-    const clock_t  EndTime      = StartTime + MinExperimentTime;
+    const clock_t  StartTime         = clock();
+    const clock_t  MinExperimentTime = (clock_t)(MinExperimentTime_sec * (double)CLOCKS_PER_SEC);
+    const clock_t  EndTime           = StartTime + MinExperimentTime;
     clock_t        current_time = 0;
     int            checksum     = 0;
 
+
     do { 
-        checksum       = 777;
+        checksum       = CHECKSUM_INIT_VALUE;
         *repetition_n += 1.0f;
         
         for(size_t token_i = 0; token_i < TokenN; ++token_i) {
             token_id = FuncP_get_token_id();
 
             // checksum = (checksum + TokenP->type_id()) % 0xFF; 
-            checksum = (checksum + token_id) % 0xFF; 
-
+            checksum = CHECKSUM_ACCUMULATE(checksum, token_id); 
 #           if ! defined(QUEX_BENCHMARK_SERIOUS)
-            cout << /*qlex.line_number() << ": " <<*/ quex::Token::map_id_to_name(token_id) << endl;
+            printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id)));
+            printf("(%i) Checksum: %i\n", (int)token_i, (int)checksum);
 #           endif
         } 
         // Overhead-Intern: (addition, modulo division, assignment, increment by one, comparison) * token_n
@@ -65,20 +73,24 @@ benchmark(GetTokenIDFuncP FuncP_get_token_id, ResetFuncP FuncP_reset,
         current_time = clock();
     } while( current_time < EndTime );
     
-    return current_time - StartTime;
+    return (double)(current_time - StartTime) / double(CLOCKS_PER_SEC);
 }
 
 size_t
 count_token_n(GetTokenIDFuncP FuncP_get_token_id, int* checksum)
 {
     int token_id = TKN_TERMINATION;
-    int token_n = 0;
-    *checksum = 0;
+    int token_n  = 0;
+    *checksum    = CHECKSUM_INIT_VALUE;
 
     // (*) loop until the 'termination' token arrives
     for(token_n=0; ; ++token_n) {
-        token_id = FuncP_get_token_id();
-        *checksum = (*checksum + token_id) % 0xFF; 
+        token_id  = FuncP_get_token_id();
+        *checksum = CHECKSUM_ACCUMULATE(*checksum, token_id); 
+#       if ! defined(QUEX_BENCHMARK_SERIOUS)
+        printf("TokenID = %s\n", (const char*)(quex::Token::map_id_to_name(token_id)));
+        printf("(%i) Checksum: %i\n", (int)token_n, (int)*checksum);
+#       endif
         if( token_id == TKN_TERMINATION ) break;
     } 
     printf("// TokenN: %i [1]\n", token_n);
