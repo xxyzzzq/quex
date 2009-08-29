@@ -450,6 +450,7 @@ def __frame_of_all(Code, HeaderFile, LexerClassName):
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "namespace quex {\n"                             + \
            "#endif\n"                                       + \
+           "/* the c_lexer header undef's the definitions at the end */\n" + \
            "#define QUEX_LEXER_CLASS %s\n" % LexerClassName + \
            "#define QUEX_TYPE_MODE  %sQuexMode\n" % LexerClassName + \
            Code                                             + \
