@@ -15,18 +15,13 @@ using namespace std;
 
 #define QUOTE_THIS(NAME) #NAME
 
-size_t    get_file_size(const char*, bool SilentF=false);
-void      print_date_string();
-size_t    count_token_n(std::FILE*);
-double    report(clock_t StartTime, double RepetitionN, size_t FileSize, size_t CharacterSize);
-void      final_report(double TimePerRun, double RefTimePerRun, const char* ThisExecutableName, const char* Filename, 
-                       size_t FileSize, size_t TokenN, double RepetitionN);
-
+#include "main.h"
 
 void 
 final_report(double      TimePerRun,              double      RefTimePerRun, 
-             const char* ThisExecutableName,      const char* FileName, 
-             size_t      FileSize, size_t TokenN, double      RepetitionN)
+             const char* FileName, 
+             size_t      FileSize, size_t TokenN, double      RepetitionN,
+             size_t      ExecutableSize)
 {
     using namespace std;
     const double  CharN          = (double)(FileSize) / (CHARACTER_SIZE);
@@ -69,7 +64,7 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
     cout << "   cc_name         = {" << CC_NAME << "}, " << endl;
     cout << "   cc_version      = {" << CC_VERSION << "}, " << endl;
     cout << "   cc_opt_flags    = {" << CC_OPTIMIZATION_FLAGS << "}, " << endl;
-    cout << "   executable_size = {" << get_file_size(ThisExecutableName, true) << "}, " << endl;
+    cout << "   executable_size = {" << ExecutableSize << "}, " << endl;
     cout << "   os_name         = {" << OS_NAME << "}, " << endl;
     cout << "   tester_email    = {" << EMAIL << "}, " << endl;
     print_date_string();
