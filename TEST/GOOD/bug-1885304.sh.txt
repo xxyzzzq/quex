@@ -25,10 +25,9 @@
 
 
 
-
-#ifdef     __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   define QUEX_TYPE_COUNTER  CounterWithIndentation
-#else
+#else 
 #   define QUEX_TYPE_COUNTER  Counter
 #endif
 
@@ -306,7 +305,7 @@ namespace quex {
                                                        size_t                BufferMemorySize = 0);
         // (*) User's Lexer Class Body Extenstion ________________________________________
     public:
-#       define self  (*(Simple*)this)
+#       define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 
 #       undef  self
 
@@ -413,7 +412,7 @@ namespace quex {
 
         __file_handle_allocated_by_constructor = 0x0;
 
-#       define self  (*(Simple*)this)
+#       define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 
 #       undef self
     }
@@ -474,7 +473,7 @@ namespace quex {
     template<class InputHandleT> inline QUEX_TYPE_MEMENTO*
     QUEX_TYPE_ANALYZER::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
     {
-#       define self  (*(Simple*)this)
+#       define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
         QUEX_TYPE_MEMENTO* memento = MemoryManager_SimpleMemento_allocate();
 
         /* Use placement 'new' for explicit call of constructor */
@@ -497,7 +496,7 @@ namespace quex {
     inline void
     QUEX_TYPE_ANALYZER::memento_unpack(QUEX_TYPE_MEMENTO* memento)
     {
-#       define self  (*(Simple*)this)
+#       define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
         self._parent_memento    = memento->base.parent;
         *((QuexAnalyser*)this)  = memento->base.analyser_core;
         self.counter            = memento->base.counter;
@@ -546,10 +545,10 @@ namespace quex {
 
 #include <quex/code_base/MemoryManager_analyzer_specific.i>
 
-#undef __QUEX_SETTING_DERIVED_CLASS_NAME
 #undef __QUEX_SETTING_MAX_MODE_CLASS_N
 #undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
 #undef __QUEX_SETTING_TOKEN_ID_TERMINATION
+#undef QUEX_TYPE_DERIVED_ANALYZER
 #undef QUEX_TYPE_ANALYZER_DATA_TAG
 #undef QUEX_TYPE_ANALYZER_DATA
 #undef QUEX_TYPE_ANALYZER
@@ -588,6 +587,7 @@ namespace quex {
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
+/* the c_lexer header undef's the definitions at the end */
 
 #include <quex/code_base/analyzer/Analyser>
 #include <quex/code_base/buffer/Buffer>
@@ -2666,7 +2666,7 @@ TERMINAL_35:
         self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
-#line 2112 "Simple-core-engine.cpp"
+#line 2113 "Simple-core-engine.cpp"
         
         }
     }
@@ -2710,7 +2710,7 @@ TERMINAL_7:
         self.send(QUEX_TKN_STRUCT);
         CONTINUE;
         
-#line 2156 "Simple-core-engine.cpp"
+#line 2157 "Simple-core-engine.cpp"
         
         }
     }
@@ -2735,7 +2735,7 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2181 "Simple-core-engine.cpp"
+#line 2182 "Simple-core-engine.cpp"
         
         }
     }
@@ -2760,7 +2760,7 @@ TERMINAL_10:
         self.send(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
-#line 2206 "Simple-core-engine.cpp"
+#line 2207 "Simple-core-engine.cpp"
         
         }
     }
@@ -2785,7 +2785,7 @@ TERMINAL_13:
         self.send(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
-#line 2231 "Simple-core-engine.cpp"
+#line 2232 "Simple-core-engine.cpp"
         
         }
     }
@@ -2810,7 +2810,7 @@ TERMINAL_16:
         self.send(QUEX_TKN_SEND);
         CONTINUE;
         
-#line 2256 "Simple-core-engine.cpp"
+#line 2257 "Simple-core-engine.cpp"
         
         }
     }
@@ -2835,7 +2835,7 @@ TERMINAL_19:
         self.send(QUEX_TKN_EXPECT);
         CONTINUE;
         
-#line 2281 "Simple-core-engine.cpp"
+#line 2282 "Simple-core-engine.cpp"
         
         }
     }
@@ -2859,7 +2859,7 @@ TERMINAL_22_DIRECT:
         self.send(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
-#line 2305 "Simple-core-engine.cpp"
+#line 2306 "Simple-core-engine.cpp"
         
         }
     }
@@ -2883,7 +2883,7 @@ TERMINAL_25_DIRECT:
         self.send(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
-#line 2329 "Simple-core-engine.cpp"
+#line 2330 "Simple-core-engine.cpp"
         
         }
     }
@@ -2907,7 +2907,7 @@ TERMINAL_28_DIRECT:
         self.send(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
-#line 2353 "Simple-core-engine.cpp"
+#line 2354 "Simple-core-engine.cpp"
         
         }
     }
@@ -2926,7 +2926,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self.send(QUEX_TKN_TERMINATION);
         
-#line 2372 "Simple-core-engine.cpp"
+#line 2373 "Simple-core-engine.cpp"
         
         }
                 }
