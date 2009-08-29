@@ -4,8 +4,11 @@
 #include <sys/stat.h>
 
 static  FILE*           fh;
+#ifdef ANALYZER_GENERATOR_FLEX
+#else
 static  quex::c_lexer*  qlex; 
 static  quex::Token     token; 
+#endif
 
 int 
 main(int argc, char** argv) 
@@ -59,7 +62,10 @@ main(int argc, char** argv)
                                    &repetition_n);
     const double  TimePerRun = report("analyzis + overhead", Time, repetition_n, FileSize, /* CharacterSize = 1 */ 1);
     
-    final_report(TimePerRun, RefTimePerRun, argv[0], argv[1], FileSize, TokenN, repetition_n);
+    final_report(TimePerRun, RefTimePerRun, 
+                 argv[1], FileSize, 
+                 TokenN, repetition_n, 
+                 get_file_size(argv[0], true));
     return 0;
 } 
 
@@ -107,6 +113,10 @@ func_reset()
     fseek(yyin, 0, SEEK_SET); 
     yyrestart(yyin);
 #else
+    /* Cause the lexer to do a complete reset, even if no file access happend.
+     * This is essential, since the reset function may short-cut in case that
+     * no seek to zero is necessary (overhead determination).                  */
+    fseek(fh, 100, SEEK_SET); 
     qlex->reset(fh);
 #endif
 }

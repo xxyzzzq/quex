@@ -16,18 +16,13 @@ benchmark(GetTokenIDFuncP FuncP_get_token_id, ResetFuncP FuncP_reset,
           size_t TokenN, int CheckSum, double* repetition_n)
 {
     register int   token_id     = TKN_TERMINATION;
-    
-    /* Reset before measurement */
-    FuncP_reset();
-
-    //
-    // -- repeat the experiment, so that it takes at least 20 seconds
-    const clock_t  StartTime         = clock();
+    const clock_t  StartTime    = clock();
     const clock_t  MinExperimentTime = (clock_t)(MinExperimentTime_sec * (double)CLOCKS_PER_SEC);
     const clock_t  EndTime           = StartTime + MinExperimentTime;
     clock_t        current_time = 0;
     int            checksum     = 0;
-
+    
+    FuncP_reset();
 
     do { 
         checksum       = CHECKSUM_INIT_VALUE;
@@ -64,7 +59,9 @@ benchmark(GetTokenIDFuncP FuncP_get_token_id, ResetFuncP FuncP_reset,
             }
         } else {
             if( CheckSum == -1 ) {
-                printf("Weird World.\n");
+                printf("#################\n");
+                printf("## Weird World ##\n");
+                printf("#################\n");
                 exit(-1);
             }
         }
@@ -73,6 +70,8 @@ benchmark(GetTokenIDFuncP FuncP_get_token_id, ResetFuncP FuncP_reset,
         current_time = clock();
     } while( current_time < EndTime );
     
+    /* Make sure, that the 'clock()' function call is not optimized strangely. */
+    current_time = clock();
     return (double)(current_time - StartTime) / double(CLOCKS_PER_SEC);
 }
 

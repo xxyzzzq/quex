@@ -5,16 +5,18 @@
 COMPILER     = g++    # icpc # g++ 
 COMPILER_V   = 4.3.1  # 10.1 # 4.3.1
 BUFFER_SIZE  = 65536
-OPTIMIZATION = -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
+OPTIMIZATION = -O3 # -ggdb # -O3 # -ggdb # # --coverage #-ggdb # -O1 #-pg # -O3# -pg -Os
 GENERATOR    = Quex#  Quex, Flex
-PROFILER     = # '-pg' for gprof profiling information
+PROFILER     = # -pg # '-pg' for gprof profiling information
+# CPU_MHZ      = `cat /proc/cpuinfo  | awk \'/cpu MHz/ { print \$4; exit; }\'` # `source get_cpu_mhz.sh` 
+CPU_MHZ      = -DCPU_FREQ_MHZ=`source get_cpu_mhz.sh` 
 
 # (*) SETUP ____________________________________________________________________
 SETUP= \
       -D'EMAIL="fschaef@users.sourceforge.net"' \
       -D'CPU_NAME="IntelCoreDuo"' \
       -D'CPU_CODE="T2400"' \
-      -D'CPU_FREQ_MHZ=((float)(1833.0))' \
+	  $(CPU_MHZ) \
 	  -D'CC_OPTIMIZATION_FLAGS="$(OPTIMIZATION)"' \
       -D'CHARACTER_SIZE=((unsigned)(1))' \
 	  -D'OS_NAME="linux-2"' \
@@ -23,7 +25,7 @@ SETUP= \
       -D'QUEX_SETTING_BUFFER_SIZE=$(BUFFER_SIZE)' \
 	  -D'NOTE=""' 
 
-.PHONY: clean
+.PHONY: clean cpu_mhz
 
 # The following might be overwritten by the caller of make:
 EXTRA_COMPILER_FLAG=#
@@ -85,7 +87,7 @@ lexer-lc: $(OBJECT_FILES_LC)
 lexer-flex: lex.yy.c 
 	$(CC) \
           -DANALYZER_GENERATOR_FLEX \
-		  -I./ lex.yy.c lexer.cpp report.cpp -lfl -o lexer-flex 
+		  -I./ main.cpp lex.yy.c lexer.cpp report.cpp -lfl -o lexer-flex 
 
 # -- application
 %.E: %.cpp 
@@ -137,4 +139,8 @@ clean:
 	rm -f *.gcda
 	rm -f *.gcov
 	rm -f lex.yy.c
+	rm -f *.E
+
+cpu_mhz:
+	@echo $(CPU_MHZ)
 
