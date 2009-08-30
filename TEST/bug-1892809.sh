@@ -14,5 +14,5 @@ echo "(1)"
 echo "(2)"
 ./Simplicism example-2.txt
 #
-rm Simple.cpp Simple-core-engine.cpp Simple Simple-token_ids Simplicism
+rm Simple.cpp Simple-core-engine.cpp Simple Simple-token_ids Simplicism Simple-configuration
 cd $tmp

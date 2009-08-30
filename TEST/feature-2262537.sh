@@ -14,5 +14,5 @@ echo "Good Case:\n"
 quex -i test.qx -o Simple
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids 
+rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simple-configuration
 cd $tmp

@@ -11,5 +11,5 @@ quex -i simple.qx -o Simple
 awk ' /*\// { exit; } // { print; } ' Simple-core-engine.cpp
 
 # cleansening
-rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids 
+rm -f Simple Simple-core-engine.cpp Simple.cpp Simple-token_ids Simple-configuration
 cd $tmp
