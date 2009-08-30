@@ -1,3 +1,11 @@
+-- Unit tests for event handlers
+-- Delete trash from 'ModeDescription'
+-- Rename and Reorganize 'lexer_mode'
+-- double check on some tests with 'LexemeNull'
+-- the function get_trigger_map() might be optimized by caching
+   the result. This, however, requires that the internal datastructures
+   do not change.
+
 (*) 08y5m9d:
 
     Ensure, that 'drop-outs' are in the else statement if possible, because
