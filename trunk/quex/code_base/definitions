@@ -23,11 +23,11 @@
 #endif
 #endif
 
-#ifndef    __QUEX_TOKEN_ID_UNINITIALIZED 
-#   define __QUEX_TOKEN_ID_UNINITIALIZED (QUEX_TYPE_TOKEN_ID)(1)
+#ifndef    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED 
+#   define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (QUEX_TYPE_TOKEN_ID)(1)
 #endif
-#ifndef    __QUEX_TOKEN_ID_TERMINATION 
-#   define __QUEX_TOKEN_ID_TERMINATION   (QUEX_TYPE_TOKEN_ID)(0)
+#ifndef    __QUEX_SETTING_TOKEN_ID_TERMINATION 
+#   define __QUEX_SETTING_TOKEN_ID_TERMINATION   (QUEX_TYPE_TOKEN_ID)(0)
 #endif
 
 /* Tokens may be 'stamped' with the line an column number automatically.

@@ -19,7 +19,8 @@ ENGINE_SOURCES = $(ENGINE_NAME)                     \
 		         $(ENGINE_NAME)-core-engine.cpp
 
 # (*) COMPILER SETTINGS ________________________________________________________
-CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb
+CC = g++ -I./ -I$(QUEX_PATH) $(EXT_CFLAGS) -ggdb \
+	 -DQUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED
 
 # (*) RULES ____________________________________________________________________
 all: lexer

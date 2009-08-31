@@ -4,16 +4,16 @@ mode NORMAL
 : <skip: [ \n\t]>
 { 
     on_end_of_stream         => TKN_TERMINATION(LexemeNull);
-    Max|Moritz               => TKN_SCALLYWAG_(Lexeme);
-    und|mit|voller|In        => TKN_PREDICATE_(Lexeme);
-    nun|gar                  => TKN_FILL_WORD_(Lexeme);
-    die|der|diese|eine?      => TKN_ARTICLE___(Lexeme);
-    Säge|Tücke|Brücke|Lücke  => TKN_SUBJECT___(Lexeme);
-    (plötz|heim)lich         => TKN_ADVERB____(Lexeme);
-    nicht                    => TKN_NEGATION__(Lexeme);
-    [,.!]                    => TKN_MARK______(Lexeme);
+    Max|Moritz               { printf("SCALLYWAG_\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    und|mit|voller|In        { printf("PREDICATE_\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    nun|gar                  { printf("FILL_WORD_\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    die|der|diese|eine?      { printf("ARTICLE___\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    Säge|Tücke|Brücke|Lücke  { printf("SUBJECT___\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    (plötz|heim)lich         { printf("ADVERB____\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    nicht                    { printf("NEGATION__\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
+    [,.!]                    { printf("MARK______\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
     Sägen                    => GOTO(ANGRY, TKN_VERB______, Lexeme);
-    [a-zäüöA-Z]+             => TKN_UKNOWN____(Lexeme);
+    [a-zäüöA-Z]+             { printf("UKNOWN____\t%s\n", (const char*)(Lexeme)); self.send(TKN_OK); }
 }
 
 mode ANGRY : NORMAL {

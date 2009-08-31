@@ -24,7 +24,7 @@ namespace quex {
     QuexPostCategorizer::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
     {
         QuexPostCategorizerNode* found = QuexPostCategorizer_find(this, Lexeme);
-        if( found == 0x0 ) return __QUEX_TOKEN_ID_UNINITIALIZED;
+        if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
         return found->token_id;
     }
 

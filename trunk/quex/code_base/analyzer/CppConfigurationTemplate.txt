@@ -222,4 +222,10 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #    error "Ambiguous configuration options."
 #endif
 
+#if   ! defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) \
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE) \
+   && ! defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
+#    error "No token policy specified."
+#endif
+
 #endif /* __INCLUDE_GUARD__QUEX_CONFIGURATION_$$INCLUDE_GUARD_EXTENSION$$    */

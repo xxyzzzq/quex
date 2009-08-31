@@ -113,7 +113,7 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
     except:
         print "<<compilation failed>>"
     print "## (4) cleaning up"
-    os.remove(filename_tmp)
+    #os.remove(filename_tmp)
 
 def create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF=False):
     global plain_memory_based_test_program
@@ -251,7 +251,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "\n"
     txt += SkipperSourceCode
     txt += "\n"
-    txt += "__REENTRY_PREPARATION:\n"
+    txt += "__REENTRY:\n"
     txt += "    /* Originally, the reentry preparation does not increment or do anything to _input_p\n"
     txt += "     * Here, we use the chance to print the position where the skipper ended.\n"
     txt += "     * If we are at the border and there is still stuff to load, then load it so we can\n"
@@ -328,7 +328,7 @@ $$TEST_CASE$$
 
 bool analysis_terminated_f = false;
 
-#define QUEX_LEXER_CLASS QuexAnalyser
+#define QUEX_TYPE_ANALYZER QuexAnalyser
 
 static void  Mr_UnitTest_analyser_function(QuexAnalyser* me);
 static void  Mrs_UnitTest_analyser_function(QuexAnalyser* me);

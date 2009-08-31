@@ -122,7 +122,8 @@ $$DELIMITER_REMAINDER_TEST$$
          * it is located on a buffer border, it automatically triggers a reload. No 
          * need here to reload the buffer. */
 $$LC_COUNT_END_PROCEDURE$$
-        $$GOTO_REENTRY_PREPARATION$$ /* End of range reached. */
+        /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
+        $$GOTO_START$$ /* End of range reached. */
     }
 
 $$DROP_OUT$$
@@ -201,7 +202,9 @@ def get_range_skipper(EndSequence, LanguageDB, MissingClosingDelimiterAction="")
                            ["$$ENTRY$$",                      LanguageDB["$label-def"]("$entry", skipper_index)],
                            ["$$DROP_OUT$$",                   LanguageDB["$label-def"]("$drop-out", skipper_index)],
                            ["$$GOTO_ENTRY$$",                 LanguageDB["$goto"]("$entry", skipper_index)],
-                           ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
+                           # When things were skipped, no change to acceptance flags or modes has
+                           # happend. One can jump immediately to the start without re-entry preparation.
+                           ["$$GOTO_START$$",                 LanguageDB["$goto"]("$start")], 
                            ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
                            ["$$DELIMITER_REMAINDER_TEST$$",   delimiter_remainder_test_str],
                            ["$$SET_INPUT_P_BEHIND_DELIMITER$$", LanguageDB["$input/add"](len(EndSequence)-1)],
@@ -270,7 +273,8 @@ $$LC_COUNT_END_PROCEDURE$$
      * The character we just swallowed must be re-considered by the main state machine.
      * But, note that the initial state does not increment '_input_p'!
      */
-    $$GOTO_REENTRY_PREPARATION$$                           
+    /* No need for re-entry preparation. Acceptance flags and modes are untouched after skipping. */
+    $$GOTO_START$$                           
 }
 """
 
@@ -311,7 +315,9 @@ def get_character_set_skipper(TriggerSet, LanguageDB):
                        ["$$GOTO_LOOP_START$$",            LanguageDB["$goto"]("$entry", skipper_index)],
                        ["$$SKIPPER_INDEX$$",              repr(skipper_index)],
                        ["$$GOTO_TERMINAL_EOF$$",          LanguageDB["$goto"]("$terminal-EOF")],
-                       ["$$GOTO_REENTRY_PREPARATION$$",   LanguageDB["$goto"]("$re-start")],
+                       # When things were skipped, no change to acceptance flags or modes has
+                       # happend. One can jump immediately to the start without re-entry preparation.
+                       ["$$GOTO_START$$",                 LanguageDB["$goto"]("$start")], 
                        ["$$MARK_LEXEME_START$$",          LanguageDB["$mark-lexeme-start"]],
                        ["$$ON_TRIGGER_SET_TO_LOOP_START$$", iteration_code],
                       ])

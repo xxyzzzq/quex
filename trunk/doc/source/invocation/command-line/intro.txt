@@ -55,7 +55,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         
         ``number`` = Token identifier for the event of 'end of token stream'.
         Note, that the termination token id can always be referred to 
-        via `__QUEX_TOKEN_ID_TERMINATION`. One does not have to specify it just in order
+        via `__QUEX_SETTING_TOKEN_ID_TERMINATION`. One does not have to specify it just in order
         to be able to know its value. Consider also the comments on the token for 
         'uninitialized'. 
         
@@ -71,7 +71,7 @@ decimal, without any prefix, hexadecimal with a '0x' prefix or octal with a
         DEFAULT = ``1`` 
         
         This option is close to meaningless under normal conditions. One can always
-        refer to the unitiliazed token id via `__QUEX_TOKEN_ID_UNINITIALIZED`. In
+        refer to the unitiliazed token id via `__QUEX_SETTING_TOKEN_ID_UNINITIALIZED`. In
         certain cases, though, it might make sense to ensure this id to have a certain
         value. This would be the case, if someone would like to code more than just the
         token id in the token id variable.

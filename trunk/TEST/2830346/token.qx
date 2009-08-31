@@ -13,5 +13,6 @@ token {
     UKNOWN____
     MARK______
     VERB______
+    OK
 }
 

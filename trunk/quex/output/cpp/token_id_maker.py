@@ -84,8 +84,8 @@ $$TOKEN_NAMES$$
            std::sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
            return error_string;
        }
-       case __QUEX_TOKEN_ID_TERMINATION:   return termination_string;
-       case __QUEX_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
+       case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
+       case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
 $$TOKEN_ID_CASES$$
        }
     }
