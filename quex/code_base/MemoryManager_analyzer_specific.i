@@ -14,7 +14,7 @@
 #endif
 
 namespace quex {
-#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     QUEX_INLINE QUEX_TYPE_TOKEN* 
     QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(const size_t N)
     {

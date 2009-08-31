@@ -158,7 +158,7 @@ def do(PatternActionPair_List, OnFailureAction,
                      PrintStateMachineF, StandAloneAnalyserF).do()
     
 def frame_this(Code):
-    return Setup.language_db["$frame"](Code, Setup.output_file_stem, Setup.output_engine_name)
+    return Setup.language_db["$frame"](Code, Setup)
 
 def delete_unused_labels(Code):
     LanguageDB = Setup.language_db

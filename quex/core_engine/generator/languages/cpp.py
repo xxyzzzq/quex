@@ -15,7 +15,7 @@ def __nice(SM_ID):
 __header_definitions_txt = """
 #include <quex/code_base/analyzer/Analyser>
 #include <quex/code_base/buffer/Buffer>
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
@@ -28,6 +28,7 @@ __header_definitions_txt = """
 
 #define RETURN   return
 #define CONTINUE $$GOTO_START_PREPARATION$$ 
+
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
 #   define __QUEX_INFO_LEXEME_NULL_DEFINED
     static QUEX_TYPE_CHARACTER  __QuexLexemeNullObject = 0x0;
@@ -69,10 +70,10 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnaly
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
 #   if defined (__QUEX_SETTING_PLAIN_C)
-#      define self (*((QUEX_LEXER_CLASS*)me));
+#      define self (*((QUEX_TYPE_ANALYZER*)me));
 #   else
        using namespace quex;
-       QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
+       QUEX_TYPE_ANALYZER& self = *((QUEX_TYPE_ANALYZER*)me);
 #   endif
 """
 
@@ -125,7 +126,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
         L = max(map(lambda name: len(name), ModeNameList))
         for name in ModeNameList:
             local_variable_list.append(["quex::QUEX_TYPE_MODE&", name + " " * (L- len(name)), 
-                                        "QUEX_LEXER_CLASS::" + name]) 
+                                        "QUEX_TYPE_ANALYZER::" + name]) 
 
     txt  = "#include <quex/code_base/temporary_macros_on>\n"
     txt += signature
@@ -235,11 +236,11 @@ $$REENTRY_PREPARATION$$
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
     
-#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-    if( self.token->type_id() != __QUEX_TOKEN_ID_UNINITIALIZED) return;
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     if( QuexTokenQueue_is_full(self._token_queue) ) return;
-#   endif
+#else
+    if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
+#endif
 
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 $$DELETE_PRE_CONDITION_FULLFILLED_FLAGS$$
@@ -260,7 +261,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
-    QUEX_TOKEN_POLICY_SET_1(__QUEX_TOKEN_ID_UNINITIALIZED);
+    QUEX_TOKEN_POLICY_SET_1(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
     return;
 #elif defined(QUEX_OPTION_ASSERTS)
     QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
@@ -445,14 +446,21 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
 
     return txt
     
-def __frame_of_all(Code, HeaderFile, LexerClassName):
-    return "#include \"%s\"\n" % HeaderFile                 + \
+def __frame_of_all(Code, Setup):
+    class_name = Setup.output_file_stem
+    if Setup.input_derived_class_name != "":
+        class_name = Setup.input_derived_class_name
+
+    return "#include \"%s\"\n" % Setup.output_file_stem     + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "namespace quex {\n"                             + \
            "#endif\n"                                       + \
-           "/* the c_lexer header undef's the definitions at the end */\n" + \
-           "#define QUEX_LEXER_CLASS %s\n" % LexerClassName + \
-           "#define QUEX_TYPE_MODE  %sQuexMode\n" % LexerClassName + \
+           "/* The generated lexer header undef's the definitions at the end\n"                        + \
+           " * so that multiple analyzer can be used. Here things must be redefined.*/\n"              + \
+           "#define QUEX_TYPE_ANALYZER                    %s\n"         % class_name                   + \
+           "#define QUEX_TYPE_MODE                        %sQuexMode\n" % class_name                   + \
+           "#define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (%i)\n"       % Setup.token_id_uninitialized + \
+           "#define __QUEX_SETTING_TOKEN_ID_TERMINATION   (%i)\n"       % Setup.token_id_termination   + \
            Code                                             + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "} // namespace quex\n"                          + \

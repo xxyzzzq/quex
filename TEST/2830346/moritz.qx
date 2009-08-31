@@ -4,12 +4,12 @@ mode NORMAL
 : <skip: [ \n\t]>
 { 
     on_end_of_stream         => MORITZ_TKN_TERMINATION(LexemeNull);
-    Max                      => MORITZ_TKN_MY_BROTHER(Lexeme);
-    Moritz                   => MORITZ_TKN_ME________(Lexeme);
-    Säge|Tücke|Brücke|Lücke  => MORITZ_TKN_SUBJECT___(Lexeme);
+    Max                      { printf("MY_BROTHER\t%s\n", (const char*)(Lexeme)); self.send(MORITZ_TKN_OK); }
+    Moritz                   { printf("ME________\t%s\n", (const char*)(Lexeme)); self.send(MORITZ_TKN_OK); }
+    Säge|Tücke|Brücke|Lücke  { printf("SUBJECT___\t%s\n", (const char*)(Lexeme)); self.send(MORITZ_TKN_OK); }
     Sägen                    => GOTO(HAPPY, MORITZ_TKN_VERB______, Lexeme);
-    [a-zäöüA-Z]+             => MORITZ_TKN_UKNOWN____(Lexeme);
-    [,.!]                    => MORITZ_TKN_MARK______(Lexeme);
+    [a-zäöüA-Z]+             { printf("UKNOWN____\t%s\n", (const char*)(Lexeme)); self.send(MORITZ_TKN_OK); }
+    [,.!]                    { printf("MARK______\t%s\n", (const char*)(Lexeme)); self.send(MORITZ_TKN_OK); }
 }
 
 mode HAPPY : NORMAL {

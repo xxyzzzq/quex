@@ -1,15 +1,15 @@
-<test-database execution-time-sec="0.63" date="Sat Aug 29 06:05:41 2009">
+<test-database execution-time-sec="0.76" date="Sun Aug 30 22:58:14 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.48"> 
+    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.60"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1251232445L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.48" crc="-1647352136"/>
+           <choice name="" result="OK" time_sec="0.60" crc="-1647352136"/>
         </choice-list>
     </test>
-    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.10"> 
+    <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.11"> 
         <application file-name="test-coder-get_generator_input.py" info-request-time="1251232445L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.10" crc="380312751"/>
+           <choice name="" result="OK" time_sec="0.11" crc="380312751"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

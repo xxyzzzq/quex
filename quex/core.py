@@ -97,7 +97,7 @@ def get_code_for_mode(Mode, ModeNameList, IndentationSupportF):
                                                     IndentationSupportF=IndentationSupportF)
     # -- 'on failure' action (nothing matched)
     if not Mode.has_code_fragment_list("on_failure"):
-        txt  = "self.send(%sTERMINATION);\n" % Setup.input_token_id_prefix 
+        txt  = "self.send(__QUEX_SETTING_TOKEN_ID_TERMINATION);\n"
         txt += "return;\n"
         Mode.set_code_fragment_list("on_failure", CodeFragment(txt))
 

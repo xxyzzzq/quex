@@ -12,7 +12,7 @@ main(int argc, char** argv)
 
     // (*) create token
     quex::Token        Token;
-    QUEX_TYPE_TOKEN_ID token_id = __QUEX_TOKEN_ID_UNINITIALIZED;
+    QUEX_TYPE_TOKEN_ID token_id = QUEX_TKN_UNINITIALIZED;
     // (*) create the lexical analyser
     //     if no command line argument is specified user file 'example.txt'
     quex::Simple*  qlex = new quex::Simple(argc == 1 ? "example.txt" : argv[1]);
@@ -36,7 +36,7 @@ main(int argc, char** argv)
         ++number_of_tokens;
 
         // (*) check against 'termination'
-    } while( token_id != __QUEX_TOKEN_ID_TERMINATION );
+    } while( token_id != QUEX_TKN_TERMINATION );
 
     // cout << Token.type_id_name() << endl;
     cout << "| [END] number of token = " << number_of_tokens << "\n";
