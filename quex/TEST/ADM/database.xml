@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.76" date="Sun Aug 30 22:58:14 2009">
+<test-database execution-time-sec="0.76" date="Mon Aug 31 10:11:49 2009">
     <last-used-diff-display-program name=""/>
     <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.60"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1251232445L"/>
@@ -10,6 +10,12 @@
         <application file-name="test-coder-get_generator_input.py" info-request-time="1251232445L"/>
         <choice-list number="1" same_result="False">
            <choice name="" result="OK" time_sec="0.11" crc="380312751"/>
+        </choice-list>
+    </test>
+    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.00"> 
+        <application file-name="macro-check.py" info-request-time="1251706241L"/>
+        <choice-list number="1" same_result="False">
+           <choice name="" result="OK" time_sec="0.00" crc="594889239"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

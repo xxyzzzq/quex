@@ -1,0 +1,1 @@
+Macro QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW undefined but not defined.
