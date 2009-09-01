@@ -1,1 +1,2 @@
+Macro __INCLUDE_INDICATOR_QUEX__CONFIGURATION defined but not undefined.
 Macro QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW undefined but not defined.

@@ -594,7 +594,7 @@ namespace quex {
 
 #include <quex/code_base/analyzer/Analyser>
 #include <quex/code_base/buffer/Buffer>
-#if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
@@ -604,6 +604,7 @@ namespace quex {
 #ifdef    RETURN
 #   undef RETURN
 #endif
+
 
 #ifndef    __QUEX_INFO_LEXEME_NULL_DEFINED
 #   define __QUEX_INFO_LEXEME_NULL_DEFINED
@@ -619,13 +620,13 @@ Simple_ONE_AND_ONLY_analyser_function(QuexAnalyser* me)
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
 #   if defined (__QUEX_SETTING_PLAIN_C)
-#      define self (*((QUEX_LEXER_CLASS*)me));
+#      define self (*((QUEX_TYPE_ANALYZER*)me));
 #   else
        using namespace quex;
-       QUEX_LEXER_CLASS& self = *((QUEX_LEXER_CLASS*)me);
+       QUEX_TYPE_ANALYZER& self = *((QUEX_TYPE_ANALYZER*)me);
 #   endif
     /* me = pointer to state of the lexical analyser */
-    quex::QUEX_TYPE_MODE&        ONE_AND_ONLY = QUEX_LEXER_CLASS::ONE_AND_ONLY;
+    quex::QUEX_TYPE_MODE&        ONE_AND_ONLY = QUEX_TYPE_ANALYZER::ONE_AND_ONLY;
     QUEX_TYPE_GOTO_LABEL         last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
     QUEX_TYPE_CHARACTER_POSITION last_acceptance_input_position = (QUEX_TYPE_CHARACTER*)(0x00);
     QUEX_TYPE_CHARACTER_POSITION* post_context_start_position = 0x0;
@@ -2669,7 +2670,7 @@ TERMINAL_35:
         self.send(QUEX_TKN_NUMBER, atoi((char*)Lexeme));
         CONTINUE;
         
-#line 2116 "Simple-core-engine.cpp"
+#line 2117 "Simple-core-engine.cpp"
         
         }
     }
@@ -2713,7 +2714,7 @@ TERMINAL_7:
         self.send(QUEX_TKN_STRUCT);
         CONTINUE;
         
-#line 2160 "Simple-core-engine.cpp"
+#line 2161 "Simple-core-engine.cpp"
         
         }
     }
@@ -2738,7 +2739,7 @@ TERMINAL_41:
         #line 28 "dos_lf_2.qx"
          self.send(QUEX_TKN_IDENTIFIER, Lexeme); RETURN; 
         
-#line 2185 "Simple-core-engine.cpp"
+#line 2186 "Simple-core-engine.cpp"
         
         }
     }
@@ -2763,7 +2764,7 @@ TERMINAL_10:
         self.send(QUEX_TKN_TYPE_INT);
         CONTINUE;
         
-#line 2210 "Simple-core-engine.cpp"
+#line 2211 "Simple-core-engine.cpp"
         
         }
     }
@@ -2788,7 +2789,7 @@ TERMINAL_13:
         self.send(QUEX_TKN_TYPE_DOUBLE);
         CONTINUE;
         
-#line 2235 "Simple-core-engine.cpp"
+#line 2236 "Simple-core-engine.cpp"
         
         }
     }
@@ -2813,7 +2814,7 @@ TERMINAL_16:
         self.send(QUEX_TKN_SEND);
         CONTINUE;
         
-#line 2260 "Simple-core-engine.cpp"
+#line 2261 "Simple-core-engine.cpp"
         
         }
     }
@@ -2838,7 +2839,7 @@ TERMINAL_19:
         self.send(QUEX_TKN_EXPECT);
         CONTINUE;
         
-#line 2285 "Simple-core-engine.cpp"
+#line 2286 "Simple-core-engine.cpp"
         
         }
     }
@@ -2862,7 +2863,7 @@ TERMINAL_22_DIRECT:
         self.send(QUEX_TKN_SEMICOLON);
         CONTINUE;
         
-#line 2309 "Simple-core-engine.cpp"
+#line 2310 "Simple-core-engine.cpp"
         
         }
     }
@@ -2886,7 +2887,7 @@ TERMINAL_25_DIRECT:
         self.send(QUEX_TKN_BRACKET_OPEN);
         CONTINUE;
         
-#line 2333 "Simple-core-engine.cpp"
+#line 2334 "Simple-core-engine.cpp"
         
         }
     }
@@ -2910,7 +2911,7 @@ TERMINAL_28_DIRECT:
         self.send(QUEX_TKN_BRACKET_CLOSE);
         CONTINUE;
         
-#line 2357 "Simple-core-engine.cpp"
+#line 2358 "Simple-core-engine.cpp"
         
         }
     }
@@ -2929,7 +2930,7 @@ TERMINAL_END_OF_STREAM:
         #line 16 "dos_lf_2.qx"
         self.send(QUEX_TKN_TERMINATION);
         
-#line 2376 "Simple-core-engine.cpp"
+#line 2377 "Simple-core-engine.cpp"
         
         }
                 }
@@ -2956,7 +2957,7 @@ else {
                     {
         Counter_shift_end_values_to_start_values(&self.counter.base);
         Counter_count(&self.counter, Lexeme, LexemeEnd);
-        self.send(QUEX_TKN_TERMINATION);
+        self.send(__QUEX_SETTING_TOKEN_ID_TERMINATION);
         return;
         
         }
@@ -2998,11 +2999,13 @@ __REENTRY_PREPARATION:
     /* (*) Common point for **restarting** lexical analysis.
      *     at each time when CONTINUE is called at the end of a pattern. */
     
-#   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
-    if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
-#   elif defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#ifndef   __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
+#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     if( QuexTokenQueue_is_full(self._token_queue) ) return;
+#   else
+    if( self.token->type_id() != __QUEX_SETTING_TOKEN_ID_UNINITIALIZED) return;
 #   endif
+#endif
 
     last_acceptance = QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE;
 

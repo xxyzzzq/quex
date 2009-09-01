@@ -1,7 +1,7 @@
-import quex.core_engine.generator.languages.core      as languages
-import quex.core_engine.generator.state_machine_coder as state_machine_coder
-import quex.core_engine.generator.input_position_backward_detector   as backward_detector
-from   quex.core_engine.generator.state_machine_decorator  import StateMachineDecorator
+import quex.core_engine.generator.languages.core                   as languages
+import quex.core_engine.generator.state_machine_coder              as state_machine_coder
+import quex.core_engine.generator.input_position_backward_detector as backward_detector
+from   quex.core_engine.generator.state_machine_decorator          import StateMachineDecorator
 from   quex.input.setup import setup as Setup
 from   quex.frs_py.string_handling import blue_print
 #

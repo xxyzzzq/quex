@@ -8,7 +8,6 @@
         self.send(QUEX_TKN_UCS_0x00062C);
         self.send(QUEX_TKN_UCS_0x00000C);
         self.send(QUEX_TKN_TERMINATION);
-        self.send(QUEX_TKN_TERMINATION);
 (*) Token IDs
 #define QUEX_TKN_TERMINATION   ((QUEX_TYPE_TOKEN_ID)0)
 #define QUEX_TKN_UCS_0x00000C  ((QUEX_TYPE_TOKEN_ID)12)
