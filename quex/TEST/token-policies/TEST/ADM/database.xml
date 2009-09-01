@@ -1,47 +1,53 @@
-<test-database execution-time-sec="0.05" date="Mon Aug 31 10:11:49 2009">
+<test-database execution-time-sec="0.04" date="Mon Aug 31 22:51:00 2009">
     <last-used-diff-display-program name=""/>
     <group name="Token Policy Queue">
-        <test title="Pseudo Analysis" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="queue.exe" info-request-time="1251665935L"/>
+        <test title="Pseudo Analysis" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="queue.exe" info-request-time="1251751850L"/>
+            <make-procedure success="True" time_sec="2.018263"/>
             <choice-list number="2" same_result="True">
                <choice name="receive-1" result="OK" time_sec="0.00" crc="-1676057123"/>
                <choice name="receive-2" result="OK" time_sec="0.00" crc="-1676057123"/>
             </choice-list>
         </test>
-        <test title="Real Analysis" make-required="True" time-sum-sec="0.02"> 
-            <application file-name="queue-real.exe" info-request-time="1251665943L"/>
+        <test title="Real Analysis" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="queue-real.exe" info-request-time="1251751856L"/>
+            <make-procedure success="True" time_sec="1.999449"/>
             <choice-list number="2" same_result="True">
-               <choice name="receive-1" result="OK" time_sec="0.01" crc="1977572885"/>
-               <choice name="receive-2" result="OK" time_sec="0.01" crc="1977572885"/>
+               <choice name="receive-1" result="OK" time_sec="0.00" crc="1977572885"/>
+               <choice name="receive-2" result="OK" time_sec="0.00" crc="1977572885"/>
             </choice-list>
         </test>
     </group>
     <group name="Token Policy UsersQueue">
-        <test title="Real Analysis" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="users_queue-real.exe" info-request-time="1251665948L"/>
+        <test title="Real Analysis" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="users_queue-real.exe" info-request-time="1251751860L"/>
+            <make-procedure success="True" time_sec="2.020230"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="-1677485873"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-1677485873"/>
             </choice-list>
         </test>
-        <test title="Pseudo Analysis" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="users_queue.exe" info-request-time="1251665940L"/>
+        <test title="Pseudo Analysis" make-required="True" time-sum-sec="0.00"> 
+            <application file-name="users_queue.exe" info-request-time="1251751854L"/>
+            <make-procedure success="True" time_sec="1.980112"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.01" crc="-1003246361"/>
+               <choice name="" result="OK" time_sec="0.00" crc="-1003246361"/>
             </choice-list>
         </test>
     </group>
     <group name="Token Policy UsersToken">
-        <test title="Pseudo Analysis" make-required="True" time-sum-sec="0.00"> 
-            <application file-name="users_token.exe" info-request-time="1251665937L"/>
+        <test title="Pseudo Analysis" make-required="True" time-sum-sec="0.01"> 
+            <application file-name="users_token.exe" info-request-time="1251751852L"/>
+            <make-procedure success="True" time_sec="1.937513"/>
             <choice-list number="2" same_result="True">
                <choice name="receive-1" result="OK" time_sec="0.00" crc="-1143890683"/>
                <choice name="receive-2" result="OK" time_sec="0.00" crc="-1143890683"/>
             </choice-list>
         </test>
         <test title="Real Analysis" make-required="True" time-sum-sec="0.01"> 
-            <application file-name="users_token-real.exe" info-request-time="1251665945L"/>
+            <application file-name="users_token-real.exe" info-request-time="1251751858L"/>
+            <make-procedure success="True" time_sec="1.962974"/>
             <choice-list number="2" same_result="True">
-               <choice name="receive-1" result="OK" time_sec="0.01" crc="1977572885"/>
+               <choice name="receive-1" result="OK" time_sec="0.00" crc="1977572885"/>
                <choice name="receive-2" result="OK" time_sec="0.00" crc="1977572885"/>
             </choice-list>
         </test>

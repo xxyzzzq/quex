@@ -20,7 +20,7 @@ def do(state, StateIdx, SMD, InitStateF):
     # -- drop out code (transition to no target state)
     txt = LanguageDB["$label-def"]("$drop-out", StateIdx)
     txt += "    " + LanguageDB["$if not BLC"]
-    # -- if it's clear that it's not a buffer limit code, then jump directly
+    # -- if input != buffer limit code, then jump to terminal
     txt += LanguageDB["$label-def"]("$drop-out-direct", StateIdx)
     txt += "        " + get_drop_out_goto_string(state, StateIdx, SMD.sm(), SMD.backward_lexing_f()) + "\n" 
     txt += "    " + LanguageDB["$endif"] + "\n"

@@ -20,7 +20,7 @@ def forward_lexing(State, StateIdx, SMD, ForceF=False):
            the current position needs to be stored in a dedicated register---ultimatively.
 
        (2) Final acceptance states can contain pre-conditions that have to be checked
-           and their might me priorities.
+           and their might be priorities.
 
            => use 'get_acceptance_detector()' in order to get a sequence of 'if-else'
               blocks that determine acceptance. 
@@ -37,12 +37,17 @@ def forward_lexing(State, StateIdx, SMD, ForceF=False):
     contains_acceptance_f = False
     for origin in OriginList: 
         if origin.is_end_of_post_contexted_core_pattern():
-            # According to 'setup_post_context.py' (currently line 121) no acceptance
-            # state can store the input position. This has been made impossible!
-            # (Post-conditions via backward search, i.e. pseudo ambigous post conditions,
-            #  are a different ball-game).
+            # Assumption about origin based on assumption about single pattern state machine:
+            #
+            #    According to 'setup_post_context.py' (currently line 121) no acceptance
+            #    state of a post context can store the input position. This has been made 
+            #    impossible! Otherwise, the post context would have zero length.
+            #
+            #    Post-conditions via backward search, i.e. pseudo ambigous post conditions,
+            #    are a different ball-game.
+            #
             assert origin.is_acceptance() == False
-            # store current input position, to be restored when post condition really matches
+            # Store current input position, to be restored when post condition really matches
             post_context_index = SMD.get_post_context_index(origin.state_machine_id)
             txt += "    " + LanguageDB["$comment"]("post context index '%s' == state machine '%s'" % \
                                                    (__nice(post_context_index), __nice(origin.state_machine_id)))
