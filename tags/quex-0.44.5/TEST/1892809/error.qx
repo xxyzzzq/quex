@@ -1,0 +1,17 @@
+define {
+    A \x041
+    B \X00042
+    C \U0000043
+    D \x44
+    E \X0045
+    F \U000046
+}
+
+mode X {
+    {A} => QUEX_TKN_A();
+    {B} => QUEX_TKN_B();
+    {C} => QUEX_TKN_C();
+    {D} => QUEX_TKN_D();
+    {E} => QUEX_TKN_E();
+    {F} => QUEX_TKN_F();
+}

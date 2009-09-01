@@ -1,0 +1,9 @@
+##
+## The reported error appears when python is compiled with 'narrow build'.
+## This build options disallows the usage of unicode characters > 0xFFFF.
+##
+## In particular the function 'unichr()' will throw an error. This test
+## checks if this function is used in the source code. If this happens,
+## please, replace 'unichr(N)' with 'eval("u'\U%08X'" % N)'.
+##
+/home/fschaef/prj/quex/trunk/quex/core_engine/interval_handling.py:184:            char_str = utf8_c(eval("u'\\U%08X'" % Code))[0]     # NOT 'unichr' for compatibility

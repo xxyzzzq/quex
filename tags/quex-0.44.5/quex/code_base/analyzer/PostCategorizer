@@ -1,0 +1,67 @@
+// -*- C++ -*- vim:set syntax=cpp:
+#ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER
+#define __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER
+#ifdef  QUEX_OPTION_POST_CATEGORIZER
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+namespace quex {
+#endif
+    /*________________________________________________________________________________
+     * Post Categorization of Lexemes:
+     *
+     * The implementation of the categorization tree is a little more efficient
+     * than the STL map, since we do not iterator over the content.
+     *________________________________________________________________________________*/
+    typedef struct QuexPostCategorizerNode_tag {
+        /* Store the first character separately from the remainder. This might
+         * help to avoid loading 'remotely allocated' strings into the cache if
+         * they do not fit anyway (because of their first character).                 */ 
+        QUEX_TYPE_CHARACTER          name_first_character;
+        const QUEX_TYPE_CHARACTER*   name_remainder;
+
+        QUEX_TYPE_TOKEN_ID           token_id;
+
+        struct QuexPostCategorizerNode_tag*   lesser;
+        struct QuexPostCategorizerNode_tag*   greater;
+
+    } QuexPostCategorizerNode;
+
+    typedef struct {
+        void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
+                                  const QUEX_TYPE_TOKEN_ID TokenID);
+        void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
+        QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
+
+        void                clear();
+
+        QuexPostCategorizerNode*  root;
+
+    } QuexPostCategorizer;
+
+    inline int
+    QuexPostCategorizerNode_compare(QuexPostCategorizerNode* me, 
+                                    QUEX_TYPE_CHARACTER FirstCharacter, const QUEX_TYPE_CHARACTER* Remainder);
+
+    inline void
+    QuexPostCategorizer_enter(QuexPostCategorizer* me, 
+                              const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID);
+
+    inline QuexPostCategorizerNode*
+    QuexPostCategorizer_find(const QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+
+    inline void
+    QuexPostCategorizer_insert(QuexPostCategorizer* me, 
+                               const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID);
+
+    inline void
+    QuexPostCategorizer_remove(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+
+    inline void
+    QuexPostCategorizer_clear(QuexPostCategorizer* me, QuexPostCategorizerNode* branch);
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+} // namespace quex
+#endif
+
+#endif /* QUEX_OPTION_POST_CATEGORIZER */
+#endif // __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER

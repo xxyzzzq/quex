@@ -1,0 +1,25 @@
+position: 0
+content:  <Im >
+position: 9
+content:  <Fru>
+position: 16
+content:  <eta>
+position: 22
+content:  <u z>
+position: 28
+content:  <u B>
+position: 31
+content:  <erg>
+Re-Do ---------------------------------------------
+position: 0
+content:  <Im >
+position: 9
+content:  <Fru>
+position: 16
+content:  <eta>
+position: 22
+content:  <u z>
+position: 28
+content:  <u B>
+position: 31
+content:  <erg>

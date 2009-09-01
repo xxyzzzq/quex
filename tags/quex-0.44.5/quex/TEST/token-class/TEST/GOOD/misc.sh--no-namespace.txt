@@ -1,0 +1,16 @@
+#ifndef __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__QToken__
+#define __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__QToken__
+#define QUEX_TYPE_TOKEN                    ::QToken
+#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  QToken
+#define QUEX_TYPE_STR_TOKEN_COMPLETE       ____QToken
+class QToken {
+    QToken();
+    QToken(const QToken& That);
+    void __copy(const QToken& That);
+    QToken operator=(const QToken& That) 
+    ~QToken();
+QToken::QToken()
+QToken::QToken(const QToken& That)
+QToken::~QToken()
+QToken::__copy(const QToken& That)
+#endif /* __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__QToken__ */
