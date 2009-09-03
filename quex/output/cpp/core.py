@@ -23,6 +23,7 @@ def do(Modes, IndentationSupportF):
 
 def write_configuration_header(Modes, IndentationSupportF):
     OutputConfigurationFile   = Setup.output_file_stem + "-configuration"
+    LexerClassName            = Setup.output_engine_name
     ConfigurationTemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
                                    + "/analyzer/CppConfigurationTemplate.txt").replace("//","/")
 
@@ -78,7 +79,12 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(Setup.output_file_stem)],
              ["$$QUEX_TYPE_CHARACTER$$",        quex_character_type_str],
              ["$$TOKEN_QUEUE_SAFETY_BORDER$$",  repr(Setup.token_queue_safety_border)],
+             ["$$INITIAL_LEXER_MODE_ID$$",      LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
+             ["$$MAX_MODE_CLASS_N$$",           repr(len(Modes))],
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
+             ["$$LEXER_CLASS_NAME$$",           LexerClassName],
+             ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.input_derived_class_name],
+             ["$$TOKEN_PREFIX$$",               Setup.input_token_id_prefix],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
 
     write_safely_and_close(OutputConfigurationFile, txt)
@@ -146,7 +152,6 @@ def write_engine_header(Modes):
                 ["$$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$", constructor_txt],
                 ["$$CORE_ENGINE_DEFINITIONS_HEADER$$",          CoreEngineDefinitionsHeader],
                 ["$$CLASS_BODY_EXTENSION$$",         lexer_mode.class_body_extension.get_code()],
-                ["$$INITIAL_LEXER_MODE_ID$$",        LexerClassName + "_QuexModeID_" + lexer_mode.initial_mode.get_pure_code()],
                 ["$$INCLUDE_GUARD_EXTENSION$$",      get_include_guard_extension(Setup.output_file_stem)],
                 ["$$LEXER_BUILD_DATE$$",             time.asctime()],
                 ["$$LEXER_BUILD_VERSION$$",          VersionID],
@@ -155,7 +160,6 @@ def write_engine_header(Modes):
                 ["$$LEXER_DERIVED_CLASS_DECL$$",     derived_class_type_declaration],
                 ["$$LEXER_DERIVED_CLASS_NAME$$",     Setup.input_derived_class_name],
                 ["$$QUEX_MODE_ID_DEFINITIONS$$",     mode_id_definition_str],
-                ["$$MAX_MODE_CLASS_N$$",             repr(len(Modes))],
                 ["$$MODE_CLASS_FRIENDS$$",           friend_txt],
                 ["$$MODE_OBJECTS$$",                 mode_object_members_txt],
                 ["$$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$", mode_specific_functions_txt],
@@ -168,7 +172,6 @@ def write_engine_header(Modes):
                 ["$$TOKEN_CLASS_DEFINITION_FILE$$",      token_class_file_name.replace("//", "/")],
                 ["$$TOKEN_CLASS_DECLARATION$$",          write_token_class_declaration()],
                 ["$$TOKEN_ID_DEFINITION_FILE$$",         Setup.output_token_id_file.replace("//","/")],
-                ["$$TOKEN_PREFIX$$",                     Setup.input_token_id_prefix],
                 ["$$CORE_ENGINE_CHARACTER_CODING$$",     quex_coding_name_str],
                 ["$$USER_DEFINED_HEADER$$",              lexer_mode.header.get_code() + "\n"],
              ])

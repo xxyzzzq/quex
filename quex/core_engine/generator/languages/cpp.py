@@ -457,12 +457,14 @@ def __frame_of_all(Code, Setup):
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "namespace quex {\n"                             + \
            "#endif\n"                                       + \
+           "#if 0 /* Following comment is superfluous with current version, delete after everything ok! */" + \
            "/* The generated lexer header undef's the definitions at the end\n"                        + \
            " * so that multiple analyzer can be used. Here things must be redefined.*/\n"              + \
            "#define QUEX_TYPE_ANALYZER                    %s\n"         % class_name                   + \
            "#define QUEX_TYPE_MODE                        %sQuexMode\n" % class_name                   + \
            "#define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED (%i)\n"       % Setup.token_id_uninitialized + \
            "#define __QUEX_SETTING_TOKEN_ID_TERMINATION   (%i)\n"       % Setup.token_id_termination   + \
+           "#endif\n" + \
            Code                                             + \
            "#if ! defined(__QUEX_SETTING_PLAIN_C)\n"        + \
            "} // namespace quex\n"                          + \
