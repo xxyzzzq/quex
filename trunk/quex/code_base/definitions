@@ -279,7 +279,7 @@ namespace quex {
         "## The lexical analyser is very low-level and the smallest error\n"                \
         "## can have desastrous consequences. Leaving the asserts helps you to find\n"      \
         "## subtle errors in your code--and if you find one in the lexical analyser, \n"    \
-        "## then please, report it at\n";                                                   \
+        "## then please, report it at\n"                                                    \
         "##\n"                                                                              \
         "##          http://sourceforge.net/tracker/?group_id=168259&atid=846112\n"         \
         "##\n"                                                                              \

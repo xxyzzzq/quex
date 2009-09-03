@@ -18,10 +18,15 @@
  *       configuration options on the command line without being immediately
  *       deleted by "configuration-undef".                                   */
 #ifdef     __INCLUDE_INDICATOR_QUEX__CONFIGURATION
-#include <quex/code_base/analyzer/configuration-undef>
+#include   <quex/code_base/analyzer/configuration-undef>
 #else
 #   define __INCLUDE_INDICATOR_QUEX__CONFIGURATION
 #endif
+
+#define    __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
+#define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID  ($$INITIAL_LEXER_MODE_ID$$)
+#define    __QUEX_SETTING_TOKEN_ID_TERMINATION   ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
+#define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
 
 #ifndef    __QUEX_OPTION_LITTLE_ENDIAN
 $$SWITCH$$ __QUEX_OPTION_LITTLE_ENDIAN
@@ -32,24 +37,6 @@ $$SWITCH$$ __QUEX_OPTION_BIG_ENDIAN
 #ifndef    __QUEX_OPTION_SYSTEM_ENDIAN
 $$SWITCH$$ __QUEX_OPTION_SYSTEM_ENDIAN
 #endif
-
-/* CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
- *                 a character. This is independent of the coding (ASCII, WinArabic, ...)
- *
- * Both character types are clearly related, because they are supposed to relate to the 
- * same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
- * belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
- * accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
- *
- * NOTE: If in parallel another engine is built with other bytes per character settings,
- *       then the engines will also include their own header with their own definition
- *       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
- *       Templatifying the lexer would be possible, but the author has in mind to bring out
- *       a 'pure C' version of the quex generated engine. Thus templating would make this 
- *       goal harder achievable.                                                            */
-#ifndef    QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER   $$QUEX_TYPE_CHARACTER$$
-#endif 
 
 #ifndef QUEX_OPTION_TOKEN_POLICY_QUEUE_DISABLED
 $$SWITCH$$ QUEX_OPTION_TOKEN_POLICY_QUEUE
@@ -138,7 +125,7 @@ $$SWITCH$$ QUEX_OPTION_DEBUG_QUEX_PATTERN_MATCHES
 #endif
 
 /* Include Stack Support                                                  */
-#ifndef  QUEX_OPTION_INCLUDE_STACK
+#ifndef   QUEX_OPTION_INCLUDE_STACK
 $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
 #endif
 #ifdef    QUEX_OPTION_INCLUDE_STACK_DISABLED
@@ -207,6 +194,43 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
+/* CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
+ *                 a character. This is independent of the coding (ASCII, WinArabic, ...)
+ *
+ * Both character types are clearly related, because they are supposed to relate to the 
+ * same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
+ * belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
+ * accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
+ *
+ * NOTE: If in parallel another engine is built with other bytes per character settings,
+ *       then the engines will also include their own header with their own definition
+ *       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
+ *       Templatifying the lexer would be possible, but the author has in mind to bring out
+ *       a 'pure C' version of the quex generated engine. Thus templating would make this 
+ *       goal harder achievable.                                                            */
+#ifndef    QUEX_TYPE_CHARACTER
+#   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
+#endif 
+
+#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
+#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data
+#define QUEX_TYPE_ANALYZER_DATA      $$LEXER_CLASS_NAME$$Data
+#define QUEX_TYPE_DERIVED_ANALYZER   $$LEXER_DERIVED_CLASS_NAME$$
+
+#define QUEX_TYPE_MEMENTO_BASE       $$LEXER_CLASS_NAME$$MementoBase
+#define QUEX_TYPE_MEMENTO_TAG        $$LEXER_CLASS_NAME$$Memento_tag
+#define QUEX_TYPE_MEMENTO            $$LEXER_CLASS_NAME$$Memento
+
+#define QUEX_TYPE_ACCUMULATOR        $$LEXER_CLASS_NAME$$Accumulator
+#define QUEX_TYPE_MODE_TAG           $$LEXER_CLASS_NAME$$QuexMode_tag
+#define QUEX_TYPE_MODE               $$LEXER_CLASS_NAME$$QuexMode
+
+#ifdef     __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#   define QUEX_TYPE_COUNTER  CounterWithIndentation
+#else 
+#   define QUEX_TYPE_COUNTER  Counter
+#endif
+
 /* Derived shorthands */
 #if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   define  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
@@ -218,6 +242,18 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   define __QUEX_OPTION_COUNTER
 #elif  defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   define __QUEX_OPTION_COUNTER
+#endif
+
+#ifdef     __QUEX_SETTING_PLAIN_C
+#   define __QUEX_SETTING_THIS_POINTER       this,
+#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   CLASS ## _constructor ## SUFFIX
+#   define QUEX_DESTRUCTOR(CLASS)            CLASS_destruct
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  CLASS ## MEMBER_NAME
+#else
+#   define __QUEX_SETTING_THIS_POINTER       /* 'this' is passed automatically */
+#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   CLASS::CLASS
+#   define QUEX_DESTRUCTOR(CLASS)            CLASS::~CLASS
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  CLASS::MEMBER_NAME
 #endif
 
 /* Following switch is also set, if a user defined converter is defined.     */

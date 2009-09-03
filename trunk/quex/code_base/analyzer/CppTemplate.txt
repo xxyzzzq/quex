@@ -23,31 +23,6 @@
 
 #include "$$LEXER_CLASS_NAME$$-configuration"
 
-
-#define __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
-#define __QUEX_SETTING_INITIAL_LEXER_MODE_ID  ($$INITIAL_LEXER_MODE_ID$$)
-#define __QUEX_SETTING_TOKEN_ID_TERMINATION   ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
-#define __QUEX_SETTING_TOKEN_ID_UNINITIALIZED ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
-
-#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
-#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data
-#define QUEX_TYPE_ANALYZER_DATA      $$LEXER_CLASS_NAME$$Data
-#define QUEX_TYPE_DERIVED_ANALYZER   $$LEXER_DERIVED_CLASS_NAME$$
-
-#define QUEX_TYPE_MEMENTO_BASE       $$LEXER_CLASS_NAME$$MementoBase
-#define QUEX_TYPE_MEMENTO_TAG        $$LEXER_CLASS_NAME$$Memento_tag
-#define QUEX_TYPE_MEMENTO            $$LEXER_CLASS_NAME$$Memento
-
-#define QUEX_TYPE_ACCUMULATOR        $$LEXER_CLASS_NAME$$Accumulator
-#define QUEX_TYPE_MODE_TAG           $$LEXER_CLASS_NAME$$QuexMode_tag
-#define QUEX_TYPE_MODE               $$LEXER_CLASS_NAME$$QuexMode
-
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   define QUEX_TYPE_COUNTER  CounterWithIndentation
-#else 
-#   define QUEX_TYPE_COUNTER  Counter
-#endif
-
 namespace quex {
     class  QUEX_TYPE_ANALYZER;
     struct QUEX_TYPE_MEMENTO_TAG;
@@ -67,8 +42,8 @@ $$USER_DEFINED_HEADER$$
 
 /* TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it won't
  *                    override the QUEX_TYPE_TOKEN_ID.                               */
-#include "$$TOKEN_ID_DEFINITION_FILE$$"
-#include "$$TOKEN_CLASS_DEFINITION_FILE$$"
+#include    "$$TOKEN_ID_DEFINITION_FILE$$"
+#include    "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 #ifndef     QUEX_TYPE_TOKEN 
 #   error   "Error: The macro QUEX_TYPE_TOKEN has not been defined in the file $$TOKEN_CLASS_DEFINITION_FILE$$."
@@ -349,7 +324,7 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 #       endif
 
         __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-        set_mode_brutally($$INITIAL_LEXER_MODE_ID$$);
+        set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
         _mode_stack.end        = _mode_stack.begin;
         _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
@@ -494,49 +469,33 @@ $$MEMENTO_EXTENSIONS_UNPACK$$
 #include <quex/code_base/temporary_macros_off>
 
 
-#if ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
+#if         ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
 #   include <quex/code_base/analyzer/constructor.i>
 #else
 #   include <quex/code_base/analyzer/constructor-engine-codec-adaption.i>
 #endif
-#include <quex/code_base/analyzer/Counter.i>
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
+#include    <quex/code_base/analyzer/Counter.i>
+#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   include <quex/code_base/analyzer/CounterWithIndentation.i>
 #endif
-#ifdef QUEX_OPTION_STRING_ACCUMULATOR
-#    include <quex/code_base/analyzer/Accumulator.i>
+#ifdef      QUEX_OPTION_STRING_ACCUMULATOR
+#   include <quex/code_base/analyzer/Accumulator.i>
 #endif
 
-#include <quex/code_base/analyzer/token_sending.i>
-#include <quex/code_base/analyzer/token_receiving.i>
+#include    <quex/code_base/analyzer/token_sending.i>
+#include    <quex/code_base/analyzer/token_receiving.i>
 
-#include <quex/code_base/analyzer/mode_handling.i>
-#ifdef  QUEX_OPTION_INCLUDE_STACK
+#include    <quex/code_base/analyzer/mode_handling.i>
+#ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/IncludeStack.i>
 #endif
-#include <quex/code_base/analyzer/misc.i>
-#include <quex/code_base/analyzer/buffer_access.i>
+#include    <quex/code_base/analyzer/misc.i>
+#include    <quex/code_base/analyzer/buffer_access.i>
 
-#include <quex/code_base/MemoryManager_analyzer_specific.i>
+#include    <quex/code_base/MemoryManager.i>
+#include    <quex/code_base/MemoryManager_analyzer_specific.i>
 
-#undef __QUEX_SETTING_MAX_MODE_CLASS_N
-#undef __QUEX_SETTING_INITIAL_LEXER_MODE_ID 
-#undef __QUEX_SETTING_TOKEN_ID_TERMINATION
-#undef __QUEX_SETTING_TOKEN_ID_UNINITIALIZED
-#undef QUEX_TYPE_DERIVED_ANALYZER
-#undef QUEX_TYPE_ANALYZER_DATA_TAG
-#undef QUEX_TYPE_ANALYZER_DATA
-#undef QUEX_TYPE_ANALYZER
-#undef QUEX_TYPE_MEMENTO_BASE
-#undef QUEX_TYPE_MEMENTO_TAG
-#undef QUEX_TYPE_MEMENTO
-#undef QUEX_TYPE_ACCUMULATOR        
-#undef QUEX_TYPE_MODE_TAG    
-#undef QUEX_TYPE_MODE
-#undef QUEX_TYPE_COUNTER
-
-#include <quex/code_base/analyzer/Analyser.i>
-#include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
-#include <quex/code_base/MemoryManager.i>
+#include    <quex/code_base/analyzer/Analyser.i>
+#include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 
 #endif // __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
