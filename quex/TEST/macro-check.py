@@ -26,6 +26,7 @@ def get_defined_macro_list():
     for line in open(FileName, "rb").readlines():
         line = line.strip()
         if line == "": continue
+        line = line.replace("#", "#   ") # handle case safely where '#undef'
         fields = line.split()
         if   fields[0] == "$$SWITCH$$":                  result.append(extract_macro(line))
         elif line[0] != "#":                             continue
@@ -38,6 +39,7 @@ def get_undef_macro_list():
     for line in open(FileName, "rb").readlines():
         line = line.strip()
         if line == "": continue
+        line = line.replace("#", "#   ") # handle case safely where '#undef'
         fields = line.split()
         if line[0] != "#":                              continue
         elif len(fields) > 1 and fields[1] == "undef":  result.append(extract_macro(line))
@@ -45,6 +47,9 @@ def get_undef_macro_list():
 
 defined_list   = get_defined_macro_list()
 undefined_list = get_undef_macro_list()
+
+# print defined_list
+# print undefined_list
 
 for macro in defined_list:
     if macro not in undefined_list:

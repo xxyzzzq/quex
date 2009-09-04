@@ -56,3 +56,8 @@ Following settings can be made on the command line:
    When using a converter (``--icu`` or ``--iconv``) this is the size of the 
    buffer where the original stream data is read into.
 
+.. cmacro:: QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE
+
+   When printing the ``text`` content of the default token type, it can be converted
+   to UTF8. The conversion requires a temporary buffer whose size is defined by
+   means of this macro.
