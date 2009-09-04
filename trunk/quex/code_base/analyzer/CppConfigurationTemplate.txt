@@ -25,6 +25,7 @@
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
 #define    __QUEX_SETTING_INITIAL_LEXER_MODE_ID  ($$INITIAL_LEXER_MODE_ID$$)
+/* NOTE: QUEX_TYPE_TOKEN_ID is later on defined inside the token class header. */
 #define    __QUEX_SETTING_TOKEN_ID_TERMINATION   ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$TERMINATION)
 #define    __QUEX_SETTING_TOKEN_ID_UNINITIALIZED ((QUEX_TYPE_TOKEN_ID)$$TOKEN_PREFIX$$UNINITIALIZED)
 
@@ -141,6 +142,11 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
 #ifndef     QUEX_SETTING_BUFFER_SIZE
 #    define QUEX_SETTING_BUFFER_SIZE  (/*(size_t)*/65536)
 #endif
+/* The fallback number of bytes can either be defined here, or left for
+ * an automatic definition below in the 'Derived' section.                */
+#ifndef        QUEX_SETTING_BUFFER_MIN_FALLBACK_N
+/* #    define QUEX_SETTING_BUFFER_MIN_FALLBACK_N ... left for auto def.  */
+#endif
 
 #ifndef  QUEX_OPTION_STRING_ACCUMULATOR
 $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
@@ -231,7 +237,30 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   define QUEX_TYPE_COUNTER  Counter
 #endif
 
-/* Derived shorthands */
+#define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
+
+/* Derived */
+#if  ! defined (QUEX_SETTING_BUFFER_MIN_FALLBACK_N)
+#   if ! defined (QUEX_SETTING_BUFFER_SIZE) 
+#      error "QUEX_SETTING_BUFFER_SIZE not defined at this place."
+#   endif
+    /* If your compiler brings you here to this position, then this may be because
+     * you defined the QUEX_SETTING_BUFFER_SIZE with something different than just
+     * an integer number. Indeed something like
+     *
+     *   #define QUEX_SETTING_BUFFER_SIZE  (size_t)4096
+     *
+     * would be propper, but does not allow to do some math. So, please erase whatever
+     * is not a number in the definition (e.g. delete the '(size_t)' type cast.        */
+#   if   QUEX_SETTING_BUFFER_SIZE >= 1024
+#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (256)
+#   elif QUEX_SETTING_BUFFER_SIZE >= 8
+#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (size_t)((float)(QUEX_SETTING_BUFFER_SIZE)/16.0)
+#   else
+#      define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  (0)
+#   endif
+#endif
+
 #if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
 #   define  __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #endif
@@ -244,16 +273,28 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   define __QUEX_OPTION_COUNTER
 #endif
 
-#ifdef     __QUEX_SETTING_PLAIN_C
-#   define __QUEX_SETTING_THIS_POINTER       this,
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   CLASS ## _constructor ## SUFFIX
-#   define QUEX_DESTRUCTOR(CLASS)            CLASS_destruct
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  CLASS ## MEMBER_NAME
+/* Tokens may be 'stamped' with the line an column number automatically.
+ * This happens by means of the option 
+ *      
+ *       QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+ *
+ * It is active by default only for queue token policies, because after
+ * a call to .receive(), the lexical analyzer maintains only the position
+ * of the last token in the queue. The positions of other tokens would
+ * not be accessible once they are in the queue. 
+ * 
+ * The token policy 'users_token' only communicates one token at a time
+ * and the line and column numbers in the lexical analyzer are those
+ * of the last token. Thus, in this case the tokens do not need to be 
+ * stamped with the position in the file.                                */
+#ifndef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN_DISABLED
+#    ifndef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#       define QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#    endif
 #else
-#   define __QUEX_SETTING_THIS_POINTER       /* 'this' is passed automatically */
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   CLASS::CLASS
-#   define QUEX_DESTRUCTOR(CLASS)            CLASS::~CLASS
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  CLASS::MEMBER_NAME
+#    ifdef     QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#        undef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN
+#    endif
 #endif
 
 /* Following switch is also set, if a user defined converter is defined.     */

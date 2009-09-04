@@ -1,2 +1,3 @@
+Macro __INCLUDE_GUARD__QUEX_CONFIGURATION_$$INCLUDE_GUARD_EXTENSION$$ defined but not undefined.
 Macro __INCLUDE_INDICATOR_QUEX__CONFIGURATION defined but not undefined.
 Macro QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW undefined but not defined.

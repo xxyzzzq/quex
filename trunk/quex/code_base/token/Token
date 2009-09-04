@@ -8,14 +8,16 @@
 #ifndef    QUEX_TYPE_TOKEN_ID 
 #   define QUEX_TYPE_TOKEN_ID              uint32_t
 #endif
-#ifdef QUEX_TYPE_TOKEN
+#ifdef     QUEX_TYPE_TOKEN
 #   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
 #endif
+#ifndef     QUEX_TYPE_CHARACTER
+#   error "QUEX_TYPE_CHARACTER has not been defined before the inclusion of this file."
+#endif
+
 #define QUEX_TYPE_TOKEN                    quex::Token
 #define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
 #define QUEX_TYPE_STR_TOKEN_COMPLETE       __quex__Token
-
-// Depends on 'QUEX_TYPE_CHARACTER' being defined!
 
 #include<iostream>
 #include<string>
@@ -147,13 +149,12 @@ namespace quex {
     inline const std::string
     Token::utf8_text() const
     {
-        uint8_t          utf8_buffer[280];
+        uint8_t          utf8_buffer[QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE];
         std::string      tmp;
         Token::__string  tmp2 = _text;
 
-        if( tmp2.length() > 48 ) tmp2 = tmp2.substr(0, 48);
-
-        uint8_t* end = Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 280);
+        uint8_t* end = Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), tmp2.length(), utf8_buffer, 
+                                                   QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE);
         *end = '\0'; /* terminating zero */
 
         return std::string((char*)utf8_buffer);

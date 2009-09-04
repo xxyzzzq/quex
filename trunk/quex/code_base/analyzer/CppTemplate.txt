@@ -40,8 +40,6 @@ $$TOKEN_CLASS_DECLARATION$$
 $$USER_DEFINED_HEADER$$
 /* END: _______________________________________________________________________*/
 
-/* TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it won't
- *                    override the QUEX_TYPE_TOKEN_ID.                               */
 #include    "$$TOKEN_ID_DEFINITION_FILE$$"
 #include    "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
