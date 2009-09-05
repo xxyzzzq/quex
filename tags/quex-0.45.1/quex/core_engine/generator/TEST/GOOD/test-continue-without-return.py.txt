@@ -1,0 +1,24 @@
+(*) Lexical Analyser Patterns:
+           [A-Z]+":" --> LABEL
+             "PRINT" --> KEYWORD CONTINUE
+              [A-Z]+ --> IDENTIFIER CONTINUE
+              [ \t]+ --> WHITESPACE CONTINUE
+## (1) code generation
+## (2) compiling generated engine code and test
+g++  ./tmp.cpp -I./. -I$QUEX_PATH -o ./tmp.cpp.exe -D__QUEX_OPTION_UNIT_TEST_ISOLATED_CODE_GENERATION -ggdb ##
+## (3) running the test
+(*) test string: 
+'ABERHALLO: GUGU PRINT PRINT: PRINTERLEIN'
+(*) result:
+              LABEL  'ABERHALLO:'
+WHITESPACE CONTINUE  ' '
+IDENTIFIER CONTINUE  'GUGU'
+WHITESPACE CONTINUE  ' '
+   KEYWORD CONTINUE  'PRINT'
+WHITESPACE CONTINUE  ' '
+              LABEL  'PRINT:'
+WHITESPACE CONTINUE  ' '
+IDENTIFIER CONTINUE  'PRINTERLEIN'
+  ''
+
+## (4) cleaning up
