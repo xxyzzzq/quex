@@ -66,4 +66,5 @@ This test checks wether all files in QUEX_CORE exist
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/token_sending.i exists
   [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_off exists
-  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./test_environment/default_configuration exists
+  [OK] /home/fschaef/prj/quex/trunk/quex/code_base/./test_environment/StrangeStream exists
