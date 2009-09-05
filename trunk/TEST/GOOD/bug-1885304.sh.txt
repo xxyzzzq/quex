@@ -43,8 +43,6 @@ namespace quex {
 
 /* END: _______________________________________________________________________*/
 
-/* TOKEN DEFINITION: (Must come before 'quex/code_base/definitions' so that it won't
- *                    override the QUEX_TYPE_TOKEN_ID.                               */
 #include    "Simple-token_ids"
 #include    "quex/code_base/token/Token"
 
@@ -58,7 +56,7 @@ namespace quex {
 #include    <quex/code_base/definitions>
 
 #ifdef      __QUEX_OPTION_UNIT_TEST
-#   include <quex/code_base/StrangeStream_unit_tests>
+#   include <quex/code_base/test_environment/StrangeStream>
 #endif
 
 #include    <quex/code_base/buffer/Buffer>

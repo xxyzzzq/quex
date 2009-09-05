@@ -64,7 +64,8 @@ __QUEX_CORE = \
     ./analyzer/Counter \
     ./analyzer/token_sending.i \
     ./temporary_macros_off \
-    ./StrangeStream_unit_tests)
+    ./test_environment/default_configuration \
+    ./test_environment/StrangeStream)
 
 ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)
     QUEX_CORE = $(__QUEX_CORE)
