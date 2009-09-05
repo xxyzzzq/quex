@@ -1,4 +1,4 @@
-<test-database execution-time-sec="3.63" date="Thu Sep  3 23:09:43 2009">
+<test-database execution-time-sec="3.65" date="Sat Sep  5 06:14:46 2009">
     <last-used-diff-display-program name=""/>
     <test title="State Machine Pattern Matching" make-required="True" time-sum-sec="0.14"> 
         <application file-name="test-pattern-matching.py" info-request-time="1251232444L"/>
@@ -61,6 +61,12 @@
         </test>
     </group>
     <group name="Conditional Analysis">
+        <test title="pre- and post-conditions" make-required="True" time-sum-sec="0.13"> 
+            <application file-name="test-pre-and-post-condition.py" info-request-time="1251232444L"/>
+            <choice-list number="1" same_result="False">
+               <choice name="" result="OK" time_sec="0.13" crc="-723227016"/>
+            </choice-list>
+        </test>
         <test title="pre conditions" make-required="True" time-sum-sec="0.13"> 
             <application file-name="test-pre-condition.py" info-request-time="1251232444L"/>
             <choice-list number="1" same_result="False">
@@ -77,12 +83,6 @@
             <application file-name="test-post-condition.py" info-request-time="1251232444L"/>
             <choice-list number="1" same_result="False">
                <choice name="" result="OK" time_sec="0.13" crc="1479181746"/>
-            </choice-list>
-        </test>
-        <test title="pre- and post-conditions" make-required="True" time-sum-sec="0.13"> 
-            <application file-name="test-pre-and-post-condition.py" info-request-time="1251232444L"/>
-            <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.13" crc="-723227016"/>
             </choice-list>
         </test>
         <test title="End of Line '$' (with DOS/Windows '\r\n')" make-required="True" time-sum-sec="0.10"> 

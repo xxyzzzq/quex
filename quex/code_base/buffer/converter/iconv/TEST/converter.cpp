@@ -1,11 +1,12 @@
 #include <cstring>
+#include <quex/code_base/test_environment/default_configuration>
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/converter/iconv/Converter_IConv.i>
 #include <quex/code_base/unicode>
 using namespace std;
 using namespace quex;
 
-int get_input(char* Choice, uint8_t* buffer, size_t BufferSize);
+int  get_input(char* Choice, uint8_t* buffer, size_t BufferSize);
 void print_content(QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End);
 
 int cl_has(int argc, char** argv, const char* What)

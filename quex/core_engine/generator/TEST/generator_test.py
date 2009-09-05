@@ -190,8 +190,9 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
     txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
+    txt += "#include <quex/code_base/test_environment/default_configuration>\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
-    txt += "#   include <quex/code_base/StrangeStream_unit_tests>\n"
+    txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
     txt += "#endif\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
     txt += "#include <quex/code_base/analyzer/Analyser>\n"
@@ -316,9 +317,10 @@ typedef int QUEX_TYPE_TOKEN_ID;
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
+#include <quex/code_base/test_environment/default_configuration>
 $$TEST_CASE$$
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
-#   include <quex/code_base/StrangeStream_unit_tests>
+#   include <quex/code_base/test_environment/StrangeStream>
 #endif
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/analyzer/Analyser>

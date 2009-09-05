@@ -1,6 +1,6 @@
 #include<fstream>    
 #include<fstream> 
-#include<quex/code_base/StrangeStream_unit_tests>
+#include<quex/code_base/test_environment/StrangeStream>
 
 #include <./Simple>
 
