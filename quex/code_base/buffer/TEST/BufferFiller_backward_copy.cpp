@@ -1,3 +1,4 @@
+#include <quex/code_base/test_environment/default_configuration>
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <cstring>
