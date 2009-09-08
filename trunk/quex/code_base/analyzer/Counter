@@ -1,5 +1,5 @@
-// -*- C++ -*-   vim: set syntax=cpp:
-// (C) Frank-Rene Schaefer
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * (C) Frank-Rene Schaefer                               */
 #ifndef __INCLUDE_GUARD__QUEX__COUNTER__
 #define __INCLUDE_GUARD__QUEX__COUNTER__
 

@@ -11,7 +11,9 @@
 
 #include <quex/code_base/token/TokenPolicy>
 
+#ifndef __QUEX_SETTING_PLAIN_C
 namespace quex { 
+#endif
 
 #   if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
 #      undef   QUEX_TOKEN_POLICY_NO_TOKEN
@@ -21,8 +23,9 @@ namespace quex {
 #   define self (*this)
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
-    inline void
-    QUEX_TYPE_ANALYZER::receive(QUEX_TYPE_TOKEN** result_pp) 
+    QUEX_INLINE void
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+                                              QUEX_TYPE_TOKEN** result_pp) 
     /* NOTE: As long as the 'receive()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
      *       does a couple af calls to 'receive()' before a rule triggers 
@@ -67,8 +70,9 @@ namespace quex {
         return;
     }
 
-    inline void
-    QUEX_TYPE_ANALYZER::receive(QUEX_TYPE_TOKEN* result_p) 
+    QUEX_INLINE void
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+                                              QUEX_TYPE_TOKEN* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
@@ -96,8 +100,9 @@ namespace quex {
     }
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 
-    inline void
-    QUEX_TYPE_ANALYZER::receive(QUEX_TYPE_TOKEN* result_p) 
+    QUEX_INLINE void
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+                                              QUEX_TYPE_TOKEN* result_p) 
     {
         this->token = result_p;
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
@@ -107,8 +112,8 @@ namespace quex {
         return;
     }
 
-    inline void
-    QUEX_TYPE_ANALYZER::receive() 
+    QUEX_INLINE void
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER) 
     {
         __quex_assert(this->token != 0x0);
 
@@ -121,8 +126,9 @@ namespace quex {
 #   endif
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    inline QUEX_TYPE_TOKEN*
-    QUEX_TYPE_ANALYZER::receive(QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
+    QUEX_INLINE QUEX_TYPE_TOKEN*
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+                                              QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
         /* RETURNS: Pointer to first token after the last filled in token. */
     {
         __quex_assert(QueueMemoryBegin != 0x0);
@@ -140,5 +146,8 @@ namespace quex {
 #   endif
 
 #   undef self
-}
+
+#ifndef __QUEX_SETTING_PLAIN_C
+} /* namespace quex { */
+#endif
 

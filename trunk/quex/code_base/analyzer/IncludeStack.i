@@ -9,22 +9,34 @@
 #endif
 
 #include <quex/code_base/analyzer/Analyser>
-namespace quex { 
 
-    template <class InputHandleT> inline void    
-    QUEX_TYPE_ANALYZER::include_push(QUEX_TYPE_CHARACTER*     InputName,
-                        const QUEX_TYPE_MODE&   mode, 
-                        const char*              IANA_CodingName /* = 0x0 */)
+#include <quex/code_base/temporary_macros_on>
+
+#ifndef __QUEX_SETTING_PLAIN_C
+namespace quex { 
+#endif
+
+    TEMPLATE_IN void    
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
+                                                   QUEX_TYPE_CHARACTER*    InputName,
+                                                   const QUEX_TYPE_MODE&   mode, 
+                                                   const char*             IANA_CodingName /* = 0x0 */)
     {
-        // Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]
+        /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
+#       ifndef __QUEX_SETTING_PLAIN_C
         include_push<InputHandleT>(InputName, mode.id(), IANA_CodingName);
+#       else
+        QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_push)(InputName, mode.id(), IANA_CodingName);
+#       endif
     }
 
-    template <class InputHandleT> inline void    
-    QUEX_TYPE_ANALYZER::include_push(QUEX_TYPE_CHARACTER*     InputName,
-                        const int                MODE_ID /* = -1 */, 
-                        const char*              IANA_CodingName /* = 0x0 */)
+    TEMPLATE_IN void    
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
+                                                   QUEX_TYPE_CHARACTER*     InputName,
+                                                   const int                MODE_ID /* = -1 */, 
+                                                   const char*              IANA_CodingName /* = 0x0 */)
     {
+#       define InputHandleT  FILE
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]             */
         __quex_assert(    MODE_ID == -1 
                       || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
@@ -32,7 +44,7 @@ namespace quex {
 
         /* Store the lexical analyser's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
-        InputHandleT*   input_handle = 0x0;
+        InputHandleT*       input_handle = 0x0;
         QUEX_TYPE_MEMENTO*  m            = memento_pack(InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
@@ -56,10 +68,11 @@ namespace quex {
         /* Keep track of 'who's your daddy?'                              */
         m->base.parent = this->_parent_memento;
         this->_parent_memento = m;
+#       undef InputHandleT
     }   
 
     inline bool
-    QUEX_TYPE_ANALYZER::include_pop() 
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_pop)(__QUEX_SETTING_THIS_POINTER) 
     {
         /* Not included? return 'false' to indicate we're on the top level     */
         if( this->_parent_memento == 0x0 ) return false; 
@@ -76,7 +89,7 @@ namespace quex {
     }
 
     inline void
-    QUEX_TYPE_ANALYZER::include_stack_delete() 
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_stack_delete)(__QUEX_SETTING_THIS_POINTER) 
     {
         while( this->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */
@@ -88,5 +101,9 @@ namespace quex {
         }
     }
 
-} // namespace quex
+#ifndef __QUEX_SETTING_PLAIN_C
+} // namespace quex 
+#endif
+
+#include <quex/code_base/temporary_macros_off>
 

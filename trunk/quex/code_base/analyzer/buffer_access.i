@@ -5,7 +5,9 @@
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_BUFFER_ACCESS_I__  */
 
 
+#ifndef __QUEX_SETTING_PLAIN_C
 namespace quex { 
+#endif
 
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
@@ -251,5 +253,8 @@ namespace quex {
                                                                QUEX_TYPE_CHARACTER* Adr)
     { buffer._input_p = Adr; }
 
-}
+#ifndef __QUEX_SETTING_PLAIN_C
+} // namespace quex
+#endif
+
 

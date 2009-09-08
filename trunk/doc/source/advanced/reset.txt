@@ -18,11 +18,22 @@ following signature
         reset(InputHandleT*   input_handle, 
               const char*     CharacterEncodingName = 0x0); 
 
-The first argument is an input handle of the user's like. The second
-argument is character encoding name which is used for the input. If
-no converter is used, the ``CharacterEncodingName`` must be set to
-zero. The reset function clears and resets all components of the
-lexical analyzer as they are:
+The first argument is an input handle of the user's like, i.e. either a
+``FILE*``, ``istream*``, or ``wistream*`` pointer, or a pointer to a derived
+class' object. The second argument is character encoding name which is used for
+the input. If no converter is used, the ``CharacterEncodingName`` must be set
+to zero. If the analyzer works only on plain memory, the following
+reset function may be used
+
+.. code-block:: cpp
+
+    void  reset(const char* CharacterEncodingName = 0x0); 
+
+which allows to specify a character encoding name, but the input stream
+is not specified.
+
+The reset function clears and resets all components of the lexical
+analyzer as they are:
 
 #. The core analyzer including buffer management and buffer fill
    management. The buffer memory remains intact, but is cleaned.

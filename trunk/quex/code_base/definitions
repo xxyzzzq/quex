@@ -6,19 +6,6 @@
 #include<quex/code_base/compatibility/inttypes.h>
 #include<quex/code_base/compatibility/pseudo-stdbool.h>
 
-#ifdef     __QUEX_SETTING_PLAIN_C
-#   define __QUEX_SETTING_THIS_POINTER       this,
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   CLASS ## _constructor ## SUFFIX
-#   define QUEX_DESTRUCTOR(CLASS)            CLASS_destruct
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  CLASS ## MEMBER_NAME
-#else
-#   define __QUEX_SETTING_THIS_POINTER       /* 'this' is passed automatically */
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   CLASS::CLASS
-#   define QUEX_DESTRUCTOR(CLASS)            CLASS::~CLASS
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  CLASS::MEMBER_NAME
-#endif
-
-
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #   include <cstring>  // gets: memmove, memcpy
 #   include <cstdio>   // gets: fprintf
@@ -232,5 +219,19 @@ namespace quex {
 
 #define __QUEX_NAMER(A, x, B) A ## x ## B
 #define QUEX_NAMER(A, x, B) __QUEX_NAMER(A, x, B)
+
+#ifdef     __QUEX_SETTING_PLAIN_C
+#   define __QUEX_SETTING_THIS_POINTER       this,
+#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_NAMER(CLASS, _constructor, SUFFIX)
+#   define QUEX_DESTRUCTOR(CLASS)            QUEX_PREFIX(CLASS, _destruct)
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_NAMER(QUEX_TYPE, CLASS, MEMBER_NAME)
+#else
+#   define __QUEX_SETTING_THIS_POINTER       /* 'this' is passed automatically */
+#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_PREFIX(CLASS)::QUEX_PREFIX(CLASS)
+#   define QUEX_DESTRUCTOR(CLASS)            QUEX_PREFIX(CLASS)::~QUEX_PREFIX(CLASS)
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_PREFIX(QUEX_TYPE, CLASS)::MEMBER_NAME
+#endif
+
+
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__DEFINITIONS__ */

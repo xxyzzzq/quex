@@ -6,35 +6,39 @@
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/analyzer/PostCategorizer>
 
+#ifndef __QUEX_SETTING_PLAIN_C
 namespace quex {
+#endif
 
-    inline void
+#   ifndef __QUEX_SETTING_PLAIN_C
+    QUEX_INLINE void
     QuexPostCategorizer::enter(const QUEX_TYPE_CHARACTER* Lexeme, const QUEX_TYPE_TOKEN_ID TokenID)
     {
         QuexPostCategorizer_enter(this, Lexeme, TokenID);
     }
     
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer::remove(const QUEX_TYPE_CHARACTER* Lexeme)
     {
         QuexPostCategorizer_remove(this, Lexeme);
     }
 
-    inline QUEX_TYPE_TOKEN_ID 
+    QUEX_INLINE QUEX_TYPE_TOKEN_ID 
     QuexPostCategorizer::get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const
     {
         QuexPostCategorizerNode* found = QuexPostCategorizer_find(this, Lexeme);
         if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
         return found->token_id;
     }
+#   endif
 
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer::clear()
     {
         QuexPostCategorizer_clear(this, root);
     }
 
-    inline QuexPostCategorizerNode* 
+    QUEX_INLINE QuexPostCategorizerNode* 
     QuexPostCategorizerNode_new(QUEX_TYPE_CHARACTER         FirstCharacter,
                                 const QUEX_TYPE_CHARACTER*  Remainder,
                                 QUEX_TYPE_TOKEN_ID          TokenID)
@@ -48,7 +52,7 @@ namespace quex {
         return me;
     }
 
-    inline int
+    QUEX_INLINE int
     QuexPostCategorizerNode_compare(QuexPostCategorizerNode*    me, 
                                     QUEX_TYPE_CHARACTER         FirstCharacter, 
                                     const QUEX_TYPE_CHARACTER*  Remainder)
@@ -58,13 +62,13 @@ namespace quex {
         else                                                 return strcmp(Remainder, me->name_remainder);
     }
 
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer_construct(QuexPostCategorizer* me)
     {
         me->root = 0x0;
     }
 
-    inline QuexPostCategorizerNode*
+    QUEX_INLINE QuexPostCategorizerNode*
     QuexPostCategorizer_find(const QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName)
     {
         QUEX_TYPE_CHARACTER         FirstCharacter = EntryName[0];
@@ -80,7 +84,7 @@ namespace quex {
         return 0x0;
     }
 
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer_enter(QuexPostCategorizer* me, 
                               const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID)
     {
@@ -110,7 +114,7 @@ namespace quex {
             prev_node->lesser  = QuexPostCategorizerNode_new(FirstCharacter, Remainder, TokenID);
     }
 
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer_remove(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName)
     {
         int result = 0;
@@ -189,7 +193,7 @@ namespace quex {
         MemoryManager_PostCategorizerNode_free(found);
     }
 
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer_print_tree(QuexPostCategorizerNode* node, int Depth)
     {
         if( node == 0x0 ) {
@@ -212,7 +216,7 @@ namespace quex {
         QuexPostCategorizer_print_tree(node->lesser, Depth + 1);
     }
 
-    inline void
+    QUEX_INLINE void
     QuexPostCategorizer_clear(QuexPostCategorizer* me, QuexPostCategorizerNode* branch)
     {
         if( branch == 0x0 ) branch = me->root;
@@ -220,7 +224,11 @@ namespace quex {
         if( branch->greater != 0x0 ) QuexPostCategorizer_clear(me, branch->greater);
         MemoryManager_PostCategorizerNode_free(branch);
     }
-}
+
+#ifndef __QUEX_SETTING_PLAIN_C
+} // namespace quex
+#endif
+
 #include <quex/code_base/MemoryManager.i>
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */

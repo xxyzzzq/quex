@@ -11,26 +11,22 @@
 
 #include <quex/code_base/token/TokenPolicy>
 
+#ifndef __QUEX_SETTING_PLAIN_C
 namespace quex { 
+#endif
 
 #   define self (*this)
 
-    inline QUEX_TYPE_TOKEN*  
-    QUEX_TYPE_ANALYZER::token_object()
-    {
-        return __QUEX_CURRENT_TOKEN_P;
-    }
-
-    inline void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN& That) 
+    QUEX_INLINE void   
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, send)(const QUEX_TYPE_TOKEN& That) 
     {
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
         QUEX_TOKEN_POLICY_SET(That);
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
     }
 
-    inline void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID) 
+    QUEX_INLINE void   
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, send)(const QUEX_TYPE_TOKEN_ID ID) 
     {
         // self._token_queue->write_iterator->set(ID);
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
@@ -38,39 +34,7 @@ namespace quex {
         QUEX_TOKEN_POLICY_PREPARE_NEXT();
     }
 
-    template <typename X0_T> inline void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0) 
-    {
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-        QUEX_TOKEN_POLICY_SET_2(ID, X0);
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();
-    }
-
-    template <typename X0_T, typename X1_T> inline void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1) 
-    {
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-        QUEX_TOKEN_POLICY_SET_3(ID, X0, X1);
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();
-    }
-
-    template <typename X0_T, typename X1_T, typename X2_T> inline void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2) 
-    {
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-        QUEX_TOKEN_POLICY_SET_4(ID, X0, X1, X2);
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();
-    }
-
-    template <typename X0_T, typename X1_T, typename X2_T, typename X3_T> inline void   
-    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T X3) 
-    {
-        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION);
-        QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3);
-        QUEX_TOKEN_POLICY_PREPARE_NEXT();
-    }
-
-    inline void   
+    QUEX_INLINE void   
     QUEX_TYPE_ANALYZER::send_n(const int RepetitionN, QUEX_TYPE_TOKEN_ID ID) 
     {
 #       if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE) || defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
@@ -93,6 +57,67 @@ namespace quex {
 #       endif
     }
 
-#   undef self
-}
+
+#   define self_send(ID) 
+
+#   define self_send1(ID, X0) 
+    do {                                                                                           \
+        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
+        QUEX_TOKEN_POLICY_SET_2(ID, X0);                                                           \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+    } while ( 0 )
+
+#   define self_send2(ID, X0, X1) 
+    do {                                                                                           \
+        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
+        QUEX_TOKEN_POLICY_SET_3(ID, X0, X1);                                                       \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+    } while ( 0 )
+
+#   define self_send3(ID, X0, X1, X2) 
+    do {                                                                                           \
+        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
+        QUEX_TOKEN_POLICY_SET_4(ID, X0, X1, X2);                                                   \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+    } while ( 0 )
+
+#   define self_send4(ID, X0, X1, X2, X3) 
+    do {                                                                                           \
+        QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
+        QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3);                                               \
+        QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
+    } while ( 0 )
+
+#ifndef __QUEX_SETTING_PLAIN_C
+    template <typename X0_T> QUEX_INLINE void   
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0) 
+    {
+        self_send(ID, X0);
+    }
+
+    template <typename X0_T, typename X1_T> QUEX_INLINE void   
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1) 
+    {
+        self_send(ID, X0, X1);
+    }
+
+    template <typename X0_T, typename X1_T, typename X2_T> QUEX_INLINE void   
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2) 
+    {
+        self_send(ID, X0, X1, X2);
+    }
+
+    template <typename X0_T, typename X1_T, typename X2_T, typename X3_T> QUEX_INLINE void   
+    QUEX_TYPE_ANALYZER::send(const QUEX_TYPE_TOKEN_ID ID, X0_T X0, X1_T X1, X2_T X2, X3_T X3) 
+    {
+        self_send(ID, X0, X1, X2);
+    }
+#endif
+
+
+#undef self
+
+#ifndef __QUEX_SETTING_PLAIN_C
+} /* namespace quex { */
+#endif
 

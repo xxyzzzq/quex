@@ -5,35 +5,43 @@
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__       */
 
+#ifndef __QUEX_SETTING_PLAIN_C
 namespace quex { 
-    inline void    
-    QUEX_TYPE_ANALYZER::move_forward(const size_t CharacterN)
+#endif
+
+    QUEX_INLINE void    
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, move_forward)(const size_t CharacterN)
     {
         QuexBuffer_move_forward(&this->buffer, CharacterN);
     }
 
-    inline void    
-    QUEX_TYPE_ANALYZER::move_backward(const size_t CharacterN)
+    QUEX_INLINE void    
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, move_backward)(const size_t CharacterN)
     {
         QuexBuffer_move_backward(&this->buffer, CharacterN);
     }
 
     
-    inline size_t  
-    QUEX_TYPE_ANALYZER::tell()
+    QUEX_INLINE size_t  
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, tell)()
     {
         return QuexBuffer_tell(&this->buffer);
     }
 
-    inline void    
-    QUEX_TYPE_ANALYZER::seek(const size_t CharacterIndex)
+    QUEX_INLINE void    
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, seek)(const size_t CharacterIndex)
     {
         QuexBuffer_seek(&this->buffer, CharacterIndex);
     }
 
+    QUEX_INLINE QUEX_TYPE_TOKEN*  
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, token_object)()
+    {
+        return __QUEX_CURRENT_TOKEN_P;
+    }
 
-    inline void
-    QUEX_TYPE_ANALYZER::print_this()
+    QUEX_INLINE void
+    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, print_this)()
     {
         __QUEX_STD_printf("   CurrentMode = %s;\n", __current_mode_p == 0x0 ? "0x0" : __current_mode_p->name);
 
@@ -56,4 +64,7 @@ namespace quex {
         __QUEX_STD_printf("   ByteOrderInversion = %s;\n", byte_order_reversion() ? "true" : "false");
     }
 
-} // namespace quex
+#ifndef __QUEX_SETTING_PLAIN_C
+} /* namespace quex { */
+#endif
+
