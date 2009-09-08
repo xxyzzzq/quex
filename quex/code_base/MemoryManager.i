@@ -87,6 +87,18 @@ namespace quex {
     { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
 #   endif
 
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
+    MemoryManager_AccumulatorText_allocate(const size_t Size);
+    {
+        const size_t     MemorySize = sizeof(QUEX_TYPE_CHARACTER);
+        return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY(MemorySize);
+    }
+    QUEX_INLINE void
+    MemoryManager_AccumulatorText_free(QUEX_TYPE_CHARACTER* memory)
+    { if( memory != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)memory); }
+#   endif
+
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
     QUEX_INLINE  QuexPostCategorizerNode*  
     MemoryManager_PostCategorizerNode_allocate(size_t RemainderL)
@@ -110,7 +122,6 @@ namespace quex {
     QUEX_INLINE  void 
     MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode* node)
     { if( node != 0x0 ) __QUEX_FREE_MEMORY((uint8_t*)node); }
-
 #   endif
 
     QUEX_INLINE size_t

@@ -319,4 +319,4 @@ namespace quex {
 } // namespace quex
 #endif
 
-#endif // __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+#endif /* __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	*/

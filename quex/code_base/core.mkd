@@ -58,7 +58,7 @@ __QUEX_CORE = \
     ./analyzer/Accumulator.i \
     ./analyzer/misc.i \
     ./analyzer/Analyser \
-    ./analyzer/count_common \
+    ./analyzer/asserts \
     ./analyzer/Counter.i \
     ./analyzer/CounterWithIndentation.i \
     ./analyzer/Counter \

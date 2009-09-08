@@ -44,10 +44,10 @@ $$USER_DEFINED_HEADER$$
 #include    "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
 #ifndef     QUEX_TYPE_TOKEN 
-#   error   "Error: The macro QUEX_TYPE_TOKEN has not been defined in the file $$TOKEN_CLASS_DEFINITION_FILE$$."
+#   error   "Error: No '#define' of QUEX_TYPE_TOKEN in file $$TOKEN_CLASS_DEFINITION_FILE$$."
 #endif
 #ifndef     QUEX_TYPE_TOKEN_ID
-#   error   "Error: The macro QUEX_TYPE_TOKEN_ID has not been defined in the file $$TOKEN_CLASS_DEFINITION_FILE$$."
+#   error   "Error: No '#define' of QUEX_TYPE_TOKEN_ID in file $$TOKEN_CLASS_DEFINITION_FILE$$."
 #endif
 
 #include    <quex/code_base/definitions>
@@ -238,9 +238,10 @@ $$MODE_OBJECTS$$
         void    seek(const size_t);
 
     public:
-        template <class InputHandleT> void
-        reset(InputHandleT*   input_handle, 
-              const char*     CharacterEncodingName = 0x0); 
+        template <class InputHandleT> void reset(InputHandleT*   input_handle, 
+                                                 const char*     CharacterEncodingName = 0x0); 
+        void                               reset(const char* CharacterEncodingName = 0x0) 
+        { reset<void>((void*)0x0, CharacterEncodingName); }
 
 
         // (*) All Modes are Friends _____________________________________________________
