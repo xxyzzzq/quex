@@ -8,6 +8,11 @@
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
+#ifndef   QUEX_TYPE_ACCUMULATOR
+#   error "Macro QUEX_TYPE_ACCUMULATOR must be defined before inclusion of this file."
+#endif
+
+#include <quex/code_base/definitions>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
@@ -29,25 +34,19 @@ namespace quex {
         }                   text;
         QUEX_TYPE_ANALYZER* the_lexer;     
 
-#       ifndef __QUEX_SETTING_PLAIN_C
+#   ifndef __QUEX_SETTING_PLAIN_C
     public:
-        QUEX_TYPE_ACCUMULATOR() 
-        { QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, construct)(this); }
         void  flush(const QUEX_TYPE_TOKEN_ID TokenID);
-        { QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, flush)(this); }
         void  clear();
-        { QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, clear)(this); }
         void  add(const QUEX_TYPE_CHARACTER*);
-        { QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, add)(this); }
         void  add(const QUEX_TYPE_CHARACTER);
-        { QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, add_character)(this); }
-
         void  print_this();
     private:
         friend class QUEX_TYPE_ANALYZER;
-#       endif
+#   endif
     } QUEX_TYPE_ACCUMULATOR;
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
+

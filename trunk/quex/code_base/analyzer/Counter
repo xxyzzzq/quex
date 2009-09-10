@@ -36,7 +36,7 @@ namespace quex {
     } Counter;
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_INLINE void  Counter_construct(Counter* me);
+    QUEX_INLINE void  Counter_construct(Counter* me, QUEX_TYPE_ANALYZER* lexer);
     QUEX_INLINE void  Counter_copy_construct(Counter* me, const Counter* That);
     QUEX_INLINE void  Counter_init(Counter* me);
 
@@ -83,7 +83,7 @@ namespace quex {
 
 #   ifdef __QUEX_OPTION_COUNTER
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me);
+    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER* lexer);
 
     QUEX_INLINE void
     CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);
