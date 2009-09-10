@@ -214,8 +214,10 @@ namespace quex {
         "###############################################################################\n"
 
 /* Generating names on the fly while existing macros are to be used. */
-#define __QUEX_PREFIX(A, x) A ## x
-#define QUEX_PREFIX(PREFIX, x) __QUEX_PREFIX(PREFIX, x)
+#define QUEX_EXPAND(X)  X
+
+#define __QUEX_PREFIX(A, x)     A ## x
+#define QUEX_PREFIX(PREFIX, x)  __QUEX_PREFIX(PREFIX, x)
 
 #define __QUEX_NAMER(A, x, B) A ## x ## B
 #define QUEX_NAMER(A, x, B) __QUEX_NAMER(A, x, B)
@@ -224,12 +226,14 @@ namespace quex {
 #   define __QUEX_SETTING_THIS_POINTER       this,
 #   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_NAMER(CLASS, _constructor, SUFFIX)
 #   define QUEX_DESTRUCTOR(CLASS)            QUEX_PREFIX(CLASS, _destruct)
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_NAMER(QUEX_TYPE, CLASS, MEMBER_NAME)
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_NAMER(QUEX_TYPE_, CLASS, MEMBER_NAME)
+#   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_NAMER(QUEX_TYPE_, CLASS, MEMBER_NAME)
 #else
 #   define __QUEX_SETTING_THIS_POINTER       /* 'this' is passed automatically */
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_PREFIX(CLASS)::QUEX_PREFIX(CLASS)
-#   define QUEX_DESTRUCTOR(CLASS)            QUEX_PREFIX(CLASS)::~QUEX_PREFIX(CLASS)
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_PREFIX(QUEX_TYPE, CLASS)::MEMBER_NAME
+#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_PREFIX(QUEX_TYPE_, CLASS)::QUEX_PREFIX(QUEX_TYPE_, CLASS)
+#   define QUEX_DESTRUCTOR(CLASS)            QUEX_PREFIX(QUEX_TYPE_, CLASS)::~QUEX_PREFIX(QUEX_TYPE_, CLASS)
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_PREFIX(QUEX_TYPE_, CLASS)::MEMBER_NAME
+#   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_NAMER(QUEX_EXPAND(QUEX_TYPE_ ## CLASS),_,MEMBER_NAME)
 #endif
 
 

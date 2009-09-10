@@ -25,14 +25,15 @@ namespace quex {
      *       last end, such as _line_number_at_begin = _line_number_at_end.
      *       This has to happen outside these functions.                        */
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me)
+    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER* lexer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
         memset((void*)me, 0xFF, sizeof(CounterWithIndentation));
 #       endif
 
-        me->_the_lexer = (QUEX_TYPE_ANALYZER*)0x0;
+        me->_the_lexer = lexer;
+
         CounterWithIndentation_init(me);
     }
 

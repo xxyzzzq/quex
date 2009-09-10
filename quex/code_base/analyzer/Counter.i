@@ -25,13 +25,15 @@ namespace quex {
 #endif
 
     QUEX_INLINE void
-    Counter_construct(Counter* me)
+    Counter_construct(Counter* me, QUEX_TYPE_ANALYZER* lexer)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
         memset((void*)me, 0xFF, sizeof(Counter));
 #       endif
         Counter_init(me); 
+
+        /* The lexical analyzer is not important for this type of counter. */
     }
 
     QUEX_INLINE void
