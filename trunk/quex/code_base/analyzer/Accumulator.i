@@ -2,12 +2,26 @@
  *
  * NO INCLUDE GUARDS -- THIS FILE MIGHT BE INCLUDED TWICE FOR MULTIPLE
  *                      LEXICAL ANALYZERS
+ *
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR_I__
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_ACCUMULATOR_I__       */
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
+
+    void
+    QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR* me, 
+                                                   QUEX_TYPE_ANALYZER*    lexer)
+    {
+        me->the_lexer = lexer;
+        me->text.begin      = MemoryManager_AccumulatorText_allocate(QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE);
+        if( me->text.begin == 0x0 ) {
+            QUEX_ERROR_EXIT("Quex engine: out of memory--cannot allocate Accumulator.");
+        }
+        me->text.end        = me->text.begin;
+        me->text.memory_end = me->text.begin + QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE;
+    }
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ACCUMULATOR, flush)(QUEX_TYPE_ACCUMULATOR*    me, 
@@ -97,18 +111,16 @@ namespace quex {
         const size_t  AddSize = (size_t)(Size * (float)QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR);
         const size_t  NewSize = AddSize <= 0 ? Size + 1 : Size + AddSize;
 
-        return QUEX_MEMFUNC_CALL(ACCUMULATOR, allocate_text)(me, NewSize);
-    }
-
-    QUEX_INLINE bool
-    QUEX_MEMFUNC(ACCUMULATOR, allocate_text)(QUEX_TYPE_ACCUMULATOR* me, const size_t Size)
-    {
         QUEX_TYPE_CHARACTER*  chunk = MemoryManager_AccumulatorText_allocate(Size);
-
         if( chunk == 0x0 ) return false;
+
+        __QUEX_STD_memcpy(chunk, me->text.begin, sizeof(QUEX_TYPE_CHARACTER) * NewSize);
+
+        MemoryManager_AccumulatorText_free(me->text.begin);
+
         me->text.begin      = chunk;
         me->text.end        = chunk;
-        me->text.memory_end = chunk + Size;
+        me->text.memory_end = chunk + NewSize;
         return true;
     }
 

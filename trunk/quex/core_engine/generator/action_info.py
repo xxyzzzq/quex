@@ -43,10 +43,13 @@ UserCodeFragment_OpenLinePragma = {
 #  ...[Language][1]   = template containing 'NUMBER' and 'FILENAME' that
 #                       are to replaced in order to get the resetting line pragma.
 #___________________________________________________________________________________
-        "C": [
-              '/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */',
-              '#line NUMBER "FILENAME"'
-             ],
+        "C": 
+        [
+            [ '/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA */',
+              '#line NUMBER "FILENAME"' ],
+            ['/* POST-ADAPTION: FILL IN APPROPRIATE LINE PRAGMA CppTemplate.txt */',
+             '#line NUMBER "CppTemplate.txt"' ]
+        ],
    }
 
 class UserCodeFragment(CodeFragment):
@@ -79,7 +82,7 @@ class UserCodeFragment(CodeFragment):
         return txt
     
 def get_return_to_source_reference():
-    return "\n" + UserCodeFragment_OpenLinePragma["C"][0] + "\n"
+    return "\n" + UserCodeFragment_OpenLinePragma["C"][0][0] + "\n"
 
 
 def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
@@ -90,12 +93,13 @@ def UserCodeFragment_straighten_open_line_pragmas(filename, Language):
 
     new_content = ""
     line_n      = 0
-    LinePragmaInfo = UserCodeFragment_OpenLinePragma[Language]
+    LinePragmaInfoList = UserCodeFragment_OpenLinePragma[Language]
     for line in fh.readlines():
         line_n += 1
-        if line.find(LinePragmaInfo[0]) != -1:
-            if Language == "C":
-                line = LinePragmaInfo[1]
+        if Language == "C":
+            for info in LinePragmaInfoList:
+                if line.find(info[0]) == -1: continue
+                line = info[1]
                 line = line.replace("NUMBER", repr(int(line_n + 1)))
                 line = line.replace("FILENAME", filename)
                 line = line + "\n"

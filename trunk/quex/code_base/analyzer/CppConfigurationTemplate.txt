@@ -151,6 +151,15 @@ $$SWITCH$$ QUEX_OPTION_INCLUDE_STACK
 #ifndef  QUEX_OPTION_STRING_ACCUMULATOR
 $$SWITCH$$ QUEX_OPTION_STRING_ACCUMULATOR
 #endif 
+/* Initial size of the character accumulator. */
+#define  QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE        (256)
+/* Granularity, if new memory has to be allocated. The new
+ * memory will be by this factor greater than the previous.
+ * Example: At start, memory contains 256 characters; then 
+ * new allocation becomes necessary; if factor = 0.5, then
+ * the new memory will contain (256 + 128) = 384 characters. The
+ * next time, the new memory of size (384 + 192) = 576 characters.      */
+#define  QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (0.8)
 
 /* If one mode requires indentation support, then the lexical analyser
  * class must be setup for indentation counting. The following flag is

@@ -89,7 +89,7 @@ namespace quex {
 
 
     QUEX_INLINE
-    QUEX_DESTRUCTOR(QUEX_TYPE_ANALYZER)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_DESTRUCTOR(ANALYZER)(__QUEX_SETTING_THIS_POINTER) 
     {
         QuexAnalyser_destruct(this);
 #       ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
