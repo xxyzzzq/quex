@@ -307,11 +307,11 @@ $$CLASS_BODY_EXTENSION$$
 #       endif
 
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_MEMCALL(ACCUMULATOR, _construct)(&accumulator, this);
+        QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _construct)(&accumulator, this);
 #       endif
 
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_MEMCALL(QUEX_TYPE_COUNTER, _construct)(&counter, this);
+        QUEX_PREFIX(QUEX_TYPE_COUNTER, _construct)(&counter, this);
 #       endif
 
         mode_db[0] = 0x0;

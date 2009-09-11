@@ -435,8 +435,6 @@ class Mode:
                           earlier_match.pattern, 
                           earlier_match.action().filename, earlier_match.action().line_n,  
                           DontExitF=True, WarningF=False) 
-                print "##1", state_machine
-                print "##2", earlier_match.pattern_state_machine()
                 error_msg("pattern '%s' while the former has precedence.\n" % \
                           pattern + "The latter can never match.\n" + \
                           "You may switch the sequence of definition to avoid this error.",
