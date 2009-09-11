@@ -10,13 +10,16 @@ specific id TKN_STRING. The accumulator provides the following functions:
 
 .. code-block:: cpp
 
-  void   add(const char*);
-  void   add(const char);
+  void  add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+  void   add(const QUEX_TYPE_CHARACTER);
   void   flush(const token::id\_type TokenID);
   void   clear();
 
-The add-functions add a string or a character to the accumulated string, the
-``flush()`` function sends a token with the accumulated string and the specified
+The add-functions add a string or a character to the accumulated string.
+``Begin`` must point to the first character of the string, and ``End`` must
+point right after the last character of the string.  ``Lexeme`` can be passed
+as ``Begin``, and ``LexemeEnd`` can be passed as ``End``. 
+The ``flush()`` function sends a token with the accumulated string and the specified
 token-id. Finally, the ``clear()`` function clears the accumulated string without
 sending any token.
 

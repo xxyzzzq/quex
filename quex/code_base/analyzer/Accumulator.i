@@ -23,89 +23,12 @@ namespace quex {
         me->text.memory_end = me->text.begin + QUEX_SETTING_ACCUMULATOR_INITIAL_SIZE;
     }
 
-    QUEX_INLINE void
-    QUEX_MEMFUNC(ACCUMULATOR, flush)(QUEX_TYPE_ACCUMULATOR*    me, 
-                                     const QUEX_TYPE_TOKEN_ID  TokenID)
-    {
-        /* If no text is to be flushed, return undone */
-        if( me->text.begin == me->text.end == 0 ) return;
-
-        _the_lexer->send(TokenID, me->text.begin);
-        _accumulated_text = std::basic_string<QUEX_TYPE_CHARACTER>();
-    }
-
-
-    QUEX_INLINE void
-    QUEX_MEMFUNC(ACCUMULATOR, clear)(QUEX_TYPE_ACCUMULATOR* me)
-    {
-        /* If no text is to be flushed, return undone */
-        if( me->text.begin == me->text.end == 0 ) return;
-        me->text.end = me->text.begin;
-    }
-
-    QUEX_INLINE void 
-    QUEX_MEMFUNC(ACCUMULATOR, add)(QUEX_TYPE_ACCUMULATOR*     me, 
-                                   const QUEX_TYPE_CHARACTER* Begin, QUEX_TYPE_CHARACTER* End)
-    { 
-        const L = End - Begin;
-
-        /* If it is the first string to be appended, the store the location */
-#       ifdef __QUEX_OPTION_COUNTER
-        if( me->text.begin == me->text.end == 0 ) {
-#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _begin_column = _the_lexer->column_number_at_begin();
-#           endif
-#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-            _begin_line   = _the_lexer->line_number_at_begin();
-#           endif
-        }
-#       endif
-
-        if( me->text.memory_end - me->text.end < L ) {
-            if( QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, extend)(me) == false ) {
-                QUEX_ERROR_EXIT("Quex Engine: Out of Memory. Accumulator could not be further extended.\n");
-            }
-        }
-
-        __QUEX_STD_memcpy(me->text.end, Begin, L * sizeof(QUEX_TYPE_CHARACTER));
-        me->text.end += L;
-    }
-
-
-    QUEX_INLINE void 
-    QUEX_MEMFUNC(ACCUMULATOR, add)(QUEX_TYPE_ACCUMULATOR*     me, 
-                                   const QUEX_TYPE_CHARACTER  Character)
-    { 
-        /* If it is the first string to be appended, the store the location */
-#       ifdef __QUEX_OPTION_COUNTER
-        if( me->text.begin == me->text.end == 0 ) {
-#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-            _begin_column = _the_lexer->column_number_at_begin();
-#           endif
-#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-            _begin_line   = _the_lexer->line_number_at_begin();
-#           endif
-        }
-#       endif
-
-        if( me->text.memory_end == me->text.end ) {
-            if( QUEX_MEMFUNC_CALL(QUEX_TYPE_ACCUMULATOR, extend)(me) == false ) {
-                QUEX_ERROR_EXIT("Quex Engine: Out of Memory. Accumulator could not be further extended.\n");
-            }
-        }
-
-        *(me->text.end) = Character;
-        ++(me->text.end);
-    }
-
-    QUEX_INLINE void  
-    QUEX_MEMFUNC(ACCUMULATOR, print_this)(QUEX_TYPE_ACCUMULATOR* me)
-    {
-        __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)me->text);
-    }
+    void
+    QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _destruct)(QUEX_TYPE_ACCUMULATOR* me, 
+                                                  QUEX_TYPE_ANALYZER*    lexer);
 
     QUEX_INLINE bool
-    QUEX_MEMFUNC(ACCUMULATOR, extend)(QUEX_TYPE_ACCUMULATOR* me)
+    QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _extend)(QUEX_TYPE_ACCUMULATOR* me)
     {
         const float   Size    = me->text.memory_end - me->text.begin;
         const size_t  AddSize = (size_t)(Size * (float)QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR);
@@ -122,6 +45,88 @@ namespace quex {
         me->text.end        = chunk;
         me->text.memory_end = chunk + NewSize;
         return true;
+    }
+
+    QUEX_INLINE void
+    QUEX_MEMFUNC(ACCUMULATOR, flush)(__QUEX_SETTING_THIS_POINTER
+                                     const QUEX_TYPE_TOKEN_ID  TokenID)
+    {
+        /* If no text is to be flushed, return undone */
+        if( this->text.begin == this->text.end ) return;
+
+        this->the_lexer->send(TokenID, this->text.begin);
+
+        QUEX_MEMCALL(ACCUMULATOR, clear)(__QUEX_SETTING_THIS_POINTER);
+    }
+
+
+    QUEX_INLINE void
+    QUEX_MEMFUNC(ACCUMULATOR, clear)(__QUEX_SETTING_THIS_POINTER)
+    {
+        /* If no text is to be flushed, return undone */
+        if( this->text.begin == this->text.end ) return;
+        this->text.end = this->text.begin;
+    }
+
+    QUEX_INLINE void 
+    QUEX_MEMFUNC(ACCUMULATOR, add)(__QUEX_SETTING_THIS_POINTER
+                                   const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End)
+    { 
+        const size_t L = End - Begin;
+
+        /* If it is the first string to be appended, the store the location */
+#       ifdef __QUEX_OPTION_COUNTER
+        if( this->text.begin == this->text.end ) {
+#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            _begin_column = this->the_lexer->counter.base._column_number_at_begin;
+#           endif
+#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+            _begin_line   = this->the_lexer->counter.base._line_number_at_begin;
+#           endif
+        }
+#       endif
+
+        if( (size_t)(this->text.memory_end - this->text.end) < L ) {
+            if( QUEX_MEMCALL(QUEX_TYPE_ACCUMULATOR, extend)(this) == false ) {
+                QUEX_ERROR_EXIT("Quex Engine: Out of Memory. Accumulator could not be further extended.\n");
+            }
+        }
+
+        __QUEX_STD_memcpy(this->text.end, Begin, L * sizeof(QUEX_TYPE_CHARACTER));
+        this->text.end += L;
+    }
+
+
+    QUEX_INLINE void 
+    QUEX_MEMFUNC(ACCUMULATOR, add)(__QUEX_SETTING_THIS_POINTER
+                                   const QUEX_TYPE_CHARACTER  Character)
+    { 
+        /* If it is the first string to be appended, the store the location */
+#       ifdef __QUEX_OPTION_COUNTER
+        if( this->text.begin == this->text.end ) {
+#           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+            _begin_column = this->the_lexer->counter.base._column_number_at_begin;
+#           endif
+#           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+            _begin_line   = this->the_lexer->counter.base._line_number_at_begin;
+#           endif
+        }
+#       endif
+
+        if( this->text.memory_end == this->text.end ) {
+            if( QUEX_MEMCALL(QUEX_TYPE_ACCUMULATOR, extend)(me) == false ) {
+                QUEX_ERROR_EXIT("Quex Engine: Out of Memory. Accumulator could not be further extended.\n");
+            }
+        }
+
+        *(this->text.end) = Character;
+        ++(this->text.end);
+    }
+
+    QUEX_INLINE void  
+    QUEX_MEMFUNC(ACCUMULATOR, print_this)(__QUEX_SETTING_THIS_POINTER)
+    {
+        __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)this->text);
     }
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
