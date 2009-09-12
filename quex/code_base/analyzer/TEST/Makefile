@@ -9,7 +9,8 @@ PROGRAMS = counter-column_line.exe \
 		   post-categorizer-remove.exe \
 		   post-categorizer-remove-2.exe \
 		   post-categorizer-remove-total.exe \
-		   post-categorizer-find.exe
+		   post-categorizer-find.exe \
+		   accumulator.exe
 
 all:       $(PROGRAMS) 
 
@@ -31,7 +32,11 @@ post-categorizer-%.exe:   post-categorizer-%.cpp $(QUEX_CORE)
 counter-%.exe:   counter-%.cpp $(QUEX_CORE)
 	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
 
-counter-%.E:   counter-%.cpp $(QUEX_CORE)
+accumulator.exe: accumalator.cpp $(QUEX_CORE)
+	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
+
+
+%.E:   %.cpp $(QUEX_CORE)
 	$(CC) -E -I./. -I$(QUEX_PATH) $< -o $@ 
 
 clean: 
