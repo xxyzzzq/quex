@@ -32,7 +32,7 @@ post-categorizer-%.exe:   post-categorizer-%.cpp $(QUEX_CORE)
 counter-%.exe:   counter-%.cpp $(QUEX_CORE)
 	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
 
-accumulator.exe: accumalator.cpp $(QUEX_CORE)
+accumulator.exe: accumulator.cpp $(QUEX_CORE)
 	$(CC) -I./. -I$(QUEX_PATH) $< -o $@ 
 
 
