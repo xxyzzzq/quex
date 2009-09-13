@@ -31,7 +31,7 @@ int
 main(int  argc, char** argv)
 {
     Counter   x;
-    Counter_construct(&x);
+    Counter_construct(&x, 0x0 /* second arg only for conformity with other counter */);
         
     if( argc > 1 and strcmp(argv[1], "--hwut-info") == 0 ) {
         printf("Count Line and Column: Without Indentation Count\n");

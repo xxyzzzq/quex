@@ -68,9 +68,7 @@ main(int  argc, char** argv)
 {
     my_tester                y;
     CounterWithIndentation   x;
-    CounterWithIndentation_construct(&x);
-
-    x._the_lexer = &y;
+    CounterWithIndentation_construct(&x, &y);
     y.counter = (Counter*)&x;
     x.base._line_number_at_end = 1;
         
