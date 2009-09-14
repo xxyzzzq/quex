@@ -189,11 +189,11 @@ mode STRING_READER :
     }
 
     {P_BACKSLASHED_STRING_DELIMITER} {
-        self.accumulator.add(Lexeme);
+        self.accumulator.add(Lexeme, LexemeEnd);
     }
 
     {P_BACKSLASHED_BACKSLASH} {
-        self.accumulator.add(Lexeme);
+        self.accumulator.add(Lexeme, LexemeEnd);
     }
 
     {P_STRING_DELIMITER} {
@@ -203,6 +203,6 @@ mode STRING_READER :
     }
 
     . {
-        self.accumulator.add(Lexeme);
+        self.accumulator.add(Lexeme, LexemeEnd);
     }
 }
