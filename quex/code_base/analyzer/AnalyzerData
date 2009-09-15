@@ -41,24 +41,18 @@ namespace quex {
 #   else
     struct QUEX_TYPE_ANALYZER_DATA : protected QuexAnalyser {
 #   endif
-
         /*_________________________________________________________________________
          *        __   __   ___  __  
          *  |\/| /  \ |  \ |__  /__` 
          *  |  | \__/ |__/ |___ .__/ 
          *                                                                         */
         /* Map: mode-id --> mode object                                            */
-        QUEX_TYPE_MODE*  mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
-
-        /* Each mode has a dedicated analyser function.  The function pointer
-         * to the currently active mode's function is located in the base class
-         * QuexAnalyzer                                                            */
-        QUEX_TYPE_MODE*  __current_mode_p;
+        QuexMode*  mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
 
         struct {
-            QUEX_TYPE_MODE*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
-            QUEX_TYPE_MODE** end;
-            QUEX_TYPE_MODE** memory_end;
+            QuexMode*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            QuexMode** end;
+            QuexMode** memory_end;
         } _mode_stack;
 
         /*_________________________________________________________________________
@@ -79,7 +73,13 @@ namespace quex {
          *  \__, \__/ \__/ | \|  |  |___ |  \ 
          *                                                                         
          *  Dependent on setup all counting might be set to 'null operations'.     */
+#       ifdef __QUEX_OPTION_COUNTER
         QUEX_TYPE_COUNTER  counter;
+#       else
+        /* In case of no counting, we spend sizeof(void*) bytes for nothing, just
+         * to keep the code uniform.                                               */
+        void*              counter; 
+#       endif
 
         /*_________________________________________________________________________
          *       __   __                            ___  __   __  

@@ -56,4 +56,4 @@ FromMode: ONE ToMode: ONE
 LETTER 'one' 
 FromMode: ONE ToMode: ONE
 LETTER 'one' 
-lexer: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/mode_handling.i:82: void quex::Simple::pop_mode(): Assertion `_mode_stack.end != _mode_stack.begin' failed.
+lexer: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/mode_handling.i:78: void quex::Simple::pop_mode(): Assertion `_mode_stack.end != _mode_stack.begin' failed.

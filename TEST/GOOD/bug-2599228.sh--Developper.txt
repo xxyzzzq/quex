@@ -57,7 +57,7 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/misc.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser
-/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/asserts
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter

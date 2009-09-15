@@ -209,7 +209,7 @@ def write_mode_class_implementation(Modes):
     for mode_name in Modes:
         mode_objects_txt += "        QUEX_TYPE_MODE  $$LEXER_CLASS_NAME$$::%s;\n" % mode_name
 
-    txt += "#define QUEX_TYPE_MODE  %sQuexMode\n" % LexerClassName
+    txt += "#define QUEX_TYPE_MODE  QuexMode\n" # % LexerClassName
     txt += "namespace quex {\n"
     txt += mode_objects_txt
     txt += mode_class_member_functions_txt
@@ -295,18 +295,18 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
             txt += __mode_functions(prolog, "void", ["on_indentation"], 
-                                    LexerClassName + "*, const int")
+                                    "QuexAnalyser*, const int")
 
     for mode in Modes:
         for event_name in ["on_exit", "on_entry"]:
             if not mode.has_code_fragment_list(event_name): continue
             txt += __mode_functions(prolog, "void", [event_name], 
-                                    LexerClassName + "*, const QUEX_TYPE_MODE*")
+                                    "QuexAnalyser*, const QuexMode*")
 
     txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     for mode in Modes:
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
-                                "const QUEX_TYPE_MODE*")
+                                "const QuexMode*")
         
     txt += "#endif\n"
     txt += "\n"

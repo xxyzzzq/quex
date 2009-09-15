@@ -1,7 +1,9 @@
-/* -*- C++ -*- vim:set syntax=cpp:
- * (C) 2005-2009 Frank-Rene Schaefer                                                 */
-#ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER
-#define __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER
+/* -*- C++ -*-   vim:set syntax=cpp:
+ * __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER may be undefined in case
+ *    that multiple lexical analyzers are used.                                       */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER
+#define __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER
+
 #ifdef  QUEX_OPTION_POST_CATEGORIZER
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -13,7 +15,7 @@ namespace quex {
      * The implementation of the categorization tree is a little more efficient
      * than the STL map, since we do not iterator over the content.
      *________________________________________________________________________________*/
-    typedef struct QuexPostCategorizerNode_tag {
+    typedef struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG {
         /* Store the first character separately from the remainder. This might
          * help to avoid loading 'remotely allocated' strings into the cache if
          * they do not fit anyway (because of their first character).                 */ 
@@ -22,13 +24,13 @@ namespace quex {
 
         QUEX_TYPE_TOKEN_ID           token_id;
 
-        struct QuexPostCategorizerNode_tag*   lesser;
-        struct QuexPostCategorizerNode_tag*   greater;
+        struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG*   lesser;
+        struct QUEX_TYPE_POST_CATEGORIZER_NODE_TAG*   greater;
 
-    } QuexPostCategorizerNode;
+    } QUEX_TYPE_POST_CATEGORIZER_NODE;
 
     typedef struct {
-        QuexPostCategorizerNode*  root;
+        QUEX_TYPE_POST_CATEGORIZER_NODE*  root;
 
 #       ifndef __QUEX_SETTING_PLAIN_C
         void                enter(const QUEX_TYPE_CHARACTER* Lexeme, 
@@ -38,32 +40,41 @@ namespace quex {
         void                clear();
 #       endif
 
-    } QuexPostCategorizer;
+    } QUEX_TYPE_POST_CATEGORIZER;
 
+#   ifdef __QUEX_SETTING_PLAIN_C
     QUEX_INLINE int
-    QuexPostCategorizerNode_compare(QuexPostCategorizerNode* me, 
-                                    QUEX_TYPE_CHARACTER FirstCharacter, const QUEX_TYPE_CHARACTER* Remainder);
+    QUEX_PREFIX(QuexPostCategorizerNode, _compare)(QuexPostCategorizerNode*    me, 
+                                                   QUEX_TYPE_CHARACTER         FirstCharacter, 
+                                                   const QUEX_TYPE_CHARACTER*  Remainder);
 
     QUEX_INLINE void
-    QuexPostCategorizer_enter(QuexPostCategorizer* me, 
-                              const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID);
+    QUEX_PREFIX(QuexPostCategorizer, _enter)(QuexPostCategorizer*        me, 
+                                             const QUEX_TYPE_CHARACTER*  EntryName, 
+                                             QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE QuexPostCategorizerNode*
-    QuexPostCategorizer_find(const QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+    QUEX_PREFIX(QuexPostCategorizer, _find)(const QuexPostCategorizer* me, 
+                                            const QUEX_TYPE_CHARACTER* EntryName);
 
     QUEX_INLINE void
-    QuexPostCategorizer_insert(QuexPostCategorizer* me, 
-                               const QUEX_TYPE_CHARACTER* EntryName, QUEX_TYPE_TOKEN_ID TokenID);
+    QUEX_PREFIX(QuexPostCategorizer, _insert)(QuexPostCategorizer*        me, 
+                                              const QUEX_TYPE_CHARACTER*  EntryName, 
+                                              QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE void
-    QuexPostCategorizer_remove(QuexPostCategorizer* me, const QUEX_TYPE_CHARACTER* EntryName);
+    QUEX_PREFIX(QuexPostCategorizer, _remove)(QuexPostCategorizer*        me, 
+                                              const QUEX_TYPE_CHARACTER*  EntryName);
 
     QUEX_INLINE void
-    QuexPostCategorizer_clear(QuexPostCategorizer* me, QuexPostCategorizerNode* branch);
+    QUEX_PREFIX(QuexPostCategorizer, _clear)(QuexPostCategorizer*      me, 
+                                             QuexPostCategorizerNode*  branch);
+#   endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 } // namespace quex
 #endif
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */
-#endif /* __INCLUDE_GUARD__QUEX__CODE_BASE__POST_CATEGORIZER */
+
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER */

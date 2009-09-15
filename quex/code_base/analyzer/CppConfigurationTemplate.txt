@@ -209,43 +209,6 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   undef  __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #endif
 
-/* CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
- *                 a character. This is independent of the coding (ASCII, WinArabic, ...)
- *
- * Both character types are clearly related, because they are supposed to relate to the 
- * same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
- * belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
- * accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
- *
- * NOTE: If in parallel another engine is built with other bytes per character settings,
- *       then the engines will also include their own header with their own definition
- *       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
- *       Templatifying the lexer would be possible, but the author has in mind to bring out
- *       a 'pure C' version of the quex generated engine. Thus templating would make this 
- *       goal harder achievable.                                                            */
-#ifndef    QUEX_TYPE_CHARACTER
-#   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
-#endif 
-
-#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
-#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data
-#define QUEX_TYPE_ANALYZER_DATA      $$LEXER_CLASS_NAME$$Data
-#define QUEX_TYPE_DERIVED_ANALYZER   $$LEXER_DERIVED_CLASS_NAME$$
-
-#define QUEX_TYPE_MEMENTO_BASE       $$LEXER_CLASS_NAME$$MementoBase
-#define QUEX_TYPE_MEMENTO_TAG        $$LEXER_CLASS_NAME$$Memento_tag
-#define QUEX_TYPE_MEMENTO            $$LEXER_CLASS_NAME$$Memento
-
-#define QUEX_TYPE_ACCUMULATOR        $$LEXER_CLASS_NAME$$Accumulator
-#define QUEX_TYPE_MODE_TAG           $$LEXER_CLASS_NAME$$QuexMode_tag
-#define QUEX_TYPE_MODE               $$LEXER_CLASS_NAME$$QuexMode
-
-#ifdef     __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   define QUEX_TYPE_COUNTER  CounterWithIndentation
-#else 
-#   define QUEX_TYPE_COUNTER  Counter
-#endif
-
 #define QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE  (280)
 
 /* Derived */
@@ -312,6 +275,49 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   ifndef    __QUEX_OPTION_CONVERTER_ENABLED
 #      define __QUEX_OPTION_CONVERTER_ENABLED
 #   endif
+#endif
+
+/* Type Definitions */
+/* CHARACTER TYPE: Type that represents the number of bytes used in the engine to store
+ *                 a character. This is independent of the coding (ASCII, WinArabic, ...)
+ *
+ * Both character types are clearly related, because they are supposed to relate to the 
+ * same type of objects in memory. The following example shows, that 'uint8_t' and 'char'
+ * belong together, the lexeme type cannot be 'uint8_t' because the std-string functions
+ * accept 'char*' and not 'uint8_t' (which is most propperly 'unsigned char').
+ *
+ * NOTE: If in parallel another engine is built with other bytes per character settings,
+ *       then the engines will also include their own header with their own definition
+ *       of QUEX_TYPE_CHARACTER. Thus there is no danger at all. 
+ *       Templatifying the lexer would be possible, but the author has in mind to bring out
+ *       a 'pure C' version of the quex generated engine. Thus templating would make this 
+ *       goal harder achievable.                                                            */
+#ifndef    QUEX_TYPE_CHARACTER
+#   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
+#endif 
+
+#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
+#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data
+#define QUEX_TYPE_ANALYZER_DATA      $$LEXER_CLASS_NAME$$Data
+#define QUEX_TYPE_DERIVED_ANALYZER   $$LEXER_DERIVED_CLASS_NAME$$
+
+#define QUEX_TYPE_MEMENTO_BASE       $$LEXER_CLASS_NAME$$MementoBase
+#define QUEX_TYPE_MEMENTO_TAG        $$LEXER_CLASS_NAME$$Memento_tag
+#define QUEX_TYPE_MEMENTO            $$LEXER_CLASS_NAME$$Memento
+
+#define QUEX_TYPE_POST_CATEGORIZER           $$LEXER_CLASS_NAME$$Dictionary
+#define QUEX_TYPE_POST_CATEGORIZER_NODE      $$LEXER_CLASS_NAME$$DictionaryNode
+#define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  $$LEXER_CLASS_NAME$$DictionaryNode_tag
+#define QUEX_TYPE_ACCUMULATOR                $$LEXER_CLASS_NAME$$Accumulator
+#define QUEX_TYPE_MODE_TAG                   QuexMode_tag
+#define QUEX_TYPE_MODE                       QuexMode
+
+#if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   define QUEX_TYPE_COUNTER  CounterWithIndentation
+#elif  defined(__QUEX_OPTION_COUNTER)
+#   define QUEX_TYPE_COUNTER  Counter
+#else
+#   define QUEX_TYPE_COUNTER  void*
 #endif
 
 

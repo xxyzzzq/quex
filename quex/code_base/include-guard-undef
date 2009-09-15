@@ -1,0 +1,18 @@
+/* (C) 2005-2009 Frank-Rene Schaefer */
+#ifndef __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+#   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN is not defined, tells that this is not the case."
+#endif
+
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I__
+#    undef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I__
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
+#    undef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER
+#    undef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER
+#    undef QuexCounter_construct
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER
+#    undef __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER
+#endif

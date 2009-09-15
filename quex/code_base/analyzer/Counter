@@ -36,13 +36,13 @@ namespace quex {
     } Counter;
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_INLINE void  Counter_construct(Counter* me, QUEX_TYPE_ANALYZER* lexer);
+    QUEX_INLINE void  Counter_construct(Counter* me, QuexAnalyser* lexer);
     QUEX_INLINE void  Counter_copy_construct(Counter* me, const Counter* That);
     QUEX_INLINE void  Counter_init(Counter* me);
 
     QUEX_INLINE void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
     QUEX_INLINE void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
-    QUEX_INLINE void  Counter_count_FixNewlineN(Counter*             me,
+    QUEX_INLINE void  Counter_count_FixNewlineN(Counter*        me,
                                            QUEX_TYPE_CHARACTER* Lexeme,
                                            QUEX_TYPE_CHARACTER* LexemeEnd,
                                            const int            LineNIncrement);
@@ -73,7 +73,7 @@ namespace quex {
     typedef struct {
         __CounterBase   base;
 
-        QUEX_TYPE_ANALYZER*  _the_lexer;
+        QuexAnalyser*  _the_lexer;
 
         int     _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
@@ -83,7 +83,7 @@ namespace quex {
 
 #   ifdef __QUEX_OPTION_COUNTER
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER* lexer);
+    CounterWithIndentation_construct(CounterWithIndentation* me, QuexAnalyser* lexer);
 
     QUEX_INLINE void
     CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);

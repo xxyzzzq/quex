@@ -25,7 +25,7 @@ namespace quex {
      *       last end, such as _line_number_at_begin = _line_number_at_end.
      *       This has to happen outside these functions.                        */
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER* lexer)
+    CounterWithIndentation_construct(CounterWithIndentation* me, QuexAnalyser* lexer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
@@ -51,7 +51,7 @@ namespace quex {
     {
         /* 'flush' remaining indentations                                      */
         if( me->_indentation_event_enabled_f ) 
-            me->_the_lexer->mode().on_indentation(me->_the_lexer, me->_indentation);
+            me->_the_lexer->__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
     }
 
     QUEX_INLINE void    
@@ -226,7 +226,7 @@ namespace quex {
 #       endif
         if( me->_indentation_count_enabled_f ) {
             me->_indentation_count_enabled_f = false; 
-            me->_the_lexer->mode().on_indentation(me->_the_lexer, me->_indentation);
+            me->_the_lexer->__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
         }
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
@@ -271,7 +271,7 @@ namespace quex {
                  *   no  -> enable event for the next time.
                  *          indentation events can only be disabled for one coming event. */
                 if( me->_indentation_event_enabled_f ) 
-                    me->_the_lexer->mode().on_indentation(me->_the_lexer, me->_indentation);
+                    me->_the_lexer->__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
                 else
                     /* event was disabled this time, enable it for the next time. */
                     me->_indentation_event_enabled_f = true;

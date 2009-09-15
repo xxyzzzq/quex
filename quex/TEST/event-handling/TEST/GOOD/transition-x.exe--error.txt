@@ -43,4 +43,4 @@ Exit:  TWO
 FromMode: TWO ToMode: ONE
 Enter: ONE
 TOKEN: RETURN_TO_MODE 'return' 
-transition-x.exe: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/mode_handling.i:82: void quex::EHLexer::pop_mode(): Assertion `_mode_stack.end != _mode_stack.begin' failed.
+transition-x.exe: /home/fschaef/prj/quex/trunk/quex/code_base/analyzer/mode_handling.i:78: void quex::EHLexer::pop_mode(): Assertion `_mode_stack.end != _mode_stack.begin' failed.

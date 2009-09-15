@@ -43,6 +43,13 @@ namespace quex {
     QUEX_INLINE uint8_t*  MemoryManager_BufferFiller_RawBuffer_allocate(const size_t ByteN);
     QUEX_INLINE void      MemoryManager_BufferFiller_RawBuffer_free(uint8_t* memory);
 
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
+    QUEX_INLINE QUEX_TYPE_CHARACTER*
+    MemoryManager_AccumulatorText_allocate(const size_t Size);
+    QUEX_INLINE void
+    MemoryManager_AccumulatorText_free(QUEX_TYPE_CHARACTER* memory);
+#   endif
+
 #   if defined (QUEX_OPTION_ENABLE_ICONV)
     QUEX_INLINE QuexConverter_IConv*  MemoryManager_Converter_IConv_allocate();
     QUEX_INLINE void                  MemoryManager_Converter_IConv_free(QuexConverter_IConv* memory);
