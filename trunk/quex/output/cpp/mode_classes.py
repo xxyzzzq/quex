@@ -5,7 +5,7 @@ def do(Modes):
 
     # -- get the implementation of mode class functions
     #    (on_entry, on_exit, on_indendation, has_base, has_entry, has_exit)
-    txt  = "#define self  (*me)\n"
+    txt  = "#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)\n"
     for mode in Modes:        
         txt += get_implementation_of_mode_functions(mode, Modes)
 
@@ -16,18 +16,18 @@ def do(Modes):
 mode_function_implementation_str = \
 """
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry($$LEXER_CLASS_NAME$$* me, const QUEX_TYPE_MODE* FromMode) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_entry(QuexAnalyser* me, const QUEX_TYPE_MODE* FromMode) {
 $$ENTER-PROCEDURE$$
     }
 
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit($$LEXER_CLASS_NAME$$* me, const QUEX_TYPE_MODE* ToMode)  {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_exit(QuexAnalyser* me, const QUEX_TYPE_MODE* ToMode)  {
 $$EXIT-PROCEDURE$$
     }
 
 #ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
     void
-    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_indentation($$LEXER_CLASS_NAME$$* me, const int Indentation) {
+    $$LEXER_CLASS_NAME$$_$$MODE_NAME$$_on_indentation(QuexAnalyser* me, const int Indentation) {
 $$INDENTATION-PROCEDURE$$
     }
 #endif

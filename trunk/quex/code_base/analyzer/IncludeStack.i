@@ -16,22 +16,22 @@
 namespace quex { 
 #endif
 
-    TEMPLATE_IN void    
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
-                                                   QUEX_TYPE_CHARACTER*    InputName,
-                                                   const QUEX_TYPE_MODE&   mode, 
-                                                   const char*             IANA_CodingName /* = 0x0 */)
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
+                                         QUEX_TYPE_CHARACTER*    InputName,
+                                         const QUEX_TYPE_MODE&   mode, 
+                                         const char*             IANA_CodingName /* = 0x0 */)
     {
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N] */
 #       ifndef __QUEX_SETTING_PLAIN_C
         include_push<InputHandleT>(InputName, mode.id(), IANA_CodingName);
 #       else
-        QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_push)(InputName, mode.id(), IANA_CodingName);
+        QUEX_MEMFUNC(ANALYZER, include_push)(InputName, mode.id(), IANA_CodingName);
 #       endif
     }
 
-    TEMPLATE_IN void    
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
+    TEMPLATE_IN(InputHandleT) void    
+    QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
                                                    QUEX_TYPE_CHARACTER*     InputName,
                                                    const int                MODE_ID /* = -1 */, 
                                                    const char*              IANA_CodingName /* = 0x0 */)
@@ -63,7 +63,9 @@ namespace quex {
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
                                buffer._byte_order_reversion_active_f);
 
+#       ifdef __QUEX_OPTION_COUNTER
         QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
+#       endif
 
         /* Keep track of 'who's your daddy?'                              */
         m->base.parent = this->_parent_memento;
@@ -72,7 +74,7 @@ namespace quex {
     }   
 
     inline bool
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_pop)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_MEMFUNC(ANALYZER, include_pop)(__QUEX_SETTING_THIS_POINTER) 
     {
         /* Not included? return 'false' to indicate we're on the top level     */
         if( this->_parent_memento == 0x0 ) return false; 
@@ -89,7 +91,7 @@ namespace quex {
     }
 
     inline void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, include_stack_delete)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_MEMFUNC(ANALYZER, include_stack_delete)(__QUEX_SETTING_THIS_POINTER) 
     {
         while( this->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */

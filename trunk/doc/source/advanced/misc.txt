@@ -10,8 +10,8 @@ specific id TKN_STRING. The accumulator provides the following functions:
 
 .. code-block:: cpp
 
-  void  add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
-  void   add(const QUEX_TYPE_CHARACTER);
+  void   add(const QUEX_TYPE_CHARACTER* Begin, const QUEX_TYPE_CHARACTER* End);
+  void   add_chararacter(const QUEX_TYPE_CHARACTER);
   void   flush(const token::id\_type TokenID);
   void   clear();
 

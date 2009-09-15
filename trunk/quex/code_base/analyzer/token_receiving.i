@@ -24,8 +24,8 @@ namespace quex {
       
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                              QUEX_TYPE_TOKEN** result_pp) 
+    QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+                                    QUEX_TYPE_TOKEN** result_pp) 
     /* NOTE: As long as the 'receive()' function is not called there is nothing
      *       happening to the token in the queue. But, a parser very probably
      *       does a couple af calls to 'receive()' before a rule triggers 
@@ -71,7 +71,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
                                               QUEX_TYPE_TOKEN* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
@@ -101,7 +101,7 @@ namespace quex {
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN)
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
                                               QUEX_TYPE_TOKEN* result_p) 
     {
         this->token = result_p;
@@ -113,7 +113,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER) 
     {
         __quex_assert(this->token != 0x0);
 
@@ -127,7 +127,7 @@ namespace quex {
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     QUEX_INLINE QUEX_TYPE_TOKEN*
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
                                               QUEX_TYPE_TOKEN* QueueMemoryBegin, QUEX_TYPE_TOKEN* QueueMemoryEnd) 
         /* RETURNS: Pointer to first token after the last filled in token. */
     {

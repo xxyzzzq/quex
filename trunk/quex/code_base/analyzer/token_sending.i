@@ -60,28 +60,28 @@ namespace quex {
 
 #   define self_send(ID) 
 
-#   define self_send1(ID, X0) 
+#   define self_send1(ID, X0) \
     do {                                                                                           \
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
         QUEX_TOKEN_POLICY_SET_2(ID, X0);                                                           \
         QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
     } while ( 0 )
 
-#   define self_send2(ID, X0, X1) 
+#   define self_send2(ID, X0, X1) \
     do {                                                                                           \
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
         QUEX_TOKEN_POLICY_SET_3(ID, X0, X1);                                                       \
         QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
     } while ( 0 )
 
-#   define self_send3(ID, X0, X1, X2) 
+#   define self_send3(ID, X0, X1, X2) \
     do {                                                                                           \
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
         QUEX_TOKEN_POLICY_SET_4(ID, X0, X1, X2);                                                   \
         QUEX_TOKEN_POLICY_PREPARE_NEXT();                                                          \
     } while ( 0 )
 
-#   define self_send4(ID, X0, X1, X2, X3) 
+#   define self_send4(ID, X0, X1, X2, X3) \
     do {                                                                                           \
         QUEX_ASSERT_NO_TOKEN_SENDING_AFTER_TOKEN_TERMINATION(__QUEX_SETTING_TOKEN_ID_TERMINATION); \
         QUEX_TOKEN_POLICY_SET_5(ID, X0, X1, X2, X3);                                               \

@@ -11,7 +11,7 @@ namespace quex {
 
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_append)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_append)(__QUEX_SETTING_THIS_POINTER
                                                                 QUEX_TYPE_CHARACTER* ContentBegin, 
                                                                 QUEX_TYPE_CHARACTER* ContentEnd)
     /* RETURNS: The position of the first character that could not be copied
@@ -53,7 +53,7 @@ namespace quex {
     }
 
     QUEX_INLINE uint8_t*
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_append_conversion)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_append_conversion)(__QUEX_SETTING_THIS_POINTER
                                                                            uint8_t* ContentBegin, uint8_t* ContentEnd)
     /* Appends the content first into a 'raw' buffer and then converts it. This
      * is useful in cases where the 'break' may appear in between characters, or
@@ -101,7 +101,7 @@ namespace quex {
     }
 
     QUEX_INLINE uint8_t*
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_append_conversion_direct)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_append_conversion_direct)(__QUEX_SETTING_THIS_POINTER
                                                                                   uint8_t* ContentBegin, 
                                                                                   uint8_t* ContentEnd)
     /* Does the conversion directly from the given user buffer to the internal 
@@ -140,32 +140,32 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_prepare)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_prepare)(__QUEX_SETTING_THIS_POINTER)
     {
         /* Move away unused passed buffer content. */
         QuexBuffer_move_away_passed_content(&buffer);
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_begin)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_begin)(__QUEX_SETTING_THIS_POINTER)
     { 
         return QuexBuffer_text_end(&buffer); 
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_end)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_end)(__QUEX_SETTING_THIS_POINTER)
     { 
         return QuexBuffer_content_back(&buffer) + 1; 
     }
 
     QUEX_INLINE size_t
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_size)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_size)(__QUEX_SETTING_THIS_POINTER)
     { 
         return buffer_fill_region_end() - buffer_fill_region_begin(); 
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_fill_region_finish)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_fill_region_finish)(__QUEX_SETTING_THIS_POINTER
                                                                 const size_t CharacterN)
     {
         __quex_assert(buffer._memory._end_of_file_p + CharacterN <= buffer._memory._back);
@@ -185,7 +185,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_conversion_fill_region_prepare)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_conversion_fill_region_prepare)(__QUEX_SETTING_THIS_POINTER
                                                                             ) 
     {
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
@@ -196,14 +196,14 @@ namespace quex {
     }
 
     QUEX_INLINE uint8_t*  
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_conversion_fill_region_begin)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_conversion_fill_region_begin)(__QUEX_SETTING_THIS_POINTER)
     { 
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
         return filler->raw_buffer.end;
     }
     
     QUEX_INLINE uint8_t*  
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_conversion_fill_region_end)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_conversion_fill_region_end)(__QUEX_SETTING_THIS_POINTER)
     { 
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
 
@@ -211,13 +211,13 @@ namespace quex {
     }
     
     QUEX_INLINE size_t
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_conversion_fill_region_size)(__QUEX_SETTING_THIS_POINTER)
+    QUEX_MEMFUNC(ANALYZER, buffer_conversion_fill_region_size)(__QUEX_SETTING_THIS_POINTER)
     { 
         return buffer_conversion_fill_region_end() - buffer_conversion_fill_region_begin(); 
     }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_conversion_fill_region_finish)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_conversion_fill_region_finish)(__QUEX_SETTING_THIS_POINTER
                                                                            const size_t  ByteN)
     {
         QuexBufferFiller_Converter<void>*  filler = (QuexBufferFiller_Converter<void>*)buffer.filler;
@@ -245,11 +245,11 @@ namespace quex {
     }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*  
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_lexeme_start_pointer_get)(__QUEX_SETTING_THIS_POINTER) 
+    QUEX_MEMFUNC(ANALYZER, buffer_lexeme_start_pointer_get)(__QUEX_SETTING_THIS_POINTER) 
     { return buffer._lexeme_start_p; }
 
     QUEX_INLINE void
-    QUEX_MEMFUNC(QUEX_TYPE_ANALYZER, buffer_input_pointer_set)(__QUEX_SETTING_THIS_POINTER
+    QUEX_MEMFUNC(ANALYZER, buffer_input_pointer_set)(__QUEX_SETTING_THIS_POINTER
                                                                QUEX_TYPE_CHARACTER* Adr)
     { buffer._input_p = Adr; }
 

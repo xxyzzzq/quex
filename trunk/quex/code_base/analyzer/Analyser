@@ -20,6 +20,7 @@
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
 #endif
+    struct QuexMode_tag;
 
     /* The following presents a minimal structure for a lexical analyser to work with the 
      * constructed engine. Actually, it should only be useful for unit tests. Else, it has
@@ -27,7 +28,13 @@ namespace quex {
      * is just decoration! Any 'real' lexical analyser should be derived from this class. */
     struct __QuexAnalyser_tag {
         QuexBuffer                   buffer;
+
+        /* Each mode has a dedicated analyser function.  The function pointer
+         * to the currently active mode's function is stored redundantly in 
+         * 'current_analyser_function' to accelerate the access to it.                    */
+        struct QuexMode_tag*         __current_mode_p;
         QUEX_TYPE_ANALYZER_FUNCTION  current_analyser_function;
+
 #if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
     || defined(QUEX_OPTION_ASSERTS)
         /* When a mode change happens and the user does not 'return' but 'CONTINUE'

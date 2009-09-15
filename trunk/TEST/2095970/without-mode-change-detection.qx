@@ -30,5 +30,5 @@ mode STRING {
 #       endif
         return;                          
     }
-    .    { self.accumulator.add(Lexeme); CONTINUE; }
+    .    { self.accumulator.add(Lexeme, LexemeEnd); CONTINUE; }
 }

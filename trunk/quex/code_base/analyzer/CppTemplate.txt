@@ -23,12 +23,20 @@
 
 #include "$$LEXER_CLASS_NAME$$-configuration"
 
+#ifdef     __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+    /* In case that multiple lexical analyzers are used the same header
+     * files are compiled with a different setting of the macros. The
+     * undef of the include guards happens in the following file.           */
+#   include <quex/code_base/include-guard-undef>
+#else
+#   define __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN
+#endif
+
 namespace quex {
     class  QUEX_TYPE_ANALYZER;
     struct QUEX_TYPE_MEMENTO_TAG;
 $$QUEX_MODE_ID_DEFINITIONS$$
 }    
-
 
 /* Token Class Declaration must preceed the user's header, so that the user
  * can refer to it at ease.                                                    */
@@ -39,7 +47,6 @@ $$TOKEN_CLASS_DECLARATION$$
  *        might rely on contents of the header.                                */
 $$USER_DEFINED_HEADER$$
 /* END: _______________________________________________________________________*/
-
 #include    "$$TOKEN_ID_DEFINITION_FILE$$"
 #include    "$$TOKEN_CLASS_DEFINITION_FILE$$"
 
@@ -375,7 +382,9 @@ $$CONSTRUCTOR_EXTENSTION$$
                            CharacterEncodingName, 
                            QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
+#       ifdef __QUEX_OPTION_COUNTER
         QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
+#       endif
 
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
         QuexTokenQueue_reset(this->_token_queue);

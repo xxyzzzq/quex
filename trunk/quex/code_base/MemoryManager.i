@@ -91,7 +91,7 @@ namespace quex {
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     MemoryManager_AccumulatorText_allocate(const size_t Size)
     {
-        const size_t     MemorySize = sizeof(QUEX_TYPE_CHARACTER);
+        const size_t     MemorySize = Size * sizeof(QUEX_TYPE_CHARACTER);
         return (QUEX_TYPE_CHARACTER*)__QUEX_ALLOCATE_MEMORY(MemorySize);
     }
     QUEX_INLINE void
