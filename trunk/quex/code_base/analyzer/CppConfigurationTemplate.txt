@@ -81,6 +81,13 @@ $$SWITCH$$ QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #   undef QUEX_OPTION_COLUMN_NUMBER_COUNTING
 #endif
 
+#ifndef QUEX_OPTION_POST_CATEGORIZER
+$$SWITCH$$ QUEX_OPTION_POST_CATEGORIZER
+#endif
+#ifdef    QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK_DISABLED
+#   undef QUEX_OPTION_POST_CATEGORIZER
+#endif
+
 /* Mode Transitions:
  *    If the engine was created without the flag '--no-mode-transition-check'
  *    then code for mode transition control is inserted. It can be deactivated
@@ -309,6 +316,8 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_POST_CATEGORIZER_NODE      $$LEXER_CLASS_NAME$$DictionaryNode
 #define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  $$LEXER_CLASS_NAME$$DictionaryNode_tag
 #define QUEX_TYPE_ACCUMULATOR                $$LEXER_CLASS_NAME$$Accumulator
+/* Definition of the quex mode is left configurable, in case that future
+ * implementations require it. 09y09m16d                                  */
 #define QUEX_TYPE_MODE_TAG                   QuexMode_tag
 #define QUEX_TYPE_MODE                       QuexMode
 

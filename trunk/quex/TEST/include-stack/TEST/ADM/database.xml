@@ -1,9 +1,8 @@
-<test-database execution-time-sec="0.59" date="Sun Sep 13 15:34:27 2009">
+<test-database execution-time-sec="0.58" date="Tue Sep 15 23:00:14 2009">
     <last-used-diff-display-program name=""/>
     <group name="Include Stack">
-        <test title="Misc Scenarios" make-required="True" time-sum-sec="0.23"> 
+        <test title="Misc Scenarios" make-required="True" time-sum-sec="0.24"> 
             <application file-name="queue.exe" info-request-time="1252127436L"/>
-            <make-procedure success="True" time_sec="3.720248"/>
             <choice-list number="7" same_result="False">
                <choice name="empty" result="OK" time_sec="0.10" crc="-916438617"/>
                <choice name="1" result="OK" time_sec="0.01" crc="1408623060"/>
@@ -16,7 +15,6 @@
         </test>
         <test title="Misc Scenarios" make-required="True" time-sum-sec="0.19"> 
             <application file-name="users_token.exe" info-request-time="1252127439L"/>
-            <make-procedure success="True" time_sec="3.534955"/>
             <choice-list number="7" same_result="False">
                <choice name="empty" result="OK" time_sec="0.05" crc="-916438617"/>
                <choice name="1" result="OK" time_sec="0.02" crc="1408623060"/>
@@ -27,9 +25,8 @@
                <choice name="20" result="OK" time_sec="0.03" crc="-1349073584"/>
             </choice-list>
         </test>
-        <test title="Misc Scenarios" make-required="True" time-sum-sec="0.17"> 
+        <test title="Misc Scenarios" make-required="True" time-sum-sec="0.15"> 
             <application file-name="users_queue.exe" info-request-time="1252127442L"/>
-            <make-procedure success="True" time_sec="3.668599"/>
             <choice-list number="7" same_result="False">
                <choice name="empty" result="OK" time_sec="0.06" crc="-916438617"/>
                <choice name="1" result="OK" time_sec="0.01" crc="1408623060"/>

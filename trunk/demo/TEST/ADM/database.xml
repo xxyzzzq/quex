@@ -1,4 +1,4 @@
-<test-database execution-time-sec="326.81" date="Sun Sep 13 15:33:56 2009">
+<test-database execution-time-sec="326.81" date="Tue Sep 15 23:00:14 2009">
     <last-used-diff-display-program name=""/>
     <group name="Other Compilers than g++">
         <test title="Sun Microsystem's sunCC" make-required="True" time-sum-sec="28.10"> 
@@ -12,7 +12,7 @@
                <choice name="006" result="OK" time_sec="4.11" crc="-1768354765"/>
             </choice-list>
         </test>
-        <test title="Intel's icpc" make-required="True" time-sum-sec="26.35"> 
+        <test title="Intel's icpc" make-required="True" time-sum-sec="26.36"> 
             <application file-name="other-compilers-intel.sh" info-request-time="1251503333L"/>
             <choice-list number="6" same_result="False">
                <choice name="000" result="OK" time_sec="4.95" crc="489948922"/>
@@ -43,7 +43,7 @@
         </test>
     </group>
     <group name="demo/002">
-        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="10.48"> 
+        <test title="Indentation Based Scopes" make-required="True" time-sum-sec="10.47"> 
             <application file-name="002.sh" info-request-time="1251503333L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="5.04" crc="-1787106835"/>
@@ -62,7 +62,7 @@
                <choice name="BPC=wchar_t" result="OK" time_sec="6.66" crc="1800559765"/>
             </choice-list>
         </test>
-        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="34.14"> 
+        <test title="Unicode Based Lexical Analyzis (Using IBM's ICU Library)" make-required="True" time-sum-sec="34.13"> 
             <application file-name="003-icu.sh" info-request-time="1251503333L"/>
             <choice-list number="5" same_result="True">
                <choice name="BPC=2" result="OK" time_sec="7.01" crc="-2052519256"/>
@@ -111,7 +111,7 @@
         </test>
     </group>
     <group name="demo/008">
-        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="9.46"> 
+        <test title="Interface to Bison/Yacc (Contributed by Marco Antonelli)" make-required="True" time-sum-sec="9.47"> 
             <application file-name="008.sh" info-request-time="1251503333L"/>
             <choice-list number="2" same_result="True">
                <choice name="NDEBUG" result="OK" time_sec="4.52" crc="1304621319"/>
@@ -153,7 +153,7 @@
         </test>
     </group>
     <group name="demo/011">
-        <test title="Engine Encoding (Example ISO8859-7)" make-required="True" time-sum-sec="7.88"> 
+        <test title="Engine Encoding (Example ISO8859-7)" make-required="True" time-sum-sec="7.87"> 
             <application file-name="011.sh" info-request-time="1251503333L"/>
             <choice-list number="2" same_result="True">
                <choice name="iso8859-7" result="OK" time_sec="3.91" crc="-643272444"/>

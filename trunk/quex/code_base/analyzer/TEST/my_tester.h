@@ -5,7 +5,7 @@
 typedef uint8_t  QUEX_TYPE_CHARACTER;
 typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION; 
 
-
+#include <quex/code_base/test_environment/default_configuration>
 #include <cstdio>
 
 struct my_tester;

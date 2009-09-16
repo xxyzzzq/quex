@@ -190,7 +190,7 @@ namespace quex {
     }
 
     QUEX_INLINE void
-    QUEX_PREFIX(POST_CATEGORIZER, _print_tree)(__QUEX_SETTING_THIS_POINTER
+    QUEX_PREFIX(POST_CATEGORIZER, _print_this)(__QUEX_SETTING_THIS_POINTER
                                                QuexPostCategorizerNode* node, int Depth)
     {
         if( node == 0x0 ) {
