@@ -1,4 +1,4 @@
-<test-database execution-time-sec="20.04" date="Sun Sep 13 15:36:52 2009">
+<test-database execution-time-sec="20.04" date="Tue Sep 15 23:00:16 2009">
     <last-used-diff-display-program name=""/>
     <group name="NumberSet">
         <test title="Cut Interval" make-required="True" time-sum-sec="0.10"> 

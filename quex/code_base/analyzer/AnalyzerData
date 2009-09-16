@@ -47,13 +47,13 @@ namespace quex {
          *  |  | \__/ |__/ |___ .__/ 
          *                                                                         */
         /* Map: mode-id --> mode object                                            */
-        QuexMode*  mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+        QuexMode*                      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
 
         struct {
             QuexMode*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
             QuexMode** end;
             QuexMode** memory_end;
-        } _mode_stack;
+        }                              _mode_stack;
 
         /*_________________________________________________________________________
          *  ___  __        ___       __  
@@ -62,9 +62,9 @@ namespace quex {
          *                                                                        
          *  Allow public access, for user's special tricks.                        */
 #       ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-        QuexTokenQueue     _token_queue;  
+        QuexTokenQueue                 _token_queue;  
 #       else
-        QUEX_TYPE_TOKEN*   token;         
+        QUEX_TYPE_TOKEN*               token;         
 #       endif
 
         /*_________________________________________________________________________
@@ -74,11 +74,11 @@ namespace quex {
          *                                                                         
          *  Dependent on setup all counting might be set to 'null operations'.     */
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_TYPE_COUNTER  counter;
+        QUEX_TYPE_COUNTER              counter;
 #       else
         /* In case of no counting, we spend sizeof(void*) bytes for nothing, just
          * to keep the code uniform.                                               */
-        void*              counter; 
+        void*                          counter; 
 #       endif
 
         /*_________________________________________________________________________
@@ -88,7 +88,7 @@ namespace quex {
          *                                                                         
          *  Accumulate lexemes from multiple patterns.                             */
 #       ifdef QUEX_OPTION_STRING_ACCUMULATOR
-        QUEX_TYPE_ACCUMULATOR  accumulator;
+        QUEX_TYPE_ACCUMULATOR          accumulator;
 #       endif
 
 
@@ -99,7 +99,7 @@ namespace quex {
          *                                                                         
          *  Fast and simple dictionary to post-classify lexemes.                   */
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
-        PostCategorizer        post_categorizer;
+        QUEX_TYPE_POST_CATEGORIZER     post_categorizer;
 #       endif
 
         /*_________________________________________________________________________

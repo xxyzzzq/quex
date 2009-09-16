@@ -28,4 +28,11 @@
 #   define QUEX_SETTING_ACCUMULATOR_GRANULARITY_FACTOR  (1)
 #endif
 
+#ifndef    QUEX_TYPE_MODE
+#   define QuexMode
+#endif
+#ifndef    QUEX_TYPE_MODE_TAG
+#   define QuexMode_tag
+#endif
+
 #endif /* __INCLUDE_GUARD_QUEX_TEST_ENVIRONMENT_DEFAULT_CONFIGURATION__ */

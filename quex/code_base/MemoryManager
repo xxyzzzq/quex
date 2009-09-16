@@ -61,8 +61,8 @@ namespace quex {
 #   endif
 
 #   ifdef QUEX_OPTION_POST_CATEGORIZER
-    QUEX_INLINE  QuexPostCategorizerNode*  MemoryManager_PostCategorizerNode_allocate(size_t RemainderSize);
-    QUEX_INLINE  void                      MemoryManager_PostCategorizerNode_free(QuexPostCategorizerNode*);
+    QUEX_INLINE  QUEX_TYPE_POST_CATEGORIZER_NODE*  MemoryManager_PostCategorizerNode_allocate(size_t RemainderSize);
+    QUEX_INLINE  void                              MemoryManager_PostCategorizerNode_free(QUEX_TYPE_POST_CATEGORIZER_NODE*);
 #   endif
 
     QUEX_INLINE size_t

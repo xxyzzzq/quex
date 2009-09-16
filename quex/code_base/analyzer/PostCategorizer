@@ -38,6 +38,7 @@ namespace quex {
         void                remove(const QUEX_TYPE_CHARACTER* Lexeme);
         QUEX_TYPE_TOKEN_ID  get_token_id(const QUEX_TYPE_CHARACTER* Lexeme) const;
         void                clear();
+        void                print_this();
 #       endif
 
     } QUEX_TYPE_POST_CATEGORIZER;

@@ -9,6 +9,7 @@
 #include <stddef.h>
 #endif
 #include <quex/code_base/definitions>
+#include <quex/code_base/analyzer/Analyser>
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 namespace quex {
