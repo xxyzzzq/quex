@@ -95,22 +95,23 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "define", "token", "mode", "token_type" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "namespace", "define", "token", "mode", "token_type" ] + lexer_mode.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
         # (*) determine what is defined
         #
-        #     -- 'mode { ... }'   => define a mode
-        #     -- 'start = ...;'   => define the name of the initial mode
-        #     -- 'header { ... }' => define code that is to be pasted on top
-        #                            of the engine (e.g. "#include<...>")
-        #     -- 'body { ... }'   => define code that is to be pasted in the class' body
-        #                            of the engine (e.g. "public: int  my_member;")
-        #     -- 'init { ... }'   => define code that is to be pasted in the class' constructors
-        #                            of the engine (e.g. "my_member = -1;")
-        #     -- 'define { ... }' => define patterns shorthands such as IDENTIFIER for [a-z]+
-        #     -- 'token { ... }'  => define token ids
+        #     -- 'mode { ... }'     => define a mode
+        #     -- 'start = ...;'     => define the name of the initial mode
+        #     -- 'namespace = ...;' => define the namespace of everything related to the lexical analyzer
+        #     -- 'header { ... }'   => define code that is to be pasted on top
+        #                              of the engine (e.g. "#include<...>")
+        #     -- 'body { ... }'     => define code that is to be pasted in the class' body
+        #                              of the engine (e.g. "public: int  my_member;")
+        #     -- 'init { ... }'     => define code that is to be pasted in the class' constructors
+        #                              of the engine (e.g. "my_member = -1;")
+        #     -- 'define { ... }'   => define patterns shorthands such as IDENTIFIER for [a-z]+
+        #     -- 'token { ... }'    => define token ids
         #     -- 'token_type { ... }'  => define a customized token type
         #
         if word in lexer_mode.fragment_db.keys():
@@ -121,6 +122,10 @@ def parse_section(fh):
 
         elif word == "start":
             parse_initial_mode_definition(fh)
+            return
+            
+        elif word == "namespace":
+            parse_namespace_definition(fh)
             return
             
         elif word == "define":
@@ -214,6 +219,11 @@ def parse_initial_mode_definition(fh):
                   lexer_mode.initial_mode.line_n)
         
     lexer_mode.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh))
+
+def parse_namespace_definition(fh):
+    name_list = read_namespaced_name(fh, "lexical analyzer name")
+
+
 
 def parse_token_id_definitions(fh):
     # NOTE: Catching of EOF happens in caller: parse_section(...)

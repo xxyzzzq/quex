@@ -190,6 +190,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
     txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
+    txt += "typedef void QUEX_TYPE_MODE;\n"
     txt += "#include <quex/code_base/test_environment/default_configuration>\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
@@ -313,6 +314,7 @@ test_program_common_declarations = """
 const int TKN_TERMINATION = 0;
 #define QUEX_SETTING_BUFFER_LIMIT_CODE      ((QUEX_TYPE_CHARACTER)$$BUFFER_LIMIT_CODE$$)
 typedef int QUEX_TYPE_TOKEN_ID;              
+typedef void QUEX_TYPE_MODE;              
 /* #define QUEX_OPTION_TOKEN_POLICY_USERS_TOKEN */
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION

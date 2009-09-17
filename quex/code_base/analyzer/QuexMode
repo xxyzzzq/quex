@@ -30,7 +30,7 @@
 namespace quex { 
 #endif
     
-    typedef struct QuexMode_tag {  
+    typedef struct QUEX_TYPE_MODE_TAG {  
         int            id;
         const char*    name;
         QuexAnalyser*  the_lexer;
@@ -47,7 +47,7 @@ namespace quex {
         bool (*has_entry_from)(const struct QuexMode_tag* Mode);
         bool (*has_exit_to)(const struct QuexMode_tag* Mode);
 #       endif
-    } QuexMode;
+    } QUEX_TYPE_MODE;
     
     QUEX_INLINE void
     QuexMode_uncallable_analyser_function(QuexAnalyser*)

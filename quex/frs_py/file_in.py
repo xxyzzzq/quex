@@ -103,6 +103,26 @@ def find_end_of_identifier(Txt, StartIdx, L):
     else:
         return L
 
+def read_namespaced_name(fh, Meaning):
+    # NOTE: Catching of EOF happens in caller: parse(...)
+    if not check(fh, "="):
+        error_msg("Missing '=' for token_type name specification.", fh)
+
+    name_list = []
+    while 1 + 1 == 2:
+        skip_whitespace(fh)
+        name = read_identifier(fh)
+
+        if name == "": error_msg("Missing identifier in %s." % Meaning, fh)
+        name_list.append(name)
+
+        if   check(fh, "::"): continue
+        elif check(fh, ";"):  break
+        else:                 error_msg("Missing identifier in %s." % Meaning, fh)
+
+    assert name_list != []
+    return name_list
+
 def get_text_line_n(Txt, Pos):
     line_n = 1
     for i in range(0, Pos):
