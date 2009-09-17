@@ -10,6 +10,8 @@ typedef uint8_t* QUEX_TYPE_CHARACTER_POSITION;
 
 struct my_tester;
 #define QUEX_TYPE_ANALYZER my_tester
+#define QUEX_TYPE_MODE_TAG QuexMode_tag
+#define QUEX_TYPE_MODE     QuexMode
 #include <quex/code_base/analyzer/Counter>
 
 

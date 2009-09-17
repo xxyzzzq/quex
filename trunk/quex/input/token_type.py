@@ -293,7 +293,9 @@ def parse_section(fh, descriptor, already_defined_list):
                         "Subsection '%s' not allowed in token_type section." % word, fh)
 
     if word == "name":
-        parse_token_type_name(fh, descriptor)
+        name_list = read_namespaced_name(fh, "token type name")
+        descriptor.class_name = name_list[-1]
+        descriptor.name_space = name_list[:-1]
 
     elif word == "inheritable":
         descriptor.open_for_derivation_f = True
@@ -332,27 +334,6 @@ def parse_section(fh, descriptor, already_defined_list):
             assert False, "This section should not be reachable"
 
     return True
-
-def parse_token_type_name(fh, descriptor):
-    # NOTE: Catching of EOF happens in caller: parse(...)
-    if not check(fh, "="):
-        error_msg("Missing '=' for token_type name specification.", fh)
-
-    name_list = []
-    while 1 + 1 == 2:
-        skip_whitespace(fh)
-        name = read_identifier(fh)
-
-        if name == "": error_msg("Missing identifier in token type name.", fh)
-        name_list.append(name)
-
-        if   check(fh, "::"): continue
-        elif check(fh, ";"):  break
-        else:                 error_msg("Missing identifier in token type name.", fh)
-
-    assert name_list != []
-    descriptor.class_name = name_list[-1]
-    descriptor.name_space = name_list[:-1]
             
 def parse_standard_members(fh, descriptor, already_defined_list):
     position = fh.tell()
