@@ -17,22 +17,24 @@
 #   endif
 #endif
 
-namespace quex {
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    QUEX_INLINE QUEX_TYPE_TOKEN* 
-    QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(const size_t N);
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
-    QUEX_INLINE void 
-    QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(QUEX_TYPE_TOKEN* memory);
-#   endif
+#ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
+QUEX_INLINE QUEX_TYPE_TOKEN* 
+QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(const size_t N);
 
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    QUEX_INLINE  QUEX_TYPE_MEMENTO_TAG*
-    QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();
+QUEX_INLINE void 
+QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(QUEX_TYPE_TOKEN* memory);
+#endif
 
-    QUEX_INLINE void
-    QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(struct QUEX_TYPE_MEMENTO_TAG* memory);
-#   endif
-}
+#ifdef QUEX_OPTION_INCLUDE_STACK
+QUEX_INLINE  QUEX_TYPE_MEMENTO_TAG*
+QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _allocate)();
+
+QUEX_INLINE void
+QUEX_NAMER(MemoryManager_, QUEX_TYPE_MEMENTO, _free)(struct QUEX_TYPE_MEMENTO_TAG* memory);
+#endif
+
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 

@@ -13,9 +13,7 @@
 #    include <quex/code_base/definitions>
 #    include <quex/code_base/buffer/Buffer>
 
-#    if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex { 
-#    endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     /* NOTE: In some cases, we cannot make the assumption that the end of the content text
      *       is terminated by the buffer limit code. Skippers set the content of this cell
@@ -98,9 +96,7 @@ namespace quex {
         QUEX_BUFFER_ASSERT_NO_BUFFER_LIMIT_CODE(buffer->_memory._front + 1, End);
     }
 
-#   if ! defined(__QUEX_SETTING_PLAIN_C)
-} /* namespace quex */
-#   endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif
 

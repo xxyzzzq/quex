@@ -63,7 +63,7 @@ $$CONTENT$$
 
 func_str = \
 """
-$$NAMESPACE_OPEN$$
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #ifndef    __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
 #   define __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
@@ -90,7 +90,7 @@ $$TOKEN_ID_CASES$$
        }
     }
 #endif
-$$NAMESPACE_CLOSE$$
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 """
 
 def do(global_setup):
@@ -174,8 +174,6 @@ def do(global_setup):
                           ["$$DATE$$",                        time.asctime()],
                           ["$$TOKEN_CLASS_DEFINITION_FILE$$", lexer_mode.get_token_class_file_name(global_setup)],
                           ["$$INCLUDE_GUARD_EXT$$",           get_include_guard_extension(global_setup.output_file_stem)],
-                          ["$$NAMESPACE_OPEN$$",              LanguageDB["$namespace-open"](name_space)],
-                          ["$$NAMESPACE_CLOSE$$",             LanguageDB["$namespace-close"](name_space)],
                           ["$$TOKEN_ID_CASES$$",              switch_cases],
                           ["$$TOKEN_NAMES$$",                 token_names],
                           ["$$TOKEN_PREFIX$$",                setup.token_prefix]])

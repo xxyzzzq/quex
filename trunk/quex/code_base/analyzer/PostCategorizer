@@ -6,9 +6,7 @@
 
 #ifdef  QUEX_OPTION_POST_CATEGORIZER
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
     /*________________________________________________________________________________
      * Post Categorization of Lexemes:
      *
@@ -72,9 +70,7 @@ namespace quex {
                                              QuexPostCategorizerNode*  branch);
 #   endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* QUEX_OPTION_POST_CATEGORIZER */
 

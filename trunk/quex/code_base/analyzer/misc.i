@@ -5,9 +5,7 @@
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MISC_I__       */
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void    
     QUEX_MEMFUNC(ANALYZER, move_forward)(const size_t CharacterN)
@@ -68,7 +66,5 @@ namespace quex {
         __QUEX_STD_printf("   ByteOrderInversion = %s;\n", byte_order_reversion() ? "true" : "false");
     }
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} /* namespace quex { */
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 

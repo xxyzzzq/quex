@@ -107,9 +107,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     TEMPLATIFIER(QuexRawBuffer, InputHandleT) {
         uint8_t*                             begin;
@@ -178,9 +176,7 @@ namespace quex {
 #   define QUEX_ASSERT_BUFFER_INFO_EASY(BI) /* empty */
 #endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 
 #include <quex/code_base/temporary_macros_off>

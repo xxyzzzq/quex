@@ -20,9 +20,7 @@
 #include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/asserts>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     Counter_construct(Counter* me, QuexAnalyser* lexer)
@@ -198,9 +196,7 @@ namespace quex {
 #       endif
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* defined(__QUEX_OPTION_COUNTER)     */
 #endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */

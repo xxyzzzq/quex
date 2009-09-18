@@ -6,9 +6,7 @@
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_MODE_HANDLING_I__  */
 #include <quex/code_base/definitions>
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE QUEX_TYPE_MODE&
     QUEX_MEMFUNC(ANALYZER, mode)() 
@@ -116,7 +114,5 @@ namespace quex {
     QUEX_MEMFUNC(ANALYZER, map_mode_to_mode_id)(const QUEX_TYPE_MODE& Mode) const
     { return Mode.id; }
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} /* namespace quex { */
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 

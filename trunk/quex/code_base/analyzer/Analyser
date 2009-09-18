@@ -17,9 +17,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
     struct XQuexMode_tag;
 
     /* The following presents a minimal structure for a lexical analyser to work with the 
@@ -85,9 +83,7 @@ namespace quex {
                                        const size_t                  PostContextN);
 
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

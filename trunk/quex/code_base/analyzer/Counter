@@ -11,9 +11,7 @@
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/Analyser>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     typedef struct {
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
@@ -137,8 +135,6 @@ namespace quex {
 #      define __CounterWithIndentation_count_whitespace_to_first_non_whitespace(me, it, Begin, End, LicenseF) /* empty */
 #   endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* __INCLUDE_GUARD__QUEX__COUNTER__ */

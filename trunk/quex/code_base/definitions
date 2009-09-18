@@ -90,9 +90,7 @@ QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
 #   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
 #endif
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+    QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE uint8_t*
     __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
@@ -165,9 +163,7 @@ namespace quex {
 
 #  endif /* ! __QUEX_OPTION_UNIT_TEST_QUEX_BUFFER_LOADS */
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 
 #if ! defined(QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION)

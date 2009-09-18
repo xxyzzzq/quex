@@ -28,7 +28,7 @@
 #include<quex/code_base/unicode>
 #include<quex/code_base/compatibility/inttypes.h>
 
-namespace quex {
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     class Token {
     public:
@@ -160,7 +160,6 @@ namespace quex {
         return std::string((char*)utf8_buffer);
     }
 
-
-}
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif // #define __INCLUDE_GUARD__QUEX__TOKEN__

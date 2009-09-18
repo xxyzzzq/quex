@@ -24,9 +24,7 @@
 #endif
 
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     typedef struct {
         QuexConverter  base;
@@ -37,8 +35,6 @@ namespace quex {
 
     QUEX_INLINE QuexConverter* QuexConverter_Recode_new();
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_PINARD_RECODE_ */

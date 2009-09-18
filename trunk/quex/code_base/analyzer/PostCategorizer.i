@@ -6,9 +6,7 @@
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/analyzer/PostCategorizer>
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QUEX_MEMFUNC(POST_CATEGORIZER, construct)(__QUEX_SETTING_THIS_POINTER)
@@ -214,9 +212,7 @@ namespace quex {
     }
 
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/MemoryManager.i>
 

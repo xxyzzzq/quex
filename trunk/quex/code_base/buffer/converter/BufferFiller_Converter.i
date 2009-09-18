@@ -12,9 +12,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_Converter_construct(TEMPLATED(QuexBufferFiller_Converter)* me, 
                                          InputHandleT*     input_handle,
@@ -423,9 +421,7 @@ namespace quex {
 #       endif
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

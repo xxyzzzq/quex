@@ -5,16 +5,12 @@
  *
  * (C) 2005-2009 Frank-Rene Schaefer                                                */
 
-
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__UNICODE
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__UNICODE
 
 #include <quex/code_base/definitions>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-#   include <stdexcept>
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE uint8_t*
     Quex_unicode_to_utf8(QUEX_TYPE_CHARACTER  UCS_CharacterCode, uint8_t* utf8_result)
@@ -129,8 +125,6 @@ namespace quex {
     }
 
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif // __INCLUDE_GUARD_QUEX__CODE_BASE__UNICODE

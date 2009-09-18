@@ -12,9 +12,7 @@
 
 #include <quex/code_base/analyzer/configuration_validation>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QuexConverter_ICU_open(QuexConverter_ICU* me, 
@@ -179,9 +177,7 @@ namespace quex {
         return (QuexConverter*)me;
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 
 #include <quex/code_base/buffer/BufferFiller.i>

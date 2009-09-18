@@ -12,9 +12,7 @@
 #include <quex/code_base/analyzer/Accumulator>
 #include <quex/code_base/MemoryManager>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR* me, 
@@ -159,9 +157,7 @@ namespace quex {
         __QUEX_STD_printf("   Accumulator = '%s'\n", (const char*)this->text.begin);
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex 
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/MemoryManager.i>
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I__ */

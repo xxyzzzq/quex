@@ -9,9 +9,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE bool 
     __QuexBufferFiller_Converter_ICU_has_coding_dynamic_character_width(const char* Coding) 
@@ -20,9 +18,7 @@ namespace quex {
         /*           //       'true' is safe, but possibly a little slower.  */
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

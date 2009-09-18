@@ -8,9 +8,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QuexAnalyser_construct(QuexAnalyser* me,
@@ -120,9 +118,7 @@ namespace quex {
     }
 
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex 
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

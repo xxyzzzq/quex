@@ -223,6 +223,7 @@ def parse_initial_mode_definition(fh):
 def parse_namespace_definition(fh):
     name_list = read_namespaced_name(fh, "lexical analyzer name")
 
+    lex.initial_mode = UserCodeFragment(mode_name, fh.name, get_current_line_info_number(fh))
 
 
 def parse_token_id_definitions(fh):

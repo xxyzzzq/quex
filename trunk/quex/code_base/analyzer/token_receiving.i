@@ -11,9 +11,7 @@
 
 #include <quex/code_base/token/TokenPolicy>
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   if ! defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
 #      undef   QUEX_TOKEN_POLICY_NO_TOKEN
@@ -147,7 +145,5 @@ namespace quex {
 
 #   undef self
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} /* namespace quex { */
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 

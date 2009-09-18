@@ -5,7 +5,7 @@
 #ifndef __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__
 #define __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__
 
-namespace quex { 
+QUEX_NAMESPACE_COMPONENTS_OPEN
     /* DEBUG: 
     **
     ** The 'memory_position' type is a pointer mimiking class that stores also the
@@ -81,5 +81,7 @@ namespace quex {
         // where a normal provided_character_type pointer is required (integrates seemingless)
         operator character_type*() { return address; }
     };
-}
+
+QUEX_NAMESPACE_COMPONENTS_CLOSE
+
 #endif // __INCLUDE_GUARD_QUEX_BUFFER_MEMORY_POSITION_MIMIKER__
