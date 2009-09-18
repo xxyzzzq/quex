@@ -15,9 +15,7 @@
 
 #include <quex/code_base/definitions>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     /* (*) pure text accumulation and flushing */
     typedef struct {
@@ -50,8 +48,6 @@ namespace quex {
     void
     QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR*, QUEX_TYPE_ANALYZER*);
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR */

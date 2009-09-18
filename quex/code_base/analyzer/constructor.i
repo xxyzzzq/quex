@@ -6,9 +6,7 @@
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_CONSTRUCTOR_I__       */
 #include <quex/code_base/buffer/Buffer.i>
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE
     QUEX_CONSTRUCTOR(ANALYZER, _memory)(__QUEX_SETTING_THIS_POINTER
@@ -100,6 +98,4 @@ namespace quex {
         }
     }
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE

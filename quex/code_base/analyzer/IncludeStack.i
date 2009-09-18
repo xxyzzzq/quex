@@ -12,9 +12,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
     QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
@@ -103,9 +101,7 @@ namespace quex {
         }
     }
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} // namespace quex 
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

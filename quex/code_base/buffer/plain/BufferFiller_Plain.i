@@ -17,9 +17,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     TEMPLATE_IN(InputHandleT) void
     QuexBufferFiller_Plain_construct(TEMPLATED(QuexBufferFiller_Plain)*, InputHandleT*    input_handle);
@@ -169,9 +167,7 @@ namespace quex {
 
 #   undef TEMPLATED_CLASS
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-}  /* namespace quex*/
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

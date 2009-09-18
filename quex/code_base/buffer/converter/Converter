@@ -3,9 +3,7 @@
 #ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__
 #define __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     typedef struct QuexConverter_tag {
         void    (*open)(struct QuexConverter_tag*, 
@@ -94,8 +92,6 @@ namespace quex {
 
     typedef void    (*QuexConverterFunctionP_delete_self)(struct QuexConverter_tag*);
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER__CONVERTER__ */

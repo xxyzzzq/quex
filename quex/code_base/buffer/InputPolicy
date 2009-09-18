@@ -8,7 +8,7 @@
 #include<iostream>
 #include<stdexcept> /* Standard C++ Exceptions*/
 
-namespace quex {
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     /* PURPOSE: The input policy provides a common interface for operations related  
      *          to stream input. In particular, the C-Style 'FILE*' and the C++-Style  
@@ -107,7 +107,9 @@ namespace quex {
            InputPolicy<IH_TYPE*>::tell((IH))
 #   define QUEX_INPUT_POLICY_LOAD_BYTES(IH, IH_TYPE, BUFFER, BYTE_N) \
            InputPolicy<IH_TYPE*>::load_bytes((IH), (uint8_t*)(BUFFER), (BYTE_N))
-}
+
+QUEX_NAMESPACE_COMPONENTS_CLOSE
+
 #else
 /* In 'C' we only load from FILE*. So if you want to do something non-standard, then provide
  * a FILE interface. */

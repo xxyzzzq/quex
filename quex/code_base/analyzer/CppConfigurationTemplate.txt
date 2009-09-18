@@ -303,11 +303,15 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #   define QUEX_TYPE_CHARACTER       $$QUEX_TYPE_CHARACTER$$
 #endif 
 
-#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
-#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data
+#define QUEX_TYPE_ANALYZER_DATA_TAG  $$LEXER_CLASS_NAME$$Data_tag
 #define QUEX_TYPE_ANALYZER_DATA      $$LEXER_CLASS_NAME$$Data
+#define QUEX_TYPE_ANALYZER           $$LEXER_CLASS_NAME$$
 #define QUEX_TYPE_DERIVED_ANALYZER   $$LEXER_DERIVED_CLASS_NAME$$
 
+/* Definition of the quex mode is left configurable, in case that future
+ * implementations require it. 09y09m16d                                  */
+#define QUEX_TYPE_MODE_TAG           QuexMode_tag
+#define QUEX_TYPE_MODE               QuexMode
 #define QUEX_TYPE_MEMENTO_BASE       $$LEXER_CLASS_NAME$$MementoBase
 #define QUEX_TYPE_MEMENTO_TAG        $$LEXER_CLASS_NAME$$Memento_tag
 #define QUEX_TYPE_MEMENTO            $$LEXER_CLASS_NAME$$Memento
@@ -316,10 +320,13 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_POST_CATEGORIZER_NODE      $$LEXER_CLASS_NAME$$DictionaryNode
 #define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  $$LEXER_CLASS_NAME$$DictionaryNode_tag
 #define QUEX_TYPE_ACCUMULATOR                $$LEXER_CLASS_NAME$$Accumulator
-/* Definition of the quex mode is left configurable, in case that future
- * implementations require it. 09y09m16d                                  */
-#define QUEX_TYPE_MODE_TAG                   QuexMode_tag
-#define QUEX_TYPE_MODE                       QuexMode
+
+#define QUEX_NAMESPACE_MAIN_REF              quex::
+#define QUEX_NAMESPACE_MAIN_OPEN             namespace quex {
+#define QUEX_NAMESPACE_MAIN_CLOSE            }
+#define QUEX_NAMESPACE_COMPONENTS_REF        quex:: 
+#define QUEX_NAMESPACE_COMPONENTS_OPEN       namespace quex { // namespace components {
+#define QUEX_NAMESPACE_COMPONENTS_CLOSE      } // }
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   define QUEX_TYPE_COUNTER  CounterWithIndentation

@@ -14,9 +14,8 @@
 
 #include <quex/code_base/temporary_macros_on>
  
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
+
     struct __QuexBufferFiller_tag;
 
 
@@ -148,9 +147,7 @@ namespace quex {
         return size;
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
  
 #include <quex/code_base/temporary_macros_off>
 

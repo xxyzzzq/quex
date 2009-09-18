@@ -16,9 +16,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     TEMPLATIFIER(QuexBufferFiller_Plain, InputHandleT) {
         /* Derived QuexBufferFiller from implemented as 'first member is base class'.
@@ -44,9 +42,7 @@ namespace quex {
 
 #   undef TEMPLATED_CLASS
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-}  // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

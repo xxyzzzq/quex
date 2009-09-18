@@ -7,9 +7,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
      typedef struct __QuexBufferFiller_tag {
         /* PURPOSE: This is the interface that the buffer sees of the buffer filler. Its
@@ -72,9 +70,7 @@ namespace quex {
     QUEX_INLINE void    __QuexBufferFiller_step_forward_n_characters(QuexBufferFiller* me,
                                                                      const size_t      ForwardN);
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 

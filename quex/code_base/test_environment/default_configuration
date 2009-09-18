@@ -29,10 +29,17 @@
 #endif
 
 #ifndef    QUEX_TYPE_MODE
-#   define QuexMode
+#   define QUEX_TYPE_MODE     QuexMode
 #endif
 #ifndef    QUEX_TYPE_MODE_TAG
-#   define QuexMode_tag
+#   define QUEX_TYPE_MODE_TAG QuexMode_tag
 #endif
+
+#define QUEX_NAMESPACE_MAIN_REF              quex::
+#define QUEX_NAMESPACE_MAIN_OPEN             namespace quex {
+#define QUEX_NAMESPACE_MAIN_CLOSE            }
+#define QUEX_NAMESPACE_COMPONENTS_REF        quex:: 
+#define QUEX_NAMESPACE_COMPONENTS_OPEN       namespace quex { // namespace components {
+#define QUEX_NAMESPACE_COMPONENTS_CLOSE      } // }
 
 #endif /* __INCLUDE_GUARD_QUEX_TEST_ENVIRONMENT_DEFAULT_CONFIGURATION__ */

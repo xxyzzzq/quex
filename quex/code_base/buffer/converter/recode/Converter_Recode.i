@@ -10,9 +10,7 @@
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICU. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
 #endif
 
-#if ! defined (__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QuexConverter_ICU_open(QuexConverter* alter_ego, 
@@ -163,9 +161,7 @@ namespace quex {
         return (QuexConverter*)me;
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-}
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 
 #include <quex/code_base/buffer/BufferFiller.i>

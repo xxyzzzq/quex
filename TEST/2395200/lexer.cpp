@@ -1,8 +1,8 @@
 #include<fstream>    
 #include<fstream> 
+#include <./Simple>
 #include<quex/code_base/test_environment/StrangeStream>
 
-#include <./Simple>
 
 using namespace std;
 

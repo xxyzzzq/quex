@@ -9,9 +9,7 @@
 #include <quex/code_base/analyzer/asserts>
 
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     /* NOTE: Quex is pretty intelligent in choosing the right function
      *       to count line and column numbers. If, for example, a pattern
@@ -317,8 +315,6 @@ namespace quex {
         __QUEX_STD_printf("   _indentation_event_enabled_f = %s;\n", me->_indentation_event_enabled_f ? "true" : "false");
     }
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	*/

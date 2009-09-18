@@ -25,9 +25,7 @@
 #   include <quex/code_base/token/TokenQueue>
 #endif
 
-#ifndef __QUEX_SETTING_PLAIN_C
-namespace quex {
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     /* Forward declaration of the derived memento, which is used by the analyzer. */
@@ -130,7 +128,5 @@ namespace quex {
     } QUEX_TYPE_MEMENTO_BASE;
 #   endif
 
-#ifndef __QUEX_SETTING_PLAIN_C
-} // namespace quex
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 

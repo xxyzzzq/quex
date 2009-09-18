@@ -22,9 +22,7 @@
 
 #include <quex/code_base/temporary_macros_on>
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-namespace quex { 
-#endif
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     typedef struct { 
 #       if ! defined(__QUEX_SETTING_PLAIN_C)
@@ -152,9 +150,7 @@ namespace quex {
 
     QUEX_INLINE void  QuexBuffer_print_this(QuexBuffer*);
 
-#if ! defined(__QUEX_SETTING_PLAIN_C)
-} /* namespace quex */
-#endif
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 #endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE__ */
