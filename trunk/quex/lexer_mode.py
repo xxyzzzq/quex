@@ -607,3 +607,13 @@ def get_token_class_file_name(Setup):
 
     return file_name
 
+__lexical_analyzer_class_name     = ""
+__lexical_analyzer_namespace_list = []
+def lexical_analyzer_class_name_set(ClassName, NamespaceSequence):
+    assert type(ClassName) in [str, unicode]
+    assert type(NamespaceSequence) == list
+    global __lexical_analyzer_class_name
+    global __lexical_analyzer_namespace_list
+
+    __lexical_analyzer_class_name     = UserCodeFragment(ClassName, fh.name, get_current_line_info_number(fh))
+    __lexical_analyzer_namespace_list = NamespaceSequence

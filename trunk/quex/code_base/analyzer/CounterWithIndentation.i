@@ -24,7 +24,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
      *       last end, such as _line_number_at_begin = _line_number_at_end.
      *       This has to happen outside these functions.                        */
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me, QuexAnalyser* lexer)
+    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER* lexer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
