@@ -35,7 +35,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     } Counter;
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_INLINE void  Counter_construct(Counter* me, QuexAnalyser* lexer);
+    QUEX_INLINE void  Counter_construct(Counter* me, QUEX_TYPE_ANALYZER* lexer);
     QUEX_INLINE void  Counter_copy_construct(Counter* me, const Counter* That);
     QUEX_INLINE void  Counter_init(Counter* me);
 
@@ -72,7 +72,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     typedef struct {
         __CounterBase   base;
 
-        QuexAnalyser*  _the_lexer;
+        QUEX_TYPE_ANALYZER*  _the_lexer;
 
         int     _indentation;                 /* number of columns to first non-whitespace  */
         /*                                     * in the current line.                       */
@@ -82,7 +82,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   ifdef __QUEX_OPTION_COUNTER
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me, QuexAnalyser* lexer);
+    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER* lexer);
 
     QUEX_INLINE void
     CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);

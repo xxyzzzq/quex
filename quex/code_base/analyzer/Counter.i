@@ -23,7 +23,7 @@
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
-    Counter_construct(Counter* me, QuexAnalyser* lexer)
+    Counter_construct(Counter* me, QUEX_TYPE_ANALYZER* lexer)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
