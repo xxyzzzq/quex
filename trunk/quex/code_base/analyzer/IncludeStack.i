@@ -64,7 +64,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                                buffer._byte_order_reversion_active_f);
 
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
+        QUEX_PREFIX(COUNTER, _init)(&counter);
 #       endif
 
         /* Keep track of 'who's your daddy?'                              */
