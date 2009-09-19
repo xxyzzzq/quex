@@ -255,47 +255,34 @@ public:
 $$MODE_CLASS_FRIENDS$$  
     // (*) User defined Friends ______________________________________________________
 $$LEXER_CLASS_FRIENDS$$
-#   if 0
-    friend void CounterWithIndentation_on_end_of_file(CounterWithIndentation* me);
-    friend void CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(
-                      CounterWithIndentation* me, const int ColumnNIncrement);
-    friend void __CounterWithIndentation_count_whitespace_to_first_non_whitespace(
-                          CounterWithIndentation* me,
-                          QUEX_TYPE_CHARACTER* start_consideration_it, 
-                          QUEX_TYPE_CHARACTER* Begin,
-                          QUEX_TYPE_CHARACTER* End,
-                          const bool           LicenseToIncrementLineCountF);
 
-#   endif
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 private:
     //      -- include events (a file is included)
     template<class InputHandleT> QUEX_TYPE_MEMENTO*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
     void                                             memento_unpack(QUEX_TYPE_MEMENTO*);
 
-
 public:
-    template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
-                                                    const QUEX_TYPE_MODE&          mode, 
+    template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
+                                                    const QUEX_TYPE_MODE&    mode, 
                                                     const char*              IANA_CodingName = 0x0);
-    template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
+    template<class InputHandleT> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
                                                     const int                MODE_ID         = -1, 
                                                     const char*              IANA_CodingName = 0x0);
-    bool                               include_pop();
+    bool              include_pop();
 protected:
-    void                               include_stack_delete();
+    void              include_stack_delete();
 #   endif
 public:
     void  print_this();
 
 private:
     // (*) Common core of all constructors ___________________________________________
-    template <class InputHandleT> 
-    void                        __constructor_core(InputHandleT*, 
-                                                   const char*           CharacterEncodingName,
-                                                   bool                  ByteOrderReversionF,
-                                                   QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
-                                                   size_t                BufferMemorySize = 0);
+    template<class InputHandleT> void  __constructor_core(InputHandleT*, 
+                                                          const char*           CharacterEncodingName,
+                                                          bool                  ByteOrderReversionF,
+                                                          QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
+                                                          size_t                BufferMemorySize = 0);
 public:
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's class body extensions ________________________________________*/
@@ -327,11 +314,11 @@ QUEX_TYPE_ANALYZER::__constructor_core(InputHandleT*             input_handle,
 #   endif
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _construct)(&accumulator, this);
+    QUEX_PREFIX(ACCUMULATOR, _construct)(&accumulator, this);
 #   endif
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_PREFIX(QUEX_TYPE_COUNTER, _construct)(&counter, this);
+    QUEX_PREFIX(COUNTER, _construct)(&counter, this);
 #   endif
 
     mode_db[0] = 0x0;
@@ -396,7 +383,7 @@ QUEX_TYPE_ANALYZER::reset(InputHandleT*   input_handle,
                        QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_PREFIX(QUEX_TYPE_COUNTER, _init)(&counter);
+    QUEX_PREFIX(COUNTER, _init)(&counter);
 #   endif
 
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED

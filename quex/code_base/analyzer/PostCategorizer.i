@@ -169,11 +169,11 @@ QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _find)(const QUEX_TYPE_POST_CATEGORIZER*
 }
 
 QUEX_INLINE void
-QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _clear_recursively)(QUEX_TYPE_POST_CATEGORIZER* me, 
+QUEX_PREFIX(POST_CATEGORIZER, _clear_recursively)(QUEX_TYPE_POST_CATEGORIZER* me, 
                                                     QUEX_TYPE_POST_CATEGORIZER_NODE* branch)
 {
-    if( branch->lesser  != 0x0 ) QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _clear_recursively)(me, branch->lesser);
-    if( branch->greater != 0x0 ) QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _clear_recursively)(me, branch->greater);
+    if( branch->lesser  != 0x0 ) QUEX_PREFIX(POST_CATEGORIZER, _clear_recursively)(me, branch->lesser);
+    if( branch->greater != 0x0 ) QUEX_PREFIX(POST_CATEGORIZER, _clear_recursively)(me, branch->greater);
     MemoryManager_PostCategorizerNode_free(branch);
 }
 
@@ -181,7 +181,7 @@ QUEX_INLINE QUEX_TYPE_TOKEN_ID
 QUEX_MEMFUNC(POST_CATEGORIZER, get_token_id)(__QUEX_SETTING_THIS_POINTER
                                              const QUEX_TYPE_CHARACTER* Lexeme) const
 {
-    QUEX_TYPE_POST_CATEGORIZER_NODE* found = QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _find)(this, Lexeme);
+    QUEX_TYPE_POST_CATEGORIZER_NODE* found = QUEX_PREFIX(POST_CATEGORIZER, _find)(this, Lexeme);
     if( found == 0x0 ) return __QUEX_SETTING_TOKEN_ID_UNINITIALIZED;
     return found->token_id;
 }
@@ -189,12 +189,12 @@ QUEX_MEMFUNC(POST_CATEGORIZER, get_token_id)(__QUEX_SETTING_THIS_POINTER
 QUEX_INLINE void
 QUEX_MEMFUNC(POST_CATEGORIZER, clear)(__QUEX_SETTING_THIS_POINTER)
 {
-    QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _clear_recursively)(this, this->root);
+    QUEX_PREFIX(POST_CATEGORIZER, _clear_recursively)(this, this->root);
 }
 
 
 QUEX_INLINE void
-QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _print_tree)(__QUEX_SETTING_THIS_POINTER
+QUEX_PREFIX(POST_CATEGORIZER, _print_tree)(__QUEX_SETTING_THIS_POINTER
                                                      QUEX_TYPE_POST_CATEGORIZER_NODE* node, int Depth)
 {
     if( node == 0x0 ) {
@@ -203,7 +203,7 @@ QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _print_tree)(__QUEX_SETTING_THIS_POINTER
         return;
     }
 
-    QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _print_tree)(node->greater, Depth + 1);
+    QUEX_PREFIX(POST_CATEGORIZER, _print_tree)(node->greater, Depth + 1);
 
     for(int i=0; i < Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("/\n");
@@ -214,7 +214,7 @@ QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _print_tree)(__QUEX_SETTING_THIS_POINTER
     for(int i=0; i<Depth + 1; ++i) __QUEX_STD_printf("        ");
     __QUEX_STD_printf("\\\n");
 
-    QUEX_PREFIX(QUEX_TYPE_POST_CATEGORIZER, _print_tree)(node->lesser, Depth + 1);
+    QUEX_PREFIX(POST_CATEGORIZER, _print_tree)(node->lesser, Depth + 1);
 }
 
 

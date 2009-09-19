@@ -43,7 +43,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   ifdef __QUEX_SETTING_PLAIN_C
     QUEX_INLINE int
-    QUEX_PREFIX(QuexPostCategorizerNode, _compare)(QuexPostCategorizerNode*    me, 
+    QUEX_PREFIX(POST_CATEGORIZER_NODE, _compare)(QuexPostCategorizerNode*    me, 
                                                    QUEX_TYPE_CHARACTER         FirstCharacter, 
                                                    const QUEX_TYPE_CHARACTER*  Remainder);
 

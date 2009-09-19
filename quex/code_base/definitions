@@ -214,7 +214,7 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #define QUEX_EXPAND(X)    __QUEX_EXPAND(X)
 
 #define __QUEX_PREFIX(A, x)     A ## x
-#define QUEX_PREFIX(PREFIX, x)  __QUEX_PREFIX(PREFIX, x)
+#define QUEX_PREFIX(PREFIX, x)  __QUEX_PREFIX(QUEX_TYPE_ ## PREFIX, x)
 
 #define __QUEX_NAMER(A, x, B) A ## x ## B
 #define QUEX_NAMER(A, x, B) __QUEX_NAMER(A, x, B)

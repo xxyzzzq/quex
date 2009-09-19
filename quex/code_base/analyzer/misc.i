@@ -51,7 +51,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         accumulator.print_this();
 #       endif
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_PREFIX(QUEX_TYPE_COUNTER, _print_this)(&counter);
+        QUEX_PREFIX(COUNTER, _print_this)(&counter);
 #       endif
 #       ifdef QUEX_OPTION_POST_CATEGORIZER
         post_categorizer.print_this();
