@@ -235,7 +235,6 @@ public:
     void disable_next_indentation_event() { counter._indentation_event_enabled_f = false; }
 #   endif
 
-    //
     // (*) Version information
     const char* version() const; // created by quex for version/date information
 
@@ -256,13 +255,24 @@ public:
 $$MODE_CLASS_FRIENDS$$  
     // (*) User defined Friends ______________________________________________________
 $$LEXER_CLASS_FRIENDS$$
+#   if 0
+    friend void CounterWithIndentation_on_end_of_file(CounterWithIndentation* me);
+    friend void CounterWithIndentation_icount_NoNewline_NeverStartOnWhitespace(
+                      CounterWithIndentation* me, const int ColumnNIncrement);
+    friend void __CounterWithIndentation_count_whitespace_to_first_non_whitespace(
+                          CounterWithIndentation* me,
+                          QUEX_TYPE_CHARACTER* start_consideration_it, 
+                          QUEX_TYPE_CHARACTER* Begin,
+                          QUEX_TYPE_CHARACTER* End,
+                          const bool           LicenseToIncrementLineCountF);
+
+#   endif
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 private:
     //      -- include events (a file is included)
-    template<class InputHandleT> QUEX_TYPE_MEMENTO*  
-          memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
-    void  memento_unpack(QUEX_TYPE_MEMENTO*);
-    void  include_stack_delete();
+    template<class InputHandleT> QUEX_TYPE_MEMENTO*  memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT**);
+    void                                             memento_unpack(QUEX_TYPE_MEMENTO*);
+
 
 public:
     template <class InputHandle> void  include_push(QUEX_TYPE_CHARACTER*     InputName, 
@@ -272,6 +282,8 @@ public:
                                                     const int                MODE_ID         = -1, 
                                                     const char*              IANA_CodingName = 0x0);
     bool                               include_pop();
+protected:
+    void                               include_stack_delete();
 #   endif
 public:
     void  print_this();
