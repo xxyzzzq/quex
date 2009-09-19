@@ -27,7 +27,7 @@ main(int argc, char** argv)
 
     post_categorizer_setup(&pc, 4);
     
-    QuexPostCategorizer_remove(&pc, argv[1]);
+    pc.remove(argv[1]);
 
     QuexPostCategorizer_print_tree(pc.root, 0);
 }

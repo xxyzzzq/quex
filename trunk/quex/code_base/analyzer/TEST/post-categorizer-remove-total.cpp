@@ -28,15 +28,15 @@ main(int argc, char** argv)
 
     post_categorizer_setup(&pc, atoi(argv[1]));
     
-    QuexPostCategorizer_remove(&pc, "Ab");
-    QuexPostCategorizer_remove(&pc, "Ad");
-    QuexPostCategorizer_remove(&pc, "Af");
-    QuexPostCategorizer_remove(&pc, "Ah");
-    QuexPostCategorizer_remove(&pc, "Bb");
-    QuexPostCategorizer_remove(&pc, "Bd");
-    QuexPostCategorizer_remove(&pc, "Bf");
+    pc.remove("Ab");
+    pc.remove("Ad");
+    pc.remove("Af");
+    pc.remove("Ah");
+    pc.remove("Bb");
+    pc.remove("Bd");
+    pc.remove("Bf");
 
-    QuexPostCategorizer_enter(&pc, "The only node", 77);
+    pc.enter("The only node", 77);
 
     QuexPostCategorizer_print_tree(pc.root, 0);
 }

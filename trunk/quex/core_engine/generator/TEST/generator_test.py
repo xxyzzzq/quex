@@ -191,11 +191,11 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt  = "#define QUEX_TYPE_CHARACTER uint8_t\n"
     txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
     txt += "typedef void QUEX_TYPE_MODE;\n"
+    if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
     txt += "#include <quex/code_base/test_environment/default_configuration>\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
     txt += "#endif\n"
-    if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
     txt += "#include <quex/code_base/analyzer/Analyser>\n"
     txt += "#include <quex/code_base/analyzer/Analyser.i>\n"
     txt += "\n"
@@ -319,8 +319,8 @@ typedef void QUEX_TYPE_MODE;
 #define QUEX_SETTING_BUFFER_MIN_FALLBACK_N  ((size_t)$$BUFFER_FALLBACK_N$$)
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
-#include <quex/code_base/test_environment/default_configuration>
 $$TEST_CASE$$
+#include <quex/code_base/test_environment/default_configuration>
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif

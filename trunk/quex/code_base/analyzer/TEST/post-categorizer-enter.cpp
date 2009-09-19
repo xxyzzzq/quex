@@ -9,7 +9,7 @@
 
 /* See: post-categorizer-common.c */
 using namespace quex;
-void post_categorizer_setup(QuexPostCategorizer* me, int Seed);
+void post_categorizer_setup(QUEX_TYPE_POST_CATEGORIZER* me, int Seed);
 
 int
 main(int argc, char** argv)
@@ -23,7 +23,7 @@ main(int argc, char** argv)
         return 0;
     }
     const int Start = atoi(argv[1]);
-    QuexPostCategorizer  pc;
+    QUEX_TYPE_POST_CATEGORIZER  pc;
 
     post_categorizer_setup(&pc, Start);
 

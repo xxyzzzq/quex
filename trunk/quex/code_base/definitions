@@ -72,7 +72,7 @@ QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
  
 /* Support of computed goto */
 #ifdef __QUEX_OPTION_USE_COMPUTED_GOTOS
-    typedef  void*    QUEX_TYPE_GOTO_LABEL;
+    typedef  void*     QUEX_TYPE_GOTO_LABEL;
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (&&TERMINAL_DEFAULT)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(0x0)
 #   define QUEX_SET_drop_out_state_index(StateIndex) drop_out_state_index = &&STATE_ ##StateIndex ##_INPUT; 
@@ -81,7 +81,7 @@ QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
 #   define QUEX_GOTO_last_acceptance()               goto *last_acceptance;
 
 #else
-    typedef  uint32_t QUEX_TYPE_GOTO_LABEL;
+    typedef  uint32_t  QUEX_TYPE_GOTO_LABEL;
 #   define QUEX_GOTO_TERMINAL_LABEL_INIT_VALUE       (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_GOTO_STATE_LABEL_INIT_VALUE          (QUEX_TYPE_GOTO_LABEL)(-1)
 #   define QUEX_SET_drop_out_state_index(StateIndex) do drop_out_state_index = StateIndex; 
@@ -90,22 +90,22 @@ QUEX_INLINE size_t __QUEX_STD_strlen(const QUEX_TYPE_CHARACTER* Str)
 #   define QUEX_GOTO_last_acceptance()               goto __TERMINAL_ROUTER;
 #endif
 
-    QUEX_NAMESPACE_COMPONENTS_OPEN
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
-    QUEX_INLINE uint8_t*
-    __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
-    {
-#        if ! defined(__QUEX_SETTING_PLAIN_C)
-         uint8_t*  result = new uint8_t[(size_t)ByteN];
-#        else
-         uint8_t*  result = (uint8_t*)malloc((size_t)ByteN);
-#        endif
-#        ifdef QUEX_OPTION_ASSERTS
-         /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
-         __QUEX_STD_memset((uint8_t*)result, 0xFF, ByteN);
-#        endif
-         return result;
-    }
+QUEX_INLINE uint8_t*
+__QUEX_ALLOCATE_MEMORY(const size_t ByteN)
+{
+#    if ! defined(__QUEX_SETTING_PLAIN_C)
+     uint8_t*  result = new uint8_t[(size_t)ByteN];
+#    else
+     uint8_t*  result = (uint8_t*)malloc((size_t)ByteN);
+#    endif
+#    ifdef QUEX_OPTION_ASSERTS
+     /* Cast to uint8_t to avoid that some smart guy provides a C++ overloading function */
+     __QUEX_STD_memset((uint8_t*)result, 0xFF, ByteN);
+#    endif
+     return result;
+}
        
 #if defined(__QUEX_SETTING_PLAIN_C)
 #   define __QUEX_FREE_MEMORY(OBJECT)  (free(OBJECT))
@@ -210,7 +210,8 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
         "###############################################################################\n"
 
 /* Generating names on the fly while existing macros are to be used. */
-#define QUEX_EXPAND(X)  X
+#define __QUEX_EXPAND(X)  X
+#define QUEX_EXPAND(X)    __QUEX_EXPAND(X)
 
 #define __QUEX_PREFIX(A, x)     A ## x
 #define QUEX_PREFIX(PREFIX, x)  __QUEX_PREFIX(PREFIX, x)
@@ -226,10 +227,10 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_NAMER(QUEX_TYPE_, CLASS, MEMBER_NAME)
 #else
 #   define __QUEX_SETTING_THIS_POINTER       /* 'this' is passed automatically */
-#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_PREFIX(QUEX_TYPE_, CLASS)::QUEX_PREFIX(QUEX_TYPE_, CLASS)
-#   define QUEX_DESTRUCTOR(CLASS)            QUEX_PREFIX(QUEX_TYPE_, CLASS)::~QUEX_PREFIX(QUEX_TYPE_, CLASS)
-#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_PREFIX(QUEX_TYPE_, CLASS)::MEMBER_NAME
-#   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_EXPAND(QUEX_TYPE_ ## CLASS)::MEMBER_NAME
+#   define QUEX_CONSTRUCTOR(CLASS, SUFFIX)   QUEX_EXPAND(QUEX_PREFIX(QUEX_TYPE_, QUEX_EXPAND(CLASS)))::QUEX_PREFIX(QUEX_TYPE_, CLASS)
+#   define QUEX_DESTRUCTOR(CLASS)            QUEX_EXPAND(QUEX_PREFIX(QUEX_TYPE_, QUEX_EXPAND(CLASS)))::~QUEX_PREFIX(QUEX_TYPE_, CLASS)
+#   define QUEX_MEMFUNC(CLASS, MEMBER_NAME)  QUEX_EXPAND(QUEX_PREFIX(QUEX_TYPE_, QUEX_EXPAND(CLASS)))::MEMBER_NAME
+#   define QUEX_MEMCALL(CLASS, MEMBER_NAME)  QUEX_EXPAND(QUEX_PREFIX(QUEX_TYPE_, QUEX_EXPAND(CLASS)))::MEMBER_NAME
 #endif
 
 
