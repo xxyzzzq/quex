@@ -256,7 +256,7 @@ public:
 $$MODE_CLASS_FRIENDS$$  
     // (*) User defined Friends ______________________________________________________
 $$LEXER_CLASS_FRIENDS$$
-#ifdef QUEX_OPTION_INCLUDE_STACK
+#   ifdef QUEX_OPTION_INCLUDE_STACK
 private:
     //      -- include events (a file is included)
     template<class InputHandleT> QUEX_TYPE_MEMENTO*  
@@ -272,7 +272,7 @@ public:
                                                     const int                MODE_ID         = -1, 
                                                     const char*              IANA_CodingName = 0x0);
     bool                               include_pop();
-#endif
+#   endif
 public:
     void  print_this();
 
@@ -300,35 +300,35 @@ QUEX_TYPE_ANALYZER::__constructor_core(InputHandleT*             input_handle,
                                        QUEX_TYPE_CHARACTER*      BufferMemory,    
                                        size_t                    BufferMemorySize)
 {
-#if      defined(QUEX_OPTION_ASSERTS) \
+#   if      defined(QUEX_OPTION_ASSERTS) \
        && ! defined(QUEX_OPTION_ASSERTS_WARNING_MESSAGE_DISABLED)
     __QUEX_STD_printf(__QUEX_MESSAGE_ASSERTS_INFO);
-#endif
+#   endif
 
-#if   defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
+#   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* explict call of placement new for all tokens in the chunk */
     QuexTokenQueue_construct(&_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
-#elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
+#   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
     QuexTokenQueue_construct(&_token_queue, 0);
-#else
+#   else
     token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
-#endif
+#   endif
 
-#ifdef QUEX_OPTION_STRING_ACCUMULATOR
+#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _construct)(&accumulator, this);
-#endif
+#   endif
 
-#ifdef __QUEX_OPTION_COUNTER
+#   ifdef __QUEX_OPTION_COUNTER
     QUEX_PREFIX(QUEX_TYPE_COUNTER, _construct)(&counter, this);
-#endif
+#   endif
 
     mode_db[0] = 0x0;
     // LexModeID = 0 is not used, mode indices from 1 to ModeN
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
-#ifdef  QUEX_OPTION_INCLUDE_STACK
+#   ifdef  QUEX_OPTION_INCLUDE_STACK
     _parent_memento = 0x0;
-#endif
+#   endif
 
     __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);

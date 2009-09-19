@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.71" date="Thu Sep 17 23:05:19 2009">
+<test-database execution-time-sec="1.08" date="Sat Sep 19 02:41:24 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.48"> 
+    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.85"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1251232445L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.48" crc="-1647352136"/>
+           <choice name="" result="OK" time_sec="0.85" crc="-1647352136"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.10"> 
@@ -12,10 +12,10 @@
            <choice name="" result="OK" time_sec="0.10" crc="380312751"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.05"> 
+    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.06"> 
         <application file-name="macro-check.py" info-request-time="1252011477L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="FAIL" time_sec="0.05" crc="-830421222"/>
+           <choice name="" result="OK" time_sec="0.06" crc="-830421222"/>
         </choice-list>
     </test>
     <group name="User defined token id file">

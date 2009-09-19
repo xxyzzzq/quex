@@ -30,11 +30,13 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     TEMPLATE_IN(InputHandleT) void    
     QUEX_MEMFUNC(ANALYZER, include_push)(__QUEX_SETTING_THIS_POINTER
-                                                   QUEX_TYPE_CHARACTER*     InputName,
-                                                   const int                MODE_ID /* = -1 */, 
-                                                   const char*              IANA_CodingName /* = 0x0 */)
+                                         QUEX_TYPE_CHARACTER*     InputName,
+                                         const int                MODE_ID /* = -1 */, 
+                                         const char*              IANA_CodingName /* = 0x0 */)
     {
+#       if defined(__QUEX_SETTING_PLAIN_C)
 #       define InputHandleT  FILE
+#       endif
         /* Once we allow MODE_ID == 0, reset the range to [0:MAX_MODE_CLASS_N]             */
         __quex_assert(    MODE_ID == -1 
                       || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
@@ -43,7 +45,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         /* Store the lexical analyser's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*       input_handle = 0x0;
-        QUEX_TYPE_MEMENTO*  m            = memento_pack(InputName, &input_handle);
+        QUEX_TYPE_MEMENTO*  m            = memento_pack<InputHandleT>(InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
@@ -68,10 +70,12 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         /* Keep track of 'who's your daddy?'                              */
         m->base.parent = this->_parent_memento;
         this->_parent_memento = m;
+#       if defined(__QUEX_SETTING_PLAIN_C)
 #       undef InputHandleT
+#       endif
     }   
 
-    inline bool
+    QUEX_INLINE bool
     QUEX_MEMFUNC(ANALYZER, include_pop)(__QUEX_SETTING_THIS_POINTER) 
     {
         /* Not included? return 'false' to indicate we're on the top level     */
@@ -88,7 +92,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         return true;
     }
 
-    inline void
+    QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, include_stack_delete)(__QUEX_SETTING_THIS_POINTER) 
     {
         while( this->_parent_memento != 0x0 ) {
