@@ -239,8 +239,8 @@ QUEX_INPUT_POLICY_SEEK	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Inpu
 QUEX_INPUT_POLICY_SEEK	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	114;"	d	file:
 QUEX_INPUT_POLICY_TELL	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	106;"	d	file:
 QUEX_INPUT_POLICY_TELL	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	116;"	d	file:
-QUEX_NAMER	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	272;"	d	file:
-QUEX_NAMER_LASS_PREFIXED	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	269;"	d	file:
+QUEX_FIX3	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	272;"	d	file:
+QUEX_FIX3_LASS_PREFIXED	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	269;"	d	file:
 QUEX_OPTION_ASSERTS	/home/fschaef/prj/quex/trunk/quex/code_base/./asserts	13;"	d	file:
 QUEX_OPTION_ASSERTS	/home/fschaef/prj/quex/trunk/quex/code_base/./asserts	9;"	d	file:
 QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	130;"	d	file:
@@ -647,8 +647,8 @@ __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_bas
 __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/count_common	7;"	d	file:
 __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	246;"	d	file:
 __QUEX_MESSAGE_BUFFER_FILLER_ON_STRANGE_STREAM	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	259;"	d	file:
-__QUEX_NAMER	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	271;"	d	file:
-__QUEX_NAMER_LASS_PREFIXED	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	268;"	d	file:
+__QUEX_FIX3	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	271;"	d	file:
+__QUEX_FIX3_LASS_PREFIXED	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	268;"	d	file:
 __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	180;"	d	file:
 __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	184;"	d	file:
 __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	215;"	d	file:

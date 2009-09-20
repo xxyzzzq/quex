@@ -314,11 +314,11 @@ QUEX_TYPE_ANALYZER::__constructor_core(InputHandleT*             input_handle,
 #   endif
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    QUEX_PREFIX(ACCUMULATOR, _construct)(&accumulator, this);
+    QUEX_FIX(ACCUMULATOR, _construct)(&accumulator, this);
 #   endif
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_PREFIX(COUNTER, _construct)(&counter, this);
+    QUEX_FIX(COUNTER, _construct)(&counter, this);
 #   endif
 
     mode_db[0] = 0x0;
@@ -383,7 +383,7 @@ QUEX_TYPE_ANALYZER::reset(InputHandleT*   input_handle,
                        QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_PREFIX(COUNTER, _init)(&counter);
+    QUEX_FIX(COUNTER, _init)(&counter);
 #   endif
 
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED

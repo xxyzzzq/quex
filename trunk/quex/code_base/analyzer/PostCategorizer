@@ -43,30 +43,30 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   ifdef __QUEX_SETTING_PLAIN_C
     QUEX_INLINE int
-    QUEX_PREFIX(POST_CATEGORIZER_NODE, _compare)(QuexPostCategorizerNode*    me, 
+    QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(QuexPostCategorizerNode*    me, 
                                                    QUEX_TYPE_CHARACTER         FirstCharacter, 
                                                    const QUEX_TYPE_CHARACTER*  Remainder);
 
     QUEX_INLINE void
-    QUEX_PREFIX(QuexPostCategorizer, _enter)(QuexPostCategorizer*        me, 
+    QUEX_FIX(QuexPostCategorizer, _enter)(QuexPostCategorizer*        me, 
                                              const QUEX_TYPE_CHARACTER*  EntryName, 
                                              QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE QuexPostCategorizerNode*
-    QUEX_PREFIX(QuexPostCategorizer, _find)(const QuexPostCategorizer* me, 
+    QUEX_FIX(QuexPostCategorizer, _find)(const QuexPostCategorizer* me, 
                                             const QUEX_TYPE_CHARACTER* EntryName);
 
     QUEX_INLINE void
-    QUEX_PREFIX(QuexPostCategorizer, _insert)(QuexPostCategorizer*        me, 
+    QUEX_FIX(QuexPostCategorizer, _insert)(QuexPostCategorizer*        me, 
                                               const QUEX_TYPE_CHARACTER*  EntryName, 
                                               QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE void
-    QUEX_PREFIX(QuexPostCategorizer, _remove)(QuexPostCategorizer*        me, 
+    QUEX_FIX(QuexPostCategorizer, _remove)(QuexPostCategorizer*        me, 
                                               const QUEX_TYPE_CHARACTER*  EntryName);
 
     QUEX_INLINE void
-    QUEX_PREFIX(QuexPostCategorizer, _clear)(QuexPostCategorizer*      me, 
+    QUEX_FIX(QuexPostCategorizer, _clear)(QuexPostCategorizer*      me, 
                                              QuexPostCategorizerNode*  branch);
 #   endif
 
