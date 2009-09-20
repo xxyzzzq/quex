@@ -53,7 +53,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         } else {
             __quex_assert(N > QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
-            QUEX_TYPE_TOKEN*  chunk     = QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(N);
+            QUEX_TYPE_TOKEN*  chunk     = QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(N);
             QUEX_TYPE_TOKEN*  chunk_end = chunk + N;
 
             /* Call placement new (plain constructor) for all tokens in chunk. */
@@ -70,7 +70,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         for(QUEX_TYPE_TOKEN* iterator = me->begin; iterator != me->end; ++iterator)
              iterator->QUEX_TYPE_TOKEN::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();  
 
-        QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->begin);
+        QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->begin);
     }
 
 #   define QuexTokenQueue_is_full(me)      ((me).write_iterator >= (me).end_minus_safety_border) 
@@ -171,7 +171,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         if( me->size != 0 ) {
             
             /* Step 1: allocate plain chunk of memory.                              */
-            me->token_list = QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(me->size);
+            me->token_list = QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _allocate)(me->size);
             if( me->token_list == 0x0 ) {
                 QUEX_ERROR_EXIT("Memory allocation error on request for token array.");
             }
@@ -223,7 +223,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
             /* Step 3: De-Allocate the remainder objects                                 
              *         NO explicit destructor calls, since the referred objects are now
              *         referred from inside the 'real' token queue.                      */
-            QUEX_NAMER(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->token_list);
+            QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->token_list);
         }
         /* Reset the read and write iterators */
         token_queue->read_iterator  = token_queue->begin;

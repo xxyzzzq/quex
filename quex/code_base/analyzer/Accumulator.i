@@ -15,7 +15,7 @@
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
 QUEX_INLINE void
-QUEX_PREFIX(ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR* me, 
+QUEX_FIX(ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR* me, 
                                                QUEX_TYPE_ANALYZER*    lexer)
 {
     me->the_lexer = lexer;
@@ -28,7 +28,7 @@ QUEX_PREFIX(ACCUMULATOR, _construct)(QUEX_TYPE_ACCUMULATOR* me,
 }
 
 QUEX_INLINE void
-QUEX_PREFIX(ACCUMULATOR, _destruct)(QUEX_TYPE_ACCUMULATOR* me)
+QUEX_FIX(ACCUMULATOR, _destruct)(QUEX_TYPE_ACCUMULATOR* me)
 {
     MemoryManager_AccumulatorText_free(me->text.begin);
     me->the_lexer       = 0x0;
@@ -38,7 +38,7 @@ QUEX_PREFIX(ACCUMULATOR, _destruct)(QUEX_TYPE_ACCUMULATOR* me)
 }
 
 QUEX_INLINE bool
-QUEX_PREFIX(ACCUMULATOR, _extend)(QUEX_TYPE_ACCUMULATOR* me, size_t MinAddSize)
+QUEX_FIX(ACCUMULATOR, _extend)(QUEX_TYPE_ACCUMULATOR* me, size_t MinAddSize)
 {
     const size_t  OldContentSize = me->text.end - me->text.begin;
     const size_t  Size    = me->text.memory_end - me->text.begin;
@@ -89,7 +89,7 @@ QUEX_MEMFUNC(ACCUMULATOR, add)(__QUEX_SETTING_THIS_POINTER
      * the terminating zero for flushing or printing.                           */
     if( this->text.memory_end <= this->text.end + L ) {
         /* L + 1 we need space for the string + the terminating zero */
-        if( QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _extend)(this, L + 1) == false ) {
+        if( QUEX_FIX(ACCUMULATOR, _extend)(this, L + 1) == false ) {
             QUEX_ERROR_EXIT("Quex Engine: Out of Memory. Accumulator could not be further extended.\n");
         }
     }
@@ -119,7 +119,7 @@ QUEX_MEMFUNC(ACCUMULATOR, add_chararacter)(__QUEX_SETTING_THIS_POINTER
      * the terminating zero for flushing or printing.                           */
     if( this->text.memory_end <= this->text.end + 1 ) {
         /* 1 + 1 we need space for the character + the terminating zero */
-        if( QUEX_PREFIX(QUEX_TYPE_ACCUMULATOR, _extend)(this, 2) == false ) {
+        if( QUEX_FIX(ACCUMULATOR, _extend)(this, 2) == false ) {
             QUEX_ERROR_EXIT("Quex Engine: Out of Memory. Accumulator could not be further extended.\n");
         }
     }
