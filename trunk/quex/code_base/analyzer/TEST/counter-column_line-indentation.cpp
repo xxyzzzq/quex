@@ -8,7 +8,7 @@ using namespace quex;
 
 string    total_string;
 int       indentation[64];
-mini_mode tester_mini_mode;
+QuexMode  tester_mini_mode;
 
 void
 print(CounterWithIndentation& x, const char* TestString)

@@ -24,7 +24,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
      * constructed engine. Actually, it should only be useful for unit tests. Else, it has
      * more a documentary character telling: This is the heart of the matter--anything else
      * is just decoration! Any 'real' lexical analyser should be derived from this class. */
-    struct __QuexAnalyser_tag {
+    typedef struct __QuexAnalyser_tag {
         QuexBuffer                   buffer;
 
         /* Each mode has a dedicated analyser function.  The function pointer
@@ -42,8 +42,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;
 #       endif
 
-    };
-    typedef struct __QuexAnalyser_tag QuexAnalyser;
+    } QuexAnalyser;
 
     TEMPLATE_IN(InputHandleT) void
     QuexAnalyser_construct(QuexAnalyser* me,

@@ -41,34 +41,32 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     } QUEX_TYPE_POST_CATEGORIZER;
 
-#   ifdef __QUEX_SETTING_PLAIN_C
     QUEX_INLINE int
     QUEX_FIX(POST_CATEGORIZER_NODE, _compare)(QuexPostCategorizerNode*    me, 
-                                                   QUEX_TYPE_CHARACTER         FirstCharacter, 
-                                                   const QUEX_TYPE_CHARACTER*  Remainder);
+                                              QUEX_TYPE_CHARACTER         FirstCharacter, 
+                                              const QUEX_TYPE_CHARACTER*  Remainder);
 
     QUEX_INLINE void
     QUEX_FIX(QuexPostCategorizer, _enter)(QuexPostCategorizer*        me, 
-                                             const QUEX_TYPE_CHARACTER*  EntryName, 
-                                             QUEX_TYPE_TOKEN_ID          TokenID);
+                                          const QUEX_TYPE_CHARACTER*  EntryName, 
+                                          QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE QuexPostCategorizerNode*
     QUEX_FIX(QuexPostCategorizer, _find)(const QuexPostCategorizer* me, 
-                                            const QUEX_TYPE_CHARACTER* EntryName);
+                                         const QUEX_TYPE_CHARACTER* EntryName);
 
     QUEX_INLINE void
     QUEX_FIX(QuexPostCategorizer, _insert)(QuexPostCategorizer*        me, 
-                                              const QUEX_TYPE_CHARACTER*  EntryName, 
-                                              QUEX_TYPE_TOKEN_ID          TokenID);
+                                           const QUEX_TYPE_CHARACTER*  EntryName, 
+                                           QUEX_TYPE_TOKEN_ID          TokenID);
 
     QUEX_INLINE void
     QUEX_FIX(QuexPostCategorizer, _remove)(QuexPostCategorizer*        me, 
-                                              const QUEX_TYPE_CHARACTER*  EntryName);
+                                           const QUEX_TYPE_CHARACTER*  EntryName);
 
     QUEX_INLINE void
     QUEX_FIX(QuexPostCategorizer, _clear)(QuexPostCategorizer*      me, 
-                                             QuexPostCategorizerNode*  branch);
-#   endif
+                                          QuexPostCategorizerNode*  branch);
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 

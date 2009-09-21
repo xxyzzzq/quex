@@ -15,7 +15,9 @@
 #ifndef __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
 #define __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
 
-#define QUEX_VERSION  "$$QUEX_VERSION$$"
+#define QUEX_SETTING_VERSION           "$$QUEX_VERSION$$"
+#define QUEX_SETTING_BUILD_DATE        "$$QUEX_VERSION$$"
+#define QUEX_SETTING_ANALYZER_VERSION  "$$QUEX_VERSION$$"
 
 #include <istream>  /* gets: istream and wistream */
 #include <cstdio>   /* gets: FILE                 */
@@ -91,6 +93,28 @@ $$LEXER_DERIVED_CLASS_DECL$$
 
 QUEX_NAMESPACE_MAIN_OPEN
     
+TEMPLATE_IN(InputHandleT) void  
+QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*   me,
+                                       InputHandleT*         ih, 
+                                       const char*           CharacterEncodingName,
+                                       bool                  ByteOrderReversionF,
+                                       QUEX_TYPE_CHARACTER*  BufferMemory,
+                                       size_t                BufferMemorySize);
+
+TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
+QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me, 
+                                  QUEX_TYPE_CHARACTER*  InputName, 
+                                  InputHandleT**        input_handle);
+
+QUEX_INLINE void
+QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*  me, 
+                                    QUEX_TYPE_MEMENTO*   memento);
+
+TEMPLATE_IN(InputHandleT) void
+QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*   me,
+                          InputHandleT*         input_handle, 
+                          const char*           CharacterEncodingName /* = 0x0 */);
+
 typedef struct QUEX_TYPE_MEMENTO_TAG {
     QUEX_TYPE_MEMENTO_BASE  base;
 
@@ -238,7 +262,7 @@ public:
     // (*) Version information
     const char* version() const; // created by quex for version/date information
 
-    // (*) Helper
+    // (*) Tell/Seek/Move on basis of character index
     void    move_forward(const size_t);
     void    move_backward(const size_t);
     size_t  tell();
@@ -247,14 +271,9 @@ public:
 public:
     template <class InputHandleT> void reset(InputHandleT*   input_handle, 
                                              const char*     CharacterEncodingName = 0x0); 
+    { QUEX_FIX(ANALYZER, _reset)(this, input_handle, CharacterEncodingName); }
     void                               reset(const char* CharacterEncodingName = 0x0) 
     { reset<void>((void*)0x0, CharacterEncodingName); }
-
-
-    // (*) All Modes are Friends _____________________________________________________
-$$MODE_CLASS_FRIENDS$$  
-    // (*) User defined Friends ______________________________________________________
-$$LEXER_CLASS_FRIENDS$$
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
 private:
@@ -273,16 +292,33 @@ public:
 protected:
     void              include_stack_delete();
 #   endif
+
 public:
     void  print_this();
 
 private:
+    friend 
     // (*) Common core of all constructors ___________________________________________
-    template<class InputHandleT> void  __constructor_core(InputHandleT*, 
-                                                          const char*           CharacterEncodingName,
-                                                          bool                  ByteOrderReversionF,
-                                                          QUEX_TYPE_CHARACTER*  BufferMemory     = 0x0,
-                                                          size_t                BufferMemorySize = 0);
+    TEMPLATE_IN(InputHandleT) void  
+    QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*, 
+                                           bool, QUEX_TYPE_CHARACTER*, size_t);
+    friend
+    TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
+    QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
+                                      InputHandleT**);
+    friend
+    QUEX_INLINE void
+    QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_MEMENTO*);
+
+    friend
+    TEMPLATE_IN(InputHandleT) void
+    QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
+
+    // (*) All Modes are Friends _____________________________________________________
+$$MODE_CLASS_FRIENDS$$  
+    // (*) User defined Friends ______________________________________________________
+$$LEXER_CLASS_FRIENDS$$
+
 public:
 #define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
 /* START: User's class body extensions ________________________________________*/
@@ -292,8 +328,8 @@ $$CLASS_BODY_EXTENSION$$
 
 };
 
-template <class InputHandleT> inline void
-QUEX_TYPE_ANALYZER::__constructor_core(InputHandleT*             input_handle, 
+TEMPLATE_IN(InputHandleT) QUEX_INLINE void
+QUEX_FIX(ANALYZER, __constructor_core)(InputHandleT*             input_handle, 
                                        const char*               CharacterEncodingName,
                                        bool                      ByteOrderReversionF,
                                        QUEX_TYPE_CHARACTER*      BufferMemory,    
@@ -366,9 +402,10 @@ $$CONSTRUCTOR_EXTENSTION$$
 #undef self
 }
 
-template <class InputHandleT> inline void
-QUEX_TYPE_ANALYZER::reset(InputHandleT*   input_handle, 
-                          const char*     CharacterEncodingName /* = 0x0 */) 
+TEMPLATE_IN(InputHandleT) void
+QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
+                           InputHandleT*        input_handle, 
+                           const char*          CharacterEncodingName /* = 0x0 */) 
 {
     __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
@@ -406,34 +443,30 @@ QUEX_TYPE_ANALYZER::reset(InputHandleT*   input_handle,
 }
 
 
-inline bool
-QUEX_TYPE_ANALYZER::byte_order_reversion()
-{ return buffer._byte_order_reversion_active_f; }
-
-inline void     
-QUEX_TYPE_ANALYZER::byte_order_reversion_set(bool Value)
-{ buffer._byte_order_reversion_active_f = Value; }
-
-inline const char* 
-QUEX_TYPE_ANALYZER::version() const
+QUEX_INLINE const char* 
+QUEX_MEMFUNC(ANALYZER, version)() const
 { 
-    return "$$LEXER_CLASS_NAME$$: Version $$LEXER_BUILD_VERSION$$. Date $$LEXER_BUILD_DATE$$\n"
-           "Generated by Quex $$QUEX_VERSION$$";
+    return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
+           ": Version "         QUEX_SETTING_ANALYZER_VERSION \
+           ". Date "            QUEX_SETTING_BUILD_DATE       \
+           "Generated by Quex " QUEX_SETTING_VERSION ".";
 }
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
-template<class InputHandleT> inline QUEX_TYPE_MEMENTO*
-QUEX_TYPE_ANALYZER::memento_pack(QUEX_TYPE_CHARACTER* InputName, InputHandleT** input_handle)
+TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
+QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me, 
+                                 QUEX_TYPE_CHARACTER*  InputName, 
+                                 InputHandleT**        input_handle)
 {
-#   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+#   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
     QUEX_TYPE_MEMENTO* memento = MemoryManager_$$LEXER_CLASS_NAME$$Memento_allocate();
 
     /* Use placement 'new' for explicit call of constructor */
     new ((void*)memento) QUEX_TYPE_MEMENTO;
 
     memento->base.parent         = self._parent_memento;
-    memento->base.analyser_core  = *((QuexAnalyser*)this);
+    memento->base.analyser_core  = *((QuexAnalyser*)me);
     memento->base.counter        = self.counter;
     memento->base.current_mode_p = self.__current_mode_p;
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
@@ -448,12 +481,13 @@ $$MEMENTO_EXTENSIONS_PACK$$
 #   undef self
 }
 
-inline void
-QUEX_TYPE_ANALYZER::memento_unpack(QUEX_TYPE_MEMENTO* memento)
+QUEX_INLINE void
+QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*   me, 
+                                    QUEX_TYPE_MEMENTO*    memento)
 {
-#   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+#   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
     self._parent_memento    = memento->base.parent;
-    *((QuexAnalyser*)this)  = memento->base.analyser_core;
+    *((QuexAnalyser*)me)    = memento->base.analyser_core;
     self.counter            = memento->base.counter;
     self.__current_mode_p   = memento->base.current_mode_p;
     

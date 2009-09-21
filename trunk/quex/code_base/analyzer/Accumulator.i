@@ -100,8 +100,8 @@ QUEX_FIX(ACCUMULATOR, _add)(QUEX_TYPE_ACCUMULATOR* me,
 
 
 QUEX_INLINE void 
-QUEX_FIX(ACCUMULATOR, _add_chararacter)(QUEX_TYPE_ACCUMULATOR*     me,
-                                        const QUEX_TYPE_CHARACTER  Character)
+QUEX_FIX(ACCUMULATOR, _add_character)(QUEX_TYPE_ACCUMULATOR*     me,
+                                      const QUEX_TYPE_CHARACTER  Character)
 { 
     /* If it is the first string to be appended, the store the location */
 #   ifdef __QUEX_OPTION_COUNTER
@@ -129,7 +129,7 @@ QUEX_FIX(ACCUMULATOR, _add_chararacter)(QUEX_TYPE_ACCUMULATOR*     me,
 }
 
 QUEX_INLINE void
-QUEX_FIX(ACCUMULATOR, _flush)(QUEX_TYPE_ACCUMULATOR*    me
+QUEX_FIX(ACCUMULATOR, _flush)(QUEX_TYPE_ACCUMULATOR*    me,
                              const QUEX_TYPE_TOKEN_ID  TokenID)
 {
     /* All functions must ensure that there is one cell left to store the terminating zero. */
@@ -143,7 +143,7 @@ QUEX_FIX(ACCUMULATOR, _flush)(QUEX_TYPE_ACCUMULATOR*    me
 
     me->the_lexer->send(TokenID, me->text.begin);
 
-    QUEX_MEMCALL(ACCUMULATOR, clear)(__QUEX_SETTING_THIS_POINTER);
+    QUEX_FIX(ACCUMULATOR, _clear)(me);
 }
 
 QUEX_INLINE void  

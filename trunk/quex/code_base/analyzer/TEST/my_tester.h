@@ -12,26 +12,30 @@ struct my_tester;
 #define  QUEX_TYPE_MODE     QuexMode
 #include <quex/code_base/test_environment/default_configuration>
 #include <quex/code_base/analyzer/Counter>
+#include <quex/code_base/analyzer/QuexMode>
+#include <quex/code_base/analyzer/Analyser>
 
-
-typedef struct mini_mode_tag {
-    void on_indentation(my_tester* x, int Indentation);
-} mini_mode;
 
 extern int  indentation[64];
 
-struct my_tester {
-    my_tester() : __current_mode_p(&tester_mini_mode) {}
+class my_tester : public quex::QuexAnalyser {
+public:
+    my_tester();
     quex::Counter*   counter;
-    mini_mode*       __current_mode_p;
-    mini_mode        tester_mini_mode;
+    quex::QuexMode   tester_mini_mode;
 };
 
 inline void 
-mini_mode::on_indentation(my_tester* x, int Indentation) 
+mini_mode_on_indentation(quex::QuexAnalyser* x, int Indentation) 
 {
-    indentation[x->counter->base._line_number_at_end-1] = Indentation;
+    indentation[((my_tester*)x)->counter->base._line_number_at_end-1] = Indentation;
     printf("indentation = %i\n", Indentation);
+}
+
+my_tester::my_tester() 
+{ 
+    tester_mini_mode.on_indentation = mini_mode_on_indentation;
+    __current_mode_p = &tester_mini_mode; 
 }
 
 #include <../CounterWithIndentation.i>
