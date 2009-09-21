@@ -93,6 +93,17 @@ $$LEXER_DERIVED_CLASS_DECL$$
 
 QUEX_NAMESPACE_MAIN_OPEN
     
+typedef struct QUEX_TYPE_MEMENTO_TAG {
+    QUEX_TYPE_MEMENTO_BASE  base;
+
+    QUEX_TYPE_MEMENTO_TAG()  {}
+    ~QUEX_TYPE_MEMENTO_TAG() {}
+
+/* START: User's memento extentions ___________________________________________*/
+$$MEMENTO_EXTENSIONS$$
+/* END: _______________________________________________________________________*/
+} QUEX_TYPE_MEMENTO;
+
 TEMPLATE_IN(InputHandleT) void  
 QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*   me,
                                        InputHandleT*         ih, 
@@ -114,17 +125,6 @@ TEMPLATE_IN(InputHandleT) void
 QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*   me,
                           InputHandleT*         input_handle, 
                           const char*           CharacterEncodingName /* = 0x0 */);
-
-typedef struct QUEX_TYPE_MEMENTO_TAG {
-    QUEX_TYPE_MEMENTO_BASE  base;
-
-    QUEX_TYPE_MEMENTO_TAG()  {}
-    ~QUEX_TYPE_MEMENTO_TAG() {}
-
-/* START: User's memento extentions ___________________________________________*/
-$$MEMENTO_EXTENSIONS$$
-/* END: _______________________________________________________________________*/
-} QUEX_TYPE_MEMENTO;
 
 $$MODE_SPECIFIC_ANALYSER_FUNCTIONS$$
 
@@ -270,7 +270,7 @@ public:
 
 public:
     template <class InputHandleT> void reset(InputHandleT*   input_handle, 
-                                             const char*     CharacterEncodingName = 0x0); 
+                                             const char*     CharacterEncodingName = 0x0)
     { QUEX_FIX(ANALYZER, _reset)(this, input_handle, CharacterEncodingName); }
     void                               reset(const char* CharacterEncodingName = 0x0) 
     { reset<void>((void*)0x0, CharacterEncodingName); }
@@ -299,7 +299,7 @@ public:
 private:
     friend 
     // (*) Common core of all constructors ___________________________________________
-    TEMPLATE_IN(InputHandleT) void  
+    template<class InputHandleT> void  
     QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*, 
                                            bool, QUEX_TYPE_CHARACTER*, size_t);
     friend
