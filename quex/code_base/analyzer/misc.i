@@ -66,5 +66,13 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __QUEX_STD_printf("   ByteOrderInversion = %s;\n", byte_order_reversion() ? "true" : "false");
     }
 
+    QUEX_INLINE bool
+    QUEX_MEMFUNC(ANALYZER, byte_order_reversion)()
+    { return buffer._byte_order_reversion_active_f; }
+
+    QUEX_INLINE void     
+    QUEX_MEMFUNC(ANALYZER, byte_order_reversion_set)(bool Value)
+    { buffer._byte_order_reversion_active_f = Value; }
+
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 

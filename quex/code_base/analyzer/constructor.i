@@ -19,7 +19,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                               :                        QUEX_SETTING_BUFFER_SIZE;
 
        __quex_assert(memory_size > 2);
-       QUEX_TYPE_ANALYZER::__constructor_core((void*)0x0, CharacterEncodingName, ByteOrderReversionF,
+       QUEX_FIX(ANALYZER, __constructor_core)((void*)0x0, CharacterEncodingName, ByteOrderReversionF,
                                  BufferMemoryBegin, memory_size);
 
     }
@@ -37,7 +37,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         if( fh == NULL ) QUEX_ERROR_EXIT("Error on attempt to open specified file.");
         setbuf(fh, 0);   // turn off system based buffering!
         //               // this is essential to profit from the quex buffer!
-        __constructor_core(fh, CharacterEncodingName, ByteOrderReversionF);
+        QUEX_FIX(ANALYZER, __constructor_core)(this, fh, CharacterEncodingName, ByteOrderReversionF, 0x0, 0);
         // Recall, that this thing as to be deleted/closed
         __file_handle_allocated_by_constructor = fh;
     }
@@ -49,7 +49,10 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                                          bool            ByteOrderReversionF   /* = false */)
     {
         if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-        __constructor_core(p_input_stream, CharacterEncodingName, ByteOrderReversionF);
+        QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
+                                               CharacterEncodingName, 
+                                               ByteOrderReversionF, 
+                                               0x0, 0);
     }
 
     QUEX_INLINE
@@ -59,17 +62,22 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                                           bool            ByteOrderReversionF   /* = false */)
     {
         if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-        __constructor_core(p_input_stream, CharacterEncodingName, ByteOrderReversionF);
+        QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
+                                               CharacterEncodingName, ByteOrderReversionF, 
+                                               0x0, 0);
     }
 
-#   if defined(__QUEX_OPTION_UNIT_TEST)
+#   if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_SETTING_PLAIN_C)
+    /* StrangeStreams are not for C-language stuff */
     template<class UnderlyingStreamT> QUEX_INLINE
     QUEX_TYPE_ANALYZER::QUEX_TYPE_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
                                            const char*      CharacterEncodingName /* = 0x0   */,
                                            bool             ByteOrderReversionF   /* = false */)
     {
         if( p_input_stream == NULL ) QUEX_ERROR_EXIT("Error: received NULL as pointer to input stream.");
-        __constructor_core(p_input_stream, CharacterEncodingName, ByteOrderReversionF);
+        QUEX_FIX(ANALYZER, __constructor_core)(this, p_input_stream, 
+                                               CharacterEncodingName, ByteOrderReversionF, 
+                                               0x0, 0);
     }
 #   endif
 
@@ -82,7 +90,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         if( fh == NULL ) QUEX_ERROR_EXIT("Error: received NULL as a file handle.");
         setbuf(fh, 0);   // turn off system based buffering!
         //               // this is essential to profit from the quex buffer!
-        __constructor_core(fh, CharacterEncodingName, ByteOrderReversionF);
+        QUEX_FIX(ANALYZER, __constructor_core)(this, fh, 
+                                               CharacterEncodingName, ByteOrderReversionF, 
+                                               0x0, 0);
     }
 
 

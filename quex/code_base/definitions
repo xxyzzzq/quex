@@ -210,6 +210,7 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
         "###############################################################################\n"
 
 /* Generating names on the fly while existing macros are to be used. */
+#define QUEX_STRING(X)        #X
 #define QUEX_EXPAND(X)        X
 #define QUEX_PURE_FIX(X, Y)   X ## Y
 #define __QUEX_FIX(X, Y)      QUEX_PURE_FIX(X, Y)
