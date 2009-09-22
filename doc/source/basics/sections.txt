@@ -102,7 +102,8 @@ for the given section-name. The available sections are the following:
 .. data:: init
 
    Extensions to the lexical analyzer constructor. This is the place to initialize
-   the additional members mentioned in the ``body`` section.
+   the additional members mentioned in the ``body`` section. Note, that as in every
+   code fragment, the analyzer itself is referred to via the ``self`` variable.
 
 A customized token type can easily be defined in a section called
 

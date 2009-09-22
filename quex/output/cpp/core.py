@@ -221,18 +221,18 @@ def write_mode_class_implementation(Modes):
     write_safely_and_close(ModeClassImplementationFile, txt)
 
 quex_mode_init_call_str = """
-        $$MN$$.id   = $$CLASS$$_QuexModeID_$$MN$$;
-        $$MN$$.name = "$$MN$$";
-        $$MN$$.analyser_function = $analyser_function;
+     me->$$MN$$.id   = $$CLASS$$_QuexModeID_$$MN$$;
+     me->$$MN$$.name = "$$MN$$";
+     me->$$MN$$.analyser_function = $analyser_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
-        $$MN$$.on_indentation = $on_indentation;
+     me->$$MN$$.on_indentation = $on_indentation;
 #    endif
-        $$MN$$.on_entry       = $on_entry;
-        $$MN$$.on_exit        = $on_exit;
+     me->$$MN$$.on_entry       = $on_entry;
+     me->$$MN$$.on_exit        = $on_exit;
 #    ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK
-        $$MN$$.has_base       = $has_base;
-        $$MN$$.has_entry_from = $has_entry_from;
-        $$MN$$.has_exit_to    = $has_exit_to;
+     me->$$MN$$.has_base       = $has_base;
+     me->$$MN$$.has_entry_from = $has_entry_from;
+     me->$$MN$$.has_exit_to    = $has_exit_to;
 #    endif
 """
 
@@ -339,7 +339,7 @@ def get_mode_class_related_code_fragments(Modes, LexerClassName):
         txt += __get_mode_init_call(mode, LexerClassName)
 
     for mode in Modes:
-        txt += "        mode_db[%s_QuexModeID_%s]%s = &%s;\n" % \
+        txt += "        me->mode_db[%s_QuexModeID_%s]%s = &me->%s;\n" % \
                (LexerClassName, mode.name, " " * (L-len(mode.name)), mode.name)
 
     constructor_txt = txt
