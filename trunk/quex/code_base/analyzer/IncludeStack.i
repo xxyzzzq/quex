@@ -45,7 +45,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         /* Store the lexical analyser's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*       input_handle = 0x0;
-        QUEX_TYPE_MEMENTO*  m            = memento_pack<InputHandleT>(InputName, &input_handle);
+        QUEX_TYPE_MEMENTO*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(this, InputName, &input_handle);
         if( m == 0x0 ) return;
         if( input_handle == 0x0 ) {
             QUEX_ERROR_EXIT("Segment 'memento_pack' segment did not set the input_handle.");
@@ -86,7 +86,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
         /* Restore the lexical analyser to the state it was before the include */
         /* Here, the 'memento_unpack' section is executed                      */
-        memento_unpack(this->_parent_memento);
+        QUEX_FIX(ANALYZER, _memento_unpack)(this, this->_parent_memento);
 
         /* Return to including file succesful */
         return true;
@@ -101,7 +101,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
             /* Restore the lexical analyser to the state it was before the include */
             /* Here, the 'memento_unpack' section is executed                      */
-            memento_unpack(this->_parent_memento);
+            QUEX_FIX(ANALYZER, _memento_unpack)(this, this->_parent_memento);
         }
     }
 

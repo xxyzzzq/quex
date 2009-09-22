@@ -297,21 +297,22 @@ public:
     void  print_this();
 
 private:
-    friend 
     // (*) Common core of all constructors ___________________________________________
-    template<class InputHandleT> void  
-    QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*, 
-                                           bool, QUEX_TYPE_CHARACTER*, size_t);
-    friend
-    TEMPLATE_IN(InputHandleT) QUEX_TYPE_MEMENTO*
+    TEMPLATE_IN(InputHandleT) friend void
+    QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
+                                           InputHandleT*             input_handle, 
+                                           const char*               CharacterEncodingName,
+                                           bool                      ByteOrderReversionF,
+                                           QUEX_TYPE_CHARACTER*      BufferMemory,    
+                                           size_t                    BufferMemorySize);
+
+    template<class InputHandleT> friend QUEX_TYPE_MEMENTO*
     QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_CHARACTER*, 
                                       InputHandleT**);
-    friend
-    QUEX_INLINE void
+    friend void
     QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*, QUEX_TYPE_MEMENTO*);
 
-    friend
-    TEMPLATE_IN(InputHandleT) void
+    template<class InputHandleT> friend void
     QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*, InputHandleT*, const char*);
 
     // (*) All Modes are Friends _____________________________________________________
@@ -328,8 +329,9 @@ $$CLASS_BODY_EXTENSION$$
 
 };
 
-TEMPLATE_IN(InputHandleT) QUEX_INLINE void
-QUEX_FIX(ANALYZER, __constructor_core)(InputHandleT*             input_handle, 
+TEMPLATE_IN(InputHandleT) void
+QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
+                                       InputHandleT*             input_handle, 
                                        const char*               CharacterEncodingName,
                                        bool                      ByteOrderReversionF,
                                        QUEX_TYPE_CHARACTER*      BufferMemory,    
@@ -342,38 +344,37 @@ QUEX_FIX(ANALYZER, __constructor_core)(InputHandleT*             input_handle,
 
 #   if defined(QUEX_OPTION_TOKEN_POLICY_QUEUE)
     /* explict call of placement new for all tokens in the chunk */
-    QuexTokenQueue_construct(&_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
+    QuexTokenQueue_construct(&me->_token_queue, QUEX_SETTING_TOKEN_QUEUE_SIZE);
 #   elif defined(QUEX_OPTION_TOKEN_POLICY_USERS_QUEUE)
-    QuexTokenQueue_construct(&_token_queue, 0);
+    QuexTokenQueue_construct(&me->_token_queue, 0);
 #   else
-    token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
+    me->token = 0x0; /* call to 'receive(Token*)' provides pointer to some place in memory. */
 #   endif
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    QUEX_FIX(ACCUMULATOR, _construct)(&accumulator, this);
+    QUEX_FIX(ACCUMULATOR, _construct)(&me->accumulator, me);
 #   endif
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_FIX(COUNTER, _construct)(&counter, this);
+    QUEX_FIX(COUNTER, _construct)(&me->counter, me);
 #   endif
 
-    mode_db[0] = 0x0;
-    // LexModeID = 0 is not used, mode indices from 1 to ModeN
+    me->mode_db[0] = 0x0;
 $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
 
 #   ifdef  QUEX_OPTION_INCLUDE_STACK
-    _parent_memento = 0x0;
+    me->_parent_memento = 0x0;
 #   endif
 
-    __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
+    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    me->set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
-    _mode_stack.end        = _mode_stack.begin;
-    _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
+    me->_mode_stack.end        = me->_mode_stack.begin;
+    me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
 
-    QuexAnalyser_construct((QuexAnalyser*)this,
-                           __current_mode_p->analyser_function,
+    QuexAnalyser_construct((QuexAnalyser*)me,
+                           me->__current_mode_p->analyser_function,
                            input_handle,
                            BufferMemory, QUEX_SETTING_BUFFER_SIZE,
                            CharacterEncodingName, 
@@ -386,71 +387,22 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
          * (2) The user does not provide memory:  --> the memory IS empty.             */
         if( BufferMemory == 0x0 ) {
             /* 'buffer._memory._front' has been set at this point in time.             */
-            QuexBuffer_end_of_file_set(&buffer, buffer._memory._front + 1);
+            QuexBuffer_end_of_file_set(&me->buffer, me->buffer._memory._front + 1);
         }
         /* When working on plain memory, the '_end_of_file_p' must be set to indicate
          * the end of the content.                                                     */
-        __quex_assert(buffer._memory._end_of_file_p != 0x0);
+        __quex_assert(me->buffer._memory._end_of_file_p != 0x0);
     }
 
-    __file_handle_allocated_by_constructor = 0x0;
+    me->__file_handle_allocated_by_constructor = 0x0;
 
-#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)this)
+#define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
 /* START: User's constructor extensions _______________________________________*/
 $$CONSTRUCTOR_EXTENSTION$$
 /* END: _______________________________________________________________________*/
 #undef self
 }
 
-TEMPLATE_IN(InputHandleT) void
-QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
-                           InputHandleT*        input_handle, 
-                           const char*          CharacterEncodingName /* = 0x0 */) 
-{
-    __current_mode_p = 0x0; /* REQUIRED, for mode transition check */
-    set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
-
-    _mode_stack.end        = _mode_stack.begin;
-    _mode_stack.memory_end = _mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
-
-    QuexAnalyser_reset((QuexAnalyser*)this, 
-                       __current_mode_p->analyser_function,
-                       input_handle, 
-                       CharacterEncodingName, 
-                       QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
-
-#   ifdef __QUEX_OPTION_COUNTER
-    QUEX_FIX(COUNTER, _init)(&counter);
-#   endif
-
-#   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
-    QuexTokenQueue_reset(this->_token_queue);
-#   endif
-
-#   ifdef QUEX_OPTION_STRING_ACCUMULATOR
-    accumulator.clear();
-#   endif
-
-#   ifdef QUEX_OPTION_INCLUDE_STACK
-    include_stack_delete();
-#   endif
-
-#   ifdef QUEX_OPTION_POST_CATEGORIZER
-    post_categorizer.clear();
-#   endif
-
-    byte_order_reversion_set(false);
-}
-
-
-QUEX_INLINE const char* 
-QUEX_MEMFUNC(ANALYZER, version)() const
-{ 
-    return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
-           ": Version "         QUEX_SETTING_ANALYZER_VERSION \
-           ". Date "            QUEX_SETTING_BUILD_DATE       \
-           "Generated by Quex " QUEX_SETTING_VERSION ".";
-}
 
 #ifdef QUEX_OPTION_INCLUDE_STACK
 
@@ -528,9 +480,11 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/analyzer/token_receiving.i>
 
 #include    <quex/code_base/analyzer/mode_handling.i>
+
 #ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/IncludeStack.i>
 #endif
+
 #include    <quex/code_base/analyzer/misc.i>
 #include    <quex/code_base/analyzer/buffer_access.i>
 

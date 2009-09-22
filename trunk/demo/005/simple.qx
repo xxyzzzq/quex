@@ -13,8 +13,8 @@ body {
 }
 
 init {
-    letter_count  = 0;
-    include_depth = 0;
+    self.letter_count  = 0;
+    self.include_depth = 0;
 }
 
 memento {
