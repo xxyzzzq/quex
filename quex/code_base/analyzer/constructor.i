@@ -55,6 +55,8 @@ QUEX_CONSTRUCTOR(ANALYZER, _istream)(__QUEX_SETTING_THIS_POINTER
                                            0x0, 0);
 }
 
+
+#if defined(__QUEX_OPTION_WCHAR_T)
 QUEX_INLINE
 QUEX_CONSTRUCTOR(ANALYZER, _wistream)(__QUEX_SETTING_THIS_POINTER
                                       std::wistream*  p_input_stream, 
@@ -66,6 +68,7 @@ QUEX_CONSTRUCTOR(ANALYZER, _wistream)(__QUEX_SETTING_THIS_POINTER
                                            CharacterEncodingName, ByteOrderReversionF, 
                                            0x0, 0);
 }
+#endif
 
 #if defined(__QUEX_OPTION_UNIT_TEST) && ! defined (__QUEX_SETTING_PLAIN_C)
 /* StrangeStreams are not for C-language stuff */

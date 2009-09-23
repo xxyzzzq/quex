@@ -143,9 +143,11 @@ public:
     QUEX_TYPE_ANALYZER(std::istream*        p_input_stream, 
                        const char*          CharacterEncodingName = 0x0,
                        bool                 ByteOrderReversionF   = false);
-    QUEX_TYPE_ANALYZER(std::wistream*       p_input_stream, 
+#   if defined(__QUEX_OPTION_WCHAR_T)
+    QUEX_TYPE_ANALYZER(std::wistream*       p_input_stream,
                        const char*          CharacterEncodingName = 0x0,
                        bool                 ByteOrderReversionF   = false);
+#   endif
     QUEX_TYPE_ANALYZER(std::FILE*           input_fh,       
                        const char*          CharacterEncodingName = 0x0,
                        bool                 ByteOrderReversionF   = false);
