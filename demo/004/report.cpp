@@ -56,7 +56,7 @@ final_report(double      TimePerRun,              double      RefTimePerRun,
     cout << "   generator       = {" << QUOTE_THIS(ANALYZER_GENERATOR) << "}," << endl;
 #   if defined(ANALYZER_GENERATOR_FLEX)
 #   else
-    cout << "   quex_version    = {" << QUEX_VERSION << "}, " << endl;
+    cout << "   quex_version    = {" << QUEX_SETTING_VERSION << "}, " << endl;
 #   endif
     cout << "   cpu_name        = {" << CPU_NAME << "}, " << endl;
     cout << "   cpu_code        = {" << CPU_CODE << "}, " << endl;
