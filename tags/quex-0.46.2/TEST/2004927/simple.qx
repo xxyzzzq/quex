@@ -1,0 +1,23 @@
+start = ONE_AND_ONLY;
+
+define {
+    P_EXPRESSION ([A-Za-z_]*[+\-]+[A-Za-z_]*)+
+    P_THING [:alnum:]+
+}
+
+token {
+EXPRESSION
+NONE
+THING
+}
+
+mode ONE_AND_ONLY
+{
+// Order is relevant
+<<EOF>> => TKN_TERMINATION;
+
+[ \t\r\n]+ { }
+{P_THING}      => TKN_THING(Lexeme);
+{P_EXPRESSION} => TKN_EXPRESSION(Lexeme); // quex loops
+.              => TKN_NONE(Lexeme);
+}

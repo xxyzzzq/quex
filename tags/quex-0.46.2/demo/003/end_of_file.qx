@@ -1,0 +1,14 @@
+mode END_OF_FILE :
+<inheritable: only>  
+{    
+    <<EOF>> {
+        /* send an empty string, to ensure that the data part is ready. */
+        QUEX_TYPE_CHARACTER  empty_string = 0x0000;
+        /* NOTE: The local variable is deleted soon, but the sender copies the
+         *       content into a string object.                                  */
+	    self.send(QUEX_TKN_TERMINATION, &empty_string);
+        RETURN;
+    }
+}
+
+
