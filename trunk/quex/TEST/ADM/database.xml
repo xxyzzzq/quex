@@ -1,9 +1,9 @@
-<test-database execution-time-sec="0.83" date="Mon Sep 21 23:12:36 2009">
+<test-database execution-time-sec="0.70" date="Wed Sep 23 23:17:49 2009">
     <last-used-diff-display-program name=""/>
-    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.64"> 
+    <test title="Double Check that Exception Handlers are in place" make-required="True" time-sum-sec="0.51"> 
         <application file-name="test-exceptions-in-place.sh" info-request-time="1253409328L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.64" crc="-1647352136"/>
+           <choice name="" result="OK" time_sec="0.51" crc="-1647352136"/>
         </choice-list>
     </test>
     <test title="Prepare Pattern Information for Code Generation" make-required="True" time-sum-sec="0.10"> 
@@ -12,17 +12,17 @@
            <choice name="" result="OK" time_sec="0.10" crc="380312751"/>
         </choice-list>
     </test>
-    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.03"> 
+    <test title="Propper undefinition of configuration parameters." make-required="True" time-sum-sec="0.04"> 
         <application file-name="macro-check.py" info-request-time="1253409328L"/>
         <choice-list number="1" same_result="False">
-           <choice name="" result="OK" time_sec="0.03" crc="-830421222"/>
+           <choice name="" result="OK" time_sec="0.04" crc="-830421222"/>
         </choice-list>
     </test>
     <group name="User defined token id file">
-        <test title="__parse_token_id_file" make-required="True" time-sum-sec="0.07"> 
+        <test title="__parse_token_id_file" make-required="True" time-sum-sec="0.06"> 
             <application file-name="test-token_id_file-find_ids.py" info-request-time="1253409329L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.07" crc="-1492277791"/>
+               <choice name="" result="OK" time_sec="0.06" crc="-1492277791"/>
             </choice-list>
         </test>
     </group>

@@ -240,6 +240,8 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #   endif
 #endif
 
+/* Special Case MinGW: At the time of this writing (2009y09m23d) it does 
+ * not support 'wchart_t'.                                                */
 #if defined __MINGW_H
 #   define  __QUEX_OPTION_WCHAR_T_DISABLED
 #endif

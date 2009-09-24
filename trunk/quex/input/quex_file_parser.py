@@ -95,7 +95,7 @@ def parse_section(fh):
     if word == "":
         error_msg("Missing section title.", fh)
 
-    SectionTitleList = ["start", "namespace", "define", "token", "mode", "token_type" ] + lexer_mode.fragment_db.keys()
+    SectionTitleList = ["start", "name", "define", "token", "mode", "token_type" ] + lexer_mode.fragment_db.keys()
 
     verify_word_in_list(word, SectionTitleList, "Unknown quex section '%s'" % word, fh)
     try:
@@ -103,7 +103,7 @@ def parse_section(fh):
         #
         #     -- 'mode { ... }'     => define a mode
         #     -- 'start = ...;'     => define the name of the initial mode
-        #     -- 'namespace = ...;' => define the namespace of everything related to the lexical analyzer
+        #     -- 'name = ...;'      => define the namespace/name of everything related to the lexical analyzer
         #     -- 'header { ... }'   => define code that is to be pasted on top
         #                              of the engine (e.g. "#include<...>")
         #     -- 'body { ... }'     => define code that is to be pasted in the class' body

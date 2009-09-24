@@ -39,21 +39,21 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __quex_assert(UCS_CharacterCode >= (QUEX_TYPE_CHARACTER)0);
 
         /* cannot convert surrogate pairs */
-        if (UCS_CharacterCode >= (QUEX_TYPE_CHARACTER)0xd800 && UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0xdfff) return 0x0;
+        if (UCS_CharacterCode >= 0xd800 && UCS_CharacterCode <= 0xdfff) return 0x0;
 
         /* Determine number of bytes in the utf8 representation of the character */
-        if      (UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0x0000007f)       n = 1;
-        else if (UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0x000007ff)       n = 2;
-        else if (UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0x0000ffff)       n = 3;
-        else if (UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0x001fffff)       n = 4;
-        else if (UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0x03ffffff)       n = 5;
-        else /* if (UCS_CharacterCode <= (QUEX_TYPE_CHARACTER)0x7fffffff) */ n = 6;
+        if      (UCS_CharacterCode <= 0x0000007f)       n = 1;
+        else if (UCS_CharacterCode <= 0x000007ff)       n = 2;
+        else if (UCS_CharacterCode <= 0x0000ffff)       n = 3;
+        else if (UCS_CharacterCode <= 0x001fffff)       n = 4;
+        else if (UCS_CharacterCode <= 0x03ffffff)       n = 5;
+        else /* if (UCS_CharacterCode <= 0x7fffffff) */ n = 6;
 
         /* make it work under different endians */
-        uint8_t byte3 = (uint8_t)((UCS_CharacterCode & (QUEX_TYPE_CHARACTER)0xFF));
-        uint8_t byte2 = (uint8_t)((UCS_CharacterCode & (QUEX_TYPE_CHARACTER)0xFF00) >> 8);
-        uint8_t byte1 = (uint8_t)((UCS_CharacterCode & (QUEX_TYPE_CHARACTER)0xFF0000) >> 16);
-        uint8_t byte0 = (uint8_t)((UCS_CharacterCode & (QUEX_TYPE_CHARACTER)0xFF000000) >> 24);
+        uint8_t byte3 = (uint8_t)((UCS_CharacterCode & 0xFF));
+        uint8_t byte2 = (uint8_t)((UCS_CharacterCode & 0xFF00) >> 8);
+        uint8_t byte1 = (uint8_t)((UCS_CharacterCode & 0xFF0000) >> 16);
+        uint8_t byte0 = (uint8_t)((UCS_CharacterCode & 0xFF000000) >> 24);
 
         switch (n) {
         case 1:
