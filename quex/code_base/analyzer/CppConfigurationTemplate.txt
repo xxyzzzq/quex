@@ -242,7 +242,8 @@ $$SWITCH$$ __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 
 /* Special Case MinGW: At the time of this writing (2009y09m23d) it does 
  * not support 'wchart_t'.                                                */
-#if defined __MINGW_H
+#if      (defined (__GLIBCPP__) || defined(__GLIBCXX__)) \
+    && ! defined  (_GLIBCXX_USE_WCHAR_T)
 #   define  __QUEX_OPTION_WCHAR_T_DISABLED
 #endif
 #ifndef     __QUEX_OPTION_WCHAR_T_DISABLED
