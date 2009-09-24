@@ -1,4 +1,4 @@
-<history date="Wed Sep 23 23:17:58 2009" element-n="79">
+<history date="Thu Sep 24 12:59:39 2009" element-n="80">
     <day year="2009" month="04" day="07">
         <history-init time="05:54:43"/>
         <crc-error time="08:24:24" application="transition-x.exe" choice="1" database-crc="-683060918" real-crc="2085579180"/>
@@ -229,5 +229,8 @@
     </day>
     <day year="2009" month="09" day="23">
         <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="21:17:58"/>
+    </day>
+    <day year="2009" month="09" day="24">
+        <test-runs-today n="1" ok-n="1" fail-n="0" else-n="0" last-run="oll korrekt" last-time="10:59:39"/>
     </day>
 </history>
