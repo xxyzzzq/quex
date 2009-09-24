@@ -1,0 +1,1 @@
+error-3.qx:6:error: Missing integer number after '0x'

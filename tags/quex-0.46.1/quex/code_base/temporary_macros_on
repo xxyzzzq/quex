@@ -1,0 +1,41 @@
+/* -*- C++ -*- vim: set syntax=cpp: 
+ *
+ * PURPOSE: Definition of handy macros that facilitate the common definition
+ *          of plain 'C' functions and elegant 'C++' templates. Note, that 
+ *          before including any other file, these macros have to be deactivated
+ *          by including <code_base/temporary_macros_off>. 
+ *
+ * NOTE: 'defines' were used instead of propper 'typedefs' because this allows
+ *       to define the relation without a existing type definition. By this means
+ *       one is discharged of the task of including all required headers. */
+#ifdef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+#    error "File <template_macros_on> was included twice without including the correspondent\n" + \
+           "<template_macros_off> file."
+#endif
+#define __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__
+
+/* Allow 'undefining' again by inclusion of file  "temporary_macros_off" */
+#ifdef    __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__OFF__
+#   undef __INCLUDE_GUARD_QUEX__CODE_BASE__TEMPORARY_MACRO_DEFINITIONS__OFF__
+#endif
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#    define TEMPLATIFIER(X, SOME_CLASS)         template <class SOME_CLASS> struct X
+#    define TEMPLATIFIER_END(X)                 /* empty */
+#    define TEMPLATE_IN(SOME_CLASS)             template <class SOME_CLASS> inline
+#    define STREAM_POSITION_TYPE(IH_TYPE)       typename InputPolicy<IH_TYPE*>::stream_position
+#    define STREAM_OFFSET_TYPE(IH_TYPE)         typename InputPolicy<IH_TYPE*>::stream_offset
+#    define TEMPLATED(X)                        X<InputHandleT>
+
+#else
+#    define TEMPLATIFIER(X, SOME_CLASS)            typedef struct
+#    define TEMPLATIFIER_END(X)                    X
+#    define TEMPLATE_IN(SOME_CLASS)                QUEX_INLINE
+#    define STREAM_POSITION_TYPE(IH_TYPE)          long
+#    define STREAM_OFFSET_TYPE(IH_TYPE)            long
+#    define InputHandleT                           FILE
+#    define TEMPLATED(X)                           X
+#endif
+
+
+

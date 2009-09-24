@@ -1,0 +1,55 @@
+.. _sec-reset:
+
+Reset and Change of Input Source
+================================
+
+In many practical applications the source of input is changed in
+the form of included files that are 'pasted' at the point where 
+the according statement occurs. The handling of this scenerio
+was mentioned in section :ref:`sec-include-stack`. In this section
+a more liberal approach is described where the input source
+can be switched without keeping track of previous content. This
+is done by the ``reset()`` member function which has the 
+following signature
+
+.. code-block:: cpp
+
+        template <class InputHandleT> void
+        reset(InputHandleT*   input_handle, 
+              const char*     CharacterEncodingName = 0x0); 
+
+The first argument is an input handle of the user's like, i.e. either a
+``FILE*``, ``istream*``, or ``wistream*`` pointer, or a pointer to a derived
+class' object. The second argument is character encoding name which is used for
+the input. If no converter is used, the ``CharacterEncodingName`` must be set
+to zero. If the analyzer works only on plain memory, the following
+reset function may be used
+
+.. code-block:: cpp
+
+    void  reset(const char* CharacterEncodingName = 0x0); 
+
+which allows to specify a character encoding name, but the input stream
+is not specified.
+
+The reset function clears and resets all components of the lexical
+analyzer as they are:
+
+#. The core analyzer including buffer management and buffer fill
+   management. The buffer memory remains intact, but is cleaned.
+   When ``reset(...)`` is called an initial load to fill the buffer
+   is accomplished. Thus, the input handle must be placed at the
+   point where the lexical analyzer is supposed to start.
+
+#. The current mode is reset to the start mode and the mode stack is cleared.
+
+#. The include stack is cleared and all mementos are deleted.
+
+#. The accumulator is cleared.
+
+#. The line and column number counter is reset.
+
+#. All entries of the post categorizer dictionary are deleted.
+
+#. The byte order reversion flag is set to ``false``.
+

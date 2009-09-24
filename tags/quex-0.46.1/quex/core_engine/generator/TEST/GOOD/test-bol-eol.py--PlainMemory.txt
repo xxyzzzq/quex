@@ -1,0 +1,37 @@
+(*) test string: 
+'HERE: THERE:
+THIS  THAT
+HERE: THERE:
+THIS  THAT'
+(*) result:
+          BOL-LABEL  'HERE:'
+         WHITESPACE  ' '
+              LABEL  'THERE:'
+           NEWNLINE  '
+'
+         IDENTIFIER  'THIS'
+         WHITESPACE  '  '
+     EOL-IDENTIFIER  'THAT'
+           NEWNLINE  '
+'
+          BOL-LABEL  'HERE:'
+         WHITESPACE  ' '
+              LABEL  'THERE:'
+           NEWNLINE  '
+'
+         IDENTIFIER  'THIS'
+         WHITESPACE  '  '
+         IDENTIFIER  'THAT'
+  ''
+(*) Lexical Analyser Patterns:
+          ^[A-Z]+":" --> BOL-LABEL
+           [A-Z]+":" --> LABEL
+             "PRINT" --> KEYWORD
+              [A-Z]+ --> IDENTIFIER
+             [A-Z]+$ --> EOL-IDENTIFIER
+              [ \t]+ --> WHITESPACE
+                  \n --> NEWNLINE
+## (1) code generation
+## (2) compiling generated engine code and test
+## (3) running the test
+## (4) cleaning up

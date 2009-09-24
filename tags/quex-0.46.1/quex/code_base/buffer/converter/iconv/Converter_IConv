@@ -1,0 +1,24 @@
+/* -*- C++ -*-  vim: set syntax=cpp:
+ * (C) 2007-2008 Frank-Rene Schaefer  */
+#ifndef __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICONV__
+#define __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICONV__
+
+#include <quex/code_base/definitions>
+#include <quex/code_base/buffer/converter/Converter>
+#include <quex/code_base/buffer/converter/iconv/special_headers.h>
+
+
+QUEX_NAMESPACE_COMPONENTS_OPEN
+
+    typedef struct {
+        QuexConverter  base;
+
+        iconv_t        handle;
+
+    } QuexConverter_IConv;
+
+    QUEX_INLINE QuexConverter* QuexConverter_IConv_new();
+
+QUEX_NAMESPACE_COMPONENTS_CLOSE
+
+#endif /* __INCLUDE_GUARD__QUEX_BUFFER_CONVERTER_ICONV__ */
