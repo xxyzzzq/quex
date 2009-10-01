@@ -63,8 +63,11 @@ __QUEX_CORE = \
     ./analyzer/CounterWithIndentation.i \
     ./analyzer/Counter \
     ./analyzer/token_sending.i \
+    ./analyzer/configuration/CppTemplate.txt \
+    ./analyzer/configuration/default \
+    ./analyzer/configuration/validation \
+    ./analyzer/configuration/undefine \
     ./temporary_macros_off \
-    ./test_environment/default_configuration \
     ./test_environment/StrangeStream)
 
 ifeq ($(QUEX_PATH), /home/fschaef/prj/quex/trunk)

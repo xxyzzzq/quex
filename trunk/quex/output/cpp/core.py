@@ -25,7 +25,7 @@ def write_configuration_header(Modes, IndentationSupportF):
     OutputConfigurationFile   = Setup.output_file_stem + "-configuration"
     LexerClassName            = Setup.output_engine_name
     ConfigurationTemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
-                                   + "/analyzer/CppConfigurationTemplate.txt").replace("//","/")
+                                   + "/analyzer/configuration/CppTemplate.txt").replace("//","/")
 
     fh  = open_file_or_die(ConfigurationTemplateFile)
     txt = fh.read()
