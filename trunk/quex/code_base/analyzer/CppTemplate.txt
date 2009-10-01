@@ -153,9 +153,9 @@ public:
                        bool                 ByteOrderReversionF   = false);
 #   if defined(__QUEX_OPTION_UNIT_TEST)
     template <class UnderlyingStreamT>
-        QUEX_TYPE_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
-                           const char*                              CharacterEncodingName = 0x0,
-                           bool                                     ByteOrderReversionF   = false);
+    QUEX_TYPE_ANALYZER(quex::StrangeStream<UnderlyingStreamT>*  p_input_stream, 
+                       const char*                              CharacterEncodingName = 0x0,
+                       bool                                     ByteOrderReversionF   = false);
 #   endif
 
     virtual ~QUEX_TYPE_ANALYZER();
@@ -181,11 +181,11 @@ public:
     void                  buffer_input_pointer_set(QUEX_TYPE_CHARACTER*);
 
     // -- activate/deactivate byte order reversion (big-/little-endian)
-    bool     byte_order_reversion();
-    void     byte_order_reversion_set(bool Value);
+    bool                  byte_order_reversion();
+    void                  byte_order_reversion_set(bool Value);
 
     // -- token stream: read next token
-    void  get_token() 
+    void                  get_token() 
     { QUEX_ERROR_EXIT("get_token() deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
     void  get_token(QUEX_TYPE_TOKEN*   result_p)
     { QUEX_ERROR_EXIT("get_token(Token*) deprecated since quex v. >= 0.37.1, use .receive(...)\n"); }
@@ -205,7 +205,7 @@ public:
     //       memory management more flexible. The token queue/token object is heavily
     //       used and it should be possible to put it somewhere in memory with other
     //       heavily used data so that the cache can take advantage of data locality.
-    QUEX_TYPE_TOKEN*    token_object();
+    QUEX_TYPE_TOKEN*     token_object();
 
     //
     // (*) Mode handling
