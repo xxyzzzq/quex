@@ -22,7 +22,7 @@ def extract_macro(LineStr):
 
 def get_defined_macro_list():
     result = []
-    FileName = BaseDir + "CppConfigurationTemplate.txt"
+    FileName = BaseDir + "configuration/CppTemplate.txt"
     for line in open(FileName, "rb").readlines():
         line = line.strip()
         if line == "": continue
@@ -35,7 +35,7 @@ def get_defined_macro_list():
 
 def get_undef_macro_list():
     result = []
-    FileName = BaseDir + "configuration-undef"
+    FileName = BaseDir + "configuration/undefine"
     for line in open(FileName, "rb").readlines():
         line = line.strip()
         if line == "": continue
