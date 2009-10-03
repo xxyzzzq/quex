@@ -463,11 +463,22 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include <quex/code_base/temporary_macros_off>
 
 
+#include    <quex/code_base/analyzer/member/token-sending.i>
+#include    <quex/code_base/analyzer/member/token-receiving.i>
+#include    <quex/code_base/analyzer/member/mode-handling.i>
+#include    <quex/code_base/analyzer/member/buffer-access.i>
+#include    <quex/code_base/analyzer/member/misc.i>
+
 #if         ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
-#   include <quex/code_base/analyzer/constructor.i>
+#   include <quex/code_base/analyzer/member/constructor.i>
 #else
-#   include <quex/code_base/analyzer/constructor-engine-codec-adaption.i>
+#   include <quex/code_base/analyzer/member/constructor-engine-codec-adaption.i>
 #endif
+#ifdef      QUEX_OPTION_INCLUDE_STACK
+#   include <quex/code_base/analyzer/member/include-stack.i>
+#endif
+
+
 #include    <quex/code_base/analyzer/Counter.i>
 #ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
 #   include <quex/code_base/analyzer/CounterWithIndentation.i>
@@ -475,18 +486,6 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator.i>
 #endif
-
-#include    <quex/code_base/analyzer/token_sending.i>
-#include    <quex/code_base/analyzer/token_receiving.i>
-
-#include    <quex/code_base/analyzer/mode_handling.i>
-
-#ifdef      QUEX_OPTION_INCLUDE_STACK
-#   include <quex/code_base/analyzer/IncludeStack.i>
-#endif
-
-#include    <quex/code_base/analyzer/misc.i>
-#include    <quex/code_base/analyzer/buffer_access.i>
 
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/MemoryManager_analyzer_specific.i>
