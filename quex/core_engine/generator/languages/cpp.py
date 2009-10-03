@@ -63,12 +63,12 @@ def __local_variable_definitions(VariableInfoList):
          
 __function_signature = """
 void  
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyser_function(QuexAnalyser* me) 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(QuexAnalyser* me) 
 {
-    /* NOTE: Different modes correspond to different analyser functions. The analyser*/
+    /* NOTE: Different modes correspond to different analyzer functions. The analyzer*/
     /*       functions are all located inside the main class as static functions. That*/
     /*       means, they are something like 'globals'. They receive a pointer to the */
-    /*       lexical analyser, since static member do not have access to the 'this' pointer.*/
+    /*       lexical analyzer, since static member do not have access to the 'this' pointer.*/
 #   if defined (__QUEX_SETTING_PLAIN_C)
 #      define self (*((QUEX_TYPE_ANALYZER*)me));
 #   else
@@ -93,7 +93,7 @@ comment_on_post_context_position_init_str = """
 """
 
 
-def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
+def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
                         function_body, PostConditionedStateMachineID_List, PreConditionIDList,
                         ModeNameList=[], InitialStateIndex=-1, LanguageDB=None):   
     """EngineClassName = name of the structure that contains the engine state.
@@ -132,7 +132,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += signature
     txt  = txt.replace("$$STATE_MACHINE_NAME$$", StateMachineName) 
 
-    txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyser") + "\n"
+    txt += "    " + LanguageDB["$comment"]("me = pointer to state of the lexical analyzer") + "\n"
 
     PostContextN = len(PostConditionedStateMachineID_List)
     local_variable_list.extend(
@@ -152,7 +152,7 @@ def __analyser_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += comment_on_post_context_position_init_str
     txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
     txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
-    txt += "    me->DEBUG_analyser_function_at_entry = me->current_analyser_function;\n"
+    txt += "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n"
     txt += "#endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
@@ -259,14 +259,14 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
      *  occured. If not it can call this function again.                               */
 #if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
     || defined(QUEX_OPTION_ASSERTS)
-    if( me->DEBUG_analyser_function_at_entry != me->current_analyser_function ) 
+    if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
     QUEX_TOKEN_POLICY_SET_1(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
     return;
 #elif defined(QUEX_OPTION_ASSERTS)
-    QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyser.");
+    QUEX_ERROR_EXIT("Mode change without immediate return from the lexical analyzer.");
 #endif
     }
 

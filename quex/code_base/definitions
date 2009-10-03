@@ -113,9 +113,6 @@ __QUEX_ALLOCATE_MEMORY(const size_t ByteN)
 #   define __QUEX_FREE_MEMORY(OBJECT)  (delete[] OBJECT)
 #endif
 
-    struct  __QuexAnalyser_tag;
-    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);
-
     QUEX_INLINE void
     QUEX_ERROR_EXIT(const char* Msg)
     {

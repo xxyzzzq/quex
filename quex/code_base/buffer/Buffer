@@ -137,6 +137,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void    QuexBuffer_move_backward(QuexBuffer*, const size_t CharacterN);
     QUEX_INLINE size_t  QuexBuffer_tell(QuexBuffer*);
     QUEX_INLINE void    QuexBuffer_seek(QuexBuffer*, const size_t CharacterIndex);
+    QUEX_INLINE void    QuexBuffer_move_away_passed_content(QuexBuffer* me);
 
     QUEX_INLINE void  QuexBuffer_set_terminating_zero_for_lexeme(QuexBuffer*);
     QUEX_INLINE void  QuexBuffer_undo_terminating_zero_for_lexeme(QuexBuffer*);

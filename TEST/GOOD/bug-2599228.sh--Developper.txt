@@ -62,6 +62,9 @@ installed versions of quex.
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter
 /home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/token_sending.i
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/CppTemplate.txt
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/default
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/validation
+/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/configuration/undefine
 /home/fschaef/prj/quex/trunk/quex/code_base/./temporary_macros_off
-/home/fschaef/prj/quex/trunk/quex/code_base/./test_environment/default_configuration
 /home/fschaef/prj/quex/trunk/quex/code_base/./test_environment/StrangeStream

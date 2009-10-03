@@ -223,7 +223,7 @@ def write_mode_class_implementation(Modes):
 quex_mode_init_call_str = """
      me->$$MN$$.id   = $$CLASS$$_QuexModeID_$$MN$$;
      me->$$MN$$.name = "$$MN$$";
-     me->$$MN$$.analyser_function = $analyser_function;
+     me->$$MN$$.analyzer_function = $analyzer_function;
 #    ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT    
      me->$$MN$$.on_indentation = $on_indentation;
 #    endif
@@ -240,7 +240,7 @@ def __get_mode_init_call(mode, LexerClassName):
     
     header_str = "%s_%s_" % (LexerClassName, mode.name)
 
-    analyser_function = header_str + "analyser_function" 
+    analyzer_function = header_str + "analyzer_function" 
     on_indentation    = header_str + "on_indentation"    
     on_entry          = header_str + "on_entry"          
     on_exit           = header_str + "on_exit"           
@@ -249,7 +249,7 @@ def __get_mode_init_call(mode, LexerClassName):
     has_exit_to       = header_str + "has_exit_to"       
 
     if mode.options["inheritable"] == "only": 
-        analyser_function = "QuexMode_uncallable_analyser_function"
+        analyzer_function = "QuexMode_uncallable_analyzer_function"
 
     if mode.get_code_fragment_list("on_entry") == []:
         on_entry = "QuexMode_on_entry_exit_null_function"
@@ -263,7 +263,7 @@ def __get_mode_init_call(mode, LexerClassName):
     txt = blue_print(quex_mode_init_call_str,
                 [["$$MN$$",             mode.name],
                  ["$$CLASS$$",          LexerClassName],
-                 ["$analyser_function", analyser_function],
+                 ["$analyzer_function", analyzer_function],
                  ["$on_indentation",    on_indentation],
                  ["$on_entry",          on_entry],
                  ["$on_exit",           on_exit],
@@ -290,7 +290,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     txt = ""
     for mode in Modes:
         if mode.options["inheritable"] != "only":
-            txt += __mode_functions(prolog, "void", ["analyser_function"],
+            txt += __mode_functions(prolog, "void", ["analyzer_function"],
                                     "QuexAnalyser*")
     for mode in Modes:
         if mode.has_code_fragment_list("on_indentation"):
@@ -306,7 +306,7 @@ def __get_mode_function_declaration(Modes, LexerClassName, FriendF=False):
     txt += "#ifdef __QUEX_OPTION_RUNTIME_MODE_TRANSITION_CHECK\n"
     for mode in Modes:
         txt += __mode_functions(prolog, "bool", ["has_base", "has_entry_from", "has_exit_to"], 
-                                "const QuexMode*")
+                                "const QUEX_TYPE_MODE*")
         
     txt += "#endif\n"
     txt += "\n"

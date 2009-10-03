@@ -1,4 +1,4 @@
-<test-database execution-time-sec="0.16" date="Thu Sep 24 13:03:29 2009">
+<test-database execution-time-sec="0.14" date="Sat Oct  3 04:38:45 2009">
     <last-used-diff-display-program name=""/>
     <group name="File Input">
         <test title="Function extract_identifiers_with_specific_prefix(...)" make-required="True" time-sum-sec="0.04"> 
@@ -21,10 +21,10 @@
         </test>
     </group>
     <group name="String Handling">
-        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.04"> 
+        <test title="Trim (replaced by string.strip(..))" make-required="True" time-sum-sec="0.02"> 
             <application file-name="test-trim.py" info-request-time="1253409328L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.04" crc="-964243626"/>
+               <choice name="" result="OK" time_sec="0.02" crc="-964243626"/>
             </choice-list>
         </test>
     </group>
