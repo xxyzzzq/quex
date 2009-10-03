@@ -113,7 +113,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {
-        QuexAnalyser                   analyser_core;
+        QuexAnalyser                   analyzer_core;
         QUEX_TYPE_COUNTER              counter;
         QUEX_TYPE_MODE*                current_mode_p;
         struct QUEX_TYPE_MEMENTO_TAG*  parent;

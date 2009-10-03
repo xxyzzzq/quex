@@ -79,7 +79,11 @@ $$USER_DEFINED_HEADER$$
 #ifdef      QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
-#include    <quex/code_base/analyzer/Counter>
+#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   include <quex/code_base/analyzer/counter/LineColumn>
+#   else
+#   include <quex/code_base/analyzer/counter/LineColumnIndentation>
+#endif
 #include    <quex/code_base/analyzer/AnalyzerData>
 
 /* START: User's derived class declaration (if there is one) __________________*/
@@ -356,7 +360,7 @@ QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
 #   endif
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_FIX(COUNTER, _construct)(&me->counter, me);
+    QUEX_FIX(COUNTER, _construct)(&me->counter, (QuexAnalyser*)me);
 #   endif
 
     me->mode_db[0] = 0x0;
@@ -468,21 +472,17 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/analyzer/member/mode-handling.i>
 #include    <quex/code_base/analyzer/member/buffer-access.i>
 #include    <quex/code_base/analyzer/member/misc.i>
-
-#if         ! defined( QUEX_OPTION_ENGINE_CODEC_ADAPTION )
-#   include <quex/code_base/analyzer/member/constructor.i>
-#else
-#   include <quex/code_base/analyzer/member/constructor-engine-codec-adaption.i>
-#endif
+#include    <quex/code_base/analyzer/member/constructor.i>
 #ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/member/include-stack.i>
 #endif
 
-
-#include    <quex/code_base/analyzer/Counter.i>
-#ifdef      __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT
-#   include <quex/code_base/analyzer/CounterWithIndentation.i>
+#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
+#   include <quex/code_base/analyzer/counter/LineColumn.i>
+#   else
+#   include <quex/code_base/analyzer/counter/LineColumnIndentation.i>
 #endif
+
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator.i>
 #endif

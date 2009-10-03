@@ -4,6 +4,8 @@
  * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_BUFFER_ACCESS_I__
  * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_BUFFER_ACCESS_I__  */
 
+#include <quex/code_base/buffer/asserts>
+#include <quex/code_base/buffer/Buffer>
 
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
