@@ -1,91 +1,91 @@
-<test-database execution-time-sec="16.97" date="Thu Sep 24 13:03:46 2009">
+<test-database execution-time-sec="15.22" date="Sat Oct  3 04:38:46 2009">
     <last-used-diff-display-program name=""/>
     <group name="Quex Queries">
-        <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.17"> 
+        <test title="Character Sets for Property Settings II" make-required="True" time-sum-sec="1.01"> 
             <application file-name="test-query-character-set-by-expression.py" info-request-time="1253409328L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="1.17" crc="831616985"/>
+               <choice name="" result="OK" time_sec="1.01" crc="831616985"/>
             </choice-list>
         </test>
-        <test title="Information about Properties" make-required="True" time-sum-sec="9.41"> 
+        <test title="Information about Properties" make-required="True" time-sum-sec="8.65"> 
             <application file-name="test-query.py" info-request-time="1253409328L"/>
             <choice-list number="2" same_result="False">
-               <choice name="PropertyList" result="OK" time_sec="8.40" crc="-1044464938"/>
-               <choice name="PropertyInfo" result="OK" time_sec="1.01" crc="86685460"/>
+               <choice name="PropertyList" result="OK" time_sec="7.71" crc="-1044464938"/>
+               <choice name="PropertyInfo" result="OK" time_sec="0.94" crc="86685460"/>
             </choice-list>
         </test>
-        <test title="Wildcard Property Values" make-required="True" time-sum-sec="0.95"> 
+        <test title="Wildcard Property Values" make-required="True" time-sum-sec="0.93"> 
             <application file-name="test-query-property-wildcard-values.py" info-request-time="1253409328L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="0.95" crc="-989951512"/>
+               <choice name="" result="OK" time_sec="0.93" crc="-989951512"/>
             </choice-list>
         </test>
-        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="3.01"> 
+        <test title="Character Sets for Property Settings" make-required="True" time-sum-sec="2.65"> 
             <application file-name="test-query-character-set.py" info-request-time="1253409328L"/>
             <choice-list number="1" same_result="False">
-               <choice name="" result="OK" time_sec="3.01" crc="-127967106"/>
+               <choice name="" result="OK" time_sec="2.65" crc="-127967106"/>
             </choice-list>
         </test>
     </group>
     <group name="token_type">
-        <test title="Union Members" make-required="True" time-sum-sec="0.63"> 
+        <test title="Union Members" make-required="True" time-sum-sec="0.51"> 
             <application file-name="token_type-3.py" info-request-time="1253409328L"/>
             <choice-list number="9" same_result="False">
-               <choice name="None" result="OK" time_sec="0.06" crc="-755544471"/>
-               <choice name="One" result="OK" time_sec="0.11" crc="1618181525"/>
-               <choice name="One-2" result="OK" time_sec="0.06" crc="2042165634"/>
+               <choice name="None" result="OK" time_sec="0.05" crc="-755544471"/>
+               <choice name="One" result="OK" time_sec="0.05" crc="1618181525"/>
+               <choice name="One-2" result="OK" time_sec="0.05" crc="2042165634"/>
                <choice name="Some" result="OK" time_sec="0.06" crc="-233722338"/>
-               <choice name="Some-2" result="OK" time_sec="0.06" crc="-878798520"/>
-               <choice name="Forbidden" result="OK" time_sec="0.06" crc="1220694349"/>
+               <choice name="Some-2" result="OK" time_sec="0.05" crc="-878798520"/>
+               <choice name="Forbidden" result="OK" time_sec="0.07" crc="1220694349"/>
                <choice name="Error" result="OK" time_sec="0.06" crc="473321804"/>
-               <choice name="Twice" result="OK" time_sec="0.08" crc="1953879902"/>
-               <choice name="Twice-2" result="OK" time_sec="0.07" crc="1705118108"/>
+               <choice name="Twice" result="OK" time_sec="0.06" crc="1953879902"/>
+               <choice name="Twice-2" result="OK" time_sec="0.06" crc="1705118108"/>
             </choice-list>
         </test>
-        <test title="Constructor, Copy, Destructor" make-required="True" time-sum-sec="0.30"> 
+        <test title="Constructor, Copy, Destructor" make-required="True" time-sum-sec="0.29"> 
             <application file-name="token_type-4.py" info-request-time="1253409328L"/>
             <choice-list number="5" same_result="False">
-               <choice name="Constructor" result="OK" time_sec="0.07" crc="107320378"/>
+               <choice name="Constructor" result="OK" time_sec="0.06" crc="107320378"/>
                <choice name="Constructor-1" result="OK" time_sec="0.06" crc="-1230242155"/>
                <choice name="Constructor-2" result="OK" time_sec="0.06" crc="246410416"/>
-               <choice name="Destructor" result="OK" time_sec="0.06" crc="252936683"/>
-               <choice name="Copy" result="OK" time_sec="0.05" crc="916604355"/>
+               <choice name="Destructor" result="OK" time_sec="0.05" crc="252936683"/>
+               <choice name="Copy" result="OK" time_sec="0.06" crc="916604355"/>
             </choice-list>
         </test>
-        <test title="Class Name and Namespace" make-required="True" time-sum-sec="0.42"> 
+        <test title="Class Name and Namespace" make-required="True" time-sum-sec="0.40"> 
             <application file-name="token_type-5.py" info-request-time="1253409328L"/>
             <choice-list number="7" same_result="False">
                <choice name="0" result="OK" time_sec="0.06" crc="186552641"/>
                <choice name="1" result="OK" time_sec="0.06" crc="-2135335263"/>
                <choice name="2" result="OK" time_sec="0.06" crc="-956491782"/>
-               <choice name="3" result="OK" time_sec="0.06" crc="834952041"/>
+               <choice name="3" result="OK" time_sec="0.05" crc="834952041"/>
                <choice name="4" result="OK" time_sec="0.07" crc="-1837355653"/>
                <choice name="5" result="OK" time_sec="0.05" crc="-1700525363"/>
-               <choice name="6" result="OK" time_sec="0.06" crc="1236312933"/>
+               <choice name="6" result="OK" time_sec="0.05" crc="1236312933"/>
             </choice-list>
         </test>
-        <test title="Buildt-In Members" make-required="True" time-sum-sec="0.53"> 
+        <test title="Buildt-In Members" make-required="True" time-sum-sec="0.47"> 
             <application file-name="token_type-1.py" info-request-time="1253409328L"/>
             <choice-list number="8" same_result="False">
-               <choice name="None" result="OK" time_sec="0.06" crc="1321924226"/>
-               <choice name="One" result="OK" time_sec="0.06" crc="953967881"/>
+               <choice name="None" result="OK" time_sec="0.08" crc="1321924226"/>
+               <choice name="One" result="OK" time_sec="0.07" crc="953967881"/>
                <choice name="All" result="OK" time_sec="0.06" crc="-2096268013"/>
-               <choice name="Forbidden" result="OK" time_sec="0.06" crc="-84095759"/>
-               <choice name="Twice" result="OK" time_sec="0.08" crc="-1689627234"/>
-               <choice name="Error" result="OK" time_sec="0.08" crc="-295376069"/>
-               <choice name="Forbidden-2" result="OK" time_sec="0.07" crc="1414248299"/>
+               <choice name="Forbidden" result="OK" time_sec="0.05" crc="-84095759"/>
+               <choice name="Twice" result="OK" time_sec="0.05" crc="-1689627234"/>
+               <choice name="Error" result="OK" time_sec="0.05" crc="-295376069"/>
+               <choice name="Forbidden-2" result="OK" time_sec="0.05" crc="1414248299"/>
                <choice name="Error-2" result="OK" time_sec="0.06" crc="-1695835805"/>
             </choice-list>
         </test>
-        <test title="Distinct Members" make-required="True" time-sum-sec="0.55"> 
+        <test title="Distinct Members" make-required="True" time-sum-sec="0.31"> 
             <application file-name="token_type-2.py" info-request-time="1253409328L"/>
             <choice-list number="6" same_result="False">
-               <choice name="None" result="OK" time_sec="0.12" crc="775994298"/>
-               <choice name="One" result="OK" time_sec="0.07" crc="1294607369"/>
-               <choice name="Some" result="OK" time_sec="0.10" crc="-553284165"/>
-               <choice name="Forbidden" result="OK" time_sec="0.08" crc="1220694349"/>
-               <choice name="Error" result="OK" time_sec="0.09" crc="473321804"/>
-               <choice name="Twice" result="OK" time_sec="0.10" crc="1953879902"/>
+               <choice name="None" result="OK" time_sec="0.05" crc="775994298"/>
+               <choice name="One" result="OK" time_sec="0.05" crc="1294607369"/>
+               <choice name="Some" result="OK" time_sec="0.06" crc="-553284165"/>
+               <choice name="Forbidden" result="OK" time_sec="0.05" crc="1220694349"/>
+               <choice name="Error" result="OK" time_sec="0.05" crc="473321804"/>
+               <choice name="Twice" result="OK" time_sec="0.05" crc="1953879902"/>
             </choice-list>
         </test>
     </group>

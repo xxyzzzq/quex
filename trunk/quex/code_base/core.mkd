@@ -43,26 +43,26 @@ __QUEX_CORE = \
     ./definitions \
     ./circular_queue \
     ./temporary_macros_on \
-    ./analyzer/IncludeStack.i \
     ./analyzer/dumpster.i \
     ./analyzer/Accumulator \
     ./analyzer/CppTemplate.txt \
     ./analyzer/QuexMode \
     ./analyzer/PostCategorizer.i \
     ./analyzer/Analyser.i \
-    ./analyzer/mode_handling.i \
-    ./analyzer/buffer_access.i \
     ./analyzer/PostCategorizer \
-    ./analyzer/token_receiving.i \
-    ./analyzer/constructor.i \
     ./analyzer/Accumulator.i \
-    ./analyzer/misc.i \
     ./analyzer/Analyser \
     ./analyzer/asserts \
-    ./analyzer/Counter.i \
-    ./analyzer/CounterWithIndentation.i \
-    ./analyzer/Counter \
-    ./analyzer/token_sending.i \
+    ./analyzer/member/include-stack.i \
+    ./analyzer/member/mode-handling.i \
+    ./analyzer/member/buffer-access.i \
+    ./analyzer/member/token-receiving.i \
+    ./analyzer/member/token-sending.i \
+    ./analyzer/member/constructor.i \
+    ./analyzer/member/misc.i \
+    ./analyzer/counter/Counter.i \
+    ./analyzer/counter/CounterWithIndentation.i \
+    ./analyzer/counter/Counter \
     ./analyzer/configuration/CppTemplate.txt \
     ./analyzer/configuration/default \
     ./analyzer/configuration/validation \

@@ -79,7 +79,7 @@ class Generator(GeneratorBase):
 
         txt += LanguageDB["$label-def"]("$terminal-general", True) + "\n"
         # -- set the input stream back to the real current position.
-        #    during backward lexing the analyser went backwards, so it needs to be reset.
+        #    during backward lexing the analyzer went backwards, so it needs to be reset.
         txt += "    QuexBuffer_seek_lexeme_start(&me->buffer);\n"
 
         return txt
@@ -103,7 +103,7 @@ class Generator(GeneratorBase):
         function_body += self.__get_core_state_machine()
 
         # -- pack the whole thing into a function 
-        analyzer_function = LanguageDB["$analyser-func"](self.state_machine_name, 
+        analyzer_function = LanguageDB["$analyzer-func"](self.state_machine_name, 
                                                          self.analyzer_state_class_name, 
                                                          self.stand_alone_analyzer_f,
                                                          function_body, 
@@ -129,7 +129,7 @@ class Generator(GeneratorBase):
 def do(PatternActionPair_List, OnFailureAction, 
        EndOfStreamAction, Language="C++", StateMachineName="",
        PrintStateMachineF=False,
-       AnalyserStateClassName="analyser_state",
+       AnalyserStateClassName="analyzer_state",
        StandAloneAnalyserF=False,
        QuexEngineHeaderDefinitionFile="",
        ModeNameList=[]):

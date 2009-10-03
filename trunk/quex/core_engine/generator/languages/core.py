@@ -153,7 +153,7 @@ db["C++"] = {
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \
                                 "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
-    "$analyser-func":     cpp.__analyser_function,
+    "$analyzer-func":     cpp.__analyzer_function,
     "$terminal-code":     cpp.__terminal_states,      
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value:

@@ -8,7 +8,7 @@
 #    error "This header has been included without setting the compile option QUEX_OPTION_ENABLE_ICONV. This could cause problems on systems where the correspondent headers are not installed. Make the inclusion of this header dependent on the above compile option."
 #endif
 
-#include <quex/code_base/analyzer/configuration_validation>
+#include <quex/code_base/analyzer/configuration/validation>
 
 QUEX_NAMESPACE_COMPONENTS_OPEN
 

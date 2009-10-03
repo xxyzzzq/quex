@@ -2,7 +2,7 @@
 #ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 #define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
 
-#include <quex/code_base/analyzer/configuration_validation>
+#include <quex/code_base/analyzer/configuration/validation>
 #include <quex/code_base/asserts>
 #include <quex/code_base/buffer/asserts>
 #include <quex/code_base/definitions>
