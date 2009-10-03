@@ -17,7 +17,7 @@
  *       last end, such as base._line_number_at_begin = base._line_number_at_end.
  *       This has to happen outside these functions.                               */
 #include <quex/code_base/definitions>
-#include <quex/code_base/analyzer/Counter>
+#include <quex/code_base/analyzer/counter/Counter>
 #include <quex/code_base/analyzer/asserts>
 
 QUEX_NAMESPACE_COMPONENTS_OPEN
