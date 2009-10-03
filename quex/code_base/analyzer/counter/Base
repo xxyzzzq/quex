@@ -1,0 +1,27 @@
+/* -*- C++ -*-   vim: set syntax=cpp:
+ * (C) Frank-Rene Schaefer                               */
+#ifndef __INCLUDE_GUARD__QUEX__COUNTER_BASE__
+#define __INCLUDE_GUARD__QUEX__COUNTER_BASE__
+
+#if ! defined(__QUEX_SETTING_PLAIN_C)
+#include <cstddef> 
+#else
+#include <stddef.h>
+
+QUEX_NAMESPACE_COMPONENTS_OPEN
+
+    typedef struct {
+#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
+        size_t  _line_number_at_begin;    /* line where current pattern starts   */
+        size_t  _line_number_at_end;      /* line after current pattern          */
+#       endif
+#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
+        size_t  _column_number_at_begin;  /* column where current pattern starts */
+        size_t  _column_number_at_end;    /* column after current pattern        */
+#       endif
+    } __CounterBase;
+
+QUEX_NAMESPACE_COMPONENTS_CLOSE
+
+#endif /* __INCLUDE_GUARD__QUEX__COUNTER__ */
+
