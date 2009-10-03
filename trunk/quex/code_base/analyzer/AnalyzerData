@@ -33,25 +33,21 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #   endif
 
 
-#   ifdef __QUEX_SETTING_PLAIN_C
     typedef struct QUEX_TYPE_ANALYZER_DATA_TAG {
         QuexAnalyser    base;
-#   else
-    struct QUEX_TYPE_ANALYZER_DATA : protected QuexAnalyser {
-#   endif
         /*_________________________________________________________________________
          *        __   __   ___  __  
          *  |\/| /  \ |  \ |__  /__` 
          *  |  | \__/ |__/ |___ .__/ 
          *                                                                         */
         /* Map: mode-id --> mode object                                            */
-        QuexMode*                      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
+        QUEX_TYPE_MODE*      mode_db[__QUEX_SETTING_MAX_MODE_CLASS_N];  
 
         struct {
-            QuexMode*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
-            QuexMode** end;
-            QuexMode** memory_end;
-        }                              _mode_stack;
+            QUEX_TYPE_MODE*  (begin[QUEX_SETTING_MODE_STACK_SIZE]);
+            QUEX_TYPE_MODE** end;
+            QUEX_TYPE_MODE** memory_end;
+        }                    _mode_stack;
 
         /*_________________________________________________________________________
          *  ___  __        ___       __  
@@ -113,11 +109,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         struct QUEX_TYPE_MEMENTO_TAG*  _parent_memento;
 #       endif
 
-#   ifdef __QUEX_SETTING_PLAIN_C
     } QUEX_TYPE_ANALYZER_DATA;
-#   else
-    };
-#   endif
 
 #   ifdef QUEX_OPTION_INCLUDE_STACK
     typedef struct {

@@ -20,18 +20,18 @@
 QUEX_NAMESPACE_COMPONENTS_OPEN
     struct QUEX_TYPE_MODE_TAG;
 
-    /* The following presents a minimal structure for a lexical analyser to work with the 
+    /* The following presents a minimal structure for a lexical analyzer to work with the 
      * constructed engine. Actually, it should only be useful for unit tests. Else, it has
      * more a documentary character telling: This is the heart of the matter--anything else
-     * is just decoration! Any 'real' lexical analyser should be derived from this class. */
-    typedef struct __QuexAnalyser_tag {
+     * is just decoration! Any 'real' lexical analyzer should be derived from this class. */
+    typedef struct QuexAnalyser_tag {
         QuexBuffer                   buffer;
 
-        /* Each mode has a dedicated analyser function.  The function pointer
+        /* Each mode has a dedicated analyzer function.  The function pointer
          * to the currently active mode's function is stored redundantly in 
-         * 'current_analyser_function' to accelerate the access to it.                    */
+         * 'current_analyzer_function' to accelerate the access to it.                    */
         struct QUEX_TYPE_MODE_TAG*   __current_mode_p; 
-        QUEX_TYPE_ANALYZER_FUNCTION  current_analyser_function;
+        QUEX_TYPE_ANALYZER_FUNCTION  current_analyzer_function;
 
 #if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
     || defined(QUEX_OPTION_ASSERTS)
@@ -39,7 +39,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
          * an error must be logged, since the following characters are still swallowed
          * by the current function and not the new one. For this one needs to return and
          * then continue further. */
-        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;
+        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyzer_function_at_entry;
 #       endif
 
     } QuexAnalyser;

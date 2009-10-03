@@ -60,7 +60,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
          * non-empty, we return to the caller (spare one check). If its empty the analyzer
          * function (which has recently been setup) is called again.                        */
         do {
-            QuexAnalyser::current_analyser_function(this);
+            base.current_analyzer_function((QuexAnalyser*)this);
             QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
@@ -70,7 +70,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, receive)(__QUEX_SETTING_THIS_POINTER
-                                              QUEX_TYPE_TOKEN* result_p) 
+                                    QUEX_TYPE_TOKEN* result_p) 
     {
         /* Tokens are in queue --> take next token from queue                                */
         if( QuexTokenQueue_is_empty(_token_queue) == false ) {        
@@ -88,7 +88,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
         /* Analyze until there is some content in the queue */
         do {
-            QuexAnalyser::current_analyser_function(this);
+            base.current_analyzer_function((QuexAnalyser*)this);
             QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
         
@@ -104,8 +104,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     {
         this->token = result_p;
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-        do   QuexAnalyser::current_analyser_function(this);
-        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+        do {
+            base.current_analyzer_function((QuexAnalyser*)this);
+        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
     }
@@ -116,8 +117,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __quex_assert(this->token != 0x0);
 
         this->token->set(__QUEX_SETTING_TOKEN_ID_UNINITIALIZED);
-        do   QuexAnalyser::current_analyser_function(this);
-        while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
+        do {
+            base.current_analyzer_function((QuexAnalyser*)this);
+        } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 
         return;
     }
@@ -135,7 +137,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                             QUEX_SETTING_TOKEN_QUEUE_SAFETY_BORDER);
 
         do {
-            QuexAnalyser::current_analyser_function(this);
+            base.current_analyzer_function((QuexAnalyser*)this);
             QUEX_TOKEN_QUEUE_ASSERT(&_token_queue);
         } while( QUEX_TOKEN_POLICY_NO_TOKEN() );        
 

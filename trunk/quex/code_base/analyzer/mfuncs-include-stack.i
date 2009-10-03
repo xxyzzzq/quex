@@ -42,7 +42,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                       || (MODE_ID >= 1 && MODE_ID < __QUEX_SETTING_MAX_MODE_CLASS_N + 1));
         /* IANA_CodingName == 0x0 possible if normal ASCII is ment (e.g. no iconv support) */
 
-        /* Store the lexical analyser's to the state before the including */
+        /* Store the lexical analyzer's to the state before the including */
         /* Here, the 'memento_pack' section is executed                   */
         InputHandleT*       input_handle = 0x0;
         QUEX_TYPE_MEMENTO*  m            = QUEX_FIX(ANALYZER, _memento_pack)<InputHandleT>(this, InputName, &input_handle);
@@ -55,13 +55,13 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        QuexAnalyser_construct((QuexAnalyser*)this,
-                               __current_mode_p->analyser_function,
+        QuexAnalyser_construct(&this->base,
+                               base.__current_mode_p->analyzer_function,
                                input_handle,
                                0x0, QUEX_SETTING_BUFFER_SIZE,
                                IANA_CodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
-                               buffer._byte_order_reversion_active_f);
+                               base.buffer._byte_order_reversion_active_f);
 
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_FIX(COUNTER, _init)(&counter);
@@ -82,9 +82,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         if( this->_parent_memento == 0x0 ) return false; 
 
         /* Free the related memory that is no longer used                      */
-        QuexAnalyser_destruct((QuexAnalyser*)this);
+        QuexAnalyser_destruct(&this->base);
 
-        /* Restore the lexical analyser to the state it was before the include */
+        /* Restore the lexical analyzer to the state it was before the include */
         /* Here, the 'memento_unpack' section is executed                      */
         QUEX_FIX(ANALYZER, _memento_unpack)(this, this->_parent_memento);
 
@@ -97,9 +97,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     {
         while( this->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */
-            QuexAnalyser_destruct((QuexAnalyser*)this);
+            QuexAnalyser_destruct(&this->base);
 
-            /* Restore the lexical analyser to the state it was before the include */
+            /* Restore the lexical analyzer to the state it was before the include */
             /* Here, the 'memento_unpack' section is executed                      */
             QUEX_FIX(ANALYZER, _memento_unpack)(this, this->_parent_memento);
         }
