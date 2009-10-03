@@ -10,26 +10,26 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 QUEX_INLINE void    
 QUEX_MEMFUNC(ANALYZER, move_forward)(const size_t CharacterN)
 {
-    QuexBuffer_move_forward(&this->buffer, CharacterN);
+    QuexBuffer_move_forward(&this->base.buffer, CharacterN);
 }
 
 QUEX_INLINE void    
 QUEX_MEMFUNC(ANALYZER, move_backward)(const size_t CharacterN)
 {
-    QuexBuffer_move_backward(&this->buffer, CharacterN);
+    QuexBuffer_move_backward(&this->base.buffer, CharacterN);
 }
 
 
 QUEX_INLINE size_t  
 QUEX_MEMFUNC(ANALYZER, tell)()
 {
-    return QuexBuffer_tell(&this->buffer);
+    return QuexBuffer_tell(&this->base.buffer);
 }
 
 QUEX_INLINE void    
 QUEX_MEMFUNC(ANALYZER, seek)(const size_t CharacterIndex)
 {
-    QuexBuffer_seek(&this->buffer, CharacterIndex);
+    QuexBuffer_seek(&this->base.buffer, CharacterIndex);
 }
 
 QUEX_INLINE QUEX_TYPE_TOKEN*  
@@ -52,9 +52,10 @@ return          QUEX_STRING(QUEX_TYPE_ANALYZER)           \
 QUEX_INLINE void
 QUEX_MEMFUNC(ANALYZER, print_this)()
 {
-    __QUEX_STD_printf("   CurrentMode = %s;\n", __current_mode_p == 0x0 ? "0x0" : __current_mode_p->name);
+    __QUEX_STD_printf("   CurrentMode = %s;\n", base.__current_mode_p == 0x0 ? "0x0" : 
+                                                                               base.__current_mode_p->name);
 
-    QuexBuffer_print_this(&this->buffer);
+    QuexBuffer_print_this(&this->base.buffer);
 
 #   ifdef QUEX_OPTION_STRING_ACCUMULATOR
     accumulator.print_this();
@@ -77,11 +78,11 @@ QUEX_MEMFUNC(ANALYZER, print_this)()
 
 QUEX_INLINE bool
 QUEX_MEMFUNC(ANALYZER, byte_order_reversion)()
-{ return buffer._byte_order_reversion_active_f; }
+{ return base.buffer._byte_order_reversion_active_f; }
 
 QUEX_INLINE void     
 QUEX_MEMFUNC(ANALYZER, byte_order_reversion_set)(bool Value)
-{ buffer._byte_order_reversion_active_f = Value; }
+{ base.buffer._byte_order_reversion_active_f = Value; }
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 

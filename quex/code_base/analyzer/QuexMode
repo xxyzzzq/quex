@@ -33,7 +33,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         const char*    name;
         QuexAnalyser*  the_lexer;
 
-        void  (*(analyser_function))(QuexAnalyser*);
+        QUEX_TYPE_ANALYZER_FUNCTION  analyzer_function;
 
 #       ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT        
         void (*on_indentation)(QuexAnalyser*, const int Indentation);
@@ -48,7 +48,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     } QUEX_TYPE_MODE;
     
     QUEX_INLINE void
-    QuexMode_uncallable_analyser_function(QuexAnalyser*)
+    QuexMode_uncallable_analyzer_function(QuexAnalyser*)
     { __quex_assert(0); return; }
 
     QUEX_INLINE void

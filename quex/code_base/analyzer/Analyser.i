@@ -37,7 +37,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                              CharacterEncodingName, TranslationBufferMemorySize,
                              ByteOrderReversionF);
 
-        me->current_analyser_function = AnalyserFunction;
+        me->current_analyzer_function = AnalyserFunction;
 
         /* Double check that everything is setup propperly. */
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
@@ -58,7 +58,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                        const char*                  CharacterEncodingName, 
                        const size_t                 TranslationBufferMemorySize)
     {
-        me->current_analyser_function = AnalyserFunction;
+        me->current_analyzer_function = AnalyserFunction;
 
         QuexBuffer_reset(&me->buffer, input_handle, CharacterEncodingName, TranslationBufferMemorySize);
 

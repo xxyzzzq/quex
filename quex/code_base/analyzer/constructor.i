@@ -102,7 +102,7 @@ QUEX_CONSTRUCTOR(ANALYZER, _FILE)(__QUEX_SETTING_THIS_POINTER
 QUEX_INLINE
 QUEX_DESTRUCTOR(ANALYZER)(__QUEX_SETTING_THIS_POINTER) 
 {
-    QuexAnalyser_destruct(this);
+    QuexAnalyser_destruct(&this->base);
 #   ifdef QUEX_OPTION_TOKEN_POLICY_QUEUE 
     QuexTokenQueue_destruct(&_token_queue);
 #   endif
@@ -116,14 +116,14 @@ QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
                            InputHandleT*        input_handle, 
                            const char*          CharacterEncodingName /* = 0x0 */) 
 {
-    me->__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    me->base.__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     me->set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
     me->_mode_stack.end        = me->_mode_stack.begin;
     me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
-    QuexAnalyser_reset((QuexAnalyser*)me, 
-                       me->__current_mode_p->analyser_function,
+    QuexAnalyser_reset(&me->base, 
+                       me->base.__current_mode_p->analyzer_function,
                        input_handle, 
                        CharacterEncodingName, 
                        QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
