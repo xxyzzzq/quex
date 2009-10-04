@@ -138,7 +138,7 @@ $$DROP_OUT$$
     $$MARK_LEXEME_START$$
     me->buffer._input_p = text_end;
 $$LC_COUNT_BEFORE_RELOAD$$
-    if(    QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
+    if(    QuexAnalyzerEngine_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
                                               post_context_start_position, PostContextStartPositionN) ) {
         /* Recover '_input_p' from lexeme start 
          * (inverse of what we just did before the loading) */
@@ -255,7 +255,7 @@ $$DROP_OUT$$
         QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);
 $$LC_COUNT_BEFORE_RELOAD$$
         $$MARK_LEXEME_START$$
-        if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
+        if( QuexAnalyzerEngine_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,
                                                post_context_start_position, PostContextStartPositionN) ) {
 
             QUEX_BUFFER_ASSERT_CONSISTENCY(&me->buffer);

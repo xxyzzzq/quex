@@ -17,34 +17,21 @@
  *       last end, such as base._line_number_at_begin = base._line_number_at_end.
  *       This has to happen outside these functions.                               */
 #include <quex/code_base/definitions>
-#include <quex/code_base/analyzer/counter/Counter>
+#include <quex/code_base/analyzer/counter/LineColumn>
 #include <quex/code_base/analyzer/asserts>
 
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
-    Counter_construct(Counter* me, QuexAnalyser* lexer)
+    Counter_construct(Counter* me, QuexAnalyzerEngine* lexer)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
         memset((void*)me, 0xFF, sizeof(Counter));
 #       endif
-        Counter_init(me); 
+        CounterBase_init((__CounterBase*)me); 
 
         /* The lexical analyzer is not important for this type of counter. */
-    }
-
-    QUEX_INLINE void
-    Counter_init(Counter* me)
-    {
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        me->base._line_number_at_begin = (size_t)0;
-        me->base._line_number_at_end   = (size_t)1;
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->base._column_number_at_begin = (size_t)0;
-        me->base._column_number_at_end   = (size_t)1; 
-#       endif
     }
 
     QUEX_INLINE void  
@@ -67,25 +54,6 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
 
-
-    QUEX_INLINE void
-    __Counter_count_newline_n_backwards(Counter*             me, 
-                                        QUEX_TYPE_CHARACTER* it,
-                                        QUEX_TYPE_CHARACTER* Begin)
-    /* NOTE: If *it == '\n' this function does **not** count it. The user must
-     *       have increased the base._line_number_at_end by hisself. This happens
-     *       for performance reasons.                                             */
-    {
-        __quex_assert(it >= Begin);
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        /* investigate remaining part of the lexeme, i.e. before the last newline
-         * (recall the lexeme is traced from the rear)                            */
-        while( it != Begin ) {
-            --it;
-            if( *it == '\n' ) ++(me->base._line_number_at_end); 
-        }         
-#       endif
-    }
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     __Counter_count_chars_to_newline_backwards(Counter* me, QUEX_TYPE_CHARACTER* Begin,
@@ -156,7 +124,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
         /* The last function may have digested a newline (*it == '\n'), but then it 
          * would have increased the base._line_number_at_end.                        */
-        __Counter_count_newline_n_backwards(me, it, Begin);
+        CounterBase_count_newline_n_backwards((__CounterBase*)me, it, Begin);
 #       endif
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
@@ -174,26 +142,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void 
     Counter_print_this(Counter* me)
     {
-        __QUEX_STD_printf("   Counter:\n");
-#       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->base._line_number_at_begin);
-        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->base._line_number_at_end);
-#       endif
-#       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->base._column_number_at_begin);
-        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->base._column_number_at_end);
-#       endif
-    }
-
-    QUEX_INLINE void             
-    Counter_shift_end_values_to_start_values(__CounterBase* me) 
-    {
-#       ifdef QUEX_OPTION_LINE_NUMBER_COUNTING
-        me->_line_number_at_begin   = me->_line_number_at_end;
-#       endif
-#       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        me->_column_number_at_begin = me->_column_number_at_end;
-#       endif
+        CounterBase_print_this((__CounterBase*)me);
     }
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE

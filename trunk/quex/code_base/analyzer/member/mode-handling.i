@@ -10,15 +10,15 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE QUEX_TYPE_MODE&
     QUEX_MEMFUNC(ANALYZER, mode)() 
-    { return *base.__current_mode_p; }
+    { return *engine.__current_mode_p; }
 
     QUEX_INLINE int
     QUEX_MEMFUNC(ANALYZER, mode_id)() const
-    { return base.__current_mode_p->id; }
+    { return engine.__current_mode_p->id; }
 
     QUEX_INLINE const char*
     QUEX_MEMFUNC(ANALYZER, mode_name)() const
-    { return base.__current_mode_p->name; }
+    { return engine.__current_mode_p->name; }
 
     QUEX_INLINE void
     QUEX_MEMFUNC(ANALYZER, set_mode_brutally)(const int ModeID)
@@ -39,8 +39,8 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __QUEX_STD_printf("ToMode: %s\n", Mode.name);
 #    endif
 
-        base.__current_mode_p          = (QUEX_TYPE_MODE*)&Mode;
-        base.current_analyzer_function = Mode.analyzer_function; 
+        engine.__current_mode_p          = (QUEX_TYPE_MODE*)&Mode;
+        engine.current_analyzer_function = Mode.analyzer_function; 
     }
 
     QUEX_INLINE void    
@@ -51,13 +51,13 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #   endif
 
 #   ifdef __QUEX_OPTION_ON_EXIT_HANDLER_PRESENT
-        SourceMode.on_exit((QuexAnalyser*)this, &SourceMode);
+        SourceMode.on_exit(this, &SourceMode);
 #   endif
 
         set_mode_brutally(TargetMode.id);
 
 #   ifdef __QUEX_OPTION_ON_ENTRY_HANDLER_PRESENT
-        TargetMode.on_entry((QuexAnalyser*)this, &TargetMode);         
+        TargetMode.on_entry(this, &TargetMode);         
 #   endif
     }
 

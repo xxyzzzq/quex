@@ -60,9 +60,10 @@ __QUEX_CORE = \
     ./analyzer/member/token-sending.i \
     ./analyzer/member/constructor.i \
     ./analyzer/member/misc.i \
-    ./analyzer/counter/Counter.i \
-    ./analyzer/counter/CounterWithIndentation.i \
-    ./analyzer/counter/Counter \
+    ./analyzer/counter/LineColumn \
+    ./analyzer/counter/LineColumn.i \
+    ./analyzer/counter/LineColumnIndentation \
+    ./analyzer/counter/LineColumnIndentation.i \
     ./analyzer/configuration/CppTemplate.txt \
     ./analyzer/configuration/default \
     ./analyzer/configuration/validation \

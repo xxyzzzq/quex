@@ -1,5 +1,7 @@
 /* -*- C++ -*-  vim:set syntax=cpp: 
  *
+ * (C) 2004-2009 Frank-Rene Schaefer
+ *
  * __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
  *    QUEX_TYPE_ACCUMULATOR must be different.                             */

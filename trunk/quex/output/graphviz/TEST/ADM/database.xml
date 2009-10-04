@@ -1,4 +1,4 @@
-<test-database execution-time-sec="1.09" date="Sat Oct  3 04:38:46 2009">
+<test-database execution-time-sec="1.09" date="Sun Oct  4 00:15:28 2009">
     <last-used-diff-display-program name=""/>
     <test title="Check supported formats." make-required="True" time-sum-sec="0.09"> 
         <application file-name="get_supported_formats.py" info-request-time="1253409327L"/>

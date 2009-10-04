@@ -339,19 +339,19 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_NAMESPACE_COMPONENTS_CLOSE      } // }
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define QUEX_TYPE_COUNTER  CounterWithIndentation
+#   define QUEX_TYPE_COUNTER      CounterWithIndentation
 #elif  defined(__QUEX_OPTION_COUNTER)
-#   define QUEX_TYPE_COUNTER  Counter
+#   define QUEX_TYPE_COUNTER      Counter
 #else
-#   define QUEX_TYPE_COUNTER  void*
+#   define QUEX_TYPE_COUNTER      void*
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN 
-    struct QuexAnalyser_tag;
+    struct QuexAnalyzerEngine_tag;
     class  QUEX_TYPE_ANALYZER;
     class  QUEX_TYPE_DERIVED_ANALYZER;
     struct QUEX_TYPE_MEMENTO_TAG;
-    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct QuexAnalyser_tag*);
+    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
 QUEX_NAMESPACE_MAIN_CLOSE
 
 

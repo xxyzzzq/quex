@@ -31,7 +31,7 @@ namespace quex {
 #include <quex/code_base/temporary_macros_on>
 
 __QUEX_SETTING_ANALYSER_FUNCTION_RETURN_TYPE  
-tiny_lexer_PROGRAM_analyser_function(QuexAnalyser* me) 
+tiny_lexer_PROGRAM_analyser_function(QuexAnalyzerEngine* me) 
 {
     /* NOTE: Different modes correspond to different analyser functions. The analyser*/
     /*       functions are all located inside the main class as static functions. That*/

@@ -1,7 +1,7 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  * (C) Frank-Rene Schaefer                               */
-#ifndef __INCLUDE_GUARD__QUEX__COUNTER__
-#define __INCLUDE_GUARD__QUEX__COUNTER__
+#ifndef __INCLUDE_GUARD__QUEX__COUNTER__LINE_COLUMN__
+#define __INCLUDE_GUARD__QUEX__COUNTER__LINE_COLUMN__
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #include <cstddef> 
@@ -17,16 +17,16 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         __CounterBase  base;
     } Counter;
 
-    QUEX_INLINE void  Counter_construct(Counter* me, QuexAnalyser* lexer);
+    QUEX_INLINE void  Counter_construct(Counter* me, QuexAnalyzerEngine* lexer);
     QUEX_INLINE void  Counter_copy_construct(Counter* me, const Counter* That);
     QUEX_INLINE void  Counter_init(Counter* me);
 
     QUEX_INLINE void  Counter_count(Counter* me, QUEX_TYPE_CHARACTER* Lexeme, QUEX_TYPE_CHARACTER* LexemeEnd);
     QUEX_INLINE void  Counter_count_NoNewline(Counter* me, const ptrdiff_t LexemeLength);
-    QUEX_INLINE void  Counter_count_FixNewlineN(Counter*        me,
-                                           QUEX_TYPE_CHARACTER* Lexeme,
-                                           QUEX_TYPE_CHARACTER* LexemeEnd,
-                                           const int            LineNIncrement);
+    QUEX_INLINE void  Counter_count_FixNewlineN(Counter*             me,
+                                                QUEX_TYPE_CHARACTER* Lexeme,
+                                                QUEX_TYPE_CHARACTER* LexemeEnd,
+                                                const int            LineNIncrement);
 
     QUEX_INLINE QUEX_TYPE_CHARACTER*
     __Counter_count_chars_to_newline_backwards(Counter* me, QUEX_TYPE_CHARACTER* Begin,
@@ -43,4 +43,4 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 
-#endif /* __INCLUDE_GUARD__QUEX__COUNTER__ */
+#endif /* __INCLUDE_GUARD__QUEX__COUNTER__LINE_COLUMN__ */

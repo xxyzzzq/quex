@@ -47,7 +47,7 @@ CounterType	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.t
 CounterWithIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter	/^    struct CounterWithIndentation $/;"	s	namespace:quex	file:
 CounterWithIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::CounterWithIndentation()$/;"	f	class:quex::CounterWithIndentation
 CounterWithIndentation	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CounterWithIndentation.i	/^CounterWithIndentation::CounterWithIndentation(const CounterWithIndentation& That)$/;"	f	class:quex::CounterWithIndentation
-DEBUG_analyser_function_at_entry	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;$/;"	m	struct:quex::__QuexAnalyser_tag	file:
+DEBUG_analyser_function_at_entry	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyser_function_at_entry;$/;"	m	struct:quex::__QuexAnalyzerEngine_tag	file:
 FromCoding	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                         const char*       FromCoding,$/;"	v
 FromCoding	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter.i	/^                                    const char*       FromCoding,$/;"	v
 INT16_C	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/win/msc_stdint.h	205;"	d
@@ -290,7 +290,7 @@ QUEX_TOKEN_POLICY_SET_5	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Toke
 QUEX_TOKEN_POLICY_SET_REMAINING_REPETITION_NUMBER_SET	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenPolicy	23;"	d	file:
 QUEX_TOKEN_QUEUE_ASSERT	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	/^    QUEX_TOKEN_QUEUE_ASSERT(QuexTokenQueue* me)$/;"	f	namespace:quex
 QUEX_TOKEN_QUEUE_ASSERT	/home/fschaef/prj/quex/trunk/quex/code_base/./token/TokenQueue	73;"	d	file:
-QUEX_TYPE_ANALYZER_FUNCTION	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	/^    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyser_tag*);$/;"	t	namespace:quex	file:
+QUEX_TYPE_ANALYZER_FUNCTION	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	/^    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct __QuexAnalyzerEngine_tag*);$/;"	t	namespace:quex	file:
 QUEX_TYPE_CHARACTER	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	75;"	d	file:
 QUEX_TYPE_CHARACTER_POSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^    typedef QUEX_TYPE_CHARACTER*        QUEX_TYPE_CHARACTER_POSITION;$/;"	t	namespace:quex	file:
 QUEX_TYPE_CHARACTER_POSITION	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^    typedef QuexBufferMemory::Position  QUEX_TYPE_CHARACTER_POSITION;$/;"	t	namespace:quex	file:
@@ -305,12 +305,12 @@ QUEX_TYPE_TOKEN_ID	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	9;"
 QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	16;"	d	file:
 QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	15;"	d	file:
 QUEX_VERSION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	78;"	d	file:
-QuexAnalyser	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^    typedef struct __QuexAnalyser_tag QuexAnalyser;$/;"	t	namespace:quex	typeref:struct:quex::__QuexAnalyser_tag	file:
-QuexAnalyser_buffer_reload_backward	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer)$/;"	f	namespace:quex
-QuexAnalyser_buffer_reload_forward	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyser_buffer_reload_forward(QuexBuffer* buffer, $/;"	f	namespace:quex
-QuexAnalyser_construct	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyser_construct(QuexAnalyser* me,$/;"	f	namespace:quex
-QuexAnalyser_destruct	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyser_destruct(QuexAnalyser* me)$/;"	f	namespace:quex
-QuexAnalyser_reset	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyser_reset(QuexAnalyser* me)$/;"	f	namespace:quex
+QuexAnalyzerEngine	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^    typedef struct __QuexAnalyzerEngine_tag QuexAnalyzerEngine;$/;"	t	namespace:quex	typeref:struct:quex::__QuexAnalyzerEngine_tag	file:
+QuexAnalyzerEngine_buffer_reload_backward	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyzerEngine_buffer_reload_backward(QuexBuffer* buffer)$/;"	f	namespace:quex
+QuexAnalyzerEngine_buffer_reload_forward	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyzerEngine_buffer_reload_forward(QuexBuffer* buffer, $/;"	f	namespace:quex
+QuexAnalyzerEngine_construct	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyzerEngine_construct(QuexAnalyzerEngine* me,$/;"	f	namespace:quex
+QuexAnalyzerEngine_destruct	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyzerEngine_destruct(QuexAnalyzerEngine* me)$/;"	f	namespace:quex
+QuexAnalyzerEngine_reset	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyzerEngine_reset(QuexAnalyzerEngine* me)$/;"	f	namespace:quex
 QuexBuffer	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/Buffer	/^    } QuexBuffer;$/;"	t	namespace:quex	typeref:struct:quex::__anon5	file:
 QuexBufferFiller	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller	/^    } QuexBufferFiller;$/;"	t	namespace:quex	typeref:struct:quex::__QuexBufferFiller_tag	file:
 QuexBufferFiller_Converter	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/BufferFiller_Converter	/^    } TEMPLATIFIER_END(QuexBufferFiller_Converter);$/;"	v
@@ -387,7 +387,7 @@ QuexConverter_Recode	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/conver
 QuexConverter_tag	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/Converter	/^    typedef struct QuexConverter_tag {$/;"	s	namespace:quex	file:
 QuexMode_on_entry_exit_null_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^    QuexMode_on_entry_exit_null_function(CLASS*, const QUEX_TYPE_MODE*) $/;"	f	namespace:quex
 QuexMode_on_indentation_null_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^    QuexMode_on_indentation_null_function(CLASS*, const int) $/;"	f	namespace:quex
-QuexMode_uncallable_analyser_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^    QuexMode_uncallable_analyser_function(QuexAnalyser*)$/;"	f	namespace:quex
+QuexMode_uncallable_analyser_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^    QuexMode_uncallable_analyser_function(QuexAnalyzerEngine*)$/;"	f	namespace:quex
 QuexPostCategorizer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer	/^    } QuexPostCategorizer;$/;"	t	namespace:quex	typeref:struct:quex::__anon10	file:
 QuexPostCategorizerNode	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer	/^    } QuexPostCategorizerNode;$/;"	t	namespace:quex	typeref:struct:quex::QuexPostCategorizerNode_tag	file:
 QuexPostCategorizerNode_compare	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer.i	/^    QuexPostCategorizerNode_compare(QuexPostCategorizerNode*    me, $/;"	f	namespace:quex
@@ -693,7 +693,7 @@ __QUEX_STD_strncat	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	106
 __QUEX_STD_strncat	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	89;"	d	file:
 __QUEX_TOKEN_ID_TERMINATION	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	30;"	d	file:
 __QUEX_TOKEN_ID_UNINITIALIZED	/home/fschaef/prj/quex/trunk/quex/code_base/./definitions	27;"	d	file:
-__QuexAnalyser_tag	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^    struct __QuexAnalyser_tag {$/;"	s	namespace:quex	file:
+__QuexAnalyzerEngine_tag	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^    struct __QuexAnalyzerEngine_tag {$/;"	s	namespace:quex	file:
 __QuexBufferFiller_backward_adapt_pointers	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i	/^    __QuexBufferFiller_backward_adapt_pointers(QuexBuffer* buffer, const size_t BackwardDistance)$/;"	f	namespace:quex
 __QuexBufferFiller_backward_compute_backward_distance	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i	/^    __QuexBufferFiller_backward_compute_backward_distance(QuexBuffer* buffer)$/;"	f	namespace:quex
 __QuexBufferFiller_backward_copy_backup_region	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller.i	/^    __QuexBufferFiller_backward_copy_backup_region(QuexBuffer* buffer, const size_t BackwardDistance)$/;"	f	namespace:quex
@@ -777,9 +777,9 @@ accumulator	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.t
 add	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator.i	/^    QUEX_TYPE_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER ToBeAppended)$/;"	f	class:quex::QUEX_TYPE_ACCUMULATOR
 add	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Accumulator.i	/^    QUEX_TYPE_ACCUMULATOR::add(const QUEX_TYPE_CHARACTER* ToBeAppended)$/;"	f	class:quex::QUEX_TYPE_ACCUMULATOR
 address	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/MemoryPositionMimiker	/^        character_type*  address;$/;"	m	struct:quex::MemoryPositionMimiker	file:
-analyser_core	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        QuexAnalyser analyser_core;$/;"	m	struct:quex::$$LEXER_CLASS_NAME$$Memento_tag	file:
-analyser_core	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack	/^            QuexAnalyser analyser_core;$/;"	m	class:quex::IncludeStack::memento	file:
-analyser_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        void  (*(analyser_function))(QuexAnalyser*);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
+analyser_core	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        QuexAnalyzerEngine analyser_core;$/;"	m	struct:quex::$$LEXER_CLASS_NAME$$Memento_tag	file:
+analyser_core	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack	/^            QuexAnalyzerEngine analyser_core;$/;"	m	class:quex::IncludeStack::memento	file:
+analyser_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        void  (*(analyser_function))(QuexAnalyzerEngine*);$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 append	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::append(const circular_queue<T>& That) {$/;"	f	class:circular_queue
 assert_consistency	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^    void assert_consistency() { }$/;"	f	class:circular_queue
 assert_consistency	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^    void assert_consistency() {$/;"	f	class:circular_queue
@@ -793,7 +793,7 @@ begin_buffer	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circ
 bool	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/pseudo-stdbool.h	22;"	d
 bool	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/stdbool.h	14;"	d
 bottom	/home/fschaef/prj/quex/trunk/quex/code_base/./circular_queue	/^circular_queue<T>::bottom() const $/;"	f	class:circular_queue
-buffer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QuexBuffer                   buffer;$/;"	m	struct:quex::__QuexAnalyser_tag	file:
+buffer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QuexBuffer                   buffer;$/;"	m	struct:quex::__QuexAnalyzerEngine_tag	file:
 buffer_conversion_fill_region_begin	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/buffer_access.i	/^    inline uint8_t*  CLASS::buffer_conversion_fill_region_begin()$/;"	f	class:quex::CLASS
 buffer_conversion_fill_region_end	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/buffer_access.i	/^    inline uint8_t*  CLASS::buffer_conversion_fill_region_end()$/;"	f	class:quex::CLASS
 buffer_conversion_fill_region_finish	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/buffer_access.i	/^    CLASS::buffer_conversion_fill_region_finish(const size_t  ByteN)$/;"	f	class:quex::CLASS
@@ -838,7 +838,7 @@ count_NoNewline	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Counter.i
 counter	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        CounterType        counter;$/;"	m	class:quex::CLASS	file:
 counter	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        CounterType  counter;$/;"	m	struct:quex::$$LEXER_CLASS_NAME$$Memento_tag	file:
 counter	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack	/^            CounterType  counter;$/;"	m	class:quex::IncludeStack::memento	file:
-current_analyser_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QUEX_TYPE_ANALYZER_FUNCTION  current_analyser_function;$/;"	m	struct:quex::__QuexAnalyser_tag	file:
+current_analyser_function	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^        QUEX_TYPE_ANALYZER_FUNCTION  current_analyser_function;$/;"	m	struct:quex::__QuexAnalyzerEngine_tag	file:
 current_mode_p	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        QUEX_TYPE_MODE*    current_mode_p;$/;"	m	struct:quex::$$LEXER_CLASS_NAME$$Memento_tag	file:
 current_mode_p	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/IncludeStack	/^            QUEX_TYPE_MODE*    current_mode_p;$/;"	m	class:quex::IncludeStack::memento	file:
 data	/home/fschaef/prj/quex/trunk/quex/code_base/./compatibility/iconv-argument-types.h	/^        uint8_t ** data;$/;"	m	struct:__Adapter_FuncIconv_SecondArgument
@@ -1082,7 +1082,7 @@ tell	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/InputPolicy	/^        
 tell_character_index	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/BufferFiller	/^        size_t   (*tell_character_index)(struct __QuexBufferFiller_tag*);$/;"	m	struct:quex::__QuexBufferFiller_tag	file:
 tellg	/home/fschaef/prj/quex/trunk/quex/code_base/./StrangeStream_unit_tests	/^    StrangeStream<StdStreamType>::tellg()$/;"	f	class:quex::StrangeStream
 text	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	/^        const __string&           text() const         { return _text; }$/;"	f	class:quex::Token
-the_lexer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        QuexAnalyser*  the_lexer;$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
+the_lexer	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/QuexMode	/^        QuexAnalyzerEngine*  the_lexer;$/;"	m	struct:quex::QUEX_TYPE_MODE	file:
 to_handle	/home/fschaef/prj/quex/trunk/quex/code_base/./buffer/converter/icu/Converter_ICU	/^        UConverter*  to_handle;$/;"	m	struct:quex::__anon6	file:
 token	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	/^        QUEX_TYPE_TOKEN*  token;         \/\/ must be public or protected (accessed with 'self')$/;"	m	class:quex::CLASS	file:
 token_id	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/PostCategorizer	/^        QUEX_TYPE_TOKEN_ID     token_id;$/;"	m	struct:quex::QuexPostCategorizerNode_tag	file:
