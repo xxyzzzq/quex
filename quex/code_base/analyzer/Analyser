@@ -24,7 +24,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
      * constructed engine. Actually, it should only be useful for unit tests. Else, it has
      * more a documentary character telling: This is the heart of the matter--anything else
      * is just decoration! Any 'real' lexical analyzer should be derived from this class. */
-    typedef struct QuexAnalyser_tag {
+    typedef struct QuexAnalyzerEngine_tag {
         QuexBuffer                   buffer;
 
         /* Each mode has a dedicated analyzer function.  The function pointer
@@ -42,10 +42,10 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         QUEX_TYPE_ANALYZER_FUNCTION  DEBUG_analyzer_function_at_entry;
 #       endif
 
-    } QuexAnalyser;
+    } QuexAnalyzerEngine;
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyser_construct(QuexAnalyser* me,
+    QuexAnalyzerEngine_construct(QuexAnalyzerEngine* me,
                            QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                            InputHandleT*                input_handle,
                            QUEX_TYPE_CHARACTER*         InputMemory,
@@ -55,7 +55,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                            bool                         ByteOrderReversionF);
 
     QUEX_INLINE void
-    QuexAnalyser_construct_for_direct_memory_access(QuexAnalyser* me,
+    QuexAnalyzerEngine_construct_for_direct_memory_access(QuexAnalyzerEngine* me,
                                                     QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                                                     QUEX_TYPE_CHARACTER*         Memory,
                                                     const size_t                 MemorySize,
@@ -63,20 +63,20 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                                                     const size_t                 TranslationBufferMemorySize);
 
     QUEX_INLINE void 
-    QuexAnalyser_destruct(QuexAnalyser* me);
+    QuexAnalyzerEngine_destruct(QuexAnalyzerEngine* me);
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyser_reset(QuexAnalyser*                me,
+    QuexAnalyzerEngine_reset(QuexAnalyzerEngine*                me,
                        QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
                        InputHandleT*                input_handle, 
                        const char*                  CharacterEncodingName, 
                        const size_t                 TranslationBufferMemorySize);
 
     QUEX_INLINE bool 
-    QuexAnalyser_buffer_reload_backward(QuexBuffer* buffer);
+    QuexAnalyzerEngine_buffer_reload_backward(QuexBuffer* buffer);
 
     QUEX_INLINE bool 
-    QuexAnalyser_buffer_reload_forward(QuexBuffer* buffer, 
+    QuexAnalyzerEngine_buffer_reload_forward(QuexBuffer* buffer, 
                                        QUEX_TYPE_CHARACTER_POSITION* last_acceptance_input_position,
                                        QUEX_TYPE_CHARACTER_POSITION* post_context_start_position,
                                        const size_t                  PostContextN);

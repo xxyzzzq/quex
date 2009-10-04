@@ -63,12 +63,14 @@ def __local_variable_definitions(VariableInfoList):
          
 __function_signature = """
 void  
-$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(QuexAnalyser* me) 
+$$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG* me) 
 {
     /* NOTE: Different modes correspond to different analyzer functions. The analyzer*/
     /*       functions are all located inside the main class as static functions. That*/
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyzer, since static member do not have access to the 'this' pointer.*/
+#   define engine  (&me->engine)
+
 #   if defined (__QUEX_SETTING_PLAIN_C)
 #      define self (*((QUEX_TYPE_ANALYZER*)me));
 #   else
@@ -152,14 +154,14 @@ def __analyzer_function(StateMachineName, EngineClassName, StandAloneEngineF,
     txt += comment_on_post_context_position_init_str
     txt += "#if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \\\n"
     txt += "    || defined(QUEX_OPTION_ASSERTS)\n"
-    txt += "    me->DEBUG_analyzer_function_at_entry = me->current_analyzer_function;\n"
+    txt += "    engine->DEBUG_analyzer_function_at_entry = engine->current_analyzer_function;\n"
     txt += "#endif\n"
 
     txt += LanguageDB["$label-def"]("$start")
 
     # -- entry to the actual function body
     txt += "    " + LanguageDB["$mark-lexeme-start"] + "\n"
-    txt += "    QuexBuffer_undo_terminating_zero_for_lexeme(&me->buffer);\n";
+    txt += "    QuexBuffer_undo_terminating_zero_for_lexeme(&engine->buffer);\n";
     
     txt += function_body
 
@@ -196,11 +198,11 @@ __terminal_state_str  = """
 
 /* Lexeme descriptions: There is a temporary zero stored at the end of each
  * lexeme. A pointer to the zero provides the Null-lexeme.                     */
-#define Lexeme       (me->buffer._lexeme_start_p)
-#define LexemeBegin  (me->buffer._lexeme_start_p)
-#define LexemeEnd    (me->buffer._input_p)
+#define Lexeme       (engine->buffer._lexeme_start_p)
+#define LexemeBegin  (engine->buffer._lexeme_start_p)
+#define LexemeEnd    (engine->buffer._input_p)
 #define LexemeNull   (&__QuexLexemeNullObject)
-#define LexemeL      (size_t)(me->buffer._input_p - me->buffer._lexeme_start_p)
+#define LexemeL      (size_t)(engine->buffer._input_p - engine->buffer._lexeme_start_p)
 $$SPECIFIC_TERMINAL_STATES$$
 
 $$TERMINAL_END_OF_STREAM-DEF$$
@@ -259,7 +261,7 @@ $$COMMENT_ON_POST_CONTEXT_INITIALIZATION$$
      *  occured. If not it can call this function again.                               */
 #if    defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE) \
     || defined(QUEX_OPTION_ASSERTS)
-    if( me->DEBUG_analyzer_function_at_entry != me->current_analyzer_function ) 
+    if( engine->DEBUG_analyzer_function_at_entry != engine->current_analyzer_function ) 
 #endif
     { 
 #if defined(QUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE)
@@ -284,10 +286,10 @@ def __adorn_action_code(action_info, SMD, SupportBeginOfLineF, IndentationOffset
     #       newline at the end, and those that do not. Then, there need not
     #       be a conditional question.
     if SupportBeginOfLineF:
-        txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&me->buffer);\n"
+        txt += indentation + "QuexBuffer_store_last_character_of_lexeme_for_next_run(&engine->buffer);\n"
 
     if action_info.action().require_terminating_zero_f():
-        txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&me->buffer);\n"
+        txt += indentation + "QuexBuffer_set_terminating_zero_for_lexeme(&engine->buffer);\n"
 
     txt += indentation + "{\n"
     txt += indentation + "    " + code_str.replace("\n", "\n        ") + "\n"  
@@ -396,7 +398,7 @@ def __terminal_states(SMD, action_db, OnFailureAction, EndOfStreamAction,
     # NOTE: It is possible that 'miss' happens after a chain of characters appeared. In any case the input
     #       pointer must be setup right after the lexeme start. This way, the lexer becomes a new chance as
     #       soon as possible.
-    on_failure_str  = "me->buffer._input_p = me->buffer._lexeme_start_p;\n"
+    on_failure_str  = "engine->buffer._input_p = engine->buffer._lexeme_start_p;\n"
     on_failure_str += LanguageDB["$if EOF"] + "\n"
     on_failure_str += "    " + LanguageDB["$comment"]("Next increment will stop on EOF character.") + "\n"
     on_failure_str += LanguageDB["$endif"] + "\n"

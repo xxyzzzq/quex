@@ -7,7 +7,7 @@
 using namespace std;
 using namespace quex;
 
-void                pseudo_analysis(quex::QuexAnalyser* me);
+void                pseudo_analysis(quex::QuexAnalyzerEngine* me);
 QUEX_TYPE_TOKEN_ID  test_core(TPLex&, const char*);
 
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
@@ -44,7 +44,7 @@ main(int argc, char** argv)
 
 #   if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
     cout << "Pseudo Analysis: Replace analysis pointer with own function.\n";
-    ((quex::QuexAnalyser*)&qlex)->current_analyser_function = pseudo_analysis;
+    ((quex::QuexAnalyzerEngine*)&qlex)->current_analyser_function = pseudo_analysis;
 #   endif
 
     while( test_core(qlex, argv[1]) != QUEX_TKN_TERMINATION );
@@ -93,7 +93,7 @@ QUEX_TYPE_TOKEN_ID test_core(TPLex& qlex, const char* Choice)
 #endif
 
 #if defined(__QUEX_OPTION_TEST_PSEUDO_ANALYSIS)
-void pseudo_analysis(quex::QuexAnalyser* me)
+void pseudo_analysis(quex::QuexAnalyzerEngine* me)
 {
     TPLex&     self = *((TPLex*)me);
     static int i = 0;

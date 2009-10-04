@@ -1,10 +1,19 @@
-/* -*- C++ -*-   vim: set syntax=cpp:
+/* -*- C++ -*-  vim:set syntax=cpp: 
  *
- * (C) 2005-2009 Frank-Rene Schaefer                                             */
-#ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+ * (C) 2004-2009 Frank-Rene Schaefer
+ *
+ * __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__ may be undefined in case
+ *    that multiple lexical analyzers are used. Then, the name of the
+ *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__
+
+#ifndef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
+#   error "This file is only to be included, if indentation trigger support is activated."
+#endif
 
 #include <quex/code_base/definitions>
-#include <quex/code_base/analyzer/Counter>
+#include <quex/code_base/analyzer/counter/LineColumnIndentation>
 #include <quex/code_base/analyzer/QuexMode>
 #include <quex/code_base/analyzer/asserts>
 
@@ -24,7 +33,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
      *       last end, such as _line_number_at_begin = _line_number_at_end.
      *       This has to happen outside these functions.                        */
     QUEX_INLINE void
-    CounterWithIndentation_construct(CounterWithIndentation* me, QuexAnalyser* lexer)
+    CounterWithIndentation_construct(CounterWithIndentation* me, QUEX_TYPE_ANALYZER_DATA* lexer)
     {
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
@@ -39,7 +48,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void
     CounterWithIndentation_init(CounterWithIndentation* me)
     {
-        Counter_init((Counter*)me);
+        CounterBase_init((__CounterBase*)me);
         me->_indentation = 0;
         me->_indentation_count_enabled_f = true;
         me->_indentation_event_enabled_f = true;
@@ -50,7 +59,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     {
         /* 'flush' remaining indentations                                      */
         if( me->_indentation_event_enabled_f ) 
-            me->_the_lexer->__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
+            me->_the_lexer->engine.__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
     }
 
     QUEX_INLINE void    
@@ -110,7 +119,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
             me->_indentation_count_enabled_f = true;
 #           ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
             ++(me->base._line_number_at_end);
-            __Counter_count_newline_n_backwards((Counter*)me, it, Begin);
+            CounterBase_count_newline_n_backwards((__CounterBase*)me, it, Begin);
 #           endif
 #           ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
             me->base._column_number_at_end = 1;  /* next lexeme starts at _column_number_at_end + 1 */
@@ -225,7 +234,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #       endif
         if( me->_indentation_count_enabled_f ) {
             me->_indentation_count_enabled_f = false; 
-            me->_the_lexer->__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
+            me->_the_lexer->engine.__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
         }
         __QUEX_LEXER_COUNT_ASSERT_CONSISTENCY();
     }
@@ -270,7 +279,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
                  *   no  -> enable event for the next time.
                  *          indentation events can only be disabled for one coming event. */
                 if( me->_indentation_event_enabled_f ) 
-                    me->_the_lexer->__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
+                    me->_the_lexer->engine.__current_mode_p->on_indentation(me->_the_lexer, me->_indentation);
                 else
                     /* event was disabled this time, enable it for the next time. */
                     me->_indentation_event_enabled_f = true;
@@ -298,7 +307,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         /* when inlined, this is a condition on a constant => deleted by compiler. */
         if( LicenseToIncrementLineCountF ) {
 #          ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-           __Counter_count_newline_n_backwards((Counter*)me, start_consideration_it, Begin);
+           CounterBase_count_newline_n_backwards((__CounterBase*)me, start_consideration_it, Begin);
 #          endif	    
         }
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
@@ -309,7 +318,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     QUEX_INLINE void 
     CounterWithIndentation_print_this(CounterWithIndentation* me)
     {
-        Counter_print_this((Counter*)me);
+        CounterBase_print_this((__CounterBase*)me);
         __QUEX_STD_printf("   _indentation                 = %i;\n", (int)me->_indentation);
         __QUEX_STD_printf("   _indentation_count_enabled_f = %s;\n", me->_indentation_count_enabled_f ? "true" : "false");
         __QUEX_STD_printf("   _indentation_event_enabled_f = %s;\n", me->_indentation_event_enabled_f ? "true" : "false");
@@ -317,4 +326,4 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 
-#endif /* __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	*/
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__ */

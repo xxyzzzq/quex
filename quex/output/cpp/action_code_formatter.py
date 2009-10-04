@@ -59,7 +59,9 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 
     txt  = "{\n"
     txt += on_every_match_code
+    txt += "#   ifdef __QUEX_OPTION_COUNTER\n"
     txt += lc_count_code
+    txt += "#   endif\n"
     txt += debug_code
     txt += user_code
     txt += "\n}"
@@ -69,12 +71,10 @@ def do(Mode, CodeFragment_or_CodeFragments, SafePatternStr, PatternStateMachine,
 def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "Counter_shift_end_values_to_start_values(&self.counter.base);\n"
+    txt = "CounterBase_shift_end_values_to_start_values(&self.counter.base);\n"
 
     if EOF_ActionF:
-        txt += "#   ifdef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT\n"
         txt += "    CounterWithIndentation_on_end_of_file(&self.counter);\n"
-        txt += "#   endif\n"
         return txt
 
     if PatternStateMachine == None:
@@ -112,7 +112,7 @@ def __get_line_and_column_counting_with_indentation(PatternStateMachine, EOF_Act
 def __get_line_and_column_counting(PatternStateMachine, EOF_ActionF):
 
     # shift the values for line and column numbering
-    txt = "Counter_shift_end_values_to_start_values(&self.counter.base);\n"
+    txt = "CounterBase_shift_end_values_to_start_values(&self.counter.base);\n"
 
     if EOF_ActionF:
         return txt

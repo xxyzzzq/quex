@@ -112,12 +112,12 @@ db["C++"] = {
     "$continue":            "continue;\n",
     "$break":               "break;\n",
     "$if not BLC":          "if( input != QUEX_SETTING_BUFFER_LIMIT_CODE ) {\n",
-    "$if EOF":              "if( QuexBuffer_is_end_of_file(&me->buffer) ) {\n",
-    "$if BOF":              "if( QuexBuffer_is_begin_of_file(&me->buffer) ) {\n",
+    "$if EOF":              "if( QuexBuffer_is_end_of_file(&engine->buffer) ) {\n",
+    "$if BOF":              "if( QuexBuffer_is_begin_of_file(&engine->buffer) ) {\n",
     "$if pre-context":        lambda id: "if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
     "$elseif pre-context":    lambda id: "else if( pre_context_%s_fulfilled_f ) {\n" % repr(id).replace("L", ""),
-    "$if begin-of-line":      "if( me->buffer._character_before_lexeme_start == '\\n' ) {\n",
-    "$elseif begin-of-line":  "else if( me->begin_of_line_f ) {\n",
+    "$if begin-of-line":      "if( engine->buffer._character_before_lexeme_start == '\\n' ) {\n",
+    "$elseif begin-of-line":  "else if( engine->begin_of_line_f ) {\n",
     "$if <":              lambda value: "if( input < "  + value + ") {\n",
     "$if in-set":         cpp.__get_if_in_character_set,
     "$if in-interval":    cpp.__get_if_in_interval,
@@ -137,14 +137,14 @@ db["C++"] = {
     #                   # is followed directly by newline.
     "$local-variable-defs": cpp.__local_variable_definitions, 
     "$input":               "input",
-    "$mark-lexeme-start":   "QuexBuffer_mark_lexeme_start(&me->buffer);",
-    "$input/increment":     "QuexBuffer_input_p_increment(&me->buffer);",
-    "$input/add":           lambda Offset:      "QuexBuffer_input_p_add_offset(&me->buffer, %i);" % Offset,
-    "$input/decrement":     "QuexBuffer_input_p_decrement(&me->buffer);",
-    "$input/get":           "input = QuexBuffer_input_get(&me->buffer);",
-    "$input/get-offset":    lambda Offset:      "input = QuexBuffer_input_get_offset(&me->buffer, %i);" % Offset,
-    "$input/tell_position": lambda PositionStr: "%s = QuexBuffer_tell_memory_adr(&me->buffer);\n" % PositionStr,
-    "$input/seek_position": lambda PositionStr: "QuexBuffer_seek_memory_adr(&me->buffer, %s);\n" % PositionStr,
+    "$mark-lexeme-start":   "QuexBuffer_mark_lexeme_start(&engine->buffer);",
+    "$input/increment":     "QuexBuffer_input_p_increment(&engine->buffer);",
+    "$input/add":           lambda Offset:      "QuexBuffer_input_p_add_offset(&engine->buffer, %i);" % Offset,
+    "$input/decrement":     "QuexBuffer_input_p_decrement(&engine->buffer);",
+    "$input/get":           "input = QuexBuffer_input_get(&engine->buffer);",
+    "$input/get-offset":    lambda Offset:      "input = QuexBuffer_input_get_offset(&engine->buffer, %i);" % Offset,
+    "$input/tell_position": lambda PositionStr: "%s = QuexBuffer_tell_memory_adr(&engine->buffer);\n" % PositionStr,
+    "$input/seek_position": lambda PositionStr: "QuexBuffer_seek_memory_adr(&engine->buffer, %s);\n" % PositionStr,
     "$return":              "return;",
     "$return_true":         "return true;",
     "$return_false":        "return false;",
@@ -152,15 +152,15 @@ db["C++"] = {
     "$label-pure":          lambda Label:                "%s:" % Label,
     "$label-def":           lambda Type, Argument=None:  
                                 "%s:\n"                             % label_db_get(Type, Argument) + \
-                                "    QUEX_DEBUG_PRINT(&me->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
+                                "    QUEX_DEBUG_PRINT(&engine->buffer, \"LABEL: %s\");\n" % label_db_get(Type, Argument),
     "$analyzer-func":     cpp.__analyzer_function,
     "$terminal-code":     cpp.__terminal_states,      
     "$compile-option":    lambda option: "#define %s\n" % option,
     "$assignment":        lambda variable, value:
-                          "QUEX_DEBUG_PRINT2(&me->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
+                          "QUEX_DEBUG_PRINT2(&engine->buffer, \"%s = %%s\", \"%s\");\n" % (variable, value) + \
                           "%s = %s;\n" % (variable, value),
     "$set-last_acceptance":  lambda value:
-                             "QUEX_DEBUG_PRINT2(&me->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
+                             "QUEX_DEBUG_PRINT2(&engine->buffer, \"ACCEPTANCE: %%s\", \"%s\");\n" % value + \
                              "QUEX_SET_last_acceptance(%s);\n" % value,
     "$goto-last_acceptance": "QUEX_GOTO_last_acceptance();\n",
     #

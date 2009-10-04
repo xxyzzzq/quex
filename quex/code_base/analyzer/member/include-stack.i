@@ -1,9 +1,13 @@
 /* -*- C++ -*- vim:set syntax=cpp:
  *
- * No include guards, the header might be included from multiple lexers.
+ * (C) 2004-2009 Frank-Rene Schaefer
  *
- * NOT: #ifndef __INCLUDE_GUARD__QUEX_LEXER_CLASS_INCLUDE_HANDLER__
- * NOT: #define __INCLUDE_GUARD__QUEX_LEXER_CLASS_INCLUDE_HANDLER__       */
+ * __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__ may be undefined in case
+ *    that multiple lexical analyzers are used. Then, the name of the
+ *    QUEX_TYPE_ACCUMULATOR must be different.                             */
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__
+#define __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__
+
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
@@ -55,13 +59,13 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
-        QuexAnalyser_construct(&this->base,
-                               base.__current_mode_p->analyzer_function,
+        QuexAnalyzerEngine_construct(&this->engine,
+                               engine.__current_mode_p->analyzer_function,
                                input_handle,
                                0x0, QUEX_SETTING_BUFFER_SIZE,
                                IANA_CodingName, 
                                QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
-                               base.buffer._byte_order_reversion_active_f);
+                               engine.buffer._byte_order_reversion_active_f);
 
 #       ifdef __QUEX_OPTION_COUNTER
         QUEX_FIX(COUNTER, _init)(&counter);
@@ -82,7 +86,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         if( this->_parent_memento == 0x0 ) return false; 
 
         /* Free the related memory that is no longer used                      */
-        QuexAnalyser_destruct(&this->base);
+        QuexAnalyzerEngine_destruct(&this->engine);
 
         /* Restore the lexical analyzer to the state it was before the include */
         /* Here, the 'memento_unpack' section is executed                      */
@@ -97,7 +101,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     {
         while( this->_parent_memento != 0x0 ) {
             /* Free the related memory that is no longer used                      */
-            QuexAnalyser_destruct(&this->base);
+            QuexAnalyzerEngine_destruct(&this->engine);
 
             /* Restore the lexical analyzer to the state it was before the include */
             /* Here, the 'memento_unpack' section is executed                      */
@@ -109,3 +113,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__ */

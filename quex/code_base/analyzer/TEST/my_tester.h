@@ -18,7 +18,7 @@ struct my_tester;
 
 extern int  indentation[64];
 
-class my_tester : public quex::QuexAnalyser {
+class my_tester : public quex::QuexAnalyzerEngine {
 public:
     my_tester();
     quex::Counter*   counter;
@@ -26,7 +26,7 @@ public:
 };
 
 inline void 
-mini_mode_on_indentation(quex::QuexAnalyser* x, int Indentation) 
+mini_mode_on_indentation(quex::QuexAnalyzerEngine* x, int Indentation) 
 {
     indentation[((my_tester*)x)->counter->base._line_number_at_end-1] = Indentation;
     printf("indentation = %i\n", Indentation);

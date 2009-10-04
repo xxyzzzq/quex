@@ -79,11 +79,7 @@ $$USER_DEFINED_HEADER$$
 #ifdef      QUEX_OPTION_POST_CATEGORIZER
 #   include <quex/code_base/analyzer/PostCategorizer>
 #endif
-#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   include <quex/code_base/analyzer/counter/LineColumn>
-#   else
-#   include <quex/code_base/analyzer/counter/LineColumnIndentation>
-#endif
+#include    <quex/code_base/analyzer/counter/Base>
 #include    <quex/code_base/analyzer/AnalyzerData>
 
 /* START: User's derived class declaration (if there is one) __________________*/
@@ -360,7 +356,7 @@ QUEX_FIX(ANALYZER, __constructor_core)(QUEX_TYPE_ANALYZER*       me,
 #   endif
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_FIX(COUNTER, _construct)(&me->counter, (QuexAnalyser*)me);
+    QUEX_FIX(COUNTER, _construct)(&me->counter, me);
 #   endif
 
     me->mode_db[0] = 0x0;
@@ -370,15 +366,15 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
     me->_parent_memento = 0x0;
 #   endif
 
-    me->base.__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
+    me->engine.__current_mode_p = 0x0; /* REQUIRED, for mode transition check */
     me->set_mode_brutally(__QUEX_SETTING_INITIAL_LEXER_MODE_ID);
 
     me->_mode_stack.end        = me->_mode_stack.begin;
     me->_mode_stack.memory_end = me->_mode_stack.begin + QUEX_SETTING_MODE_STACK_SIZE;
 
 
-    QuexAnalyser_construct(&me->base,
-                           me->base.__current_mode_p->analyzer_function,
+    QuexAnalyzerEngine_construct(&me->engine,
+                           me->engine.__current_mode_p->analyzer_function,
                            input_handle,
                            BufferMemory, QUEX_SETTING_BUFFER_SIZE,
                            CharacterEncodingName, 
@@ -391,11 +387,11 @@ $$CONSTRUCTOR_MODE_DB_INITIALIZATION_CODE$$
          * (2) The user does not provide memory:  --> the memory IS empty.             */
         if( BufferMemory == 0x0 ) {
             /* 'buffer._memory._front' has been set at this point in time.             */
-            QuexBuffer_end_of_file_set(&me->base.buffer, me->base.buffer._memory._front + 1);
+            QuexBuffer_end_of_file_set(&me->engine.buffer, me->engine.buffer._memory._front + 1);
         }
         /* When working on plain memory, the '_end_of_file_p' must be set to indicate
          * the end of the content.                                                     */
-        __quex_assert(me->base.buffer._memory._end_of_file_p != 0x0);
+        __quex_assert(me->engine.buffer._memory._end_of_file_p != 0x0);
     }
 
     me->__file_handle_allocated_by_constructor = 0x0;
@@ -422,9 +418,9 @@ QUEX_FIX(ANALYZER, _memento_pack)(QUEX_TYPE_ANALYZER*   me,
     new ((void*)memento) QUEX_TYPE_MEMENTO;
 
     memento->base.parent         = self._parent_memento;
-    memento->base.analyzer_core  = me->base;                /* plain copy, references remain intact. */
+    memento->base.engine         = me->engine;                /* plain copy, references remain intact. */
     memento->base.counter        = self.counter;
-    memento->base.current_mode_p = self.base.__current_mode_p;
+    memento->base.current_mode_p = self.engine.__current_mode_p;
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
 #   endif
@@ -442,10 +438,10 @@ QUEX_FIX(ANALYZER, _memento_unpack)(QUEX_TYPE_ANALYZER*   me,
                                     QUEX_TYPE_MEMENTO*    memento)
 {
 #   define self  (*(QUEX_TYPE_DERIVED_ANALYZER*)me)
-    self._parent_memento       = memento->base.parent;
-    me->base                   = memento->base.analyzer_core; /* plain copy, references remain intact. */
-    self.counter               = memento->base.counter;
-    self.base.__current_mode_p = memento->base.current_mode_p;
+    self._parent_memento         = memento->base.parent;
+    me->engine                   = memento->base.engine; /* plain copy, references remain intact. */
+    self.counter                 = memento->base.counter;
+    self.engine.__current_mode_p = memento->base.current_mode_p;
     
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
     // QuexTokenQueueRemainder_restore(&memento->token_queue_remainder, &self._token_queue);
@@ -473,24 +469,16 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/analyzer/member/buffer-access.i>
 #include    <quex/code_base/analyzer/member/misc.i>
 #include    <quex/code_base/analyzer/member/constructor.i>
+#include    <quex/code_base/analyzer/counter/Base.i>
+#include    <quex/code_base/MemoryManager.i>
+#include    <quex/code_base/MemoryManager_analyzer_specific.i>
+#include    <quex/code_base/analyzer/Analyser.i>
+#include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/member/include-stack.i>
 #endif
-
-#if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   include <quex/code_base/analyzer/counter/LineColumn.i>
-#   else
-#   include <quex/code_base/analyzer/counter/LineColumnIndentation.i>
-#endif
-
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator.i>
 #endif
-
-#include    <quex/code_base/MemoryManager.i>
-#include    <quex/code_base/MemoryManager_analyzer_specific.i>
-
-#include    <quex/code_base/analyzer/Analyser.i>
-#include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 
 #endif // __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$

@@ -209,7 +209,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
     txt += "    if( QuexBuffer_distance_input_to_text_end(buffer) == 0 ) {\n"
     txt += "        QuexBuffer_mark_lexeme_start(buffer);\n"
-    txt += "        if( QuexAnalyser_buffer_reload_forward(buffer, &last_acceptance_input_position,\n"
+    txt += "        if( QuexAnalyzerEngine_buffer_reload_forward(buffer, &last_acceptance_input_position,\n"
     txt += "                                               post_context_start_position, 0) == 0 ) {\n"
     txt += "            return false;\n"
     txt += "        } else {\n"
@@ -225,7 +225,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    return true;\n"
     txt += "}\n"
     txt += "\n"
-    txt += "void Mr_UnitTest_analyser_function(QuexAnalyser* me)\n"
+    txt += "void Mr_UnitTest_analyser_function(QuexAnalyzerEngine* me)\n"
     txt += "{\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
@@ -242,7 +242,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
         txt += "    break;\n"
     txt += "        if( QuexBuffer_distance_input_to_text_end(&me->buffer) == 0 ) {\n"
     txt += "            QuexBuffer_mark_lexeme_start(&me->buffer);\n"
-    txt += "            if( QuexAnalyser_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
+    txt += "            if( QuexAnalyzerEngine_buffer_reload_forward(&me->buffer, &last_acceptance_input_position,\n"
     txt += "                                                   post_context_start_position, 0) == 0 )\n"
     txt += "                goto TERMINAL_END_OF_STREAM;\n"
     txt += "            QuexBuffer_input_p_increment(&me->buffer);\n"
@@ -333,10 +333,10 @@ $$TEST_CASE$$
 
 bool analysis_terminated_f = false;
 
-#define QUEX_TYPE_ANALYZER QuexAnalyser
+#define QUEX_TYPE_ANALYZER QuexAnalyzerEngine
 
-static void  Mr_UnitTest_analyser_function(QuexAnalyser* me);
-static void  Mrs_UnitTest_analyser_function(QuexAnalyser* me);
+static void  Mr_UnitTest_analyser_function(QuexAnalyzerEngine* me);
+static void  Mrs_UnitTest_analyser_function(QuexAnalyzerEngine* me);
 """
 
 test_program_db = { 
@@ -346,12 +346,12 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QuexAnalyser   lexer_state;
+        QuexAnalyzerEngine   lexer_state;
         int            success_f = 0;
         char           TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, (void*)0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, (void*)0x0,
                                TestString, MemorySize, 0x0, 0, false);
         QuexBuffer_end_of_file_set(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
@@ -369,7 +369,7 @@ test_program_db = {
 
     int main(int argc, char** argv)
     {
-        QuexAnalyser lexer_state;
+        QuexAnalyzerEngine lexer_state;
         int          success_f = 0;
         /**/
         const char*             test_string = "$$TEST_STRING$$";
@@ -381,7 +381,7 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, fh, 0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, fh, 0x0,
                                $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
@@ -404,12 +404,12 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        QuexAnalyser lexer_state;
+        QuexAnalyzerEngine lexer_state;
         int          success_f = 0;
         /**/
         istringstream  istr("$$TEST_STRING$$");
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr, 0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr, 0x0,
                                $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
@@ -430,13 +430,13 @@ test_program_db = {
         using namespace std;
         using namespace quex;
 
-        QuexAnalyser lexer_state;
+        QuexAnalyzerEngine lexer_state;
         int          success_f = 0;
         /**/
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
 
-        QuexAnalyser_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream, 0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream, 0x0,
                                $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");

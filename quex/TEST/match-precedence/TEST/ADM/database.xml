@@ -1,4 +1,4 @@
-<test-database execution-time-sec="5.41" date="Sat Oct  3 04:38:44 2009">
+<test-database execution-time-sec="5.41" date="Sun Oct  4 00:15:26 2009">
     <last-used-diff-display-program name=""/>
     <test title="PRIORITY-MARK or DELETION on not existing pattern." make-required="True" time-sum-sec="0.71"> 
         <application file-name="unvalid-marks.sh" info-request-time="1253409329L"/>
