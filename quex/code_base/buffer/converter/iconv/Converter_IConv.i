@@ -1,7 +1,7 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  * (C) 2007-2008 Frank-Rene Schaefer  */
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
-#define __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I
 
 #include <quex/code_base/definitions>
 #if ! defined(QUEX_OPTION_ENABLE_ICONV)
@@ -150,4 +150,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #include <quex/code_base/buffer/BufferFiller.i>
 #include <quex/code_base/MemoryManager.i>
 
-#endif /* __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICONV_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I */

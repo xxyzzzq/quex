@@ -2,11 +2,11 @@
  *
  * (C) 2004-2009 Frank-Rene Schaefer
  *
- * __QUEX_INCLUDE_GUARD__ANALYZER__MODE__ may be undefined in case
+ * __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
  *    QUEX_TYPE_ACCUMULATOR must be different.                             */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MODE__
-#define __QUEX_INCLUDE_GUARD__ANALYZER__MODE__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE
+#define __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE
 
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
@@ -69,4 +69,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MODE__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE */

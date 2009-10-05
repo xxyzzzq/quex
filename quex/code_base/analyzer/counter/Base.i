@@ -1,13 +1,16 @@
-#ifndef __INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I__
-#define __INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I
 
-#include <quex/code_base/analyzer/counter/base>
+#include <quex/code_base/definitions>
+#include <quex/code_base/analyzer/counter/Base>
 
 #if         ! defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
 #   include <quex/code_base/analyzer/counter/LineColumn.i>
 #   else
 #   include <quex/code_base/analyzer/counter/LineColumnIndentation.i>
 #endif
+
+QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
     CounterBase_init(__CounterBase* me)
@@ -57,15 +60,16 @@
     {
         __QUEX_STD_printf("   Counter:\n");
 #       ifdef  QUEX_OPTION_LINE_NUMBER_COUNTING
-        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->base._line_number_at_begin);
-        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->base._line_number_at_end);
+        __QUEX_STD_printf("   _line_number_at_begin = %i;\n", (int)me->_line_number_at_begin);
+        __QUEX_STD_printf("   _line_number_at_end   = %i;\n", (int)me->_line_number_at_end);
 #       endif
 #       ifdef  QUEX_OPTION_COLUMN_NUMBER_COUNTING
-        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->base._column_number_at_begin);
-        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->base._column_number_at_end);
+        __QUEX_STD_printf("   _column_number_at_begin = %i;\n", (int)me->_column_number_at_begin);
+        __QUEX_STD_printf("   _column_number_at_end   = %i;\n", (int)me->_column_number_at_end);
 #       endif
     }
 
+QUEX_NAMESPACE_COMPONENTS_CLOSE
 
-#endif /* __INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I */
 

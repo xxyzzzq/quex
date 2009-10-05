@@ -1,7 +1,7 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  * (C) 2007-2008 Frank-Rene Schaefer  */
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__
-#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I
 
 #include <quex/code_base/MemoryManager>
 #include <quex/code_base/buffer/InputPolicy>
@@ -436,4 +436,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #include <quex/code_base/MemoryManager.i>
 
 
-#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_CONVERTER_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I */

@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
-#define __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER
+#define __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER
 /****************************************************************************
  *
  * IMPORTANT NOTE:
@@ -86,4 +86,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __INCLUDE_GUARD__QUEX__CODE_BASE__ANALYSER_MINIMAL__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER */

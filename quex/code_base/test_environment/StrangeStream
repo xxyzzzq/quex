@@ -1,6 +1,6 @@
 // -*- C++ -*- vim: set syntax=cpp:
-#ifndef __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
-#define __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
+#ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM
+#define __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM
 /* -*- C++ -*- vim: set syntax=cpp: 
  * (C) 2008 Frank-Rene Schaefer 
  * LGPL -- ABSOLUTELY NO WARRANTY */
@@ -127,4 +127,4 @@ TEMPLATE_IN bool   StrangeStream<StdStreamType>::fail()   { return sh->fail(); }
 
 #   undef TEMPLATE_IN
 QUEX_NAMESPACE_COMPONENTS_CLOSE
-#endif // __INCLUDE_GUARD__QUEX__CODE_BASE__STRANGE_STREAM__
+#endif // __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM

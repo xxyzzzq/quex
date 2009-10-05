@@ -1,7 +1,8 @@
-// -*- C++ -*-    vim: set syntax=cpp:
-//////////////////////////////////////////////////////////////////////////////////////////
-#ifndef __INCLUDE_GUARD__QUEX__TOKEN__
-#define __INCLUDE_GUARD__QUEX__TOKEN__
+/* -*- C++ -*-    vim: set syntax=cpp:
+ * (C) 2004-2009 Frank-Rene Schaefer
+ ************************************************************************************/
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN
+#define __QUEX_INCLUDE_GUARD__TOKEN__TOKEN
 
 #include <quex/code_base/definitions>
 
@@ -162,4 +163,4 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 
-#endif // #define __INCLUDE_GUARD__QUEX__TOKEN__
+#endif // #define __QUEX_INCLUDE_GUARD__TOKEN__TOKEN

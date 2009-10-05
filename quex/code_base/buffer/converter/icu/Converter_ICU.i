@@ -1,7 +1,7 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  * (C) 2007-2008 Frank-Rene Schaefer  */
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICU_I__
-#define __INCLUDE_GUARD__QUEX_BUFFER__CONVERTER_ICU_I__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU_I
 
 #include <quex/code_base/compatibility/inttypes.h>
 #include <quex/code_base/MemoryManager>

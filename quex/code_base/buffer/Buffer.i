@@ -1,6 +1,6 @@
 /* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I
 
 #include <quex/code_base/analyzer/configuration/validation>
 #include <quex/code_base/asserts>
@@ -633,6 +633,6 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #include <quex/code_base/buffer/Buffer_debug.i>
 #include <quex/code_base/MemoryManager.i>
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_CORE_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I */
 
 

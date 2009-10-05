@@ -129,7 +129,7 @@ QUEX_FIX(ANALYZER, _reset)(QUEX_TYPE_ANALYZER*  me,
                              QUEX_SETTING_TRANSLATION_BUFFER_SIZE);
 
 #   ifdef __QUEX_OPTION_COUNTER
-    QUEX_FIX(COUNTER, _init)(&me->counter);
+    QUEX_FIX(COUNTER, _reset)(&me->counter);
 #   endif
 
 #   ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED

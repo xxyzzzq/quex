@@ -2,11 +2,11 @@
  *
  * (C) 2004-2009 Frank-Rene Schaefer
  *
- * __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__ may be undefined in case
+ * __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
  *    QUEX_TYPE_ACCUMULATOR must be different.                             */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__
-#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I
 
 #ifndef __QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT	
 #   error "This file is only to be included, if indentation trigger support is activated."
@@ -53,6 +53,13 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         me->_indentation_count_enabled_f = true;
         me->_indentation_event_enabled_f = true;
     }
+
+    QUEX_INLINE void
+    CounterWithIndentation_reset(CounterWithIndentation* me)
+    {
+        CounterWithIndentation_init(me);
+    }
+
 
     QUEX_INLINE void
     CounterWithIndentation_on_end_of_file(CounterWithIndentation* me)
@@ -326,4 +333,4 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I */
