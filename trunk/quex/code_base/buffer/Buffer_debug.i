@@ -1,8 +1,8 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  *
  * (C) 2008 Frank-Rene Schaefer */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_DEBUG_I_
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_DEBUG_I_
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
@@ -163,4 +163,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #include <quex/code_base/buffer/Buffer.i>
 
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__BUFFER_DEBUG_I_ */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I */

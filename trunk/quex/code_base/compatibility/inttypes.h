@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__
-#define __INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__
+#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__INTTYPES_H
+#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__INTTYPES_H
 /* NOTE: At the time of this writing (Aug. 2007) there are still some
  *       compilers that do not support C99 Standard completely and
  *       do not provided 'inttypes.h' and 'stdint.h' along with their
@@ -22,4 +22,4 @@ extern "C" {
 } /* extern "C" */
 #endif
 
-#endif /* __INCLUDE_GUARD__QUEX_INCLUDE_COMPATIBILITY_INTTYPES_H__ */
+#endif /* __QUEX_INCLUDE_GUARD__COMPATIBILITY__INTTYPES_H */

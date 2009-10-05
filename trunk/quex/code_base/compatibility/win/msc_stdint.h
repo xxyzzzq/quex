@@ -28,8 +28,8 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_STDINT_H
-#define __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_STDINT_H
+#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
+#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H
 
 #ifndef _MSC_VER // [
 #error "Use this header only with Microsoft Visual C++ compilers!"
@@ -217,4 +217,4 @@ typedef uint64_t  uintmax_t;
 
 #endif // __STDC_CONSTANT_MACROS ]
 
-#endif // __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_STDINT_H
+#endif // __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_STDINT_H

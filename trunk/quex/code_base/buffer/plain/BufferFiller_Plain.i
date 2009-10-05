@@ -1,7 +1,7 @@
 /*  -*- C++ -*-  vim: set syntax=cpp: */
 /* (C) 2008 Frank-Rene Schaefer*/
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER__BUFFER_FILLER_PLAIN_I__
-#define __INCLUDE_GUARD__QUEX_BUFFER__BUFFER_FILLER_PLAIN_I__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I
 /**/
 
 #if ! defined (__QUEX_SETTING_PLAIN_C)

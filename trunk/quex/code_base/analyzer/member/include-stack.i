@@ -2,11 +2,11 @@
  *
  * (C) 2004-2009 Frank-Rene Schaefer
  *
- * __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__ may be undefined in case
+ * __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I may be undefined in case
  *    that multiple lexical analyzers are used. Then, the name of the
  *    QUEX_TYPE_ACCUMULATOR must be different.                             */
-#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__
-#define __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I
 
 #ifndef   QUEX_TYPE_ANALYZER
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
@@ -60,15 +60,15 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         /* Initialize the lexical analyzer for the new input stream.             */
         /* Include stacks cannot be used with plain direct user memory => 0x0, 0 */
         QuexAnalyzerEngine_construct(&this->engine,
-                               engine.__current_mode_p->analyzer_function,
-                               input_handle,
-                               0x0, QUEX_SETTING_BUFFER_SIZE,
-                               IANA_CodingName, 
-                               QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
-                               engine.buffer._byte_order_reversion_active_f);
+                                     engine.__current_mode_p->analyzer_function,
+                                     input_handle,
+                                     0x0, QUEX_SETTING_BUFFER_SIZE,
+                                     IANA_CodingName, 
+                                     QUEX_SETTING_TRANSLATION_BUFFER_SIZE,
+                                     engine.buffer._byte_order_reversion_active_f);
 
 #       ifdef __QUEX_OPTION_COUNTER
-        QUEX_FIX(COUNTER, _init)(&counter);
+        QUEX_FIX(COUNTER, _reset)(&counter);
 #       endif
 
         /* Keep track of 'who's your daddy?'                              */
@@ -113,4 +113,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I */

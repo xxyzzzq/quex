@@ -1,7 +1,7 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  * (C) Frank-Rene Schaefer                                                         */
-#ifndef __INCLUDE_GUARD__QUEX__COUNTER_I__
-#define __INCLUDE_GUARD__QUEX__COUNTER_I__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I
 
 #if     defined(__QUEX_OPTION_COUNTER)
 /* NOTE: Quex is pretty intelligent in choosing the right function
@@ -23,7 +23,7 @@
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
     QUEX_INLINE void
-    Counter_construct(Counter* me, QuexAnalyzerEngine* lexer)
+    Counter_construct(Counter* me, QUEX_TYPE_ANALYZER_DATA* lexer)
     { 
 #       ifdef QUEX_OPTION_ASSERTS
         /* Set all to '0xFF' in order to catch easily a lack of initialization. */
@@ -32,6 +32,12 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
         CounterBase_init((__CounterBase*)me); 
 
         /* The lexical analyzer is not important for this type of counter. */
+    }
+
+    QUEX_INLINE void
+    Counter_reset(Counter* me)
+    {
+        CounterBase_init((__CounterBase*)me);
     }
 
     QUEX_INLINE void  
@@ -148,4 +154,4 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #endif /* defined(__QUEX_OPTION_COUNTER)     */
-#endif /* __INCLUDE_GUARD__QUEX__COUNTER_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I */

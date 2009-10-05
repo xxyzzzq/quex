@@ -1,6 +1,7 @@
-/* -*- C++ -*- vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__
+/* -*- C++ -*- vim: set syntax=cpp: 
+ * (C) 2004-2009 Frank-Rene Schaefer                               */
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE
+#define __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE
 
 #ifndef QUEX_TYPE_TOKEN
 #   error "QUEX_TYPE_TOKEN has not been defined before the inclusion of this file."
@@ -238,4 +239,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 
 #include <quex/code_base/temporary_macros_off>
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__QUEX_TOKEN_QUEUE__ */
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__TOKENQUEUE */

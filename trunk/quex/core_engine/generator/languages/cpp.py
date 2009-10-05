@@ -69,6 +69,13 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QU
     /*       functions are all located inside the main class as static functions. That*/
     /*       means, they are something like 'globals'. They receive a pointer to the */
     /*       lexical analyzer, since static member do not have access to the 'this' pointer.*/
+#   ifdef     self
+#       undef self
+#   endif
+#   ifdef     engine
+#       undef engine
+#   endif
+
 #   define engine  (&me->engine)
 
 #   if defined (__QUEX_SETTING_PLAIN_C)
@@ -328,7 +335,7 @@ def get_terminal_code(state_machine_id, SMD, pattern_action_info, SupportBeginOf
         #    where the 'normal' pattern ended, then we can do a backward detection.
         txt += "    " + LanguageDB["$input/seek_position"]("last_acceptance_input_position") + "\n"
         txt += LanguageDB["$label-def"]("$terminal-direct", state_machine_id) + "\n"
-        txt += "    PAPC_input_postion_backward_detector_%s(me);\n" % \
+        txt += "    PAPC_input_postion_backward_detector_%s(engine);\n" % \
                __nice(state_machine.core().post_context_backward_input_position_detector_sm_id())
 
     elif state_machine.core().post_context_id() != -1L: 

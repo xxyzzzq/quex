@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD_MY_TESTER_H__
-#define __INCLUDE_GUARD_MY_TESTER_H__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
+#define __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H
 #include <quex/code_base/compatibility/inttypes.h>
 
 #define QUEX_TYPE_CHARACTER           uint8_t  
@@ -41,4 +41,4 @@ my_tester::my_tester()
 #include <../CounterWithIndentation.i>
 #include <../Counter.i>
 
-#endif // __INCLUDE_GUARD_MY_TESTER_H__
+#endif // __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H

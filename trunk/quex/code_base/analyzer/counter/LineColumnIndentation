@@ -42,6 +42,9 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     CounterWithIndentation_construct(CounterWithIndentation* me, struct QUEX_TYPE_ANALYZER_DATA_TAG* lexer);
 
     QUEX_INLINE void
+    CounterWithIndentation_reset(CounterWithIndentation* me);
+
+    QUEX_INLINE void
     CounterWithIndentation_copy_construct(CounterWithIndentation* me, const CounterWithIndentation* That);
 
     QUEX_INLINE void

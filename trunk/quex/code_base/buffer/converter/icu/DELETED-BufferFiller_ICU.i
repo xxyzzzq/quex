@@ -1,7 +1,7 @@
 /* -*- C++ -*-  vim: set syntax=cpp:
  * (C) 2007-2008 Frank-Rene Schaefer  */
-#ifndef __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICU_I__
-#define __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICU_I__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU_I
+#define __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU_I
 
 #include <quex/code_base/buffer/converter/BufferFiller_Converter>
 #include <quex/code_base/buffer/converter/icu/BufferFiller_ICU>
@@ -26,4 +26,4 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #include <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #include <quex/code_base/buffer/converter/icu/Converter_ICU.i>
 
-#endif /* __INCLUDE_GUARD__QUEX_BUFFER_FILLER_ICU_I__ */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU_I */

@@ -28,8 +28,8 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_INTTYPES_H
-#define __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_INTTYPES_H
+#ifndef __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_INTTYPES_H
+#define __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_INTTYPES_H
 
 #ifndef _MSC_VER // [
 #error "Use this header only with Microsoft Visual C++ compilers!"
@@ -296,4 +296,4 @@ imaxdiv_t __cdecl imaxdiv(intmax_t numer, intmax_t denom)
 #define wcstoimax _wcstoi64
 #define wcstoumax _wcstoui64
 
-#endif // __INCLUDE_GUARD_QUEX_CODE_BASE_COMPATIBILITY_WIN_MSC_INTTYPES_H
+#endif // __QUEX_INCLUDE_GUARD__COMPATIBILITY__WIN__MSC_INTTYPES_H

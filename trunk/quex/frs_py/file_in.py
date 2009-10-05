@@ -160,6 +160,26 @@ def read_integer(fh, HexF=True):
     fh.seek(-1, 1)
     return txt
 
+def extract_identifiers_with_specific_sub_string(Content, SubString):
+    L = len(Content)
+    i = 0
+    finding_list = []
+    while 1 + 1 == 2:
+        i = Content.find(SubString, i)
+        # not found?
+        if i == -1: break
+        # is it inside an identifier?
+
+        # go back to the begin of the identifier
+        while i > 0 and (is_identifier_continue(Content[i]) or is_identifier_continue(Content[i])): 
+            i -= 1
+
+        if i != 0 and is_identifier_start(Content[i-1]): i += 1; continue
+        end_i = find_end_of_identifier(Content, i, L)
+        finding_list.append([Content[i:end_i], get_text_line_n(Content, i)])
+        i = end_i
+    return finding_list
+
 def extract_identifiers_with_specific_prefix(Content, Prefix):
     L = len(Content)
     i = 0

@@ -1,5 +1,5 @@
-#ifndef __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__PLAIN_TEST_HELPER_H__
-#define __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__PLAIN_TEST_HELPER_H__
+#ifndef __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H
+#define __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H
 #include <quex/code_base/buffer/plain/BufferFiller_Plain.i>
 #include <cstdio>
 #include <iostream>
@@ -67,4 +67,4 @@ prepare_input_error()
     return fh;
 }
 
-#endif /* __INCLUDE_GUARD_QUEX__CODE_BASE__BUFFER__PLAIN_TEST_HELPER_H__ */
+#endif /* __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H */

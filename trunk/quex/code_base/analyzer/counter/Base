@@ -1,7 +1,7 @@
 /* -*- C++ -*-   vim: set syntax=cpp:
  * (C) Frank-Rene Schaefer                               */
-#ifndef __INCLUDE_GUARD__QUEX__COUNTER__BASE__
-#define __INCLUDE_GUARD__QUEX__COUNTER__BASE__
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE
+#define __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #include <cstddef> 
@@ -38,5 +38,5 @@ QUEX_NAMESPACE_COMPONENTS_CLOSE
 #   include <quex/code_base/analyzer/counter/LineColumnIndentation>
 #endif
 
-#endif /* __INCLUDE_GUARD__QUEX__COUNTER__BASE__ */
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE */
 
