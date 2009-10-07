@@ -13,7 +13,7 @@ struct my_tester;
 #include <quex/code_base/test_environment/default_configuration>
 #include <quex/code_base/analyzer/Counter>
 #include <quex/code_base/analyzer/QuexMode>
-#include <quex/code_base/analyzer/Analyser>
+#include <quex/code_base/analyzer/Engine>
 
 
 extern int  indentation[64];

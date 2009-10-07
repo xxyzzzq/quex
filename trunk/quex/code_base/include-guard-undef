@@ -3,40 +3,143 @@
 #   error "This file is only to be included in case that multiple lexical analyzers are used. The fact that macro __QUEX_INCLUDE_DETECTOR__ANALYZER__MAIN is not defined, tells that this is not the case."
 #endif
 
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MODE__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__MODE__
+#ifdef     __QUEX_INCLUDE_GUARD__TOKEN__TOKEN                                        
+#   undef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN                                        
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__DATA__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__DATA__
+#ifdef     __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
+#   undef  __QUEX_INCLUDE_GUARD__TOKEN__TOKEN_QUEUE                                  
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR
+
+#if 0
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER                               
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER                               
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I__
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER                                      
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER                                      
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN
-#    undef QuexCounter_construct
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER_I                             
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_FILLER_I                             
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I__
-#    undef QuexCounter_construct
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I                                    
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_I                                    
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION
-#    undef QuexCounter_construct
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__MEMORY_POSITION_MIMIKER                     
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I__
-#    undef QuexCounter_construct
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__BUFFER_DEBUG_I                              
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY                                
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__INPUT_POLICY                                
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER_I__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER_I__
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__ASSERTS                                     
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__ASSERTS                                     
 #endif
-#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__
-#    undef __QUEX_INCLUDE_GUARD__ANALYZER__INCLUDE_STACK_I__
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I        
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER_I        
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__CONVERTER                        
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__CONVERTER                        
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER          
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__BUFFER_FILLER_CONVERTER          
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU_I 
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU_I 
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU               
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU               
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU   
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__DELETED_BUFFER_FILLER_ICU   
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H           
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__SPECIAL_HEADERS_H           
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU_I             
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICU__CONVERTER_ICU_I             
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I         
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV_I         
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV           
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__CONVERTER_ICONV           
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__SPECIAL_HEADERS_H         
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__ICONV__SPECIAL_HEADERS_H         
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__RECODE__CONVERTER_RECODE_I       
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__RECODE__CONVERTER_RECODE_I       
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__RECODE__CONVERTER_RECODE         
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__CONVERTER__RECODE__CONVERTER_RECODE         
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN                  
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN                  
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I                
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__BUFFER_FILLER_PLAIN_I                
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H                  
+#   undef  __QUEX_INCLUDE_GUARD__BUFFER__PLAIN__TEST__TEST_HELPER_H                  
+#endif
+#endif
+
+
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE                                 
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__QUEX_MODE                                 
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER                       
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER                        
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER_I                        
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__POST_CATEGORIZER_I                        
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I                                
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER_I                                
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR                          
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ACCUMULATOR_I                             
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER                                  
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYSER                                  
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ASSERTS                                   
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__ANALYZER_DATA                             
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE                             
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE                             
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I                           
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__BASE_I                           
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION        
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION        
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I        
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_INDENTATION_I        
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN                   
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN                    
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I                    
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__COUNTER__LINE_COLUMN_I                    
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT                    
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT                    
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I                   
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__MEMBER__INCLUDE_STACK_I                   
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H                         
+#   undef  __QUEX_INCLUDE_GUARD__ANALYZER__TEST__MY_TESTER_H                         
+#endif
+#ifdef     __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
+#   undef  __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM                    
 #endif

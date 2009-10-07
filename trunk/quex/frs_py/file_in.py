@@ -103,7 +103,13 @@ def find_end_of_identifier(Txt, StartIdx, L):
     else:
         return L
 
-def read_namespaced_name(fh, Meaning):
+def read_namespaced_name(FileHandle_or_String, Meaning):
+    string_f = False
+    if type(FileHandle_or_String) in [str, unicode]:
+        fh = StringIO(FileHandle_or_String)
+        string_f = True
+    else:
+        fh = FileHandle_or_String
     # NOTE: Catching of EOF happens in caller: parse(...)
     if not check(fh, "="):
         error_msg("Missing '=' for token_type name specification.", fh)

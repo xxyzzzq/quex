@@ -1,6 +1,9 @@
-/* -*- C++ -*-   vim: set syntax=cpp: */
-#ifndef __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
-#define __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__
+/* -*- C++ -*-   vim: set syntax=cpp: 
+ * (C) 2004-2009 Frank-Rene Schaefer
+ * ABSOLUTELY NO WARRANTY
+ */
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_TYPE$$
+#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_TYPE$$
 
 #include <quex/code_base/definitions>
  
@@ -103,4 +106,4 @@ $$COPY$$
 
 $$NAMESPACE_CLOSE$$
 
-#endif /* __INCLUDE_GUARD__QUEX__CUSTOMIZED_TOKEN__$$TOKEN_TYPE$$__ */
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_TYPE$$ */

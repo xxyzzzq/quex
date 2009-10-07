@@ -12,7 +12,7 @@
 #   error "Macro QUEX_TYPE_ANALYZER must be defined before inclusion of this file."
 #endif
 
-#include <quex/code_base/analyzer/Analyser>
+#include <quex/code_base/analyzer/Engine>
 
 #include <quex/code_base/temporary_macros_on>
 
