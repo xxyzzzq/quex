@@ -10,7 +10,6 @@
  * token class before header 'Analyser'                                     
  *
  ****************************************************************************/
-
 #include <quex/code_base/definitions>
 #include <quex/code_base/buffer/Buffer>
 #include <quex/code_base/buffer/BufferFiller>
@@ -45,22 +44,22 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     } QuexAnalyzerEngine;
 
     TEMPLATE_IN(InputHandleT) void
-    QuexAnalyzerEngine_construct(QuexAnalyzerEngine* me,
-                           QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                           InputHandleT*                input_handle,
-                           QUEX_TYPE_CHARACTER*         InputMemory,
-                           const size_t                 BufferMemorySize,
-                           const char*                  CharacterEncodingName, 
-                           const size_t                 TranslationBufferMemorySize,
-                           bool                         ByteOrderReversionF);
+    QuexAnalyzerEngine_construct(QuexAnalyzerEngine*          me,
+                                 QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                                 InputHandleT*                input_handle,
+                                 QUEX_TYPE_CHARACTER*         InputMemory,
+                                 const size_t                 BufferMemorySize,
+                                 const char*                  CharacterEncodingName, 
+                                 const size_t                 TranslationBufferMemorySize,
+                                 bool                         ByteOrderReversionF);
 
     QUEX_INLINE void
-    QuexAnalyzerEngine_construct_for_direct_memory_access(QuexAnalyzerEngine* me,
-                                                    QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
-                                                    QUEX_TYPE_CHARACTER*         Memory,
-                                                    const size_t                 MemorySize,
-                                                    const char*                  CharacterEncodingName, 
-                                                    const size_t                 TranslationBufferMemorySize);
+    QuexAnalyzerEngine_construct_for_direct_memory_access(QuexAnalyzerEngine*          me,
+                                                          QUEX_TYPE_ANALYZER_FUNCTION  AnalyserFunction,
+                                                          QUEX_TYPE_CHARACTER*         Memory,
+                                                          const size_t                 MemorySize,
+                                                          const char*                  CharacterEncodingName, 
+                                                          const size_t                 TranslationBufferMemorySize);
 
     QUEX_INLINE void 
     QuexAnalyzerEngine_destruct(QuexAnalyzerEngine* me);

@@ -13,7 +13,7 @@ def __nice(SM_ID):
 #
 
 __header_definitions_txt = """
-#include <quex/code_base/analyzer/Analyser>
+#include <quex/code_base/analyzer/Engine>
 #include <quex/code_base/buffer/Buffer>
 #ifdef __QUEX_OPTION_TOKEN_POLICY_IS_QUEUE_BASED
 #   include <quex/code_base/token/TokenQueue>
@@ -76,7 +76,11 @@ $$QUEX_ANALYZER_STRUCT_NAME$$_$$STATE_MACHINE_NAME$$_analyzer_function(struct QU
 #       undef engine
 #   endif
 
-#   define engine  (&me->engine)
+#   if defined(__QUEX_OPTION_PLAIN_ANALYZER_OBJECT)
+#      define engine  (me)
+#   else
+#      define engine  (&me->engine)
+#   endif
 
 #   if defined (__QUEX_SETTING_PLAIN_C)
 #      define self (*((QUEX_TYPE_ANALYZER*)me));

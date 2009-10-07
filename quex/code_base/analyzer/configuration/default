@@ -40,6 +40,15 @@
 #ifndef    QUEX_TYPE_POST_CATEGORIZER
 #   define QUEX_TYPE_POST_CATEGORIZER        QuexPostCategorizer
 #endif
+#ifndef    __QUEX_SETTING_MAX_MODE_CLASS_N
+#   define __QUEX_SETTING_MAX_MODE_CLASS_N  (256)
+#endif
+#ifndef    QUEX_SETTING_MODE_STACK_SIZE
+#   define QUEX_SETTING_MODE_STACK_SIZE     (256)
+#endif
+#ifndef    QUEX_TYPE_TOKEN  
+#   define QUEX_TYPE_TOKEN  int
+#endif
 
 #if ! defined(__QUEX_SETTING_PLAIN_C)
 #define QUEX_NAMESPACE_MAIN_REF              quex::
@@ -58,8 +67,19 @@
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN
-struct  __QuexAnalyzerEngine_tag;
-typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(__QuexAnalyzerEngine_tag*);
+    struct  QuexAnalyzerEngine_tag;
+    /* Define QUEX_TYPE_ANALYZER_FUNCTION before inclusion 
+     * of 'quex/code_base/analyzer/Engine'. */
+    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct QuexAnalyzerEngine_tag*);
 QUEX_NAMESPACE_MAIN_CLOSE
+
+#ifndef    QUEX_TYPE_ANALYZER_DATA
+#   define QUEX_TYPE_ANALYZER_DATA     QuexAnalyzerEngine
+#   define QUEX_TYPE_ANALYZER_DATA_TAG QuexAnalyzerEngine_tag
+#endif
+#ifndef    QUEX_TYPE_ANALYZER
+#   define QUEX_TYPE_ANALYZER     QuexAnalyzerEngine
+#   define QUEX_TYPE_ANALYZER_TAG QuexAnalyzerEngine_tag
+#endif
 
 #endif /* __QUEX_INCLUDE_GUARD__ANALYZER__CONFIGURATION__DEFAULT */

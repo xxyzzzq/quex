@@ -74,10 +74,10 @@ def compile_and_run(Language, SourceCode, AssertsActionvation_str=""):
         extension = ".c"
         # The '-Wvariadic-macros' shall remind us that we do not want use variadic macroes.
         # Because, some compilers do not swallow them!
-        compiler  = "gcc -ansi -Wvariadic-macros"
+        compiler  = "gcc -ansi -Wvariadic-macros -Wall"
     else:
         extension = ".cpp"
-        compiler  = "g++"
+        compiler  = "g++ -Wall"
 
     if Language.find("StrangeStream") != -1:
         compiler += " -DQUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION "
@@ -153,7 +153,7 @@ def create_common_declarations(Language, QuexBufferSize, TestStr, QuexBufferFall
 
 def create_state_machine_function(PatternActionPairList, PatternDictionary, 
                                   BufferLimitCode, SecondModeF=False):
-    on_failure_action = "analysis_terminated_f = true; return;"
+    on_failure_action = "analyzis_terminated_f = true; return;"
 
     # -- produce some visible output about the setup
     print "(*) Lexical Analyser Patterns:"
@@ -192,16 +192,16 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "#define QUEX_TYPE_TOKEN_ID  bool\n"  
     txt += "typedef void QUEX_TYPE_MODE;\n"
     if Language.find("Cpp") == -1: txt += "#define __QUEX_SETTING_PLAIN_C\n"
-    txt += "#include <quex/code_base/test_environment/default_configuration>\n"
+    txt += "#include <quex/code_base/analyzer/configuration/default>\n"
     txt += "#ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION\n"
     txt += "#   include <quex/code_base/test_environment/StrangeStream>\n"
     txt += "#endif\n"
-    txt += "#include <quex/code_base/analyzer/Analyser>\n"
-    txt += "#include <quex/code_base/analyzer/Analyser.i>\n"
+    txt += "#include <quex/code_base/analyzer/Engine>\n"
+    txt += "#include <quex/code_base/analyzer/Engine.i>\n"
     txt += "\n"
     if Language.find("Cpp") != -1: txt += "using namespace quex;\n"
     txt += "\n"
-    txt += "extern bool analysis_terminated_f = false;\n"
+    txt += "bool analyzis_terminated_f = false;\n"
     txt += "\n"
     txt += "bool\n"
     txt += "show_next_character(QuexBuffer* buffer) {\n"
@@ -225,8 +225,9 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "    return true;\n"
     txt += "}\n"
     txt += "\n"
-    txt += "void Mr_UnitTest_analyser_function(QuexAnalyzerEngine* me)\n"
+    txt += "void Mr_UnitTest_analyzer_function(QUEX_TYPE_ANALYZER_DATA* me)\n"
     txt += "{\n"
+    txt += "#   define  engine (me)\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION* post_context_start_position    = 0x0;\n"
     txt += "    QUEX_TYPE_CHARACTER_POSITION  last_acceptance_input_position = 0x0;\n"
     txt += "    const size_t                  PostContextStartPositionN      = 0;\n"
@@ -263,6 +264,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
     txt += "\n"
     txt += "TERMINAL_END_OF_STREAM:\n"
     txt += EndStr
+    txt += "#undef engine\n"
     txt += "}\n"
     txt += "\n"
     txt += create_main_function(Language, TestStr, QuexBufferSize, CommentTestStrF)
@@ -272,7 +274,7 @@ def __get_skipper_code_framework(Language, TestStr, SkipperSourceCode,
 def create_character_set_skipper_code(Language, TestStr, TriggerSet, QuexBufferSize=1024):
 
     end_str  = '    printf("end\\n");'
-    end_str += '    analysis_terminated_f = true; return;\n'
+    end_str += '    analyzis_terminated_f = true; return;\n'
 
     skipper_code = skipper.get_character_set_skipper(TriggerSet, db["C++"])
 
@@ -288,7 +290,7 @@ def create_skipper_code(Language, TestStr, EndSequence, QuexBufferSize=1024, Com
     assert QuexBufferSize >= len(EndSequence) + 2
 
     end_str  = '    printf("end\\n");'
-    end_str += '    analysis_terminated_f = true; return;\n'
+    end_str += '    analyzis_terminated_f = true; return;\n'
 
     skipper_code = skipper.get_range_skipper(EndSequence, db["C++"], end_str)
 
@@ -301,11 +303,11 @@ def action(PatternName):
     ##txt = 'fprintf(stderr, "%19s  \'%%s\'\\n", Lexeme);\n' % PatternName # DEBUG
     txt = 'printf("%19s  \'%%s\'\\n", Lexeme);\n' % PatternName
 
-    if   "->1" in PatternName: txt += "me->current_analyser_function = Mr_UnitTest_analyser_function;\n"
-    elif "->2" in PatternName: txt += "me->current_analyser_function = Mrs_UnitTest_analyser_function;\n"
+    if   "->1" in PatternName: txt += "me->current_analyzer_function = Mr_UnitTest_analyzer_function;\n"
+    elif "->2" in PatternName: txt += "me->current_analyzer_function = Mrs_UnitTest_analyzer_function;\n"
 
     if "CONTINUE" in PatternName: txt += ""
-    elif "STOP" in PatternName:   txt += "analysis_terminated_f = true; return;"
+    elif "STOP" in PatternName:   txt += "analyzis_terminated_f = true; return;"
     else:                         txt += "return;"
 
     return txt
@@ -320,29 +322,27 @@ typedef void QUEX_TYPE_MODE;
 #define __QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION
 #define __QUEX_OPTION_PLAIN_ANALYZER_OBJECT
 $$TEST_CASE$$
-#include <quex/code_base/test_environment/default_configuration>
+#include <quex/code_base/analyzer/configuration/default>
 #ifdef QUEX_OPTION_STRANGE_ISTREAM_IMPLEMENTATION 
 #   include <quex/code_base/test_environment/StrangeStream>
 #endif
 #include <quex/code_base/buffer/Buffer>
-#include <quex/code_base/analyzer/Analyser>
-#include <quex/code_base/analyzer/Analyser.i>
+#include <quex/code_base/analyzer/Engine>
+#include <quex/code_base/analyzer/Engine.i>
 #if ! defined (__QUEX_SETTING_PLAIN_C)
     using namespace quex;
 #endif
 
-bool analysis_terminated_f = false;
+bool analyzis_terminated_f = false;
 
-#define QUEX_TYPE_ANALYZER QuexAnalyzerEngine
-
-static void  Mr_UnitTest_analyser_function(QuexAnalyzerEngine* me);
-static void  Mrs_UnitTest_analyser_function(QuexAnalyzerEngine* me);
+static void  Mr_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+static void  Mrs_UnitTest_analyzer_function(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
 """
 
 test_program_db = { 
     "ANSI-C-PlainMemory": """
     #include <stdlib.h>
-    #include <quex/code_base/analyzer/Analyser.i>
+    #include <quex/code_base/analyzer/Engine.i>
 
     int main(int argc, char** argv)
     {
@@ -351,20 +351,20 @@ test_program_db = {
         char           TestString[] = "\\0$$TEST_STRING$$\\0";
         const size_t   MemorySize   = strlen(TestString+1) + 2;
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, (void*)0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, (void*)0x0,
                                TestString, MemorySize, 0x0, 0, false);
         QuexBuffer_end_of_file_set(&lexer_state.buffer, TestString + MemorySize - 1);
         /**/
         printf("(*) test string: \\n'%s'$$COMMENT$$\\n", TestString + 1);
         printf("(*) result:\\n");
-        for(analysis_terminated_f = false; ! analysis_terminated_f; )
-            lexer_state.current_analyser_function(&lexer_state);
+        for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
+            lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
     }\n""",
 
     "ANSI-C": """
     #include <stdio.h>
-    #include <quex/code_base/analyzer/Analyser.i>
+    #include <quex/code_base/analyzer/Engine.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)
@@ -381,13 +381,13 @@ test_program_db = {
         fwrite(test_string, strlen(test_string), 1, fh);
         fseek(fh, 0, SEEK_SET); /* start reading from the beginning */
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, fh, 0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, fh, 0x0,
                                $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
-        for(analysis_terminated_f = false; ! analysis_terminated_f; )
-            lexer_state.current_analyser_function(&lexer_state);
+        for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
+            lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
 
         fclose(fh); /* this deletes the temporary file (see description of 'tmpfile()') */
@@ -396,7 +396,7 @@ test_program_db = {
     "Cpp": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/analyzer/Analyser.i>
+    #include <quex/code_base/analyzer/Engine.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)
@@ -409,20 +409,20 @@ test_program_db = {
         /**/
         istringstream  istr("$$TEST_STRING$$");
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, &istr, 0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, &istr, 0x0,
                                $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
-        for(analysis_terminated_f = false; ! analysis_terminated_f; )
-            lexer_state.current_analyser_function(&lexer_state);
+        for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
+            lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
     }\n""",
 
     "Cpp_StrangeStream": """
     #include <cstring>
     #include <sstream>
-    #include <quex/code_base/analyzer/Analyser.i>
+    #include <quex/code_base/analyzer/Engine.i>
     #include <quex/code_base/buffer/plain/BufferFiller_Plain>
 
     int main(int argc, char** argv)
@@ -436,13 +436,13 @@ test_program_db = {
         istringstream                 istr("$$TEST_STRING$$");
         StrangeStream<istringstream>  strange_stream(&istr);
 
-        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyser_function, &strange_stream, 0x0,
+        QuexAnalyzerEngine_construct(&lexer_state, Mr_UnitTest_analyzer_function, &strange_stream, 0x0,
                                $$BUFFER_SIZE$$, 0x0, /* No translation, no translation buffer */0x0, false);
         /**/
         printf("(*) test string: \\n'$$TEST_STRING$$'$$COMMENT$$\\n");
         printf("(*) result:\\n");
-        for(analysis_terminated_f = false; ! analysis_terminated_f; )
-            lexer_state.current_analyser_function(&lexer_state);
+        for(analyzis_terminated_f = false; ! analyzis_terminated_f; )
+            lexer_state.current_analyzer_function(&lexer_state);
         printf("  ''\\n");
     }\n""",
 }

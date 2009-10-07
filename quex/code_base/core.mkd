@@ -45,13 +45,13 @@ __QUEX_CORE = \
     ./temporary_macros_on \
     ./analyzer/dumpster.i \
     ./analyzer/Accumulator \
-    ./analyzer/CppTemplate.txt \
-    ./analyzer/QuexMode \
-    ./analyzer/PostCategorizer.i \
-    ./analyzer/Analyser.i \
-    ./analyzer/PostCategorizer \
     ./analyzer/Accumulator.i \
-    ./analyzer/Analyser \
+    ./analyzer/CppTemplate.txt \
+    ./analyzer/Mode \
+    ./analyzer/PostCategorizer.i \
+    ./analyzer/PostCategorizer \
+    ./analyzer/Engine \
+    ./analyzer/Engine.i \
     ./analyzer/asserts \
     ./analyzer/member/include-stack.i \
     ./analyzer/member/mode-handling.i \

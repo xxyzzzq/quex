@@ -12,8 +12,8 @@
  *
  * (C) 2005-2009 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY                                                    */
-#ifndef __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
-#define __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
+#ifndef __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
+#define __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$
 
 #define QUEX_SETTING_VERSION           "$$QUEX_VERSION$$"
 #define QUEX_SETTING_BUILD_DATE        "$$QUEX_VERSION$$"
@@ -68,8 +68,8 @@ $$USER_DEFINED_HEADER$$
 
 #include    <quex/code_base/MemoryManager>
 #include    <quex/code_base/MemoryManager_analyzer_specific>
-#include    <quex/code_base/analyzer/QuexMode>
-#include    <quex/code_base/analyzer/Analyser>
+#include    <quex/code_base/analyzer/Mode>
+#include    <quex/code_base/analyzer/Engine>
 #ifdef      QUEX_OPTION_STRING_ACCUMULATOR
 #   include <quex/code_base/analyzer/Accumulator>
 #endif
@@ -472,7 +472,7 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #include    <quex/code_base/analyzer/counter/Base.i>
 #include    <quex/code_base/MemoryManager.i>
 #include    <quex/code_base/MemoryManager_analyzer_specific.i>
-#include    <quex/code_base/analyzer/Analyser.i>
+#include    <quex/code_base/analyzer/Engine.i>
 #include    <quex/code_base/buffer/converter/BufferFiller_Converter.i>
 #ifdef      QUEX_OPTION_INCLUDE_STACK
 #   include <quex/code_base/analyzer/member/include-stack.i>
@@ -481,4 +481,4 @@ QUEX_NAMESPACE_MAIN_CLOSE
 #   include <quex/code_base/analyzer/Accumulator.i>
 #endif
 
-#endif // __INCLUDE_GUARD__QUEX__$$INCLUDE_GUARD_EXTENSION$$
+#endif /* __QUEX_INCLUDE_GUARD__ANALYZER__GENERATED__$$INCLUDE_GUARD_EXTENSION$$ */
