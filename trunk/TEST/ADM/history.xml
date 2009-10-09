@@ -1,4 +1,4 @@
-<history date="Tue Oct  6 22:45:17 2009" element-n="484">
+<history date="Thu Oct  8 22:30:15 2009" element-n="490">
     <day year="2008" month="02" day="10">
         <history-init time="09:50:03"/>
         <crc-error time="09:50:07" application="bug-1885304.sh" choice="" database-crc="-1988207487" real-crc="118547486"/>
@@ -1022,5 +1022,15 @@
     </day>
     <day year="2009" month="10" day="06">
         <test-runs-today n="3" ok-n="0" fail-n="3" else-n="0" last-run="failure" last-time="20:45:17"/>
+    </day>
+    <day year="2009" month="10" day="07">
+        <crc-error time="19:11:30" application="bug-2599228.sh" choice="Developper" database-crc="-627807066" real-crc="-530750543"/>
+        <crc-error time="19:11:30" application="bug-2599228.sh" choice="FilesExist" database-crc="1752598686" real-crc="1329967682"/>
+        <crc-error time="19:24:51" application="bug-1885304.sh" choice="" database-crc="-216702775" real-crc="-2137285576"/>
+        <crc-error time="19:24:51" application="bug-1895066.sh" choice="" database-crc="-1770815875" real-crc="-300999480"/>
+        <test-runs-today n="4" ok-n="1" fail-n="3" else-n="0" last-run="failure" last-time="19:27:45"/>
+    </day>
+    <day year="2009" month="10" day="08">
+        <test-runs-today n="1" ok-n="0" fail-n="1" else-n="0" last-run="failure" last-time="20:30:15"/>
     </day>
 </history>

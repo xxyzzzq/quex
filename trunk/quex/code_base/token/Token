@@ -6,20 +6,6 @@
 
 #include <quex/code_base/definitions>
 
-#ifndef    QUEX_TYPE_TOKEN_ID 
-#   define QUEX_TYPE_TOKEN_ID              uint32_t
-#endif
-#ifdef     QUEX_TYPE_TOKEN
-#   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
-#endif
-#ifndef     QUEX_TYPE_CHARACTER
-#   error "QUEX_TYPE_CHARACTER has not been defined before the inclusion of this file."
-#endif
-
-#define QUEX_TYPE_TOKEN                    quex::Token
-#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  Token
-#define QUEX_TYPE_STR_TOKEN_COMPLETE       __quex__Token
-
 #include<iostream>
 #include<string>
 
@@ -31,7 +17,7 @@
 
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
-    class Token {
+    class QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE {
     public:
         // Quex Token Policy: _____________________________________________________
         static const char*  map_id_to_name(QUEX_TYPE_TOKEN_ID);

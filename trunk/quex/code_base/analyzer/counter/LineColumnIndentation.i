@@ -14,7 +14,6 @@
 
 #include <quex/code_base/definitions>
 #include <quex/code_base/analyzer/counter/LineColumnIndentation>
-#include <quex/code_base/analyzer/QuexMode>
 #include <quex/code_base/analyzer/asserts>
 
 

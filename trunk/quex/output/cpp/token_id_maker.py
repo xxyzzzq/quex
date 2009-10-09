@@ -63,34 +63,31 @@ $$CONTENT$$
 
 func_str = \
 """
-QUEX_NAMESPACE_COMPONENTS_OPEN
-
 #ifndef    __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
 #   define __QUEX_SETTING_MAP_TOKEN_ID_TO_NAME_DEFINED
 
-    inline const char*
-    QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
-    {
-       static char  error_string[64];
-       static const char  uninitialized_string[] = "<UNINITIALIZED>";
-       static const char  termination_string[]   = "<TERMINATION>";
+inline const char*
+QUEX_TYPE_TOKEN::map_id_to_name(const QUEX_TYPE_TOKEN_ID TokenID)
+{
+   static char  error_string[64];
+   static const char  uninitialized_string[] = "<UNINITIALIZED>";
+   static const char  termination_string[]   = "<TERMINATION>";
 $$TOKEN_NAMES$$       
 
-       /* NOTE: This implementation works only for token id types that are 
-        *       some type of integer or enum. In case an alien type is to
-        *       used, this function needs to be redefined.                  */
-       switch( TokenID ) {
-       default: {
-           std::sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
-           return error_string;
-       }
-       case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
-       case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
+   /* NOTE: This implementation works only for token id types that are 
+    *       some type of integer or enum. In case an alien type is to
+    *       used, this function needs to be redefined.                  */
+   switch( TokenID ) {
+   default: {
+       std::sprintf(error_string, "<UNKNOWN TOKEN-ID: %i>", int(TokenID));
+       return error_string;
+   }
+   case __QUEX_SETTING_TOKEN_ID_TERMINATION:   return termination_string;
+   case __QUEX_SETTING_TOKEN_ID_UNINITIALIZED: return uninitialized_string;
 $$TOKEN_ID_CASES$$
-       }
-    }
+   }
+}
 #endif
-QUEX_NAMESPACE_COMPONENTS_CLOSE
 """
 
 def do(global_setup):
@@ -159,9 +156,9 @@ def do(global_setup):
     token_names  = ""
     for token_name in lexer_mode.token_id_db.keys():
         if token_name in ["TERMINATION", "UNINITIALIZED"]: continue
-        switch_cases += "       case %s%s:%s return token_id_str_%s;\n" % \
+        switch_cases += "   case %s%s:%s return token_id_str_%s;\n" % \
                         (setup.token_prefix, token_name, space(token_name), token_name)
-        token_names  += "       static const char  token_id_str_%s[]%s = \"%s\";\n" % \
+        token_names  += "   static const char  token_id_str_%s[]%s = \"%s\";\n" % \
                         (token_name, space(token_name), token_name)
 
     name_space = ["quex"]

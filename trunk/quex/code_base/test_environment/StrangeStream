@@ -1,13 +1,17 @@
-// -*- C++ -*- vim: set syntax=cpp:
-#ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM
-#define __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM
 /* -*- C++ -*- vim: set syntax=cpp: 
  * (C) 2008 Frank-Rene Schaefer 
  * LGPL -- ABSOLUTELY NO WARRANTY */
+#ifndef __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM
+#define __QUEX_INCLUDE_GUARD__TEST_ENVIRONMENT__STRANGE_STREAM
+#
 #include <sys/types.h>
 #include <iostream>
 #include <quex/code_base/compatibility/inttypes.h>
-#include <quex/code_base/analyzer/configuration/default>
+
+#ifndef QUEX_NAMESPACE_COMPONENTS_OPEN
+#   error "Important macro definitions are missing. However, please, do not include the default configuration file. This might cause interferences with the main configuration file of the lexical analyzer. Please, place this header after the inclusion of the lexer's configuration file."
+#endif
+
 QUEX_NAMESPACE_COMPONENTS_OPEN
 
 class StrangeStream_unit_test {

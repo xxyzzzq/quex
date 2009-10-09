@@ -24,7 +24,12 @@ def _do(Descr):
     assert Descr.__class__.__name__ == "TokenTypeDescriptor"
     ## ALLOW: Descr.get_member_db().keys() == []
 
-    txt = get_basic_template(Descr)
+    TemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
+                    + "/token/CppTemplate.txt").replace("//","/")
+    template_str = open_file_or_die(TemplateFile, Mode="rb").read()
+    
+    virtual_destructor_str = ""
+    if Descr.open_for_derivation_f: virtual_destructor_str = "virtual "
 
     if Descr.copy.get_pure_code() == "":
         # Default copy operation: Plain Copy of token memory
@@ -32,7 +37,7 @@ def _do(Descr):
     else:
         copy_str = Descr.copy.get_code()
 
-    txt = blue_print(txt,
+    txt = blue_print(template_str,
                      [["$$DISTINCT_MEMBERS$$", get_distinct_members(Descr)],
                       ["$$UNION_MEMBERS$$",    get_union_members(Descr)],
                       ["$$SETTERS_GETTERS$$",  get_setter_getter(Descr)],
@@ -43,31 +48,9 @@ def _do(Descr):
                       ["$$BODY$$",             Descr.body.get_code()],
                       ["$$NAMESPACE_OPEN$$",   LanguageDB["$namespace-open"](Descr.name_space)],
                       ["$$NAMESPACE_CLOSE$$",  LanguageDB["$namespace-close"](Descr.name_space)],
+                      ["$$VIRTUAL_DESTRUCTOR$$", virtual_destructor_str],
                      ])
     return txt
-
-def get_basic_template(Descr):
-    
-    TemplateFile = (Setup.QUEX_TEMPLATE_DB_DIR 
-                    + "/token/CppTemplate.txt").replace("//","/")
-
-    template_str = open_file_or_die(TemplateFile, Mode="rb").read()
-    
-    namespace_str = LanguageDB["$namespace-ref"](Descr.name_space) 
-    namespace_plain_str = make_safe_identifier(namespace_str)
-
-    virtual_destructor_str = ""
-    if Descr.open_for_derivation_f: virtual_destructor_str = "virtual "
-
-    return blue_print(template_str, 
-            [["$$TOKEN_CLASS$$",               Descr.class_name],
-             ["$$TOKEN_ID_TYPE$$",             Descr.token_id_type.get_pure_code()],
-             ["$$TOKEN_TYPE_WITH_NAMESPACE$$", namespace_str + Descr.class_name],
-             ["$$TOKEN_TYPE$$",                Descr.class_name],
-             ["$$TOKEN_TYPE_STR$$",            namespace_plain_str + "__" + Descr.class_name],
-             ["$$VIRTUAL_DESTRUCTOR$$",        virtual_destructor_str],
-             ["$$LINE_N_TYPE$$",               Descr.line_number_type.get_pure_code()],
-             ["$$COLUMN_N_TYPE$$",             Descr.column_number_type.get_pure_code()]])
 
 def get_distinct_members(Descr):
     # '0' to make sure, that it works on an empty sequence too.

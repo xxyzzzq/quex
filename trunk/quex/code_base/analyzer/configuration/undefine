@@ -123,6 +123,9 @@
 #ifdef    QUEX_TYPE_DERIVED_ANALYZER
 #   undef QUEX_TYPE_DERIVED_ANALYZER
 #endif
+#ifdef    QUEX_TYPE_ANALYZER_FUNCTION   
+#   undef QUEX_TYPE_ANALYZER_FUNCTION   
+#endif
 #ifdef    QUEX_TYPE_ANALYZER_DATA_TAG
 #   undef QUEX_TYPE_ANALYZER_DATA_TAG
 #endif
@@ -164,6 +167,24 @@
 #endif
 #ifdef    QUEX_SETTING_BUFFER_MIN_FALLBACK_N
 #   undef QUEX_SETTING_BUFFER_MIN_FALLBACK_N
+#endif
+#ifndef   QUEX_TYPE_TOKEN_ID
+#   undef QUEX_TYPE_TOKEN_ID                 
+#endif
+#ifdef    QUEX_TYPE_TOKEN
+#   undef QUEX_TYPE_TOKEN                    
+#endif
+#ifdef    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+#   undef QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  
+#endif
+#ifdef    QUEX_TYPE_STR_TOKEN_COMPLETE
+#   undef QUEX_TYPE_STR_TOKEN_COMPLETE       
+#endif
+#ifdef    QUEX_TYPE_LINE_N
+#   undef QUEX_TYPE_LINE_N                   
+#endif
+#ifdef    QUEX_TYPE_COLUMN_N
+#   undef QUEX_TYPE_COLUMN_N                 
 #endif
 #ifdef    QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN 
 #   undef QUEX_OPTION_TOKEN_STAMPING_WITH_LINE_AND_COLUMN 

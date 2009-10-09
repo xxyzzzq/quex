@@ -16,11 +16,15 @@
  * NOTE: We do undefine without making sure that there is an older definition
  *       from a configuration file. This allows users to define some
  *       configuration options on the command line without being immediately
- *       deleted by "configuration/undefine".                                */
-#ifdef     __INCLUDE_INDICATOR_QUEX__CONFIGURATION
-#include   <quex/code_base/analyzer/configuration/undefine>
+ *       deleted by "configuration/undefine".                                  */
+#ifdef     __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
+#   include   <quex/code_base/analyzer/configuration/undefine>
+    /* Indicate: NOT first time that a configuration is included.              */
+#   undef  __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION__VIRGIN
 #else
-#   define __INCLUDE_INDICATOR_QUEX__CONFIGURATION
+#   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION
+    /* Indicate: first time that a configuration is included.                  */
+#   define __QUEX_INCLUDE_INDICATOR__ANALYZER__CONFIGURATION__VIRGIN
 #endif
 
 #define    __QUEX_SETTING_MAX_MODE_CLASS_N       ($$MAX_MODE_CLASS_N$$)
@@ -331,6 +335,19 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_TYPE_POST_CATEGORIZER_NODE_TAG  $$LEXER_CLASS_NAME$$DictionaryNode_tag
 #define QUEX_TYPE_ACCUMULATOR                $$LEXER_CLASS_NAME$$Accumulator
 
+#ifdef     __INCLUDE_INDICATOR_QUEX__CONFIGURATION__VIRGIN
+#   define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  $$TOKEN_CLASS$$
+#else
+#   define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  $$LEXER_CLASS_NAME$$$$TOKEN_CLASS$$
+#endif
+#define QUEX_TYPE_TOKEN_ID                    $$TOKEN_ID_TYPE$$
+#define QUEX_TYPE_TOKEN                       $$TOKEN_TYPE_WITH_NAMESPACE$$
+#define QUEX_TYPE_STR_TOKEN_COMPLETE          $$TOKEN_TYPE_STR$$
+#define QUEX_TYPE_LINE_N                      $$LINE_N_TYPE$$
+#define QUEX_TYPE_COLUMN_N                    $$COLUMN_N_TYPE$$
+
+
+
 #define QUEX_NAMESPACE_MAIN_REF              quex::
 #define QUEX_NAMESPACE_MAIN_OPEN             namespace quex {
 #define QUEX_NAMESPACE_MAIN_CLOSE            }
@@ -339,11 +356,11 @@ $$SWITCH$$ __QUEX_OPTION_CONVERTER_ENABLED
 #define QUEX_NAMESPACE_COMPONENTS_CLOSE      } // }
 
 #if    defined(__QUEX_OPTION_INDENTATION_TRIGGER_SUPPORT)
-#   define QUEX_TYPE_COUNTER      CounterWithIndentation
+#   define     QUEX_TYPE_COUNTER      CounterWithIndentation
 #elif  defined(__QUEX_OPTION_COUNTER)
-#   define QUEX_TYPE_COUNTER      Counter
+#   define     QUEX_TYPE_COUNTER      Counter
 #else
-#   define QUEX_TYPE_COUNTER      void*
+#   define     QUEX_TYPE_COUNTER      void*
 #endif
 
 QUEX_NAMESPACE_MAIN_OPEN 
@@ -351,7 +368,8 @@ QUEX_NAMESPACE_MAIN_OPEN
     class  QUEX_TYPE_ANALYZER;
     class  QUEX_TYPE_DERIVED_ANALYZER;
     struct QUEX_TYPE_MEMENTO_TAG;
-    typedef void (*QUEX_TYPE_ANALYZER_FUNCTION)(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+    typedef void (*$$LEXER_CLASS_NAME$$_AnalyzerFunctionType)(struct QUEX_TYPE_ANALYZER_DATA_TAG*);
+#   define QUEX_TYPE_ANALYZER_FUNCTION   $$LEXER_CLASS_NAME$$_AnalyzerFunctionType
 QUEX_NAMESPACE_MAIN_CLOSE
 
 

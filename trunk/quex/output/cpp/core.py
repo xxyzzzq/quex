@@ -6,7 +6,8 @@ import time
 from quex.frs_py.string_handling import blue_print
 from quex.frs_py.file_in  import open_file_or_die, \
                                  write_safely_and_close, \
-                                 get_include_guard_extension
+                                 get_include_guard_extension, \
+                                 make_safe_identifier
 
 import quex.lexer_mode              as lexer_mode
 import quex.output.cpp.mode_classes as mode_classes
@@ -74,6 +75,23 @@ def write_configuration_header(Modes, IndentationSupportF):
     txt = __switch(txt, "__QUEX_OPTION_SUPPORT_BEGIN_OF_LINE_PRE_CONDITION",  True)
     txt = __switch(txt, "__QUEX_OPTION_SYSTEM_ENDIAN",               Setup.byte_order_is_that_of_current_system_f)
 
+    # -- token class related definitions
+    if lexer_mode.token_type_definition != None:
+        token_descr               = lexer_mode.token_type_definition
+        token_class_name          = token_descr.class_name 
+        token_id_type             = token_descr.token_id_type.get_pure_code()
+        token_line_n_type         = token_descr.line_number_type.get_pure_code()
+        token_column_n_type       = token_descr.column_number_type.get_pure_code()
+        token_namespace_str       = LanguageDB["$namespace-ref"](token_descr.name_space) 
+        token_namespace_plain_str = make_safe_identifier(token_namespace_str)
+    else:
+        token_class_name          = "Token"
+        token_id_type             = "uint32_t"
+        token_line_n_type         = "size_t"
+        token_column_n_type       = "size_t"
+        token_namespace_str       = LanguageDB["$namespace-ref"](["quex"]) 
+        token_namespace_plain_str = make_safe_identifier(token_namespace_str)
+
     txt = blue_print(txt, 
             [["$$BUFFER_LIMIT_CODE$$",          "0x%X" % Setup.buffer_limit_code],
              ["$$INCLUDE_GUARD_EXTENSION$$",    get_include_guard_extension(Setup.output_file_stem)],
@@ -84,6 +102,13 @@ def write_configuration_header(Modes, IndentationSupportF):
              ["$$TOKEN_QUEUE_SIZE$$",           repr(Setup.token_queue_size)],
              ["$$LEXER_CLASS_NAME$$",           LexerClassName],
              ["$$LEXER_DERIVED_CLASS_NAME$$",   Setup.input_derived_class_name],
+             ["$$TOKEN_CLASS$$",                token_class_name],
+             ["$$TOKEN_ID_TYPE$$",              token_id_type],
+             ["$$TOKEN_TYPE_WITH_NAMESPACE$$",  token_namespace_str + token_class_name],
+             ["$$TOKEN_TYPE$$",                 token_class_name],
+             ["$$TOKEN_TYPE_STR$$",             token_namespace_plain_str + "__" + token_class_name],
+             ["$$LINE_N_TYPE$$",                token_line_n_type],
+             ["$$COLUMN_N_TYPE$$",              token_column_n_type],
              ["$$TOKEN_PREFIX$$",               Setup.input_token_id_prefix],
              ["$$QUEX_SETTING_BUFFER_FILLERS_CONVERTER_NEW$$", converter_new_str]])
 
