@@ -9,6 +9,9 @@ fi
 
 tmp=`pwd`
 cd $bug/ 
+make clean >& /dev/null
+
+
 if [[ $1 == "Normal" ]]; then
     make EXT_MODE_FILE=with-mode-change-detection.qx 
 fi
@@ -28,6 +31,7 @@ if [[ $1 == "NoModeDetection_ErrorCase" ]]; then
     make EXT_MODE_FILE=with-mode-change-detection.qx \
          EXT_CFLAGS='-DQUEX_OPTION_AUTOMATIC_ANALYSIS_CONTINUATION_ON_MODE_CHANGE_DISABLED'
 fi
+
 ./lexer >& tmp.txt
 cat tmp.txt
 rm tmp.txt

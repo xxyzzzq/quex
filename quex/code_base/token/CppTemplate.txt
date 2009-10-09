@@ -2,37 +2,23 @@
  * (C) 2004-2009 Frank-Rene Schaefer
  * ABSOLUTELY NO WARRANTY
  */
-#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_TYPE$$
-#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_TYPE$$
+#ifndef __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
+#define __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE
 
 #include <quex/code_base/definitions>
  
-#ifdef QUEX_TYPE_TOKEN
-#   error "QUEX_TYPE_TOKEN has been defined before the inclusion of this file."
-#endif
-
-#ifndef    QUEX_TYPE_TOKEN_ID 
-#   define QUEX_TYPE_TOKEN_ID              $$TOKEN_ID_TYPE$$
-#endif
-
-#define QUEX_TYPE_TOKEN                    $$TOKEN_TYPE_WITH_NAMESPACE$$
-#define QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE  $$TOKEN_TYPE$$
-#define QUEX_TYPE_STR_TOKEN_COMPLETE       $$TOKEN_TYPE_STR$$
-#define QUEX_TYPE_LINE_N                   $$LINE_N_TYPE$$
-#define QUEX_TYPE_COLUMN_N                 $$COLUMN_N_TYPE$$
-
 $$NAMESPACE_OPEN$$
 
-class $$TOKEN_TYPE$$ {
+class QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE {
 public:
-    $$TOKEN_TYPE$$();
-    $$TOKEN_TYPE$$(const $$TOKEN_TYPE$$& That);
-    void __copy(const $$TOKEN_CLASS$$& That);
+    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();
+    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE(const QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE& That);
+    void __copy(const QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE& That);
     /* operator=(..): USE WITH CAUTION--POSSIBLE MAJOR PERFORMANCE DECREASE! 
      *                BETTER USE __copy(That)                                */
-    $$TOKEN_TYPE$$ operator=(const $$TOKEN_TYPE$$& That) 
+    QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE operator=(const QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE& That) 
     { __copy(That); return *this; }
-    $$VIRTUAL_DESTRUCTOR$$~$$TOKEN_TYPE$$();
+    $$VIRTUAL_DESTRUCTOR$$~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE();
 
 $$DISTINCT_MEMBERS$$
 $$UNION_MEMBERS$$
@@ -69,26 +55,26 @@ $$BODY$$
 };
 
 inline
-$$TOKEN_CLASS$$::$$TOKEN_CLASS$$()
+QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
 {
 $$CONSTRUCTOR$$
 }
 
 inline
-$$TOKEN_CLASS$$::$$TOKEN_CLASS$$(const $$TOKEN_CLASS$$& That)
+QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE(const QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE& That)
 {
     __copy(That);
 $$CONSTRUCTOR$$
 }
 
 inline
-$$TOKEN_CLASS$$::~$$TOKEN_CLASS$$()
+QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::~QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE()
 {
 $$DESTRUCTOR$$
 }
 
 inline void
-$$TOKEN_CLASS$$::__copy(const $$TOKEN_CLASS$$& That)
+QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE::__copy(const QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE& That)
 {
 $$COPY$$
     /* If the user even misses to copy the token id, then there's
@@ -106,4 +92,4 @@ $$COPY$$
 
 $$NAMESPACE_CLOSE$$
 
-#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__$$TOKEN_TYPE$$ */
+#endif /* __QUEX_INCLUDE_GUARD__TOKEN__GENERATED__QUEX_TYPE_TOKEN_WITHOUT_NAMESPACE */

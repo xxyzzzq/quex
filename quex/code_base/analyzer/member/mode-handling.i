@@ -34,8 +34,8 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
 #       ifdef QUEX_OPTION_COLUMN_NUMBER_COUNTING
         __QUEX_STD_printf("column = %i\n", (int)me->column_number_at_begin();
 #       endif
-        if( __current_mode_p != 0x0 ) 
-            __QUEX_STD_printf("FromMode: %s ", __current_mode_p->name);
+        if( engine.__current_mode_p != 0x0 ) 
+            __QUEX_STD_printf("FromMode: %s ", engine.__current_mode_p->name);
         __QUEX_STD_printf("ToMode: %s\n", Mode.name);
 #    endif
 
