@@ -302,8 +302,8 @@ QUEX_TYPE_TOKEN_WITH_NAMESPACE	/home/fschaef/prj/quex/trunk/quex/code_base/./tok
 QUEX_TYPE_TOKEN_WITH_NAMESPACE	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	14;"	d	file:
 QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	12;"	d	file:
 QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	9;"	d	file:
-QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	16;"	d	file:
-QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	15;"	d	file:
+QUEX_TYPE_TOKEN	/home/fschaef/prj/quex/trunk/quex/code_base/./token/CppTemplate.txt	16;"	d	file:
+QUEX_TYPE_TOKEN	/home/fschaef/prj/quex/trunk/quex/code_base/./token/Token	15;"	d	file:
 QUEX_VERSION	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/CppTemplate.txt	78;"	d	file:
 QuexAnalyzerEngine	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser	/^    typedef struct __QuexAnalyzerEngine_tag QuexAnalyzerEngine;$/;"	t	namespace:quex	typeref:struct:quex::__QuexAnalyzerEngine_tag	file:
 QuexAnalyzerEngine_buffer_reload_backward	/home/fschaef/prj/quex/trunk/quex/code_base/./analyzer/Analyser.i	/^    QuexAnalyzerEngine_buffer_reload_backward(QuexBuffer* buffer)$/;"	f	namespace:quex

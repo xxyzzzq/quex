@@ -72,7 +72,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
     {
         /* Call explicit destructors for all tokens in array */
         for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = me->begin; iterator != me->end; ++iterator)
-             iterator->QUEX_TYPE_TOKEN_WITH_NAMESPACE::~QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE();  
+             iterator->QUEX_TYPE_TOKEN_WITH_NAMESPACE::~QUEX_TYPE_TOKEN();  
 
         QUEX_FIX3(MemoryManager_, QUEX_TYPE_STR_TOKEN_COMPLETE, _free)(me->begin);
     }
@@ -219,7 +219,7 @@ QUEX_NAMESPACE_COMPONENTS_OPEN
             /* Step 1: Call explicit destructors for token objects that are overwritten  */
             for(QUEX_TYPE_TOKEN_WITH_NAMESPACE* iterator = token_queue->begin; 
                 iterator != token_queue->begin + me->size; ++iterator) {
-                iterator->~QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE();
+                iterator->~QUEX_TYPE_TOKEN();
             }
             /* Step 2: Plain copy of objects stored in the 'remainder store'             */
             memcpy(token_queue->begin, me->token_list, sizeof(QUEX_TYPE_TOKEN_WITH_NAMESPACE) * me->size);
