@@ -17,7 +17,7 @@
 
 QUEX_NAMESPACE_TOKEN_OPEN
 
-    class QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE {
+    class QUEX_TYPE_TOKEN {
     public:
         // Quex Token Policy: _____________________________________________________
         static const char*  map_id_to_name(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID);
@@ -31,15 +31,15 @@ QUEX_NAMESPACE_TOKEN_OPEN
         int                _number;
 
     public:
-        QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE() {} 
-        QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE(const QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE& That) { __copy(That); }     
-        void __copy(const QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE& That);
+        QUEX_TYPE_TOKEN() {} 
+        QUEX_TYPE_TOKEN(const QUEX_TYPE_TOKEN& That) { __copy(That); }     
+        void __copy(const QUEX_TYPE_TOKEN& That);
 
         // note, that tokens are created in a bunch on the token stack and only
         // set with the .set(..) functions when pushed.
         //
-        QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const QUEX_TYPE_CHARACTER* Text) { set(ID, Text); }
-        ~QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE() { }
+        QUEX_TYPE_TOKEN(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const QUEX_TYPE_CHARACTER* Text) { set(ID, Text); }
+        ~QUEX_TYPE_TOKEN() { }
 
         // (*) convert data to string
         operator         const std::string() const;
@@ -55,7 +55,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
         int                       number()             { return _number; }
 
         //     -- write 
-        void    set(const QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE&);
+        void    set(const QUEX_TYPE_TOKEN&);
         void    set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID);
         void    set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const QUEX_TYPE_CHARACTER* Text);
         void    set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID ID, const int   Number1);
@@ -80,7 +80,7 @@ QUEX_NAMESPACE_TOKEN_OPEN
     };
 
     inline void 
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::__copy(const QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE& That) 
+    QUEX_TYPE_TOKEN::__copy(const QUEX_TYPE_TOKEN& That) 
     {
         _id     = That._id;
         _text   = That._text;
@@ -96,27 +96,27 @@ QUEX_NAMESPACE_TOKEN_OPEN
     }
 
     inline void    
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type, const QUEX_TYPE_CHARACTER* Text)
+    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type, const QUEX_TYPE_CHARACTER* Text)
     { _id = Type; _text = Text; }
 
     inline void    
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type, const int Number1)
+    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type, const int Number1)
     { _id = Type; _number = Number1; }
 
     inline void    
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::set(const QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE& Other) 
+    QUEX_TYPE_TOKEN::set(const QUEX_TYPE_TOKEN& Other) 
     { __copy(Other); }
 
     inline void    
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type) 
+    QUEX_TYPE_TOKEN::set(QUEX_TYPE_TOKEN_WITH_NAMESPACE_ID Type) 
     { _id = Type; }
 
     inline std::ostream&
-    operator<<(std::ostream& ostr, const QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE& Tok)
+    operator<<(std::ostream& ostr, const QUEX_TYPE_TOKEN& Tok)
     { ostr << std::string(Tok); return ostr; }
 
     inline
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::operator const std::string() const
+    QUEX_TYPE_TOKEN::operator const std::string() const
     {
         std::string             tmp;
         std::string::size_type  pos  = 0;
@@ -134,11 +134,11 @@ QUEX_NAMESPACE_TOKEN_OPEN
     }
     
     inline const std::string
-    QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::utf8_text() const
+    QUEX_TYPE_TOKEN::utf8_text() const
     {
         uint8_t          utf8_buffer[QUEX_SETTING_OUTPUT_TEMPORARY_UTF8_STRING_BUFFER_SIZE];
         std::string      tmp;
-        QUEX_TYPE_DOKEN_WITHOUT_NAMESPACE::__string  tmp2 = _text;
+        QUEX_TYPE_TOKEN::__string  tmp2 = _text;
 
         uint8_t* end = QUEX_NAMESPACE_MAIN::Quex_unicode_to_utf8_string((QUEX_TYPE_CHARACTER*)tmp2.c_str(), 
                                                    tmp2.length(), utf8_buffer, 
